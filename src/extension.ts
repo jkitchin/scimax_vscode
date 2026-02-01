@@ -882,6 +882,10 @@ export async function activate(context: vscode.ExtensionContext) {
         registerBlockHighlight,
         blockExportRegistry,
         blockHighlightRegistry,
+        registerExportHook,
+        exportHookRegistry,
+        createWrapperHook,
+        createElementReplacerHook,
     } = await import('./adapters');
 
     const { linkTypeRegistry } = await import('./parser/orgLinkTypes');
@@ -982,6 +986,47 @@ export async function activate(context: vscode.ExtensionContext) {
         registerBlockHighlight,
 
         /**
+         * Register an export hook for customizing exports
+         * Hooks can modify options (preExport), transform output (postExport),
+         * or filter individual elements (elementFilter)
+         * @example
+         * const disposable = api.registerExportHook({
+         *     id: 'my-hook',
+         *     postExport: (output, ctx) => {
+         *         if (ctx.backend === 'html') {
+         *             return `<!-- Custom Header -->\n${output}`;
+         *         }
+         *         return undefined;
+         *     },
+         * });
+         */
+        registerExportHook,
+
+        /**
+         * Create a simple wrapper hook that adds content before/after export output
+         * @example
+         * const hook = api.createWrapperHook('my-wrapper', {
+         *     backend: 'html',
+         *     before: '<!-- Start -->',
+         *     after: '<!-- End -->',
+         * });
+         * api.registerExportHook(hook);
+         */
+        createWrapperHook,
+
+        /**
+         * Create a hook that replaces specific element types
+         * @example
+         * const hook = api.createElementReplacerHook('para-wrapper', {
+         *     elementType: 'paragraph',
+         *     backend: 'html',
+         *     replace: (rendered) => `<div class="para">${rendered}</div>`,
+         * });
+         * api.registerExportHook(hook);
+         */
+        createElementReplacerHook,
+
+        /**
          * Direct access to registries for advanced use cases
          */
         registries: {
@@ -989,6 +1034,7 @@ export async function activate(context: vscode.ExtensionContext) {
             blockHighlight: blockHighlightRegistry,
             linkFollow: linkFollowRegistry,
             linkType: linkTypeRegistry,
+            exportHook: exportHookRegistry,
         },
     };
 }

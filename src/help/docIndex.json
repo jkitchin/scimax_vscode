@@ -1,6 +1,6 @@
 {
-  "buildDate": "2026-02-01T17:01:26.663Z",
-  "count": 3288,
+  "buildDate": "2026-02-01T17:59:06.897Z",
+  "count": 3300,
   "entries": [
     {
       "heading": "Scimax VS Code",
@@ -97697,10 +97697,300 @@
       ]
     },
     {
-      "heading": "Potential Future Extension Points",
+      "heading": "Export Hooks",
       "level": 2,
       "file": "extension-points.org",
       "line": 442,
+      "content": "Lightweight callbacks that run at specific points during export, allowing customization without implementing a full ExportBackend. Location: =src/adapters/exportHooksAdapter.ts=",
+      "path": [
+        "Extension Points"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "export",
+        "hooks",
+        "lightweight",
+        "callbacks",
+        "run",
+        "specific",
+        "points",
+        "during",
+        "allowing",
+        "customization",
+        "without",
+        "implementing",
+        "full",
+        "exportbackend",
+        "location",
+        "srcadaptersexporthooksadapterts"
+      ]
+    },
+    {
+      "heading": "ExportHook Interface",
+      "level": 3,
+      "file": "extension-points.org",
+      "line": 449,
+      "content": "#+BEGIN_SRC typescript interface ExportHook { /** Unique identifier for this hook */ id: string; /** Optional description */ description?: string; /** Priority for ordering (higher runs first, default 0) */ priority?: number; /** * Pre-export hook - runs before export starts * Can modify export options */ preExport?: (context: PreExportContext) => ExportOptions | undefined; /** * Post-export hook - runs after export completes * Can transform the final output */ postExport?: (output: string, cont",
+      "path": [
+        "Extension Points",
+        "Export Hooks"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "exporthook",
+        "interface",
+        "beginsrc",
+        "typescript",
+        "unique",
+        "identifier",
+        "hook",
+        "string",
+        "optional",
+        "description",
+        "priority",
+        "ordering",
+        "higher",
+        "runs",
+        "first",
+        "default",
+        "number",
+        "pre-export",
+        "before",
+        "export"
+      ]
+    },
+    {
+      "heading": "Registering Export Hooks",
+      "level": 3,
+      "file": "extension-points.org",
+      "line": 502,
+      "content": "#+BEGIN_SRC typescript import { registerExportHook } from './adapters/exportHooksAdapter'; // Add a company header/footer to HTML exports const disposable = registerExportHook({ id: 'company-branding', description: 'Add company header and footer', postExport: (output, context) => { if (context.backend === 'html') { return `<!-- Company Header -->\\n${output}\\n<!-- Company Footer -->`; } return undefined; // Don't modify other backends } }); context.subscriptions.push(disposable); #+END_SRC",
+      "path": [
+        "Extension Points",
+        "Export Hooks"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "registering",
+        "export",
+        "hooks",
+        "beginsrc",
+        "typescript",
+        "import",
+        "registerexporthook",
+        "adaptersexporthooksadapter",
+        "add",
+        "company",
+        "headerfooter",
+        "html",
+        "exports",
+        "const",
+        "disposable",
+        "company-branding",
+        "description",
+        "header",
+        "footer",
+        "postexport"
+      ]
+    },
+    {
+      "heading": "Use Cases",
+      "level": 3,
+      "file": "extension-points.org",
+      "line": 523,
+      "content": "| Hook Type | Use Case | |-----------+----------| | preExport | Inject metadata, set default options, add custom macros | | postExport | Add headers/footers, wrap in template, minify, post-process | | elementFilter | Custom handling for specific elements, transform rendering |",
+      "path": [
+        "Extension Points",
+        "Export Hooks"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "cases",
+        "hook",
+        "type",
+        "case",
+        "---------------------",
+        "preexport",
+        "inject",
+        "metadata",
+        "set",
+        "default",
+        "options",
+        "add",
+        "custom",
+        "macros",
+        "postexport",
+        "headersfooters",
+        "wrap",
+        "template",
+        "minify",
+        "post-process"
+      ]
+    },
+    {
+      "heading": "Helper Functions",
+      "level": 3,
+      "file": "extension-points.org",
+      "line": 531,
+      "content": "",
+      "path": [
+        "Extension Points",
+        "Export Hooks"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "helper",
+        "functions"
+      ]
+    },
+    {
+      "heading": "createWrapperHook",
+      "level": 4,
+      "file": "extension-points.org",
+      "line": 533,
+      "content": "Creates a simple hook that wraps output with before/after content. #+BEGIN_SRC typescript import { createWrapperHook, registerExportHook } from './adapters/exportHooksAdapter'; // Add copyright notice to HTML/LaTeX exports const hook = createWrapperHook('copyright', { backend: ['html', 'latex'],  // Only these backends before: '', after: '\\n<!-- Copyright 2024 MyCompany -->', }); context.subscriptions.push(registerExportHook(hook)); #+END_SRC",
+      "path": [
+        "Extension Points",
+        "Export Hooks",
+        "Helper Functions"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "createwrapperhook",
+        "creates",
+        "simple",
+        "hook",
+        "wraps",
+        "output",
+        "beforeafter",
+        "content",
+        "beginsrc",
+        "typescript",
+        "import",
+        "registerexporthook",
+        "adaptersexporthooksadapter",
+        "add",
+        "copyright",
+        "notice",
+        "htmllatex",
+        "exports",
+        "const",
+        "backend"
+      ]
+    },
+    {
+      "heading": "createElementReplacerHook",
+      "level": 4,
+      "file": "extension-points.org",
+      "line": 550,
+      "content": "Creates a hook that modifies specific element types. #+BEGIN_SRC typescript import { createElementReplacerHook, registerExportHook } from './adapters/exportHooksAdapter'; // Wrap all paragraphs in a custom div const hook = createElementReplacerHook('para-wrapper', { elementType: 'paragraph', backend: 'html', replace: (rendered) => `<div class=\"custom-para\">${rendered}</div>`, }); context.subscriptions.push(registerExportHook(hook)); #+END_SRC",
+      "path": [
+        "Extension Points",
+        "Export Hooks",
+        "Helper Functions"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "createelementreplacerhook",
+        "creates",
+        "hook",
+        "modifies",
+        "specific",
+        "element",
+        "types",
+        "beginsrc",
+        "typescript",
+        "import",
+        "registerexporthook",
+        "adaptersexporthooksadapter",
+        "wrap",
+        "paragraphs",
+        "custom",
+        "div",
+        "const",
+        "para-wrapper",
+        "elementtype",
+        "paragraph"
+      ]
+    },
+    {
+      "heading": "Hook Execution Order",
+      "level": 3,
+      "file": "extension-points.org",
+      "line": 567,
+      "content": "1. Hooks are sorted by priority (higher numbers run first) 2. Default priority is 0 3. Multiple hooks chain together - each receives the output of the previous 4. Return =undefined= from a hook to skip modification and pass through",
+      "path": [
+        "Extension Points",
+        "Export Hooks"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "hook",
+        "execution",
+        "order",
+        "hooks",
+        "sorted",
+        "priority",
+        "higher",
+        "numbers",
+        "run",
+        "first",
+        "default",
+        "multiple",
+        "chain",
+        "together",
+        "receives",
+        "output",
+        "previous",
+        "return",
+        "undefined",
+        "skip"
+      ]
+    },
+    {
+      "heading": "Error Handling",
+      "level": 3,
+      "file": "extension-points.org",
+      "line": 574,
+      "content": "Hooks that throw errors are caught and logged. The export continues with the unmodified content, so a failing hook won't break the entire export.",
+      "path": [
+        "Extension Points",
+        "Export Hooks"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "error",
+        "handling",
+        "hooks",
+        "throw",
+        "errors",
+        "caught",
+        "logged",
+        "export",
+        "continues",
+        "unmodified",
+        "content",
+        "failing",
+        "hook",
+        "won",
+        "break",
+        "entire"
+      ]
+    },
+    {
+      "heading": "Potential Future Extension Points",
+      "level": 2,
+      "file": "extension-points.org",
+      "line": 579,
       "content": "These patterns could be extended for additional plugin types:",
       "path": [
         "Extension Points"
@@ -97723,7 +98013,7 @@
       "heading": "Speed Commands",
       "level": 3,
       "file": "extension-points.org",
-      "line": 446,
+      "line": 583,
       "content": "Custom single-key commands at headline beginnings. #+BEGIN_SRC typescript interface SpeedCommand { key: string; description: string; execute(editor: TextEditor, heading: HeadingNode): Promise<void>; } #+END_SRC",
       "path": [
         "Extension Points",
@@ -97758,7 +98048,7 @@
       "heading": "Capture Templates",
       "level": 3,
       "file": "extension-points.org",
-      "line": 458,
+      "line": 595,
       "content": "Custom org-capture templates. #+BEGIN_SRC typescript interface CaptureTemplate { key: string; description: string; template: string; target: CaptureTarget; } #+END_SRC",
       "path": [
         "Extension Points",
@@ -97788,7 +98078,7 @@
       "heading": "Entity Definitions",
       "level": 3,
       "file": "extension-points.org",
-      "line": 471,
+      "line": 608,
       "content": "Custom special character entities (like org-entities). #+BEGIN_SRC typescript interface OrgEntity { name: string; latex: string; html: string; unicode: string; } #+END_SRC",
       "path": [
         "Extension Points",
@@ -97821,7 +98111,7 @@
       "heading": "Document Linters",
       "level": 3,
       "file": "extension-points.org",
-      "line": 484,
+      "line": 621,
       "content": "Custom lint rules for org documents. #+BEGIN_SRC typescript interface LintRule { id: string; severity: 'error' | 'warning' | 'info'; check(document: OrgDocument): Diagnostic[]; } #+END_SRC",
       "path": [
         "Extension Points",
@@ -97856,7 +98146,7 @@
       "heading": "VS Code Extension API",
       "level": 1,
       "file": "extension-points.org",
-      "line": 496,
+      "line": 633,
       "content": "External VS Code extensions can contribute to scimax via the extension API.",
       "path": [],
       "commands": [],
@@ -97876,7 +98166,7 @@
       "heading": "Accessing the API",
       "level": 2,
       "file": "extension-points.org",
-      "line": 500,
+      "line": 637,
       "content": "#+BEGIN_SRC typescript // In your extension's activate() function export async function activate(context: vscode.ExtensionContext) { const scimaxExt = vscode.extensions.getExtension('scimax.scimax-vscode'); if (!scimaxExt) { console.log('Scimax extension not installed'); return; } // Ensure scimax is activated const scimaxApi = scimaxExt.isActive ? scimaxExt.exports : await scimaxExt.activate(); // Now use the API... } #+END_SRC",
       "path": [
         "VS Code Extension API"
@@ -97912,7 +98202,7 @@
       "heading": "Available API Methods",
       "level": 2,
       "file": "extension-points.org",
-      "line": 521,
+      "line": 658,
       "content": "",
       "path": [
         "VS Code Extension API"
@@ -97929,7 +98219,7 @@
       "heading": "registerBabelExecutor(executor)",
       "level": 3,
       "file": "extension-points.org",
-      "line": 523,
+      "line": 660,
       "content": "Register a custom language executor for source blocks. #+BEGIN_SRC typescript const disposable = scimaxApi.registerBabelExecutor({ languages: ['ruby', 'rb'], async execute(code, context) { return { success: true, stdout: 'result', stderr: '', executionTime: 100 }; }, async isAvailable() { return true; } }); context.subscriptions.push(disposable); #+END_SRC",
       "path": [
         "VS Code Extension API",
@@ -97964,7 +98254,7 @@
       "heading": "createSimpleExecutor(options)",
       "level": 3,
       "file": "extension-points.org",
-      "line": 541,
+      "line": 678,
       "content": "Helper to create a command-based executor. #+BEGIN_SRC typescript const rubyExec = scimaxApi.createSimpleExecutor({ languages: ['ruby'], command: 'ruby', extension: '.rb', }); context.subscriptions.push(scimaxApi.registerBabelExecutor(rubyExec)); #+END_SRC",
       "path": [
         "VS Code Extension API",
@@ -97997,7 +98287,7 @@
       "heading": "registerLinkType(handler)",
       "level": 3,
       "file": "extension-points.org",
-      "line": 555,
+      "line": 692,
       "content": "Register a custom link type handler. #+BEGIN_SRC typescript const disposable = scimaxApi.registerLinkType({ type: 'jira', description: 'Jira issue links', resolve: (path) => ({ displayText: path, url: `https://jira.example.com/browse/${path}`, tooltip: `Open Jira issue ${path}` }), export: (path, desc, backend) => { const url = `https://jira.example.com/browse/${path}`; const text = desc || path; if (backend === 'html') return `<a href=\"${url}\">${text}</a>`; if (backend === 'latex') return `\\\\hr",
       "path": [
         "VS Code Extension API",
@@ -98032,7 +98322,7 @@
       "heading": "registerLinkFollowHandler(handler)",
       "level": 3,
       "file": "extension-points.org",
-      "line": 580,
+      "line": 717,
       "content": "Register a VS Code action for when a link type is clicked. #+BEGIN_SRC typescript const disposable = scimaxApi.registerLinkFollowHandler({ type: 'jira', async follow(path, context) { await vscode.env.openExternal( vscode.Uri.parse(`https://jira.example.com/browse/${path}`) ); } }); context.subscriptions.push(disposable); #+END_SRC",
       "path": [
         "VS Code Extension API",
@@ -98067,7 +98357,7 @@
       "heading": "registerBlockExport(handler)",
       "level": 3,
       "file": "extension-points.org",
-      "line": 597,
+      "line": 734,
       "content": "Register a custom export handler for special blocks. #+BEGIN_SRC typescript const disposable = scimaxApi.registerBlockExport({ blockType: 'callout', export: (content, backend, ctx) => { if (backend === 'html') return `<div class=\"callout\">${content}</div>`; if (backend === 'latex') return `\\\\begin{tcolorbox}${content}\\\\end{tcolorbox}`; return content; }, }); context.subscriptions.push(disposable); #+END_SRC",
       "path": [
         "VS Code Extension API",
@@ -98102,7 +98392,7 @@
       "heading": "registerBlockHighlight(config)",
       "level": 3,
       "file": "extension-points.org",
-      "line": 614,
+      "line": 751,
       "content": "Register visual highlighting for custom block types in the editor. #+BEGIN_SRC typescript const disposable = scimaxApi.registerBlockHighlight({ blockType: 'callout', backgroundColor: 'rgba(100, 149, 237, 0.1)', borderColor: 'rgba(100, 149, 237, 0.5)', headerColor: 'cornflowerblue', }); context.subscriptions.push(disposable); #+END_SRC",
       "path": [
         "VS Code Extension API",
@@ -98134,11 +98424,116 @@
       ]
     },
     {
+      "heading": "registerExportHook(hook)",
+      "level": 3,
+      "file": "extension-points.org",
+      "line": 766,
+      "content": "Register a hook to customize the export process. #+BEGIN_SRC typescript const disposable = scimaxApi.registerExportHook({ id: 'my-custom-hook', // Modify options before export preExport: (ctx) => ({ ...ctx.options, toc: true }), // Transform output after export postExport: (output, ctx) => { if (ctx.backend === 'html') { return `<!-- Custom Header -->\\n${output}`; } return undefined; }, // Filter specific elements elementFilter: (rendered, ctx) => { if (ctx.element.type === 'paragraph') {",
+      "path": [
+        "VS Code Extension API",
+        "Available API Methods"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "registerexporthook",
+        "hook",
+        "register",
+        "customize",
+        "export",
+        "process",
+        "beginsrc",
+        "typescript",
+        "const",
+        "disposable",
+        "scimaxapiregisterexporthook",
+        "my-custom-hook",
+        "modify",
+        "options",
+        "before",
+        "preexport",
+        "ctx",
+        "ctxoptions",
+        "toc",
+        "true"
+      ]
+    },
+    {
+      "heading": "createWrapperHook(id, options)",
+      "level": 3,
+      "file": "extension-points.org",
+      "line": 794,
+      "content": "Helper to create a simple wrapper hook. #+BEGIN_SRC typescript const hook = scimaxApi.createWrapperHook('my-wrapper', { backend: 'html',           // Optional: filter by backend before: '<!-- Start -->', after: '<!-- End -->', priority: 10,              // Optional: higher runs first }); context.subscriptions.push(scimaxApi.registerExportHook(hook)); #+END_SRC",
+      "path": [
+        "VS Code Extension API",
+        "Available API Methods"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "createwrapperhook",
+        "options",
+        "helper",
+        "create",
+        "simple",
+        "wrapper",
+        "hook",
+        "beginsrc",
+        "typescript",
+        "const",
+        "scimaxapicreatewrapperhook",
+        "my-wrapper",
+        "backend",
+        "html",
+        "optional",
+        "filter",
+        "before",
+        "start",
+        "after",
+        "end"
+      ]
+    },
+    {
+      "heading": "createElementReplacerHook(id, options)",
+      "level": 3,
+      "file": "extension-points.org",
+      "line": 809,
+      "content": "Helper to create a hook that modifies specific element types. #+BEGIN_SRC typescript const hook = scimaxApi.createElementReplacerHook('para-wrapper', { elementType: ['paragraph', 'headline'],  // Can be string or array backend: 'html',                         // Optional: filter by backend replace: (rendered, element) => { return `<div class=\"custom\">${rendered}</div>`; }, }); context.subscriptions.push(scimaxApi.registerExportHook(hook)); #+END_SRC",
+      "path": [
+        "VS Code Extension API",
+        "Available API Methods"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "createelementreplacerhook",
+        "options",
+        "helper",
+        "create",
+        "hook",
+        "modifies",
+        "specific",
+        "element",
+        "types",
+        "beginsrc",
+        "typescript",
+        "const",
+        "scimaxapicreateelementreplacerhook",
+        "para-wrapper",
+        "elementtype",
+        "paragraph",
+        "headline",
+        "string",
+        "array",
+        "backend"
+      ]
+    },
+    {
       "heading": "Direct Registry Access",
       "level": 3,
       "file": "extension-points.org",
-      "line": 629,
-      "content": "For advanced use cases, you can access the registries directly: #+BEGIN_SRC typescript // Access all registries const { registries } = scimaxApi; // Check registered block types registries.blockExport.getBlockTypes();  // ['warning', 'note', ...] // Check if a block has a custom handler registries.blockExport.hasHandler('callout');  // true/false // Get highlight config for a block type registries.blockHighlight.getConfig('warning'); #+END_SRC",
+      "line": 825,
+      "content": "For advanced use cases, you can access the registries directly: #+BEGIN_SRC typescript // Access all registries const { registries } = scimaxApi; // Check registered block types registries.blockExport.getBlockTypes();  // ['warning', 'note', ...] // Check if a block has a custom handler registries.blockExport.hasHandler('callout');  // true/false // Get highlight config for a block type registries.blockHighlight.getConfig('warning'); // Get all export hooks registries.exportHook.getHooks();  // ",
       "path": [
         "VS Code Extension API",
         "Available API Methods"
@@ -98172,7 +98567,7 @@
       "heading": "Utility Functions",
       "level": 3,
       "file": "extension-points.org",
-      "line": 647,
+      "line": 849,
       "content": "#+BEGIN_SRC typescript // Check if a language is supported scimaxApi.isLanguageSupported('python');  // true // Get all registered languages scimaxApi.getRegisteredLanguages();  // ['python', 'py', 'bash', ...] #+END_SRC",
       "path": [
         "VS Code Extension API",
@@ -98203,7 +98598,7 @@
       "heading": "Core Library Extraction",
       "level": 1,
       "file": "extension-points.org",
-      "line": 657,
+      "line": 859,
       "content": "The =src/parser/= directory is designed to be extractable as a standalone npm library (=@scimax/org-core=) with no VS Code dependencies.",
       "path": [],
       "commands": [],
@@ -98227,7 +98622,7 @@
       "heading": "What's in Core",
       "level": 2,
       "file": "extension-points.org",
-      "line": 662,
+      "line": 864,
       "content": "- AST types (=orgElementTypes.ts=) - Parser (=orgParser.ts=, =orgExportParser.ts=, =orgParserUnified.ts=) - Export backends (=orgExport*.ts=) - Link resolution (=orgLinkTypes.ts= - resolve/export only) - Entities (=orgEntities.ts=) - Babel execution (=orgBabel.ts=)",
       "path": [
         "Core Library Extraction"
@@ -98261,7 +98656,7 @@
       "heading": "What's in VS Code Layer",
       "level": 2,
       "file": "extension-points.org",
-      "line": 671,
+      "line": 873,
       "content": "- Providers (=src/org/*.ts=) - Link follow actions (=src/adapters/linkFollowAdapter.ts=) - Commands and UI - Database and indexing",
       "path": [
         "Core Library Extraction"
@@ -98286,7 +98681,7 @@
       "heading": "Related Documentation",
       "level": 1,
       "file": "extension-points.org",
-      "line": 678,
+      "line": 880,
       "content": "- [[file:source-blocks.org][Source Blocks]] - Babel execution - [[file:keybindings.org][Keybindings]] - Command reference - [[file:configuration.org][Configuration]] - Settings",
       "path": [],
       "commands": [],

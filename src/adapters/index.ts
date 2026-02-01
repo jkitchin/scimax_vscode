@@ -109,3 +109,16 @@ export {
     LinkCompletion,
     linkTypeRegistry,
 } from '../parser/orgLinkTypes';
+
+// Export Hooks Adapter
+export {
+    ExportHook,
+    PreExportContext,
+    PostExportContext,
+    ElementFilterContext,
+    exportHookRegistry,
+    registerExportHook,
+    // Helper functions
+    createWrapperHook,
+    createElementReplacerHook,
+} from './exportHooksAdapter';

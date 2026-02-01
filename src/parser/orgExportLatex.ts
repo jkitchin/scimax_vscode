@@ -73,6 +73,7 @@ import {
 } from './orgExport';
 
 import { blockExportRegistry } from '../adapters/blockExportAdapter';
+import { exportHookRegistry } from '../adapters/exportHooksAdapter';
 
 // =============================================================================
 // LaTeX Export Options
@@ -205,7 +206,7 @@ export class LatexExportBackend implements ExportBackend {
         const optionsKeyword = doc.keywords['OPTIONS'];
         const parsedOptions = optionsKeyword ? parseOptionsKeyword(optionsKeyword) : {};
 
-        const opts: LatexExportOptions = {
+        let opts: LatexExportOptions = {
             ...DEFAULT_LATEX_OPTIONS,
             ...parsedOptions,  // OPTIONS keyword values
             ...options,        // Explicit options override OPTIONS
@@ -215,6 +216,14 @@ export class LatexExportBackend implements ExportBackend {
             noDefaults,
             backend: 'latex',
         };
+
+        // Run pre-export hooks (can modify options)
+        opts = exportHookRegistry.runPreExportHooks({
+            document: doc,
+            options: opts,
+            backend: 'latex',
+        }) as LatexExportOptions;
+
         const state = createExportState(opts);
 
         // Pre-process document
@@ -244,18 +253,27 @@ export class LatexExportBackend implements ExportBackend {
         // Build content
         const content = this.exportDocumentContent(doc, state, opts);
 
+        let output: string;
         // If bodyOnly is requested, return just the content without preamble/document wrapper
         if (opts.bodyOnly) {
-            return content;
+            output = content;
+        } else {
+            output = this.wrapInLatexDocument(content, {
+                title,
+                author,
+                email,
+                date,
+                ...opts,
+            }, state);
         }
 
-        return this.wrapInLatexDocument(content, {
-            title,
-            author,
-            email,
-            date,
-            ...opts,
-        }, state);
+        // Run post-export hooks (can transform output)
+        output = exportHookRegistry.runPostExportHooks(output, {
+            backend: 'latex',
+            options: opts,
+        });
+
+        return output;
     }
 
     /**
@@ -297,7 +315,16 @@ export class LatexExportBackend implements ExportBackend {
         }
 
         const content = this.exportElementContent(element, state);
-        return prefix + content;
+        let result = prefix + content;
+
+        // Run element filter hooks
+        result = exportHookRegistry.runElementFilters(result, {
+            element,
+            backend: 'latex',
+            options: state.options,
+        });
+
+        return result;
     }
 
     /**
