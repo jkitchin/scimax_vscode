@@ -5274,6 +5274,11 @@
           "default": "name",
           "description": "Default sort field for dired listings"
         },
+        "scimax.dired.changeWorkspaceOnEnter": {
+          "type": "boolean",
+          "default": false,
+          "description": "When entering a directory in dired, change VS Code's workspace to that directory"
+        },
         "scimax.db.includeJournal": {
           "type": "boolean",
           "default": true,

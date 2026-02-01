@@ -117,9 +117,27 @@ export class DiredPanel {
                     break;
 
                 case 'open':
+                    const entryBeforeOpen = this.manager.getState().entries[message.index];
                     const entry = await this.manager.openAtIndex(message.index);
                     if (entry) {
+                        // File was opened
                         await vscode.window.showTextDocument(vscode.Uri.file(entry.path));
+                    } else if (entryBeforeOpen?.isDirectory) {
+                        // Directory was entered - optionally change workspace
+                        const config = vscode.workspace.getConfiguration('scimax.dired');
+                        const changeWorkspace = config.get<boolean>('changeWorkspaceOnEnter', false);
+                        if (changeWorkspace) {
+                            const newDir = this.manager.getState().currentDirectory;
+                            const newUri = vscode.Uri.file(newDir);
+                            const workspaceFolders = vscode.workspace.workspaceFolders;
+                            if (workspaceFolders && workspaceFolders.length > 0) {
+                                // Replace the first workspace folder
+                                vscode.workspace.updateWorkspaceFolders(0, 1, { uri: newUri });
+                            } else {
+                                // No workspace folders - add this one
+                                vscode.workspace.updateWorkspaceFolders(0, 0, { uri: newUri });
+                            }
+                        }
                     }
                     break;
 
