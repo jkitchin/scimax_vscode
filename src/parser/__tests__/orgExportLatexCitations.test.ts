@@ -2,7 +2,16 @@
  * Tests for LaTeX export of citations and references
  */
 
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
+
+// Mock VS Code API (required because export backends now use adapters that import vscode)
+vi.mock('vscode', () => ({
+    Disposable: class {
+        constructor(private callback: () => void) {}
+        dispose() { this.callback(); }
+    },
+}));
+
 import { parseOrgFast } from '../orgExportParser';
 import { exportToLatex } from '../orgExportLatex';
 

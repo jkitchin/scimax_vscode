@@ -117,6 +117,8 @@ export interface LinkTypeHandler {
 
     /**
      * Follow/open the link (VS Code action)
+     * @deprecated Use LinkFollowHandler in adapters/linkFollowAdapter.ts instead.
+     * This keeps the core parser VS Code-free for npm library extraction.
      */
     follow?(path: string, context: LinkContext): Promise<void>;
 }
@@ -652,39 +654,7 @@ export const cmdHandler: LinkTypeHandler = {
                 return text;
         }
     },
-
-    async follow(path: string, context: LinkContext): Promise<void> {
-        // Dynamic import to avoid circular dependencies
-        const vscode = await import('vscode');
-        try {
-            // Support command arguments: cmd:command?arg1&arg2 or cmd:command?json={"key":"value"}
-            let command = path;
-            let args: unknown[] = [];
-
-            const queryIndex = path.indexOf('?');
-            if (queryIndex !== -1) {
-                command = path.substring(0, queryIndex);
-                const queryString = path.substring(queryIndex + 1);
-
-                // Check if it's JSON format
-                if (queryString.startsWith('json=')) {
-                    try {
-                        args = [JSON.parse(decodeURIComponent(queryString.substring(5)))];
-                    } catch {
-                        // Fall back to treating as simple string argument
-                        args = [queryString.substring(5)];
-                    }
-                } else {
-                    // Simple format: arg1&arg2&arg3 (each becomes a separate argument)
-                    args = queryString.split('&').map(arg => decodeURIComponent(arg));
-                }
-            }
-
-            await vscode.commands.executeCommand(command, ...args);
-        } catch (error) {
-            vscode.window.showErrorMessage(`Failed to execute command: ${path}`);
-        }
-    },
+    // Note: follow() is handled by cmdFollowHandler in adapters/linkFollowAdapter.ts
 };
 
 /**
@@ -834,57 +804,7 @@ export const notebookHandler: LinkTypeHandler = {
 
         return completions;
     },
-
-    async follow(path: string, context: LinkContext): Promise<void> {
-        const vscode = await import('vscode');
-
-        const parsed = parseNotebookLinkPath(path);
-        if (!parsed) {
-            vscode.window.showErrorMessage('Invalid notebook link format');
-            return;
-        }
-
-        const { projectName, filePath, target } = parsed;
-        const projects = context.getProjects?.() || [];
-
-        // Find matching projects
-        const matchingProjects = projects.filter(
-            proj => proj.name === projectName ||
-                  proj.name.toLowerCase() === projectName.toLowerCase() ||
-                  proj.path.endsWith(`/${projectName}`) ||
-                  proj.path.endsWith(`\\${projectName}`)
-        );
-
-        if (matchingProjects.length === 0) {
-            vscode.window.showErrorMessage(`Project not found: ${projectName}`);
-            return;
-        }
-
-        let project: ProjectInfo;
-        if (matchingProjects.length > 1) {
-            // Show picker for ambiguous matches
-            const items = matchingProjects.map(proj => ({
-                label: proj.name,
-                description: proj.path,
-                project: proj,
-            }));
-            const selected = await vscode.window.showQuickPick(items, {
-                placeHolder: `Multiple projects match "${projectName}". Select one:`,
-            });
-            if (!selected) return;
-            project = selected.project;
-        } else {
-            project = matchingProjects[0];
-        }
-
-        // Build full path
-        const fullPath = `${project.path}/${filePath}`.replace(/\\/g, '/');
-
-        // Open via command with target handling (reuses existing file link logic)
-        // Construct a file: link to leverage existing openFileLink
-        const fileLink = target ? `file:${fullPath}::${target}` : `file:${fullPath}`;
-        await vscode.commands.executeCommand('scimax.org.openLink', fileLink);
-    },
+    // Note: follow() is handled by notebookFollowHandler in adapters/linkFollowAdapter.ts
 };
 
 /**

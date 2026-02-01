@@ -83,6 +83,8 @@ import { CitationProcessor, CSLStyleName } from '../references/citationProcessor
 import { parseCitationsFromLine, getNormalizedStyle } from '../references/citationParser';
 import type { BibEntry } from '../references/bibtexParser';
 import { ALL_CITATION_COMMANDS } from '../references/citationTypes';
+import { blockExportRegistry } from '../adapters/blockExportAdapter';
+import { exportHookRegistry } from '../adapters/exportHooksAdapter';
 
 // Citation link types that should be processed as citations
 const CITATION_LINK_TYPES = new Set(ALL_CITATION_COMMANDS.map(c => c.toLowerCase()));
@@ -185,12 +187,19 @@ export class HtmlExportBackend implements ExportBackend {
         const optionsKeyword = doc.keywords['OPTIONS'];
         const parsedOptions = optionsKeyword ? parseOptionsKeyword(optionsKeyword) : {};
 
-        const opts: HtmlExportOptions = {
+        let opts: HtmlExportOptions = {
             ...DEFAULT_HTML_OPTIONS,
             ...parsedOptions,  // OPTIONS keyword values
             ...options,        // Explicit options override OPTIONS
             backend: 'html',
         };
+
+        // Run pre-export hooks (can modify options)
+        opts = exportHookRegistry.runPreExportHooks({
+            document: doc,
+            options: opts,
+            backend: 'html',
+        }) as HtmlExportOptions;
 
         // Create base export state
         const baseState = createExportState(opts);
@@ -246,18 +255,27 @@ export class HtmlExportBackend implements ExportBackend {
         // Build content
         const content = this.exportDocumentContent(doc, state);
 
+        let output: string;
         if (opts.bodyOnly) {
-            return content;
+            output = content;
+        } else {
+            output = this.wrapInHtmlDocument(content, {
+                title,
+                author,
+                email,
+                date,
+                language,
+                ...opts,
+            }, state);
         }
 
-        return this.wrapInHtmlDocument(content, {
-            title,
-            author,
-            email,
-            date,
-            language,
-            ...opts,
-        }, state);
+        // Run post-export hooks (can transform output)
+        output = exportHookRegistry.runPostExportHooks(output, {
+            backend: 'html',
+            options: opts,
+        });
+
+        return output;
     }
 
     /**
@@ -317,7 +335,16 @@ export class HtmlExportBackend implements ExportBackend {
         }
 
         const content = this.exportElementContent(element, state);
-        return prefix + content;
+        let result = prefix + content;
+
+        // Run element filter hooks
+        result = exportHookRegistry.runElementFilters(result, {
+            element,
+            backend: 'html',
+            options: state.options,
+        });
+
+        return result;
     }
 
     /**
@@ -606,17 +633,14 @@ export class HtmlExportBackend implements ExportBackend {
             .map(child => this.exportElement(child, state))
             .join('\n');
 
-        // Handle common special blocks
-        switch (blockType) {
-            case 'warning':
-            case 'note':
-            case 'tip':
-            case 'important':
-            case 'caution':
-                return `<div class="org-${blockType} admonition">\n${content}</div>\n`;
-            default:
-                return `<div class="org-special-block org-${blockType}">\n${content}</div>\n`;
+        // Check registry for custom handler first
+        const customResult = blockExportRegistry.export(blockType, content, 'html', {});
+        if (customResult !== undefined) {
+            return customResult;
         }
+
+        // Default handling for special blocks
+        return `<div class="org-special-block org-${blockType}">\n${content}</div>\n`;
     }
 
     private exportVerseBlock(block: VerseBlockElement, state: ExportState): string {

@@ -25,7 +25,8 @@ import {
 } from './references/providers';
 import { NotebookManager } from './notebook/notebookManager';
 import { registerNotebookCommands, checkPendingNavigation } from './notebook/commands';
-import { OrgLinkProvider, MarkdownHeadingLinkProvider, registerOrgLinkCommands } from './parser/orgLinkProvider';
+import { OrgLinkProvider, MarkdownHeadingLinkProvider, registerOrgLinkCommands } from './org/orgLinkProvider';
+import { registerBuiltinFollowHandlers } from './adapters/linkFollowAdapter';
 import { registerSemanticTokenProvider } from './highlighting/semanticTokenProvider';
 import { registerFoldingProvider } from './highlighting/foldingProvider';
 import { registerBlockDecorations } from './highlighting/blockDecorations';
@@ -88,6 +89,14 @@ export async function activate(context: vscode.ExtensionContext) {
     // Initialize logging first - errors will be visible in status bar
     initializeLogging(context);
     extensionLogger.info('Extension activating...');
+
+    // Register link follow handlers (VS Code-specific link actions)
+    context.subscriptions.push(...registerBuiltinFollowHandlers());
+
+    // Register block export and highlight handlers
+    const { registerBuiltinBlockHandlers, registerBuiltinBlockHighlights } = await import('./adapters');
+    context.subscriptions.push(...registerBuiltinBlockHandlers());
+    context.subscriptions.push(...registerBuiltinBlockHighlights());
 
     // Register log level command
     context.subscriptions.push(
@@ -855,6 +864,179 @@ export async function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push({ dispose: () => hydraManager.dispose() });
 
     extensionLogger.info('Extension activated');
+
+    // ==========================================================================
+    // Extension API
+    // ==========================================================================
+    // Return API for other extensions to use
+    // Access via: vscode.extensions.getExtension('scimax.scimax-vscode')?.exports
+
+    const {
+        registerBabelExecutor,
+        createSimpleExecutor,
+        createSessionExecutor,
+        isLanguageSupported,
+        getRegisteredLanguages,
+        linkFollowRegistry,
+        registerBlockExport,
+        registerBlockHighlight,
+        blockExportRegistry,
+        blockHighlightRegistry,
+        registerExportHook,
+        exportHookRegistry,
+        createWrapperHook,
+        createElementReplacerHook,
+    } = await import('./adapters');
+
+    const { linkTypeRegistry } = await import('./parser/orgLinkTypes');
+
+    return {
+        /**
+         * Register a custom Babel language executor
+         * @example
+         * const disposable = api.registerBabelExecutor({
+         *     languages: ['ruby', 'rb'],
+         *     execute: async (code, ctx) => ({ success: true, stdout: result, stderr: '', executionTime: 100 }),
+         *     isAvailable: async () => true,
+         * });
+         */
+        registerBabelExecutor,
+
+        /**
+         * Create a simple command-based executor
+         * @example
+         * const rubyExec = api.createSimpleExecutor({
+         *     languages: ['ruby'],
+         *     command: 'ruby',
+         *     extension: '.rb',
+         * });
+         * api.registerBabelExecutor(rubyExec);
+         */
+        createSimpleExecutor,
+
+        /**
+         * Create a session-based executor with persistent state
+         */
+        createSessionExecutor,
+
+        /**
+         * Check if a language is supported
+         */
+        isLanguageSupported,
+
+        /**
+         * Get all registered language names
+         */
+        getRegisteredLanguages,
+
+        /**
+         * Register a custom link type handler
+         * @example
+         * const disposable = api.registerLinkType({
+         *     type: 'jira',
+         *     description: 'Jira issues',
+         *     resolve: (path) => ({ displayText: path, url: `https://jira.example.com/${path}` }),
+         * });
+         */
+        registerLinkType: (handler: import('./parser/orgLinkTypes').LinkTypeHandler) => {
+            linkTypeRegistry.register(handler);
+            return new vscode.Disposable(() => linkTypeRegistry.unregister(handler.type));
+        },
+
+        /**
+         * Register a custom link follow handler (VS Code action when clicking)
+         * @example
+         * const disposable = api.registerLinkFollowHandler({
+         *     type: 'jira',
+         *     follow: async (path) => {
+         *         await vscode.env.openExternal(vscode.Uri.parse(`https://jira.example.com/${path}`));
+         *     },
+         * });
+         */
+        registerLinkFollowHandler: (handler: import('./adapters/linkFollowAdapter').LinkFollowHandler) => {
+            return linkFollowRegistry.register(handler);
+        },
+
+        /**
+         * Register a custom block export handler
+         * Allows external extensions to define how custom #+BEGIN_X blocks render in exports
+         * @example
+         * const disposable = api.registerBlockExport({
+         *     blockType: 'callout',
+         *     export: (content, backend, ctx) => {
+         *         if (backend === 'html') return `<div class="callout">${content}</div>`;
+         *         if (backend === 'latex') return `\\begin{tcolorbox}${content}\\end{tcolorbox}`;
+         *         return content;
+         *     },
+         * });
+         */
+        registerBlockExport,
+
+        /**
+         * Register a custom block highlight configuration
+         * Allows external extensions to define visual highlighting for custom blocks
+         * @example
+         * const disposable = api.registerBlockHighlight({
+         *     blockType: 'callout',
+         *     backgroundColor: 'rgba(100, 149, 237, 0.1)',
+         *     borderColor: 'rgba(100, 149, 237, 0.5)',
+         *     headerColor: 'cornflowerblue',
+         * });
+         */
+        registerBlockHighlight,
+
+        /**
+         * Register an export hook for customizing exports
+         * Hooks can modify options (preExport), transform output (postExport),
+         * or filter individual elements (elementFilter)
+         * @example
+         * const disposable = api.registerExportHook({
+         *     id: 'my-hook',
+         *     postExport: (output, ctx) => {
+         *         if (ctx.backend === 'html') {
+         *             return `<!-- Custom Header -->\n${output}`;
+         *         }
+         *         return undefined;
+         *     },
+         * });
+         */
+        registerExportHook,
+
+        /**
+         * Create a simple wrapper hook that adds content before/after export output
+         * @example
+         * const hook = api.createWrapperHook('my-wrapper', {
+         *     backend: 'html',
+         *     before: '<!-- Start -->',
+         *     after: '<!-- End -->',
+         * });
+         * api.registerExportHook(hook);
+         */
+        createWrapperHook,
+
+        /**
+         * Create a hook that replaces specific element types
+         * @example
+         * const hook = api.createElementReplacerHook('para-wrapper', {
+         *     elementType: 'paragraph',
+         *     backend: 'html',
+         *     replace: (rendered) => `<div class="para">${rendered}</div>`,
+         * });
+         * api.registerExportHook(hook);
+         */
+        createElementReplacerHook,
+
+        /**
+         * Direct access to registries for advanced use cases
+         */
+        registries: {
+            blockExport: blockExportRegistry,
+            blockHighlight: blockHighlightRegistry,
+            linkFollow: linkFollowRegistry,
+            linkType: linkTypeRegistry,
+            exportHook: exportHookRegistry,
+        },
+    };
 }
 
 export async function deactivate() {

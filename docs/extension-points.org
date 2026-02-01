@@ -1,0 +1,884 @@
+#+TITLE: Extension Points for Plugin Development
+#+AUTHOR: Scimax VS Code
+#+OPTIONS: toc:2
+
+* Overview
+
+Scimax VS Code is designed with extensibility in mind. The architecture
+separates core parsing logic (npm library extractable) from VS Code-specific
+adapters, enabling both internal extension and external plugin development.
+
+This document describes the extension points available for adding new
+functionality.
+
+* Architecture Layers
+
+#+BEGIN_SRC text
+  ┌────────────────────────────────────────────────────────────┐
+  │                   VS Code Extension                         │
+  │  ┌─────────────────────────────────────────────────────────┐│
+  │  │              Plugin Adapter Layer                        ││
+  │  │  • src/adapters/linkFollowAdapter.ts                    ││
+  │  │  • VS Code-specific actions (commands, UI)              ││
+  │  └─────────────────────────────────────────────────────────┘│
+  │                              │                              │
+  │                              ▼                              │
+  │  ┌─────────────────────────────────────────────────────────┐│
+  │  │              Core Library (npm extractable)              ││
+  │  │  • src/parser/ - Parsing, export, link resolution       ││
+  │  │  • No VS Code dependencies                              ││
+  │  └─────────────────────────────────────────────────────────┘│
+  └────────────────────────────────────────────────────────────┘
+#+END_SRC
+
+* Extension Points
+
+** Link Types
+
+Add new link type handlers to support custom link syntax like =[[mytype:path]]=.
+
+*** Core: LinkTypeHandler (Pure Functions)
+
+Location: =src/parser/orgLinkTypes.ts=
+
+#+BEGIN_SRC typescript
+import { linkTypeRegistry, LinkTypeHandler } from './parser/orgLinkTypes';
+
+const myHandler: LinkTypeHandler = {
+  type: 'jira',
+  description: 'Link to Jira issues',
+
+  // Pure resolution - no side effects
+  resolve(path, context) {
+    return {
+      displayText: path,
+      url: `https://jira.example.com/browse/${path}`,
+      tooltip: `Open Jira issue ${path}`
+    };
+  },
+
+  // Export for different backends
+  export(path, description, backend, context) {
+    const url = `https://jira.example.com/browse/${path}`;
+    const text = description || path;
+
+    switch (backend) {
+      case 'html':
+        return `<a href="${url}">${text}</a>`;
+      case 'latex':
+        return `\\href{${url}}{${text}}`;
+      default:
+        return text;
+    }
+  },
+
+  // Optional: completion suggestions
+  async complete(prefix, context) {
+    return [
+      { text: 'PROJ-123', label: 'PROJ-123', detail: 'Bug fix' }
+    ];
+  }
+};
+
+linkTypeRegistry.register(myHandler);
+#+END_SRC
+
+*** Adapter: LinkFollowHandler (VS Code Actions)
+
+Location: =src/adapters/linkFollowAdapter.ts=
+
+#+BEGIN_SRC typescript
+import { linkFollowRegistry, LinkFollowHandler } from './adapters/linkFollowAdapter';
+
+const myFollowHandler: LinkFollowHandler = {
+  type: 'jira',
+
+  async follow(path, context) {
+    await vscode.env.openExternal(
+      vscode.Uri.parse(`https://jira.example.com/browse/${path}`)
+    );
+  }
+};
+
+linkFollowRegistry.register(myFollowHandler);
+#+END_SRC
+
+*** Built-in Link Types
+
+| Type     | Description              | Example                    |
+|----------+--------------------------+----------------------------|
+| http     | Web URLs                 | =[[http://example.com]]=   |
+| https    | Secure web URLs          | =[[https://example.com]]=  |
+| file     | Local files              | =[[file:./notes.org]]=     |
+| id       | Org-id targets           | =[[id:abc123]]=            |
+| doi      | DOI links                | =[[doi:10.1234/abc]]=      |
+| cite     | BibTeX citations         | =[[cite:smith2020]]=       |
+| mailto   | Email addresses          | =[[mailto:user@example.com]]= |
+| cmd      | VS Code commands         | =[[cmd:workbench.action.openSettings]]= |
+| nb       | Project/notebook links   | =[[nb:myproject::file.org]]= |
+| ref      | Named element references | =[[ref:fig1]]=             |
+
+** Custom Exporters
+
+Add custom export formats using Handlebars templates - no code required.
+
+*** Directory Structure
+
+Location: =~/.scimax/exporters/= or workspace =.scimax/exporters/=
+
+#+BEGIN_SRC text
+~/.scimax/exporters/
+├── my-journal/
+│   ├── manifest.json      # Configuration
+│   ├── template.tex       # Handlebars template
+│   └── partials/          # Optional partial templates
+│       └── header.tex
+#+END_SRC
+
+*** manifest.json
+
+#+BEGIN_SRC json
+{
+  "id": "my-journal",
+  "name": "My Journal Format",
+  "description": "Custom journal article format",
+  "parent": "latex",
+  "outputFormat": "pdf",
+  "template": "template.tex",
+  "keywords": {
+    "JOURNAL": {
+      "required": true,
+      "description": "Target journal name"
+    },
+    "VOLUME": {
+      "default": "1"
+    }
+  },
+  "latexOptions": {
+    "documentClass": "article",
+    "packages": ["hyperref", "graphicx"]
+  }
+}
+#+END_SRC
+
+*** Template Helpers
+
+| Helper                      | Description                    |
+|-----------------------------+--------------------------------|
+| ={{latex value}}=           | Escape for LaTeX               |
+| ={{html value}}=            | Escape for HTML                |
+| ={{default field "fallback"}}= | Default value if empty      |
+| ={{required field "name"}}= | Mark field as required         |
+| ={{join items ", "}}=       | Join array with separator      |
+| ={{#ifeq a b}}...{{/ifeq}}= | Conditional equality           |
+| ={{today}}=                 | Current date                   |
+| ={{year}}=                  | Current year                   |
+| ={{upper text}}=            | Uppercase                      |
+| ={{lower text}}=            | Lowercase                      |
+| ={{{body}}}=                | Raw body content (triple braces) |
+
+** Export Backends (Programmatic)
+
+For complex export needs, implement the full ExportBackend interface.
+
+Location: =src/parser/orgExport.ts=
+
+#+BEGIN_SRC typescript
+interface ExportBackend {
+  name: string;
+  exportDocument(doc: OrgDocumentNode, options?: ExportOptions): string;
+  exportElement(element: OrgElement, state: ExportState): string;
+  exportObject(object: OrgObject, state: ExportState): string;
+  exportAffiliatedKeywords?(affiliated: AffiliatedKeywords, state: ExportState): string;
+}
+#+END_SRC
+
+See implementations:
+- =src/parser/orgExportHtml.ts= - HTML backend
+- =src/parser/orgExportLatex.ts= - LaTeX backend
+- =src/parser/orgExportIpynb.ts= - Jupyter notebook backend
+
+** Babel Executors
+
+Add new language execution engines for source blocks.
+
+Location: =src/adapters/babelExecutorAdapter.ts=
+
+*** LanguageExecutor Interface
+
+#+BEGIN_SRC typescript
+interface LanguageExecutor {
+  /** Language names this executor handles (e.g., ['ruby', 'rb']) */
+  languages: string[];
+
+  /** Execute code and return result */
+  execute(code: string, context: ExecutionContext): Promise<ExecutionResult>;
+
+  /** Initialize a persistent session (optional) */
+  initSession?(sessionName: string, context: ExecutionContext): Promise<void>;
+
+  /** Close a session (optional) */
+  closeSession?(sessionName: string): Promise<void>;
+
+  /** Check if the runtime is available */
+  isAvailable(): Promise<boolean>;
+}
+
+interface ExecutionContext {
+  cwd?: string;                    // Working directory
+  env?: Record<string, string>;    // Environment variables
+  session?: string;                // Session name for persistence
+  variables?: Record<string, unknown>; // From :var arguments
+  timeout?: number;                // Execution timeout
+}
+
+interface ExecutionResult {
+  success: boolean;
+  stdout: string;
+  stderr: string;
+  executionTime: number;  // milliseconds
+}
+#+END_SRC
+
+*** Registering a Custom Executor
+
+#+BEGIN_SRC typescript
+import { registerBabelExecutor, LanguageExecutor } from './adapters/babelExecutorAdapter';
+
+const rubyExecutor: LanguageExecutor = {
+  languages: ['ruby', 'rb'],
+
+  async execute(code, context) {
+    // Spawn ruby process, capture output
+    const startTime = Date.now();
+    // ... execution logic ...
+    return {
+      success: true,
+      stdout: output,
+      stderr: '',
+      executionTime: Date.now() - startTime
+    };
+  },
+
+  async isAvailable() {
+    // Check if ruby is installed
+    return true;
+  }
+};
+
+// Register returns a Disposable for cleanup
+const disposable = registerBabelExecutor(rubyExecutor);
+context.subscriptions.push(disposable);
+#+END_SRC
+
+*** Using the Helper Functions
+
+For simple command-based executors, use the helper:
+
+#+BEGIN_SRC typescript
+import { createSimpleExecutor, registerBabelExecutor } from './adapters/babelExecutorAdapter';
+
+// Create an executor that writes code to a temp file and runs a command
+const rubyExecutor = createSimpleExecutor({
+  languages: ['ruby', 'rb'],
+  command: 'ruby',
+  extension: '.rb',
+  args: [],  // Optional: arguments before the file
+  timeout: 30000,  // Optional: default timeout
+  transformCode: (code, ctx) => code,  // Optional: transform code
+});
+
+context.subscriptions.push(registerBabelExecutor(rubyExecutor));
+#+END_SRC
+
+*** Built-in Executors
+
+| Language   | Aliases                    | Notes                    |
+|------------+----------------------------+--------------------------|
+| python     | python3, py                | Supports sessions        |
+| javascript | js, node, nodejs           | Via Node.js              |
+| typescript | ts                         | Via tsx, ts-node, or bun |
+| shell      | sh, bash                   |                          |
+| julia      | jl                         |                          |
+| R          | r, Rscript                 |                          |
+
+Jupyter kernels are also supported via =jupyter-python=, =jupyter-julia=, etc.
+
+** Block Export Handlers
+
+Define how custom special blocks (=#+BEGIN_X...#+END_X=) render in exports.
+
+Location: =src/adapters/blockExportAdapter.ts=
+
+*** BlockExportHandler Interface
+
+#+BEGIN_SRC typescript
+interface BlockExportHandler {
+  /** Block type name (case-insensitive, e.g., 'sidebar') */
+  blockType: string;
+
+  /** Optional description for documentation */
+  description?: string;
+
+  /**
+   * Export the block content for a specific backend
+   * @param content The processed content inside the block
+   * @param backend The export backend ('html', 'latex', 'text')
+   * @param context Additional context about the block
+   * @returns The exported string, or undefined to use default handling
+   */
+  export(
+    content: string,
+    backend: 'html' | 'latex' | 'text',
+    context: BlockExportContext
+  ): string | undefined;
+}
+
+interface BlockExportContext {
+  blockType: string;
+  parameters?: string;  // From #+BEGIN_foo :param value
+  filePath?: string;
+  affiliated?: {
+    name?: string;
+    caption?: string;
+    [key: string]: string | undefined;
+  };
+}
+#+END_SRC
+
+*** Registering a Custom Block Handler
+
+#+BEGIN_SRC typescript
+import { registerBlockExport, BlockExportHandler } from './adapters/blockExportAdapter';
+
+const calloutHandler: BlockExportHandler = {
+  blockType: 'callout',
+  description: 'Custom callout blocks',
+
+  export(content, backend, context) {
+    const title = context.parameters?.trim() || 'Note';
+
+    switch (backend) {
+      case 'html':
+        return `<div class="callout">\n<strong>${title}</strong>\n${content}</div>`;
+      case 'latex':
+        return `\\begin{tcolorbox}[title=${title}]\n${content}\\end{tcolorbox}`;
+      default:
+        return undefined;  // Use default handling for 'text' backend
+    }
+  }
+};
+
+const disposable = registerBlockExport(calloutHandler);
+context.subscriptions.push(disposable);
+#+END_SRC
+
+*** Built-in Block Types
+
+| Type      | Description                      | HTML Class        |
+|-----------+----------------------------------+-------------------|
+| warning   | Warning/alert admonition         | =org-warning=     |
+| note      | Informational note               | =org-note=        |
+| tip       | Tip/hint admonition              | =org-tip=         |
+| important | Important notice                 | =org-important=   |
+| caution   | Caution notice                   | =org-caution=     |
+| sidebar   | Sidebar content                  | =org-sidebar=     |
+| details   | Collapsible details (HTML only)  | =<details>=       |
+
+** Block Highlight Configuration
+
+Define visual highlighting (decorations) for custom blocks in the editor.
+
+Location: =src/adapters/blockHighlightAdapter.ts=
+
+*** BlockHighlightConfig Interface
+
+#+BEGIN_SRC typescript
+interface BlockHighlightConfig {
+  /** Block type to highlight (case-insensitive) */
+  blockType: string;
+
+  /** Background color for the block (CSS color or theme variable) */
+  backgroundColor?: string;
+
+  /** Color for the #+BEGIN/#+END lines */
+  headerColor?: string;
+
+  /** Border color (left border is common) */
+  borderColor?: string;
+
+  /** Whether content should be italic */
+  italic?: boolean;
+}
+#+END_SRC
+
+*** Registering Block Highlights
+
+#+BEGIN_SRC typescript
+import { registerBlockHighlight } from './adapters/blockHighlightAdapter';
+
+const disposable = registerBlockHighlight({
+  blockType: 'callout',
+  backgroundColor: 'rgba(100, 149, 237, 0.1)',
+  borderColor: 'rgba(100, 149, 237, 0.5)',
+  headerColor: 'cornflowerblue',
+});
+
+context.subscriptions.push(disposable);
+#+END_SRC
+
+*** Built-in Highlight Configs
+
+| Block Type | Background Color           | Border Color                |
+|------------+----------------------------+-----------------------------|
+| warning    | =rgba(255, 193, 7, 0.1)=   | =rgba(255, 193, 7, 0.5)=    |
+| note       | =rgba(33, 150, 243, 0.1)=  | =rgba(33, 150, 243, 0.5)=   |
+| tip        | =rgba(76, 175, 80, 0.1)=   | =rgba(76, 175, 80, 0.5)=    |
+| important  | =rgba(244, 67, 54, 0.1)=   | =rgba(244, 67, 54, 0.5)=    |
+| caution    | =rgba(255, 152, 0, 0.1)=   | =rgba(255, 152, 0, 0.5)=    |
+| sidebar    | =rgba(158, 158, 158, 0.1)= | =rgba(158, 158, 158, 0.5)=  |
+| details    | =rgba(103, 58, 183, 0.1)=  | =rgba(103, 58, 183, 0.5)=   |
+
+** Export Hooks
+
+Lightweight callbacks that run at specific points during export, allowing
+customization without implementing a full ExportBackend.
+
+Location: =src/adapters/exportHooksAdapter.ts=
+
+*** ExportHook Interface
+
+#+BEGIN_SRC typescript
+interface ExportHook {
+  /** Unique identifier for this hook */
+  id: string;
+
+  /** Optional description */
+  description?: string;
+
+  /** Priority for ordering (higher runs first, default 0) */
+  priority?: number;
+
+  /**
+   * Pre-export hook - runs before export starts
+   * Can modify export options
+   */
+  preExport?: (context: PreExportContext) => ExportOptions | undefined;
+
+  /**
+   * Post-export hook - runs after export completes
+   * Can transform the final output
+   */
+  postExport?: (output: string, context: PostExportContext) => string | undefined;
+
+  /**
+   * Element filter - runs for each element during export
+   * Can override the rendered output for specific elements
+   */
+  elementFilter?: (rendered: string, context: ElementFilterContext) => string | undefined;
+}
+
+interface PreExportContext {
+  document: OrgDocumentNode;
+  options: ExportOptions;
+  backend: string;  // 'html', 'latex', etc.
+  filePath?: string;
+}
+
+interface PostExportContext {
+  backend: string;
+  options: ExportOptions;
+  filePath?: string;
+}
+
+interface ElementFilterContext {
+  element: OrgElement;
+  backend: string;
+  options: ExportOptions;
+  parent?: OrgElement;
+}
+#+END_SRC
+
+*** Registering Export Hooks
+
+#+BEGIN_SRC typescript
+import { registerExportHook } from './adapters/exportHooksAdapter';
+
+// Add a company header/footer to HTML exports
+const disposable = registerExportHook({
+  id: 'company-branding',
+  description: 'Add company header and footer',
+
+  postExport: (output, context) => {
+    if (context.backend === 'html') {
+      return `<!-- Company Header -->\n${output}\n<!-- Company Footer -->`;
+    }
+    return undefined; // Don't modify other backends
+  }
+});
+
+context.subscriptions.push(disposable);
+#+END_SRC
+
+*** Use Cases
+
+| Hook Type | Use Case |
+|-----------+----------|
+| preExport | Inject metadata, set default options, add custom macros |
+| postExport | Add headers/footers, wrap in template, minify, post-process |
+| elementFilter | Custom handling for specific elements, transform rendering |
+
+*** Helper Functions
+
+**** createWrapperHook
+
+Creates a simple hook that wraps output with before/after content.
+
+#+BEGIN_SRC typescript
+import { createWrapperHook, registerExportHook } from './adapters/exportHooksAdapter';
+
+// Add copyright notice to HTML/LaTeX exports
+const hook = createWrapperHook('copyright', {
+  backend: ['html', 'latex'],  // Only these backends
+  before: '',
+  after: '\n<!-- Copyright 2024 MyCompany -->',
+});
+
+context.subscriptions.push(registerExportHook(hook));
+#+END_SRC
+
+**** createElementReplacerHook
+
+Creates a hook that modifies specific element types.
+
+#+BEGIN_SRC typescript
+import { createElementReplacerHook, registerExportHook } from './adapters/exportHooksAdapter';
+
+// Wrap all paragraphs in a custom div
+const hook = createElementReplacerHook('para-wrapper', {
+  elementType: 'paragraph',
+  backend: 'html',
+  replace: (rendered) => `<div class="custom-para">${rendered}</div>`,
+});
+
+context.subscriptions.push(registerExportHook(hook));
+#+END_SRC
+
+*** Hook Execution Order
+
+1. Hooks are sorted by priority (higher numbers run first)
+2. Default priority is 0
+3. Multiple hooks chain together - each receives the output of the previous
+4. Return =undefined= from a hook to skip modification and pass through
+
+*** Error Handling
+
+Hooks that throw errors are caught and logged. The export continues with the
+unmodified content, so a failing hook won't break the entire export.
+
+** Potential Future Extension Points
+
+These patterns could be extended for additional plugin types:
+
+*** Speed Commands
+
+Custom single-key commands at headline beginnings.
+
+#+BEGIN_SRC typescript
+interface SpeedCommand {
+  key: string;
+  description: string;
+  execute(editor: TextEditor, heading: HeadingNode): Promise<void>;
+}
+#+END_SRC
+
+*** Capture Templates
+
+Custom org-capture templates.
+
+#+BEGIN_SRC typescript
+interface CaptureTemplate {
+  key: string;
+  description: string;
+  template: string;
+  target: CaptureTarget;
+}
+#+END_SRC
+
+*** Entity Definitions
+
+Custom special character entities (like org-entities).
+
+#+BEGIN_SRC typescript
+interface OrgEntity {
+  name: string;
+  latex: string;
+  html: string;
+  unicode: string;
+}
+#+END_SRC
+
+*** Document Linters
+
+Custom lint rules for org documents.
+
+#+BEGIN_SRC typescript
+interface LintRule {
+  id: string;
+  severity: 'error' | 'warning' | 'info';
+  check(document: OrgDocument): Diagnostic[];
+}
+#+END_SRC
+
+* VS Code Extension API
+
+External VS Code extensions can contribute to scimax via the extension API.
+
+** Accessing the API
+
+#+BEGIN_SRC typescript
+// In your extension's activate() function
+export async function activate(context: vscode.ExtensionContext) {
+  const scimaxExt = vscode.extensions.getExtension('scimax.scimax-vscode');
+
+  if (!scimaxExt) {
+    console.log('Scimax extension not installed');
+    return;
+  }
+
+  // Ensure scimax is activated
+  const scimaxApi = scimaxExt.isActive
+    ? scimaxExt.exports
+    : await scimaxExt.activate();
+
+  // Now use the API...
+}
+#+END_SRC
+
+** Available API Methods
+
+*** registerBabelExecutor(executor)
+
+Register a custom language executor for source blocks.
+
+#+BEGIN_SRC typescript
+const disposable = scimaxApi.registerBabelExecutor({
+  languages: ['ruby', 'rb'],
+  async execute(code, context) {
+    return { success: true, stdout: 'result', stderr: '', executionTime: 100 };
+  },
+  async isAvailable() {
+    return true;
+  }
+});
+
+context.subscriptions.push(disposable);
+#+END_SRC
+
+*** createSimpleExecutor(options)
+
+Helper to create a command-based executor.
+
+#+BEGIN_SRC typescript
+const rubyExec = scimaxApi.createSimpleExecutor({
+  languages: ['ruby'],
+  command: 'ruby',
+  extension: '.rb',
+});
+
+context.subscriptions.push(scimaxApi.registerBabelExecutor(rubyExec));
+#+END_SRC
+
+*** registerLinkType(handler)
+
+Register a custom link type handler.
+
+#+BEGIN_SRC typescript
+const disposable = scimaxApi.registerLinkType({
+  type: 'jira',
+  description: 'Jira issue links',
+  resolve: (path) => ({
+    displayText: path,
+    url: `https://jira.example.com/browse/${path}`,
+    tooltip: `Open Jira issue ${path}`
+  }),
+  export: (path, desc, backend) => {
+    const url = `https://jira.example.com/browse/${path}`;
+    const text = desc || path;
+    if (backend === 'html') return `<a href="${url}">${text}</a>`;
+    if (backend === 'latex') return `\\href{${url}}{${text}}`;
+    return text;
+  }
+});
+
+context.subscriptions.push(disposable);
+#+END_SRC
+
+*** registerLinkFollowHandler(handler)
+
+Register a VS Code action for when a link type is clicked.
+
+#+BEGIN_SRC typescript
+const disposable = scimaxApi.registerLinkFollowHandler({
+  type: 'jira',
+  async follow(path, context) {
+    await vscode.env.openExternal(
+      vscode.Uri.parse(`https://jira.example.com/browse/${path}`)
+    );
+  }
+});
+
+context.subscriptions.push(disposable);
+#+END_SRC
+
+*** registerBlockExport(handler)
+
+Register a custom export handler for special blocks.
+
+#+BEGIN_SRC typescript
+const disposable = scimaxApi.registerBlockExport({
+  blockType: 'callout',
+  export: (content, backend, ctx) => {
+    if (backend === 'html') return `<div class="callout">${content}</div>`;
+    if (backend === 'latex') return `\\begin{tcolorbox}${content}\\end{tcolorbox}`;
+    return content;
+  },
+});
+
+context.subscriptions.push(disposable);
+#+END_SRC
+
+*** registerBlockHighlight(config)
+
+Register visual highlighting for custom block types in the editor.
+
+#+BEGIN_SRC typescript
+const disposable = scimaxApi.registerBlockHighlight({
+  blockType: 'callout',
+  backgroundColor: 'rgba(100, 149, 237, 0.1)',
+  borderColor: 'rgba(100, 149, 237, 0.5)',
+  headerColor: 'cornflowerblue',
+});
+
+context.subscriptions.push(disposable);
+#+END_SRC
+
+*** registerExportHook(hook)
+
+Register a hook to customize the export process.
+
+#+BEGIN_SRC typescript
+const disposable = scimaxApi.registerExportHook({
+  id: 'my-custom-hook',
+  // Modify options before export
+  preExport: (ctx) => ({ ...ctx.options, toc: true }),
+  // Transform output after export
+  postExport: (output, ctx) => {
+    if (ctx.backend === 'html') {
+      return `<!-- Custom Header -->\n${output}`;
+    }
+    return undefined;
+  },
+  // Filter specific elements
+  elementFilter: (rendered, ctx) => {
+    if (ctx.element.type === 'paragraph') {
+      return `<div class="para">${rendered}</div>`;
+    }
+    return undefined;
+  },
+});
+
+context.subscriptions.push(disposable);
+#+END_SRC
+
+*** createWrapperHook(id, options)
+
+Helper to create a simple wrapper hook.
+
+#+BEGIN_SRC typescript
+const hook = scimaxApi.createWrapperHook('my-wrapper', {
+  backend: 'html',           // Optional: filter by backend
+  before: '<!-- Start -->',
+  after: '<!-- End -->',
+  priority: 10,              // Optional: higher runs first
+});
+
+context.subscriptions.push(scimaxApi.registerExportHook(hook));
+#+END_SRC
+
+*** createElementReplacerHook(id, options)
+
+Helper to create a hook that modifies specific element types.
+
+#+BEGIN_SRC typescript
+const hook = scimaxApi.createElementReplacerHook('para-wrapper', {
+  elementType: ['paragraph', 'headline'],  // Can be string or array
+  backend: 'html',                         // Optional: filter by backend
+  replace: (rendered, element) => {
+    return `<div class="custom">${rendered}</div>`;
+  },
+});
+
+context.subscriptions.push(scimaxApi.registerExportHook(hook));
+#+END_SRC
+
+*** Direct Registry Access
+
+For advanced use cases, you can access the registries directly:
+
+#+BEGIN_SRC typescript
+// Access all registries
+const { registries } = scimaxApi;
+
+// Check registered block types
+registries.blockExport.getBlockTypes();  // ['warning', 'note', ...]
+
+// Check if a block has a custom handler
+registries.blockExport.hasHandler('callout');  // true/false
+
+// Get highlight config for a block type
+registries.blockHighlight.getConfig('warning');
+
+// Get all export hooks
+registries.exportHook.getHooks();  // Sorted by priority
+
+// Check if a hook is registered
+registries.exportHook.hasHook('my-hook');  // true/false
+#+END_SRC
+
+*** Utility Functions
+
+#+BEGIN_SRC typescript
+// Check if a language is supported
+scimaxApi.isLanguageSupported('python');  // true
+
+// Get all registered languages
+scimaxApi.getRegisteredLanguages();  // ['python', 'py', 'bash', ...]
+#+END_SRC
+
+* Core Library Extraction
+
+The =src/parser/= directory is designed to be extractable as a standalone
+npm library (=@scimax/org-core=) with no VS Code dependencies.
+
+** What's in Core
+
+- AST types (=orgElementTypes.ts=)
+- Parser (=orgParser.ts=, =orgExportParser.ts=, =orgParserUnified.ts=)
+- Export backends (=orgExport*.ts=)
+- Link resolution (=orgLinkTypes.ts= - resolve/export only)
+- Entities (=orgEntities.ts=)
+- Babel execution (=orgBabel.ts=)
+
+** What's in VS Code Layer
+
+- Providers (=src/org/*.ts=)
+- Link follow actions (=src/adapters/linkFollowAdapter.ts=)
+- Commands and UI
+- Database and indexing
+
+* Related Documentation
+
+- [[file:source-blocks.org][Source Blocks]] - Babel execution
+- [[file:keybindings.org][Keybindings]] - Command reference
+- [[file:configuration.org][Configuration]] - Settings

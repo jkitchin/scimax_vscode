@@ -1,7 +1,16 @@
 /**
  * Test citation linking in HTML export
  */
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
+
+// Mock VS Code API (required because export backends now use adapters that import vscode)
+vi.mock('vscode', () => ({
+    Disposable: class {
+        constructor(private callback: () => void) {}
+        dispose() { this.callback(); }
+    },
+}));
+
 import { exportToHtml } from '../orgExportHtml';
 import { parseOrgFast } from '../orgExportParser';
 import { createCitationProcessor } from '../../references/citationProcessor';
