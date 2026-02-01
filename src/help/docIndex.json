@@ -1,6 +1,6 @@
 {
-  "buildDate": "2026-02-01T16:14:12.098Z",
-  "count": 3276,
+  "buildDate": "2026-02-01T16:50:52.917Z",
+  "count": 3287,
   "entries": [
     {
       "heading": "Scimax VS Code",
@@ -97435,10 +97435,272 @@
       ]
     },
     {
-      "heading": "Potential Future Extension Points",
+      "heading": "Block Export Handlers",
       "level": 2,
       "file": "extension-points.org",
       "line": 307,
+      "content": "Define how custom special blocks (=#+BEGIN_X...#+END_X=) render in exports. Location: =src/adapters/blockExportAdapter.ts=",
+      "path": [
+        "Extension Points"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "block",
+        "export",
+        "handlers",
+        "define",
+        "custom",
+        "special",
+        "blocks",
+        "beginxendx",
+        "render",
+        "exports",
+        "location",
+        "srcadaptersblockexportadapterts"
+      ]
+    },
+    {
+      "heading": "BlockExportHandler Interface",
+      "level": 3,
+      "file": "extension-points.org",
+      "line": 313,
+      "content": "#+BEGIN_SRC typescript interface BlockExportHandler { /** Block type name (case-insensitive, e.g., 'sidebar') */ blockType: string; /** Optional description for documentation */ description?: string; /** * Export the block content for a specific backend * @param content The processed content inside the block * @param backend The export backend ('html', 'latex', 'text') * @param context Additional context about the block * @returns The exported string, or undefined to use default handling",
+      "path": [
+        "Extension Points",
+        "Block Export Handlers"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "blockexporthandler",
+        "interface",
+        "beginsrc",
+        "typescript",
+        "block",
+        "type",
+        "name",
+        "case-insensitive",
+        "sidebar",
+        "blocktype",
+        "string",
+        "optional",
+        "description",
+        "documentation",
+        "export",
+        "content",
+        "specific",
+        "backend",
+        "param",
+        "processed"
+      ]
+    },
+    {
+      "heading": "Registering a Custom Block Handler",
+      "level": 3,
+      "file": "extension-points.org",
+      "line": 349,
+      "content": "#+BEGIN_SRC typescript import { registerBlockExport, BlockExportHandler } from './adapters/blockExportAdapter'; const calloutHandler: BlockExportHandler = { blockType: 'callout', description: 'Custom callout blocks', export(content, backend, context) { const title = context.parameters?.trim() || 'Note'; switch (backend) { case 'html': return `<div class=\"callout\">\\n<strong>${title}</strong>\\n${content}</div>`; case 'latex': return `\\\\begin{tcolorbox}[title=${title}]\\n${content}\\\\end{tcolorbox}`;",
+      "path": [
+        "Extension Points",
+        "Block Export Handlers"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "registering",
+        "custom",
+        "block",
+        "handler",
+        "beginsrc",
+        "typescript",
+        "import",
+        "registerblockexport",
+        "blockexporthandler",
+        "adaptersblockexportadapter",
+        "const",
+        "callouthandler",
+        "blocktype",
+        "callout",
+        "description",
+        "blocks",
+        "export",
+        "content",
+        "backend",
+        "context"
+      ]
+    },
+    {
+      "heading": "Built-in Block Types",
+      "level": 3,
+      "file": "extension-points.org",
+      "line": 376,
+      "content": "| Type      | Description                      | HTML Class        | |-----------+----------------------------------+-------------------| | warning   | Warning/alert admonition         | =org-warning=     | | note      | Informational note               | =org-note=        | | tip       | Tip/hint admonition              | =org-tip=         | | important | Important notice                 | =org-important=   | | caution   | Caution notice                   | =org-caution=     | | sidebar   | Sid",
+      "path": [
+        "Extension Points",
+        "Block Export Handlers"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "built-in",
+        "block",
+        "types",
+        "type",
+        "description",
+        "html",
+        "class",
+        "----------------------------------------------------------------",
+        "warning",
+        "warningalert",
+        "admonition",
+        "org-warning",
+        "note",
+        "informational",
+        "org-note",
+        "tip",
+        "tiphint",
+        "org-tip",
+        "important",
+        "notice"
+      ]
+    },
+    {
+      "heading": "Block Highlight Configuration",
+      "level": 2,
+      "file": "extension-points.org",
+      "line": 388,
+      "content": "Define visual highlighting (decorations) for custom blocks in the editor. Location: =src/adapters/blockHighlightAdapter.ts=",
+      "path": [
+        "Extension Points"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "block",
+        "highlight",
+        "configuration",
+        "define",
+        "visual",
+        "highlighting",
+        "decorations",
+        "custom",
+        "blocks",
+        "editor",
+        "location",
+        "srcadaptersblockhighlightadapterts"
+      ]
+    },
+    {
+      "heading": "BlockHighlightConfig Interface",
+      "level": 3,
+      "file": "extension-points.org",
+      "line": 394,
+      "content": "#+BEGIN_SRC typescript interface BlockHighlightConfig { /** Block type to highlight (case-insensitive) */ blockType: string; /** Background color for the block (CSS color or theme variable) */ backgroundColor?: string; /** Color for the #+BEGIN/#+END lines */ headerColor?: string; /** Border color (left border is common) */ borderColor?: string; /** Whether content should be italic */ italic?: boolean; } #+END_SRC",
+      "path": [
+        "Extension Points",
+        "Block Highlight Configuration"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "blockhighlightconfig",
+        "interface",
+        "beginsrc",
+        "typescript",
+        "block",
+        "type",
+        "highlight",
+        "case-insensitive",
+        "blocktype",
+        "string",
+        "background",
+        "color",
+        "css",
+        "theme",
+        "variable",
+        "backgroundcolor",
+        "beginend",
+        "lines",
+        "headercolor",
+        "border"
+      ]
+    },
+    {
+      "heading": "Registering Block Highlights",
+      "level": 3,
+      "file": "extension-points.org",
+      "line": 415,
+      "content": "#+BEGIN_SRC typescript import { registerBlockHighlight } from './adapters/blockHighlightAdapter'; const disposable = registerBlockHighlight({ blockType: 'callout', backgroundColor: 'rgba(100, 149, 237, 0.1)', borderColor: 'rgba(100, 149, 237, 0.5)', headerColor: 'cornflowerblue', }); context.subscriptions.push(disposable); #+END_SRC",
+      "path": [
+        "Extension Points",
+        "Block Highlight Configuration"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "registering",
+        "block",
+        "highlights",
+        "beginsrc",
+        "typescript",
+        "import",
+        "registerblockhighlight",
+        "adaptersblockhighlightadapter",
+        "const",
+        "disposable",
+        "blocktype",
+        "callout",
+        "backgroundcolor",
+        "rgba",
+        "100",
+        "149",
+        "237",
+        "bordercolor",
+        "headercolor",
+        "cornflowerblue"
+      ]
+    },
+    {
+      "heading": "Built-in Highlight Configs",
+      "level": 3,
+      "file": "extension-points.org",
+      "line": 430,
+      "content": "| Block Type | Background Color           | Border Color                | |------------+----------------------------+-----------------------------| | warning    | =rgba(255, 193, 7, 0.1)=   | =rgba(255, 193, 7, 0.5)=    | | note       | =rgba(33, 150, 243, 0.1)=  | =rgba(33, 150, 243, 0.5)=   | | tip        | =rgba(76, 175, 80, 0.1)=   | =rgba(76, 175, 80, 0.5)=    | | important  | =rgba(244, 67, 54, 0.1)=   | =rgba(244, 67, 54, 0.5)=    | | caution    | =rgba(255, 152, 0, 0.1)=   | =rgba(255, 1",
+      "path": [
+        "Extension Points",
+        "Block Highlight Configuration"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "built-in",
+        "highlight",
+        "configs",
+        "block",
+        "type",
+        "background",
+        "color",
+        "border",
+        "---------------------------------------------------------------------",
+        "warning",
+        "rgba",
+        "255",
+        "193",
+        "note",
+        "150",
+        "243",
+        "tip",
+        "175",
+        "important",
+        "244"
+      ]
+    },
+    {
+      "heading": "Potential Future Extension Points",
+      "level": 2,
+      "file": "extension-points.org",
+      "line": 442,
       "content": "These patterns could be extended for additional plugin types:",
       "path": [
         "Extension Points"
@@ -97461,7 +97723,7 @@
       "heading": "Speed Commands",
       "level": 3,
       "file": "extension-points.org",
-      "line": 311,
+      "line": 446,
       "content": "Custom single-key commands at headline beginnings. #+BEGIN_SRC typescript interface SpeedCommand { key: string; description: string; execute(editor: TextEditor, heading: HeadingNode): Promise<void>; } #+END_SRC",
       "path": [
         "Extension Points",
@@ -97496,7 +97758,7 @@
       "heading": "Capture Templates",
       "level": 3,
       "file": "extension-points.org",
-      "line": 323,
+      "line": 458,
       "content": "Custom org-capture templates. #+BEGIN_SRC typescript interface CaptureTemplate { key: string; description: string; template: string; target: CaptureTarget; } #+END_SRC",
       "path": [
         "Extension Points",
@@ -97526,7 +97788,7 @@
       "heading": "Entity Definitions",
       "level": 3,
       "file": "extension-points.org",
-      "line": 336,
+      "line": 471,
       "content": "Custom special character entities (like org-entities). #+BEGIN_SRC typescript interface OrgEntity { name: string; latex: string; html: string; unicode: string; } #+END_SRC",
       "path": [
         "Extension Points",
@@ -97559,7 +97821,7 @@
       "heading": "Document Linters",
       "level": 3,
       "file": "extension-points.org",
-      "line": 349,
+      "line": 484,
       "content": "Custom lint rules for org documents. #+BEGIN_SRC typescript interface LintRule { id: string; severity: 'error' | 'warning' | 'info'; check(document: OrgDocument): Diagnostic[]; } #+END_SRC",
       "path": [
         "Extension Points",
@@ -97594,7 +97856,7 @@
       "heading": "VS Code Extension API",
       "level": 1,
       "file": "extension-points.org",
-      "line": 361,
+      "line": 496,
       "content": "External VS Code extensions can contribute to scimax via the extension API.",
       "path": [],
       "commands": [],
@@ -97614,7 +97876,7 @@
       "heading": "Accessing the API",
       "level": 2,
       "file": "extension-points.org",
-      "line": 365,
+      "line": 500,
       "content": "#+BEGIN_SRC typescript // In your extension's activate() function export async function activate(context: vscode.ExtensionContext) { const scimaxExt = vscode.extensions.getExtension('scimax.scimax-vscode'); if (!scimaxExt) { console.log('Scimax extension not installed'); return; } // Ensure scimax is activated const scimaxApi = scimaxExt.isActive ? scimaxExt.exports : await scimaxExt.activate(); // Now use the API... } #+END_SRC",
       "path": [
         "VS Code Extension API"
@@ -97650,7 +97912,7 @@
       "heading": "Available API Methods",
       "level": 2,
       "file": "extension-points.org",
-      "line": 386,
+      "line": 521,
       "content": "",
       "path": [
         "VS Code Extension API"
@@ -97667,7 +97929,7 @@
       "heading": "registerBabelExecutor(executor)",
       "level": 3,
       "file": "extension-points.org",
-      "line": 388,
+      "line": 523,
       "content": "Register a custom language executor for source blocks. #+BEGIN_SRC typescript const disposable = scimaxApi.registerBabelExecutor({ languages: ['ruby', 'rb'], async execute(code, context) { return { success: true, stdout: 'result', stderr: '', executionTime: 100 }; }, async isAvailable() { return true; } }); context.subscriptions.push(disposable); #+END_SRC",
       "path": [
         "VS Code Extension API",
@@ -97702,7 +97964,7 @@
       "heading": "createSimpleExecutor(options)",
       "level": 3,
       "file": "extension-points.org",
-      "line": 406,
+      "line": 541,
       "content": "Helper to create a command-based executor. #+BEGIN_SRC typescript const rubyExec = scimaxApi.createSimpleExecutor({ languages: ['ruby'], command: 'ruby', extension: '.rb', }); context.subscriptions.push(scimaxApi.registerBabelExecutor(rubyExec)); #+END_SRC",
       "path": [
         "VS Code Extension API",
@@ -97735,7 +97997,7 @@
       "heading": "registerLinkType(handler)",
       "level": 3,
       "file": "extension-points.org",
-      "line": 420,
+      "line": 555,
       "content": "Register a custom link type handler. #+BEGIN_SRC typescript const disposable = scimaxApi.registerLinkType({ type: 'jira', description: 'Jira issue links', resolve: (path) => ({ displayText: path, url: `https://jira.example.com/browse/${path}`, tooltip: `Open Jira issue ${path}` }), export: (path, desc, backend) => { const url = `https://jira.example.com/browse/${path}`; const text = desc || path; if (backend === 'html') return `<a href=\"${url}\">${text}</a>`; if (backend === 'latex') return `\\\\hr",
       "path": [
         "VS Code Extension API",
@@ -97770,7 +98032,7 @@
       "heading": "registerLinkFollowHandler(handler)",
       "level": 3,
       "file": "extension-points.org",
-      "line": 445,
+      "line": 580,
       "content": "Register a VS Code action for when a link type is clicked. #+BEGIN_SRC typescript const disposable = scimaxApi.registerLinkFollowHandler({ type: 'jira', async follow(path, context) { await vscode.env.openExternal( vscode.Uri.parse(`https://jira.example.com/browse/${path}`) ); } }); context.subscriptions.push(disposable); #+END_SRC",
       "path": [
         "VS Code Extension API",
@@ -97802,10 +98064,115 @@
       ]
     },
     {
+      "heading": "registerBlockExport(handler)",
+      "level": 3,
+      "file": "extension-points.org",
+      "line": 597,
+      "content": "Register a custom export handler for special blocks. #+BEGIN_SRC typescript const disposable = scimaxApi.registerBlockExport({ blockType: 'callout', export: (content, backend, ctx) => { if (backend === 'html') return `<div class=\"callout\">${content}</div>`; if (backend === 'latex') return `\\\\begin{tcolorbox}${content}\\\\end{tcolorbox}`; return content; }, }); context.subscriptions.push(disposable); #+END_SRC",
+      "path": [
+        "VS Code Extension API",
+        "Available API Methods"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "registerblockexport",
+        "handler",
+        "register",
+        "custom",
+        "export",
+        "special",
+        "blocks",
+        "beginsrc",
+        "typescript",
+        "const",
+        "disposable",
+        "scimaxapiregisterblockexport",
+        "blocktype",
+        "callout",
+        "content",
+        "backend",
+        "ctx",
+        "html",
+        "return",
+        "div"
+      ]
+    },
+    {
+      "heading": "registerBlockHighlight(config)",
+      "level": 3,
+      "file": "extension-points.org",
+      "line": 614,
+      "content": "Register visual highlighting for custom block types in the editor. #+BEGIN_SRC typescript const disposable = scimaxApi.registerBlockHighlight({ blockType: 'callout', backgroundColor: 'rgba(100, 149, 237, 0.1)', borderColor: 'rgba(100, 149, 237, 0.5)', headerColor: 'cornflowerblue', }); context.subscriptions.push(disposable); #+END_SRC",
+      "path": [
+        "VS Code Extension API",
+        "Available API Methods"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "registerblockhighlight",
+        "config",
+        "register",
+        "visual",
+        "highlighting",
+        "custom",
+        "block",
+        "types",
+        "editor",
+        "beginsrc",
+        "typescript",
+        "const",
+        "disposable",
+        "scimaxapiregisterblockhighlight",
+        "blocktype",
+        "callout",
+        "backgroundcolor",
+        "rgba",
+        "100",
+        "149"
+      ]
+    },
+    {
+      "heading": "Direct Registry Access",
+      "level": 3,
+      "file": "extension-points.org",
+      "line": 629,
+      "content": "For advanced use cases, you can access the registries directly: #+BEGIN_SRC typescript // Access all registries const { registries } = scimaxApi; // Check registered block types registries.blockExport.getBlockTypes();  // ['warning', 'note', ...] // Check if a block has a custom handler registries.blockExport.hasHandler('callout');  // true/false // Get highlight config for a block type registries.blockHighlight.getConfig('warning'); #+END_SRC",
+      "path": [
+        "VS Code Extension API",
+        "Available API Methods"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "direct",
+        "registry",
+        "access",
+        "advanced",
+        "cases",
+        "registries",
+        "directly",
+        "beginsrc",
+        "typescript",
+        "const",
+        "scimaxapi",
+        "check",
+        "registered",
+        "block",
+        "types",
+        "registriesblockexportgetblocktypes",
+        "warning",
+        "note",
+        "custom",
+        "handler"
+      ]
+    },
+    {
       "heading": "Utility Functions",
       "level": 3,
       "file": "extension-points.org",
-      "line": 462,
+      "line": 647,
       "content": "#+BEGIN_SRC typescript // Check if a language is supported scimaxApi.isLanguageSupported('python');  // true // Get all registered languages scimaxApi.getRegisteredLanguages();  // ['python', 'py', 'bash', ...] #+END_SRC",
       "path": [
         "VS Code Extension API",
@@ -97836,7 +98203,7 @@
       "heading": "Core Library Extraction",
       "level": 1,
       "file": "extension-points.org",
-      "line": 472,
+      "line": 657,
       "content": "The =src/parser/= directory is designed to be extractable as a standalone npm library (=@scimax/org-core=) with no VS Code dependencies.",
       "path": [],
       "commands": [],
@@ -97860,7 +98227,7 @@
       "heading": "What's in Core",
       "level": 2,
       "file": "extension-points.org",
-      "line": 477,
+      "line": 662,
       "content": "- AST types (=orgElementTypes.ts=) - Parser (=orgParser.ts=, =orgExportParser.ts=, =orgParserUnified.ts=) - Export backends (=orgExport*.ts=) - Link resolution (=orgLinkTypes.ts= - resolve/export only) - Entities (=orgEntities.ts=) - Babel execution (=orgBabel.ts=)",
       "path": [
         "Core Library Extraction"
@@ -97894,7 +98261,7 @@
       "heading": "What's in VS Code Layer",
       "level": 2,
       "file": "extension-points.org",
-      "line": 486,
+      "line": 671,
       "content": "- Providers (=src/org/*.ts=) - Link follow actions (=src/adapters/linkFollowAdapter.ts=) - Commands and UI - Database and indexing",
       "path": [
         "Core Library Extraction"
@@ -97919,7 +98286,7 @@
       "heading": "Related Documentation",
       "level": 1,
       "file": "extension-points.org",
-      "line": 493,
+      "line": 678,
       "content": "- [[file:source-blocks.org][Source Blocks]] - Babel execution - [[file:keybindings.org][Keybindings]] - Command reference - [[file:configuration.org][Configuration]] - Settings",
       "path": [],
       "commands": [],
