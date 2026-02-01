@@ -93,6 +93,11 @@ export async function activate(context: vscode.ExtensionContext) {
     // Register link follow handlers (VS Code-specific link actions)
     context.subscriptions.push(...registerBuiltinFollowHandlers());
 
+    // Register block export and highlight handlers
+    const { registerBuiltinBlockHandlers, registerBuiltinBlockHighlights } = await import('./adapters');
+    context.subscriptions.push(...registerBuiltinBlockHandlers());
+    context.subscriptions.push(...registerBuiltinBlockHighlights());
+
     // Register log level command
     context.subscriptions.push(
         vscode.commands.registerCommand('scimax.setLogLevel', async () => {
@@ -873,6 +878,10 @@ export async function activate(context: vscode.ExtensionContext) {
         isLanguageSupported,
         getRegisteredLanguages,
         linkFollowRegistry,
+        registerBlockExport,
+        registerBlockHighlight,
+        blockExportRegistry,
+        blockHighlightRegistry,
     } = await import('./adapters');
 
     const { linkTypeRegistry } = await import('./parser/orgLinkTypes');
@@ -942,6 +951,44 @@ export async function activate(context: vscode.ExtensionContext) {
          */
         registerLinkFollowHandler: (handler: import('./adapters/linkFollowAdapter').LinkFollowHandler) => {
             return linkFollowRegistry.register(handler);
+        },
+
+        /**
+         * Register a custom block export handler
+         * Allows external extensions to define how custom #+BEGIN_X blocks render in exports
+         * @example
+         * const disposable = api.registerBlockExport({
+         *     blockType: 'callout',
+         *     export: (content, backend, ctx) => {
+         *         if (backend === 'html') return `<div class="callout">${content}</div>`;
+         *         if (backend === 'latex') return `\\begin{tcolorbox}${content}\\end{tcolorbox}`;
+         *         return content;
+         *     },
+         * });
+         */
+        registerBlockExport,
+
+        /**
+         * Register a custom block highlight configuration
+         * Allows external extensions to define visual highlighting for custom blocks
+         * @example
+         * const disposable = api.registerBlockHighlight({
+         *     blockType: 'callout',
+         *     backgroundColor: 'rgba(100, 149, 237, 0.1)',
+         *     borderColor: 'rgba(100, 149, 237, 0.5)',
+         *     headerColor: 'cornflowerblue',
+         * });
+         */
+        registerBlockHighlight,
+
+        /**
+         * Direct access to registries for advanced use cases
+         */
+        registries: {
+            blockExport: blockExportRegistry,
+            blockHighlight: blockHighlightRegistry,
+            linkFollow: linkFollowRegistry,
+            linkType: linkTypeRegistry,
         },
     };
 }

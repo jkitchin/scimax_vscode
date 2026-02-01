@@ -304,6 +304,141 @@ context.subscriptions.push(registerBabelExecutor(rubyExecutor));
 
 Jupyter kernels are also supported via =jupyter-python=, =jupyter-julia=, etc.
 
+** Block Export Handlers
+
+Define how custom special blocks (=#+BEGIN_X...#+END_X=) render in exports.
+
+Location: =src/adapters/blockExportAdapter.ts=
+
+*** BlockExportHandler Interface
+
+#+BEGIN_SRC typescript
+interface BlockExportHandler {
+  /** Block type name (case-insensitive, e.g., 'sidebar') */
+  blockType: string;
+
+  /** Optional description for documentation */
+  description?: string;
+
+  /**
+   * Export the block content for a specific backend
+   * @param content The processed content inside the block
+   * @param backend The export backend ('html', 'latex', 'text')
+   * @param context Additional context about the block
+   * @returns The exported string, or undefined to use default handling
+   */
+  export(
+    content: string,
+    backend: 'html' | 'latex' | 'text',
+    context: BlockExportContext
+  ): string | undefined;
+}
+
+interface BlockExportContext {
+  blockType: string;
+  parameters?: string;  // From #+BEGIN_foo :param value
+  filePath?: string;
+  affiliated?: {
+    name?: string;
+    caption?: string;
+    [key: string]: string | undefined;
+  };
+}
+#+END_SRC
+
+*** Registering a Custom Block Handler
+
+#+BEGIN_SRC typescript
+import { registerBlockExport, BlockExportHandler } from './adapters/blockExportAdapter';
+
+const calloutHandler: BlockExportHandler = {
+  blockType: 'callout',
+  description: 'Custom callout blocks',
+
+  export(content, backend, context) {
+    const title = context.parameters?.trim() || 'Note';
+
+    switch (backend) {
+      case 'html':
+        return `<div class="callout">\n<strong>${title}</strong>\n${content}</div>`;
+      case 'latex':
+        return `\\begin{tcolorbox}[title=${title}]\n${content}\\end{tcolorbox}`;
+      default:
+        return undefined;  // Use default handling for 'text' backend
+    }
+  }
+};
+
+const disposable = registerBlockExport(calloutHandler);
+context.subscriptions.push(disposable);
+#+END_SRC
+
+*** Built-in Block Types
+
+| Type      | Description                      | HTML Class        |
+|-----------+----------------------------------+-------------------|
+| warning   | Warning/alert admonition         | =org-warning=     |
+| note      | Informational note               | =org-note=        |
+| tip       | Tip/hint admonition              | =org-tip=         |
+| important | Important notice                 | =org-important=   |
+| caution   | Caution notice                   | =org-caution=     |
+| sidebar   | Sidebar content                  | =org-sidebar=     |
+| details   | Collapsible details (HTML only)  | =<details>=       |
+
+** Block Highlight Configuration
+
+Define visual highlighting (decorations) for custom blocks in the editor.
+
+Location: =src/adapters/blockHighlightAdapter.ts=
+
+*** BlockHighlightConfig Interface
+
+#+BEGIN_SRC typescript
+interface BlockHighlightConfig {
+  /** Block type to highlight (case-insensitive) */
+  blockType: string;
+
+  /** Background color for the block (CSS color or theme variable) */
+  backgroundColor?: string;
+
+  /** Color for the #+BEGIN/#+END lines */
+  headerColor?: string;
+
+  /** Border color (left border is common) */
+  borderColor?: string;
+
+  /** Whether content should be italic */
+  italic?: boolean;
+}
+#+END_SRC
+
+*** Registering Block Highlights
+
+#+BEGIN_SRC typescript
+import { registerBlockHighlight } from './adapters/blockHighlightAdapter';
+
+const disposable = registerBlockHighlight({
+  blockType: 'callout',
+  backgroundColor: 'rgba(100, 149, 237, 0.1)',
+  borderColor: 'rgba(100, 149, 237, 0.5)',
+  headerColor: 'cornflowerblue',
+});
+
+context.subscriptions.push(disposable);
+#+END_SRC
+
+*** Built-in Highlight Configs
+
+| Block Type | Background Color           | Border Color                |
+|------------+----------------------------+-----------------------------|
+| warning    | =rgba(255, 193, 7, 0.1)=   | =rgba(255, 193, 7, 0.5)=    |
+| note       | =rgba(33, 150, 243, 0.1)=  | =rgba(33, 150, 243, 0.5)=   |
+| tip        | =rgba(76, 175, 80, 0.1)=   | =rgba(76, 175, 80, 0.5)=    |
+| important  | =rgba(244, 67, 54, 0.1)=   | =rgba(244, 67, 54, 0.5)=    |
+| caution    | =rgba(255, 152, 0, 0.1)=   | =rgba(255, 152, 0, 0.5)=    |
+| sidebar    | =rgba(158, 158, 158, 0.1)= | =rgba(158, 158, 158, 0.5)=  |
+| details    | =rgba(103, 58, 183, 0.1)=  | =rgba(103, 58, 183, 0.5)=   |
+
 ** Potential Future Extension Points
 
 These patterns could be extended for additional plugin types:
@@ -457,6 +592,56 @@ const disposable = scimaxApi.registerLinkFollowHandler({
 });
 
 context.subscriptions.push(disposable);
+#+END_SRC
+
+*** registerBlockExport(handler)
+
+Register a custom export handler for special blocks.
+
+#+BEGIN_SRC typescript
+const disposable = scimaxApi.registerBlockExport({
+  blockType: 'callout',
+  export: (content, backend, ctx) => {
+    if (backend === 'html') return `<div class="callout">${content}</div>`;
+    if (backend === 'latex') return `\\begin{tcolorbox}${content}\\end{tcolorbox}`;
+    return content;
+  },
+});
+
+context.subscriptions.push(disposable);
+#+END_SRC
+
+*** registerBlockHighlight(config)
+
+Register visual highlighting for custom block types in the editor.
+
+#+BEGIN_SRC typescript
+const disposable = scimaxApi.registerBlockHighlight({
+  blockType: 'callout',
+  backgroundColor: 'rgba(100, 149, 237, 0.1)',
+  borderColor: 'rgba(100, 149, 237, 0.5)',
+  headerColor: 'cornflowerblue',
+});
+
+context.subscriptions.push(disposable);
+#+END_SRC
+
+*** Direct Registry Access
+
+For advanced use cases, you can access the registries directly:
+
+#+BEGIN_SRC typescript
+// Access all registries
+const { registries } = scimaxApi;
+
+// Check registered block types
+registries.blockExport.getBlockTypes();  // ['warning', 'note', ...]
+
+// Check if a block has a custom handler
+registries.blockExport.hasHandler('callout');  // true/false
+
+// Get highlight config for a block type
+registries.blockHighlight.getConfig('warning');
 #+END_SRC
 
 *** Utility Functions

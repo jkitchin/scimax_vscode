@@ -83,6 +83,7 @@ import { CitationProcessor, CSLStyleName } from '../references/citationProcessor
 import { parseCitationsFromLine, getNormalizedStyle } from '../references/citationParser';
 import type { BibEntry } from '../references/bibtexParser';
 import { ALL_CITATION_COMMANDS } from '../references/citationTypes';
+import { blockExportRegistry } from '../adapters/blockExportAdapter';
 
 // Citation link types that should be processed as citations
 const CITATION_LINK_TYPES = new Set(ALL_CITATION_COMMANDS.map(c => c.toLowerCase()));
@@ -606,17 +607,14 @@ export class HtmlExportBackend implements ExportBackend {
             .map(child => this.exportElement(child, state))
             .join('\n');
 
-        // Handle common special blocks
-        switch (blockType) {
-            case 'warning':
-            case 'note':
-            case 'tip':
-            case 'important':
-            case 'caution':
-                return `<div class="org-${blockType} admonition">\n${content}</div>\n`;
-            default:
-                return `<div class="org-special-block org-${blockType}">\n${content}</div>\n`;
+        // Check registry for custom handler first
+        const customResult = blockExportRegistry.export(blockType, content, 'html', {});
+        if (customResult !== undefined) {
+            return customResult;
         }
+
+        // Default handling for special blocks
+        return `<div class="org-special-block org-${blockType}">\n${content}</div>\n`;
     }
 
     private exportVerseBlock(block: VerseBlockElement, state: ExportState): string {

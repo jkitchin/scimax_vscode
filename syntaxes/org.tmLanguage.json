@@ -18,6 +18,7 @@
     { "include": "#verse-blocks" },
     { "include": "#export-blocks" },
     { "include": "#comment-blocks" },
+    { "include": "#admonition-blocks" },
     { "include": "#generic-blocks" },
     { "include": "#dynamic-blocks" },
     { "include": "#keywords" },
@@ -637,6 +638,101 @@
       "endCaptures": {
         "2": { "name": "keyword.control.block.end.org" }
       }
+    },
+    "admonition-blocks": {
+      "patterns": [
+        {
+          "name": "meta.block.admonition.warning.org",
+          "begin": "(?i)^(\\s*)(#\\+BEGIN_WARNING)(.*)$",
+          "end": "(?i)^(\\1)(#\\+END_WARNING)\\s*$",
+          "beginCaptures": {
+            "2": { "name": "keyword.control.block.begin.warning.org" },
+            "3": { "name": "meta.block.header.org" }
+          },
+          "endCaptures": {
+            "2": { "name": "keyword.control.block.end.warning.org" }
+          },
+          "patterns": [{ "include": "#inline-elements" }]
+        },
+        {
+          "name": "meta.block.admonition.note.org",
+          "begin": "(?i)^(\\s*)(#\\+BEGIN_NOTE)(.*)$",
+          "end": "(?i)^(\\1)(#\\+END_NOTE)\\s*$",
+          "beginCaptures": {
+            "2": { "name": "keyword.control.block.begin.note.org" },
+            "3": { "name": "meta.block.header.org" }
+          },
+          "endCaptures": {
+            "2": { "name": "keyword.control.block.end.note.org" }
+          },
+          "patterns": [{ "include": "#inline-elements" }]
+        },
+        {
+          "name": "meta.block.admonition.tip.org",
+          "begin": "(?i)^(\\s*)(#\\+BEGIN_TIP)(.*)$",
+          "end": "(?i)^(\\1)(#\\+END_TIP)\\s*$",
+          "beginCaptures": {
+            "2": { "name": "keyword.control.block.begin.tip.org" },
+            "3": { "name": "meta.block.header.org" }
+          },
+          "endCaptures": {
+            "2": { "name": "keyword.control.block.end.tip.org" }
+          },
+          "patterns": [{ "include": "#inline-elements" }]
+        },
+        {
+          "name": "meta.block.admonition.important.org",
+          "begin": "(?i)^(\\s*)(#\\+BEGIN_IMPORTANT)(.*)$",
+          "end": "(?i)^(\\1)(#\\+END_IMPORTANT)\\s*$",
+          "beginCaptures": {
+            "2": { "name": "keyword.control.block.begin.important.org" },
+            "3": { "name": "meta.block.header.org" }
+          },
+          "endCaptures": {
+            "2": { "name": "keyword.control.block.end.important.org" }
+          },
+          "patterns": [{ "include": "#inline-elements" }]
+        },
+        {
+          "name": "meta.block.admonition.caution.org",
+          "begin": "(?i)^(\\s*)(#\\+BEGIN_CAUTION)(.*)$",
+          "end": "(?i)^(\\1)(#\\+END_CAUTION)\\s*$",
+          "beginCaptures": {
+            "2": { "name": "keyword.control.block.begin.caution.org" },
+            "3": { "name": "meta.block.header.org" }
+          },
+          "endCaptures": {
+            "2": { "name": "keyword.control.block.end.caution.org" }
+          },
+          "patterns": [{ "include": "#inline-elements" }]
+        },
+        {
+          "name": "meta.block.sidebar.org",
+          "begin": "(?i)^(\\s*)(#\\+BEGIN_SIDEBAR)(.*)$",
+          "end": "(?i)^(\\1)(#\\+END_SIDEBAR)\\s*$",
+          "beginCaptures": {
+            "2": { "name": "keyword.control.block.begin.sidebar.org" },
+            "3": { "name": "meta.block.header.org" }
+          },
+          "endCaptures": {
+            "2": { "name": "keyword.control.block.end.sidebar.org" }
+          },
+          "patterns": [{ "include": "#inline-elements" }]
+        },
+        {
+          "name": "meta.block.details.org",
+          "begin": "(?i)^(\\s*)(#\\+BEGIN_DETAILS)(.*)$",
+          "end": "(?i)^(\\1)(#\\+END_DETAILS)\\s*$",
+          "beginCaptures": {
+            "2": { "name": "keyword.control.block.begin.details.org" },
+            "3": { "name": "string.unquoted.summary.org" }
+          },
+          "endCaptures": {
+            "2": { "name": "keyword.control.block.end.details.org" }
+          },
+          "patterns": [{ "include": "#inline-elements" }]
+        }
+      ]
     },
     "generic-blocks": {
       "name": "meta.block.generic.org",

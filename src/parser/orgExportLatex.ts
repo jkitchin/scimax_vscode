@@ -72,6 +72,8 @@ import {
     parseOptionsKeyword,
 } from './orgExport';
 
+import { blockExportRegistry } from '../adapters/blockExportAdapter';
+
 // =============================================================================
 // LaTeX Export Options
 // =============================================================================
@@ -596,7 +598,13 @@ export class LatexExportBackend implements ExportBackend {
             .map(child => this.exportElement(child, state))
             .join('\n');
 
-        // Handle common special blocks
+        // Check registry for custom handler first
+        const customResult = blockExportRegistry.export(blockType, content, 'latex', {});
+        if (customResult !== undefined) {
+            return customResult;
+        }
+
+        // Handle common LaTeX environments
         switch (blockType) {
             case 'abstract':
                 return `\\begin{abstract}\n${content}\\end{abstract}\n`;
@@ -609,13 +617,6 @@ export class LatexExportBackend implements ExportBackend {
             case 'example':
             case 'remark':
                 return `\\begin{${blockType}}\n${content}\\end{${blockType}}\n`;
-            case 'warning':
-            case 'note':
-            case 'tip':
-            case 'important':
-            case 'caution':
-                // Use a custom environment or tcolorbox if available
-                return `\\begin{tcolorbox}[title=${blockType.charAt(0).toUpperCase() + blockType.slice(1)}]\n${content}\\end{tcolorbox}\n`;
             default:
                 // Try to use as environment name
                 return `\\begin{${blockType}}\n${content}\\end{${blockType}}\n`;

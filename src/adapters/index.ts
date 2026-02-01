@@ -66,6 +66,41 @@ export {
     validateExecutor,
 } from './babelExecutorAdapter';
 
+// Block Export Adapter
+export {
+    BlockExportHandler,
+    BlockExportContext,
+    BlockExportRegistry,
+    blockExportRegistry,
+    registerBlockExport,
+    registerBuiltinBlockHandlers,
+    // Built-in handlers for reference
+    warningBlockHandler,
+    noteBlockHandler,
+    tipBlockHandler,
+    importantBlockHandler,
+    cautionBlockHandler,
+    sidebarBlockHandler,
+    detailsBlockHandler,
+} from './blockExportAdapter';
+
+// Block Highlight Adapter
+export {
+    BlockHighlightConfig,
+    BlockHighlightRegistry,
+    blockHighlightRegistry,
+    registerBlockHighlight,
+    registerBuiltinBlockHighlights,
+    // Built-in configs for reference
+    warningHighlightConfig,
+    noteHighlightConfig,
+    tipHighlightConfig,
+    importantHighlightConfig,
+    cautionHighlightConfig,
+    sidebarHighlightConfig,
+    detailsHighlightConfig,
+} from './blockHighlightAdapter';
+
 // Re-export core link types for convenience
 export {
     LinkTypeHandler,
