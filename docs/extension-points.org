@@ -198,21 +198,115 @@ See implementations:
 - =src/parser/orgExportLatex.ts= - LaTeX backend
 - =src/parser/orgExportIpynb.ts= - Jupyter notebook backend
 
-** Potential Future Extension Points
-
-These patterns could be extended for additional plugin types:
-
-*** Babel Executors
+** Babel Executors
 
 Add new language execution engines for source blocks.
 
+Location: =src/adapters/babelExecutorAdapter.ts=
+
+*** LanguageExecutor Interface
+
 #+BEGIN_SRC typescript
-interface BabelExecutor {
-  language: string;
-  execute(code: string, options: ExecuteOptions): Promise<ExecutionResult>;
-  canExecute?(block: SourceBlock): boolean;
+interface LanguageExecutor {
+  /** Language names this executor handles (e.g., ['ruby', 'rb']) */
+  languages: string[];
+
+  /** Execute code and return result */
+  execute(code: string, context: ExecutionContext): Promise<ExecutionResult>;
+
+  /** Initialize a persistent session (optional) */
+  initSession?(sessionName: string, context: ExecutionContext): Promise<void>;
+
+  /** Close a session (optional) */
+  closeSession?(sessionName: string): Promise<void>;
+
+  /** Check if the runtime is available */
+  isAvailable(): Promise<boolean>;
+}
+
+interface ExecutionContext {
+  cwd?: string;                    // Working directory
+  env?: Record<string, string>;    // Environment variables
+  session?: string;                // Session name for persistence
+  variables?: Record<string, unknown>; // From :var arguments
+  timeout?: number;                // Execution timeout
+}
+
+interface ExecutionResult {
+  success: boolean;
+  stdout: string;
+  stderr: string;
+  executionTime: number;  // milliseconds
 }
 #+END_SRC
+
+*** Registering a Custom Executor
+
+#+BEGIN_SRC typescript
+import { registerBabelExecutor, LanguageExecutor } from './adapters/babelExecutorAdapter';
+
+const rubyExecutor: LanguageExecutor = {
+  languages: ['ruby', 'rb'],
+
+  async execute(code, context) {
+    // Spawn ruby process, capture output
+    const startTime = Date.now();
+    // ... execution logic ...
+    return {
+      success: true,
+      stdout: output,
+      stderr: '',
+      executionTime: Date.now() - startTime
+    };
+  },
+
+  async isAvailable() {
+    // Check if ruby is installed
+    return true;
+  }
+};
+
+// Register returns a Disposable for cleanup
+const disposable = registerBabelExecutor(rubyExecutor);
+context.subscriptions.push(disposable);
+#+END_SRC
+
+*** Using the Helper Functions
+
+For simple command-based executors, use the helper:
+
+#+BEGIN_SRC typescript
+import { createSimpleExecutor, registerBabelExecutor } from './adapters/babelExecutorAdapter';
+
+// Create an executor that writes code to a temp file and runs a command
+const rubyExecutor = createSimpleExecutor({
+  languages: ['ruby', 'rb'],
+  command: 'ruby',
+  extension: '.rb',
+  args: [],  // Optional: arguments before the file
+  timeout: 30000,  // Optional: default timeout
+  transformCode: (code, ctx) => code,  // Optional: transform code
+});
+
+context.subscriptions.push(registerBabelExecutor(rubyExecutor));
+#+END_SRC
+
+*** Built-in Executors
+
+| Language   | Aliases                    | Notes                    |
+|------------+----------------------------+--------------------------|
+| python     | python3, py                | Supports sessions        |
+| javascript | js, node, nodejs           | Via Node.js              |
+| typescript | ts                         | Via tsx, ts-node, or bun |
+| shell      | sh, bash                   |                          |
+| julia      | jl                         |                          |
+| R          | r, Rscript                 |                          |
+
+Jupyter kernels are also supported via =jupyter-python=, =jupyter-julia=, etc.
+
+** Potential Future Extension Points
+
+These patterns could be extended for additional plugin types:
 
 *** Speed Commands
 
@@ -266,26 +360,114 @@ interface LintRule {
 
 * VS Code Extension API
 
-For external extensions to contribute to scimax:
+External VS Code extensions can contribute to scimax via the extension API.
+
+** Accessing the API
 
 #+BEGIN_SRC typescript
-// In your extension's activate()
-const scimaxApi = vscode.extensions.getExtension('scimax.scimax-vscode')?.exports;
+// In your extension's activate() function
+export async function activate(context: vscode.ExtensionContext) {
+  const scimaxExt = vscode.extensions.getExtension('scimax.scimax-vscode');
 
-if (scimaxApi) {
-  // Register custom link type
-  const disposable = scimaxApi.registerLinkType({
-    type: 'mylink',
-    resolve: (path) => ({ displayText: path }),
-    export: (path, desc, backend) => desc || path
-  });
+  if (!scimaxExt) {
+    console.log('Scimax extension not installed');
+    return;
+  }
 
-  context.subscriptions.push(disposable);
+  // Ensure scimax is activated
+  const scimaxApi = scimaxExt.isActive
+    ? scimaxExt.exports
+    : await scimaxExt.activate();
+
+  // Now use the API...
 }
 #+END_SRC
 
-Note: The extension API is planned but not yet fully exposed. Contact the
-maintainers for early access.
+** Available API Methods
+
+*** registerBabelExecutor(executor)
+
+Register a custom language executor for source blocks.
+
+#+BEGIN_SRC typescript
+const disposable = scimaxApi.registerBabelExecutor({
+  languages: ['ruby', 'rb'],
+  async execute(code, context) {
+    return { success: true, stdout: 'result', stderr: '', executionTime: 100 };
+  },
+  async isAvailable() {
+    return true;
+  }
+});
+
+context.subscriptions.push(disposable);
+#+END_SRC
+
+*** createSimpleExecutor(options)
+
+Helper to create a command-based executor.
+
+#+BEGIN_SRC typescript
+const rubyExec = scimaxApi.createSimpleExecutor({
+  languages: ['ruby'],
+  command: 'ruby',
+  extension: '.rb',
+});
+
+context.subscriptions.push(scimaxApi.registerBabelExecutor(rubyExec));
+#+END_SRC
+
+*** registerLinkType(handler)
+
+Register a custom link type handler.
+
+#+BEGIN_SRC typescript
+const disposable = scimaxApi.registerLinkType({
+  type: 'jira',
+  description: 'Jira issue links',
+  resolve: (path) => ({
+    displayText: path,
+    url: `https://jira.example.com/browse/${path}`,
+    tooltip: `Open Jira issue ${path}`
+  }),
+  export: (path, desc, backend) => {
+    const url = `https://jira.example.com/browse/${path}`;
+    const text = desc || path;
+    if (backend === 'html') return `<a href="${url}">${text}</a>`;
+    if (backend === 'latex') return `\\href{${url}}{${text}}`;
+    return text;
+  }
+});
+
+context.subscriptions.push(disposable);
+#+END_SRC
+
+*** registerLinkFollowHandler(handler)
+
+Register a VS Code action for when a link type is clicked.
+
+#+BEGIN_SRC typescript
+const disposable = scimaxApi.registerLinkFollowHandler({
+  type: 'jira',
+  async follow(path, context) {
+    await vscode.env.openExternal(
+      vscode.Uri.parse(`https://jira.example.com/browse/${path}`)
+    );
+  }
+});
+
+context.subscriptions.push(disposable);
+#+END_SRC
+
+*** Utility Functions
+
+#+BEGIN_SRC typescript
+// Check if a language is supported
+scimaxApi.isLanguageSupported('python');  // true
+
+// Get all registered languages
+scimaxApi.getRegisteredLanguages();  // ['python', 'py', 'bash', ...]
+#+END_SRC
 
 * Core Library Extraction
 

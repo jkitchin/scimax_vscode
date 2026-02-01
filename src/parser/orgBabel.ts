@@ -362,6 +362,22 @@ class ExecutorRegistry {
     }
 
     /**
+     * Unregister a language executor
+     * @returns true if any languages were unregistered
+     */
+    unregister(executor: LanguageExecutor): boolean {
+        let removed = false;
+        for (const lang of executor.languages) {
+            const key = lang.toLowerCase();
+            if (this.executors.get(key) === executor) {
+                this.executors.delete(key);
+                removed = true;
+            }
+        }
+        return removed;
+    }
+
+    /**
      * Get executor for a language
      */
     getExecutor(language: string): LanguageExecutor | undefined {

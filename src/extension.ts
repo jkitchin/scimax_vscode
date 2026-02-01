@@ -859,6 +859,91 @@ export async function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push({ dispose: () => hydraManager.dispose() });
 
     extensionLogger.info('Extension activated');
+
+    // ==========================================================================
+    // Extension API
+    // ==========================================================================
+    // Return API for other extensions to use
+    // Access via: vscode.extensions.getExtension('scimax.scimax-vscode')?.exports
+
+    const {
+        registerBabelExecutor,
+        createSimpleExecutor,
+        createSessionExecutor,
+        isLanguageSupported,
+        getRegisteredLanguages,
+        linkFollowRegistry,
+    } = await import('./adapters');
+
+    const { linkTypeRegistry } = await import('./parser/orgLinkTypes');
+
+    return {
+        /**
+         * Register a custom Babel language executor
+         * @example
+         * const disposable = api.registerBabelExecutor({
+         *     languages: ['ruby', 'rb'],
+         *     execute: async (code, ctx) => ({ success: true, stdout: result, stderr: '', executionTime: 100 }),
+         *     isAvailable: async () => true,
+         * });
+         */
+        registerBabelExecutor,
+
+        /**
+         * Create a simple command-based executor
+         * @example
+         * const rubyExec = api.createSimpleExecutor({
+         *     languages: ['ruby'],
+         *     command: 'ruby',
+         *     extension: '.rb',
+         * });
+         * api.registerBabelExecutor(rubyExec);
+         */
+        createSimpleExecutor,
+
+        /**
+         * Create a session-based executor with persistent state
+         */
+        createSessionExecutor,
+
+        /**
+         * Check if a language is supported
+         */
+        isLanguageSupported,
+
+        /**
+         * Get all registered language names
+         */
+        getRegisteredLanguages,
+
+        /**
+         * Register a custom link type handler
+         * @example
+         * const disposable = api.registerLinkType({
+         *     type: 'jira',
+         *     description: 'Jira issues',
+         *     resolve: (path) => ({ displayText: path, url: `https://jira.example.com/${path}` }),
+         * });
+         */
+        registerLinkType: (handler: import('./parser/orgLinkTypes').LinkTypeHandler) => {
+            linkTypeRegistry.register(handler);
+            return new vscode.Disposable(() => linkTypeRegistry.unregister(handler.type));
+        },
+
+        /**
+         * Register a custom link follow handler (VS Code action when clicking)
+         * @example
+         * const disposable = api.registerLinkFollowHandler({
+         *     type: 'jira',
+         *     follow: async (path) => {
+         *         await vscode.env.openExternal(vscode.Uri.parse(`https://jira.example.com/${path}`));
+         *     },
+         * });
+         */
+        registerLinkFollowHandler: (handler: import('./adapters/linkFollowAdapter').LinkFollowHandler) => {
+            return linkFollowRegistry.register(handler);
+        },
+    };
 }
 
 export async function deactivate() {
