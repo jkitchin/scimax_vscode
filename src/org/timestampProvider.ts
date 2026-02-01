@@ -651,6 +651,12 @@ async function shiftTimestampUp(): Promise<void> {
     const document = editor.document;
     const position = editor.selection.active;
 
+    // If there's already a selection, prioritize extending it over special behaviors
+    if (!editor.selection.isEmpty) {
+        await vscode.commands.executeCommand('cursorUpSelect');
+        return;
+    }
+
     // Check if in table first - if in table, only handle table operations
     if (isInTable(document, position)) {
         await moveRowUp();
@@ -699,6 +705,12 @@ async function shiftTimestampDown(): Promise<void> {
 
     const document = editor.document;
     const position = editor.selection.active;
+
+    // If there's already a selection, prioritize extending it over special behaviors
+    if (!editor.selection.isEmpty) {
+        await vscode.commands.executeCommand('cursorDownSelect');
+        return;
+    }
 
     // Check if in table first - if in table, only handle table operations
     if (isInTable(document, position)) {
