@@ -6,9 +6,9 @@
 
 import * as vscode from 'vscode';
 import { getHeadingLevel } from './context';
-import { parseRelativeDate, getDateExpressionExamples } from '../../utils/dateParser';
 import { formatOrgTimestamp as formatTimestamp } from '../../parser/orgRepeater';
 import { showCalendarDatePicker } from '../calendarDatePicker';
+import { getTodoWorkflowForDocument } from '../todoStates';
 
 // Store extension URI for calendar picker
 let extensionUri: vscode.Uri | undefined;
@@ -96,109 +96,36 @@ function getPlanningIndent(document: vscode.TextDocument, headingLine: number): 
 }
 
 /**
- * Prompt user for a date using QuickPick with calendar option
+ * Prompt user for a date using the calendar widget
+ * The calendar has a text input at the top for typing date expressions,
+ * quick buttons (Today, Tomorrow, Next Week), and a calendar grid.
  */
 async function promptForDate(title: string): Promise<Date | null> {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
-    const tomorrow = new Date(today);
-    tomorrow.setDate(tomorrow.getDate() + 1);
-
-    const nextWeek = new Date(today);
-    nextWeek.setDate(nextWeek.getDate() + 7);
-
-    // Find next occurrence of each weekday
-    const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-    const currentDay = today.getDay();
-
-    // Create options for upcoming weekdays
-    const weekdayOptions: vscode.QuickPickItem[] = [];
-    for (let i = 1; i <= 7; i++) {
-        const futureDate = new Date(today);
-        futureDate.setDate(today.getDate() + i);
-        const dayName = dayNames[futureDate.getDay()];
-        const dateStr = formatDateForDisplay(futureDate);
-        weekdayOptions.push({
-            label: dayName,
-            description: dateStr,
-            detail: `+${i} day${i > 1 ? 's' : ''}`
-        });
+    if (!extensionUri) {
+        vscode.window.showErrorMessage('Calendar picker not available - extension not properly initialized');
+        return null;
     }
-
-    const items: vscode.QuickPickItem[] = [
-        { label: 'Today', description: formatDateForDisplay(today), detail: 'Today\'s date' },
-        { label: 'Tomorrow', description: formatDateForDisplay(tomorrow), detail: '+1 day' },
-        { label: '$(separator)', kind: vscode.QuickPickItemKind.Separator },
-        ...weekdayOptions,
-        { label: '$(separator)', kind: vscode.QuickPickItemKind.Separator },
-        { label: '$(calendar) Open Calendar...', description: 'Pick from a calendar widget' },
-        { label: '$(edit) Type date expression...', description: 'Enter natural language date' }
-    ];
-
-    const selected = await vscode.window.showQuickPick(items, {
-        title: title,
-        placeHolder: 'Select a date or choose an input method'
-    });
-
-    if (!selected) return null;
-
-    if (selected.label === '$(calendar) Open Calendar...') {
-        if (!extensionUri) {
-            vscode.window.showErrorMessage('Calendar picker not available - extension not properly initialized');
-            return null;
-        }
-        return showCalendarDatePicker(extensionUri, title);
-    }
-
-    if (selected.label === '$(edit) Type date expression...') {
-        return promptForDateText(title);
-    }
-
-    // Parse the selected option
-    if (selected.label === 'Today') return today;
-    if (selected.label === 'Tomorrow') return tomorrow;
-
-    // Parse weekday selection
-    const dayIndex = dayNames.indexOf(selected.label);
-    if (dayIndex !== -1) {
-        // Find the next occurrence of this day
-        let daysUntil = dayIndex - currentDay;
-        if (daysUntil <= 0) daysUntil += 7;
-        const date = new Date(today);
-        date.setDate(today.getDate() + daysUntil);
-        return date;
-    }
-
-    return null;
+    return showCalendarDatePicker(extensionUri, title);
 }
 
 /**
- * Format a date for display in QuickPick
+ * Check if heading has a TODO state
  */
-function formatDateForDisplay(date: Date): string {
-    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-    const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-    return `${days[date.getDay()]}, ${months[date.getMonth()]} ${date.getDate()}`;
+function headingHasTodoState(headingText: string, validStates: Set<string>): boolean {
+    // Match: stars, space, then check for TODO state
+    const match = headingText.match(/^\*+\s+(\S+)/);
+    if (!match) return false;
+    return validStates.has(match[1]);
 }
 
 /**
- * Prompt user for a date using text input with natural language parsing
+ * Add TODO state to a heading that doesn't have one
  */
-async function promptForDateText(title: string): Promise<Date | null> {
-    const input = await vscode.window.showInputBox({
-        prompt: title,
-        placeHolder: 'today, tomorrow, +2d, friday, next friday, jan 15',
-        validateInput: (value) => {
-            if (!value) return null;
-            const parsed = parseRelativeDate(value);
-            if (!parsed) return `Invalid date. ${getDateExpressionExamples()}`;
-            return null;
-        }
-    });
-
-    if (!input) return null;
-    return parseRelativeDate(input);
+function addTodoStateToHeading(headingText: string, todoState: string): string {
+    // Match: stars and space
+    const match = headingText.match(/^(\*+\s+)/);
+    if (!match) return headingText;
+    return match[1] + todoState + ' ' + headingText.slice(match[1].length);
 }
 
 /**
@@ -210,6 +137,9 @@ async function addPlanningTimestamp(keyword: 'SCHEDULED' | 'DEADLINE'): Promise<
 
     const document = editor.document;
     const position = editor.selection.active;
+
+    // Save document URI to restore focus after calendar picker
+    const documentUri = document.uri;
 
     // Find the heading we're on or below
     let headingLine = position.line;
@@ -231,43 +161,72 @@ async function addPlanningTimestamp(keyword: 'SCHEDULED' | 'DEADLINE'): Promise<
     const date = await promptForDate(`Set ${keyword}`);
     if (!date) return;
 
+    // Restore focus to the original document and get fresh editor reference
+    // This is necessary because the calendar webview may have taken focus
+    const doc = await vscode.workspace.openTextDocument(documentUri);
+    const activeEditor = await vscode.window.showTextDocument(doc, { preserveFocus: false });
+
     const timestamp = formatOrgTimestamp(date);
-    const indent = getPlanningIndent(document, headingLine);
+    const indent = getPlanningIndent(activeEditor.document, headingLine);
+
+    // Get TODO workflow for auto-setting TODO state
+    const workflow = getTodoWorkflowForDocument(activeEditor.document);
+    const validStates = new Set(workflow.allStates);
+    const defaultTodoState = workflow.activeStates[0] || 'TODO';
+
+    // Check if heading needs a TODO state added
+    const headingLineObj = activeEditor.document.lineAt(headingLine);
+    const needsTodoState = !headingHasTodoState(headingLineObj.text, validStates);
 
     // Check for existing planning line
-    const existing = findPlanningLine(document, headingLine, keyword);
+    const existing = findPlanningLine(activeEditor.document, headingLine, keyword);
 
     if (existing) {
-        const line = document.lineAt(existing.lineNumber);
+        const line = activeEditor.document.lineAt(existing.lineNumber);
 
         if (existing.hasKeyword) {
             // Replace existing timestamp for this keyword
             const keywordPattern = new RegExp(`${keyword}:\\s*<[^>]+>`);
             const newLine = line.text.replace(keywordPattern, `${keyword}: ${timestamp}`);
 
-            await editor.edit(editBuilder => {
+            await activeEditor.edit(editBuilder => {
                 editBuilder.replace(line.range, newLine);
+                // Add TODO state if needed
+                if (needsTodoState) {
+                    const newHeading = addTodoStateToHeading(headingLineObj.text, defaultTodoState);
+                    editBuilder.replace(headingLineObj.range, newHeading);
+                }
             });
         } else {
             // Append this keyword to the existing planning line
             // Add it at the end of the line
             const newLine = `${line.text} ${keyword}: ${timestamp}`;
 
-            await editor.edit(editBuilder => {
+            await activeEditor.edit(editBuilder => {
                 editBuilder.replace(line.range, newLine);
+                // Add TODO state if needed
+                if (needsTodoState) {
+                    const newHeading = addTodoStateToHeading(headingLineObj.text, defaultTodoState);
+                    editBuilder.replace(headingLineObj.range, newHeading);
+                }
             });
         }
     } else {
         // Insert new planning line right after the heading
-        await editor.edit(editBuilder => {
+        await activeEditor.edit(editBuilder => {
+            // Add TODO state if needed
+            if (needsTodoState) {
+                const newHeading = addTodoStateToHeading(headingLineObj.text, defaultTodoState);
+                editBuilder.replace(headingLineObj.range, newHeading);
+            }
+
             // Check if there's a line after the heading
-            if (headingLine + 1 < document.lineCount) {
+            if (headingLine + 1 < activeEditor.document.lineCount) {
                 // Normal case: insert at the beginning of the next line
                 const newLine = `${indent}${keyword}: ${timestamp}\n`;
                 editBuilder.insert(new vscode.Position(headingLine + 1, 0), newLine);
             } else {
                 // Heading is the last line of the file - insert at end with preceding newline
-                const headingLineObj = document.lineAt(headingLine);
                 editBuilder.insert(headingLineObj.range.end, `\n${indent}${keyword}: ${timestamp}`);
             }
         });

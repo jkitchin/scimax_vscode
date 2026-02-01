@@ -42,8 +42,8 @@ export async function showCalendarDatePicker(
             switch (message.command) {
                 case 'selectDate':
                     const date = new Date(message.year, message.month, message.day);
-                    panel.dispose();
                     resolve(date);
+                    panel.dispose();
                     break;
                 case 'prevMonth':
                     currentMonth--;
@@ -62,20 +62,20 @@ export async function showCalendarDatePicker(
                     updateContent();
                     break;
                 case 'today':
-                    panel.dispose();
                     resolve(today);
+                    panel.dispose();
                     break;
                 case 'tomorrow':
                     const tomorrow = new Date(today);
                     tomorrow.setDate(tomorrow.getDate() + 1);
-                    panel.dispose();
                     resolve(tomorrow);
+                    panel.dispose();
                     break;
                 case 'nextWeek':
                     const nextWeek = new Date(today);
                     nextWeek.setDate(nextWeek.getDate() + 7);
-                    panel.dispose();
                     resolve(nextWeek);
+                    panel.dispose();
                     break;
                 case 'goToMonth':
                     currentMonth = message.month;
@@ -88,8 +88,8 @@ export async function showCalendarDatePicker(
                 case 'parseInput':
                     const parsed = parseRelativeDate(message.value);
                     if (parsed) {
-                        panel.dispose();
                         resolve(parsed);
+                        panel.dispose();
                     } else {
                         // Send error back to webview
                         panel.webview.postMessage({
