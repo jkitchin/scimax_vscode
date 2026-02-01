@@ -1,0 +1,315 @@
+#+TITLE: Extension Points for Plugin Development
+#+AUTHOR: Scimax VS Code
+#+OPTIONS: toc:2
+
+* Overview
+
+Scimax VS Code is designed with extensibility in mind. The architecture
+separates core parsing logic (npm library extractable) from VS Code-specific
+adapters, enabling both internal extension and external plugin development.
+
+This document describes the extension points available for adding new
+functionality.
+
+* Architecture Layers
+
+#+BEGIN_SRC text
+  ┌────────────────────────────────────────────────────────────┐
+  │                   VS Code Extension                         │
+  │  ┌─────────────────────────────────────────────────────────┐│
+  │  │              Plugin Adapter Layer                        ││
+  │  │  • src/adapters/linkFollowAdapter.ts                    ││
+  │  │  • VS Code-specific actions (commands, UI)              ││
+  │  └─────────────────────────────────────────────────────────┘│
+  │                              │                              │
+  │                              ▼                              │
+  │  ┌─────────────────────────────────────────────────────────┐│
+  │  │              Core Library (npm extractable)              ││
+  │  │  • src/parser/ - Parsing, export, link resolution       ││
+  │  │  • No VS Code dependencies                              ││
+  │  └─────────────────────────────────────────────────────────┘│
+  └────────────────────────────────────────────────────────────┘
+#+END_SRC
+
+* Extension Points
+
+** Link Types
+
+Add new link type handlers to support custom link syntax like =[[mytype:path]]=.
+
+*** Core: LinkTypeHandler (Pure Functions)
+
+Location: =src/parser/orgLinkTypes.ts=
+
+#+BEGIN_SRC typescript
+import { linkTypeRegistry, LinkTypeHandler } from './parser/orgLinkTypes';
+
+const myHandler: LinkTypeHandler = {
+  type: 'jira',
+  description: 'Link to Jira issues',
+
+  // Pure resolution - no side effects
+  resolve(path, context) {
+    return {
+      displayText: path,
+      url: `https://jira.example.com/browse/${path}`,
+      tooltip: `Open Jira issue ${path}`
+    };
+  },
+
+  // Export for different backends
+  export(path, description, backend, context) {
+    const url = `https://jira.example.com/browse/${path}`;
+    const text = description || path;
+
+    switch (backend) {
+      case 'html':
+        return `<a href="${url}">${text}</a>`;
+      case 'latex':
+        return `\\href{${url}}{${text}}`;
+      default:
+        return text;
+    }
+  },
+
+  // Optional: completion suggestions
+  async complete(prefix, context) {
+    return [
+      { text: 'PROJ-123', label: 'PROJ-123', detail: 'Bug fix' }
+    ];
+  }
+};
+
+linkTypeRegistry.register(myHandler);
+#+END_SRC
+
+*** Adapter: LinkFollowHandler (VS Code Actions)
+
+Location: =src/adapters/linkFollowAdapter.ts=
+
+#+BEGIN_SRC typescript
+import { linkFollowRegistry, LinkFollowHandler } from './adapters/linkFollowAdapter';
+
+const myFollowHandler: LinkFollowHandler = {
+  type: 'jira',
+
+  async follow(path, context) {
+    await vscode.env.openExternal(
+      vscode.Uri.parse(`https://jira.example.com/browse/${path}`)
+    );
+  }
+};
+
+linkFollowRegistry.register(myFollowHandler);
+#+END_SRC
+
+*** Built-in Link Types
+
+| Type     | Description              | Example                    |
+|----------+--------------------------+----------------------------|
+| http     | Web URLs                 | =[[http://example.com]]=   |
+| https    | Secure web URLs          | =[[https://example.com]]=  |
+| file     | Local files              | =[[file:./notes.org]]=     |
+| id       | Org-id targets           | =[[id:abc123]]=            |
+| doi      | DOI links                | =[[doi:10.1234/abc]]=      |
+| cite     | BibTeX citations         | =[[cite:smith2020]]=       |
+| mailto   | Email addresses          | =[[mailto:user@example.com]]= |
+| cmd      | VS Code commands         | =[[cmd:workbench.action.openSettings]]= |
+| nb       | Project/notebook links   | =[[nb:myproject::file.org]]= |
+| ref      | Named element references | =[[ref:fig1]]=             |
+
+** Custom Exporters
+
+Add custom export formats using Handlebars templates - no code required.
+
+*** Directory Structure
+
+Location: =~/.scimax/exporters/= or workspace =.scimax/exporters/=
+
+#+BEGIN_SRC text
+~/.scimax/exporters/
+├── my-journal/
+│   ├── manifest.json      # Configuration
+│   ├── template.tex       # Handlebars template
+│   └── partials/          # Optional partial templates
+│       └── header.tex
+#+END_SRC
+
+*** manifest.json
+
+#+BEGIN_SRC json
+{
+  "id": "my-journal",
+  "name": "My Journal Format",
+  "description": "Custom journal article format",
+  "parent": "latex",
+  "outputFormat": "pdf",
+  "template": "template.tex",
+  "keywords": {
+    "JOURNAL": {
+      "required": true,
+      "description": "Target journal name"
+    },
+    "VOLUME": {
+      "default": "1"
+    }
+  },
+  "latexOptions": {
+    "documentClass": "article",
+    "packages": ["hyperref", "graphicx"]
+  }
+}
+#+END_SRC
+
+*** Template Helpers
+
+| Helper                      | Description                    |
+|-----------------------------+--------------------------------|
+| ={{latex value}}=           | Escape for LaTeX               |
+| ={{html value}}=            | Escape for HTML                |
+| ={{default field "fallback"}}= | Default value if empty      |
+| ={{required field "name"}}= | Mark field as required         |
+| ={{join items ", "}}=       | Join array with separator      |
+| ={{#ifeq a b}}...{{/ifeq}}= | Conditional equality           |
+| ={{today}}=                 | Current date                   |
+| ={{year}}=                  | Current year                   |
+| ={{upper text}}=            | Uppercase                      |
+| ={{lower text}}=            | Lowercase                      |
+| ={{{body}}}=                | Raw body content (triple braces) |
+
+** Export Backends (Programmatic)
+
+For complex export needs, implement the full ExportBackend interface.
+
+Location: =src/parser/orgExport.ts=
+
+#+BEGIN_SRC typescript
+interface ExportBackend {
+  name: string;
+  exportDocument(doc: OrgDocumentNode, options?: ExportOptions): string;
+  exportElement(element: OrgElement, state: ExportState): string;
+  exportObject(object: OrgObject, state: ExportState): string;
+  exportAffiliatedKeywords?(affiliated: AffiliatedKeywords, state: ExportState): string;
+}
+#+END_SRC
+
+See implementations:
+- =src/parser/orgExportHtml.ts= - HTML backend
+- =src/parser/orgExportLatex.ts= - LaTeX backend
+- =src/parser/orgExportIpynb.ts= - Jupyter notebook backend
+
+** Potential Future Extension Points
+
+These patterns could be extended for additional plugin types:
+
+*** Babel Executors
+
+Add new language execution engines for source blocks.
+
+#+BEGIN_SRC typescript
+interface BabelExecutor {
+  language: string;
+  execute(code: string, options: ExecuteOptions): Promise<ExecutionResult>;
+  canExecute?(block: SourceBlock): boolean;
+}
+#+END_SRC
+
+*** Speed Commands
+
+Custom single-key commands at headline beginnings.
+
+#+BEGIN_SRC typescript
+interface SpeedCommand {
+  key: string;
+  description: string;
+  execute(editor: TextEditor, heading: HeadingNode): Promise<void>;
+}
+#+END_SRC
+
+*** Capture Templates
+
+Custom org-capture templates.
+
+#+BEGIN_SRC typescript
+interface CaptureTemplate {
+  key: string;
+  description: string;
+  template: string;
+  target: CaptureTarget;
+}
+#+END_SRC
+
+*** Entity Definitions
+
+Custom special character entities (like org-entities).
+
+#+BEGIN_SRC typescript
+interface OrgEntity {
+  name: string;
+  latex: string;
+  html: string;
+  unicode: string;
+}
+#+END_SRC
+
+*** Document Linters
+
+Custom lint rules for org documents.
+
+#+BEGIN_SRC typescript
+interface LintRule {
+  id: string;
+  severity: 'error' | 'warning' | 'info';
+  check(document: OrgDocument): Diagnostic[];
+}
+#+END_SRC
+
+* VS Code Extension API
+
+For external extensions to contribute to scimax:
+
+#+BEGIN_SRC typescript
+// In your extension's activate()
+const scimaxApi = vscode.extensions.getExtension('scimax.scimax-vscode')?.exports;
+
+if (scimaxApi) {
+  // Register custom link type
+  const disposable = scimaxApi.registerLinkType({
+    type: 'mylink',
+    resolve: (path) => ({ displayText: path }),
+    export: (path, desc, backend) => desc || path
+  });
+
+  context.subscriptions.push(disposable);
+}
+#+END_SRC
+
+Note: The extension API is planned but not yet fully exposed. Contact the
+maintainers for early access.
+
+* Core Library Extraction
+
+The =src/parser/= directory is designed to be extractable as a standalone
+npm library (=@scimax/org-core=) with no VS Code dependencies.
+
+** What's in Core
+
+- AST types (=orgElementTypes.ts=)
+- Parser (=orgParser.ts=, =orgExportParser.ts=, =orgParserUnified.ts=)
+- Export backends (=orgExport*.ts=)
+- Link resolution (=orgLinkTypes.ts= - resolve/export only)
+- Entities (=orgEntities.ts=)
+- Babel execution (=orgBabel.ts=)
+
+** What's in VS Code Layer
+
+- Providers (=src/org/*.ts=)
+- Link follow actions (=src/adapters/linkFollowAdapter.ts=)
+- Commands and UI
+- Database and indexing
+
+* Related Documentation
+
+- [[file:source-blocks.org][Source Blocks]] - Babel execution
+- [[file:keybindings.org][Keybindings]] - Command reference
+- [[file:configuration.org][Configuration]] - Settings

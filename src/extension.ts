@@ -25,7 +25,8 @@ import {
 } from './references/providers';
 import { NotebookManager } from './notebook/notebookManager';
 import { registerNotebookCommands, checkPendingNavigation } from './notebook/commands';
-import { OrgLinkProvider, MarkdownHeadingLinkProvider, registerOrgLinkCommands } from './parser/orgLinkProvider';
+import { OrgLinkProvider, MarkdownHeadingLinkProvider, registerOrgLinkCommands } from './org/orgLinkProvider';
+import { registerBuiltinFollowHandlers } from './adapters/linkFollowAdapter';
 import { registerSemanticTokenProvider } from './highlighting/semanticTokenProvider';
 import { registerFoldingProvider } from './highlighting/foldingProvider';
 import { registerBlockDecorations } from './highlighting/blockDecorations';
@@ -88,6 +89,9 @@ export async function activate(context: vscode.ExtensionContext) {
     // Initialize logging first - errors will be visible in status bar
     initializeLogging(context);
     extensionLogger.info('Extension activating...');
+
+    // Register link follow handlers (VS Code-specific link actions)
+    context.subscriptions.push(...registerBuiltinFollowHandlers());
 
     // Register log level command
     context.subscriptions.push(
