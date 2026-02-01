@@ -9,9 +9,11 @@ A scientific computing environment for VS Code inspired by [Scimax](https://gith
 
 ## Roadmap
 
-For the forseeable future I envision this remaining a mono-repository. That is for practical reasons. As the sole maintainer at the moment, I don't have bandwidth to manage many separate repositories. I also see this as a "batteries included", low friction path to get org-mode in the hands of as many people as possible.
+For time being, I envision this remaining a mono-repository. That is for practical reasons. As the sole maintainer at the moment, I don't have bandwidth to manage many repositories. I also see this as a "batteries included", low friction path to get org-mode in the hands of as many people as possible.
 
 I anticipate several months of bug fixes and feature parity efforts. Those should be reported at https://github.com/jkitchin/scimax_vscode/issues. I am trying to extend some ideas from org-mode to Markdown so it is easier to go between these formats.
+
+My plan is to keep the major version at 0.x.x until it seems "stable", that is not many bug reports, or mostly feature requests. At that point, I plan to separate out the scimax  org-parser and non-extension code into a standalone library that will be available on npm to allow additional packages / extensions to be easily built using it. Then, we will have scimax 1.x.x. I do not anticipate any change in functionality for this, but it will add some maintenance and release complexity. I do not know exactly when that will be, but hopefully by Summer 2026, and sooner if all goes well.
 
 ## Installation
 
