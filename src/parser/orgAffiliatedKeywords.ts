@@ -70,16 +70,49 @@ export function parseColonAttributes(text: string): Record<string, string> {
 }
 
 /**
- * Parse caption text, handling optional short caption
- * Format: [short caption]long caption
- * Or just: long caption
+ * Result of parsing a caption with potential inline label
  */
-export function parseCaption(text: string): string | [string, string] {
-    const shortMatch = text.match(/^\[([^\]]*)\]\s*(.*)$/);
-    if (shortMatch) {
-        return [shortMatch[1], shortMatch[2]];
+export interface CaptionParseResult {
+    /** The caption text (string or [short, long] array) */
+    caption: string | [string, string];
+    /** Inline label if found (e.g., label:fig-name at end of caption) */
+    inlineLabel?: string;
+}
+
+/**
+ * Parse caption text, handling optional short caption and inline labels
+ * Format: [short caption]long caption label:labelname
+ * Or just: long caption label:labelname
+ * Or: [short caption]long caption
+ * Or just: long caption
+ *
+ * The inline label (org-ref style) appears at the end: label:some-label-name
+ */
+export function parseCaption(text: string): CaptionParseResult {
+    let captionText = text;
+    let inlineLabel: string | undefined;
+
+    // Check for inline label at end of caption (org-ref style)
+    // Pattern: label:labelname at the end, where labelname can contain alphanumeric, hyphen, underscore
+    const labelMatch = text.match(/\s+label:([a-zA-Z0-9_:-]+)\s*$/);
+    if (labelMatch) {
+        inlineLabel = labelMatch[1];
+        captionText = text.slice(0, labelMatch.index).trim();
     }
-    return text;
+
+    // Parse short/long caption format
+    const shortMatch = captionText.match(/^\[([^\]]*)\]\s*(.*)$/);
+    if (shortMatch) {
+        return {
+            caption: [shortMatch[1], shortMatch[2]],
+            inlineLabel
+        };
+    }
+
+    return {
+        caption: captionText,
+        inlineLabel
+    };
 }
 
 /**
@@ -147,9 +180,15 @@ export function parseAffiliatedKeywords(
         // Check for standard affiliated keywords
         if (AFFILIATED_KEYWORD_NAMES.has(keyword)) {
             switch (keyword) {
-                case 'CAPTION':
-                    affiliated.caption = parseCaption(value);
+                case 'CAPTION': {
+                    const captionResult = parseCaption(value);
+                    affiliated.caption = captionResult.caption;
+                    // Use inline label if no explicit #+NAME: or #+LABEL: is set
+                    if (captionResult.inlineLabel && !affiliated.name) {
+                        affiliated.name = captionResult.inlineLabel;
+                    }
                     break;
+                }
                 case 'NAME':
                 case 'LABEL':
                 case 'SRCNAME':

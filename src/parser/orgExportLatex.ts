@@ -1295,12 +1295,21 @@ export class LatexExportBackend implements ExportBackend {
                 parts.push('');
             }
         } else {
-            // Normal mode: use document class and user preamble only
+            // Normal mode: use document class with essential packages
             // Document class
             const classOpts = meta.classOptions?.length
                 ? `[${meta.classOptions.join(',')}]`
                 : '';
             parts.push(`\\documentclass${classOpts}{${meta.documentClass}}`);
+            parts.push('');
+
+            // Essential packages for common features
+            parts.push('% Essential packages');
+            parts.push('\\usepackage[utf8]{inputenc}');
+            parts.push('\\usepackage[T1]{fontenc}');
+            parts.push('\\usepackage{graphicx}');
+            parts.push('\\usepackage{hyperref}');
+            parts.push('\\usepackage{natbib}  % For citation commands (citet, citep, citenum, etc.)');
             parts.push('');
 
             // User preamble from #+LATEX_HEADER: lines

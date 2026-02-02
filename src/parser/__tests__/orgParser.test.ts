@@ -69,17 +69,38 @@ describe('Affiliated Keywords Parser', () => {
     describe('parseCaption', () => {
         it('should parse simple caption', () => {
             const result = parseCaption('This is a caption');
-            expect(result).toBe('This is a caption');
+            expect(result.caption).toBe('This is a caption');
+            expect(result.inlineLabel).toBeUndefined();
         });
 
         it('should parse caption with short form', () => {
             const result = parseCaption('[Short]Long caption text');
-            expect(result).toEqual(['Short', 'Long caption text']);
+            expect(result.caption).toEqual(['Short', 'Long caption text']);
+            expect(result.inlineLabel).toBeUndefined();
         });
 
         it('should handle empty short caption', () => {
             const result = parseCaption('[]Long caption');
-            expect(result).toEqual(['', 'Long caption']);
+            expect(result.caption).toEqual(['', 'Long caption']);
+            expect(result.inlineLabel).toBeUndefined();
+        });
+
+        it('should extract inline label from end of caption', () => {
+            const result = parseCaption('This is a caption label:fig-example');
+            expect(result.caption).toBe('This is a caption');
+            expect(result.inlineLabel).toBe('fig-example');
+        });
+
+        it('should extract inline label with short form caption', () => {
+            const result = parseCaption('[Short]Long caption text label:my-label');
+            expect(result.caption).toEqual(['Short', 'Long caption text']);
+            expect(result.inlineLabel).toBe('my-label');
+        });
+
+        it('should handle label with hyphens and underscores', () => {
+            const result = parseCaption('Caption text label:fig-my_complex-label-2');
+            expect(result.caption).toBe('Caption text');
+            expect(result.inlineLabel).toBe('fig-my_complex-label-2');
         });
     });
 

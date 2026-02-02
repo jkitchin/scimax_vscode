@@ -108,9 +108,9 @@ export class CitationHoverProvider implements vscode.HoverProvider {
         // Patterns to match citations with potentially comma-separated keys
         const patterns = [
             // org-ref v3 style: cite:&key1 &key2 (keys prefixed with &)
-            { regex: /(?:cite[pt]?|citeauthor|citeyear|Citep|Citet|citealp|citealt):(&[a-zA-Z0-9_:-]+(?:\s+&[a-zA-Z0-9_:-]+)*)/g, keysGroup: 1, prefix: '&' },
+            { regex: /(?:cite[pt]?|citenum|citeauthor|citeyear|Citep|Citet|citealp|citealt):(&[a-zA-Z0-9_:-]+(?:\s+&[a-zA-Z0-9_:-]+)*)/g, keysGroup: 1, prefix: '&' },
             // org-ref v2 style: cite:key1,key2,key3 etc.
-            { regex: /(?:cite[pt]?|citeauthor|citeyear|Citep|Citet|citealp|citealt):([a-zA-Z0-9_:,-]+)/g, keysGroup: 1 },
+            { regex: /(?:cite[pt]?|citenum|citeauthor|citeyear|Citep|Citet|citealp|citealt):([a-zA-Z0-9_:,-]+)/g, keysGroup: 1 },
             // org-mode 9.5+ citation: [cite:@key1;@key2] or [cite/style:@key]
             { regex: /\[cite(?:\/[^\]]*)?:([^\]]+)\]/g, keysGroup: 1, prefix: '@' },
             // Pandoc/markdown: [@key]
@@ -212,7 +212,7 @@ export class BibliographyHoverProvider implements vscode.HoverProvider {
 
         // Match bibliography references
         // #+BIBLIOGRAPHY: path/to/file.bib
-        // bibliography:path/to/file.bib
+        // bibliography:path/to/file.bib,other.bib (comma-separated)
         const patterns: { regex: RegExp }[] = [
             { regex: /^(#\+BIBLIOGRAPHY:\s*)(.+?\.bib)\s*$/i },
             { regex: /(bibliography:)([^\s<>\[\](){}]+)/i }
@@ -221,12 +221,14 @@ export class BibliographyHoverProvider implements vscode.HoverProvider {
         for (const { regex } of patterns) {
             const match = regex.exec(line);
             if (match) {
-                const bibPath = match[2].trim();
+                const fullBibPath = match[2].trim();
                 const end = match.index + match[0].length;
 
                 // Check if cursor is anywhere on the link
                 if (position.character >= match.index && position.character <= end) {
-                    return this.createBibHover(bibPath, document);
+                    // Handle comma-separated bibliography files
+                    const bibPaths = fullBibPath.split(',').map(p => p.trim()).filter(p => p);
+                    return this.createBibHover(bibPaths, document);
                 }
             }
         }
@@ -234,74 +236,115 @@ export class BibliographyHoverProvider implements vscode.HoverProvider {
         return null;
     }
 
-    private async createBibHover(bibPath: string, document: vscode.TextDocument): Promise<vscode.Hover | null> {
-        // Resolve the path relative to the document
-        let resolvedPath = bibPath;
+    private async createBibHover(bibPaths: string[], document: vscode.TextDocument): Promise<vscode.Hover | null> {
         const homeDir = process.env.HOME || process.env.USERPROFILE || '';
-
-        if (bibPath.startsWith('~')) {
-            resolvedPath = bibPath.replace('~', homeDir);
-        } else if (!path.isAbsolute(bibPath)) {
-            const docDir = path.dirname(document.uri.fsPath);
-            resolvedPath = path.resolve(docDir, bibPath);
-        }
-
-        // Try adding .bib extension if file doesn't exist
-        if (!fs.existsSync(resolvedPath) && !resolvedPath.endsWith('.bib')) {
-            const withBib = resolvedPath + '.bib';
-            if (fs.existsSync(withBib)) {
-                resolvedPath = withBib;
-            }
-        }
-
+        const docDir = path.dirname(document.uri.fsPath);
         const markdown = new vscode.MarkdownString();
         markdown.isTrusted = true;
 
-        // Check if file exists
-        if (!fs.existsSync(resolvedPath)) {
-            markdown.appendMarkdown(`### Bibliography: ${bibPath}\n\n`);
-            markdown.appendMarkdown(`**File not found**\n\n`);
-            markdown.appendMarkdown(`Expected path: \`${resolvedPath}\`\n\n`);
-            markdown.appendMarkdown(`[Create file](command:scimax.ref.createBibFile?${encodeURIComponent(JSON.stringify(resolvedPath))})`);
+        // Resolve and check each bib file
+        const resolvedFiles: { original: string; resolved: string; exists: boolean }[] = [];
+
+        for (const bibPath of bibPaths) {
+            let resolvedPath = bibPath;
+
+            if (bibPath.startsWith('~')) {
+                resolvedPath = bibPath.replace('~', homeDir);
+            } else if (!path.isAbsolute(bibPath)) {
+                resolvedPath = path.resolve(docDir, bibPath);
+            }
+
+            // Try adding .bib extension if file doesn't exist
+            if (!fs.existsSync(resolvedPath) && !resolvedPath.endsWith('.bib')) {
+                const withBib = resolvedPath + '.bib';
+                if (fs.existsSync(withBib)) {
+                    resolvedPath = withBib;
+                }
+            }
+
+            resolvedFiles.push({
+                original: bibPath,
+                resolved: resolvedPath,
+                exists: fs.existsSync(resolvedPath)
+            });
+        }
+
+        // Check if any files are missing
+        const missingFiles = resolvedFiles.filter(f => !f.exists);
+        if (missingFiles.length > 0) {
+            if (bibPaths.length === 1) {
+                markdown.appendMarkdown(`### Bibliography: ${bibPaths[0]}\n\n`);
+            } else {
+                markdown.appendMarkdown(`### Bibliography: ${bibPaths.length} files\n\n`);
+            }
+
+            for (const file of missingFiles) {
+                markdown.appendMarkdown(`**File not found:** ${file.original}\n\n`);
+                markdown.appendMarkdown(`Expected path: \`${file.resolved}\`\n\n`);
+                markdown.appendMarkdown(`[Create file](command:scimax.ref.createBibFile?${encodeURIComponent(JSON.stringify(file.resolved))})\n\n`);
+            }
+
+            // Show existing files too
+            const existingFiles = resolvedFiles.filter(f => f.exists);
+            if (existingFiles.length > 0) {
+                markdown.appendMarkdown(`---\n\n**Found files:**\n`);
+                for (const file of existingFiles) {
+                    markdown.appendMarkdown(`- ${file.original}\n`);
+                }
+            }
+
             return new vscode.Hover(markdown);
         }
 
         try {
-            // Read and parse the bib file
-            const content = fs.readFileSync(resolvedPath, 'utf8');
-            const parseResult = parseBibTeX(content);
-            const entries = parseResult.entries;
-
-            // Count entry types
+            // Aggregate stats from all bib files
+            let totalEntries = 0;
             const typeCounts = new Map<string, number>();
             const years = new Set<string>();
-            const recentEntries: { key: string; author: string; year: string; title: string }[] = [];
+            const recentEntries: { key: string; author: string; year: string; title: string; file: string }[] = [];
+            const fileInfos: { name: string; path: string; count: number; modified: string }[] = [];
 
-            for (const entry of entries) {
-                typeCounts.set(entry.type, (typeCounts.get(entry.type) || 0) + 1);
-                if (entry.year) {
-                    years.add(entry.year);
+            for (const file of resolvedFiles) {
+                const content = fs.readFileSync(file.resolved, 'utf8');
+                const parseResult = parseBibTeX(content);
+                const entries = parseResult.entries;
+                totalEntries += entries.length;
+
+                const stats = fs.statSync(file.resolved);
+                fileInfos.push({
+                    name: path.basename(file.original),
+                    path: file.resolved,
+                    count: entries.length,
+                    modified: stats.mtime.toLocaleDateString()
+                });
+
+                for (const entry of entries) {
+                    typeCounts.set(entry.type, (typeCounts.get(entry.type) || 0) + 1);
+                    if (entry.year) {
+                        years.add(entry.year);
+                    }
+                }
+
+                // Get 2 most recent entries from each file
+                const lastEntries = entries.slice(-2).reverse();
+                for (const entry of lastEntries) {
+                    recentEntries.push({
+                        key: entry.key,
+                        author: formatAuthors(entry.author, 1),
+                        year: entry.year || 'n.d.',
+                        title: entry.title?.slice(0, 50) + (entry.title && entry.title.length > 50 ? '...' : '') || '',
+                        file: path.basename(file.original)
+                    });
                 }
             }
 
-            // Get 3 most recent entries (by position in file, assuming recent at end)
-            const lastEntries = entries.slice(-3).reverse();
-            for (const entry of lastEntries) {
-                recentEntries.push({
-                    key: entry.key,
-                    author: formatAuthors(entry.author, 1),
-                    year: entry.year || 'n.d.',
-                    title: entry.title?.slice(0, 50) + (entry.title && entry.title.length > 50 ? '...' : '') || ''
-                });
-            }
-
-            // Get file stats
-            const stats = fs.statSync(resolvedPath);
-            const modifiedDate = stats.mtime.toLocaleDateString();
-
             // Build hover content
-            markdown.appendMarkdown(`### Bibliography: ${path.basename(bibPath)}\n\n`);
-            markdown.appendMarkdown(`**${entries.length} entries**`);
+            if (bibPaths.length === 1) {
+                markdown.appendMarkdown(`### Bibliography: ${path.basename(bibPaths[0])}\n\n`);
+            } else {
+                markdown.appendMarkdown(`### Bibliography: ${bibPaths.length} files\n\n`);
+            }
+            markdown.appendMarkdown(`**${totalEntries} entries**`);
 
             if (years.size > 0) {
                 const sortedYears = Array.from(years).sort();
@@ -319,28 +362,38 @@ export class BibliographyHoverProvider implements vscode.HoverProvider {
                 markdown.appendMarkdown(`*Types:* ${typeList}\n\n`);
             }
 
-            // Recent entries
+            // Recent entries (limit to 4 total)
             if (recentEntries.length > 0) {
                 markdown.appendMarkdown(`**Recent entries:**\n`);
-                for (const entry of recentEntries) {
-                    markdown.appendMarkdown(`- \`${entry.key}\` ${entry.author} (${entry.year})\n`);
+                for (const entry of recentEntries.slice(0, 4)) {
+                    if (bibPaths.length > 1) {
+                        markdown.appendMarkdown(`- \`${entry.key}\` ${entry.author} (${entry.year}) *[${entry.file}]*\n`);
+                    } else {
+                        markdown.appendMarkdown(`- \`${entry.key}\` ${entry.author} (${entry.year})\n`);
+                    }
                 }
                 markdown.appendMarkdown(`\n`);
             }
 
             // File info
             markdown.appendMarkdown(`---\n`);
-            markdown.appendMarkdown(`*Path:* \`${resolvedPath}\`\n\n`);
-            markdown.appendMarkdown(`*Modified:* ${modifiedDate}\n\n`);
-
-            // Actions
-            markdown.appendMarkdown(`[Open file](${vscode.Uri.file(resolvedPath).toString()}) | `);
+            if (bibPaths.length === 1) {
+                markdown.appendMarkdown(`*Path:* \`${resolvedFiles[0].resolved}\`\n\n`);
+                markdown.appendMarkdown(`*Modified:* ${fileInfos[0].modified}\n\n`);
+                markdown.appendMarkdown(`[Open file](${vscode.Uri.file(resolvedFiles[0].resolved).toString()}) | `);
+            } else {
+                markdown.appendMarkdown(`**Files:**\n`);
+                for (const info of fileInfos) {
+                    markdown.appendMarkdown(`- [${info.name}](${vscode.Uri.file(info.path).toString()}) (${info.count} entries)\n`);
+                }
+                markdown.appendMarkdown(`\n`);
+            }
             markdown.appendMarkdown(`[Search entries](command:scimax.ref.searchReferences)`);
 
             return new vscode.Hover(markdown);
         } catch (error) {
-            markdown.appendMarkdown(`### Bibliography: ${bibPath}\n\n`);
-            markdown.appendMarkdown(`**Error reading file**\n\n`);
+            markdown.appendMarkdown(`### Bibliography: ${bibPaths.join(', ')}\n\n`);
+            markdown.appendMarkdown(`**Error reading files**\n\n`);
             markdown.appendMarkdown(`${error}`);
             return new vscode.Hover(markdown);
         }
@@ -1051,6 +1104,7 @@ export class CitationCompletionProvider implements vscode.CompletionItemProvider
         // Check if we're in a citation context
         const isCiteContext =
             /cite[pt]?:[\w-]*$/.test(linePrefix) ||
+            /citenum:[\w-]*$/.test(linePrefix) ||
             /citeauthor:[\w-]*$/.test(linePrefix) ||
             /citeyear:[\w-]*$/.test(linePrefix) ||
             /@[\w-]*$/.test(linePrefix) ||
@@ -1132,9 +1186,9 @@ export class CitationDefinitionProvider implements vscode.DefinitionProvider {
         // Each pattern has: regex, capture group, and optional prefix to strip
         const patterns: { regex: RegExp; group: number; prefix?: string }[] = [
             // org-ref v3 style: cite:&key (keys prefixed with &)
-            { regex: /(?:cite[pt]?|citeauthor|citeyear|Citep|Citet|citealp|citealt):&([a-zA-Z0-9_:-]+)/g, group: 1 },
+            { regex: /(?:cite[pt]?|citenum|citeauthor|citeyear|Citep|Citet|citealp|citealt):&([a-zA-Z0-9_:-]+)/g, group: 1 },
             // org-ref v2 style: cite:key, citep:key, citet:key, etc.
-            { regex: /(?:cite[pt]?|citeauthor|citeyear|Citep|Citet|citealp|citealt):([a-zA-Z0-9_:-]+)/g, group: 1 },
+            { regex: /(?:cite[pt]?|citenum|citeauthor|citeyear|Citep|Citet|citealp|citealt):([a-zA-Z0-9_:-]+)/g, group: 1 },
             // org-mode 9.5+ citation: [cite:@key] or [cite/style:@key]
             { regex: /\[cite(?:\/[^\]]*)?:@([a-zA-Z0-9_:-]+)[^\]]*\]/g, group: 1 },
             // Pandoc/markdown: [@key]
@@ -1233,7 +1287,7 @@ export class CitationLinkProvider implements vscode.DocumentLinkProvider {
         const text = document.getText();
 
         // org-ref v3 style: cite:&key1 &key2 (keys prefixed with &, space-separated)
-        const orgRefV3Pattern = /(?:cite[pt]?|citeauthor|citeyear|Citep|Citet|citealp|citealt):(&[a-zA-Z0-9_:-]+(?:\s+&[a-zA-Z0-9_:-]+)*)/g;
+        const orgRefV3Pattern = /(?:cite[pt]?|citenum|citeauthor|citeyear|Citep|Citet|citealp|citealt):(&[a-zA-Z0-9_:-]+(?:\s+&[a-zA-Z0-9_:-]+)*)/g;
 
         let match;
         while ((match = orgRefV3Pattern.exec(text)) !== null) {
@@ -1275,7 +1329,7 @@ export class CitationLinkProvider implements vscode.DocumentLinkProvider {
         }
 
         // org-ref v2 style: cite:key1,key2,key3 (comma-separated, no prefix)
-        const orgRefV2Pattern = /(?:cite[pt]?|citeauthor|citeyear|Citep|Citet|citealp|citealt):([a-zA-Z][a-zA-Z0-9_:,-]*)/g;
+        const orgRefV2Pattern = /(?:cite[pt]?|citenum|citeauthor|citeyear|Citep|Citet|citealp|citealt):([a-zA-Z][a-zA-Z0-9_:,-]*)/g;
 
         while ((match = orgRefV2Pattern.exec(text)) !== null) {
             const fullMatch = match[0];
