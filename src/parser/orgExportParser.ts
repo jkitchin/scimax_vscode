@@ -40,9 +40,11 @@ import type {
     SubscriptObject,
     SuperscriptObject,
     OrgRange,
+    AffiliatedKeywords,
 } from './orgElementTypes';
 
 import { createPlainText } from './orgObjects';
+import { parseCaption, parseColonAttributes } from './orgAffiliatedKeywords';
 
 // =============================================================================
 // Fast Inline Object Parser (Regex-based)
@@ -52,7 +54,7 @@ import { createPlainText } from './orgObjects';
 // Using simpler patterns without lookbehind/lookahead to prevent catastrophic backtracking
 const LINK_PATTERN = /\[\[([^\]]+)\](?:\[([^\]]+)\])?\]/g;
 // Citation pattern: cite:key1,key2 but not trailing comma (cite:key, should be cite:key)
-const CITATION_PATTERN = /(cite[pt]?|citeauthor|citeyear|Citep|Citet|citealp|citealt):([a-zA-Z0-9_:-]+(?:,[a-zA-Z0-9_:-]+)*)/g;
+const CITATION_PATTERN = /(cite[pt]?|citenum|citeauthor|citeyear|Citep|Citet|citealp|citealt):([a-zA-Z0-9_:-]+(?:,[a-zA-Z0-9_:-]+)*)/g;
 const REF_PATTERN = /(ref|eqref|pageref|nameref|autoref|cref|Cref|label):([a-zA-Z0-9_:-]+)/g;
 const DOI_PATTERN = /doi:(10\.\d{4,9}\/[^\s<>\[\](){}]+)/g;
 const BIBLIOGRAPHY_PATTERN = /bibliography:([^\s<>\[\](){}]+)/g;
@@ -274,13 +276,54 @@ export function parseObjectsFast(text: string): OrgObject[] {
         }));
     }
 
+    // Subscript and superscript MUST be processed BEFORE underline
+    // because _{x} could be misinterpreted as part of _text_ underline
     if (text.includes('_')) {
+        // Braced subscript: _{content}
+        collectMatches(SUBSCRIPT_BRACED_PATTERN, (m) => ({
+            type: 'subscript' as const,
+            range: { start: m.index!, end: m.index! + m[0].length },
+            postBlank: 0,
+            properties: { usesBraces: true },
+            children: parseObjectsFast(m[1]),
+        } as SubscriptObject));
+
+        // Simple subscript: _word
+        collectMatches(SUBSCRIPT_SIMPLE_PATTERN, (m) => ({
+            type: 'subscript' as const,
+            range: { start: m.index!, end: m.index! + m[0].length },
+            postBlank: 0,
+            properties: { usesBraces: false },
+            children: [createPlainText(m[1], m.index! + 1, m.index! + 1 + m[1].length)],
+        } as SubscriptObject));
+
+        // Underline: _text_ (after subscript to avoid conflicts)
         collectMatches(UNDERLINE_PATTERN, (m) => ({
             type: 'underline' as const,
             range: { start: m.index!, end: m.index! + m[0].length },
             postBlank: 0,
             children: parseObjectsFast(m[1]),
         }));
+    }
+
+    if (text.includes('^')) {
+        // Braced superscript: ^{content}
+        collectMatches(SUPERSCRIPT_BRACED_PATTERN, (m) => ({
+            type: 'superscript' as const,
+            range: { start: m.index!, end: m.index! + m[0].length },
+            postBlank: 0,
+            properties: { usesBraces: true },
+            children: parseObjectsFast(m[1]),
+        } as SuperscriptObject));
+
+        // Simple superscript: ^word
+        collectMatches(SUPERSCRIPT_SIMPLE_PATTERN, (m) => ({
+            type: 'superscript' as const,
+            range: { start: m.index!, end: m.index! + m[0].length },
+            postBlank: 0,
+            properties: { usesBraces: false },
+            children: [createPlainText(m[1], m.index! + 1, m.index! + 1 + m[1].length)],
+        } as SuperscriptObject));
     }
 
     if (text.includes('+')) {
@@ -318,48 +361,6 @@ export function parseObjectsFast(text: string): OrgObject[] {
             postBlank: 0,
             properties: { value: m[1] },
         }));
-    }
-
-    // Subscript: _{content} or _word (must follow word character)
-    if (text.includes('_')) {
-        // Braced subscript: _{content}
-        collectMatches(SUBSCRIPT_BRACED_PATTERN, (m) => ({
-            type: 'subscript' as const,
-            range: { start: m.index!, end: m.index! + m[0].length },
-            postBlank: 0,
-            properties: { usesBraces: true },
-            children: parseObjectsFast(m[1]),
-        } as SubscriptObject));
-
-        // Simple subscript: _word
-        collectMatches(SUBSCRIPT_SIMPLE_PATTERN, (m) => ({
-            type: 'subscript' as const,
-            range: { start: m.index!, end: m.index! + m[0].length },
-            postBlank: 0,
-            properties: { usesBraces: false },
-            children: [createPlainText(m[1], m.index! + 1, m.index! + 1 + m[1].length)],
-        } as SubscriptObject));
-    }
-
-    // Superscript: ^{content} or ^word (must follow word character)
-    if (text.includes('^')) {
-        // Braced superscript: ^{content}
-        collectMatches(SUPERSCRIPT_BRACED_PATTERN, (m) => ({
-            type: 'superscript' as const,
-            range: { start: m.index!, end: m.index! + m[0].length },
-            postBlank: 0,
-            properties: { usesBraces: true },
-            children: parseObjectsFast(m[1]),
-        } as SuperscriptObject));
-
-        // Simple superscript: ^word
-        collectMatches(SUPERSCRIPT_SIMPLE_PATTERN, (m) => ({
-            type: 'superscript' as const,
-            range: { start: m.index!, end: m.index! + m[0].length },
-            postBlank: 0,
-            properties: { usesBraces: false },
-            children: [createPlainText(m[1], m.index! + 1, m.index! + 1 + m[1].length)],
-        } as SuperscriptObject));
     }
 
     // LaTeX math (higher priority, check first)
@@ -637,12 +638,19 @@ export function parseOrgFast(content: string): OrgDocumentNode {
     }
 
     // First pass: extract document keywords from the top
+    // Stop when we encounter affiliated keywords (CAPTION, ATTR_*, NAME, etc.)
+    // as these should be attached to elements, not treated as document settings
     while (state.lineIndex < lines.length) {
         const line = lines[state.lineIndex];
         const keywordMatch = line.match(/^#\+(\w+):\s*(.*)$/i);
         if (keywordMatch) {
             const key = keywordMatch[1].toUpperCase();
             const value = keywordMatch[2];
+
+            // Check if this is an affiliated keyword - stop document keyword extraction
+            if (isAffiliatedKeyword(key)) {
+                break;
+            }
 
             if (MULTI_VALUE_KEYWORDS.has(key)) {
                 // Collect multi-value keywords into arrays
@@ -779,8 +787,87 @@ function parseHeadline(state: FastParserState): HeadlineElement | null {
     return headline;
 }
 
+/**
+ * Set of keywords that should be affiliated with the next element
+ */
+const AFFILIATED_KEYWORD_NAMES = new Set([
+    'CAPTION',
+    'DATA',
+    'HEADER',
+    'HEADERS',
+    'LABEL',
+    'NAME',
+    'PLOT',
+    'RESNAME',
+    'RESULT',
+    'RESULTS',
+    'SOURCE',
+    'SRCNAME',
+    'TBLNAME',
+]);
+
+/**
+ * Check if a keyword should be affiliated with the next element
+ */
+function isAffiliatedKeyword(key: string): boolean {
+    const upperKey = key.toUpperCase();
+    return AFFILIATED_KEYWORD_NAMES.has(upperKey) || upperKey.startsWith('ATTR_');
+}
+
+/**
+ * Collect affiliated keyword into the accumulated object
+ */
+function collectAffiliatedKeyword(
+    affiliated: AffiliatedKeywords,
+    key: string,
+    value: string
+): void {
+    const upperKey = key.toUpperCase();
+
+    // Check for ATTR_* keywords
+    if (upperKey.startsWith('ATTR_')) {
+        const backend = upperKey.slice(5).toLowerCase();
+        const attrs = parseColonAttributes(value);
+        affiliated.attr[backend] = { ...affiliated.attr[backend], ...attrs };
+        return;
+    }
+
+    switch (upperKey) {
+        case 'CAPTION': {
+            const captionResult = parseCaption(value);
+            affiliated.caption = captionResult.caption;
+            if (captionResult.inlineLabel && !affiliated.name) {
+                affiliated.name = captionResult.inlineLabel;
+            }
+            break;
+        }
+        case 'NAME':
+        case 'LABEL':
+        case 'SRCNAME':
+        case 'TBLNAME':
+        case 'RESNAME':
+            affiliated.name = value;
+            break;
+        case 'RESULTS':
+        case 'RESULT':
+            affiliated.results = value;
+            break;
+        case 'HEADER':
+        case 'HEADERS':
+            if (!affiliated.header) {
+                affiliated.header = [];
+            }
+            affiliated.header.push(value);
+            break;
+        case 'PLOT':
+            affiliated.plot = value;
+            break;
+    }
+}
+
 function parseSection(state: FastParserState, parentLevel: number): OrgElement[] {
     const elements: OrgElement[] = [];
+    let pendingAffiliated: AffiliatedKeywords | null = null;
 
     while (state.lineIndex < state.lines.length) {
         const line = state.lines[state.lineIndex];
@@ -800,8 +887,30 @@ function parseSection(state: FastParserState, parentLevel: number): OrgElement[]
         // Try to parse different element types
         const element = parseElement(state);
         if (element) {
+            // Check if this is an affiliated keyword that should attach to the next element
+            if (element.type === 'keyword') {
+                const kw = element as KeywordElement;
+                if (isAffiliatedKeyword(kw.properties.key)) {
+                    // Start or continue collecting affiliated keywords
+                    if (!pendingAffiliated) {
+                        pendingAffiliated = { attr: {} };
+                    }
+                    collectAffiliatedKeyword(pendingAffiliated, kw.properties.key, kw.properties.value);
+                    // Don't add this keyword to elements - it will be attached to next element
+                    continue;
+                }
+            }
+
+            // Attach any pending affiliated keywords to this element
+            if (pendingAffiliated) {
+                (element as any).affiliated = pendingAffiliated;
+                pendingAffiliated = null;
+            }
+
             elements.push(element);
         } else {
+            // Empty line or unparseable - reset affiliated keywords
+            pendingAffiliated = null;
             state.lineIndex++;
         }
     }

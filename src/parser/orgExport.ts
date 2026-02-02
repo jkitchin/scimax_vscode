@@ -1148,6 +1148,36 @@ export function exportSubtree(
 }
 
 /**
+ * Process inline markup (subscripts, superscripts, emphasis) for LaTeX
+ * Used for titles, authors, and other text that needs markup conversion
+ */
+function processInlineMarkup(text: string): string {
+    let result = text;
+
+    // Subscript: word_{content} -> word\textsubscript{content}
+    result = result.replace(/([a-zA-Z0-9)])_\{([^}]+)\}/g, '$1\\textsubscript{$2}');
+    // Simple subscript: word_x (single alphanumeric)
+    result = result.replace(/([a-zA-Z0-9)])_([a-zA-Z0-9])/g, '$1\\textsubscript{$2}');
+
+    // Superscript: word^{content} -> word\textsuperscript{content}
+    result = result.replace(/([a-zA-Z0-9)])\^\{([^}]+)\}/g, '$1\\textsuperscript{$2}');
+    // Simple superscript: word^x (single alphanumeric)
+    result = result.replace(/([a-zA-Z0-9)])\^([a-zA-Z0-9])/g, '$1\\textsuperscript{$2}');
+
+    // Bold: *text* -> \textbf{text}
+    result = result.replace(/\*([^*]+)\*/g, '\\textbf{$1}');
+
+    // Italic: /text/ -> \textit{text} (but not in URLs)
+    result = result.replace(/(?<![:/])\/([^/]+)\//g, '\\textit{$1}');
+
+    // Escape remaining LaTeX special characters that weren't part of markup
+    // Note: Don't escape backslashes we just added
+    result = result.replace(/(?<!\\)([%$&#])/g, '\\$1');
+
+    return result;
+}
+
+/**
  * Simple export to LaTeX for live preview
  * This is a simplified conversion that wraps org content in a LaTeX document
  */
@@ -1204,8 +1234,8 @@ export function exportToLatex(
         }
 
         latexLines.push('');
-        if (title) latexLines.push(`\\title{${escapeString(title, 'latex')}}`);
-        if (author) latexLines.push(`\\author{${escapeString(author, 'latex')}}`);
+        if (title) latexLines.push(`\\title{${processInlineMarkup(title)}}`);
+        if (author) latexLines.push(`\\author{${processInlineMarkup(author)}}`);
         latexLines.push('\\begin{document}');
         if (title) latexLines.push('\\maketitle');
         if (opts.toc) latexLines.push('\\tableofcontents');
@@ -1309,6 +1339,17 @@ export function exportToLatex(
 
         // Handle regular text with markup conversion
 
+        // Subscript: word_{content} -> word\textsubscript{content}
+        // Must process BEFORE underline to avoid _{x}_ being treated as underline
+        processedLine = processedLine.replace(/([a-zA-Z0-9)])_\{([^}]+)\}/g, '$1\\textsubscript{$2}');
+        // Simple subscript: word_x (single alphanumeric)
+        processedLine = processedLine.replace(/([a-zA-Z0-9)])_([a-zA-Z0-9])/g, '$1\\textsubscript{$2}');
+
+        // Superscript: word^{content} -> word\textsuperscript{content}
+        processedLine = processedLine.replace(/([a-zA-Z0-9)])\^\{([^}]+)\}/g, '$1\\textsuperscript{$2}');
+        // Simple superscript: word^x (single alphanumeric)
+        processedLine = processedLine.replace(/([a-zA-Z0-9)])\^([a-zA-Z0-9])/g, '$1\\textsuperscript{$2}');
+
         // Bold: *text* -> \textbf{text}
         processedLine = processedLine.replace(/\*([^*]+)\*/g, '\\textbf{$1}');
 
@@ -1316,6 +1357,7 @@ export function exportToLatex(
         processedLine = processedLine.replace(/(?<![:/])\/([^/]+)\//g, '\\textit{$1}');
 
         // Underline: _text_ -> \underline{text}
+        // Note: subscripts like _{x} are already handled above
         processedLine = processedLine.replace(/_([^_]+)_/g, '\\underline{$1}');
 
         // Code: =text= or ~text~ -> \texttt{text}

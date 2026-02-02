@@ -74,6 +74,7 @@ import {
 
 import { blockExportRegistry } from '../adapters/blockExportAdapter';
 import { exportHookRegistry } from '../adapters/exportHooksAdapter';
+import { parseObjects } from './orgObjects';
 
 // =============================================================================
 // LaTeX Export Options
@@ -360,6 +361,8 @@ export class LatexExportBackend implements ExportBackend {
                 return this.exportPlainList(element as PlainListElement, state);
             case 'drawer':
                 return this.exportDrawer(element as DrawerElement, state);
+            case 'property-drawer':
+                return ''; // Property drawers are metadata, never exported
             case 'keyword':
                 return this.exportKeyword(element as KeywordElement, state);
             case 'horizontal-rule':
@@ -576,7 +579,10 @@ export class LatexExportBackend implements ExportBackend {
                 const caption = Array.isArray(block.affiliated.caption)
                     ? block.affiliated.caption[1]
                     : block.affiliated.caption;
-                endWrapper += `\\caption{${escapeString(caption, 'latex')}}\n`;
+                // Parse caption for inline objects (citations, links, markup, etc.)
+                const captionObjects = parseObjects(caption);
+                const captionLatex = exportObjects(captionObjects, this, state);
+                endWrapper += `\\caption{${captionLatex}}\n`;
             }
 
             if (block.affiliated.name) {
@@ -694,7 +700,10 @@ export class LatexExportBackend implements ExportBackend {
                 const caption = Array.isArray(table.affiliated.caption)
                     ? table.affiliated.caption[1]
                     : table.affiliated.caption;
-                endWrapper += `\\caption{${escapeString(caption, 'latex')}}\n`;
+                // Parse caption for inline objects (citations, links, markup, etc.)
+                const captionObjects = parseObjects(caption);
+                const captionLatex = exportObjects(captionObjects, this, state);
+                endWrapper += `\\caption{${captionLatex}}\n`;
             }
 
             if (table.affiliated.name) {
@@ -994,6 +1003,8 @@ export class LatexExportBackend implements ExportBackend {
             // Citation types - org-ref style
             case 'cite':
                 return `\\cite{${path}}`;
+            case 'citenum':
+                return `\\citenum{${path}}`;
             case 'citep':
             case 'Citep':
                 return `\\citep{${path}}`;
@@ -1079,7 +1090,8 @@ export class LatexExportBackend implements ExportBackend {
                     width = affiliated.attr.latex.width;
                 }
                 if (affiliated.attr.latex.placement) {
-                    placement = affiliated.attr.latex.placement;
+                    // Strip brackets if already present (user may write [H] or H)
+                    placement = affiliated.attr.latex.placement.replace(/^\[|\]$/g, '');
                 }
             }
         }
@@ -1089,7 +1101,10 @@ export class LatexExportBackend implements ExportBackend {
         latex += `\\includegraphics[width=${width}]{${escapeString(path, 'latex')}}\n`;
 
         if (caption) {
-            latex += `\\caption{${escapeString(caption, 'latex')}}\n`;
+            // Parse caption text for inline objects (citations, links, markup, etc.)
+            const captionObjects = parseObjects(caption);
+            const captionLatex = exportObjects(captionObjects, this, state);
+            latex += `\\caption{${captionLatex}}\n`;
         }
         if (label) {
             latex += `\\label{${escapeString(label, 'latex')}}\n`;
@@ -1296,13 +1311,18 @@ export class LatexExportBackend implements ExportBackend {
         }
 
         // Title, author, date (controlled by OPTIONS)
+        // Parse title for inline objects (subscripts, superscripts, entities, etc.)
         if (meta.title) {
-            parts.push(`\\title{${escapeString(meta.title, 'latex')}}`);
+            const titleObjects = parseObjects(meta.title);
+            const titleLatex = exportObjects(titleObjects, this, _state);
+            parts.push(`\\title{${titleLatex}}`);
         }
 
         // Include author if includeAuthor is not false
+        // Parse author for inline objects (e.g., superscript affiliations)
         if (meta.author && meta.includeAuthor !== false) {
-            let authorStr = escapeString(meta.author, 'latex');
+            const authorObjects = parseObjects(meta.author);
+            let authorStr = exportObjects(authorObjects, this, _state);
             // Include email if includeEmail is true
             if (meta.email && meta.includeEmail === true) {
                 authorStr += `\\\\\\texttt{${escapeString(meta.email, 'latex')}}`;

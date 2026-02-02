@@ -1315,6 +1315,46 @@ describe('LaTeX Export', () => {
             expect(result).toContain('\\end{document}');
         });
 
+        it('exports subscripts and superscripts in title', () => {
+            const doc = createSimpleDocument('Test content');
+            const result = exportToLatex(doc, {
+                title: 'Cu_{x}Pd_{1-x} Alloy (111)',
+                author: 'Test Author',
+            });
+
+            // Title should contain textsubscript, not escaped underscores
+            expect(result).toContain('\\title{Cu\\textsubscript{x}Pd\\textsubscript{1-x} Alloy (111)}');
+            // Should NOT contain escaped underscores in title
+            expect(result).not.toContain('\\title{Cu\\_\\{x\\}');
+        });
+
+        it('exports superscripts in author for affiliations', () => {
+            const doc = createSimpleDocument('Test content');
+            const result = exportToLatex(doc, {
+                title: 'Test Title',
+                author: 'John Smith^{1}, Jane Doe^{2}',
+            });
+
+            // Author should contain textsuperscript
+            expect(result).toContain('\\author{John Smith\\textsuperscript{1}, Jane Doe\\textsuperscript{2}}');
+        });
+
+        it('exports subscripts in paragraph body text', () => {
+            // Test parsing and exporting a document with subscripts in body text
+            const orgContent = `#+TITLE: Test
+* Section
+Text with Cu_{x}Pd_{1-x} subscripts.
+`;
+            const doc = parseOrg(orgContent);
+            const result = exportToLatex(doc);
+
+            // Body text should contain textsubscript, not escaped underscores
+            expect(result).toContain('Cu\\textsubscript{x}Pd\\textsubscript{1-x}');
+            // Should NOT contain escaped underscores/braces
+            expect(result).not.toContain('Cu\\_\\{x\\}');
+            expect(result).not.toContain('Cu\\underline');
+        });
+
         it('includes packages from preamble option', () => {
             const doc = createSimpleDocument('Test');
             const preamble = `\\usepackage[utf8]{inputenc}
