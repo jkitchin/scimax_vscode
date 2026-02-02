@@ -1,0 +1,257 @@
+#+TITLE: Link Graph Visualization
+#+AUTHOR: Scimax VS Code Team
+#+DATE: 2026-02-02
+#+STARTUP: overview
+#+OPTIONS: toc:2 num:t H:4
+#+TODO: ⚠️ 👀 | ✅
+
+*Keybinding Note:* This extension uses Emacs-style keybindings where Ctrl is used on all platforms (not Cmd on Mac), except where explicitly noted.
+
+* ⚠️ Link Graph Visualization
+
+The link graph feature provides an interactive visualization of how your files are connected through links. Files are shown as nodes, and the links between them are shown as edges, enabling you to explore your knowledge base as a network.
+
+** ⚠️ Overview
+
+The link graph visualization helps you:
+
+- *Discover connections* - See which files link to each other
+- *Navigate your knowledge base* - Click on nodes to open files
+- *Explore relationships* - Follow chains of links across multiple files
+- *Filter by context* - Filter links by tags, TODO states, and more
+
+** ⚠️ Opening the Link Graph
+
+*** Commands
+
+| Key         | Command                      | Description                      |
+|-------------+------------------------------+----------------------------------|
+| C-c S-g     | scimax.showLinkGraph         | Show link graph for current file |
+| (none)      | scimax.showLinkGraphForFile  | Show link graph for a file       |
+| (none)      | scimax.showLinkStats         | Show link statistics for file    |
+
+*** From Command Palette
+
+1. Open the Command Palette (=Ctrl+Shift+P=)
+2. Type "Link Graph" or "Scimax: Show Link Graph"
+3. Select the command
+
+*** Context Menu
+
+Right-click on a file in the explorer and select "Show Link Graph".
+
+* ⚠️ Understanding the Graph
+
+** ⚠️ Nodes
+
+Each node in the graph represents a file:
+
+- *Center node* - The starting file, highlighted in a distinct color
+- *Connected nodes* - Files that link to or from the center file
+- *Node size* - Larger nodes have more connections
+
+** ⚠️ Edges
+
+Edges (lines) represent links between files:
+
+- *Direction* - Arrows show link direction (source → target)
+- *Bidirectional* - Some file pairs may have links in both directions
+
+** ⚠️ Node Tooltips
+
+Hover over a node to see information about the file:
+
+- File name and path
+- File type (org, markdown)
+- Number of headings
+- Number of TODO items
+- Tags present in the file
+- Modification time
+
+** ⚠️ Interacting with the Graph
+
+*** Click
+
+- *Single click* - Opens the file in the editor
+
+*** Double-click
+
+- *Double-click* - Recenters the graph on that file
+
+*** Drag
+
+- *Drag nodes* - Move nodes around to arrange the layout
+- Nodes stay where you place them until you recenter
+
+* ⚠️ Graph Controls
+
+** ⚠️ Depth
+
+Controls how many hops away from the center file to include:
+
+| Depth | Description                                    |
+|-------+------------------------------------------------|
+| 1     | Only direct connections                        |
+| 2     | Connections and their connections              |
+| 3     | Up to 3 hops away (larger graphs)              |
+
+Larger depths show more of the network but can become cluttered.
+
+** ⚠️ Direction
+
+Controls which types of links to follow:
+
+| Direction | Description                            |
+|-----------+----------------------------------------|
+| Both      | Show incoming and outgoing links       |
+| Outgoing  | Only show files this file links to     |
+| Incoming  | Only show files that link to this file |
+
+** ⚠️ Filters
+
+The filter panel allows you to narrow down which links appear in the graph based on various criteria.
+
+*** File Type Filter
+
+Filter by file extension:
+- =org= - Org-mode files only
+- =md= - Markdown files only
+
+*** Tag Filter
+
+Filter to show only links within headings that have specific tags:
+- Enter comma-separated tags (e.g., =project,important=)
+- A link appears if its containing heading has ANY of the specified tags
+
+*** TODO State Filter
+
+Filter links by the TODO state of their containing heading:
+- =TODO= - Links in headings with TODO state
+- =DONE= - Links in completed headings
+- =WAITING=, =NEXT=, etc. - Other states
+
+*** Exclude Done Filter
+
+When checked, links in headings with DONE or CANCELLED states are hidden.
+
+*** Modified After Filter
+
+Show only links in files modified after a certain date:
+- Enter a date in YYYY-MM-DD format
+- Useful for finding recently updated connections
+
+* ⚠️ Link Statistics
+
+The =scimax.showLinkStats= command shows a summary of links for the current file:
+
+#+BEGIN_EXAMPLE
+Link Statistics for notes.org
+
+Outgoing links: 15
+By type:
+  file: 8
+  http: 5
+  cite: 2
+Incoming links (backlinks): 3
+#+END_EXAMPLE
+
+After viewing statistics, you can click "Show Graph" to open the full visualization.
+
+* ⚠️ How Links Are Indexed
+
+Links are extracted from your org and markdown files and stored in the database:
+
+** ⚠️ Link Types
+
+| Type  | Description                       | Example                  |
+|-------+-----------------------------------+--------------------------|
+| file  | Links to other files              | [[file:other.org]]       |
+| http  | Web links                         | [[https://example.com]]  |
+| https | Secure web links                  | [[https://example.com]]  |
+| cite  | Citation links                    | cite:author-2024         |
+| id    | Links to headings by ID           | [[id:abc-123]]           |
+| nb    | Notebook project links            | [[nb:project::file.org]] |
+
+** ⚠️ Heading Association
+
+Each link is associated with its containing heading. This enables filtering:
+
+- Links under a heading inherit that heading's tags
+- Filter by TODO state to see links in active vs completed tasks
+- Filter by priority to focus on important connections
+
+* ⚠️ Use Cases
+
+** ⚠️ Exploring Backlinks
+
+Want to see what references a particular file?
+
+1. Open the file
+2. Run =scimax.showLinkGraph=
+3. Set direction to "Incoming"
+4. Explore which files cite this one
+
+** ⚠️ Tracing Topic Chains
+
+Want to follow a chain of related topics?
+
+1. Open a starting file
+2. Set depth to 2 or 3
+3. Double-click interesting nodes to recenter
+4. Follow the chain of connections
+
+** ⚠️ Finding Active Project Connections
+
+Want to see links only in active tasks?
+
+1. Open a project file
+2. Apply filter: TODO state = "TODO" or "NEXT"
+3. Or check "Exclude done" to hide completed items
+4. See which files are referenced by active work
+
+** ⚠️ Recent Modifications Review
+
+Want to see recently updated connections?
+
+1. Apply "Modified after" filter with a recent date
+2. See which connected files have been recently changed
+3. Useful for reviewing changes in a connected set of notes
+
+* ⚠️ Technical Details
+
+** ⚠️ Database Tables
+
+The link graph uses the =links= table in the Scimax database:
+
+| Column      | Description                            |
+|-------------+----------------------------------------|
+| file_path   | Source file containing the link        |
+| target      | Link target (path, URL, etc.)          |
+| link_type   | Type of link (file, http, cite, etc.)  |
+| line_number | Line where link appears                |
+| heading_id  | ID of containing heading (for filters) |
+
+** ⚠️ Visualization Technology
+
+The graph is rendered using vis.js Network in a VS Code webview:
+
+- Force-directed layout automatically arranges nodes
+- Physics simulation enables smooth dragging
+- SVG rendering for crisp display at any zoom level
+
+** ⚠️ Performance
+
+- Default maximum of 100 nodes to prevent overwhelming graphs
+- Truncation indicator shows when limit is reached
+- Use filters to narrow down large graphs
+
+* ⚠️ Related Topics
+
+- [[file:05-links.org][Hyperlinks]] - Creating and following links
+- [[file:18-database-search.org][Database and Search]] - Database structure and search
+- [[file:16-notebook.org][Notebooks]] - Project organization with nb: links
+
+* Navigation
+
+- Previous: [[file:38-find-file.org][Find File]]
+- Index: [[file:00-index.org][Documentation Index]]

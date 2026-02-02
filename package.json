@@ -1128,6 +1128,19 @@
         "title": "Scimax: Configure Embedding Service"
       },
       {
+        "command": "scimax.showLinkGraph",
+        "title": "Scimax: Show Link Graph",
+        "icon": "$(type-hierarchy)"
+      },
+      {
+        "command": "scimax.showLinkGraphForFile",
+        "title": "Scimax: Show Link Graph for File"
+      },
+      {
+        "command": "scimax.showLinkStats",
+        "title": "Scimax: Show Link Statistics"
+      },
+      {
         "command": "scimax.journal.refresh",
         "title": "Scimax: Refresh Journal View",
         "icon": "$(refresh)"
@@ -5131,6 +5144,12 @@
         "command": "scimax.insertOcrScreenshot",
         "key": "shift+f10",
         "mac": "shift+f10",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/"
+      },
+      {
+        "command": "scimax.showLinkGraph",
+        "key": "ctrl+c shift+g",
+        "mac": "ctrl+c shift+g",
         "when": "editorTextFocus && editorLangId =~ /org|markdown/"
       }
     ],

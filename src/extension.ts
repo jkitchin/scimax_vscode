@@ -76,6 +76,7 @@ import { registerManuscriptCommands } from './manuscript';
 import { initializeLogging, extensionLogger } from './utils/logger';
 import { registerDiredCommands } from './dired';
 import { registerFindFileCommands } from './findFile';
+import { registerLinkGraphCommands } from './linkGraph';
 
 let journalManager: JournalManager;
 let hydraManager: HydraManager;
@@ -190,6 +191,9 @@ export async function activate(context: vscode.ExtensionContext) {
 
     // Register Database Commands (uses lazy loading - db initializes on first command use)
     registerDbCommands(context);
+
+    // Register Link Graph Commands (uses lazy loading)
+    context.subscriptions.push(...registerLinkGraphCommands(context));
 
     // Register Database View
     registerDatabaseView(context);
