@@ -87,6 +87,9 @@ export interface CaptionParseResult {
  * Or just: long caption
  *
  * The inline label (org-ref style) appears at the end: label:some-label-name
+ * Note: The label:xxx is kept in the caption text so it can be parsed as an
+ * inline object and exported as \label{xxx}. The inlineLabel is only extracted
+ * for use when there's no #+NAME: keyword.
  */
 export function parseCaption(text: string): CaptionParseResult {
     let captionText = text;
@@ -94,10 +97,12 @@ export function parseCaption(text: string): CaptionParseResult {
 
     // Check for inline label at end of caption (org-ref style)
     // Pattern: label:labelname at the end, where labelname can contain alphanumeric, hyphen, underscore
+    // We extract it for potential use as #+NAME but keep it in the caption for inline parsing
     const labelMatch = text.match(/\s+label:([a-zA-Z0-9_:-]+)\s*$/);
     if (labelMatch) {
         inlineLabel = labelMatch[1];
-        captionText = text.slice(0, labelMatch.index).trim();
+        // Keep the label:xxx in the caption text - it will be parsed as an inline object
+        // and exported as \label{xxx}
     }
 
     // Parse short/long caption format

@@ -99,6 +99,8 @@ export interface LatexExportOptions extends ExportOptions {
     listings?: boolean;
     /** Use minted package for code */
     minted?: boolean;
+    /** Minted options (e.g., 'frame=lines,fontsize=\\scriptsize,linenos') */
+    mintedOptions?: string;
     /** Default image width */
     imageWidth?: string;
     /** Float placement preference */
@@ -139,6 +141,7 @@ const DEFAULT_LATEX_OPTIONS: LatexExportOptions = {
     },
     listings: false,
     minted: true,
+    mintedOptions: 'frame=lines,fontsize=\\scriptsize,linenos',
     imageWidth: '0.8\\textwidth',
     floatPlacement: 'htbp',
     booktabs: true,
@@ -192,20 +195,23 @@ export class LatexExportBackend implements ExportBackend {
             }
         }
 
-        // Collect LATEX_HEADER lines and append to preamble (options preamble + document headers)
-        const latexHeaders = doc.keywordLists?.['LATEX_HEADER'] || [];
-        const existingPreamble = options?.preamble || '';
-        const preamble = latexHeaders.length > 0
-            ? (existingPreamble ? existingPreamble + '\n' : '') + latexHeaders.join('\n')
-            : existingPreamble;
-
-        // Check for LATEX_NO_DEFAULTS keyword
-        const noDefaultsKeyword = doc.keywords['LATEX_NO_DEFAULTS'];
-        const noDefaults = options?.noDefaults || (noDefaultsKeyword === 't' || noDefaultsKeyword === 'true');
-
-        // Parse #+OPTIONS: keyword if present
+        // Parse #+OPTIONS: keyword if present (need to do this early to check noDefaults)
         const optionsKeyword = doc.keywords['OPTIONS'];
         const parsedOptions = optionsKeyword ? parseOptionsKeyword(optionsKeyword) : {};
+
+        // Check for noDefaults from multiple sources (explicit option, OPTIONS keyword, or LATEX_NO_DEFAULTS keyword)
+        const noDefaultsKeyword = doc.keywords['LATEX_NO_DEFAULTS'];
+        const noDefaults = options?.noDefaults ||
+            (parsedOptions as any).noDefaults ||
+            (noDefaultsKeyword === 't' || noDefaultsKeyword === 'true');
+
+        // Collect LATEX_HEADER lines from document
+        const latexHeaders = doc.keywordLists?.['LATEX_HEADER'] || [];
+        // When noDefaults is true, skip the settings-provided preamble but keep document headers
+        const settingsPreamble = noDefaults ? '' : (options?.preamble || '');
+        const preamble = latexHeaders.length > 0
+            ? (settingsPreamble ? settingsPreamble + '\n' : '') + latexHeaders.join('\n')
+            : settingsPreamble;
 
         let opts: LatexExportOptions = {
             ...DEFAULT_LATEX_OPTIONS,
@@ -567,36 +573,18 @@ export class LatexExportBackend implements ExportBackend {
             state.skipNextResults = false;
         }
 
-        // Check for affiliated keywords
-        let wrapper = '';
-        let endWrapper = '';
+        // Check for affiliated keywords (caption/name)
+        const hasCaption = block.affiliated?.caption || block.affiliated?.name;
 
-        if (block.affiliated?.caption || block.affiliated?.name) {
-            wrapper = '\\begin{figure}[' + (opts.floatPlacement || 'htbp') + ']\n';
-            endWrapper = '';
-
-            if (block.affiliated.caption) {
-                const caption = Array.isArray(block.affiliated.caption)
-                    ? block.affiliated.caption[1]
-                    : block.affiliated.caption;
-                // Parse caption for inline objects (citations, links, markup, etc.)
-                const captionObjects = parseObjects(caption);
-                const captionLatex = exportObjects(captionObjects, this, state);
-                endWrapper += `\\caption{${captionLatex}}\n`;
-            }
-
-            if (block.affiliated.name) {
-                endWrapper += `\\label{${block.affiliated.name}}\n`;
-            }
-
-            endWrapper += '\\end{figure}\n';
-        }
+        // Build minted options string
+        const mintedOpts = opts.mintedOptions || '';
 
         // Use minted or listings
         let codeBlock: string;
         if (opts.minted) {
             const mintedLang = this.mapLanguageForMinted(lang);
-            codeBlock = `\\begin{minted}{${mintedLang}}\n${code}\n\\end{minted}`;
+            const mintedOptsStr = mintedOpts ? `[${mintedOpts}]` : '';
+            codeBlock = `\\begin{minted}${mintedOptsStr}{${mintedLang}}\n${code}\n\\end{minted}`;
         } else if (opts.listings) {
             codeBlock = `\\begin{lstlisting}[language=${this.mapLanguage(lang)}]\n${code}\n\\end{lstlisting}`;
         } else {
@@ -604,7 +592,33 @@ export class LatexExportBackend implements ExportBackend {
             codeBlock = `\\begin{verbatim}\n${code}\n\\end{verbatim}`;
         }
 
-        return wrapper + codeBlock + endWrapper;
+        // Wrap in listing environment if there's a caption or name
+        if (hasCaption) {
+            const placement = opts.floatPlacement || 'htbp';
+            let result = `\\begin{listing}[${placement}]\n${codeBlock}\n`;
+
+            // Build caption with label from #+name:
+            if (block.affiliated?.caption) {
+                const caption = Array.isArray(block.affiliated.caption)
+                    ? block.affiliated.caption[1]
+                    : block.affiliated.caption;
+                // Parse caption for inline objects (citations, links, markup, labels, etc.)
+                const captionObjects = parseObjects(caption);
+                const captionLatex = exportObjects(captionObjects, this, state);
+
+                // Add #+name: as label inside caption
+                const nameLabel = block.affiliated.name ? `\\label{${block.affiliated.name}}` : '';
+                result += `\\caption{${nameLabel}${captionLatex}}\n`;
+            } else if (block.affiliated?.name) {
+                // Just name, no caption
+                result += `\\label{${block.affiliated.name}}\n`;
+            }
+
+            result += '\\end{listing}';
+            return result;
+        }
+
+        return codeBlock;
     }
 
     private exportExampleBlock(block: ExampleBlockElement, state: ExportState): string {
@@ -1310,6 +1324,11 @@ export class LatexExportBackend implements ExportBackend {
             parts.push('\\usepackage{graphicx}');
             parts.push('\\usepackage{hyperref}');
             parts.push('\\usepackage{natbib}  % For citation commands (citet, citep, citenum, etc.)');
+
+            // Code highlighting packages
+            if (meta.minted !== false) {
+                parts.push('\\usepackage[newfloat]{minted}  % Code highlighting with listing environment');
+            }
             parts.push('');
 
             // User preamble from #+LATEX_HEADER: lines

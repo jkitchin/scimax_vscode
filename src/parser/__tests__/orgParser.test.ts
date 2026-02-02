@@ -85,21 +85,23 @@ describe('Affiliated Keywords Parser', () => {
             expect(result.inlineLabel).toBeUndefined();
         });
 
-        it('should extract inline label from end of caption', () => {
+        it('should extract inline label from end of caption but keep in text', () => {
+            // The label:xxx is kept in caption text so it can be parsed as inline object
+            // and exported as \label{xxx}, but inlineLabel is extracted for use when no #+name:
             const result = parseCaption('This is a caption label:fig-example');
-            expect(result.caption).toBe('This is a caption');
+            expect(result.caption).toBe('This is a caption label:fig-example');
             expect(result.inlineLabel).toBe('fig-example');
         });
 
-        it('should extract inline label with short form caption', () => {
+        it('should extract inline label with short form caption but keep in text', () => {
             const result = parseCaption('[Short]Long caption text label:my-label');
-            expect(result.caption).toEqual(['Short', 'Long caption text']);
+            expect(result.caption).toEqual(['Short', 'Long caption text label:my-label']);
             expect(result.inlineLabel).toBe('my-label');
         });
 
         it('should handle label with hyphens and underscores', () => {
             const result = parseCaption('Caption text label:fig-my_complex-label-2');
-            expect(result.caption).toBe('Caption text');
+            expect(result.caption).toBe('Caption text label:fig-my_complex-label-2');
             expect(result.inlineLabel).toBe('fig-my_complex-label-2');
         });
     });

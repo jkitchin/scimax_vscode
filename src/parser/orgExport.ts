@@ -365,6 +365,11 @@ export function parseOptionsKeyword(optionsLine: string): Partial<ExportOptions>
             case '\\n':
                 opts.preserveBreaks = toBool(value);
                 break;
+
+            // No defaults (LaTeX-specific, but parsed here for convenience)
+            case 'no-defaults':
+                (opts as any).noDefaults = toBool(value);
+                break;
         }
     }
 

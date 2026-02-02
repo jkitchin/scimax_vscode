@@ -121,7 +121,11 @@ const EMPHASIS_MARKERS: Record<string, { type: ObjectType; close: string }> = {
 /**
  * Characters that can start an inline object (for fast-path routing)
  */
-const OBJECT_START_CHARS = new Set(['\\', '$', '[', '<', '@', '{', '_', '^', '*', '/', '+', '=', '~', 's', 'c', 'C']);
+const OBJECT_START_CHARS = new Set([
+    '\\', '$', '[', '<', '@', '{', '_', '^', '*', '/', '+', '=', '~',
+    's', 'c', 'C',  // src_, call_, citation types
+    'r', 'd', 'i', 'f', 'm', 'e', 'n', 'p', 'a', 'l', 'h',  // plain link types: ref, doi, id, file, mailto, elisp/eqref, nb/nameref, pageref, autoref, label, help/http
+]);
 
 // =============================================================================
 // Main Parser Class
