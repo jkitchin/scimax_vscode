@@ -5,6 +5,14 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { LinkGraphQueryService, LinkGraphFilters } from '../linkGraphQueries';
 
+// Mock vscode (needed by graphDataAdapter import chain)
+vi.mock('vscode', () => ({
+    Disposable: class {
+        constructor(private callback: () => void) {}
+        dispose() { this.callback(); }
+    }
+}));
+
 // Mock the logger
 vi.mock('../../utils/logger', () => ({
     databaseLogger: {
