@@ -576,6 +576,286 @@ context.subscriptions.push(registerExportHook(hook));
 Hooks that throw errors are caught and logged. The export continues with the
 unmodified content, so a failing hook won't break the entire export.
 
+** Database Extension Points
+
+Extension points for extracting custom data during indexing, running custom
+queries, and enriching graph visualizations. These enable building knowledge
+graphs, custom search algorithms, and entity extraction systems.
+
+*** IndexerAdapter - Custom Content Extraction
+
+Hook into the file indexing pipeline to extract entities, relationships, or
+custom metadata from files as they are indexed.
+
+Location: =src/adapters/indexerAdapter.ts=
+
+**** IndexerAdapter Interface
+
+#+BEGIN_SRC typescript
+interface IndexerAdapter {
+  /** Unique identifier */
+  id: string;
+
+  /** Human-readable description */
+  description?: string;
+
+  /** Priority for ordering (higher first) */
+  priority?: number;
+
+  /** File types to process (['org', 'md']). Empty = all. */
+  fileTypes?: string[];
+
+  /** Extract custom data during indexing */
+  extract(
+    content: string,
+    ast: OrgDocumentNode | undefined,
+    context: IndexContext
+  ): Promise<ExtractedData[]>;
+
+  /** Called when file is removed (cleanup) */
+  onFileRemoved?(filePath: string, fileId: number, db: unknown): Promise<void>;
+}
+
+interface IndexContext {
+  filePath: string;
+  fileId: number;
+  fileType: string;
+  mtime: number;
+  db: unknown;  // Database client for custom queries
+}
+#+END_SRC
+
+**** Extracted Data Types
+
+#+BEGIN_SRC typescript
+// Entity - a named concept, person, project, etc.
+interface ExtractedEntity {
+  type: 'entity';
+  category: string;  // 'person', 'concept', 'project'
+  name: string;
+  properties?: Record<string, unknown>;
+  lineNumber?: number;
+}
+
+// Relationship between entities or files
+interface ExtractedRelationship {
+  type: 'relationship';
+  source: string;
+  target: string;
+  relation: string;  // 'references', 'is_part_of', 'related_to'
+  weight?: number;
+  properties?: Record<string, unknown>;
+}
+
+// Custom metadata about a file
+interface ExtractedMetadata {
+  type: 'metadata';
+  key: string;
+  value: unknown;
+}
+#+END_SRC
+
+**** Example: Entity Extractor
+
+#+BEGIN_SRC typescript
+import { registerIndexer, IndexerAdapter } from './adapters/indexerAdapter';
+
+const entityExtractor: IndexerAdapter = {
+  id: 'knowledge-graph-entities',
+  description: 'Extract named entities for knowledge graph',
+  fileTypes: ['org', 'md'],
+
+  async extract(content, ast, context) {
+    const entities: ExtractedEntity[] = [];
+
+    // Example: Extract #+CONCEPT: definitions
+    const conceptMatches = content.matchAll(/^#\+CONCEPT:\s*(.+)$/gm);
+    for (const match of conceptMatches) {
+      entities.push({
+        type: 'entity',
+        category: 'concept',
+        name: match[1].trim()
+      });
+    }
+
+    return entities;
+  }
+};
+
+context.subscriptions.push(registerIndexer(entityExtractor));
+#+END_SRC
+
+*** QueryProviderAdapter - Custom Search Types
+
+Register custom query providers for specialized searches like graph traversal,
+path finding, or semantic similarity queries.
+
+Location: =src/adapters/queryProviderAdapter.ts=
+
+**** QueryProvider Interface
+
+#+BEGIN_SRC typescript
+interface QueryProvider {
+  /** Query type identifier */
+  queryType: string;
+
+  /** Human-readable name */
+  name: string;
+
+  /** Description */
+  description?: string;
+
+  /** Capabilities (pagination, filtering, ranking) */
+  capabilities?: QueryCapabilities;
+
+  /** Validate parameters (return true or error message) */
+  validate?(params: QueryParams): true | string;
+
+  /** Execute the query */
+  execute(params: QueryParams, db: unknown): Promise<QueryResponse>;
+}
+
+interface QueryResponse {
+  results: QueryResult[];
+  totalCount?: number;
+  executionTimeMs?: number;
+  metadata?: Record<string, unknown>;
+}
+#+END_SRC
+
+**** Built-in Query Providers
+
+| Query Type    | Description                          | Parameters          |
+|---------------+--------------------------------------+---------------------|
+| graph-path    | Find shortest path between files     | from, to, maxHops   |
+| related-files | Find files related by links and tags | filePath, limit     |
+
+**** Example: Custom Similarity Query
+
+#+BEGIN_SRC typescript
+import { registerQueryProvider, QueryProvider } from './adapters/queryProviderAdapter';
+
+const similarityProvider: QueryProvider = {
+  queryType: 'semantic-similarity',
+  name: 'Semantic Similarity Search',
+  description: 'Find semantically similar files using embeddings',
+
+  validate(params) {
+    if (!params.filePath) return 'Missing filePath';
+    return true;
+  },
+
+  async execute(params, db) {
+    const filePath = params.filePath as string;
+    const limit = (params.limit as number) || 10;
+
+    // Query embedding vectors and compute similarity
+    // ...
+
+    return {
+      results: similarFiles.map(f => ({
+        type: 'file',
+        id: f.path,
+        label: f.name,
+        score: f.similarity
+      }))
+    };
+  }
+};
+
+context.subscriptions.push(registerQueryProvider(similarityProvider));
+#+END_SRC
+
+*** GraphDataProviderAdapter - Graph Enrichment
+
+Add custom data to link graph nodes and edges, or inject additional edges
+beyond the standard file links (e.g., semantic relationships).
+
+Location: =src/adapters/graphDataAdapter.ts=
+
+**** GraphDataProvider Interface
+
+#+BEGIN_SRC typescript
+interface GraphDataProvider {
+  id: string;
+  name: string;
+  description?: string;
+  priority?: number;
+
+  /** Enrich node with custom properties */
+  enrichNode?(node: GraphNode, context: GraphDataContext): Promise<NodeEnrichment | undefined>;
+
+  /** Enrich edge with custom properties */
+  enrichEdge?(edge: GraphEdge, context: GraphDataContext): Promise<EdgeEnrichment | undefined>;
+
+  /** Add custom edges (e.g., semantic relationships) */
+  getCustomEdges?(filePath: string, context: GraphDataContext): Promise<CustomEdge[]>;
+
+  /** Filter out nodes */
+  filterNode?(node: GraphNode, context: GraphDataContext): boolean;
+
+  /** Filter out edges */
+  filterEdge?(edge: GraphEdge, context: GraphDataContext): boolean;
+}
+
+interface NodeEnrichment {
+  color?: string;
+  size?: number;
+  shape?: string;
+  label?: string;
+  tooltip?: string;
+  group?: string;
+  importance?: number;
+  properties?: Record<string, unknown>;
+}
+#+END_SRC
+
+**** Built-in Providers
+
+| Provider ID          | Description                              |
+|----------------------+------------------------------------------|
+| link-count-importance | Sizes nodes based on link count         |
+| recency-coloring     | Colors nodes by modification recency     |
+
+**** Example: Cluster Provider
+
+#+BEGIN_SRC typescript
+import { registerGraphDataProvider, GraphDataProvider } from './adapters/graphDataAdapter';
+
+const clusterProvider: GraphDataProvider = {
+  id: 'topic-clusters',
+  name: 'Topic Clustering',
+  description: 'Group files by topic similarity',
+
+  async enrichNode(node, context) {
+    // Compute cluster membership
+    const cluster = await getFileCluster(node.id, context.db);
+
+    return {
+      group: cluster.name,
+      color: cluster.color,
+      properties: { clusterId: cluster.id }
+    };
+  },
+
+  async getCustomEdges(filePath, context) {
+    // Add edges to semantically similar files
+    const similar = await getSimilarFiles(filePath, context.db);
+
+    return similar.map(s => ({
+      from: filePath,
+      to: s.path,
+      type: 'semantic-similarity',
+      label: 'Similar',
+      style: 'dashed',
+      color: '#999'
+    }));
+  }
+};
+
+context.subscriptions.push(registerGraphDataProvider(clusterProvider));
+#+END_SRC
+
 ** Potential Future Extension Points
 
 These patterns could be extended for additional plugin types:

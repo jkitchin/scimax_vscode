@@ -30,6 +30,7 @@ export interface Migration {
  * - v1: Initial schema (files, headings, source_blocks, links, hashtags, chunks, fts_content)
  * - v2: Add projects table and project_id foreign key
  * - v3: Add db_metadata table for storing configuration like embedding dimensions
+ * - v4: Add heading_id to links table for contextual filtering and graph queries
  */
 export const migrations: Migration[] = [
     {
@@ -157,6 +158,24 @@ export const migrations: Migration[] = [
                 value TEXT NOT NULL,
                 updated_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now') * 1000)
             )`
+        ]
+    },
+    {
+        version: 4,
+        description: 'Add heading_id to links table for contextual filtering and graph queries',
+        up: [
+            // Add heading_id column to links table for associating links with their containing heading
+            // This enables filtering links by heading metadata (tags, TODO state, etc.)
+            `ALTER TABLE links ADD COLUMN heading_id INTEGER REFERENCES headings(id) ON DELETE SET NULL`,
+
+            // Index for efficient joins when filtering by heading
+            `CREATE INDEX IF NOT EXISTS idx_links_heading ON links(heading_id)`,
+
+            // Index for target lookups (backlinks queries)
+            `CREATE INDEX IF NOT EXISTS idx_links_target ON links(target)`,
+
+            // Composite index for common query pattern (file + link type)
+            `CREATE INDEX IF NOT EXISTS idx_links_file_type ON links(file_path, link_type)`
         ]
     }
 ];

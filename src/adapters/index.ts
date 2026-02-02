@@ -122,3 +122,47 @@ export {
     createWrapperHook,
     createElementReplacerHook,
 } from './exportHooksAdapter';
+
+// Indexer Adapter (for knowledge graph extraction)
+export {
+    IndexerAdapter,
+    IndexContext,
+    ExtractedData,
+    ExtractedDataType,
+    ExtractedEntity,
+    ExtractedRelationship,
+    ExtractedMetadata,
+    ExtractedCustom,
+    IndexerResult,
+    indexerRegistry,
+    registerIndexer,
+} from './indexerAdapter';
+
+// Query Provider Adapter (for custom search types)
+export {
+    QueryProvider,
+    QueryParams,
+    QueryResult,
+    QueryResponse,
+    QueryCapabilities,
+    queryProviderRegistry,
+    registerQueryProvider,
+    // Built-in providers
+    graphPathProvider,
+    relatedFilesProvider,
+} from './queryProviderAdapter';
+
+// Graph Data Provider Adapter (for graph enrichment)
+export {
+    GraphDataProvider,
+    GraphDataContext,
+    NodeEnrichment,
+    EdgeEnrichment,
+    CustomEdge,
+    GraphEnrichmentResult,
+    graphDataRegistry,
+    registerGraphDataProvider,
+    // Built-in providers
+    linkCountImportanceProvider,
+    recencyColoringProvider,
+} from './graphDataAdapter';

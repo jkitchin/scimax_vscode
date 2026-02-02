@@ -230,6 +230,7 @@ This documentation is organized into several sections:
 | [[file:34-bibtex.org][BibTeX Editing]]               | BibTeX file editing and commands |
 | [[file:35-templates.org][Document Templates]]           | Template system for documents    |
 | [[file:36-manuscript.org][Manuscript Flattening]]        | Prepare LaTeX for submission     |
+| [[file:39-link-graph.org][Link Graph]]                   | Visualize file connections       |
 
 ** Quick Start
 
@@ -411,6 +412,7 @@ Quick reference to find specific features across documentation.
 | LaTeX math            | [[file:11-latex-preview.org][LaTeX Preview]]                 | [[file:10-export.org][Export]]                                                                                             |
 | Links                 | [[file:05-links.org][Links]]                                 | [[file:19-references.org][References]], [[file:21-navigation.org][Navigation]]                                             |
 | Limitations           | [[file:29-unsupported-features.org][Unsupported Features]]   | Emacs features not available in VS Code                                                                                    |
+| Link graph            | [[file:39-link-graph.org][Link Graph]]                       | [[file:05-links.org][Links]], [[file:18-database-search.org][Database and Search]]                                         |
 | Lists (ordered)       | [[file:01.5-basic-syntax.org][Basic Syntax]]                 | [[file:02-document-structure.org][Document Structure]]                                                                     |
 | Lists (unordered)     | [[file:01.5-basic-syntax.org][Basic Syntax]]                 | [[file:02-document-structure.org][Document Structure]]                                                                     |
 | Markdown support      | [[file:30-markdown-compatibility.org][Markdown Compatibility]] | [[file:02-document-structure.org][Document Structure]], [[file:23-speed-commands.org][Speed Commands]], [[file:07-source-blocks.org][Source Blocks]] |

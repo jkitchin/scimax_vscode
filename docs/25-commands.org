@@ -482,6 +482,16 @@ CLOSED: [2026-01-17 Sat 12:46]
 | [[cmd:scimax.db.cancelEmbeddings]] | Cancel Embedding Generation  | -                  |
 | [[cmd:scimax.database.refresh]]    | Refresh Database             | -                  |
 
+** ⚠️ Link Graph Visualization
+
+Commands for visualizing file connections through links.
+
+| Command ID                           | Description                     | Default Keybinding |
+|--------------------------------------+---------------------------------+--------------------|
+| [[cmd:scimax.showLinkGraph]]         | Show Link Graph for Current File| C-c S-g            |
+| [[cmd:scimax.showLinkGraphForFile]]  | Show Link Graph for File        | -                  |
+| [[cmd:scimax.showLinkStats]]         | Show Link Statistics            | -                  |
+
 ** ✅ Troubleshooting and Diagnostics
 CLOSED: [2026-01-22 Thu 20:56]
 

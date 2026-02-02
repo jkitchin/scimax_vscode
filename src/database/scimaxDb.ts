@@ -30,6 +30,7 @@ import {
 // Re-export advanced search types
 export type { AdvancedSearchOptions, AdvancedSearchResult, SearchMode, SearchProgressCallback };
 import { withRetry, withTimeout, isTransientError } from '../utils/resilience';
+import { indexerRegistry, type IndexContext } from '../adapters/indexerAdapter';
 
 /**
  * Database record types
@@ -385,6 +386,14 @@ export class ScimaxDb {
             error: this.vectorSearchError,
             hasEmbeddings: this.embeddingService !== null
         };
+    }
+
+    /**
+     * Get the underlying database client for direct queries
+     * Used by LinkGraphQueryService and other advanced features
+     */
+    public getClient(): Client | null {
+        return this.db;
     }
 
     /**
@@ -978,6 +987,42 @@ export class ScimaxDb {
                     await this.db!.batch(finalStatements);
                 }
 
+                // Run indexer adapters for knowledge graph extraction
+                if (indexerRegistry.getAdapters().length > 0) {
+                    const indexContext: IndexContext = {
+                        filePath,
+                        fileId,
+                        fileType,
+                        mtime: stats.mtimeMs,
+                        db: this.db
+                    };
+
+                    try {
+                        const indexerResult = await indexerRegistry.runAdapters(
+                            contentForDb!,
+                            undefined, // AST - adapters can re-parse if needed
+                            indexContext
+                        );
+
+                        // Log any errors from adapters
+                        for (const err of indexerResult.errors) {
+                            log.warn('Indexer adapter error', { adapterId: err.adapterId, error: err.error.message });
+                        }
+
+                        // Log extracted data summary
+                        if (indexerResult.entities.length > 0 || indexerResult.relationships.length > 0) {
+                            log.debug('INDEXER_ADAPTERS_RESULT', {
+                                path: filePath,
+                                entities: indexerResult.entities.length,
+                                relationships: indexerResult.relationships.length,
+                                metadata: indexerResult.metadata.length
+                            });
+                        }
+                    } catch (adapterError) {
+                        log.warn('Indexer adapters failed', { error: (adapterError as Error).message });
+                    }
+                }
+
                 // Handle embeddings for semantic search
                 if (this.embeddingService) {
                     if (options?.queueEmbeddings) {
@@ -1096,6 +1141,94 @@ export class ScimaxDb {
 
         // Clear statements array to help GC reclaim memory
         statements.length = 0;
+
+        // Index links with heading association
+        if (doc.links.length > 0) {
+            await this.indexLinks(fileId, filePath, doc.links);
+        }
+    }
+
+    /**
+     * Index links from a parsed document with heading association
+     * Associates each link with its containing heading for contextual filtering
+     */
+    private async indexLinks(
+        fileId: number,
+        filePath: string,
+        links: { type: string; target: string; description?: string; lineNumber: number }[]
+    ): Promise<void> {
+        if (!this.db || links.length === 0) return;
+
+        // Query headings for this file to build line_number -> id mapping
+        const headingsResult = await this.db.execute({
+            sql: 'SELECT id, line_number FROM headings WHERE file_path = ? ORDER BY line_number',
+            args: [filePath]
+        });
+
+        // Build sorted array of heading line numbers and IDs for binary search
+        const headings = headingsResult.rows.map(row => ({
+            id: row.id as number,
+            lineNumber: row.line_number as number
+        }));
+
+        // Batch insert links
+        const linkStatements: { sql: string; args: (string | number | null)[] }[] = [];
+
+        for (const link of links) {
+            // Find containing heading using binary search
+            const headingId = this.findContainingHeadingId(link.lineNumber, headings);
+
+            linkStatements.push({
+                sql: `INSERT INTO links
+                      (file_id, file_path, link_type, target, description, line_number, heading_id)
+                      VALUES (?, ?, ?, ?, ?, ?, ?)`,
+                args: [
+                    fileId,
+                    filePath,
+                    link.type,
+                    link.target,
+                    link.description || null,
+                    link.lineNumber,
+                    headingId
+                ]
+            });
+        }
+
+        // Execute in batches
+        const BATCH_SIZE = 50;
+        for (let i = 0; i < linkStatements.length; i += BATCH_SIZE) {
+            const batch = linkStatements.slice(i, i + BATCH_SIZE);
+            await this.db.batch(batch);
+        }
+
+        log.debug('Indexed links', { filePath, count: links.length });
+    }
+
+    /**
+     * Find the heading that contains a given line number using binary search
+     * Returns the ID of the last heading with line_number <= targetLine, or null
+     */
+    private findContainingHeadingId(
+        targetLine: number,
+        headings: { id: number; lineNumber: number }[]
+    ): number | null {
+        if (headings.length === 0) return null;
+
+        let left = 0;
+        let right = headings.length - 1;
+        let result: number | null = null;
+
+        while (left <= right) {
+            const mid = Math.floor((left + right) / 2);
+            if (headings[mid].lineNumber <= targetLine) {
+                result = headings[mid].id;
+                left = mid + 1;
+            } else {
+                right = mid - 1;
+            }
+        }
+
+        return result;
     }
 
     /**
