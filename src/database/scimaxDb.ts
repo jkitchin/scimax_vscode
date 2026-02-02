@@ -30,6 +30,7 @@ import {
 // Re-export advanced search types
 export type { AdvancedSearchOptions, AdvancedSearchResult, SearchMode, SearchProgressCallback };
 import { withRetry, withTimeout, isTransientError } from '../utils/resilience';
+import { indexerRegistry, type IndexContext } from '../adapters/indexerAdapter';
 
 /**
  * Database record types
@@ -984,6 +985,42 @@ export class ScimaxDb {
                 if (finalStatements.length > 0) {
                     log.debug('INDEX_FTS', { path: filePath, statements: finalStatements.length });
                     await this.db!.batch(finalStatements);
+                }
+
+                // Run indexer adapters for knowledge graph extraction
+                if (indexerRegistry.getAdapters().length > 0) {
+                    const indexContext: IndexContext = {
+                        filePath,
+                        fileId,
+                        fileType,
+                        mtime: stats.mtimeMs,
+                        db: this.db
+                    };
+
+                    try {
+                        const indexerResult = await indexerRegistry.runAdapters(
+                            contentForDb!,
+                            undefined, // AST - adapters can re-parse if needed
+                            indexContext
+                        );
+
+                        // Log any errors from adapters
+                        for (const err of indexerResult.errors) {
+                            log.warn('Indexer adapter error', { adapterId: err.adapterId, error: err.error.message });
+                        }
+
+                        // Log extracted data summary
+                        if (indexerResult.entities.length > 0 || indexerResult.relationships.length > 0) {
+                            log.debug('INDEXER_ADAPTERS_RESULT', {
+                                path: filePath,
+                                entities: indexerResult.entities.length,
+                                relationships: indexerResult.relationships.length,
+                                metadata: indexerResult.metadata.length
+                            });
+                        }
+                    } catch (adapterError) {
+                        log.warn('Indexer adapters failed', { error: (adapterError as Error).message });
+                    }
                 }
 
                 // Handle embeddings for semantic search

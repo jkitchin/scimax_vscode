@@ -7,6 +7,7 @@
 
 import type { Client } from '@libsql/client';
 import { databaseLogger as log } from '../utils/logger';
+import { graphDataRegistry, type GraphDataContext, type CustomEdge } from '../adapters/graphDataAdapter';
 
 /**
  * Filters for graph queries
@@ -53,6 +54,9 @@ export interface GraphNode {
     linkCount: number;
     hasUpcomingDeadline: boolean;
     topTags: string[];
+
+    // Extension point: custom metadata from graph data providers
+    metadata?: Record<string, unknown>;
 }
 
 /**
@@ -66,6 +70,9 @@ export interface GraphEdge {
     count: number;               // number of links (for edge thickness)
     title: string;               // hover tooltip
     arrows: 'to';
+
+    // Extension point: custom metadata from graph data providers
+    metadata?: Record<string, unknown>;
 }
 
 /**
@@ -127,11 +134,101 @@ export class LinkGraphQueryService {
             filters
         );
 
-        // Step 4: Truncate if needed
-        const truncated = nodes.length > maxNodes;
-        const finalNodes = truncated ? nodes.slice(0, maxNodes) : nodes;
+        // Step 4: Apply graph data providers for enrichment
+        let enrichedNodes = nodes;
+        let enrichedEdges = edges;
+
+        if (graphDataRegistry.getProviders().length > 0) {
+            const graphContext: GraphDataContext = {
+                centerFile,
+                depth,
+                maxDepth: depth,
+                direction,
+                db: this.db
+            };
+
+            try {
+                const enrichment = await graphDataRegistry.applyProviders(
+                    nodes,
+                    edges,
+                    graphContext
+                );
+
+                // Apply node enrichments
+                enrichedNodes = nodes
+                    .filter(n => !enrichment.filteredNodes.has(n.id))
+                    .map(node => {
+                        const nodeEnrich = enrichment.nodeEnrichments.get(node.id);
+                        if (!nodeEnrich) return node;
+
+                        return {
+                            ...node,
+                            label: nodeEnrich.label ?? node.label,
+                            // Store enrichment data in metadata for webview
+                            metadata: {
+                                ...node.metadata,
+                                ...nodeEnrich.properties,
+                                enrichedColor: nodeEnrich.color,
+                                enrichedSize: nodeEnrich.size,
+                                enrichedShape: nodeEnrich.shape,
+                                importance: nodeEnrich.importance,
+                                group: nodeEnrich.group
+                            }
+                        };
+                    });
+
+                // Apply edge enrichments
+                enrichedEdges = edges
+                    .filter(e => !enrichment.filteredEdges.has(`${e.from}:${e.to}`))
+                    .map(edge => {
+                        const edgeEnrich = enrichment.edgeEnrichments.get(`${edge.from}:${edge.to}`);
+                        if (!edgeEnrich) return edge;
+
+                        return {
+                            ...edge,
+                            title: edgeEnrich.label ?? edge.title,
+                            // Store enrichment data for webview
+                            metadata: {
+                                ...edgeEnrich.properties,
+                                enrichedColor: edgeEnrich.color,
+                                enrichedWidth: edgeEnrich.width,
+                                enrichedStyle: edgeEnrich.style
+                            }
+                        };
+                    });
+
+                // Add custom edges from providers
+                for (const customEdge of enrichment.customEdges) {
+                    enrichedEdges.push({
+                        id: `custom-${customEdge.from}-${customEdge.to}-${customEdge.type}`,
+                        from: customEdge.from,
+                        to: customEdge.to,
+                        linkType: customEdge.type,
+                        count: 1,
+                        title: customEdge.label || customEdge.type,
+                        arrows: 'to',
+                        metadata: {
+                            isCustom: true,
+                            customType: customEdge.type,
+                            ...customEdge.properties
+                        }
+                    } as GraphEdge);
+                }
+
+                // Log any errors from providers
+                for (const err of enrichment.errors) {
+                    log.warn('Graph data provider error', { providerId: err.providerId, error: err.error.message });
+                }
+            } catch (providerError) {
+                log.warn('Graph data providers failed', { error: (providerError as Error).message });
+            }
+        }
+
+        // Step 5: Truncate if needed
+        const truncated = enrichedNodes.length > maxNodes;
+        const finalNodes = truncated ? enrichedNodes.slice(0, maxNodes) : enrichedNodes;
         const nodeIds = new Set(finalNodes.map(n => n.id));
-        const finalEdges = edges.filter(e => nodeIds.has(e.from) && nodeIds.has(e.to));
+        const finalEdges = enrichedEdges.filter(e => nodeIds.has(e.from) && nodeIds.has(e.to));
 
         log.debug('Graph built', {
             nodes: finalNodes.length,
@@ -143,7 +240,7 @@ export class LinkGraphQueryService {
             nodes: finalNodes,
             edges: finalEdges,
             truncated,
-            totalEdges: edges.length
+            totalEdges: enrichedEdges.length
         };
     }
 
