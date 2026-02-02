@@ -3356,6 +3356,12 @@
         "when": "editorTextFocus && editorLangId == 'org' && !terminalFocus"
       },
       {
+        "command": "scimax.org.jumpToPdf",
+        "key": "ctrl+c v",
+        "mac": "ctrl+c v",
+        "when": "editorTextFocus && editorLangId == 'org' && !terminalFocus"
+      },
+      {
         "command": "scimax.org.clipboardHtmlRich",
         "key": "ctrl+c k",
         "mac": "ctrl+c k",
