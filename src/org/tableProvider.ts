@@ -513,13 +513,31 @@ function findTableAtCursor(document: vscode.TextDocument, position: vscode.Posit
             columnAlignments.push(columnSpecs[i].alignment);
             columnMinWidths.push(columnSpecs[i].minWidth);
             columnMaxWidths.push(columnSpecs[i].maxWidth);
+
+            // Calculate the width of the spec cookie itself (e.g., "<l>" = 3, "<15>" = 4)
+            // The column must be at least wide enough to display the cookie
+            const spec = columnSpecs[i];
+            let cookieWidth: number;
+            if (spec.maxWidth !== undefined) {
+                cookieWidth = `<${spec.maxWidth}>`.length;
+            } else if (spec.minWidth !== undefined) {
+                cookieWidth = `<${spec.alignment}${spec.minWidth}>`.length;
+            } else {
+                cookieWidth = `<${spec.alignment}>`.length;
+            }
+            columnWidths[i] = Math.max(columnWidths[i], cookieWidth);
+
             // Apply minimum width if specified
             if (columnSpecs[i].minWidth !== undefined) {
                 columnWidths[i] = Math.max(columnWidths[i], columnSpecs[i].minWidth!);
             }
             // Apply maximum width if specified (constrains column width for alignment)
+            // But never make it smaller than the cookie itself
             if (columnSpecs[i].maxWidth !== undefined) {
-                columnWidths[i] = Math.min(columnWidths[i], columnSpecs[i].maxWidth!);
+                columnWidths[i] = Math.max(
+                    Math.min(columnWidths[i], columnSpecs[i].maxWidth!),
+                    cookieWidth
+                );
             }
         } else {
             columnAlignments.push('l');

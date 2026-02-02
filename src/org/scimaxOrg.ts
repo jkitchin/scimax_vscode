@@ -32,6 +32,7 @@ import {
     buildPlanningLine,
     removeClosed,
 } from './planningLine';
+import { pushMark } from '../mark/markRing';
 
 // Re-export planning line utilities for external use
 export { findPlanningLine, buildPlanningLine, removeClosed };
@@ -1179,11 +1180,22 @@ async function handleHeadingReturn(
 // =============================================================================
 
 /**
+ * Push mark and show status bar reminder before navigation.
+ * This allows users to return to their previous position with C-x C-x.
+ */
+async function pushMarkBeforeJump(): Promise<void> {
+    await pushMark();
+    vscode.window.setStatusBarMessage('C-x C-x to return', 3000);
+}
+
+/**
  * Jump to a heading in the current buffer using quick pick
  */
 export async function jumpToHeading(): Promise<void> {
     const editor = vscode.window.activeTextEditor;
     if (!editor) return;
+
+    await pushMarkBeforeJump();
 
     const document = editor.document;
     const headings: { label: string; line: number; level: number }[] = [];
@@ -1239,6 +1251,8 @@ export async function nextHeading(): Promise<void> {
     const editor = vscode.window.activeTextEditor;
     if (!editor) return;
 
+    await pushMarkBeforeJump();
+
     const document = editor.document;
     const currentLine = editor.selection.active.line;
 
@@ -1261,6 +1275,8 @@ export async function previousHeading(): Promise<void> {
     const editor = vscode.window.activeTextEditor;
     if (!editor) return;
 
+    await pushMarkBeforeJump();
+
     const document = editor.document;
     const currentLine = editor.selection.active.line;
 
@@ -1282,6 +1298,8 @@ export async function previousHeading(): Promise<void> {
 export async function parentHeading(): Promise<void> {
     const editor = vscode.window.activeTextEditor;
     if (!editor) return;
+
+    await pushMarkBeforeJump();
 
     const document = editor.document;
     const currentLine = editor.selection.active.line;

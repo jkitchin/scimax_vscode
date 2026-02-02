@@ -6,6 +6,16 @@
 
 import * as vscode from 'vscode';
 import { getHeadingLevel } from './context';
+import { pushMark } from '../../mark/markRing';
+
+/**
+ * Push mark and show status bar reminder before navigation.
+ * This allows users to return to their previous position with C-x C-x.
+ */
+async function pushMarkBeforeJump(): Promise<void> {
+    await pushMark();
+    vscode.window.setStatusBarMessage('C-x C-x to return', 3000);
+}
 
 /**
  * Navigate to the next sibling heading (same level)
@@ -13,6 +23,8 @@ import { getHeadingLevel } from './context';
 export async function nextSiblingHeading(): Promise<void> {
     const editor = vscode.window.activeTextEditor;
     if (!editor) return;
+
+    await pushMarkBeforeJump();
 
     const document = editor.document;
     const currentLine = editor.selection.active.line;
@@ -50,6 +62,8 @@ export async function previousSiblingHeading(): Promise<void> {
     const editor = vscode.window.activeTextEditor;
     if (!editor) return;
 
+    await pushMarkBeforeJump();
+
     const document = editor.document;
     const currentLine = editor.selection.active.line;
     const currentLevel = getHeadingLevel(document, currentLine);
@@ -86,6 +100,8 @@ export async function firstHeading(): Promise<void> {
     const editor = vscode.window.activeTextEditor;
     if (!editor) return;
 
+    await pushMarkBeforeJump();
+
     const document = editor.document;
 
     for (let i = 0; i < document.lineCount; i++) {
@@ -107,6 +123,8 @@ export async function firstHeading(): Promise<void> {
 export async function lastHeading(): Promise<void> {
     const editor = vscode.window.activeTextEditor;
     if (!editor) return;
+
+    await pushMarkBeforeJump();
 
     const document = editor.document;
 

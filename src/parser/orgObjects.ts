@@ -78,6 +78,16 @@ const RE_SUPERSCRIPT = /^\^([a-zA-Z0-9]+)/;
 // Supports org-ref v2 (comma-separated) and v3 (ampersand-prefixed, semicolon-separated)
 const RE_CITATION_LINK = /^(cite[pt]?|citeauthor|citeyear|Citep|Citet|citealp|citealt|citenum):([\w&;,:-]+)/;
 
+// Plain links (type:path format without brackets)
+// Matches registered link types: ref, doi, id, file, http, https, mailto, etc.
+// Path can contain: word chars, &, ;, ,, :, -, ., /, #, ?, =, %, ~
+const PLAIN_LINK_TYPES = ['ref', 'doi', 'id', 'file', 'mailto', 'shell', 'elisp', 'help', 'info', 'roam', 'cmd', 'nb', 'eqref', 'pageref', 'nameref', 'autoref', 'label'];
+const RE_PLAIN_LINK = new RegExp(`^(${PLAIN_LINK_TYPES.join('|')}):([-\\w&;,:./#?=%~]+)`);
+
+// URL-style plain links (http://, https://)
+// These need special handling because URLs can have more complex paths
+const RE_URL_LINK = /^(https?):\/\/([^\s\[\]<>]+)/;
+
 // =============================================================================
 // Object Parser Configuration
 // =============================================================================
@@ -288,6 +298,33 @@ export function parseObjects(
                     const emphasisInfo = EMPHASIS_MARKERS[char];
                     if (isAllowed(emphasisInfo.type)) {
                         parsed = tryParseEmphasis(text, pos, char, prevChar, baseOffset, { parseNested, allowedTypes });
+                    }
+                }
+                break;
+
+            // Plain link types (ref:, doi:, id:, file:, mailto:, etc.)
+            case 'r': // ref, roam
+            case 'd': // doi
+            case 'i': // id, info
+            case 'f': // file
+            case 'm': // mailto
+            case 'e': // elisp, eqref
+            case 'n': // nb, nameref
+            case 'p': // pageref
+            case 'a': // autoref
+            case 'l': // label
+                if (isAllowed('link')) {
+                    parsed = tryParsePlainLink(text, pos, prevChar, baseOffset);
+                }
+                break;
+
+            case 'h': // help, http, https
+                if (isAllowed('link')) {
+                    // Try URL link first (http://, https://)
+                    parsed = tryParseUrlLink(text, pos, prevChar, baseOffset);
+                    // Fall back to plain link (help:)
+                    if (!parsed) {
+                        parsed = tryParsePlainLink(text, pos, prevChar, baseOffset);
                     }
                 }
                 break;
@@ -875,6 +912,87 @@ function tryParseCitationLink(text: string, pos: number, prevChar: string, baseO
             path,
             format: 'plain',
             rawLink: match[0],
+        },
+        children: undefined,
+    };
+}
+
+/**
+ * Try to parse a plain link (type:path format without brackets)
+ * Handles: ref:label, doi:10.xxx, id:uuid, file:path, mailto:email, etc.
+ */
+function tryParsePlainLink(text: string, pos: number, prevChar: string, baseOffset: number): LinkObject | null {
+    // Must not be preceded by a word character (to avoid matching mid-word)
+    if (prevChar && /\w/.test(prevChar)) {
+        return null;
+    }
+
+    const match = text.slice(pos).match(RE_PLAIN_LINK);
+    if (!match) return null;
+
+    const linkType = match[1].toLowerCase();
+    let path = match[2];
+
+    // For file: links, extract search option if present (file:path::search)
+    let searchOption: string | undefined;
+    if (linkType === 'file') {
+        const searchIdx = path.indexOf('::');
+        if (searchIdx !== -1) {
+            searchOption = path.slice(searchIdx + 2);
+            path = path.slice(0, searchIdx);
+        }
+    }
+
+    return {
+        type: 'link',
+        range: { start: pos + baseOffset, end: pos + match[0].length + baseOffset },
+        postBlank: 0,
+        properties: {
+            linkType,
+            path,
+            format: 'plain',
+            rawLink: match[0],
+            searchOption,
+        },
+        children: undefined,
+    };
+}
+
+/**
+ * Try to parse a URL-style plain link (http://... or https://...)
+ */
+function tryParseUrlLink(text: string, pos: number, prevChar: string, baseOffset: number): LinkObject | null {
+    // Must not be preceded by a word character
+    if (prevChar && /\w/.test(prevChar)) {
+        return null;
+    }
+
+    const match = text.slice(pos).match(RE_URL_LINK);
+    if (!match) return null;
+
+    const linkType = match[1].toLowerCase();
+    const fullUrl = match[0];
+
+    // Trim trailing punctuation that's likely not part of the URL
+    let trimmed = fullUrl;
+    while (trimmed.length > 0 && /[.,;:!?)]+$/.test(trimmed)) {
+        // But keep if it looks like part of URL (e.g., closing paren with matching open)
+        const lastChar = trimmed[trimmed.length - 1];
+        if (lastChar === ')' && (trimmed.match(/\(/g) || []).length > (trimmed.match(/\)/g) || []).length - 1) {
+            break; // Keep the paren, it's probably part of the URL
+        }
+        trimmed = trimmed.slice(0, -1);
+    }
+
+    return {
+        type: 'link',
+        range: { start: pos + baseOffset, end: pos + trimmed.length + baseOffset },
+        postBlank: 0,
+        properties: {
+            linkType,
+            path: trimmed,
+            format: 'plain',
+            rawLink: trimmed,
         },
         children: undefined,
     };

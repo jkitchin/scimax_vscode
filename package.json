@@ -3701,6 +3701,12 @@
         "when": "editorTextFocus && editorHasSelection"
       },
       {
+        "command": "scimax.mark.cancel",
+        "key": "escape escape",
+        "mac": "escape escape",
+        "when": "editorTextFocus && editorHasSelection"
+      },
+      {
         "command": "scimax.mark.push",
         "key": "ctrl+c space",
         "mac": "ctrl+c space",
