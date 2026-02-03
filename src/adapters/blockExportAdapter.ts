@@ -26,7 +26,20 @@
  * ```
  */
 
-import * as vscode from 'vscode';
+// Conditional vscode import for CLI compatibility
+// When running in CLI (outside VS Code), vscode module is not available
+let vscode: typeof import('vscode') | undefined;
+try {
+    vscode = require('vscode');
+} catch {
+    // Running outside VS Code (CLI mode) - vscode not available
+}
+
+// Fallback Disposable for CLI mode
+class FallbackDisposable {
+    constructor(private callback: () => void) {}
+    dispose() { this.callback(); }
+}
 
 // =============================================================================
 // Types
@@ -155,9 +168,10 @@ export const blockExportRegistry = new BlockExportRegistry();
 /**
  * Register a block export handler with VS Code Disposable support
  */
-export function registerBlockExport(handler: BlockExportHandler): vscode.Disposable {
+export function registerBlockExport(handler: BlockExportHandler): { dispose(): void } {
     blockExportRegistry.register(handler);
-    return new vscode.Disposable(() => {
+    const Disposable = vscode?.Disposable ?? FallbackDisposable;
+    return new Disposable(() => {
         blockExportRegistry.unregister(handler.blockType);
     });
 }
@@ -301,7 +315,7 @@ export const detailsBlockHandler: BlockExportHandler = {
 /**
  * Register built-in block export handlers
  */
-export function registerBuiltinBlockHandlers(): vscode.Disposable[] {
+export function registerBuiltinBlockHandlers(): { dispose(): void }[] {
     return [
         registerBlockExport(warningBlockHandler),
         registerBlockExport(noteBlockHandler),

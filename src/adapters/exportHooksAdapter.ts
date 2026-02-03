@@ -9,7 +9,20 @@
  * mechanism while the actual hook invocation happens in the export backends.
  */
 
-import * as vscode from 'vscode';
+// Conditional vscode import for CLI compatibility
+let vscode: typeof import('vscode') | undefined;
+try {
+    vscode = require('vscode');
+} catch {
+    // Running outside VS Code (CLI mode)
+}
+
+// Fallback Disposable for CLI mode
+class FallbackDisposable {
+    constructor(private callback: () => void) {}
+    dispose() { this.callback(); }
+}
+
 import type { ExportOptions } from '../parser/orgExport';
 import type { OrgElement, OrgDocumentNode } from '../parser/orgElementTypes';
 
@@ -98,7 +111,7 @@ class ExportHookRegistry {
     /**
      * Register a new export hook
      */
-    register(hook: ExportHook): vscode.Disposable {
+    register(hook: ExportHook): { dispose(): void } {
         if (!hook.id) {
             throw new Error('Export hook must have an id');
         }
@@ -108,7 +121,8 @@ class ExportHookRegistry {
 
         this.hooks.set(hook.id, hook);
 
-        return new vscode.Disposable(() => {
+        const Disposable = vscode?.Disposable ?? FallbackDisposable;
+        return new Disposable(() => {
             this.hooks.delete(hook.id);
         });
     }
@@ -237,7 +251,7 @@ export const exportHookRegistry = new ExportHookRegistry();
  * Register an export hook
  * @returns Disposable that unregisters the hook when disposed
  */
-export function registerExportHook(hook: ExportHook): vscode.Disposable {
+export function registerExportHook(hook: ExportHook): { dispose(): void } {
     return exportHookRegistry.register(hook);
 }
 
