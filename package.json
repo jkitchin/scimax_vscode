@@ -6294,7 +6294,7 @@
     "vscode:prepublish": "npm run compile",
     "compile": "npm run build-doc-index && tsc -p ./ && npm run copy-assets",
     "build-doc-index": "npx ts-node scripts/build-doc-index.ts",
-    "copy-assets": "cp src/help/docIndex.json out/help/",
+    "copy-assets": "cp src/help/docIndex.json out/help/ && mkdir -p out/publishing/themes/bookTheme/assets && cp src/publishing/themes/bookTheme/assets/* out/publishing/themes/bookTheme/assets/",
     "watch": "tsc -watch -p ./",
     "lint": "eslint src --ext ts",
     "test": "vitest",
