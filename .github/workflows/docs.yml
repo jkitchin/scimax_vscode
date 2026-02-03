@@ -41,19 +41,16 @@ jobs:
       - name: Compile TypeScript
         run: npm run compile
 
-      - name: Create output directory
-        run: mkdir -p _site
-
-      - name: Export documentation to HTML
+      - name: Publish documentation with book theme
         run: |
-          # Export each org file to HTML
-          for orgfile in docs/*.org; do
-            if [ -f "$orgfile" ]; then
-              filename=$(basename "$orgfile" .org)
-              echo "Exporting $orgfile -> _site/${filename}.html"
-              node out/cli/index.js export "$orgfile" --format html --output "_site/${filename}.html" || true
-            fi
-          done
+          # Use the publish command which uses _config.yml and the book theme
+          # Project name is derived from title in _config.yml
+          node out/cli/index.js publish --force
+
+      - name: Move output to _site
+        run: |
+          # The publish command outputs to docs-html per _config.yml
+          mv docs-html _site
 
       - name: Create index redirect
         run: |
@@ -70,17 +67,6 @@ jobs:
           </body>
           </html>
           EOF
-
-      - name: Copy static assets
-        run: |
-          # Copy any images or other assets from docs/
-          if [ -d "docs/images" ]; then
-            cp -r docs/images _site/
-          fi
-          # Copy CSS if exists
-          if [ -f "docs/style.css" ]; then
-            cp docs/style.css _site/
-          fi
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
