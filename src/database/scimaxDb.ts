@@ -1174,9 +1174,33 @@ export class ScimaxDb {
         // Batch insert links
         const linkStatements: { sql: string; args: (string | number | null)[] }[] = [];
 
+        const fileDir = path.dirname(filePath);
+
         for (const link of links) {
             // Find containing heading using binary search
             const headingId = this.findContainingHeadingId(link.lineNumber, headings);
+
+            // Resolve relative paths to absolute paths for file/internal links
+            let resolvedTarget = link.target;
+            if (link.type === 'internal' || link.type === 'file') {
+                let targetPath = link.target;
+                // Strip file: prefix if present
+                if (targetPath.startsWith('file:')) {
+                    targetPath = targetPath.slice(5);
+                }
+                // Strip search string suffix (e.g., ::*Heading or ::123)
+                const searchIdx = targetPath.indexOf('::');
+                const searchSuffix = searchIdx >= 0 ? targetPath.slice(searchIdx) : '';
+                if (searchIdx >= 0) {
+                    targetPath = targetPath.slice(0, searchIdx);
+                }
+                // Resolve relative paths (./foo.org, ../bar.org, foo.org)
+                if (!path.isAbsolute(targetPath)) {
+                    resolvedTarget = path.resolve(fileDir, targetPath) + searchSuffix;
+                } else {
+                    resolvedTarget = targetPath + searchSuffix;
+                }
+            }
 
             linkStatements.push({
                 sql: `INSERT INTO links
@@ -1186,7 +1210,7 @@ export class ScimaxDb {
                     fileId,
                     filePath,
                     link.type,
-                    link.target,
+                    resolvedTarget,
                     link.description || null,
                     link.lineNumber,
                     headingId

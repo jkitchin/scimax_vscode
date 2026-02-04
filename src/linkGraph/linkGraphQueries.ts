@@ -365,8 +365,8 @@ export class LinkGraphQueryService {
         args: any[],
         filters: LinkGraphFilters
     ): void {
-        // Default to file links only
-        const linkTypes = filters.linkTypes?.length ? filters.linkTypes : ['file'];
+        // Default to file and internal links (internal = relative path links like [[./foo.org]])
+        const linkTypes = filters.linkTypes?.length ? filters.linkTypes : ['file', 'internal'];
         conditions.push(`l.link_type IN (${linkTypes.map(() => '?').join(',')})`);
         args.push(...linkTypes);
 

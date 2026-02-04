@@ -117,6 +117,10 @@ function extractFromNode(
     switch (node.type) {
         case 'org-data':
             const docNode = node as OrgDocumentNode;
+            // Process section before first headline (if any)
+            if (docNode.section) {
+                extractFromNode(docNode.section, result, lines);
+            }
             if (docNode.children) {
                 for (const child of docNode.children) {
                     extractFromNode(child, result, lines);
@@ -196,6 +200,11 @@ function extractHeadline(
         children: [],
     };
 
+    // Process section content (contains paragraphs, links, timestamps, etc.)
+    if (headline.section) {
+        extractFromNode(headline.section, result, lines);
+    }
+
     // Process children headlines
     if (headline.children) {
         for (const child of headline.children) {
@@ -247,11 +256,16 @@ function extractLink(link: LinkObject): LegacyLink {
     const props = link.properties || {};
     const lineNumber = link.position?.start?.line ?? 0;
 
-    // Determine link type from path
-    let linkType = 'internal';
+    // Use parser's linkType if available, otherwise detect from path
+    let linkType = props.linkType || 'internal';
     let target = props.path || '';
 
-    if (target.match(/^https?:/)) {
+    // Map parser link types to legacy types and detect from path as fallback
+    if (linkType === 'https' || linkType === 'http') {
+        // Already correct
+    } else if (linkType === 'file') {
+        // Parser already identified as file link, target already has prefix stripped
+    } else if (target.match(/^https?:/)) {
         linkType = target.startsWith('https:') ? 'https' : 'http';
     } else if (target.match(/^file:/)) {
         linkType = 'file';
@@ -267,6 +281,12 @@ function extractLink(link: LinkObject): LegacyLink {
     } else if (target.match(/^\//)) {
         linkType = 'file';
     } else if (target.match(/^\.\//)) {
+        linkType = 'file';
+    } else if (target.match(/^\.?\.\//)) {
+        // ../foo.org - relative path going up
+        linkType = 'file';
+    } else if (target.match(/\.(org|md)$/i)) {
+        // Bare filename with org/md extension - treat as file link
         linkType = 'file';
     }
 
