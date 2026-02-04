@@ -1,6 +1,6 @@
 .PHONY: all clean deps compile package install uninstall
 
-VSIX = scimax-vscode-0.2.0.vsix
+VSIX = scimax-vscode-0.3.0.vsix
 CODE = /Applications/Visual\ Studio\ Code.app/Contents/Resources/app/bin/code
 
 all: package
