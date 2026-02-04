@@ -9,6 +9,7 @@ import { showFuzzyQuickPick, FuzzyQuickPickItem } from '../utils/fuzzyQuickPick'
 type ProjectQuickPickItem = vscode.QuickPickItem & {
     project: Project;
     buttons?: vscode.QuickInputButton[];
+    searchText?: string;
 };
 
 // Global reference to active project picker for M-o actions
@@ -48,19 +49,37 @@ async function switchProject(manager: ProjectileManager): Promise<void> {
     }
 
     const quickPick = vscode.window.createQuickPick<ProjectQuickPickItem>();
-    quickPick.placeholder = 'Switch to project (C-c p p) - M-o for actions';
-    quickPick.matchOnDescription = true;
-    quickPick.matchOnDetail = true;
+    quickPick.placeholder = 'Switch to project (C-c p p) - M-o for actions, space-separated terms';
+    // Disable VS Code's built-in filtering - we do our own fuzzy matching
+    quickPick.matchOnDescription = false;
+    quickPick.matchOnDetail = false;
 
-    // Build items with buttons
+    // Build items with buttons and searchText for fuzzy matching
     const items: ProjectQuickPickItem[] = projects.map(p => ({
         label: p.name,
         description: p.path,
         detail: getProjectDetail(p),
         project: p,
-        buttons: [findFileButton, excludeButton]
+        buttons: [findFileButton, excludeButton],
+        searchText: `${p.name} ${p.path} ${getProjectDetail(p) || ''}`.toLowerCase()
     }));
     quickPick.items = items;
+
+    // Apply fuzzy filtering on input change (space-separated AND matching)
+    const allItems = items;
+    quickPick.onDidChangeValue(value => {
+        if (!value.trim()) {
+            quickPick.items = allItems;
+            return;
+        }
+        const parts = value.toLowerCase().split(/\s+/).filter(p => p.length > 0);
+        quickPick.items = allItems
+            .filter(item => {
+                const searchText = item.searchText || '';
+                return parts.every(part => searchText.includes(part));
+            })
+            .map(item => ({ ...item, alwaysShow: true }));
+    });
 
     // Set context for M-o keybinding
     activeProjectPicker = quickPick;
@@ -420,15 +439,16 @@ async function findFileInKnownProjects(manager: ProjectileManager): Promise<void
     }
 
     // Create QuickPick for better UX with many items
-    const quickPick = vscode.window.createQuickPick<vscode.QuickPickItem & { filePath: string }>();
-    quickPick.placeholder = 'Find file in known projects (C-c p F) - type to search...';
-    quickPick.matchOnDescription = true;
-    quickPick.matchOnDetail = true;
+    const quickPick = vscode.window.createQuickPick<vscode.QuickPickItem & { filePath: string; searchText?: string }>();
+    quickPick.placeholder = 'Find file in known projects (C-c p F) - space-separated terms';
+    // Disable VS Code's built-in filtering - we do our own fuzzy matching
+    quickPick.matchOnDescription = false;
+    quickPick.matchOnDetail = false;
     quickPick.busy = true;
     quickPick.show();
 
     // Collect files from all projects
-    const items: (vscode.QuickPickItem & { filePath: string })[] = [];
+    const items: (vscode.QuickPickItem & { filePath: string; searchText?: string })[] = [];
 
     for (const project of projects) {
         if (!fs.existsSync(project.path)) {
@@ -444,11 +464,13 @@ async function findFileInKnownProjects(manager: ProjectileManager): Promise<void
 
             for (const file of result.files) {
                 const relativePath = path.relative(project.path, file);
+                const fileName = path.basename(file);
                 items.push({
-                    label: path.basename(file),
+                    label: fileName,
                     description: relativePath,
                     detail: `$(folder) ${project.name}`,
-                    filePath: file
+                    filePath: file,
+                    searchText: `${fileName} ${relativePath} ${project.name}`.toLowerCase()
                 });
             }
         } catch (err) {
@@ -463,6 +485,22 @@ async function findFileInKnownProjects(manager: ProjectileManager): Promise<void
     if (items.length === 0) {
         quickPick.placeholder = 'No files found in known projects';
     }
+
+    // Apply fuzzy filtering on input change (space-separated AND matching)
+    const allItems = items;
+    quickPick.onDidChangeValue(value => {
+        if (!value.trim()) {
+            quickPick.items = allItems;
+            return;
+        }
+        const parts = value.toLowerCase().split(/\s+/).filter(p => p.length > 0);
+        quickPick.items = allItems
+            .filter(item => {
+                const searchText = item.searchText || '';
+                return parts.every(part => searchText.includes(part));
+            })
+            .map(item => ({ ...item, alwaysShow: true }));
+    });
 
     quickPick.onDidAccept(async () => {
         const selected = quickPick.selectedItems[0];
