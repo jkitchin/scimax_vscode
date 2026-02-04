@@ -142,12 +142,14 @@ describe('QueryProviderRegistry', () => {
                 queryType: 'slow-query',
                 name: 'Slow Query',
                 execute: async () => {
-                    await new Promise(resolve => setTimeout(resolve, 10));
+                    // Use 20ms sleep to account for OS timer imprecision (especially on Windows)
+                    await new Promise(resolve => setTimeout(resolve, 20));
                     return { results: [] };
                 }
             });
 
             const response = await queryProviderRegistry.executeQuery('slow-query', {}, {});
+            // Check for >= 10ms (allowing margin for timer imprecision)
             expect(response.executionTimeMs).toBeGreaterThanOrEqual(10);
         });
 
