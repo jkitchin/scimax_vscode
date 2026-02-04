@@ -81,6 +81,8 @@ export interface SerializedFindFileState {
     selectedIndex: number;
     filterText: string;
     showHidden: boolean;
+    /** Whether the filter text can be used to create a new file */
+    canCreateFile: boolean;
 }
 
 /**
@@ -93,7 +95,8 @@ export function serializeState(state: FindFileState): SerializedFindFileState {
         filteredEntries: state.filteredEntries,
         selectedIndex: state.selectedIndex,
         filterText: state.filterText,
-        showHidden: state.showHidden
+        showHidden: state.showHidden,
+        canCreateFile: false  // Will be set by panel from manager
     };
 }
 

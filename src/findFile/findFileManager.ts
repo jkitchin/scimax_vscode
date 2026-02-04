@@ -199,8 +199,10 @@ export class FindFileManager {
             this.state.filteredEntries = [...this.state.entries];
         } else {
             this.state.filteredEntries = this.state.entries.filter(entry => {
-                // Always include ".."
-                if (entry.name === '..') return true;
+                // Only include ".." when filter is empty (handled above) or explicitly matches
+                if (entry.name === '..') {
+                    return filter === '..' || filter === '.';
+                }
                 // Fuzzy match: check if filter characters appear in order
                 return this.fuzzyMatch(entry.name.toLowerCase(), filter);
             });
@@ -210,6 +212,49 @@ export class FindFileManager {
         if (this.state.selectedIndex >= this.state.filteredEntries.length) {
             this.state.selectedIndex = Math.max(0, this.state.filteredEntries.length - 1);
         }
+    }
+
+    /**
+     * Check if the current filter would create a new file (no exact match exists)
+     */
+    canCreateFile(): boolean {
+        if (!this.state.filterText || this.state.filterText.trim() === '') {
+            return false;
+        }
+        // Check if any entry matches the filter text exactly
+        const exactMatch = this.state.entries.some(
+            entry => entry.name.toLowerCase() === this.state.filterText.toLowerCase()
+        );
+        return !exactMatch;
+    }
+
+    /**
+     * Create a new file with the current filter text as the name
+     */
+    async createFile(): Promise<string | null> {
+        if (!this.canCreateFile()) {
+            return null;
+        }
+
+        const fileName = this.state.filterText.trim();
+        const filePath = path.join(this.state.currentDirectory, fileName);
+
+        // Validate filename - no path separators or dangerous chars
+        if (fileName.includes('/') || fileName.includes('\\') ||
+            fileName === '.' || fileName === '..') {
+            throw new Error('Invalid filename');
+        }
+
+        // Verify the path is within the current directory
+        const resolvedPath = path.resolve(filePath);
+        if (!isPathWithinDirectory(resolvedPath, this.state.currentDirectory)) {
+            throw new Error('Path traversal detected');
+        }
+
+        // Create empty file
+        await fs.promises.writeFile(filePath, '', { flag: 'wx' }); // wx = fail if exists
+
+        return filePath;
     }
 
     /**

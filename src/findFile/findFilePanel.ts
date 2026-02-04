@@ -160,7 +160,24 @@ export class FindFilePanel {
      */
     private async handleOpen(): Promise<void> {
         const entry = this.manager.getSelectedEntry();
-        if (!entry) return;
+
+        // If no entry selected but we have filter text, try to create the file
+        if (!entry || this.manager.getState().filteredEntries.length === 0) {
+            if (this.manager.canCreateFile()) {
+                try {
+                    const filePath = await this.manager.createFile();
+                    if (filePath) {
+                        this.dispose();
+                        await vscode.window.showTextDocument(vscode.Uri.file(filePath));
+                        return;
+                    }
+                } catch (error: any) {
+                    this.sendMessage({ command: 'error', message: `Failed to create file: ${error.message}` });
+                    return;
+                }
+            }
+            return;
+        }
 
         if (entry.isDirectory) {
             // If it's "..", just navigate up
@@ -321,9 +338,12 @@ export class FindFilePanel {
      */
     private updateWebview(state: FindFileState): void {
         this.panel.title = `Find: ${path.basename(state.currentDirectory)}`;
+        const serialized = serializeState(state);
+        // Add canCreateFile from manager
+        serialized.canCreateFile = this.manager.canCreateFile();
         this.sendMessage({
             command: 'update',
-            state: serializeState(state)
+            state: serialized
         });
     }
 
@@ -453,6 +473,15 @@ export class FindFilePanel {
         .file-name.directory {
             color: var(--dir-color);
             font-weight: bold;
+        }
+
+        .file-row.create-new .create-new-name {
+            color: var(--vscode-textLink-activeForeground, #3794ff);
+            font-style: italic;
+        }
+
+        .file-row.create-new.selected .create-new-name {
+            color: var(--selected-fg);
         }
 
         .status-bar {
@@ -748,47 +777,78 @@ export class FindFilePanel {
             const tbody = document.getElementById('file-body');
             tbody.innerHTML = '';
 
-            state.filteredEntries.forEach((entry, index) => {
+            // Show "Create new file" option if applicable
+            if (state.canCreateFile && state.filteredEntries.length === 0) {
                 const tr = document.createElement('tr');
-                tr.className = 'file-row' + (index === state.selectedIndex ? ' selected' : '');
-                tr.dataset.index = index;
+                tr.className = 'file-row selected create-new';
+                tr.dataset.createNew = 'true';
 
-                // Icon column
                 const iconTd = document.createElement('td');
                 iconTd.className = 'icon-col';
-                iconTd.textContent = entry.isDirectory ? '\ud83d\udcc1' : '\ud83d\udcc4';
+                iconTd.textContent = '\u2795';  // Plus sign
                 tr.appendChild(iconTd);
 
-                // Name column
                 const nameTd = document.createElement('td');
-                nameTd.className = 'file-name';
-                if (entry.isDirectory) {
-                    nameTd.classList.add('directory');
-                }
-                nameTd.textContent = entry.name + (entry.isDirectory && entry.name !== '..' ? '/' : '');
+                nameTd.className = 'file-name create-new-name';
+                nameTd.textContent = '[Create new file: ' + state.filterText + ']';
                 tr.appendChild(nameTd);
 
-                // Size column
                 const sizeTd = document.createElement('td');
                 sizeTd.className = 'size-col';
-                sizeTd.textContent = entry.isDirectory ? '' : formatSize(entry.size);
+                sizeTd.textContent = '';
                 tr.appendChild(sizeTd);
 
-                // Event listeners
                 tr.addEventListener('click', () => {
-                    state.selectedIndex = index;
-                    render();
+                    vscode.postMessage({ command: 'open' });
                 });
                 tr.addEventListener('dblclick', () => {
-                    if (entry.isDirectory) {
-                        vscode.postMessage({ command: 'navigateInto' });
-                    } else {
-                        vscode.postMessage({ command: 'open' });
-                    }
+                    vscode.postMessage({ command: 'open' });
                 });
 
                 tbody.appendChild(tr);
-            });
+            } else {
+                state.filteredEntries.forEach((entry, index) => {
+                    const tr = document.createElement('tr');
+                    tr.className = 'file-row' + (index === state.selectedIndex ? ' selected' : '');
+                    tr.dataset.index = index;
+
+                    // Icon column
+                    const iconTd = document.createElement('td');
+                    iconTd.className = 'icon-col';
+                    iconTd.textContent = entry.isDirectory ? '\ud83d\udcc1' : '\ud83d\udcc4';
+                    tr.appendChild(iconTd);
+
+                    // Name column
+                    const nameTd = document.createElement('td');
+                    nameTd.className = 'file-name';
+                    if (entry.isDirectory) {
+                        nameTd.classList.add('directory');
+                    }
+                    nameTd.textContent = entry.name + (entry.isDirectory && entry.name !== '..' ? '/' : '');
+                    tr.appendChild(nameTd);
+
+                    // Size column
+                    const sizeTd = document.createElement('td');
+                    sizeTd.className = 'size-col';
+                    sizeTd.textContent = entry.isDirectory ? '' : formatSize(entry.size);
+                    tr.appendChild(sizeTd);
+
+                    // Event listeners
+                    tr.addEventListener('click', () => {
+                        state.selectedIndex = index;
+                        render();
+                    });
+                    tr.addEventListener('dblclick', () => {
+                        if (entry.isDirectory) {
+                            vscode.postMessage({ command: 'navigateInto' });
+                        } else {
+                            vscode.postMessage({ command: 'open' });
+                        }
+                    });
+
+                    tbody.appendChild(tr);
+                });
+            }
 
             // Scroll selected into view
             const selectedRow = document.querySelector('.file-row.selected');
