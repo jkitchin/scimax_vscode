@@ -1935,6 +1935,10 @@
         "category": "Scimax"
       },
       {
+        "command": "scimax.org.fillParagraph",
+        "title": "Scimax: Fill/Unfill Paragraph"
+      },
+      {
         "command": "scimax.org.updateDynamicBlock",
         "title": "Scimax: Update Dynamic Block"
       },
@@ -2961,6 +2965,38 @@
       {
         "command": "scimax.manuscript.flattenToDirectory",
         "title": "Scimax: Flatten Manuscript to Directory"
+      },
+      {
+        "command": "scimax.rectangle.kill",
+        "title": "Scimax: Kill Rectangle"
+      },
+      {
+        "command": "scimax.rectangle.copy",
+        "title": "Scimax: Copy Rectangle"
+      },
+      {
+        "command": "scimax.rectangle.delete",
+        "title": "Scimax: Delete Rectangle"
+      },
+      {
+        "command": "scimax.rectangle.yank",
+        "title": "Scimax: Yank Rectangle"
+      },
+      {
+        "command": "scimax.rectangle.open",
+        "title": "Scimax: Open Rectangle"
+      },
+      {
+        "command": "scimax.rectangle.clear",
+        "title": "Scimax: Clear Rectangle"
+      },
+      {
+        "command": "scimax.rectangle.numberLines",
+        "title": "Scimax: Number Lines (Rectangle)"
+      },
+      {
+        "command": "scimax.rectangle.string",
+        "title": "Scimax: String Rectangle"
       }
     ],
     "keybindings": [
@@ -3897,6 +3933,12 @@
         "key": "alt+shift+5",
         "mac": "alt+shift+5",
         "when": "editorTextFocus"
+      },
+      {
+        "command": "scimax.org.fillParagraph",
+        "key": "alt+q",
+        "mac": "alt+q",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && !terminalFocus"
       },
       {
         "command": "scimax.markup.bold",
@@ -5157,6 +5199,54 @@
         "key": "ctrl+c shift+g",
         "mac": "ctrl+c shift+g",
         "when": "editorTextFocus && editorLangId =~ /org|markdown/"
+      },
+      {
+        "command": "scimax.rectangle.kill",
+        "key": "ctrl+x r k",
+        "mac": "ctrl+x r k",
+        "when": "editorTextFocus && editorHasSelection"
+      },
+      {
+        "command": "scimax.rectangle.copy",
+        "key": "ctrl+x r alt+w",
+        "mac": "ctrl+x r alt+w",
+        "when": "editorTextFocus && editorHasSelection"
+      },
+      {
+        "command": "scimax.rectangle.delete",
+        "key": "ctrl+x r d",
+        "mac": "ctrl+x r d",
+        "when": "editorTextFocus && editorHasSelection"
+      },
+      {
+        "command": "scimax.rectangle.yank",
+        "key": "ctrl+x r y",
+        "mac": "ctrl+x r y",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "scimax.rectangle.open",
+        "key": "ctrl+x r o",
+        "mac": "ctrl+x r o",
+        "when": "editorTextFocus && editorHasSelection"
+      },
+      {
+        "command": "scimax.rectangle.clear",
+        "key": "ctrl+x r c",
+        "mac": "ctrl+x r c",
+        "when": "editorTextFocus && editorHasSelection"
+      },
+      {
+        "command": "scimax.rectangle.numberLines",
+        "key": "ctrl+x r shift+n",
+        "mac": "ctrl+x r shift+n",
+        "when": "editorTextFocus && editorHasSelection"
+      },
+      {
+        "command": "scimax.rectangle.string",
+        "key": "ctrl+x r t",
+        "mac": "ctrl+x r t",
+        "when": "editorTextFocus && editorHasSelection"
       }
     ],
     "configuration": {
@@ -5166,6 +5256,13 @@
           "type": "string",
           "default": "~/scimax",
           "description": "Root directory for Scimax files. Subdirectories include journal/, templates/, and notes.org. Individual directory settings (scimax.journal.directory, scimax.templates.directory) override this when explicitly set."
+        },
+        "scimax.fillColumn": {
+          "type": "integer",
+          "default": 80,
+          "minimum": 20,
+          "maximum": 200,
+          "description": "Column at which to wrap text when filling paragraphs (Alt+Q). Similar to Emacs fill-column."
         },
         "scimax.journal.directory": {
           "type": "string",

@@ -1379,6 +1379,59 @@ Emacs-style mark ring for navigation and selection. Save cursor positions (marks
 3. Select an entry to jump to that position
 4. Timestamps show how long ago each mark was set
 
+* ⚠️ Rectangle
+:PROPERTIES:
+:CUSTOM_ID: rectangle
+:END:
+
+Emacs-style rectangle editing commands. A rectangle is a column-aligned block of text defined by two corners of the current selection. These commands operate on the rectangular region rather than contiguous text.
+
+| Command ID                              | Description                    | Default Keybinding |
+|-----------------------------------------+--------------------------------+--------------------|
+| [[cmd:scimax.rectangle.kill]]           | Kill Rectangle                 | C-x r k            |
+| [[cmd:scimax.rectangle.copy]]           | Copy Rectangle                 | C-x r M-w          |
+| [[cmd:scimax.rectangle.delete]]         | Delete Rectangle               | C-x r d            |
+| [[cmd:scimax.rectangle.yank]]           | Yank Rectangle                 | C-x r y            |
+| [[cmd:scimax.rectangle.open]]           | Open Rectangle                 | C-x r o            |
+| [[cmd:scimax.rectangle.clear]]          | Clear Rectangle                | C-x r c            |
+| [[cmd:scimax.rectangle.numberLines]]    | Number Lines (Rectangle)       | C-x r S-n          |
+| [[cmd:scimax.rectangle.string]]         | String Rectangle               | C-x r t            |
+
+** ⚠️ Rectangle Concepts
+
+- **Rectangle**: A column-aligned region of text defined by two corners (the selection's anchor and active positions)
+- **Rectangle Clipboard**: A separate clipboard (not the system clipboard) that stores the last killed/copied rectangle. This matches Emacs behavior.
+- **Kill**: Delete the rectangle and save it to the rectangle clipboard
+- **Yank**: Insert the rectangle clipboard contents at the cursor position
+
+** ⚠️ Common Workflows
+
+*** Cut and Paste a Column
+1. Select the rectangular region (anchor at one corner, cursor at the opposite corner)
+2. Press =C-x r k= to kill the rectangle
+3. Move cursor to the insertion point
+4. Press =C-x r y= to yank the rectangle
+
+*** Add a Prefix to Multiple Lines
+1. Place cursor at column 0 of the first line, select down to the last line (zero-width selection at column 0)
+2. Press =C-x r t= and enter the prefix string (e.g. =// = for comments)
+3. The string is inserted at column 0 on each line
+
+*** Number a List
+1. Select the rectangular region where numbers should be inserted
+2. Press =C-x r S-n=
+3. Enter the starting number (default 1) and optional format string
+4. Line numbers are inserted, replacing the rectangle content
+
+*** Remove a Column of Text
+1. Select the rectangular region to remove
+2. Press =C-x r d= to delete without saving, or =C-x r k= to save for later yanking
+
+** ⚠️ Related Topics
+
+- [[file:24-keybindings.org::*Rectangle Commands (Emacs-style)][Keybinding Reference: Rectangle Commands]]
+- [[file:22-hydra-menus.org][Hydra Menus]] - Rectangle commands are available in the Hydra menu system
+
 * ✅ Publishing
 CLOSED: [2026-01-18 Sun 10:02]
 :PROPERTIES:

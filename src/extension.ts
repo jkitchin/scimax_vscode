@@ -66,6 +66,7 @@ import { registerMarkCommands } from './mark/markRing';
 import { registerCitationManipulationCommands, checkCitationContext } from './references/citationManipulation';
 import { registerBibtexSpeedCommands } from './references/bibtexSpeedCommands';
 import { registerEditmarkCommands } from './editmarks/editmarks';
+import { registerRectangleCommands } from './rectangle';
 import { HydraManager, registerHydraCommands, scimaxMenus } from './hydra';
 import { registerPublishCommands } from './publishing';
 import { registerHelpCommands } from './help';
@@ -857,6 +858,9 @@ export async function activate(context: vscode.ExtensionContext) {
 
     // Register Editmark Commands (track changes)
     registerEditmarkCommands(context);
+
+    // Register Rectangle Commands (Emacs-style rectangle editing)
+    registerRectangleCommands(context);
 
     // Activate LaTeX navigation and structure features
     activateLatexFeatures(context);

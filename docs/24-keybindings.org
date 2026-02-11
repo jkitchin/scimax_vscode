@@ -383,6 +383,23 @@ Emacs-style mark and region commands.
 | C-x C-x           | Exchange point and mark    |
 | C-c m s           | Show mark ring             |
 
+* ⚠️ Rectangle Commands (Emacs-style)
+
+Emacs-style rectangle editing commands. A rectangle is defined by the column range and line range of the current selection.
+
+| Key         | Action                                |
+|-------------+---------------------------------------|
+| C-x r k     | Kill rectangle (save to rect clip)    |
+| C-x r M-w   | Copy rectangle (no delete)            |
+| C-x r d     | Delete rectangle (no save)            |
+| C-x r y     | Yank rectangle at point               |
+| C-x r o     | Open rectangle (insert blank space)   |
+| C-x r c     | Clear rectangle (replace with spaces) |
+| C-x r S-n   | Number lines in rectangle             |
+| C-x r t     | String rectangle (replace with text)  |
+
+*Note:* The rectangle clipboard is separate from the system clipboard, matching Emacs behavior. Kill/copy saves to the rectangle clipboard; yank inserts from it.
+
 * Speed Commands
 
 Speed commands are single-key shortcuts available when the cursor is at the *beginning* of a heading (the first character of the heading line). They must be enabled in settings (scimax.speedCommands.enabled).
