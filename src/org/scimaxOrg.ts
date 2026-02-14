@@ -4111,6 +4111,151 @@ async function showTodosInFile(): Promise<void> {
 }
 
 // =============================================================================
+// Fill/Unfill Paragraph
+// =============================================================================
+
+/**
+ * Check if a line is a paragraph boundary (blank, heading, keyword, drawer, list item, etc.)
+ */
+function isParagraphBoundary(document: vscode.TextDocument, lineNumber: number): boolean {
+    if (lineNumber < 0 || lineNumber >= document.lineCount) {
+        return true;
+    }
+    const text = document.lineAt(lineNumber).text;
+    // Blank line
+    if (text.trim() === '') {
+        return true;
+    }
+    // Heading (org or markdown)
+    if (isHeadingLine(document, text)) {
+        return true;
+    }
+    // Org keywords and blocks (#+)
+    if (/^#\+/.test(text)) {
+        return true;
+    }
+    // Drawer delimiters
+    if (/^\s*:(PROPERTIES|END|LOGBOOK|CLOCK):/.test(text)) {
+        return true;
+    }
+    // List items (unordered: - or +, ordered: 1. or 1))
+    if (/^\s*[-+]\s/.test(text) || /^\s*\d+[.)]\s/.test(text)) {
+        return true;
+    }
+    // Horizontal rule
+    if (/^-----/.test(text)) {
+        return true;
+    }
+    return false;
+}
+
+/**
+ * Find the paragraph range (start and end lines) around the cursor.
+ * Returns null if the cursor is on a boundary line.
+ */
+function findParagraphRange(document: vscode.TextDocument, cursorLine: number): { start: number; end: number } | null {
+    if (isParagraphBoundary(document, cursorLine)) {
+        return null;
+    }
+
+    let start = cursorLine;
+    while (start > 0 && !isParagraphBoundary(document, start - 1)) {
+        start--;
+    }
+
+    let end = cursorLine;
+    while (end < document.lineCount - 1 && !isParagraphBoundary(document, end + 1)) {
+        end++;
+    }
+
+    return { start, end };
+}
+
+/**
+ * Fill a single long line into multiple lines at the fill column.
+ * Preserves leading indentation from the original line.
+ */
+function fillLine(text: string, fillColumn: number): string {
+    const indentMatch = text.match(/^(\s*)/);
+    const indent = indentMatch ? indentMatch[1] : '';
+    const words = text.trim().split(/\s+/);
+    if (words.length === 0 || (words.length === 1 && words[0] === '')) {
+        return text;
+    }
+
+    const lines: string[] = [];
+    let currentLine = indent + words[0];
+
+    for (let i = 1; i < words.length; i++) {
+        const candidate = currentLine + ' ' + words[i];
+        if (candidate.length > fillColumn && currentLine.length > indent.length) {
+            lines.push(currentLine);
+            currentLine = indent + words[i];
+        } else {
+            currentLine = candidate;
+        }
+    }
+    lines.push(currentLine);
+
+    return lines.join('\n');
+}
+
+/**
+ * Fill or unfill the paragraph at cursor.
+ * If the paragraph is a single line, fill (wrap) it at fill-column.
+ * If the paragraph spans multiple lines, unfill (join) it into one line.
+ */
+async function fillOrUnfillParagraph(): Promise<void> {
+    const editor = vscode.window.activeTextEditor;
+    if (!editor) {
+        return;
+    }
+
+    const document = editor.document;
+    const cursorLine = editor.selection.active.line;
+    const range = findParagraphRange(document, cursorLine);
+
+    if (!range) {
+        return;
+    }
+
+    const config = vscode.workspace.getConfiguration('scimax');
+    const fillColumn: number = config.get('fillColumn', 80);
+
+    const { start, end } = range;
+
+    if (start === end) {
+        // Single line → fill (wrap)
+        const lineText = document.lineAt(start).text;
+        const filled = fillLine(lineText, fillColumn);
+        if (filled === lineText) {
+            return;
+        }
+        const lineRange = document.lineAt(start).range;
+        await editor.edit(editBuilder => {
+            editBuilder.replace(lineRange, filled);
+        });
+    } else {
+        // Multiple lines → unfill (join into one line)
+        const lines: string[] = [];
+        for (let i = start; i <= end; i++) {
+            lines.push(document.lineAt(i).text.trimEnd());
+        }
+        // Preserve leading indent from first line
+        const indentMatch = lines[0].match(/^(\s*)/);
+        const indent = indentMatch ? indentMatch[1] : '';
+        const joined = indent + lines.map(l => l.trim()).join(' ');
+        const replaceRange = new vscode.Range(
+            new vscode.Position(start, 0),
+            document.lineAt(end).range.end
+        );
+        await editor.edit(editBuilder => {
+            editBuilder.replace(replaceRange, joined);
+        });
+    }
+}
+
+// =============================================================================
 // Command Registration
 // =============================================================================
 
@@ -4340,5 +4485,10 @@ export function registerScimaxOrgCommands(context: vscode.ExtensionContext): voi
     // Query replace
     context.subscriptions.push(
         vscode.commands.registerCommand('scimax.queryReplace', queryReplace)
+    );
+
+    // Fill/unfill paragraph (Emacs M-q)
+    context.subscriptions.push(
+        vscode.commands.registerCommand('scimax.org.fillParagraph', fillOrUnfillParagraph)
     );
 }

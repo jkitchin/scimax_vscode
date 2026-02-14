@@ -77,6 +77,23 @@ import { exportHookRegistry } from '../adapters/exportHooksAdapter';
 import { parseObjects } from './orgObjects';
 
 // =============================================================================
+// Helpers
+// =============================================================================
+
+/**
+ * Normalize org-ref citation keys for LaTeX output.
+ * v2 format (key1,key2) passes through unchanged.
+ * v3 format (&key1;&key2) strips & prefixes and converts ; to ,.
+ */
+function normalizeCiteKeys(path: string): string {
+    if (path.includes('&')) {
+        const matches = path.match(/&([a-zA-Z0-9_:.\-]+)/g) || [];
+        return matches.map(k => k.slice(1)).join(',');
+    }
+    return path;
+}
+
+// =============================================================================
 // LaTeX Export Options
 // =============================================================================
 
@@ -1015,24 +1032,25 @@ export class LatexExportBackend implements ExportBackend {
                 return `\\href{https://doi.org/${path}}{${description}}`;
 
             // Citation types - org-ref style
+            // Normalize keys: v3 format (&key1;&key2) → key1,key2
             case 'cite':
-                return `\\cite{${path}}`;
+                return `\\cite{${normalizeCiteKeys(path)}}`;
             case 'citenum':
-                return `\\citenum{${path}}`;
+                return `\\citenum{${normalizeCiteKeys(path)}}`;
             case 'citep':
             case 'Citep':
-                return `\\citep{${path}}`;
+                return `\\citep{${normalizeCiteKeys(path)}}`;
             case 'citet':
             case 'Citet':
-                return `\\citet{${path}}`;
+                return `\\citet{${normalizeCiteKeys(path)}}`;
             case 'citeauthor':
-                return `\\citeauthor{${path}}`;
+                return `\\citeauthor{${normalizeCiteKeys(path)}}`;
             case 'citeyear':
-                return `\\citeyear{${path}}`;
+                return `\\citeyear{${normalizeCiteKeys(path)}}`;
             case 'citealp':
-                return `\\citealp{${path}}`;
+                return `\\citealp{${normalizeCiteKeys(path)}}`;
             case 'citealt':
-                return `\\citealt{${path}}`;
+                return `\\citealt{${normalizeCiteKeys(path)}}`;
 
             // Cross-reference types - org-ref style
             case 'ref':
@@ -1066,7 +1084,8 @@ export class LatexExportBackend implements ExportBackend {
                 return `\\bibliography{${bibFiles.join(',')}}`;
 
             case 'bibstyle':
-                // bibstyle:unsrtnat -> \bibliographystyle{unsrtnat}
+            case 'bibliographystyle':
+                // bibliographystyle:unsrtnat -> \bibliographystyle{unsrtnat}
                 return `\\bibliographystyle{${path}}`;
 
             default:
@@ -1293,6 +1312,10 @@ export class LatexExportBackend implements ExportBackend {
         // If custom header is provided, use it instead of auto-generated preamble
         if (meta.customHeader) {
             parts.push(meta.customHeader);
+            // Inject minted package if enabled but missing from custom header
+            if (meta.minted !== false && !meta.customHeader.includes('minted')) {
+                parts.push('\\usepackage[newfloat]{minted}');
+            }
             parts.push('');
         } else if (meta.noDefaults) {
             // No defaults mode: only include documentclass and user preamble
@@ -1302,6 +1325,11 @@ export class LatexExportBackend implements ExportBackend {
             parts.push(`\\documentclass${classOpts}{${meta.documentClass}}`);
             parts.push('');
 
+            // Inject minted package if enabled
+            if (meta.minted !== false) {
+                parts.push('\\usepackage[newfloat]{minted}');
+            }
+
             // Only user-provided preamble
             if (meta.preamble) {
                 parts.push('% User preamble');
@@ -1309,29 +1337,19 @@ export class LatexExportBackend implements ExportBackend {
                 parts.push('');
             }
         } else {
-            // Normal mode: use document class with essential packages
-            // Document class
+            // Normal mode: use document class with user-configured packages
             const classOpts = meta.classOptions?.length
                 ? `[${meta.classOptions.join(',')}]`
                 : '';
             parts.push(`\\documentclass${classOpts}{${meta.documentClass}}`);
             parts.push('');
 
-            // Essential packages for common features
-            parts.push('% Essential packages');
-            parts.push('\\usepackage[utf8]{inputenc}');
-            parts.push('\\usepackage[T1]{fontenc}');
-            parts.push('\\usepackage{graphicx}');
-            parts.push('\\usepackage{hyperref}');
-            parts.push('\\usepackage{natbib}  % For citation commands (citet, citep, citenum, etc.)');
-
-            // Code highlighting packages
-            if (meta.minted !== false) {
-                parts.push('\\usepackage[newfloat]{minted}  % Code highlighting with listing environment');
+            // Inject minted package if enabled and not already in user preamble
+            if (meta.minted !== false && !(meta.preamble && meta.preamble.includes('minted'))) {
+                parts.push('\\usepackage[newfloat]{minted}');
             }
-            parts.push('');
 
-            // User preamble from #+LATEX_HEADER: lines
+            // User preamble from defaultPreamble setting and #+LATEX_HEADER: lines
             if (meta.preamble) {
                 parts.push(meta.preamble);
                 parts.push('');

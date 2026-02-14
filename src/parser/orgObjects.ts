@@ -81,7 +81,7 @@ const RE_CITATION_LINK = /^(cite[pt]?|citeauthor|citeyear|Citep|Citet|citealp|ci
 // Plain links (type:path format without brackets)
 // Matches registered link types: ref, doi, id, file, http, https, mailto, etc.
 // Path can contain: word chars, &, ;, ,, :, -, ., /, #, ?, =, %, ~
-const PLAIN_LINK_TYPES = ['ref', 'doi', 'id', 'file', 'mailto', 'shell', 'elisp', 'help', 'info', 'roam', 'cmd', 'nb', 'eqref', 'pageref', 'nameref', 'autoref', 'label'];
+const PLAIN_LINK_TYPES = ['ref', 'doi', 'id', 'file', 'mailto', 'shell', 'elisp', 'help', 'info', 'roam', 'cmd', 'nb', 'eqref', 'pageref', 'nameref', 'autoref', 'label', 'bibliography', 'bibliographystyle', 'bibstyle'];
 const RE_PLAIN_LINK = new RegExp(`^(${PLAIN_LINK_TYPES.join('|')}):([-\\w&;,:./#?=%~]+)`);
 
 // URL-style plain links (http://, https://)

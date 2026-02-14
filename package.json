@@ -2,7 +2,7 @@
   "name": "scimax-vscode",
   "displayName": "Scimax for VS Code",
   "description": "Scientific computing environment inspired by Emacs Scimax - journal, literate programming, org-mode enhancements",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "publisher": "jkitchin",
   "license": "MIT",
   "repository": {
@@ -2997,6 +2997,14 @@
       {
         "command": "scimax.rectangle.string",
         "title": "Scimax: String Rectangle"
+      },
+      {
+        "command": "scimax.rectangle.confirm",
+        "title": "Scimax: Confirm Rectangle Operation"
+      },
+      {
+        "command": "scimax.rectangle.cancel",
+        "title": "Scimax: Cancel Rectangle Operation"
       }
     ],
     "keybindings": [
@@ -5204,19 +5212,19 @@
         "command": "scimax.rectangle.kill",
         "key": "ctrl+x r k",
         "mac": "ctrl+x r k",
-        "when": "editorTextFocus && editorHasSelection"
+        "when": "editorTextFocus"
       },
       {
         "command": "scimax.rectangle.copy",
         "key": "ctrl+x r alt+w",
         "mac": "ctrl+x r alt+w",
-        "when": "editorTextFocus && editorHasSelection"
+        "when": "editorTextFocus"
       },
       {
         "command": "scimax.rectangle.delete",
         "key": "ctrl+x r d",
         "mac": "ctrl+x r d",
-        "when": "editorTextFocus && editorHasSelection"
+        "when": "editorTextFocus"
       },
       {
         "command": "scimax.rectangle.yank",
@@ -5228,25 +5236,37 @@
         "command": "scimax.rectangle.open",
         "key": "ctrl+x r o",
         "mac": "ctrl+x r o",
-        "when": "editorTextFocus && editorHasSelection"
+        "when": "editorTextFocus"
       },
       {
         "command": "scimax.rectangle.clear",
         "key": "ctrl+x r c",
         "mac": "ctrl+x r c",
-        "when": "editorTextFocus && editorHasSelection"
+        "when": "editorTextFocus"
       },
       {
         "command": "scimax.rectangle.numberLines",
         "key": "ctrl+x r shift+n",
         "mac": "ctrl+x r shift+n",
-        "when": "editorTextFocus && editorHasSelection"
+        "when": "editorTextFocus"
       },
       {
         "command": "scimax.rectangle.string",
         "key": "ctrl+x r t",
         "mac": "ctrl+x r t",
-        "when": "editorTextFocus && editorHasSelection"
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "scimax.rectangle.confirm",
+        "key": "enter",
+        "mac": "enter",
+        "when": "editorTextFocus && scimax.rectangleMarkMode"
+      },
+      {
+        "command": "scimax.rectangle.cancel",
+        "key": "escape",
+        "mac": "escape",
+        "when": "editorTextFocus && scimax.rectangleMarkMode"
       }
     ],
     "configuration": {
@@ -5744,7 +5764,7 @@
         },
         "scimax.export.latex.defaultPreamble": {
           "type": "string",
-          "default": "\\usepackage[utf8]{inputenc}\n\\usepackage{lmodern}\n\\usepackage{graphicx}\n\\usepackage{longtable}\n\\usepackage{float}\n\\usepackage{wrapfig}\n\\usepackage{rotating}\n\\usepackage[normalem]{ulem}\n\\usepackage{amsmath}\n\\usepackage{amssymb}\n\\usepackage{capt-of}\n\\usepackage{mhchem}",
+          "default": "\\usepackage[utf8]{inputenc}\n\\usepackage[T1]{fontenc}\n\\usepackage{lmodern}\n\\usepackage{graphicx}\n\\usepackage{longtable}\n\\usepackage{float}\n\\usepackage{wrapfig}\n\\usepackage{rotating}\n\\usepackage[normalem]{ulem}\n\\usepackage{amsmath}\n\\usepackage{amssymb}\n\\usepackage{capt-of}\n\\usepackage{hyperref}\n\\usepackage{natbib}\n\\usepackage{mhchem}",
           "editPresentation": "multilineText",
           "markdownDescription": "Default LaTeX preamble (packages and commands) added after `\\documentclass`. Can be extended by `#+LATEX_HEADER:` lines in the document. Example:\n```latex\n\\usepackage[utf8]{inputenc}\n\\usepackage{graphicx}\n\\usepackage{amsmath}\n```"
         },

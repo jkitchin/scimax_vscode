@@ -197,6 +197,12 @@ async function compileToPdf(texPath: string, pdfPath: string, cwd: string): Prom
     const config = vscode.workspace.getConfiguration('scimax.export.pdf');
     const compiler = config.get<string>('compiler', 'latexmk-lualatex');
     const cleanAuxFiles = config.get<boolean>('cleanAuxFiles', true);
+    const shellEscape = config.get<string>('shellEscape', 'restricted');
+
+    // Determine shell escape flag (needed for minted/pygments)
+    const shellFlag = shellEscape === 'restricted' ? '-shell-restricted'
+        : shellEscape === 'full' ? '-shell-escape'
+        : null;
 
     // Build command
     let command: string;
@@ -230,6 +236,12 @@ async function compileToPdf(texPath: string, pdfPath: string, cwd: string): Prom
         default:
             command = 'latexmk';
             args = ['-lualatex', '-interaction=nonstopmode', texPath];
+    }
+
+    // Add shell escape flag if needed (before the tex file path)
+    if (shellFlag) {
+        // Insert before the last arg (texPath)
+        args.splice(args.length - 1, 0, shellFlag);
     }
 
     // Read TEXMFHOME from environment (per user's guidance)

@@ -58,7 +58,7 @@ const CITATION_PATTERN = /(cite[pt]?|citenum|citeauthor|citeyear|Citep|Citet|cit
 const REF_PATTERN = /(ref|eqref|pageref|nameref|autoref|cref|Cref|label):([a-zA-Z0-9_:-]+)/g;
 const DOI_PATTERN = /doi:(10\.\d{4,9}\/[^\s<>\[\](){}]+)/g;
 const BIBLIOGRAPHY_PATTERN = /bibliography:([^\s<>\[\](){}]+)/g;
-const BIBSTYLE_PATTERN = /bibstyle:([^\s<>\[\](){}]+)/g;
+const BIBSTYLE_PATTERN = /(?:bibliographystyle|bibstyle):([^\s<>\[\](){}]+)/g;
 
 // Simplified markup patterns - use non-greedy matching with length limits
 // These are more permissive but much faster and won't cause backtracking
