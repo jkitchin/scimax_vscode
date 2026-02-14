@@ -1,6 +1,6 @@
-.PHONY: all clean deps compile package install uninstall
+.PHONY: all clean deps compile package install uninstall publish
 
-VSIX = scimax-vscode-0.3.0.vsix
+VSIX = scimax-vscode-0.3.1.vsix
 CODE = /Applications/Visual\ Studio\ Code.app/Contents/Resources/app/bin/code
 
 all: package
@@ -30,6 +30,9 @@ install-latest:
 	@echo "Installing..."
 	$(CODE) --install-extension scimax-vscode-*.vsix --force
 	@echo "Done. Reload VS Code to activate."
+
+publish: package
+	vsce publish
 
 clean:
 	rm -rf out node_modules *.vsix

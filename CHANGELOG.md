@@ -7,14 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.1] - 2026-02-14
+
 ### Fixed
 
+- **LaTeX export: duplicate packages** - Hardcoded "essential packages" (inputenc, fontenc, graphicx, hyperref, natbib) were duplicating packages from the `defaultPreamble` setting. All default packages now come solely from the user-configurable `scimax.export.latex.defaultPreamble` setting.
+- **LaTeX export: org-ref v3 citations** - `cite:&key` was exporting as `\cite{&key}` instead of `\cite{key}`. Now correctly strips `&` prefixes and converts `;` separators to `,` for all citation commands.
+- **LaTeX export: `bibliographystyle:` links** - `bibliographystyle:unsrtnat` was passing through as plain text. Now recognized by both parsers and correctly exports as `\bibliographystyle{unsrtnat}`.
 - **Rectangle mark mode operation switching** - Invoking a different rectangle command while in mark mode (e.g., copy while in open mode) now executes the new operation instead of the old one
 - **Rectangle mark mode immediate execution** - Rectangle commands execute immediately when invoked during mark mode, no double-Enter needed
 
 ### Added
 
 - **Rectangle kill/copy to system clipboard** - Kill (`C-x r k`) and copy (`C-x r M-w`) now write rectangle contents to the system clipboard in addition to the internal rectangle register
+
+### Changed
+
+- `scimax.export.latex.defaultPreamble` default now includes `fontenc`, `hyperref`, and `natbib`
 
 ## [0.3.0] - 2026-02-04
 
