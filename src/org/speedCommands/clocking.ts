@@ -258,10 +258,19 @@ async function ensureLogbookDrawer(
     }
 
     await editor.edit(editBuilder => {
-        editBuilder.insert(
-            new vscode.Position(insertLine, 0),
-            ':LOGBOOK:\n:END:\n'
-        );
+        if (insertLine >= document.lineCount) {
+            // Heading is at end of file - append after the last line
+            const lastLine = document.lineAt(document.lineCount - 1);
+            editBuilder.insert(
+                new vscode.Position(document.lineCount - 1, lastLine.text.length),
+                '\n:LOGBOOK:\n:END:\n'
+            );
+        } else {
+            editBuilder.insert(
+                new vscode.Position(insertLine, 0),
+                ':LOGBOOK:\n:END:\n'
+            );
+        }
     });
 
     return { startLine: insertLine, endLine: insertLine + 1 };
