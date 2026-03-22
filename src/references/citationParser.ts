@@ -92,7 +92,7 @@ function parseOrgRefCitations(
         // v3: cite:&key or cite:prefix;&key - has & before keys
 
         // First, try to match v2 pattern (simple keys without &)
-        const v2Match = remainingLine.match(/^([a-zA-Z0-9_][a-zA-Z0-9_:,-]*)(?!\S*&)/);
+        const v2Match = remainingLine.match(/^([a-zA-Z0-9_][a-zA-Z0-9_.:/+,-]*)(?!\S*&)/);
 
         // Check if the match contains & (which would make it v3)
         const hasAmpersand = v2Match && v2Match[1].includes('&');
@@ -335,7 +335,7 @@ function parseNotesAndKeys(
  */
 function parseKeyWithNotes(part: string, keyPrefix: string): CitationReference | null {
     // Find the key (starts with keyPrefix)
-    const keyMatch = new RegExp(`${escapeRegex(keyPrefix)}([a-zA-Z0-9_][a-zA-Z0-9_:-]*)`).exec(part);
+    const keyMatch = new RegExp(`${escapeRegex(keyPrefix)}([a-zA-Z0-9_][a-zA-Z0-9_.:/+-]*)`).exec(part);
 
     if (!keyMatch) {
         return null;
