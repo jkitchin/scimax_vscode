@@ -1251,26 +1251,44 @@ export function registerDbCommands(
             const db = await requireDatabase();
             if (!db) return;
 
-            // If no path provided, use current file
+            // If no path provided, prompt with current file as default
             if (!filePath) {
                 const editor = vscode.window.activeTextEditor;
-                if (!editor) {
-                    vscode.window.showWarningMessage('No file selected');
-                    return;
-                }
-                filePath = editor.document.uri.fsPath;
+                const defaultValue = editor ? editor.document.uri.fsPath : '';
+                filePath = await vscode.window.showInputBox({
+                    prompt: 'File path or pattern to remove (use * as wildcard)',
+                    value: defaultValue,
+                    placeHolder: '/path/to/file.org or /path/to/dir/*'
+                });
+                if (!filePath) return;
             }
 
-            const fileName = path.basename(filePath);
-            const confirm = await vscode.window.showWarningMessage(
-                `Remove "${fileName}" from the database?`,
-                { modal: false },
-                'Remove'
-            );
+            // Detect if this is a pattern (contains *)
+            const isPattern = filePath.includes('*');
 
-            if (confirm === 'Remove') {
-                await db.removeFile(filePath);
-                vscode.window.showInformationMessage(`Removed "${fileName}" from database`);
+            if (isPattern) {
+                // Convert glob-style * to SQL LIKE %
+                const sqlPattern = filePath.replace(/\*/g, '%');
+                const confirm = await vscode.window.showWarningMessage(
+                    `Remove all files matching "${filePath}" from the database?`,
+                    { modal: true },
+                    'Remove'
+                );
+                if (confirm === 'Remove') {
+                    const count = await db.removeFilesByPattern(sqlPattern);
+                    vscode.window.showInformationMessage(`Removed ${count} files matching "${filePath}" from database`);
+                }
+            } else {
+                const fileName = path.basename(filePath);
+                const confirm = await vscode.window.showWarningMessage(
+                    `Remove "${fileName}" from the database?`,
+                    { modal: false },
+                    'Remove'
+                );
+                if (confirm === 'Remove') {
+                    await db.removeFile(filePath);
+                    vscode.window.showInformationMessage(`Removed "${fileName}" from database`);
+                }
             }
         })
     );
