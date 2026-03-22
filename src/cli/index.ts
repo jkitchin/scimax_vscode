@@ -5,10 +5,12 @@
  * Usage:
  *   scimax agenda [today|week|todos]
  *   scimax search <query> [--semantic]
- *   scimax find [--tag X] [--todo STATE]
+ *   scimax search headings [query] [-t tag] [--todo STATE]
  *   scimax export <file> [--format html|pdf|latex]
  *   scimax cite [extract|check] <file>
  *   scimax db [rebuild|stats]
+ *   scimax journal [date]
+ *   scimax project [query] [--add path] [--list]
  *   scimax publish [project] [--init|--list]
  */
 
@@ -22,6 +24,9 @@ import { exportCommand } from './commands/export';
 import { citeCommand } from './commands/cite';
 import { dbCommand } from './commands/db';
 import { publishCommand } from './commands/publish';
+import { skillCommand } from './commands/skill';
+import { journalCommand } from './commands/journal';
+import { projectCommand } from './commands/project';
 
 interface CliConfig {
     dbPath: string;
@@ -104,6 +109,15 @@ function parseArgs(args: string[]): { command: string; subcommand?: string; args
             } else {
                 flags[key] = true;
             }
+        } else if (arg.startsWith('-') && arg.length === 2) {
+            const key = arg.slice(1);
+            const next = args[i + 1];
+            if (next && !next.startsWith('-')) {
+                flags[key] = next;
+                i++;
+            } else {
+                flags[key] = true;
+            }
         } else if (arg.startsWith('-')) {
             flags[arg.slice(1)] = true;
         } else {
@@ -129,29 +143,43 @@ USAGE:
 COMMANDS:
     agenda [view]           Show agenda (today, week, todos, overdue)
     search <query>          Full-text search across org files
-    find                    Find files by tag, property, or TODO state
+    search headings         Search headings by title, tag, or TODO state
     export <file>           Export org file to HTML, PDF, or LaTeX
     cite <subcommand>       Citation operations (extract, check, convert)
     db <subcommand>         Database operations (rebuild, stats)
+    journal [date]          Open journal entry (today, tomorrow, "next friday", etc.)
+    project [query]         Fuzzy-select and open a known project in VS Code
     publish [project]       Publish org project(s) to HTML
+    skill <subcommand>      Manage the scimax Claude Code skill
     help                    Show this help message
 
 EXAMPLES:
     scimax agenda today
     scimax agenda todos --state NEXT
     scimax search "machine learning"
-    scimax find --tag research --todo TODO
+    scimax search "concepts" --semantic
+    scimax search headings -t proposal
+    scimax search headings --todo TODO -t grant
     scimax export paper.org --format html
     scimax cite extract paper.org
     scimax cite check paper.org --bib refs.bib
     scimax db rebuild
+    scimax journal
+    scimax journal tomorrow
+    scimax journal --date "next friday"
+    scimax project
+    scimax project myapp
+    scimax project --list
     scimax publish
     scimax publish --init
+    scimax skill install
+    scimax skill update
 
 OPTIONS:
     --help, -h              Show help for a command
     --db <path>             Override database path
-    --format <fmt>          Output format (html, pdf, latex, json)
+    --json                  Output structured JSON (agenda, search, db stats, cite, export, publish)
+    --format <fmt>          Output format for export (html, pdf, latex)
     --output <path>         Output file or directory
 `);
 }
@@ -187,8 +215,17 @@ async function main(): Promise<void> {
             case 'db':
                 await dbCommand(config, args);
                 break;
+            case 'journal':
+                await journalCommand(config, args);
+                break;
+            case 'project':
+                await projectCommand(config, args);
+                break;
             case 'publish':
                 await publishCommand(config, args);
+                break;
+            case 'skill':
+                await skillCommand(config, args);
                 break;
             case 'help':
             default:

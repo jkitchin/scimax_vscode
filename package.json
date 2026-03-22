@@ -750,7 +750,8 @@
       },
       "[markdown]": {
         "editor.wordWrap": "on"
-      }
+      },
+      "files.autoSave": "onWindowChange"
     },
     "commands": [
       {
@@ -903,6 +904,42 @@
       {
         "command": "scimax.org.exportIpynbOpen",
         "title": "Scimax: Export to Jupyter Notebook and Open"
+      },
+      {
+        "command": "scimax.markdown.exportMenu",
+        "title": "Scimax: Markdown Export Menu"
+      },
+      {
+        "command": "scimax.markdown.exportHtml",
+        "title": "Scimax: Export Markdown to HTML"
+      },
+      {
+        "command": "scimax.markdown.exportHtmlOpen",
+        "title": "Scimax: Export Markdown to HTML and Open"
+      },
+      {
+        "command": "scimax.markdown.exportPdf",
+        "title": "Scimax: Export Markdown to PDF"
+      },
+      {
+        "command": "scimax.markdown.exportPdfOpen",
+        "title": "Scimax: Export Markdown to PDF and Open"
+      },
+      {
+        "command": "scimax.markdown.exportDocx",
+        "title": "Scimax: Export Markdown to Word"
+      },
+      {
+        "command": "scimax.markdown.exportDocxOpen",
+        "title": "Scimax: Export Markdown to Word and Open"
+      },
+      {
+        "command": "scimax.markdown.exportLatex",
+        "title": "Scimax: Export Markdown to LaTeX"
+      },
+      {
+        "command": "scimax.markdown.exportLatexOpen",
+        "title": "Scimax: Export Markdown to LaTeX and Open"
       },
       {
         "command": "scimax.org.clipboardHtmlRich",
@@ -1506,6 +1543,11 @@
       {
         "command": "scimax.dired.openWorkspace",
         "title": "Scimax: Open Dired for Workspace"
+      },
+      {
+        "command": "scimax.openTerminalHere",
+        "title": "Scimax: Open Terminal Here",
+        "icon": "$(terminal)"
       },
       {
         "command": "scimax.findFile",
@@ -3048,6 +3090,11 @@
         "mac": "ctrl+x ctrl+s"
       },
       {
+        "command": "workbench.action.files.saveAs",
+        "key": "ctrl+x ctrl+w",
+        "mac": "ctrl+x ctrl+w"
+      },
+      {
         "command": "workbench.action.files.saveAll",
         "key": "ctrl+x s",
         "mac": "ctrl+x s"
@@ -3398,6 +3445,12 @@
         "key": "ctrl+c ctrl+e",
         "mac": "ctrl+c ctrl+e",
         "when": "editorTextFocus && editorLangId == 'org' && !terminalFocus"
+      },
+      {
+        "command": "scimax.markdown.exportMenu",
+        "key": "ctrl+c ctrl+e",
+        "mac": "ctrl+c ctrl+e",
+        "when": "editorTextFocus && editorLangId == 'markdown' && !terminalFocus"
       },
       {
         "command": "scimax.org.jumpToPdf",
@@ -5301,7 +5354,12 @@
         "scimax.journal.template": {
           "type": "string",
           "default": "default",
-          "description": "Template name for new journal entries"
+          "description": "Built-in template name for new journal entries (default, minimal, research, meeting, standup)"
+        },
+        "scimax.journal.customTemplate": {
+          "type": "string",
+          "default": "",
+          "description": "Custom template string for new journal entries. Overrides the built-in template. Supports placeholders: {{date}}, {{weekday}}, {{year}}, {{month}}, {{day}}, {{monthName}}, {{timestamp}}. Use \\n for newlines."
         },
         "scimax.journal.dateFormat": {
           "type": "string",
@@ -5319,7 +5377,7 @@
             "sunday",
             "monday"
           ],
-          "default": "monday",
+          "default": "sunday",
           "description": "First day of the week in calendar view"
         },
         "scimax.email": {
@@ -6264,6 +6322,12 @@
       }
     },
     "menus": {
+      "editor/title/context": [
+        {
+          "command": "scimax.openTerminalHere",
+          "group": "2_files"
+        }
+      ],
       "editor/context": [
         {
           "command": "scimax.org.executeBlock",
@@ -6411,7 +6475,7 @@
     "vscode:prepublish": "npm run compile",
     "compile": "npm run build-doc-index && tsc -p ./ && npm run copy-assets",
     "build-doc-index": "npx ts-node scripts/build-doc-index.ts",
-    "copy-assets": "shx cp src/help/docIndex.json out/help/ && shx mkdir -p out/publishing/themes/bookTheme/assets && shx cp -r src/publishing/themes/bookTheme/assets/* out/publishing/themes/bookTheme/assets/",
+    "copy-assets": "shx cp src/help/docIndex.json out/help/ && shx mkdir -p out/publishing/themes/bookTheme/assets && shx cp -r src/publishing/themes/bookTheme/assets/* out/publishing/themes/bookTheme/assets/ && shx mkdir -p out/cli/assets && shx cp src/cli/assets/* out/cli/assets/",
     "watch": "tsc -watch -p ./",
     "lint": "eslint src --ext ts",
     "test": "vitest",

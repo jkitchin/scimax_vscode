@@ -66,6 +66,8 @@ export interface ExportSettings {
 export interface JournalSettings {
     directory: string;
     format: string;
+    template: string;
+    customTemplate: string;
     dateFormat: string;
 }
 
@@ -233,7 +235,9 @@ export function loadSettings(): ScimaxSettings {
         '**/.git/**',
         '**/dist/**',
         '**/build/**',
-        '**/.ipynb_checkpoints/**'
+        '**/.ipynb_checkpoints/**',
+        '~/.vscode/extensions/**',
+        '~/.claude/**',
     ];
 
     // Default agenda exclude patterns
@@ -286,6 +290,8 @@ export function loadSettings(): ScimaxSettings {
         journal: {
             directory: getSetting<string>(settings, 'scimax.journal.directory', ''),
             format: getSetting<string>(settings, 'scimax.journal.format', 'org'),
+            template: getSetting<string>(settings, 'scimax.journal.template', 'default'),
+            customTemplate: getSetting<string>(settings, 'scimax.journal.customTemplate', ''),
             dateFormat: getSetting<string>(settings, 'scimax.journal.dateFormat', 'YYYY-MM-DD'),
         },
         ref: {

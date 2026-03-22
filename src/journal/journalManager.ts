@@ -2,6 +2,7 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 import * as fs from 'fs';
 import { resolveScimaxPath } from '../utils/pathResolver';
+import { getBuiltInTemplates, renderTemplate, buildTemplateContext, resolveTemplate } from './journalTemplates';
 
 // Use fs.promises for async operations
 const fsp = fs.promises;
@@ -10,6 +11,7 @@ export interface JournalConfig {
     directory: string;
     format: 'markdown' | 'org';
     template: string;
+    customTemplate: string;
     dateFormat: string;
     autoTimestamp: boolean;
     weekStartsOn: 'sunday' | 'monday';
@@ -94,9 +96,10 @@ export class JournalManager {
             directory,
             format: vsConfig.get<'markdown' | 'org'>('format') || 'org',
             template: vsConfig.get<string>('template') || 'default',
+            customTemplate: vsConfig.get<string>('customTemplate') || '',
             dateFormat: vsConfig.get<string>('dateFormat') || 'YYYY-MM-DD',
             autoTimestamp: vsConfig.get<boolean>('autoTimestamp') ?? true,
-            weekStartsOn: vsConfig.get<'sunday' | 'monday'>('weekStartsOn') || 'monday'
+            weekStartsOn: vsConfig.get<'sunday' | 'monday'>('weekStartsOn') || 'sunday'
         };
     }
 
@@ -236,7 +239,8 @@ export class JournalManager {
             return this.templateCache.get(templateName)!;
         }
 
-        // Check for custom template in journal directory
+        // Check for custom template file in journal directory
+        let customFileContent: string | undefined;
         const customTemplatePath = path.join(
             this.config.directory,
             '.scimax',
@@ -245,155 +249,24 @@ export class JournalManager {
         );
 
         if (fs.existsSync(customTemplatePath)) {
-            const content = fs.readFileSync(customTemplatePath, 'utf8');
-            this.templateCache.set(templateName, content);
-            return content;
+            customFileContent = fs.readFileSync(customTemplatePath, 'utf8');
         }
 
-        // Return default template
-        const defaultTemplate = this.getDefaultTemplate();
-        this.templateCache.set(templateName, defaultTemplate);
-        return defaultTemplate;
-    }
+        const template = resolveTemplate({
+            templateName,
+            format: this.config.format,
+            customTemplate: this.config.customTemplate || customFileContent,
+        });
 
-    /**
-     * Get the default template based on format and template name
-     */
-    private getDefaultTemplate(): string {
-        const templateName = this.config.template;
-
-        // Built-in templates
-        const templates = this.getBuiltInTemplates();
-        if (templates[templateName]) {
-            return templates[templateName];
-        }
-
-        // Fall back to 'default'
-        return templates['default'];
+        this.templateCache.set(templateName, template);
+        return template;
     }
 
     /**
      * Get all built-in templates
      */
     public getBuiltInTemplates(): Record<string, string> {
-        if (this.config.format === 'org') {
-            return {
-                'default': `#+TITLE: {{date}} - {{weekday}}
-#+DATE: {{date}}
-
-* Tasks
-- [ ]
-
-* Notes
-
-* Log
-`,
-                'minimal': `#+TITLE: {{date}}
-#+DATE: {{date}}
-
-* Notes
-`,
-                'research': `#+TITLE: Research Log - {{date}}
-#+DATE: {{date}}
-#+AUTHOR: {{author}}
-
-* Goals for Today
-- [ ]
-
-* Experiments
-
-* Results
-
-* Next Steps
-
-* References
-`,
-                'meeting': `#+TITLE: Meeting Notes - {{date}}
-#+DATE: {{date}}
-
-* Attendees
--
-
-* Agenda
-1.
-
-* Discussion
-
-* Action Items
-- [ ]
-
-* Next Meeting
-`,
-                'standup': `#+TITLE: Standup - {{date}}
-#+DATE: {{date}}
-
-* Yesterday
--
-
-* Today
--
-
-* Blockers
--
-`
-            };
-        }
-
-        // Markdown templates
-        return {
-            'default': `# {{date}} - {{weekday}}
-
-## Tasks
-- [ ]
-
-## Notes
-
-## Log
-`,
-            'minimal': `# {{date}}
-
-## Notes
-`,
-            'research': `# Research Log - {{date}}
-
-## Goals for Today
-- [ ]
-
-## Experiments
-
-## Results
-
-## Next Steps
-
-## References
-`,
-            'meeting': `# Meeting Notes - {{date}}
-
-## Attendees
--
-
-## Agenda
-1.
-
-## Discussion
-
-## Action Items
-- [ ]
-
-## Next Meeting
-`,
-            'standup': `# Standup - {{date}}
-
-## Yesterday
--
-
-## Today
--
-
-## Blockers
--
-`
-        };
+        return getBuiltInTemplates(this.config.format);
     }
 
     /**
@@ -439,27 +312,8 @@ export class JournalManager {
      */
     private renderTemplate(date: Date): string {
         const template = this.getTemplate();
-
-        const weekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-        const months = ['January', 'February', 'March', 'April', 'May', 'June',
-                        'July', 'August', 'September', 'October', 'November', 'December'];
-
-        const year = date.getFullYear();
-        const month = date.getMonth() + 1;
-        const day = date.getDate();
-        const weekday = weekdays[date.getDay()];
-        const monthName = months[date.getMonth()];
-
-        const dateStr = `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
-
-        return template
-            .replace(/\{\{date\}\}/g, dateStr)
-            .replace(/\{\{year\}\}/g, year.toString())
-            .replace(/\{\{month\}\}/g, month.toString().padStart(2, '0'))
-            .replace(/\{\{day\}\}/g, day.toString().padStart(2, '0'))
-            .replace(/\{\{weekday\}\}/g, weekday)
-            .replace(/\{\{monthName\}\}/g, monthName)
-            .replace(/\{\{timestamp\}\}/g, new Date().toISOString());
+        const ctx = buildTemplateContext(date);
+        return renderTemplate(template, ctx);
     }
 
     /**
