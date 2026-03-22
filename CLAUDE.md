@@ -67,7 +67,7 @@ src/
 │   └── kernelSpec.ts         # Kernel discovery
 ├── database/                 # SQLite database layer
 │   ├── scimaxDb.ts           # Main database with FTS5 + vector search
-│   ├── embeddingService.ts   # Ollama/OpenAI embeddings
+│   ├── embeddingService.ts   # Ollama embeddings
 │   ├── migrations.ts         # Schema versioning and migrations
 │   ├── lazyDb.ts             # Lazy database initialization
 │   ├── secretStorage.ts      # Secure API key storage

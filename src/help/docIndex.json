@@ -1,6 +1,6 @@
 {
-  "buildDate": "2026-02-11T12:18:47.959Z",
-  "count": 3361,
+  "buildDate": "2026-03-22T00:41:10.791Z",
+  "count": 3363,
   "entries": [
     {
       "heading": "Scimax VS Code",
@@ -85775,10 +85775,80 @@
       ]
     },
     {
-      "heading": "Database",
+      "heading": "Journal",
       "level": 2,
       "file": "30-cli.org",
       "line": 263,
+      "content": "Open or create journal entries from the terminal. #+begin_src bash # Open today's journal (creates if needed) scimax journal # Open a specific date scimax journal tomorrow scimax journal yesterday scimax journal friday scimax journal --date \"next monday\" scimax journal --date 2026-03-15 scimax journal --date +2d scimax journal --date -1w # JSON output (for scripting) scimax journal --json #+end_src The journal directory is configured via =scimax.journal.directory= in VS Code settings. New entrie",
+      "path": [
+        "Commands"
+      ],
+      "commands": [
+        "scimax.journal.directory"
+      ],
+      "keybindings": [],
+      "keywords": [
+        "journal",
+        "open",
+        "create",
+        "entries",
+        "terminal",
+        "beginsrc",
+        "bash",
+        "today",
+        "creates",
+        "needed",
+        "scimax",
+        "specific",
+        "date",
+        "tomorrow",
+        "yesterday",
+        "friday",
+        "--date",
+        "next",
+        "monday",
+        "2026-03-15"
+      ]
+    },
+    {
+      "heading": "Project",
+      "level": 2,
+      "file": "30-cli.org",
+      "line": 288,
+      "content": "Fuzzy-select and open a known project in VS Code. #+begin_src bash # Interactive fuzzy selection (uses fzf if available) scimax project # Pre-filter with a query scimax project scimax # List all known projects scimax project --list # Add a new project (creates directory if needed, opens in VS Code) scimax project --add ~/projects/new-project # JSON output scimax project --json #+end_src Projects are pulled fresh from the scimax database each time. The extension registers projects automatically w",
+      "path": [
+        "Commands"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "project",
+        "fuzzy-select",
+        "open",
+        "known",
+        "code",
+        "beginsrc",
+        "bash",
+        "interactive",
+        "fuzzy",
+        "selection",
+        "uses",
+        "fzf",
+        "available",
+        "scimax",
+        "pre-filter",
+        "query",
+        "list",
+        "projects",
+        "--list",
+        "add"
+      ]
+    },
+    {
+      "heading": "Database",
+      "level": 2,
+      "file": "30-cli.org",
+      "line": 313,
       "content": "Database maintenance operations.",
       "path": [
         "Commands"
@@ -85795,7 +85865,7 @@
       "heading": "Statistics",
       "level": 3,
       "file": "30-cli.org",
-      "line": 267,
+      "line": 317,
       "content": "Show database statistics: #+begin_src bash scimax db stats #+end_src Output: #+begin_example === Database Statistics === Database: /home/user/.config/Code/User/globalStorage/jkitchin.scimax-vscode/scimax-db.sqlite Root: /home/user/project Files indexed: 42 Headings: 1,234 TODO items: 89 Has embeddings: No #+end_example",
       "path": [
         "Commands",
@@ -85830,7 +85900,7 @@
       "heading": "Check Integrity",
       "level": 3,
       "file": "30-cli.org",
-      "line": 288,
+      "line": 338,
       "content": "Check for missing or stale files: #+begin_src bash scimax db check #+end_src Output: #+begin_example Checking database integrity... MISSING: old-file.org MISSING: deleted-folder/notes.org Total files in database: 42 Missing files: 2 Open VS Code to rebuild the index. #+end_example",
       "path": [
         "Commands",
@@ -85865,7 +85935,7 @@
       "heading": "Reindex",
       "level": 3,
       "file": "30-cli.org",
-      "line": 309,
+      "line": 359,
       "content": "Re-parse and re-index all files already in the database. This is the most accurate way to refresh the index since it processes exactly the files VS Code has indexed. #+begin_src bash scimax db reindex #+end_src Output: #+begin_example Database path: /home/user/.config/Code/User/globalStorage/jkitchin.scimax-vscode/scimax-db.sqlite Found 12385 file(s) in database. Indexing: ~/Documents/org/notes.org... OK Indexing: ~/projects/paper.org... OK Removing (missing): ~/old/deleted.org... OK ... Indexed",
       "path": [
         "Commands",
@@ -85900,7 +85970,7 @@
       "heading": "Rebuild",
       "level": 3,
       "file": "30-cli.org",
-      "line": 334,
+      "line": 384,
       "content": "Discover directories and scan for org files. Use this to find and add new files that aren't yet in the database. The rebuild command discovers directories from: 1. VS Code settings (=scimax.db.include=, =scimax.journal.directory=) 2. Root directories derived from already-indexed files #+begin_src bash # Auto-discover directories and scan for new files scimax db rebuild # Scan only a specific directory scimax db rebuild --path ./docs #+end_src Note: For refreshing existing files, use =scimax db r",
       "path": [
         "Commands",
@@ -85938,7 +86008,7 @@
       "heading": "Scan Directory",
       "level": 3,
       "file": "30-cli.org",
-      "line": 352,
+      "line": 402,
       "content": "CLOSED: [2026-01-22 Thu 20:57] Scan a specific directory and add its files to the database. This is a simplified command that takes the directory as a direct argument, making it ideal for cron jobs and scripts. #+begin_src bash # Scan a specific directory scimax db scan /path/to/org-files # Scan multiple directories (run sequentially) scimax db scan ~/work/org-files scimax db scan ~/personal/notes #+end_src Output: #+begin_example Scanning directory: /path/to/org-files Database path: /home/user/",
       "path": [
         "Commands",
@@ -85973,7 +86043,7 @@
       "heading": "Cron Job Examples",
       "level": 4,
       "file": "30-cli.org",
-      "line": 381,
+      "line": 431,
       "content": "Schedule automatic database updates: #+begin_src bash # Edit crontab crontab -e # Scan every hour 0 * * * * cd /path/to/project && scimax db scan ~/org-files # Scan daily at 6am 0 6 * * * cd /path/to/project && scimax db scan ~/org-files >> /var/log/scimax-scan.log 2>&1 # Scan multiple directories every 30 minutes */30 * * * * cd /path/to/project && scimax db scan ~/work/notes && scimax db scan ~/personal/org #+end_src",
       "path": [
         "Commands",
@@ -86009,7 +86079,7 @@
       "heading": "Command Comparison",
       "level": 4,
       "file": "30-cli.org",
-      "line": 399,
+      "line": 449,
       "content": "| Command                | Use Case                                           | |------------------------+----------------------------------------------------| | =scimax db reindex=    | Refresh all files already in DB (most accurate)    | | =scimax db rebuild=    | Discover directories and scan for new files        | | =scimax db scan <dir>= | Add files from a specific directory                | - Use *reindex* to refresh the index after making changes to existing files - Use *rebuild* or *scan",
       "path": [
         "Commands",
@@ -86045,7 +86115,7 @@
       "heading": "Scripting Examples",
       "level": 1,
       "file": "30-cli.org",
-      "line": 410,
+      "line": 460,
       "content": "",
       "path": [],
       "commands": [],
@@ -86059,7 +86129,7 @@
       "heading": "Export All Org Files to HTML",
       "level": 2,
       "file": "30-cli.org",
-      "line": 412,
+      "line": 462,
       "content": "#+begin_src bash #!/bin/bash for f in docs/*.org; do scimax export \"$f\" --format html --output \"build/$(basename \"$f\" .org).html\" done #+end_src",
       "path": [
         "Scripting Examples"
@@ -86087,7 +86157,7 @@
       "heading": "Check Citations in CI",
       "level": 2,
       "file": "30-cli.org",
-      "line": 421,
+      "line": 471,
       "content": "#+begin_src yaml # .github/workflows/check-citations.yml name: Check Citations on: [push, pull_request] jobs: check: runs-on: ubuntu-latest steps: - uses: actions/checkout@v3 - uses: actions/setup-node@v3 with: node-version: '18' - run: npm ci - run: npm run compile - run: node out/cli/index.js cite check paper.org --bib refs.bib #+end_src",
       "path": [
         "Scripting Examples"
@@ -86121,7 +86191,7 @@
       "heading": "Daily Agenda Email",
       "level": 2,
       "file": "30-cli.org",
-      "line": 440,
+      "line": 490,
       "content": "#+begin_src bash #!/bin/bash # Send daily agenda via email scimax agenda today | mail -s \"Today's Agenda\" user@example.com #+end_src",
       "path": [
         "Scripting Examples"
@@ -86148,7 +86218,7 @@
       "heading": "Find Files with Specific Tags",
       "level": 2,
       "file": "30-cli.org",
-      "line": 448,
+      "line": 498,
       "content": "#+begin_src bash # Using search (if tag is in heading) scimax search \":research:\" --limit 50 #+end_src",
       "path": [
         "Scripting Examples"
@@ -86174,7 +86244,7 @@
       "heading": "Limitations",
       "level": 1,
       "file": "30-cli.org",
-      "line": 455,
+      "line": 505,
       "content": "The CLI has some limitations compared to the VS Code extension: 1. *Semantic Search*: Requires embeddings which need the embedding service configured in VS Code. 2. *Live Updates*: The CLI reads a snapshot of the database. Changes made to org files won't be reflected until you run =scimax db rebuild= or VS Code re-indexes them. 3. *Interactive Features*: No support for interactive features like completion or live preview. 4. *FTS Index*: The CLI rebuild populates the main tables but doesn't rebu",
       "path": [],
       "commands": [],
@@ -86206,7 +86276,7 @@
       "heading": "Related Topics",
       "level": 1,
       "file": "30-cli.org",
-      "line": 467,
+      "line": 517,
       "content": "- [[file:18-database-search.org][Database & Search]] - How the database indexing works - [[file:10-export.org][Export]] - Export options and configuration - [[file:19-references.org][References & Citations]] - Citation syntax and bibliography management - [[file:13-agenda.org][Agenda]] - Agenda views in VS Code",
       "path": [],
       "commands": [],

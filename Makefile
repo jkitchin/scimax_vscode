@@ -19,6 +19,7 @@ package: compile
 
 install: package
 	$(CODE) --install-extension $(VSIX)
+	npm link
 
 uninstall:
 	$(CODE) --uninstall-extension scimax-vscode
