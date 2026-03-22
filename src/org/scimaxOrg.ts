@@ -1133,13 +1133,18 @@ async function handleHeadingReturn(
         .replace(/^\[#[A-Z]\]\s*/, '')
         .trim();
 
-    // If heading is empty, delete the line
+    // If heading is empty, replace with blank line so cursor stays on it
     if (cleanTitle === '') {
         await editor.edit(editBuilder => {
-            // Delete the entire line including newline
-            const range = currentLine.rangeIncludingLineBreak;
-            editBuilder.delete(range);
+            const range = new vscode.Range(
+                currentLine.range.start,
+                currentLine.range.end
+            );
+            editBuilder.replace(range, '');
         });
+        // Position cursor at start of the now-blank line
+        const newPos = new vscode.Position(position.line, 0);
+        editor.selection = new vscode.Selection(newPos, newPos);
         return true;
     }
 
@@ -1164,9 +1169,20 @@ async function handleHeadingReturn(
     const insertPos = new vscode.Position(insertLine, document.lineAt(insertLine).text.length);
     const newHeading = `\n\n${stars} `;
 
-    await editor.edit(editBuilder => {
+    console.log('[DWIM] handleHeadingReturn:', {
+        positionLine: position.line,
+        level,
+        endLine,
+        insertLine,
+        insertPos: `(${insertPos.line}, ${insertPos.character})`,
+        lineCount: document.lineCount,
+        insertLineText: JSON.stringify(document.lineAt(insertLine).text),
+    });
+
+    const editResult = await editor.edit(editBuilder => {
         editBuilder.insert(insertPos, newHeading);
     });
+    console.log('[DWIM] edit result:', editResult);
 
     // Move cursor to the new heading
     const newPos = new vscode.Position(insertLine + 2, stars.length + 1);
@@ -3009,12 +3025,32 @@ export function setupDynamicBlockContext(context: vscode.ExtensionContext): void
  * Stored link for org-store-link / org-insert-link workflow
  * Stores both full path (for cross-file) and fuzzy link (for same-file)
  */
-let storedLink: {
+type StoredLink = {
     filePath: string;      // Full path to source file
     fuzzyLink: string;     // Link without file path (e.g., "*Heading", "#custom-id")
     fullLink: string;      // Full link with file (e.g., "file:name.org::*Heading")
     description: string;   // Description for the link
-} | null = null;
+};
+
+// In-memory cache (for same-window use)
+let storedLink: StoredLink | null = null;
+
+// Extension context for cross-window persistence via globalState
+let _extensionContext: vscode.ExtensionContext | undefined;
+
+function persistStoredLink(link: StoredLink | null): void {
+    storedLink = link;
+    _extensionContext?.globalState.update('scimax.storedLink', link);
+}
+
+function loadStoredLink(): StoredLink | null {
+    if (storedLink) return storedLink;
+    const persisted = _extensionContext?.globalState.get<StoredLink>('scimax.storedLink');
+    if (persisted) {
+        storedLink = persisted;
+    }
+    return storedLink;
+}
 
 /**
  * Store a link based on context at point (like org-store-link)
@@ -3043,12 +3079,12 @@ export async function storeLink(): Promise<void> {
         // Strip priority like [#A]
         headingTitle = headingTitle.replace(/^\[#[A-Z]\]\s*/, '');
         headingTitle = headingTitle.trim();
-        storedLink = {
+        persistStoredLink({
             filePath,
             fuzzyLink: `*${headingTitle}`,
             fullLink: `file:${fileName}::*${headingTitle}`,
             description: headingTitle
-        };
+        });
         vscode.window.showInformationMessage(`Stored link: [[*${headingTitle}]]`);
         return;
     }
@@ -3057,12 +3093,12 @@ export async function storeLink(): Promise<void> {
     const namedBlockMatch = lineText.match(/^#\+NAME:\s*(.+)$/i);
     if (namedBlockMatch) {
         const blockName = namedBlockMatch[1].trim();
-        storedLink = {
+        persistStoredLink({
             filePath,
             fuzzyLink: blockName,
             fullLink: `file:${fileName}::${blockName}`,
             description: blockName
-        };
+        });
         vscode.window.showInformationMessage(`Stored link: [[${blockName}]]`);
         return;
     }
@@ -3078,12 +3114,12 @@ export async function storeLink(): Promise<void> {
                 const customIdMatch = propLine.match(/:CUSTOM_ID:\s*(.+)/i);
                 if (customIdMatch) {
                     const customId = customIdMatch[1].trim();
-                    storedLink = {
+                    persistStoredLink({
                         filePath,
                         fuzzyLink: `#${customId}`,
                         fullLink: `file:${fileName}::#${customId}`,
                         description: customId
-                    };
+                    });
                     vscode.window.showInformationMessage(`Stored link: [[#${customId}]]`);
                     return;
                 }
@@ -3101,23 +3137,23 @@ export async function storeLink(): Promise<void> {
     if (charNum === 0) {
         // At beginning of line - just use line number
         const link = `file:${fileName}::${lineNum}`;
-        storedLink = {
+        persistStoredLink({
             filePath,
             fuzzyLink: link,  // No fuzzy equivalent for line numbers
             fullLink: link,
             description: `${fileName}:${lineNum}`
-        };
+        });
         vscode.window.showInformationMessage(`Stored link: [[${link}]]`);
     } else {
         // Mid-line - use character offset from beginning of file
         const charOffset = document.offsetAt(position);
         const link = `file:${fileName}::c${charOffset}`;
-        storedLink = {
+        persistStoredLink({
             filePath,
             fuzzyLink: link,  // No fuzzy equivalent for char offset
             fullLink: link,
             description: `${fileName}:${lineNum}:${charNum}`
-        };
+        });
         vscode.window.showInformationMessage(`Stored link: [[${link}]]`);
     }
 }
@@ -3125,15 +3161,15 @@ export async function storeLink(): Promise<void> {
 /**
  * Get the currently stored link (for use by insertLink)
  */
-export function getStoredLink(): typeof storedLink {
-    return storedLink;
+export function getStoredLink(): StoredLink | null {
+    return loadStoredLink();
 }
 
 /**
  * Clear the stored link
  */
 export function clearStoredLink(): void {
-    storedLink = null;
+    persistStoredLink(null);
 }
 
 /**
@@ -3149,14 +3185,15 @@ export async function insertLink(): Promise<void> {
     let description: string | undefined;
 
     // If we have a stored link, offer to use it
-    if (storedLink) {
+    const currentStoredLink = loadStoredLink();
+    if (currentStoredLink) {
         // Determine if we're in the same file
         const currentFilePath = editor.document.uri.fsPath;
-        const isSameFile = currentFilePath === storedLink.filePath;
+        const isSameFile = currentFilePath === currentStoredLink.filePath;
 
         // Use fuzzy link for same file, full link for different file
-        const linkToUse = isSameFile ? storedLink.fuzzyLink : storedLink.fullLink;
-        const displayLink = isSameFile ? `[[${storedLink.fuzzyLink}]]` : `[[${storedLink.fullLink}]]`;
+        const linkToUse = isSameFile ? currentStoredLink.fuzzyLink : currentStoredLink.fullLink;
+        const displayLink = isSameFile ? `[[${currentStoredLink.fuzzyLink}]]` : `[[${currentStoredLink.fullLink}]]`;
 
         const choice = await vscode.window.showQuickPick(
             [
@@ -3170,9 +3207,9 @@ export async function insertLink(): Promise<void> {
 
         if (choice.value === 'stored') {
             url = linkToUse;
-            description = storedLink.description;
+            description = currentStoredLink.description;
             // Clear the stored link after use
-            storedLink = null;
+            persistStoredLink(null);
         }
     }
 
@@ -4263,6 +4300,9 @@ async function fillOrUnfillParagraph(): Promise<void> {
  * Register all scimax-org commands
  */
 export function registerScimaxOrgCommands(context: vscode.ExtensionContext): void {
+    // Store context for cross-window link persistence
+    _extensionContext = context;
+
     // Text markup
     context.subscriptions.push(
         vscode.commands.registerCommand('scimax.markup.bold', boldRegionOrPoint),
