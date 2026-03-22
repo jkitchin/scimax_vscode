@@ -36,20 +36,25 @@ export async function exportCommand(config: CliConfig, args: ParsedArgs): Promis
     const inputFile = args.args[0];
 
     if (!inputFile) {
-        console.error('Usage: scimax export <file.org> [--format html|latex|pdf] [--output path]');
+        console.error('Usage: scimax export <file.org> [--format html|latex|pdf] [--output path] [--json]');
         process.exit(1);
     }
 
     // Load settings from VS Code settings.json
     const settings = loadSettings();
 
+    const json = args.flags.json === true;
     const format = (typeof args.flags.format === 'string' ? args.flags.format : 'html').toLowerCase();
     const outputPath = typeof args.flags.output === 'string' ? args.flags.output : undefined;
 
     // Read input file
     const inputPath = path.resolve(inputFile);
     if (!fs.existsSync(inputPath)) {
-        console.error(`File not found: ${inputPath}`);
+        if (json) {
+            console.log(JSON.stringify({ success: false, error: `File not found: ${inputPath}` }));
+        } else {
+            console.error(`File not found: ${inputPath}`);
+        }
         process.exit(1);
     }
 
@@ -62,7 +67,8 @@ export async function exportCommand(config: CliConfig, args: ParsedArgs): Promis
         ? args.flags.bib
         : findBibFile(inputPath, settings.ref);
     if (bibFile && fs.existsSync(bibFile)) {
-        console.log(`Using bibliography: ${bibFile}`);
+        // Route info messages to stderr in JSON mode so stdout is clean
+        process.stderr.write(`Using bibliography: ${bibFile}\n`);
         const bibContent = fs.readFileSync(bibFile, 'utf-8');
         const parseResult = parseBibTeX(bibContent);
         bibEntries = parseResult.entries;
@@ -94,7 +100,7 @@ export async function exportCommand(config: CliConfig, args: ParsedArgs): Promis
             defaultExt = '.tex';
             break;
 
-        case 'pdf':
+        case 'pdf': {
             // Export to LaTeX first, then compile
             const latex = exportToLatex(doc, {
                 documentClass: settings.export.latex.documentClass,
@@ -102,24 +108,37 @@ export async function exportCommand(config: CliConfig, args: ParsedArgs): Promis
                 customHeader: settings.export.latex.customHeader,
             });
             defaultExt = '.pdf';
-            output = await compilePdf(latex, inputPath, outputPath, settings.export);
+            output = await compilePdf(latex, inputPath, outputPath, settings.export, json);
             if (output === '__PDF_WRITTEN__') {
-                return; // PDF was written directly
+                if (json) {
+                    const pdfOut = outputPath || inputPath.replace(/\.org$/i, '.pdf');
+                    console.log(JSON.stringify({ success: true, input_file: inputPath, output_path: pdfOut, format: 'pdf' }));
+                }
+                return;
             }
             break;
+        }
 
         default:
-            console.error(`Unknown format: ${format}`);
-            console.error('Supported formats: html, latex, pdf');
+            if (json) {
+                console.log(JSON.stringify({ success: false, error: `Unknown format: ${format}. Supported: html, latex, pdf` }));
+            } else {
+                console.error(`Unknown format: ${format}`);
+                console.error('Supported formats: html, latex, pdf');
+            }
             process.exit(1);
     }
 
     // Determine output path
-    const outPath = outputPath || inputPath.replace(/\.org$/i, defaultExt);
+    const outPath = outputPath || inputPath.replace(/\.org$/i, defaultExt!);
 
     if (format !== 'pdf') {
-        fs.writeFileSync(outPath, output);
-        console.log(`Exported to: ${outPath}`);
+        fs.writeFileSync(outPath, output!);
+        if (json) {
+            console.log(JSON.stringify({ success: true, input_file: inputPath, output_path: outPath, format }));
+        } else {
+            console.log(`Exported to: ${outPath}`);
+        }
     }
 }
 
@@ -162,7 +181,8 @@ async function compilePdf(
     latex: string,
     inputPath: string,
     outputPath: string | undefined,
-    exportSettings: ExportSettings
+    exportSettings: ExportSettings,
+    json: boolean = false
 ): Promise<string> {
     const { execSync } = await import('child_process');
 
@@ -183,7 +203,10 @@ async function compilePdf(
     const compiler = exportSettings.pdf.compiler;
     const extraArgs = exportSettings.pdf.extraArgs ? exportSettings.pdf.extraArgs.split(' ').filter(a => a) : [];
 
-    console.log(`Using compiler: ${compiler}`);
+    // Route progress to stderr in JSON mode
+    const log = (msg: string) => json ? process.stderr.write(msg + '\n') : console.log(msg);
+
+    log(`Using compiler: ${compiler}`);
 
     try {
         if (compiler.startsWith('latexmk')) {
@@ -202,7 +225,7 @@ async function compilePdf(
             args.push(...extraArgs);
             args.push(`"${texPath}"`);
 
-            console.log(`Running: latexmk ${args.join(' ')}`);
+            log(`Running: latexmk ${args.join(' ')}`);
             execSync(`latexmk ${args.join(' ')}`, {
                 cwd: dir,
                 stdio: 'pipe',
@@ -215,7 +238,7 @@ async function compilePdf(
             args.push(...extraArgs);
             args.push(`"${texPath}"`);
 
-            console.log(`Running: ${compilerCmd} ${args.join(' ')}`);
+            log(`Running: ${compilerCmd} ${args.join(' ')}`);
             execSync(`${compilerCmd} ${args.join(' ')}`, {
                 cwd: dir,
                 stdio: 'pipe',
@@ -228,8 +251,12 @@ async function compilePdf(
             });
         }
     } catch (error) {
-        console.error(`PDF compilation failed with ${compiler}.`);
-        console.error('LaTeX file saved to:', texPath);
+        if (json) {
+            console.log(JSON.stringify({ success: false, error: `PDF compilation failed with ${compiler}`, tex_file: texPath }));
+        } else {
+            console.error(`PDF compilation failed with ${compiler}.`);
+            console.error('LaTeX file saved to:', texPath);
+        }
         process.exit(1);
     }
 
@@ -254,6 +281,6 @@ async function compilePdf(
         fs.renameSync(generatedPdf, pdfPath);
     }
 
-    console.log(`Exported to: ${pdfPath}`);
+    log(`Exported to: ${pdfPath}`);
     return '__PDF_WRITTEN__';
 }

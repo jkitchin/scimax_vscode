@@ -39,12 +39,15 @@ import type {
     LatexEnvironmentElement,
     SubscriptObject,
     SuperscriptObject,
+    EntityObject,
     OrgRange,
     AffiliatedKeywords,
 } from './orgElementTypes';
 
 import { createPlainText } from './orgObjects';
 import { parseCaption, parseColonAttributes } from './orgAffiliatedKeywords';
+import { getEntity } from './orgEntities';
+import { normalizeLineEndings } from '../utils/escapeUtils';
 
 // =============================================================================
 // Fast Inline Object Parser (Regex-based)
@@ -53,8 +56,9 @@ import { parseCaption, parseColonAttributes } from './orgAffiliatedKeywords';
 // Pre-compiled regex patterns to avoid re-creation on each call
 // Using simpler patterns without lookbehind/lookahead to prevent catastrophic backtracking
 const LINK_PATTERN = /\[\[([^\]]+)\](?:\[([^\]]+)\])?\]/g;
-// Citation pattern: cite:key1,key2 but not trailing comma (cite:key, should be cite:key)
-const CITATION_PATTERN = /(cite[pt]?|citenum|citeauthor|citeyear|Citep|Citet|citealp|citealt):([a-zA-Z0-9_:-]+(?:,[a-zA-Z0-9_:-]+)*)/g;
+// Citation pattern: cite:key1,key2 (v2) or cite:&key1;&key2 (v3)
+// Matches word chars, &, ;, ,, :, - but not trailing punctuation (,;)
+const CITATION_PATTERN = /(cite[pt]?|citenum|citeauthor|citeyear|Citep|Citet|citealp|citealt):([\w&;,:-]*[\w&:-])/g;
 const REF_PATTERN = /(ref|eqref|pageref|nameref|autoref|cref|Cref|label):([a-zA-Z0-9_:-]+)/g;
 const DOI_PATTERN = /doi:(10\.\d{4,9}\/[^\s<>\[\](){}]+)/g;
 const BIBLIOGRAPHY_PATTERN = /bibliography:([^\s<>\[\](){}]+)/g;
@@ -62,12 +66,16 @@ const BIBSTYLE_PATTERN = /(?:bibliographystyle|bibstyle):([^\s<>\[\](){}]+)/g;
 
 // Simplified markup patterns - use non-greedy matching with length limits
 // These are more permissive but much faster and won't cause backtracking
-const BOLD_PATTERN = /\*([^\s*](?:[^*]{0,500}[^\s*])?)\*/g;
-const ITALIC_PATTERN = /\/([^\s/](?:[^/]{0,500}[^\s/])?)\/(?![a-zA-Z])/g;
-const UNDERLINE_PATTERN = /_([^\s_](?:[^_]{0,500}[^\s_])?)_(?![a-zA-Z])/g;
-const STRIKE_PATTERN = /\+([^\s+](?:[^+]{0,500}[^\s+])?)\+(?![a-zA-Z0-9])/g;
-const CODE_PATTERN = /=([^\s=](?:[^=]{0,500}[^\s=])?)=/g;
-const VERBATIM_PATTERN = /~([^\s~](?:[^~]{0,500}[^\s~])?)~/g;
+// Opening marker must be preceded by start-of-string, whitespace, or - ( { ' "
+// Closing marker must be followed by end-of-string, whitespace, or - . , : ! ? ; ' " ) } \ [ ]
+const PRE = '(?:^|(?<=[\\s\\-({\'\"]))';
+const POST = '(?=[\\s\\-.,:!?;\\\'")}\\\\\\[\\]]|$)';
+const BOLD_PATTERN = new RegExp(`${PRE}\\*([^\\s*](?:[^*]{0,500}[^\\s*])?)\\*${POST}`, 'g');
+const ITALIC_PATTERN = new RegExp(`${PRE}\\/([^\\s/](?:[^/]{0,500}[^\\s/])?)\\/(?![a-zA-Z0-9])${POST}`, 'g');
+const UNDERLINE_PATTERN = new RegExp(`${PRE}_([^\\s_](?:[^_]{0,500}[^\\s_])?)_(?![a-zA-Z])${POST}`, 'g');
+const STRIKE_PATTERN = new RegExp(`${PRE}\\+([^\\s+](?:[^+]{0,500}[^\\s+])?)\\+(?![a-zA-Z0-9])${POST}`, 'g');
+const CODE_PATTERN = new RegExp(`${PRE}=([^\\s=](?:[^=]{0,500}[^\\s=])?)=${POST}`, 'g');
+const VERBATIM_PATTERN = new RegExp(`${PRE}~([^\\s~](?:[^~]{0,500}[^\\s~])?)~${POST}`, 'g');
 // Emacs-style command markup: `command'
 const COMMAND_PATTERN = /`([^`'\n]+)'/g;
 
@@ -404,26 +412,68 @@ export function parseObjectsFast(text: string): OrgObject[] {
         }));
 
         // LaTeX commands: \ref{}, \cite{}, \eqref{}, \label{}, \pageref{}, \autoref{}, etc.
-        collectMatches(LATEX_COMMAND_PATTERN, (m) => ({
-            type: 'latex-fragment' as const,
-            range: { start: m.index!, end: m.index! + m[0].length },
-            postBlank: 0,
-            properties: {
-                value: m[0],
-                fragmentType: 'command' as const,
-            },
-        }));
+        // Also handles entity forms like \alpha{} (empty braces)
+        collectMatches(LATEX_COMMAND_PATTERN, (m) => {
+            const cmdName = m[1];
+            const arg = m[2];
+            // Check for entity with empty braces: \alpha{}, \rightarrow{}
+            if (arg === '') {
+                const entity = getEntity(cmdName);
+                if (entity) {
+                    return {
+                        type: 'entity' as const,
+                        range: { start: m.index!, end: m.index! + m[0].length },
+                        postBlank: 0,
+                        properties: {
+                            name: cmdName,
+                            usesBrackets: true,
+                            latex: entity.latex,
+                            html: entity.html,
+                            utf8: entity.utf8,
+                        },
+                    } as EntityObject;
+                }
+            }
+            return {
+                type: 'latex-fragment' as const,
+                range: { start: m.index!, end: m.index! + m[0].length },
+                postBlank: 0,
+                properties: {
+                    value: m[0],
+                    fragmentType: 'command' as const,
+                },
+            };
+        });
 
         // Standalone LaTeX commands: \noindent, \newpage, \clearpage, \bigskip, etc.
-        collectMatches(LATEX_STANDALONE_COMMAND_PATTERN, (m) => ({
-            type: 'latex-fragment' as const,
-            range: { start: m.index!, end: m.index! + m[0].length },
-            postBlank: 0,
-            properties: {
-                value: m[0],
-                fragmentType: 'command' as const,
-            },
-        }));
+        // Check if it's an org entity (\alpha, \rightarrow) and emit entity object instead
+        collectMatches(LATEX_STANDALONE_COMMAND_PATTERN, (m) => {
+            const cmdName = m[1];
+            const entity = getEntity(cmdName);
+            if (entity) {
+                return {
+                    type: 'entity' as const,
+                    range: { start: m.index!, end: m.index! + m[0].length },
+                    postBlank: 0,
+                    properties: {
+                        name: cmdName,
+                        usesBrackets: false,
+                        latex: entity.latex,
+                        html: entity.html,
+                        utf8: entity.utf8,
+                    },
+                } as EntityObject;
+            }
+            return {
+                type: 'latex-fragment' as const,
+                range: { start: m.index!, end: m.index! + m[0].length },
+                postBlank: 0,
+                properties: {
+                    value: m[0],
+                    fragmentType: 'command' as const,
+                },
+            };
+        });
     }
 
     // Macros: {{{macro(args)}}}
@@ -601,7 +651,7 @@ interface FastParserState {
  * Fast export parser - optimized for generating export output
  */
 export function parseOrgFast(content: string): OrgDocumentNode {
-    const lines = content.split('\n');
+    const lines = normalizeLineEndings(content).split('\n');
     const state: FastParserState = {
         lines,
         lineIndex: 0,
@@ -992,13 +1042,13 @@ function parseElement(state: FastParserState): OrgElement | null {
         return parseList(state);
     }
 
-    // Property drawer
-    if (line.match(/^:PROPERTIES:/i)) {
+    // Property drawer (may be indented under headlines)
+    if (line.match(/^\s*:PROPERTIES:\s*$/i)) {
         return parsePropertyDrawer(state);
     }
 
     // Regular drawer (but not :END: which closes drawers/blocks)
-    if (line.match(/^:(\w+):\s*$/) && !line.match(/^:END:/i)) {
+    if (line.match(/^\s*:(\w+):\s*$/) && !line.match(/^\s*:END:/i)) {
         return parseDrawer(state);
     }
 
@@ -1287,11 +1337,11 @@ function parsePropertyDrawer(state: FastParserState): OrgElement {
 
     while (state.lineIndex < state.lines.length) {
         const line = state.lines[state.lineIndex];
-        if (line.match(/^:END:/i)) {
+        if (line.match(/^\s*:END:\s*$/i)) {
             state.lineIndex++;
             break;
         }
-        const propMatch = line.match(/^:(\w+):\s*(.*)$/);
+        const propMatch = line.match(/^\s*:(\w+):\s*(.*)$/);
         if (propMatch) {
             properties[propMatch[1].toUpperCase()] = propMatch[2];
         }
@@ -1314,7 +1364,7 @@ function parsePropertyDrawer(state: FastParserState): OrgElement {
 
 function parseDrawer(state: FastParserState): OrgElement {
     const startLine = state.lines[state.lineIndex];
-    const nameMatch = startLine.match(/^:(\w+):/);
+    const nameMatch = startLine.match(/^\s*:(\w+):/);
     const name = nameMatch ? nameMatch[1] : 'DRAWER';
 
     state.lineIndex++;
@@ -1322,7 +1372,7 @@ function parseDrawer(state: FastParserState): OrgElement {
 
     while (state.lineIndex < state.lines.length) {
         const line = state.lines[state.lineIndex];
-        if (line.match(/^:END:/i)) {
+        if (line.match(/^\s*:END:\s*$/i)) {
             state.lineIndex++;
             break;
         }
@@ -1545,7 +1595,7 @@ function parseParagraph(state: FastParserState): ParagraphElement | null {
 
         // End of paragraph conditions
         if (line.trim() === '') break;
-        if (line.match(/^[*#:|\-]/)) break;
+        if (line.match(/^(\*+\s|[#:|\-])/)) break;
         if (line.match(/^\s*[-+*]\s+/) || line.match(/^\s*\d+[.)]\s+/)) break;
         // Stop at LaTeX environments
         if (line.match(/^\\begin\{/)) break;

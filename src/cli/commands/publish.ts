@@ -64,20 +64,38 @@ export async function publishCommand(config: CliConfig, args: ParsedArgs): Promi
         process.exit(1);
     }
 
+    const json = args.flags.json === true;
+
     // Handle --list flag
     if (args.flags.list) {
-        listProjects(publishConfig);
+        if (json) {
+            const projectList = Object.entries(publishConfig.projects).map(([name, project]) => ({
+                name,
+                publishable: isPublishProject(project),
+                ...(isPublishProject(project) ? {
+                    source: (project as PublishProject).baseDirectory,
+                    output: (project as PublishProject).publishingDirectory,
+                    is_default: name === publishConfig.defaultProject,
+                } : {
+                    components: (project as any).components,
+                }),
+            }));
+            console.log(JSON.stringify({ projects: projectList }, null, 2));
+        } else {
+            listProjects(publishConfig);
+        }
         return;
     }
 
     // Build publish options
+    const isTTY = process.stdout.isTTY && !json;
     const options: PublishOptions = {
         force: !!args.flags.force,
         dryRun: !!args.flags['dry-run'],
-        onProgress: (current, total, file) => {
+        onProgress: isTTY ? (current, total, file) => {
             const pct = Math.round((current / total) * 100);
             process.stdout.write(`\r[${pct}%] Publishing ${file}...`.padEnd(60));
-        },
+        } : undefined,
     };
 
     // Get project name if specified
@@ -91,24 +109,34 @@ export async function publishCommand(config: CliConfig, args: ParsedArgs): Promi
             const projectConfig = publishConfig.projects[projectName];
 
             if (!projectConfig) {
-                console.error(`Project '${projectName}' not found.`);
-                console.error('');
-                console.error('Available projects:');
-                listProjects(publishConfig);
+                if (json) {
+                    console.log(JSON.stringify({ success: false, error: `Project '${projectName}' not found`, available: Object.keys(publishConfig.projects) }));
+                } else {
+                    console.error(`Project '${projectName}' not found.`);
+                    console.error('');
+                    console.error('Available projects:');
+                    listProjects(publishConfig);
+                }
                 process.exit(1);
             }
 
             if (!isPublishProject(projectConfig)) {
-                console.error(`'${projectName}' is a component project, not a publishable project.`);
+                if (json) {
+                    console.log(JSON.stringify({ success: false, error: `'${projectName}' is a component project, not publishable` }));
+                } else {
+                    console.error(`'${projectName}' is a component project, not a publishable project.`);
+                }
                 process.exit(1);
             }
 
             const project = mergeWithDefaults({ ...projectConfig, name: projectName });
 
-            console.log(`Publishing project: ${projectName}`);
-            console.log(`  Source: ${project.baseDirectory}`);
-            console.log(`  Output: ${project.publishingDirectory}`);
-            console.log('');
+            if (!json) {
+                console.log(`Publishing project: ${projectName}`);
+                console.log(`  Source: ${project.baseDirectory}`);
+                console.log(`  Output: ${project.publishingDirectory}`);
+                console.log('');
+            }
 
             let result: PublishProjectResult;
 
@@ -124,20 +152,48 @@ export async function publishCommand(config: CliConfig, args: ParsedArgs): Promi
             results = [result];
         } else {
             // Publish all projects
-            console.log('Publishing all projects...');
-            console.log('');
+            if (!json) {
+                console.log('Publishing all projects...');
+                console.log('');
+            }
 
             results = await publishAll(publishConfig, workspaceRoot, options);
         }
 
-        // Clear progress line
-        process.stdout.write('\r'.padEnd(60) + '\r');
+        // Clear progress line (TTY only)
+        if (isTTY) {
+            process.stdout.write('\r'.padEnd(60) + '\r');
+        }
 
-        // Print summary
-        printSummary(results, options.dryRun);
+        if (json) {
+            const summary = results.map(r => ({
+                project: r.projectName,
+                success: r.errorCount === 0,
+                files_published: r.successCount,
+                files_total: r.totalFiles,
+                errors: r.files.filter(f => !f.success).map(f => ({
+                    file: f.sourcePath,
+                    error: f.error,
+                })),
+                duration_ms: r.duration,
+            }));
+            console.log(JSON.stringify({
+                dry_run: !!options.dryRun,
+                projects: summary,
+                total_files: results.reduce((s, r) => s + r.totalFiles, 0),
+                total_published: results.reduce((s, r) => s + r.successCount, 0),
+                total_errors: results.reduce((s, r) => s + r.errorCount, 0),
+            }, null, 2));
+        } else {
+            printSummary(results, options.dryRun);
+        }
     } catch (error) {
-        console.error('');
-        console.error('Publishing failed:', error instanceof Error ? error.message : error);
+        if (json) {
+            console.log(JSON.stringify({ success: false, error: error instanceof Error ? error.message : String(error) }));
+        } else {
+            console.error('');
+            console.error('Publishing failed:', error instanceof Error ? error.message : error);
+        }
         process.exit(1);
     }
 }

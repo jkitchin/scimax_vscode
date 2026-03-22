@@ -238,6 +238,16 @@ export function parseClockElement(clock: ClockElement): ClockEntry | null {
 /**
  * Format a date as org-mode timestamp
  */
+/**
+ * Truncate a Date to the minute (zero out seconds and milliseconds).
+ * This ensures the duration calculation matches the displayed HH:MM timestamps.
+ */
+function truncateToMinute(date: Date): Date {
+    const d = new Date(date.getTime());
+    d.setSeconds(0, 0);
+    return d;
+}
+
 export function formatClockTimestamp(date: Date, includeTime = true): string {
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -290,7 +300,9 @@ export function generateClockIn(date: Date = new Date()): string {
  * Generate a clock-out line (closing an existing clock)
  */
 export function generateClockOut(start: Date, end: Date = new Date()): string {
-    const duration = Math.round((end.getTime() - start.getTime()) / 60000);
+    const s = truncateToMinute(start);
+    const e = truncateToMinute(end);
+    const duration = Math.round((e.getTime() - s.getTime()) / 60000);
     return `CLOCK: ${formatClockTimestamp(start)}--${formatClockTimestamp(end)} => ${formatDuration(duration)}`;
 }
 
@@ -311,7 +323,9 @@ export function clockIn(headline?: HeadlineElement): ClockEntry {
 export function clockOut(entry: ClockEntry): ClockEntry {
     const end = new Date();
     entry.end = end;
-    entry.duration = Math.round((end.getTime() - entry.start.getTime()) / 60000);
+    const s = truncateToMinute(entry.start);
+    const e = truncateToMinute(end);
+    entry.duration = Math.round((e.getTime() - s.getTime()) / 60000);
     return entry;
 }
 

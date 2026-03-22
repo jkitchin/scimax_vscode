@@ -50,7 +50,7 @@ OPTIONS:
     --bib <file.bib>    Bibliography file
     --from <syntax>     Source syntax (v2, v3, org-cite)
     --to <syntax>       Target syntax (v2, v3, org-cite)
-    --format <fmt>      Output format (text, json)
+    --json              Output JSON (works with extract, check, list)
 `);
     }
 }
@@ -78,13 +78,13 @@ async function extractCitations(args: ParsedArgs): Promise<void> {
         }
     }
 
-    const format = args.flags.format || 'text';
+    const json = args.flags.json === true || args.flags.format === 'json';
 
-    if (format === 'json') {
+    if (json) {
         console.log(JSON.stringify({
             file: inputFile,
-            citationCount: allCitations.length,
-            uniqueKeys: [...allKeys].sort(),
+            citation_count: allCitations.length,
+            unique_keys: [...allKeys].sort(),
             citations: allCitations,
         }, null, 2));
     } else {
@@ -134,29 +134,43 @@ async function checkCitations(args: ParsedArgs): Promise<void> {
     const missing = [...citedKeys].filter(k => !bibKeys.has(k)).sort();
     const unused = [...bibKeys].filter(k => !citedKeys.has(k)).sort();
 
-    console.log(`Citation Check: ${inputFile}\n`);
-    console.log(`  Citations found: ${citedKeys.size}`);
-    console.log(`  Bibliography entries: ${bibKeys.size}`);
-    console.log();
+    const json = args.flags.json === true || args.flags.format === 'json';
 
-    if (missing.length > 0) {
-        console.log(`MISSING (${missing.length} cited but not in .bib):`);
-        for (const key of missing) {
-            console.log(`  - ${key}`);
-        }
+    if (json) {
+        console.log(JSON.stringify({
+            file: inputFile,
+            bib_file: bibFile,
+            cited_count: citedKeys.size,
+            bib_count: bibKeys.size,
+            missing,
+            unused,
+            valid: missing.length === 0,
+        }, null, 2));
+    } else {
+        console.log(`Citation Check: ${inputFile}\n`);
+        console.log(`  Citations found: ${citedKeys.size}`);
+        console.log(`  Bibliography entries: ${bibKeys.size}`);
         console.log();
-    }
 
-    if (unused.length > 0) {
-        console.log(`UNUSED (${unused.length} in .bib but not cited):`);
-        for (const key of unused) {
-            console.log(`  - ${key}`);
+        if (missing.length > 0) {
+            console.log(`MISSING (${missing.length} cited but not in .bib):`);
+            for (const key of missing) {
+                console.log(`  - ${key}`);
+            }
+            console.log();
         }
-        console.log();
-    }
 
-    if (missing.length === 0 && unused.length === 0) {
-        console.log('All citations are valid and all bibliography entries are used.');
+        if (unused.length > 0) {
+            console.log(`UNUSED (${unused.length} in .bib but not cited):`);
+            for (const key of unused) {
+                console.log(`  - ${key}`);
+            }
+            console.log();
+        }
+
+        if (missing.length === 0 && unused.length === 0) {
+            console.log('All citations are valid and all bibliography entries are used.');
+        }
     }
 
     // Exit with error if missing citations
@@ -240,9 +254,9 @@ async function listBibEntries(args: ParsedArgs): Promise<void> {
     const parseResult = parseBibTeX(content);
     const entries = parseResult.entries;
 
-    const format = args.flags.format || 'text';
+    const json = args.flags.json === true || args.flags.format === 'json';
 
-    if (format === 'json') {
+    if (json) {
         console.log(JSON.stringify(entries, null, 2));
     } else {
         console.log(`Bibliography: ${bibFile}\n`);

@@ -53,7 +53,7 @@ import type {
     TableCellObject,
     AffiliatedKeywords,
 } from './orgElementTypes';
-import { escapeString, escapeHtml as escapeHtmlUtil } from '../utils/escapeUtils';
+import { escapeString, escapeHtml as escapeHtmlUtil, normalizeLineEndings } from '../utils/escapeUtils';
 
 // Re-export escapeString for backwards compatibility with existing imports
 export { escapeString };
@@ -1190,7 +1190,7 @@ export function exportToLatex(
     orgText: string,
     options?: { toc?: boolean; standalone?: boolean; syntexEnabled?: boolean; editmarkMode?: EditmarkExportMode }
 ): string {
-    const lines = orgText.split('\n');
+    const lines = normalizeLineEndings(orgText).split('\n');
     const latexLines: string[] = [];
     const opts = { toc: false, standalone: true, syntexEnabled: false, editmarkMode: 'show' as EditmarkExportMode, ...options };
 

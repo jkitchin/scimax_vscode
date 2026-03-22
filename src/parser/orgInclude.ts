@@ -17,6 +17,7 @@
 
 import * as fs from 'fs';
 import * as path from 'path';
+import { normalizeLineEndings } from '../utils/escapeUtils';
 
 // =============================================================================
 // Types
@@ -297,7 +298,7 @@ export function processInclude(
 
     try {
         // Read file content
-        let content = fs.readFileSync(resolvedPath, options.encoding ?? 'utf-8');
+        let content = normalizeLineEndings(fs.readFileSync(resolvedPath, options.encoding ?? 'utf-8'));
 
         // Apply line range filter
         if (directive.lines) {

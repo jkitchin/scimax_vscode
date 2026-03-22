@@ -1073,8 +1073,8 @@ function extractCitationKeys(text: string): Set<string> {
 
     // Patterns to match citations
     const patterns = [
-        // org-ref style: cite:key1,key2,key3 etc.
-        /(?:cite[pt]?|citeauthor|citeyear|Citep|Citet|citealp|citealt):([a-zA-Z0-9_:,-]+)/g,
+        // org-ref style: cite:key1,key2,key3 or cite:&key1;&key2 (v3 with & prefix)
+        /(?:cite[pt]?|citeauthor|citeyear|Citep|Citet|citealp|citealt):([a-zA-Z0-9_:,&;-]+)/g,
         // org-mode 9.5+ citation: [cite:@key1;@key2] or [cite/style:@key]
         /\[cite(?:\/[^\]]*)?:([^\]]+)\]/g,
         // Pandoc/markdown: [@key] or [@key1; @key2]
@@ -1094,6 +1094,12 @@ function extractCitationKeys(text: string): Set<string> {
             if (keysStr.includes('@')) {
                 // org-mode 9.5+ or Pandoc style with @ prefix
                 const keyMatches = keysStr.matchAll(/@([a-zA-Z][a-zA-Z0-9_:-]*)/g);
+                for (const km of keyMatches) {
+                    keys.add(km[1]);
+                }
+            } else if (keysStr.includes('&')) {
+                // org-ref v3 style with & prefix: cite:&key1;&key2
+                const keyMatches = keysStr.matchAll(/&([a-zA-Z][a-zA-Z0-9_:-]*)/g);
                 for (const km of keyMatches) {
                     keys.add(km[1]);
                 }

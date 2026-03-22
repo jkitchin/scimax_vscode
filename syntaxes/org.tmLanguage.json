@@ -1259,7 +1259,7 @@
       "patterns": [
         {
           "name": "markup.bold.org",
-          "match": "(?:^|(?<=[\\s\\-({'\"]))(\\*)([^*\\n]+)(\\*)(?=[\\s.,;:!?)\\]}'\"\\-]|$)",
+          "match": "(?:^|(?<=[\\s\\-({'\"]))(\\*)([^*\\s\\n](?:[^*\\n]*[^*\\s\\n])?)(\\*)(?=[\\s.,;:!?)\\]}'\"\\-]|$)",
           "captures": {
             "1": { "name": "punctuation.definition.bold.begin.org" },
             "2": { "name": "markup.bold.content.org" },
@@ -1268,7 +1268,7 @@
         },
         {
           "name": "markup.italic.org",
-          "match": "(?:^|(?<=[\\s\\-({'\"]))(\\/)([^\\/\\n]+)(\\/)(?=[\\s.,;:!?)\\]}'\"\\-]|$)",
+          "match": "(?:^|(?<=[\\s\\-({'\"]))(\\/)([^\\/\\s\\n](?:[^\\/\\n]*[^\\/\\s\\n])?)(\\/)(?=[\\s.,;:!?)\\]}'\"\\-]|$)",
           "captures": {
             "1": { "name": "punctuation.definition.italic.begin.org" },
             "2": { "name": "markup.italic.content.org" },

@@ -357,6 +357,18 @@ Centered text
             expect(italic).toBeDefined();
         });
 
+        it('does not parse fractions as italic', () => {
+            const objects = parseObjectsFast('38/117 problems and more on 57/117');
+            const italic = objects.find(o => o.type === 'italic');
+            expect(italic).toBeUndefined();
+        });
+
+        it('does not parse file paths as italic', () => {
+            const objects = parseObjectsFast('the path /usr/bin/env is common');
+            const italic = objects.find(o => o.type === 'italic');
+            expect(italic).toBeUndefined();
+        });
+
         it('parses underline text', () => {
             const objects = parseObjectsFast('This is _underlined_ text');
             const underline = objects.find(o => o.type === 'underline');
