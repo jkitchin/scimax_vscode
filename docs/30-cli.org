@@ -260,6 +260,56 @@ scimax cite list references.bib
 scimax cite list references.bib --format json
 #+end_src
 
+** ⚠️ Journal
+
+Open or create journal entries from the terminal.
+
+#+begin_src bash
+# Open today's journal (creates if needed)
+scimax journal
+
+# Open a specific date
+scimax journal tomorrow
+scimax journal yesterday
+scimax journal friday
+scimax journal --date "next monday"
+scimax journal --date 2026-03-15
+scimax journal --date +2d
+scimax journal --date -1w
+
+# JSON output (for scripting)
+scimax journal --json
+#+end_src
+
+The journal directory is configured via =scimax.journal.directory= in VS Code settings. New entries use the default template (customizable via =scimax.journal.customTemplate= setting).
+
+Supported date expressions: today, tomorrow, yesterday, day names (monday, fri), next/this day (next friday, this monday), relative (+2d, -1w, +3m), month+day (jan 15), ISO dates (2026-03-15).
+
+** ⚠️ Project
+
+Fuzzy-select and open a known project in VS Code.
+
+#+begin_src bash
+# Interactive fuzzy selection (uses fzf if available)
+scimax project
+
+# Pre-filter with a query
+scimax project scimax
+
+# List all known projects
+scimax project --list
+
+# Add a new project (creates directory if needed, opens in VS Code)
+scimax project --add ~/projects/new-project
+
+# JSON output
+scimax project --json
+#+end_src
+
+Projects are pulled fresh from the scimax database each time. The extension registers projects automatically when you open folders in VS Code.
+
+When =fzf= is installed, the interactive selection uses fuzzy matching. Otherwise, a numbered list is displayed.
+
 ** Database
 
 Database maintenance operations.
