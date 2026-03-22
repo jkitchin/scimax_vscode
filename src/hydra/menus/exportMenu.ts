@@ -389,8 +389,184 @@ export const clipboardExportMenu: HydraMenuDefinition = {
     ],
 };
 
+// =============================================================================
+// Markdown File Export Menus (for .md files, using pandoc)
+// =============================================================================
+
 /**
- * All export menus for registration
+ * Main markdown file export dispatcher
+ * Shown when C-c C-e is pressed in a markdown file
+ */
+export const mdFileExportMenu: HydraMenuDefinition = {
+    id: 'scimax.markdown.export',
+    title: 'Markdown Export Dispatcher',
+    hint: 'Export markdown via pandoc',
+    groups: [
+        {
+            title: 'Export Formats',
+            items: [
+                {
+                    key: 'h',
+                    label: 'HTML exports',
+                    description: 'Export to HTML format',
+                    icon: 'file-code',
+                    exit: 'submenu',
+                    action: 'scimax.markdown.export.html',
+                },
+                {
+                    key: 'p',
+                    label: 'PDF exports',
+                    description: 'Export to PDF (requires LaTeX)',
+                    icon: 'file-pdf',
+                    exit: 'submenu',
+                    action: 'scimax.markdown.export.pdf',
+                },
+                {
+                    key: 'd',
+                    label: 'Word document',
+                    description: 'Export to Microsoft Word (.docx)',
+                    icon: 'file',
+                    exit: 'submenu',
+                    action: 'scimax.markdown.export.docx',
+                },
+                {
+                    key: 'l',
+                    label: 'LaTeX exports',
+                    description: 'Export to LaTeX',
+                    icon: 'file-pdf',
+                    exit: 'submenu',
+                    action: 'scimax.markdown.export.latex',
+                },
+            ],
+        },
+    ],
+};
+
+export const mdHtmlExportMenu: HydraMenuDefinition = {
+    id: 'scimax.markdown.export.html',
+    title: 'Markdown → HTML',
+    parent: 'scimax.markdown.export',
+    groups: [
+        {
+            items: [
+                {
+                    key: 'h',
+                    label: 'HTML file',
+                    description: 'Export to .html file',
+                    icon: 'file-code',
+                    exit: 'exit',
+                    action: 'scimax.markdown.exportHtml',
+                },
+                {
+                    key: 'o',
+                    label: 'HTML and open',
+                    description: 'Export and open in browser',
+                    icon: 'link-external',
+                    exit: 'exit',
+                    action: 'scimax.markdown.exportHtmlOpen',
+                },
+            ],
+        },
+    ],
+};
+
+export const mdPdfExportMenu: HydraMenuDefinition = {
+    id: 'scimax.markdown.export.pdf',
+    title: 'Markdown → PDF',
+    parent: 'scimax.markdown.export',
+    groups: [
+        {
+            items: [
+                {
+                    key: 'p',
+                    label: 'PDF file',
+                    description: 'Export to .pdf file',
+                    icon: 'file-pdf',
+                    exit: 'exit',
+                    action: 'scimax.markdown.exportPdf',
+                },
+                {
+                    key: 'o',
+                    label: 'PDF and open',
+                    description: 'Export and open',
+                    icon: 'link-external',
+                    exit: 'exit',
+                    action: 'scimax.markdown.exportPdfOpen',
+                },
+            ],
+        },
+    ],
+};
+
+export const mdDocxExportMenu: HydraMenuDefinition = {
+    id: 'scimax.markdown.export.docx',
+    title: 'Markdown → Word',
+    parent: 'scimax.markdown.export',
+    groups: [
+        {
+            items: [
+                {
+                    key: 'd',
+                    label: 'Word document',
+                    description: 'Export to .docx file',
+                    icon: 'file',
+                    exit: 'exit',
+                    action: 'scimax.markdown.exportDocx',
+                },
+                {
+                    key: 'o',
+                    label: 'Word and open',
+                    description: 'Export and open in Word',
+                    icon: 'link-external',
+                    exit: 'exit',
+                    action: 'scimax.markdown.exportDocxOpen',
+                },
+            ],
+        },
+    ],
+};
+
+export const mdLatexExportMenu: HydraMenuDefinition = {
+    id: 'scimax.markdown.export.latex',
+    title: 'Markdown → LaTeX',
+    parent: 'scimax.markdown.export',
+    groups: [
+        {
+            items: [
+                {
+                    key: 'l',
+                    label: 'LaTeX file',
+                    description: 'Export to .tex file',
+                    icon: 'file',
+                    exit: 'exit',
+                    action: 'scimax.markdown.exportLatex',
+                },
+                {
+                    key: 'o',
+                    label: 'LaTeX and open',
+                    description: 'Export and open',
+                    icon: 'link-external',
+                    exit: 'exit',
+                    action: 'scimax.markdown.exportLatexOpen',
+                },
+            ],
+        },
+    ],
+};
+
+/**
+ * All markdown file export menus
+ */
+export const mdExportMenus: HydraMenuDefinition[] = [
+    mdFileExportMenu,
+    mdHtmlExportMenu,
+    mdPdfExportMenu,
+    mdDocxExportMenu,
+    mdLatexExportMenu,
+];
+
+/**
+ * All export menus for registration (org + markdown)
  */
 export const exportMenus: HydraMenuDefinition[] = [
     exportMenu,
@@ -400,4 +576,5 @@ export const exportMenus: HydraMenuDefinition[] = [
     docxExportMenu,
     jupyterExportMenu,
     clipboardExportMenu,
+    ...mdExportMenus,
 ];

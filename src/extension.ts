@@ -1,4 +1,5 @@
 import * as vscode from 'vscode';
+import * as path from 'path';
 import { JournalManager } from './journal/journalManager';
 import { JournalCalendarProvider } from './journal/calendarView';
 import { JournalStatusBar } from './journal/statusBar';
@@ -31,6 +32,7 @@ import { registerSemanticTokenProvider } from './highlighting/semanticTokenProvi
 import { registerFoldingProvider } from './highlighting/foldingProvider';
 import { registerBlockDecorations } from './highlighting/blockDecorations';
 import { registerCheckboxFeatures } from './markdown/checkboxProvider';
+import { registerMarkdownExportCommands } from './markdown/markdownExportCommands';
 import { registerTaskCommands } from './markdown/taskCommands';
 import { registerTimestampCommands } from './org/timestampProvider';
 import { registerTableCommands, isInTable } from './org/tableProvider';
@@ -128,6 +130,22 @@ export async function activate(context: vscode.ExtensionContext) {
                 await config.update('logLevel', newLevel, vscode.ConfigurationTarget.Global);
                 vscode.window.showInformationMessage(`Log level set to: ${newLevel}`);
             }
+        })
+    );
+
+    // Open Terminal Here - opens integrated terminal in file's directory
+    context.subscriptions.push(
+        vscode.commands.registerCommand('scimax.openTerminalHere', (uri?: vscode.Uri) => {
+            if (!uri) {
+                uri = vscode.window.activeTextEditor?.document.uri;
+            }
+            if (!uri || uri.scheme !== 'file') {
+                vscode.window.showWarningMessage('No file to open terminal for');
+                return;
+            }
+            const dir = path.dirname(uri.fsPath);
+            const terminal = vscode.window.createTerminal({ cwd: dir });
+            terminal.show();
         })
     );
 
@@ -473,6 +491,9 @@ export async function activate(context: vscode.ExtensionContext) {
 
     // Register Custom Export commands (user-defined export templates)
     registerCustomExportCommands(context);
+
+    // Register Markdown Export commands (pandoc-based export for .md files)
+    registerMarkdownExportCommands(context);
 
     // Register Manuscript commands (flatten LaTeX for journal submission)
     registerManuscriptCommands(context);

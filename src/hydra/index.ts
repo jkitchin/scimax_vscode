@@ -87,4 +87,6 @@ export {
     latexExportMenu,
     markdownExportMenu,
     exportMenus,
+    mdFileExportMenu,
+    mdExportMenus,
 } from './menus';
