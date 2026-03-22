@@ -1045,7 +1045,7 @@ describe('LaTeX Export', () => {
                     utf8: 'α',
                 },
             };
-            expect(backend.exportObject(entity, state)).toBe('\\alpha');
+            expect(backend.exportObject(entity, state)).toBe('$\\alpha$');
         });
 
         it('exports LaTeX fragments as-is', () => {
@@ -1461,6 +1461,35 @@ Text with Cu_{x}Pd_{1-x} subscripts.
             expect(result).toContain('\\bottomrule');
         });
 
+        it('uses tabularx environment when specified in ATTR_LATEX', async () => {
+            const { parseOrgFast } = await import('../orgExportParser');
+            const orgContent = `#+ATTR_LATEX: :environment tabularx :width \\textwidth :align {|l|l|}
+| Name | Age |
+|------+-----|
+| Alice | 30 |
+`;
+            const doc = parseOrgFast(orgContent);
+            const latex = exportToLatex(doc);
+            expect(latex).toContain('\\begin{tabularx}{\\textwidth}{|l|l|}');
+            expect(latex).toContain('\\end{tabularx}');
+            expect(latex).not.toContain('\\begin{tabular}');
+        });
+
+        it('uses hline instead of booktabs when column spec has vertical lines', async () => {
+            const { parseOrgFast } = await import('../orgExportParser');
+            const orgContent = `#+ATTR_LATEX: :align {|l|l|}
+| Name | Age |
+|------+-----|
+| Alice | 30 |
+`;
+            const doc = parseOrgFast(orgContent);
+            const latex = exportToLatex(doc, { booktabs: true });
+            expect(latex).toContain('\\hline');
+            expect(latex).not.toContain('\\toprule');
+            expect(latex).not.toContain('\\midrule');
+            expect(latex).not.toContain('\\bottomrule');
+        });
+
         it('includes table of contents when enabled', () => {
             const doc = createSimpleDocument('Test');
             const result = exportToLatex(doc, { toc: true });
@@ -1665,5 +1694,88 @@ describe('Export Integration', () => {
         const latex = exportToLatex(doc);
         expect(latex).toContain('\\section{Chapter 1}');
         expect(latex).toContain('\\subsection{Section 1.1}');
+    });
+
+    it('produces unnumbered sections with num:nil option', () => {
+        const orgContent = `#+OPTIONS: num:nil
+* Introduction
+Some text.
+** Background
+More text.
+`;
+        const doc = parseOrg(orgContent);
+        const latex = exportToLatex(doc);
+        expect(latex).toContain('\\section*{Introduction}');
+        expect(latex).toContain('\\subsection*{Background}');
+        expect(latex).not.toMatch(/\\section\{Introduction\}/);
+    });
+
+    it('produces numbered sections by default (num:t)', () => {
+        const orgContent = `#+OPTIONS: num:t
+* Introduction
+Some text.
+`;
+        const doc = parseOrg(orgContent);
+        const latex = exportToLatex(doc);
+        expect(latex).toContain('\\section{Introduction}');
+        expect(latex).not.toContain('\\section*{Introduction}');
+    });
+
+    it('nonum tag works independently of global num option', () => {
+        const orgContent = `* Regular Section
+Some text.
+* Unnumbered Section :nonum:
+More text.
+`;
+        const doc = parseOrg(orgContent);
+        const latex = exportToLatex(doc);
+        expect(latex).toContain('\\section{Regular Section}');
+        expect(latex).toContain('\\section*{Unnumbered Section');
+        expect(latex).not.toContain('\\section*{Regular Section');
+    });
+
+    it('uses height attribute from ATTR_LATEX for images', async () => {
+        const { parseOrgFast } = await import('../orgExportParser');
+        const orgContent = `#+attr_latex: :height 2in
+[[./mfi.png]]
+`;
+        const doc = parseOrgFast(orgContent);
+        const latex = exportToLatex(doc);
+        expect(latex).toContain('\\includegraphics[height=2in]{./mfi.png}');
+        // Should not include default width when only height is specified
+        expect(latex).not.toContain('width=');
+    });
+
+    it('uses both width and height from ATTR_LATEX for images', async () => {
+        const { parseOrgFast } = await import('../orgExportParser');
+        const orgContent = `#+attr_latex: :width 0.5\\textwidth :height 3in
+[[./test.png]]
+`;
+        const doc = parseOrgFast(orgContent);
+        const latex = exportToLatex(doc);
+        expect(latex).toContain('width=0.5\\textwidth');
+        expect(latex).toContain('height=3in');
+    });
+
+    it('exports bold text at start of line (not confused with heading)', async () => {
+        const { parseOrgFast } = await import('../orgExportParser');
+        const input = `* Cover Sheet
+
+*Proposal Title:* My Great Proposal
+
+*PI:* John Smith
+
+*Keywords:* AI, ML, optimization
+
+Some normal paragraph text here.`;
+        const doc = parseOrgFast(input);
+        const latex = exportToLatex(doc);
+        expect(latex).toContain('\\textbf{Proposal Title:}');
+        expect(latex).toContain('My Great Proposal');
+        expect(latex).toContain('\\textbf{PI:}');
+        expect(latex).toContain('John Smith');
+        expect(latex).toContain('\\textbf{Keywords:}');
+        expect(latex).toContain('AI, ML, optimization');
+        expect(latex).toContain('Some normal paragraph text here.');
     });
 });

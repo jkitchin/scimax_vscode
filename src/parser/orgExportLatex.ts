@@ -75,6 +75,7 @@ import {
 import { blockExportRegistry } from '../adapters/blockExportAdapter';
 import { exportHookRegistry } from '../adapters/exportHooksAdapter';
 import { parseObjects } from './orgObjects';
+import { getEntity } from './orgEntities';
 
 // =============================================================================
 // Helpers
@@ -511,7 +512,7 @@ export class LatexExportBackend implements ExportBackend {
         const parts: string[] = [];
 
         // Section command
-        const starred = tags.includes('nonum') ? '*' : '';
+        const starred = (state.options.sectionNumbers === false || tags.includes('nonum')) ? '*' : '';
         parts.push(`${sectionCmd}${starred}{${title}}`);
 
         // Add label for cross-references
@@ -747,29 +748,52 @@ export class LatexExportBackend implements ExportBackend {
         // Apply ATTR_LATEX options
         let actualColSpec = colSpec;
         let width = '';
+        let environment = 'tabular';
         if (table.affiliated?.attr?.latex) {
             const latexAttr = table.affiliated.attr.latex;
             if (latexAttr.align) {
-                actualColSpec = latexAttr.align;
+                // Strip outer braces if present — we wrap in {} when emitting
+                let align = latexAttr.align;
+                if (align.startsWith('{') && align.endsWith('}')) {
+                    align = align.slice(1, -1);
+                }
+                actualColSpec = align;
             }
             if (latexAttr.width) {
                 width = latexAttr.width;
             }
+            if (latexAttr.environment) {
+                environment = latexAttr.environment;
+            }
         }
 
-        // Build table content
+        // Booktabs rules (\toprule, \midrule, \bottomrule) are incompatible with
+        // vertical lines (|) in column specs — they produce gaps at intersections.
+        // Fall back to \hline when the column spec contains vertical separators.
+        const hasVerticalLines = actualColSpec.includes('|');
+        const useBooktabs = opts.booktabs && !hasVerticalLines;
+
+        // Build table environment opening
+        // tabularx uses: \begin{tabularx}{width}{colspec}
+        // tabular uses:  \begin{tabular}{colspec}
         let tabular = '';
-        if (opts.booktabs) {
-            tabular = `\\begin{tabular}{${actualColSpec}}\n\\toprule\n`;
+        if (environment === 'tabularx' && width) {
+            tabular = `\\begin{tabularx}{${width}}{${actualColSpec}}\n`;
         } else {
-            tabular = `\\begin{tabular}{${actualColSpec}}\n\\hline\n`;
+            tabular = `\\begin{${environment}}{${actualColSpec}}\n`;
+        }
+
+        if (useBooktabs) {
+            tabular += '\\toprule\n';
+        } else {
+            tabular += '\\hline\n';
         }
 
         let inHeader = true;
 
         for (const row of table.children) {
             if (row.properties.rowType === 'rule') {
-                if (opts.booktabs) {
+                if (useBooktabs) {
                     tabular += inHeader ? '\\midrule\n' : '\\midrule\n';
                 } else {
                     tabular += '\\hline\n';
@@ -788,13 +812,13 @@ export class LatexExportBackend implements ExportBackend {
             tabular += cells.join(' & ') + ' \\\\\n';
         }
 
-        if (opts.booktabs) {
+        if (useBooktabs) {
             tabular += '\\bottomrule\n';
         } else {
             tabular += '\\hline\n';
         }
 
-        tabular += '\\end{tabular}\n';
+        tabular += `\\end{${environment}}\n`;
 
         return wrapper + tabular + endWrapper;
     }
@@ -1099,7 +1123,8 @@ export class LatexExportBackend implements ExportBackend {
 
     private exportImage(path: string, link: LinkObject, state: ExportState): string {
         const opts = state.options as LatexExportOptions;
-        let width = opts.imageWidth || '0.8\\textwidth';
+        let width: string | undefined = opts.imageWidth || '0.8\\textwidth';
+        let height: string | undefined;
         let placement = opts.floatPlacement || 'htbp';
         let caption = '';
         let label = '';
@@ -1122,6 +1147,13 @@ export class LatexExportBackend implements ExportBackend {
                 if (affiliated.attr.latex.width) {
                     width = affiliated.attr.latex.width;
                 }
+                if (affiliated.attr.latex.height) {
+                    height = affiliated.attr.latex.height;
+                    // When only height is specified, don't force a default width
+                    if (!affiliated.attr.latex.width) {
+                        width = undefined;
+                    }
+                }
                 if (affiliated.attr.latex.placement) {
                     // Strip brackets if already present (user may write [H] or H)
                     placement = affiliated.attr.latex.placement.replace(/^\[|\]$/g, '');
@@ -1129,9 +1161,19 @@ export class LatexExportBackend implements ExportBackend {
             }
         }
 
+        // Build \includegraphics options
+        const graphicsOpts: string[] = [];
+        if (width) {
+            graphicsOpts.push(`width=${width}`);
+        }
+        if (height) {
+            graphicsOpts.push(`height=${height}`);
+        }
+        const graphicsOptsStr = graphicsOpts.length > 0 ? `[${graphicsOpts.join(',')}]` : '';
+
         let latex = `\\begin{figure}[${placement}]\n`;
         latex += '\\centering\n';
-        latex += `\\includegraphics[width=${width}]{${escapeString(path, 'latex')}}\n`;
+        latex += `\\includegraphics${graphicsOptsStr}{${escapeString(path, 'latex')}}\n`;
 
         if (caption) {
             // Parse caption text for inline objects (citations, links, markup, etc.)
@@ -1155,8 +1197,13 @@ export class LatexExportBackend implements ExportBackend {
     }
 
     private exportEntity(entity: EntityObject, state: ExportState): string {
-        // Use LaTeX representation directly
-        return entity.properties.latex;
+        const latex = entity.properties.latex;
+        // Check if entity requires math mode (like Emacs math-p flag)
+        const entityDef = getEntity(entity.properties.name);
+        if (entityDef?.mathp) {
+            return `$${latex}$`;
+        }
+        return latex;
     }
 
     private exportLatexFragment(fragment: LatexFragmentObject, state: ExportState): string {
