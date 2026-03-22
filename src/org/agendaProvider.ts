@@ -1230,11 +1230,99 @@ export class AgendaManager {
     }
 
     /**
+     * Build a TodoListView from the database
+     */
+    async getTodoListFromDb(): Promise<TodoListView | null> {
+        const db = this.db || await getDatabase();
+        if (!db) {
+            return null;
+        }
+
+        try {
+            const headings = await db.getTodos();
+            const doneStates = new Set(this.config.doneStates);
+
+            const byState = new Map<string, AgendaItem[]>();
+            const byPriority = new Map<string, AgendaItem[]>();
+            const countsState: Record<string, number> = {};
+            const countsPriority: Record<string, number> = {};
+
+            for (const heading of headings) {
+                const state = heading.todo_state;
+                if (!state) continue;
+                if (!this.config.showDone && doneStates.has(state)) continue;
+                if (this.isFileExcluded(heading.file_path)) continue;
+
+                const tags = heading.tags ? heading.tags.split(',').map((t: string) => t.trim()).filter((t: string) => t) : [];
+                const priority = heading.priority || 'none';
+
+                const minimalHeadline: HeadlineElement = {
+                    type: 'headline',
+                    range: { start: heading.begin_pos, end: heading.begin_pos + heading.title.length },
+                    postBlank: 0,
+                    properties: {
+                        level: heading.level,
+                        rawValue: heading.title,
+                        todoKeyword: state,
+                        priority: heading.priority || undefined,
+                        tags,
+                        archivedp: false,
+                        commentedp: false,
+                        footnoteSection: false,
+                        lineNumber: heading.line_number,
+                    },
+                    children: [],
+                };
+
+                const item: AgendaItem = {
+                    title: heading.title,
+                    todoState: state,
+                    priority: heading.priority || undefined,
+                    tags,
+                    file: heading.file_path,
+                    line: heading.line_number,
+                    agendaType: 'todo',
+                    headline: minimalHeadline,
+                    category: heading.file_path.split('/').pop()?.replace('.org', ''),
+                };
+
+                if (!byState.has(state)) byState.set(state, []);
+                byState.get(state)!.push(item);
+                countsState[state] = (countsState[state] || 0) + 1;
+
+                if (!byPriority.has(priority)) byPriority.set(priority, []);
+                byPriority.get(priority)!.push(item);
+                countsPriority[priority] = (countsPriority[priority] || 0) + 1;
+            }
+
+            const total = headings.filter(h => h.todo_state && (this.config.showDone || !doneStates.has(h.todo_state))).length;
+
+            return {
+                byState,
+                byPriority,
+                counts: { total, byState: countsState, byPriority: countsPriority },
+            };
+        } catch (error) {
+            this.log(`Error getting todos from database: ${error}`);
+            return null;
+        }
+    }
+
+    /**
      * Refresh agenda (clear cache and re-scan)
      */
     async refresh(): Promise<void> {
         this.config = this.loadConfig();
         this.fileCache.clear();
+
+        // Re-index agenda files in the database so the view reflects current state
+        if (this.db) {
+            const files = await this.getAgendaFiles();
+            if (files.length > 0) {
+                await this.db.reindexFiles(files);
+            }
+        }
+
         this.refreshEmitter.fire();
     }
 
@@ -1501,31 +1589,33 @@ export class AgendaTreeProvider implements vscode.TreeDataProvider<AgendaTreeIte
 
     private async doRefresh(): Promise<void> {
         if (this.viewMode === 'agenda') {
-            // Try database first (faster)
             const dbView = await this.manager.getAgendaViewFromDb({ groupBy: this.groupBy });
             if (dbView) {
                 this.agendaView = dbView;
-                this.isFromDatabase = true;
+                if (this.treeView) {
+                    this.treeView.description = `${dbView.totalItems} items`;
+                    this.treeView.message = undefined;
+                }
             } else {
-                // Fall back to file scanning
-                this.agendaView = await this.manager.getAgendaView({ groupBy: this.groupBy });
-                this.isFromDatabase = false;
+                if (this.treeView) {
+                    this.treeView.description = '';
+                    this.treeView.message = 'Database not ready. Run "Scimax: Rebuild Database" to index your org files.';
+                }
             }
         } else {
-            this.todoList = await this.manager.getTodoList({ excludeDone: true });
-            this.isFromDatabase = false;
-        }
-
-        // Update tree view description
-        if (this.treeView) {
-            if (this.isFromDatabase) {
-                const itemCount = this.agendaView?.totalItems || 0;
-                this.treeView.description = `${itemCount} items`;
+            const dbTodos = await this.manager.getTodoListFromDb();
+            if (dbTodos) {
+                this.todoList = dbTodos;
+                if (this.treeView) {
+                    this.treeView.description = `${dbTodos.counts.total} items`;
+                    this.treeView.message = undefined;
+                }
             } else {
-                const fileCount = this.agendaView?.totalFiles || 0;
-                this.treeView.description = `${fileCount} files`;
+                if (this.treeView) {
+                    this.treeView.description = '';
+                    this.treeView.message = 'Database not ready. Run "Scimax: Rebuild Database" to index your org files.';
+                }
             }
-            this.treeView.message = undefined; // Clear any loading message
         }
 
         this._onDidChangeTreeData.fire(undefined);
@@ -1634,8 +1724,9 @@ export function registerAgendaCommands(context: vscode.ExtensionContext): void {
     // Commands
     context.subscriptions.push(
         // Refresh
-        vscode.commands.registerCommand('scimax.agenda.refresh', () => {
-            manager.refresh();
+        vscode.commands.registerCommand('scimax.agenda.refresh', async () => {
+            await manager.refresh();
+            vscode.window.setStatusBarMessage('$(check) Agenda refreshed', 2000);
         }),
 
         // Cancel ongoing scan
@@ -1661,10 +1752,6 @@ export function registerAgendaCommands(context: vscode.ExtensionContext): void {
                 return;
             }
             const filePath = editor.document.uri.fsPath;
-            if (!filePath.endsWith('.org')) {
-                vscode.window.showWarningMessage('Current file is not an org file');
-                return;
-            }
             await manager.excludeFile(filePath);
             vscode.window.showInformationMessage(`Added to agenda exclude list: ${path.basename(filePath)}`);
             treeProvider.refresh();
