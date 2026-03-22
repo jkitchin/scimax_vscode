@@ -460,8 +460,18 @@ export async function clockOut(): Promise<void> {
     let clockEditor = editor;
     if (!editor || editor.document.uri.fsPath !== currentClock.filePath) {
         // Need to open the file with the running clock
-        const doc = await vscode.workspace.openTextDocument(currentClock.filePath);
-        clockEditor = await vscode.window.showTextDocument(doc);
+        try {
+            const doc = await vscode.workspace.openTextDocument(currentClock.filePath);
+            clockEditor = await vscode.window.showTextDocument(doc);
+        } catch {
+            // File was deleted - clear the clock state
+            const title = currentClock.headingTitle;
+            currentClock = null;
+            await saveClockState();
+            updateStatusBar();
+            vscode.window.showWarningMessage(`Clock cleared: file for "${title}" no longer exists. Use Cancel Clock to discard.`);
+            return;
+        }
     }
 
     const document = clockEditor!.document;
@@ -519,20 +529,24 @@ export async function clockCancel(): Promise<void> {
 
     if (answer !== 'Cancel Clock') return;
 
-    // Open file and remove the clock line
-    const doc = await vscode.workspace.openTextDocument(currentClock.filePath);
-    const editor = await vscode.window.showTextDocument(doc);
+    // Try to open the file and remove the clock line
+    try {
+        const doc = await vscode.workspace.openTextDocument(currentClock.filePath);
+        const editor = await vscode.window.showTextDocument(doc);
 
-    const line = doc.lineAt(currentClock.lineNumber);
+        const line = doc.lineAt(currentClock.lineNumber);
 
-    await editor.edit(editBuilder => {
-        // Delete the entire line including newline
-        const range = new vscode.Range(
-            currentClock!.lineNumber, 0,
-            currentClock!.lineNumber + 1, 0
-        );
-        editBuilder.delete(range);
-    });
+        await editor.edit(editBuilder => {
+            // Delete the entire line including newline
+            const range = new vscode.Range(
+                currentClock!.lineNumber, 0,
+                currentClock!.lineNumber + 1, 0
+            );
+            editBuilder.delete(range);
+        });
+    } catch {
+        // File may have been deleted - just clear the clock state
+    }
 
     currentClock = null;
     await saveClockState();
@@ -551,13 +565,17 @@ export async function clockGoto(): Promise<void> {
     }
 
     // Open the file
-    const doc = await vscode.workspace.openTextDocument(currentClock.filePath);
-    const editor = await vscode.window.showTextDocument(doc);
+    try {
+        const doc = await vscode.workspace.openTextDocument(currentClock.filePath);
+        const editor = await vscode.window.showTextDocument(doc);
 
-    // Move cursor to the heading
-    const pos = new vscode.Position(currentClock.headingLine, 0);
-    editor.selection = new vscode.Selection(pos, pos);
-    editor.revealRange(new vscode.Range(pos, pos), vscode.TextEditorRevealType.InCenter);
+        // Move cursor to the heading
+        const pos = new vscode.Position(currentClock.headingLine, 0);
+        editor.selection = new vscode.Selection(pos, pos);
+        editor.revealRange(new vscode.Range(pos, pos), vscode.TextEditorRevealType.InCenter);
+    } catch {
+        vscode.window.showWarningMessage(`Clock file no longer exists: ${currentClock.filePath}. Use Cancel Clock to clear.`);
+    }
 }
 
 /**
