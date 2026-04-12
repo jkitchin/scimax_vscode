@@ -1,0 +1,58 @@
+name: Publish
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install Pandoc
+        uses: pandoc/actions/setup@v1
+        with:
+          version: 3.1.11
+
+      - name: Verify tag matches package.json version
+        run: |
+          tag="${GITHUB_REF_NAME#v}"
+          pkg=$(node -p "require('./package.json').version")
+          if [ "$tag" != "$pkg" ]; then
+            echo "::error::Release tag v$tag does not match package.json version $pkg"
+            exit 1
+          fi
+          echo "Publishing version $pkg"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Compile TypeScript
+        run: npm run compile
+
+      - name: Run tests
+        run: npm test
+
+      - name: Package extension
+        run: npx vsce package -o scimax-vscode-${{ github.event.release.tag_name }}.vsix
+
+      - name: Publish to VS Code Marketplace
+        env:
+          VSCE_PAT: ${{ secrets.VSCE_PAT }}
+        run: npx vsce publish --packagePath scimax-vscode-${{ github.event.release.tag_name }}.vsix
+
+      - name: Attach VSIX to GitHub release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh release upload "${{ github.event.release.tag_name }}" scimax-vscode-${{ github.event.release.tag_name }}.vsix --clobber
