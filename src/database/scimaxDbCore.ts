@@ -1689,6 +1689,20 @@ export class ScimaxDbCore {
         return result.rows as unknown as FileRecord[];
     }
 
+    /**
+     * Return files sorted by mtime (most recently modified first).
+     */
+    public async getRecentFiles(limit = 50): Promise<FileRecord[]> {
+        if (!this.db) return [];
+        const result = await this.db.execute({
+            sql: `SELECT * FROM files
+                  ORDER BY mtime DESC
+                  LIMIT ?`,
+            args: [limit]
+        });
+        return result.rows as unknown as FileRecord[];
+    }
+
     public async getStats(): Promise<DbStats> {
         if (!this.db) return {
             files: 0, headings: 0, blocks: 0, chunks: 0,

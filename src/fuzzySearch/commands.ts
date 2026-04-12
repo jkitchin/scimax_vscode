@@ -1,5 +1,6 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
+import { getDatabase } from '../database/lazyDb';
 
 interface LineItem extends vscode.QuickPickItem {
     filePath: string;
@@ -371,6 +372,85 @@ async function fuzzySearchOutline(): Promise<void> {
     quickPick.show();
 }
 
+interface RecentFileItem extends vscode.QuickPickItem {
+    filePath: string;
+}
+
+/**
+ * Fuzzy-search recently opened org/md files tracked in ScimaxDb.
+ * Files are ordered by mtime (most recently modified first).
+ */
+async function fuzzySearchRecentFiles(): Promise<void> {
+    const db = await getDatabase();
+    if (!db) {
+        vscode.window.showWarningMessage('Scimax database not available');
+        return;
+    }
+
+    const files = await db.getRecentFiles(200);
+    if (files.length === 0) {
+        vscode.window.showInformationMessage('No recently opened files found. Open some org/md files first.');
+        return;
+    }
+
+    const items: RecentFileItem[] = files.map(f => {
+        const basename = path.basename(f.path);
+        const dir = path.dirname(f.path);
+        const home = process.env.HOME || '';
+        const shortDir = home ? dir.replace(home, '~') : dir;
+        const when = formatRelativeTime(f.mtime);
+        return {
+            label: basename,
+            description: shortDir,
+            detail: when,
+            filePath: f.path
+        };
+    });
+
+    function filterItems(all: RecentFileItem[], query: string): RecentFileItem[] {
+        if (!query.trim()) return all;
+        const parts = query.toLowerCase().split(/\s+/).filter(p => p.length > 0);
+        return all.filter(item => {
+            const haystack = `${item.label} ${item.description}`.toLowerCase();
+            return parts.every(p => haystack.includes(p));
+        });
+    }
+
+    const quickPick = vscode.window.createQuickPick<RecentFileItem>();
+    quickPick.placeholder = 'Recent org/md files (type to filter)';
+    quickPick.matchOnDescription = true;
+    quickPick.items = items;
+
+    quickPick.onDidChangeValue(value => {
+        quickPick.items = filterItems(items, value);
+    });
+
+    quickPick.onDidAccept(() => {
+        const selected = quickPick.selectedItems[0];
+        if (selected) {
+            vscode.workspace.openTextDocument(selected.filePath).then(doc =>
+                vscode.window.showTextDocument(doc)
+            );
+        }
+        quickPick.hide();
+    });
+
+    quickPick.onDidHide(() => quickPick.dispose());
+    quickPick.show();
+}
+
+function formatRelativeTime(ms: number): string {
+    const diff = Date.now() - ms;
+    const minutes = Math.floor(diff / 60000);
+    const hours = Math.floor(diff / 3600000);
+    const days = Math.floor(diff / 86400000);
+    if (minutes < 1) return 'just now';
+    if (minutes < 60) return `${minutes}m ago`;
+    if (hours < 24) return `${hours}h ago`;
+    if (days < 7) return `${days}d ago`;
+    return new Date(ms).toLocaleDateString();
+}
+
 /**
  * Register all fuzzy search commands
  */
@@ -378,6 +458,7 @@ export function registerFuzzySearchCommands(context: vscode.ExtensionContext): v
     context.subscriptions.push(
         vscode.commands.registerCommand('scimax.fuzzySearch', fuzzySearch),
         vscode.commands.registerCommand('scimax.fuzzySearchOpenFiles', fuzzySearchOpenFiles),
-        vscode.commands.registerCommand('scimax.fuzzySearchOutline', fuzzySearchOutline)
+        vscode.commands.registerCommand('scimax.fuzzySearchOutline', fuzzySearchOutline),
+        vscode.commands.registerCommand('scimax.fuzzySearchRecentFiles', fuzzySearchRecentFiles)
     );
 }

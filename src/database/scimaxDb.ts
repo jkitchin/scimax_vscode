@@ -156,6 +156,7 @@ export class ScimaxDb extends ScimaxDbCore {
             }
         });
         this.context.subscriptions.push(saveHandler);
+
     }
 
     private queueIndex(filePath: string): void {

@@ -1651,6 +1651,10 @@
         "title": "Scimax: Fuzzy Search (Outline)"
       },
       {
+        "command": "scimax.fuzzySearchRecentFiles",
+        "title": "Scimax: Recent Files"
+      },
+      {
         "command": "scimax.jump.gotoChar",
         "title": "Scimax: Jump to Character"
       },
@@ -3130,7 +3134,7 @@
         "mac": "ctrl+x o"
       },
       {
-        "command": "workbench.action.quickOpenPreviousRecentlyUsedEditor",
+        "command": "scimax.fuzzySearchRecentFiles",
         "key": "ctrl+x b",
         "mac": "ctrl+x b"
       },
