@@ -95,6 +95,7 @@ export async function exportCommand(config: CliConfig, args: ParsedArgs): Promis
             output = exportToLatex(doc, {
                 documentClass: settings.export.latex.documentClass,
                 classOptions: parseClassOptions(settings.export.latex.classOptions),
+                preamble: settings.export.latex.defaultPreamble,
                 customHeader: settings.export.latex.customHeader,
             });
             defaultExt = '.tex';
@@ -105,6 +106,7 @@ export async function exportCommand(config: CliConfig, args: ParsedArgs): Promis
             const latex = exportToLatex(doc, {
                 documentClass: settings.export.latex.documentClass,
                 classOptions: parseClassOptions(settings.export.latex.classOptions),
+                preamble: settings.export.latex.defaultPreamble,
                 customHeader: settings.export.latex.customHeader,
             });
             defaultExt = '.pdf';

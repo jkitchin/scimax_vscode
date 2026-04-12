@@ -103,6 +103,29 @@ export interface ScimaxSettings {
 }
 
 /**
+ * Default LaTeX preamble — must match scimax.export.latex.defaultPreamble
+ * in package.json. VS Code reads package.json defaults automatically; the CLI
+ * has to carry this string itself since it only sees what's in settings.json.
+ */
+const DEFAULT_LATEX_PREAMBLE = [
+    '\\usepackage[utf8]{inputenc}',
+    '\\usepackage[T1]{fontenc}',
+    '\\usepackage{lmodern}',
+    '\\usepackage{graphicx}',
+    '\\usepackage{longtable}',
+    '\\usepackage{float}',
+    '\\usepackage{wrapfig}',
+    '\\usepackage{rotating}',
+    '\\usepackage[normalem]{ulem}',
+    '\\usepackage{amsmath}',
+    '\\usepackage{amssymb}',
+    '\\usepackage{capt-of}',
+    '\\usepackage[numbers,super]{natbib}',
+    '\\usepackage{natmove}',
+    '\\usepackage{mhchem}',
+].join('\n');
+
+/**
  * Get VS Code settings.json path for current platform
  */
 export function getVSCodeSettingsPath(): string {
@@ -272,7 +295,7 @@ export function loadSettings(): ScimaxSettings {
                 documentClass: getSetting<string>(settings, 'scimax.export.latex.documentClass', 'article'),
                 classOptions: getSetting<string>(settings, 'scimax.export.latex.classOptions', '12pt,letterpaper'),
                 customHeader: getSetting<string>(settings, 'scimax.export.latex.customHeader', ''),
-                defaultPreamble: getSetting<string>(settings, 'scimax.export.latex.defaultPreamble', ''),
+                defaultPreamble: getSetting<string>(settings, 'scimax.export.latex.defaultPreamble', DEFAULT_LATEX_PREAMBLE),
             },
             pdf: {
                 compiler: getSetting<string>(settings, 'scimax.export.pdf.compiler', 'latexmk-lualatex'),
