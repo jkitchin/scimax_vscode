@@ -64,13 +64,14 @@ CLOSED: [2026-01-17 Sat 12:24]
 | [[cmd:scimax.org.markSubtree]]     | Mark (Select) Subtree    | C-c @ (org)        |
 | [[cmd:scimax.org.addIdToHeading]]  | Add ID to Heading        | -                  |
 
-** ✅ DWIM Commands
+** 👀 DWIM Commands
 CLOSED: [2026-01-17 Sat 15:21]
 
-| Command ID                    | Description     | Default Keybinding |
-|-------------------------------+-----------------+--------------------|
-| [[cmd:scimax.org.dwimReturn]] | DWIM Return     | -                  |
-| [[cmd:scimax.insertNewline]]  | Insert Newline  | -                  |
+| Command ID                    | Description                         | Default Keybinding |
+|-------------------------------+-------------------------------------+--------------------|
+| [[cmd:scimax.org.dwimReturn]] | DWIM Return                         | -                  |
+| [[cmd:scimax.insertNewline]]  | Insert Newline                      | -                  |
+| [[cmd:scimax.org.dwimComment]]| DWIM Comment (toggle =# = on lines) | M-;                |
 
 ** ✅ Org Utility Commands
 CLOSED: [2026-01-18 Sun 09:57]
@@ -285,6 +286,24 @@ CLOSED: [2026-01-17 Sat 12:27]
 | Command ID                        | Description         | Default Keybinding |
 |-----------------------------------+---------------------+--------------------|
 | [[cmd:scimax.org.exportMarkdown]] | Export to Markdown  | C-c C-e m m        |
+
+** ⚠️ Markdown File Export
+
+Export markdown (=.md=) files to other formats via Pandoc. Complements the org-to-markdown export above — these commands operate on markdown source files.
+
+| Command ID                             | Description                       | Default Keybinding |
+|----------------------------------------+-----------------------------------+--------------------|
+| [[cmd:scimax.markdown.exportMenu]]     | Markdown Export Menu              | -                  |
+| [[cmd:scimax.markdown.exportHtml]]     | Markdown → HTML                   | -                  |
+| [[cmd:scimax.markdown.exportHtmlOpen]] | Markdown → HTML and Open          | -                  |
+| [[cmd:scimax.markdown.exportLatex]]    | Markdown → LaTeX                  | -                  |
+| [[cmd:scimax.markdown.exportLatexOpen]]| Markdown → LaTeX and Open         | -                  |
+| [[cmd:scimax.markdown.exportPdf]]      | Markdown → PDF                    | -                  |
+| [[cmd:scimax.markdown.exportPdfOpen]]  | Markdown → PDF and Open           | -                  |
+| [[cmd:scimax.markdown.exportDocx]]     | Markdown → DOCX                   | -                  |
+| [[cmd:scimax.markdown.exportDocxOpen]] | Markdown → DOCX and Open          | -                  |
+
+Requires Pandoc to be installed on the system.
 
 ** ✅ Jupyter Notebook Export
 CLOSED: [2026-01-25 Sun 20:43]
@@ -672,14 +691,15 @@ CLOSED: [2026-01-17 Sat 12:46]
 * ✅ Navigation
 CLOSED: [2026-01-17 Sat 12:47]
 
-** ✅ Fuzzy Search (Swiper)
+** 👀 Fuzzy Search (Swiper)
 CLOSED: [2026-01-17 Sat 12:47]
 
-| Command ID                          | Description                 | Default Keybinding |
-|-------------------------------------+-----------------------------+--------------------|
-| [[cmd:scimax.fuzzySearch]]          | Fuzzy Search (Current File) | C-c s              |
-| [[cmd:scimax.fuzzySearchOpenFiles]] | Fuzzy Search (Open Files)   | C-c S-s            |
-| [[cmd:scimax.fuzzySearchOutline]]   | Fuzzy Search (Outline)      | C-c M-s            |
+| Command ID                             | Description                      | Default Keybinding |
+|----------------------------------------+----------------------------------+--------------------|
+| [[cmd:scimax.fuzzySearch]]             | Fuzzy Search (Current File)      | C-c s              |
+| [[cmd:scimax.fuzzySearchOpenFiles]]    | Fuzzy Search (Open Files)        | C-c S-s            |
+| [[cmd:scimax.fuzzySearchOutline]]      | Fuzzy Search (Outline)           | C-c M-s            |
+| [[cmd:scimax.fuzzySearchRecentFiles]]  | Fuzzy Search (Recent org/md)     | C-x b              |
 
 ** ✅ Jump (Avy)
 CLOSED: [2026-01-17 Sat 12:47]
@@ -1490,6 +1510,7 @@ Miscellaneous utility commands.
 | Command ID                       | Description                       | Default Keybinding |
 |----------------------------------+-----------------------------------+--------------------|
 | [[cmd:scimax.openFolder]]        | Open Folder                       | -                  |
+| [[cmd:scimax.openTerminalHere]]  | Open Terminal in Document's Directory | -              |
 | [[cmd:scimax.dired.open]]        | Open Dired (Directory Editor)     | C-x d              |
 | [[cmd:scimax.dired.openCurrent]] | Open Dired for Current File Dir   | -                  |
 | [[cmd:scimax.dired.openWorkspace]]| Open Dired for Workspace         | -                  |

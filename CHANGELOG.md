@@ -7,6 +7,47 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-04-12
+
+### Added
+
+#### Features
+- **Markdown export with Pandoc** - Export markdown files to HTML, LaTeX, PDF, and DOCX via a new `scimax.markdown.export*` command family with an interactive export menu
+- **Terminal navigation with CLI hyperlinks** - Open files produced by `scimax` CLI output directly from the integrated terminal
+- **Fuzzy search for recent files** (`C-x b`) - Quick pick over recently modified org/md files tracked in the scimax database, ordered by mtime with relative-time labels. Replaces the built-in `quickOpenPreviousRecentlyUsedEditor` on `C-x b`
+- **DWIM comment toggle** (`Alt-;`) - Emacs-style `comment-dwim`: toggles `# ` prefix on the current line, or adds/removes it across a selection based on whether all lines are already commented
+- **Selection-aware word count** - `scimax.latex.wordCount` now works on any buffer, counts the current selection when one is active, and only strips LaTeX commands in LaTeX files
+- **Agenda refresh status bar notification** - Brief status bar message when the agenda finishes refreshing
+
+#### CLI
+- `scimax journal` - Open, create, and navigate journal entries from the command line
+- `scimax project` - Fuzzy-pick and switch projects from the command line
+
+### Changed
+
+- **LaTeX export**: restored the Emacs org-mode default package list (inputenc, fontenc, geometry, graphicx, longtable, wrapfig, rotating, ulem, amsmath, amssymb, capt-of, hyperref, booktabs, minted) with dedup guards against user-supplied preamble content
+- `scimax.export.latex.defaultPreamble` default now loads `natbib` with `[numbers,super]` options plus `natmove`, and drops `hyperref` (emitted automatically by the backend)
+- LaTeX compilation via `latexmk` now passes `-f` to continue past non-fatal errors
+- LaTeX export: entities like `α`, `→`, and `\pm` now render in math mode where appropriate; improved table handling and image height support
+- **Org-mode syntax reference** shipped with the scimax skill (v0.6.0) so Claude Code can answer org syntax and citation questions without web lookups
+
+### Fixed
+
+- **CLI LaTeX export** was producing `.tex` files without the default package list because the CLI never passed `preamble` to `exportToLatex`. VS Code export and `scimax export --format latex` now match
+- **DOCX export**: relative bibliography paths are now resolved against the document's directory instead of the invoker's CWD, so DOCX export from subfolders or the CLI finds `refs.bib`
+- **Agenda scanning**: stray `.org` backups under `~/Library/Application Support`, `~/Library/Caches`, `~/.Trash`, `~/AppData`, `~/.cache`, and `~/.emacs.d/{elpa,straight}` no longer leak into agenda views
+- **Clock operations** no longer throw when a previously clocked-in file has been deleted
+- **Clocking**: `LOGBOOK` drawer placement when clocking in on the final heading at end-of-file
+- **Citation keys** may now contain `.`, `/`, and `+` (e.g., `doi:10.1021/ja.5b00123`)
+- **Markup export**: removed the 500-character length cap on inline bold/italic/code/verbatim patterns that was silently dropping long spans
+- **`org-store-link`** persistence and heading return behavior improvements
+
+### Infrastructure
+
+- **Release automation** - New `.github/workflows/publish.yml` fires on GitHub release, guards `package.json` version against the release tag, runs tests, publishes to the VS Code Marketplace via `vsce`, and attaches the VSIX as a release asset. Requires `VSCE_PAT` repo secret
+- **`RELEASING.md`** checklist and release process documentation at the repo root
+- Database layer refactored so the CLI reuses `ScimaxDbCore` directly, sharing logic with the VS Code extension
+
 ## [0.3.1] - 2026-02-14
 
 ### Fixed
