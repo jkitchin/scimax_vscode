@@ -564,17 +564,17 @@ function buildCompileArgs(
     switch (config.compiler) {
         case 'latexmk-lualatex':
             command = 'latexmk';
-            args = ['-lualatex', '-bibtex'];
+            args = ['-lualatex', '-bibtex', '-f'];
             break;
 
         case 'latexmk-pdflatex':
             command = 'latexmk';
-            args = ['-pdf', '-bibtex'];
+            args = ['-pdf', '-bibtex', '-f'];
             break;
 
         case 'latexmk-xelatex':
             command = 'latexmk';
-            args = ['-xelatex', '-bibtex'];
+            args = ['-xelatex', '-bibtex', '-f'];
             break;
 
         case 'lualatex':
@@ -594,7 +594,7 @@ function buildCompileArgs(
 
         default:
             command = 'latexmk';
-            args = ['-lualatex', '-bibtex'];
+            args = ['-lualatex', '-bibtex', '-f'];
     }
 
     // Add shell escape flag if needed

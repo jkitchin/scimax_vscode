@@ -278,6 +278,11 @@ export class LatexExportBackend implements ExportBackend {
         // Build content
         const content = this.exportDocumentContent(doc, state, opts);
 
+        // Only include minted in preamble if there are actual minted code blocks in the content
+        if (opts.minted && !content.includes('\\begin{minted}')) {
+            opts = { ...opts, minted: false };
+        }
+
         let output: string;
         // If bodyOnly is requested, return just the content without preamble/document wrapper
         if (opts.bodyOnly) {
@@ -1391,10 +1396,61 @@ export class LatexExportBackend implements ExportBackend {
             parts.push(`\\documentclass${classOpts}{${meta.documentClass}}`);
             parts.push('');
 
+            // Default packages (matching Emacs org-mode LaTeX export defaults)
+            const preambleStr = meta.preamble || '';
+            parts.push('\\usepackage[utf8]{inputenc}');
+            parts.push('\\usepackage[T1]{fontenc}');
+            if (!preambleStr.includes('geometry')) {
+                parts.push('\\usepackage[margin=1in]{geometry}');
+            }
+            if (!preambleStr.includes('graphicx')) {
+                parts.push('\\usepackage{graphicx}');
+            }
+            if (!preambleStr.includes('longtable')) {
+                parts.push('\\usepackage{longtable}');
+            }
+            if (!preambleStr.includes('wrapfig')) {
+                parts.push('\\usepackage{wrapfig}');
+            }
+            if (!preambleStr.includes('rotating')) {
+                parts.push('\\usepackage{rotating}');
+            }
+            if (!preambleStr.includes('ulem') && !preambleStr.includes('normalem')) {
+                parts.push('\\usepackage[normalem]{ulem}');
+            }
+            if (!preambleStr.includes('amsmath')) {
+                parts.push('\\usepackage{amsmath}');
+            }
+            if (!preambleStr.includes('amssymb')) {
+                parts.push('\\usepackage{amssymb}');
+            }
+            if (!preambleStr.includes('capt-of')) {
+                parts.push('\\usepackage{capt-of}');
+            }
+
+            // Hyperref (should be loaded near last)
+            if (meta.hyperref !== false && !preambleStr.includes('hyperref')) {
+                const hyperOpts = meta.hyperrefOptions;
+                if (hyperOpts && Object.keys(hyperOpts).length > 0) {
+                    const optsStr = Object.entries(hyperOpts)
+                        .map(([k, v]) => v ? `${k}=${v}` : k)
+                        .join(',\n            ');
+                    parts.push(`\\usepackage[${optsStr}]{hyperref}`);
+                } else {
+                    parts.push('\\usepackage{hyperref}');
+                }
+            }
+
+            // Booktabs for nicer tables
+            if (meta.booktabs !== false && !preambleStr.includes('booktabs')) {
+                parts.push('\\usepackage{booktabs}');
+            }
+
             // Inject minted package if enabled and not already in user preamble
-            if (meta.minted !== false && !(meta.preamble && meta.preamble.includes('minted'))) {
+            if (meta.minted !== false && !preambleStr.includes('minted')) {
                 parts.push('\\usepackage[newfloat]{minted}');
             }
+            parts.push('');
 
             // User preamble from defaultPreamble setting and #+LATEX_HEADER: lines
             if (meta.preamble) {

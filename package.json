@@ -5822,7 +5822,7 @@
         },
         "scimax.export.latex.defaultPreamble": {
           "type": "string",
-          "default": "\\usepackage[utf8]{inputenc}\n\\usepackage[T1]{fontenc}\n\\usepackage{lmodern}\n\\usepackage{graphicx}\n\\usepackage{longtable}\n\\usepackage{float}\n\\usepackage{wrapfig}\n\\usepackage{rotating}\n\\usepackage[normalem]{ulem}\n\\usepackage{amsmath}\n\\usepackage{amssymb}\n\\usepackage{capt-of}\n\\usepackage{hyperref}\n\\usepackage{natbib}\n\\usepackage{mhchem}",
+          "default": "\\usepackage[utf8]{inputenc}\n\\usepackage[T1]{fontenc}\n\\usepackage{lmodern}\n\\usepackage{graphicx}\n\\usepackage{longtable}\n\\usepackage{float}\n\\usepackage{wrapfig}\n\\usepackage{rotating}\n\\usepackage[normalem]{ulem}\n\\usepackage{amsmath}\n\\usepackage{amssymb}\n\\usepackage{capt-of}\n\\usepackage[numbers,super]{natbib}\n\\usepackage{natmove}\n\\usepackage{mhchem}",
           "editPresentation": "multilineText",
           "markdownDescription": "Default LaTeX preamble (packages and commands) added after `\\documentclass`. Can be extended by `#+LATEX_HEADER:` lines in the document. Example:\n```latex\n\\usepackage[utf8]{inputenc}\n\\usepackage{graphicx}\n\\usepackage{amsmath}\n```"
         },
