@@ -526,14 +526,13 @@ describe('JournalManager Statistics', () => {
             await manager.createEntry(date);
 
             const entryPath = manager.getEntryPath(date);
-            // Default template already has 1 task, we add 2 more + 1 done
             fs.appendFileSync(entryPath, '\n- [ ] Task 1\n- [ ] Task 2\n- [X] Done task');
 
             const entry = manager.getEntry(date);
             const stats = manager.getEntryStats(entry);
 
-            // Default template has 1 task ("- [ ]") + our 3 added = 4 total
-            expect(stats.taskCount).toBe(4);
+            // 2 open tasks + 1 done task; taskCount is the total
+            expect(stats.taskCount).toBe(3);
             expect(stats.doneCount).toBe(1);
         });
 
