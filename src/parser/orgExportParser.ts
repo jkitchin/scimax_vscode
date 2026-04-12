@@ -70,12 +70,12 @@ const BIBSTYLE_PATTERN = /(?:bibliographystyle|bibstyle):([^\s<>\[\](){}]+)/g;
 // Closing marker must be followed by end-of-string, whitespace, or - . , : ! ? ; ' " ) } \ [ ]
 const PRE = '(?:^|(?<=[\\s\\-({\'\"]))';
 const POST = '(?=[\\s\\-.,:!?;\\\'")}\\\\\\[\\]]|$)';
-const BOLD_PATTERN = new RegExp(`${PRE}\\*([^\\s*](?:[^*]{0,500}[^\\s*])?)\\*${POST}`, 'g');
-const ITALIC_PATTERN = new RegExp(`${PRE}\\/([^\\s/](?:[^/]{0,500}[^\\s/])?)\\/(?![a-zA-Z0-9])${POST}`, 'g');
-const UNDERLINE_PATTERN = new RegExp(`${PRE}_([^\\s_](?:[^_]{0,500}[^\\s_])?)_(?![a-zA-Z])${POST}`, 'g');
-const STRIKE_PATTERN = new RegExp(`${PRE}\\+([^\\s+](?:[^+]{0,500}[^\\s+])?)\\+(?![a-zA-Z0-9])${POST}`, 'g');
-const CODE_PATTERN = new RegExp(`${PRE}=([^\\s=](?:[^=]{0,500}[^\\s=])?)=${POST}`, 'g');
-const VERBATIM_PATTERN = new RegExp(`${PRE}~([^\\s~](?:[^~]{0,500}[^\\s~])?)~${POST}`, 'g');
+const BOLD_PATTERN = new RegExp(`${PRE}\\*([^\\s*](?:[^*]*[^\\s*])?)\\*${POST}`, 'g');
+const ITALIC_PATTERN = new RegExp(`${PRE}\\/([^\\s/](?:[^/]*[^\\s/])?)\\/(?![a-zA-Z0-9])${POST}`, 'g');
+const UNDERLINE_PATTERN = new RegExp(`${PRE}_([^\\s_](?:[^_]*[^\\s_])?)_(?![a-zA-Z])${POST}`, 'g');
+const STRIKE_PATTERN = new RegExp(`${PRE}\\+([^\\s+](?:[^+]*[^\\s+])?)\\+(?![a-zA-Z0-9])${POST}`, 'g');
+const CODE_PATTERN = new RegExp(`${PRE}=([^\\s=](?:[^=]*[^\\s=])?)=${POST}`, 'g');
+const VERBATIM_PATTERN = new RegExp(`${PRE}~([^\\s~](?:[^~]*[^\\s~])?)~${POST}`, 'g');
 // Emacs-style command markup: `command'
 const COMMAND_PATTERN = /`([^`'\n]+)'/g;
 
