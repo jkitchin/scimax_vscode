@@ -454,6 +454,10 @@ export class DocxExportBackend {
             if (bibPath) {
                 // Expand ~ to home directory
                 expandedBibPath = bibPath.replace(/^~/, process.env.HOME || '');
+                // Resolve relative paths against the document's directory (basePath)
+                if (!path.isAbsolute(expandedBibPath)) {
+                    expandedBibPath = path.resolve(opts.basePath || process.cwd(), expandedBibPath);
+                }
                 if (fs.existsSync(expandedBibPath)) {
                     useBibliography = true;
                 }
