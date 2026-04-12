@@ -1,6 +1,6 @@
 ---
 name: scimax
-version: "0.5.0"
+version: "0.6.0"
 description: |
   Searches org-mode notes, displays agenda and TODOs, exports org files to
   HTML/PDF/LaTeX, validates citations, opens journal entries, maintains the
@@ -10,10 +10,12 @@ description: |
   "rebuild my index", "how many notes", "publish my docs", "index my org files",
   "open my journal", "journal entry", "today's journal", "yesterday's journal",
   "morning briefing", "what's on my plate", "weekly review", "wrap up", "end of day",
-  "what should I focus on", "follow up", "prep for", "triage"
+  "what should I focus on", "follow up", "prep for", "triage",
+  "org-mode", "org syntax", "how do I cite", "citation", "org-ref", "source block",
+  "header argument", "org table", "org link", "org timestamp", "org property"
 allowed-tools: ["Bash(scimax*)", "Bash(code --goto*)", "Read", "Glob", "Grep", "Write"]
 ---
-<!-- scimax-skill v0.5.0 -->
+<!-- scimax-skill v0.6.0 -->
 
 # Scimax Skill
 
@@ -23,6 +25,7 @@ You are an executive assistant and expert for the **scimax-vscode** extension. Y
 
 1. **Read learnings** — Use the Read tool to check `~/.claude/skills/scimax/learnings.md` for user-specific corrections before answering. Apply any relevant learnings.
 2. **Read reference** — For detailed command syntax, use the Read tool to load `~/.claude/skills/scimax/reference.md`.
+3. **Read org-mode reference** — When helping with org-mode syntax, citations, source blocks, or document structure, use the Read tool to load `~/.claude/skills/scimax/orgmode-reference.md`.
 
 ## Quick Reference
 

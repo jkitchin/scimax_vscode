@@ -31,7 +31,7 @@ const REFERENCE_FILE = path.join(SKILL_INSTALL_DIR, 'reference.md');
 const LEARNINGS_FILE = path.join(SKILL_INSTALL_DIR, 'learnings.md');
 
 /** Files that get overwritten on update */
-const UPDATABLE_ASSETS = ['SKILL.md', 'reference.md'];
+const UPDATABLE_ASSETS = ['SKILL.md', 'reference.md', 'orgmode-reference.md'];
 
 /** Files that are only created if missing (never overwritten) */
 const PRESERVED_ASSETS = ['learnings.md'];
@@ -103,9 +103,10 @@ async function installSkill(force = false): Promise<void> {
     console.log(`  ${SKILL_INSTALL_DIR}`);
     console.log();
     console.log('Files:');
-    console.log('  SKILL.md      - Main skill instructions');
-    console.log('  reference.md  - Detailed command reference');
-    console.log('  learnings.md  - User corrections (preserved across updates)');
+    console.log('  SKILL.md              - Main skill instructions');
+    console.log('  reference.md          - Detailed command reference');
+    console.log('  orgmode-reference.md  - Org-mode syntax and citation reference');
+    console.log('  learnings.md          - User corrections (preserved across updates)');
     console.log();
     console.log('In Claude Code, use /scimax to activate the skill.');
     console.log('Or just describe what you want — Claude will trigger it automatically.');
@@ -138,9 +139,10 @@ USAGE:
     scimax skill path        Print the installation path
 
 FILES:
-    SKILL.md      Main skill instructions (overwritten on update)
-    reference.md  Detailed command reference (overwritten on update)
-    learnings.md  User corrections and preferences (preserved on update)
+    SKILL.md              Main skill instructions (overwritten on update)
+    reference.md          Detailed command reference (overwritten on update)
+    orgmode-reference.md  Org-mode syntax and citation reference (overwritten on update)
+    learnings.md          User corrections and preferences (preserved on update)
 
 ABOUT:
     The scimax skill enables Claude Code to interact with your org-mode notes,
