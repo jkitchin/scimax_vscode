@@ -1985,6 +1985,10 @@
         "title": "Scimax: Fill/Unfill Paragraph"
       },
       {
+        "command": "scimax.org.dwimComment",
+        "title": "Scimax: DWIM Comment (toggle # )"
+      },
+      {
         "command": "scimax.org.updateDynamicBlock",
         "title": "Scimax: Update Dynamic Block"
       },
@@ -4004,6 +4008,12 @@
         "key": "alt+q",
         "mac": "alt+q",
         "when": "editorTextFocus && editorLangId =~ /org|markdown/ && !terminalFocus"
+      },
+      {
+        "command": "scimax.org.dwimComment",
+        "key": "alt+;",
+        "mac": "alt+;",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/"
       },
       {
         "command": "scimax.markup.bold",

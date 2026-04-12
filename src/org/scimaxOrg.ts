@@ -863,6 +863,82 @@ export async function latexDisplayMathRegionOrPoint(): Promise<void> {
 }
 
 // =============================================================================
+// DWIM Comment (Do What I Mean)
+// =============================================================================
+
+/**
+ * Toggle org-mode line comments (# ) on the current line or selection.
+ * - No selection: toggle `# ` prefix on the current line
+ * - Selection: if ALL selected lines start with `# `, remove it; otherwise add it
+ * Mirrors Emacs comment-dwim (M-;) behavior for org-mode.
+ */
+export async function dwimComment(): Promise<void> {
+    const editor = vscode.window.activeTextEditor;
+    if (!editor) return;
+
+    const document = editor.document;
+    const selection = editor.selection;
+
+    if (selection.isEmpty) {
+        // Single line toggle
+        const line = document.lineAt(selection.active.line);
+        const text = line.text;
+        await editor.edit(editBuilder => {
+            if (text.startsWith('# ')) {
+                editBuilder.delete(new vscode.Range(
+                    line.range.start,
+                    new vscode.Position(line.lineNumber, 2)
+                ));
+            } else if (text === '#') {
+                editBuilder.delete(new vscode.Range(
+                    line.range.start,
+                    new vscode.Position(line.lineNumber, 1)
+                ));
+            } else {
+                editBuilder.insert(line.range.start, '# ');
+            }
+        });
+    } else {
+        // Multi-line: collect all lines in the selection
+        const startLine = selection.start.line;
+        const endLine = selection.end.line === selection.start.line
+            ? selection.end.line
+            : selection.end.character === 0
+                ? selection.end.line - 1
+                : selection.end.line;
+
+        const lines: vscode.TextLine[] = [];
+        for (let i = startLine; i <= endLine; i++) {
+            lines.push(document.lineAt(i));
+        }
+
+        const allCommented = lines.every(l => l.text.startsWith('# ') || l.text === '#');
+
+        await editor.edit(editBuilder => {
+            for (const line of lines) {
+                if (allCommented) {
+                    if (line.text.startsWith('# ')) {
+                        editBuilder.delete(new vscode.Range(
+                            line.range.start,
+                            new vscode.Position(line.lineNumber, 2)
+                        ));
+                    } else if (line.text === '#') {
+                        editBuilder.delete(new vscode.Range(
+                            line.range.start,
+                            new vscode.Position(line.lineNumber, 1)
+                        ));
+                    }
+                } else {
+                    if (!line.text.startsWith('# ') && line.text !== '#') {
+                        editBuilder.insert(line.range.start, '# ');
+                    }
+                }
+            }
+        });
+    }
+}
+
+// =============================================================================
 // DWIM Return (Do What I Mean)
 // =============================================================================
 
@@ -4530,5 +4606,10 @@ export function registerScimaxOrgCommands(context: vscode.ExtensionContext): voi
     // Fill/unfill paragraph (Emacs M-q)
     context.subscriptions.push(
         vscode.commands.registerCommand('scimax.org.fillParagraph', fillOrUnfillParagraph)
+    );
+
+    // DWIM Comment (Emacs M-;)
+    context.subscriptions.push(
+        vscode.commands.registerCommand('scimax.org.dwimComment', dwimComment)
     );
 }
