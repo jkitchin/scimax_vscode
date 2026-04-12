@@ -61,7 +61,7 @@ CLOSED: [2026-01-17 Sat 12:24]
 | [[cmd:scimax.org.cloneSubtree]]    | Clone Subtree            | -                  |
 | [[cmd:scimax.org.refile]]          | Refile Subtree           | C-c C-w            |
 | [[cmd:scimax.org.refileCopy]]      | Copy Subtree to Target   | C-c M-w            |
-| [[cmd:scimax.org.markSubtree]]     | Mark (Select) Subtree    | C-c @ (org)        |
+| [[cmd:scimax.org.markSubtree]]     | Mark (Select) Subtree    | m (speed)          |
 | [[cmd:scimax.org.addIdToHeading]]  | Add ID to Heading        | -                  |
 
 ** 👀 DWIM Commands
@@ -73,7 +73,7 @@ CLOSED: [2026-01-17 Sat 15:21]
 | [[cmd:scimax.insertNewline]]  | Insert Newline                      | -                  |
 | [[cmd:scimax.org.dwimComment]]| DWIM Comment (toggle =# = on lines) | M-;                |
 
-** ✅ Org Utility Commands
+** 👀 Org Utility Commands
 CLOSED: [2026-01-18 Sun 09:57]
 
 | Command ID                            | Description              | Default Keybinding |
@@ -81,6 +81,7 @@ CLOSED: [2026-01-18 Sun 09:57]
 | [[cmd:scimax.org.updateStatistics]]   | Update Statistics Cookie | -                  |
 | [[cmd:scimax.org.renumberList]]       | Renumber Ordered List    | -                  |
 | [[cmd:scimax.org.updateDynamicBlock]] | Update Dynamic Block     | C-c C-x C-u (org)  |
+| [[cmd:scimax.org.fillParagraph]]      | Fill/Unfill Paragraph    | M-q                |
 
 ** ✅ Lists
 CLOSED: [2026-01-24 Sat 17:41]
@@ -145,8 +146,8 @@ CLOSED: [2026-01-17 Sat 12:25]
 
 | Command ID                           | Description               | Default Keybinding   |
 |--------------------------------------+---------------------------+----------------------|
-| [[cmd:scimax.table.insertRowBelow]]   | Insert Table Row Below    | M-RET                |
-| [[cmd:scimax.table.insertRowAbove]]   | Insert Table Row Above    | M-S-RET              |
+| [[cmd:scimax.table.insertRowBelow]]   | Insert Table Row Below    | M-S-down             |
+| [[cmd:scimax.table.insertRowAbove]]   | Insert Table Row Above    | M-S-up               |
 | [[cmd:scimax.table.deleteRow]]        | Delete Table Row          | M-S-BACKSPACE        |
 | [[cmd:scimax.table.insertColumnLeft]] | Insert Table Column Left  | -                    |
 | [[cmd:scimax.table.insertColumnRight]]| Insert Table Column Right | M-S-RIGHT (in table) |
@@ -164,6 +165,7 @@ CLOSED: [2026-01-17 Sat 12:25]
 | [[cmd:scimax.table.gotoNamed]]   | Go to Named Table           | -                  |
 | [[cmd:scimax.table.export]]      | Export Table                | -                  |
 | [[cmd:scimax.table.import]]      | Import Table from Clipboard | -                  |
+| [[cmd:scimax.table.importFile]]  | Import Table from File      | -                  |
 | [[cmd:scimax.table.sumColumn]]   | Sum Column                  | -                  |
 | [[cmd:scimax.table.averageColumn]]| Average Column              | -                  |
 | [[cmd:scimax.table.sortByColumn]]| Sort by Column              | C-c ^              |
@@ -388,11 +390,12 @@ CLOSED: [2026-01-17 Sat 12:28]
 ** ✅ Agenda Views
 CLOSED: [2026-01-17 Sat 12:28]
 
-| Command ID                   | Description             | Default Keybinding |
-|------------------------------+-------------------------+--------------------|
-| [[cmd:scimax.db.agenda]]     | Show Agenda             | -                  |
-| [[cmd:scimax.db.showTodos]]  | Show TODO Items         | -                  |
-| [[cmd:scimax.db.deadlines]]  | Show Upcoming Deadlines | -                  |
+| Command ID                       | Description             | Default Keybinding |
+|----------------------------------+-------------------------+--------------------|
+| [[cmd:scimax.db.agenda]]         | Show Agenda             | -                  |
+| [[cmd:scimax.db.showTodos]]      | Show TODO Items         | -                  |
+| [[cmd:scimax.db.deadlines]]      | Show Upcoming Deadlines | -                  |
+| [[cmd:scimax.agenda.currentFile]]| Agenda for Current File | C-c a <            |
 
 ** ✅ Advanced Agenda
 CLOSED: [2026-01-17 Sat 12:51]
@@ -421,6 +424,7 @@ CLOSED: [2026-01-17 Sat 12:51]
 | [[cmd:scimax.agenda.search]]          | Search Agenda Items      | -                  |
 | [[cmd:scimax.agenda.toggleVerbose]]   | Toggle Verbose Mode      | -                  |
 | [[cmd:scimax.agenda.ignoreFile]]      | Ignore File in Agenda    | -                  |
+| [[cmd:scimax.agenda.ignoreFileFromItem]]| Ignore File from Agenda Item | -            |
 | [[cmd:scimax.agenda.unignoreFile]]    | Unignore File in Agenda  | -                  |
 
 * ✅ Journal
@@ -468,12 +472,13 @@ CLOSED: [2026-01-17 Sat 12:45]
 ** ✅ Advanced Search
 CLOSED: [2026-01-17 Sat 12:45]
 
-| Command ID                       | Description                 | Default Keybinding |
-|----------------------------------+-----------------------------+--------------------|
-| [[cmd:scimax.db.searchBlocks]]   | Search Code Blocks          | -                  |
-| [[cmd:scimax.db.searchHashtags]] | Search by Hashtag           | -                  |
-| [[cmd:scimax.db.searchByTag]]    | Search by Tag               | -                  |
-| [[cmd:scimax.db.searchByProperty]]| Search by Property         | -                  |
+| Command ID                       | Description                  | Default Keybinding |
+|----------------------------------+------------------------------+--------------------|
+| [[cmd:scimax.db.searchBlocks]]   | Search Code Blocks           | -                  |
+| [[cmd:scimax.db.searchHashtags]] | Search by Hashtag            | -                  |
+| [[cmd:scimax.db.searchByTag]]    | Search by Tag                | -                  |
+| [[cmd:scimax.db.searchByProperty]]| Search by Property          | -                  |
+| [[cmd:scimax.db.searchAdvanced]] | Advanced Search (Full Pipeline) | -               |
 
 ** ✅ Semantic Search (AI)
 CLOSED: [2026-01-17 Sat 12:45]
@@ -500,6 +505,10 @@ CLOSED: [2026-01-17 Sat 12:46]
 | [[cmd:scimax.db.cancelSync]]       | Cancel Database Sync         | -                  |
 | [[cmd:scimax.db.cancelEmbeddings]] | Cancel Embedding Generation  | -                  |
 | [[cmd:scimax.database.refresh]]    | Refresh Database             | -                  |
+| [[cmd:scimax.db.removeCurrentFile]]| Remove Current File from Database | -             |
+| [[cmd:scimax.db.removeFile]]       | Remove File from Database    | -                  |
+| [[cmd:scimax.db.ignoreCurrentFile]]| Add Current File to Ignore Patterns | -           |
+| [[cmd:scimax.db.ignoreFile]]       | Add File to Ignore Patterns  | -                  |
 
 ** ⚠️ Link Graph Visualization
 
@@ -526,6 +535,7 @@ Commands for debugging issues and reporting problems.
 | [[cmd:scimax.contextHelp]]     | Context-Sensitive Help     | -                  |
 | [[cmd:scimax.openLogDirectory]]| Open Log Files Directory   | -                  |
 | [[cmd:scimax.setLogLevel]]     | Set Logging Level          | -                  |
+| [[cmd:scimax.db.searchCapabilities]] | Show Search Capabilities | -                |
 
 * ✅ References (org-ref)
 CLOSED: [2026-01-17 Sat 12:46]
@@ -721,6 +731,7 @@ CLOSED: [2026-01-17 Sat 12:47]
 | Command ID                            | Description                   | Default Keybinding |
 |---------------------------------------+-------------------------------+--------------------|
 | [[cmd:scimax.projectile.switch]]      | Switch Project                | C-c p p            |
+| [[cmd:scimax.projectile.switchActions]]| Project Picker Actions       | M-o                |
 | [[cmd:scimax.projectile.findFile]]    | Find File in Project          | C-c p f            |
 | [[cmd:scimax.projectile.findFileInKnownProjects]] | Find File in Known Projects | -        |
 | [[cmd:scimax.projectile.search]]      | Search in Project             | C-c p s            |
@@ -891,16 +902,6 @@ CLOSED: [2026-01-17 Sat 12:48]
 | [[cmd:scimax.speed.archiveSubtree]]   | Archive Subtree    | a         |
 | [[cmd:scimax.speed.toggleArchiveTag]] | Toggle Archive Tag | A (S-a)   |
 | [[cmd:scimax.speed.archiveToSibling]] | Archive to Sibling | $ (S-4)   |
-
-** ✅ Narrowing
-CLOSED: [2026-01-17 Sat 12:50]
-
-Note this is not the same as narrowing in Emacs which restricts the visible portion of the window.
-
-| Command ID                           | Description       | Speed Key |
-|--------------------------------------+-------------------+-----------|
-| [[cmd:scimax.speed.narrowToSubtree]] | Narrow to Subtree | N (S-n)   |
-| [[cmd:scimax.speed.widen]]           | Widen             | S (S-s)   |
 
 ** ✅ Help
 CLOSED: [2026-01-17 Sat 12:49]
@@ -1111,7 +1112,7 @@ CLOSED: [2026-01-21 Wed 11:36]
 | [[cmd:scimax.templates.insertOrg]]       | Insert Org Template       | -                  |
 | [[cmd:scimax.templates.insertMarkdown]]  | Insert Markdown Template  | -                  |
 | [[cmd:scimax.templates.insertLatex]]     | Insert LaTeX Template     | -                  |
-| [[cmd:scimax.templates.quickInsert]]     | Quick Insert Template     | C-S-.              |
+| [[cmd:scimax.templates.quickInsert]]     | Quick Insert Template     | C-c C-t i          |
 
 ** ✅ New Files from Templates
 CLOSED: [2026-01-21 Wed 11:36]
@@ -1357,7 +1358,7 @@ Emacs-style mark ring for navigation and selection. Save cursor positions (marks
 |----------------------------------+---------------------------+--------------------|
 | [[cmd:scimax.mark.set]]          | Set Mark (for selection)  | C-SPC              |
 | [[cmd:scimax.mark.cancel]]       | Cancel Selection          | C-g                |
-| [[cmd:scimax.mark.push]]         | Push Mark                 | C-SPC C-SPC        |
+| [[cmd:scimax.mark.push]]         | Push Mark                 | C-c SPC            |
 | [[cmd:scimax.mark.pop]]          | Pop Mark                  | C-u C-SPC          |
 | [[cmd:scimax.mark.popGlobal]]    | Pop Global Mark           | C-x C-SPC          |
 | [[cmd:scimax.mark.exchange]]     | Exchange Point and Mark   | C-x C-x            |
@@ -1416,6 +1417,8 @@ Emacs-style rectangle editing commands. A rectangle is a column-aligned block of
 | [[cmd:scimax.rectangle.clear]]          | Clear Rectangle                | C-x r c            |
 | [[cmd:scimax.rectangle.numberLines]]    | Number Lines (Rectangle)       | C-x r S-n          |
 | [[cmd:scimax.rectangle.string]]         | String Rectangle               | C-x r t            |
+| [[cmd:scimax.rectangle.confirm]]        | Confirm Rectangle Operation    | RET (mark mode)    |
+| [[cmd:scimax.rectangle.cancel]]         | Cancel Rectangle Operation     | ESC (mark mode)    |
 
 ** ⚠️ Rectangle Concepts
 
@@ -1507,15 +1510,21 @@ CLOSED: [2026-01-21 Wed 13:21]
 
 Miscellaneous utility commands.
 
-| Command ID                       | Description                       | Default Keybinding |
-|----------------------------------+-----------------------------------+--------------------|
-| [[cmd:scimax.openFolder]]        | Open Folder                       | -                  |
-| [[cmd:scimax.openTerminalHere]]  | Open Terminal in Document's Directory | -              |
-| [[cmd:scimax.dired.open]]        | Open Dired (Directory Editor)     | C-x d              |
-| [[cmd:scimax.dired.openCurrent]] | Open Dired for Current File Dir   | -                  |
-| [[cmd:scimax.dired.openWorkspace]]| Open Dired for Workspace         | -                  |
-| [[cmd:scimax.replaceNonAscii]]   | Replace Non-ASCII Characters      | -                  |
-| [[cmd:scimax.showDebugInfo]]     | Show Debug/Diagnostic Info        | -                  |
+| Command ID                          | Description                           | Default Keybinding |
+|-------------------------------------+---------------------------------------+--------------------|
+| [[cmd:scimax.findFile]]             | Find File                             | C-x C-f            |
+| [[cmd:scimax.findFileHome]]         | Find File in Home Directory           | -                  |
+| [[cmd:scimax.findFileWorkspace]]    | Find File in Workspace                | -                  |
+| [[cmd:scimax.insertFile]]           | Insert File Contents                  | C-x i              |
+| [[cmd:scimax.insertOcrScreenshot]]  | Insert OCR Screenshot                 | S-F10              |
+| [[cmd:scimax.googleSearch]]         | Google Search Selection               | C-c C-g            |
+| [[cmd:scimax.killLine]]             | Kill Line (copy to clipboard)         | C-k                |
+| [[cmd:scimax.openTerminalHere]]     | Open Terminal in Document's Directory | -                  |
+| [[cmd:scimax.dired.open]]           | Open Dired (Directory Editor)         | C-x d              |
+| [[cmd:scimax.dired.openCurrent]]    | Open Dired for Current File Dir       | -                  |
+| [[cmd:scimax.dired.openWorkspace]]  | Open Dired for Workspace              | -                  |
+| [[cmd:scimax.replaceNonAscii]]      | Replace Non-ASCII Characters          | -                  |
+| [[cmd:scimax.showDebugInfo]]        | Show Debug/Diagnostic Info            | -                  |
 
 ** Dired Commands
 
