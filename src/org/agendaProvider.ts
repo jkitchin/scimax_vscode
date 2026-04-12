@@ -182,9 +182,34 @@ export class AgendaManager {
     }
 
     /**
+     * Path substrings that should always be excluded from agenda scanning.
+     * These are system/application directories that may contain .org files
+     * as backups or caches but are never valid agenda sources.
+     */
+    private static readonly BUILTIN_EXCLUDE_PATHS: string[] = [
+        '/Library/Application Support/',
+        '/Library/Caches/',
+        '/.Trash/',
+        '/.local/share/',
+        '/AppData/',
+        '/.cache/',
+        '/tmp/',
+        '/temp/',
+        '/.emacs.d/elpa/',
+        '/.emacs.d/straight/',
+    ];
+
+    /**
      * Check if a file should be excluded (by absolute path or glob pattern)
      */
     private isFileExcluded(filePath: string): boolean {
+        // Always exclude system/application directories
+        for (const segment of AgendaManager.BUILTIN_EXCLUDE_PATHS) {
+            if (filePath.includes(segment)) {
+                return true;
+            }
+        }
+
         for (const pattern of this.config.exclude) {
             // Expand ~ in pattern
             let expandedPattern = pattern;
