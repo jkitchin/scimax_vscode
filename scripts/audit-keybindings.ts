@@ -66,13 +66,37 @@ interface AuditResults {
     };
 }
 
-// Convert Emacs notation to VS Code notation for comparison
+// Map of US-keyboard shifted characters to their underlying key combos.
+// Lets us match docs that show the literal character (e.g., "?") against
+// package.json entries that use the explicit shift+ form (e.g., "shift+/").
+const SHIFTED_CHAR_TO_COMBO: Record<string, string> = {
+    '?': 'shift+/', '<': 'shift+,', '>': 'shift+.',
+    '@': 'shift+2', '#': 'shift+3', '$': 'shift+4',
+    '%': 'shift+5', '^': 'shift+6', '&': 'shift+7',
+    '*': 'shift+8', '(': 'shift+9', ')': 'shift+0',
+    '"': "shift+'", ':': 'shift+;', '+': 'shift+=',
+    '_': 'shift+-', '{': 'shift+[', '}': 'shift+]',
+    '|': 'shift+\\', '~': 'shift+`', '!': 'shift+1',
+};
+
+// Convert Emacs / docs notation to VS Code notation for comparison.
 function emacsToVSCode(key: string): string {
-    return key
+    let k = key
+        // Strip parenthetical annotations like "(org)", "(heading)", "(mark mode)", "(S-2)"
+        .replace(/\([^)]*\)/g, '')
+        // Take first alternative if separated by " / "
+        .split(/\s*\/\s*/)[0]
+        // Normalize VS Code-style prefixes that may appear in docs
+        .replace(/Cmd\+/gi, 'cmd+')
+        .replace(/Ctrl\+/gi, 'ctrl+')
+        .replace(/Shift\+/gi, 'shift+')
+        .replace(/Alt\+/gi, 'alt+')
+        // Emacs-style prefixes
         .replace(/C-/g, 'ctrl+')
         .replace(/M-/g, 'alt+')
         .replace(/S-/g, 'shift+')
         .replace(/s-/g, 'cmd+')
+        // Bracketed special keys
         .replace(/<tab>/gi, 'tab')
         .replace(/<return>/gi, 'enter')
         .replace(/<ret>/gi, 'enter')
@@ -86,9 +110,27 @@ function emacsToVSCode(key: string): string {
         .replace(/<escape>/gi, 'escape')
         .replace(/<home>/gi, 'home')
         .replace(/<end>/gi, 'end')
+        // Bare special-key tokens (Emacs-style without brackets)
+        .replace(/\bRET\b/g, 'enter')
+        .replace(/\bSPC\b/g, 'space')
+        .replace(/\bTAB\b/g, 'tab')
+        .replace(/\bESC\b/g, 'escape')
+        .replace(/\bDEL\b/g, 'delete')
         .replace(/\s+/g, ' ')
         .toLowerCase()
         .trim();
+
+    // Expand single shifted characters that appear at chord boundaries.
+    // e.g., "alt+%" → "alt+shift+5", "?" → "shift+/"
+    k = k.replace(/(^| |\+)([?<>@#$%^&*():"+_{}|~!])/g, (_m, before, ch) => {
+        const combo = SHIFTED_CHAR_TO_COMBO[ch];
+        return combo ? `${before}${combo}` : `${before}${ch}`;
+    });
+
+    // Normalize cmd+ → ctrl+ for cross-platform comparison
+    k = k.replace(/cmd\+/g, 'ctrl+');
+
+    return k;
 }
 
 // Normalize VS Code keybinding format
@@ -235,22 +277,43 @@ function findDuplicateKeybindings(keybindings: Keybinding[]): Array<{
     }> = [];
 
     for (const [key, entries] of keyMap) {
-        if (entries.length > 1) {
-            // Check if contexts overlap
-            const contexts = entries.map(e => e.when);
-            const commands = entries.map(e => e.command);
+        if (entries.length < 2) continue;
 
-            // Skip if all have unique contexts (proper disambiguation)
-            // A conflict occurs when two entries have the same or overlapping contexts
-            const hasConflict = contexts.some((ctx1, i) =>
-                contexts.some((ctx2, j) =>
-                    i !== j && (ctx1 === ctx2 || (!ctx1 && !ctx2))
-                )
-            );
+        // Filter out intentional override patterns:
+        // 1. Removal entries (`-command`) paired with the matching positive entry
+        //    are by design — VS Code uses this idiom to suppress a default before
+        //    re-binding it.
+        // 2. Built-in `workbench.action.*` commands that a scimax command shadows
+        //    are intentional overrides; the extension binding wins by precedence.
+        const positiveCommands = new Set(
+            entries
+                .filter(e => !e.command.startsWith('-'))
+                .map(e => e.command)
+        );
+        const hasScimaxOverride = [...positiveCommands].some(c => c.startsWith('scimax.'));
 
-            if (hasConflict) {
-                duplicates.push({ key, commands, contexts });
+        const realConflicts = entries.filter(e => {
+            if (e.command.startsWith('-')) return false;
+            if (hasScimaxOverride && e.command.startsWith('workbench.action.')) {
+                return false;
             }
+            return true;
+        });
+
+        if (realConflicts.length < 2) continue;
+
+        const contexts = realConflicts.map(e => e.when);
+        const commands = realConflicts.map(e => e.command);
+
+        // Conflict iff two real entries share an identical context (or both empty).
+        const hasConflict = contexts.some((ctx1, i) =>
+            contexts.some((ctx2, j) =>
+                i !== j && ctx1 === ctx2
+            )
+        );
+
+        if (hasConflict) {
+            duplicates.push({ key, commands, contexts });
         }
     }
 
@@ -304,12 +367,21 @@ function audit(): AuditResults {
         const docKey = docCmd.keybinding;
 
         if (docKey !== '-' && docKey.length > 0) {
-            const normalizedDocKey = emacsToVSCode(docKey);
+            // Split doc key on commas — docs sometimes list multiple bindings
+            // for the same command (e.g., "m, @ (S-2)") that map to multiple
+            // package.json entries.
+            const docVariants = docKey
+                .split(',')
+                .map(v => emacsToVSCode(v))
+                .filter(v => v.length > 0);
 
-            // Check if any package keybinding matches
-            const hasMatch = packageKeys.some(pk =>
-                normalizeVSCode(pk) === normalizedDocKey ||
-                normalizeVSCode(pk).includes(normalizedDocKey.split(' ')[0])
+            // Each doc variant must match at least one package keybinding.
+            const hasMatch = docVariants.every(variant =>
+                packageKeys.some(pk => {
+                    const npk = normalizeVSCode(pk);
+                    return npk === variant ||
+                        npk.includes(variant.split(' ')[0]);
+                })
             );
 
             if (!hasMatch && packageKeys.length > 0) {
