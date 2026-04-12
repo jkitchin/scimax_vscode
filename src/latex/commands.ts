@@ -733,31 +733,36 @@ export function registerLatexCompileCommands(context: vscode.ExtensionContext): 
         // Word count
         vscode.commands.registerCommand('scimax.latex.wordCount', async () => {
             const editor = vscode.window.activeTextEditor;
-            if (!editor || editor.document.languageId !== 'latex') {
-                vscode.window.showWarningMessage('No LaTeX document open');
+            if (!editor) {
+                vscode.window.showWarningMessage('No active editor');
                 return;
             }
 
-            const text = editor.document.getText();
+            const selection = editor.selection;
+            const hasSelection = !selection.isEmpty;
+            const text = hasSelection
+                ? editor.document.getText(selection)
+                : editor.document.getText();
 
-            // Remove comments
-            const noComments = text.replace(/%.*$/gm, '');
+            let normalized = text;
 
-            // Remove commands (rough approximation)
-            const noCommands = noComments.replace(/\\[a-zA-Z]+(\[[^\]]*\])?(\{[^}]*\})?/g, ' ');
-
-            // Remove environments markers
-            const noEnvMarkers = noCommands.replace(/\\(begin|end)\{[^}]+\}/g, '');
+            if (editor.document.languageId === 'latex') {
+                // Remove LaTeX comments and commands for cleaner count
+                normalized = normalized.replace(/%.*$/gm, '');
+                normalized = normalized.replace(/\\[a-zA-Z]+(\[[^\]]*\])?(\{[^}]*\})?/g, ' ');
+                normalized = normalized.replace(/\\(begin|end)\{[^}]+\}/g, '');
+            }
 
             // Count words
-            const words = noEnvMarkers.match(/\b[a-zA-Z]+\b/g) || [];
+            const words = normalized.match(/\b[a-zA-Z0-9]+\b/g) || [];
             const wordCount = words.length;
 
             // Count characters (excluding whitespace)
-            const charCount = noEnvMarkers.replace(/\s/g, '').length;
+            const charCount = normalized.replace(/\s/g, '').length;
 
+            const scope = hasSelection ? 'Selection' : 'Document';
             vscode.window.showInformationMessage(
-                `Word count: ${wordCount} words, ${charCount} characters (approximate)`
+                `${scope} word count: ${wordCount} words, ${charCount} characters`
             );
         }),
 
