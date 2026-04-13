@@ -48,7 +48,8 @@ To unlink later:
 npm unlink scimax-vscode
 #+end_src
 
-* 👀 Configuration
+* ✅ Configuration
+CLOSED: [2026-04-12 Sun 19:48]
 
 The CLI automatically uses the same database as the VS Code extension. It looks in VS Code's global storage location:
 
@@ -260,7 +261,7 @@ scimax cite list references.bib
 scimax cite list references.bib --format json
 #+end_src
 
-** ⚠️ Journal
+** Journal
 
 Open or create journal entries from the terminal.
 
@@ -285,7 +286,7 @@ The journal directory is configured via =scimax.journal.directory= in VS Code se
 
 Supported date expressions: today, tomorrow, yesterday, day names (monday, fri), next/this day (next friday, this monday), relative (+2d, -1w, +3m), month+day (jan 15), ISO dates (2026-03-15).
 
-** ⚠️ Project
+** Project
 
 Fuzzy-select and open a known project in VS Code.
 
@@ -356,7 +357,8 @@ Missing files: 2
 Open VS Code to rebuild the index.
 #+end_example
 
-*** 👀 Reindex
+*** ✅ Reindex
+CLOSED: [2026-04-12 Sun 19:54]
 
 Re-parse and re-index all files already in the database. This is the most accurate way to refresh the index since it processes exactly the files VS Code has indexed.
 
@@ -381,7 +383,8 @@ Removed (missing): 5 file(s)
 
 Files that no longer exist are automatically removed from the database.
 
-*** 👀 Rebuild
+*** ✅ Rebuild
+CLOSED: [2026-04-12 Sun 19:54]
 
 Discover directories and scan for org files. Use this to find and add new files that aren't yet in the database.
 
@@ -446,7 +449,8 @@ crontab -e
 */30 * * * * cd /path/to/project && scimax db scan ~/work/notes && scimax db scan ~/personal/org
 #+end_src
 
-**** 👀 Command Comparison
+**** ✅ Command Comparison
+CLOSED: [2026-04-12 Sun 19:54]
 
 | Command                | Use Case                                           |
 |------------------------+----------------------------------------------------|

@@ -7,11 +7,13 @@
 
 *Keybinding Note:* This extension uses Emacs-style keybindings where Ctrl is used on all platforms (not Cmd on Mac), except where explicitly noted.
 
-* ⚠️ Link Graph Visualization
+* ✅ Link Graph Visualization
+CLOSED: [2026-04-12 Sun 19:51]
 
 The link graph feature provides an interactive visualization of how your files are connected through links. Files are shown as nodes, and the links between them are shown as edges, enabling you to explore your knowledge base as a network.
 
-** ⚠️ Overview
+** ✅ Overview
+CLOSED: [2026-04-12 Sun 19:52]
 
 The link graph visualization helps you:
 
@@ -20,9 +22,11 @@ The link graph visualization helps you:
 - *Explore relationships* - Follow chains of links across multiple files
 - *Filter by context* - Filter links by tags, TODO states, and more
 
-** ⚠️ Opening the Link Graph
+** ✅ Opening the Link Graph
+CLOSED: [2026-04-12 Sun 19:52]
 
-*** Commands
+*** ✅ Commands
+CLOSED: [2026-04-12 Sun 19:52]
 
 | Key         | Command                      | Description                      |
 |-------------+------------------------------+----------------------------------|
@@ -40,9 +44,11 @@ The link graph visualization helps you:
 
 Right-click on a file in the explorer and select "Show Link Graph".
 
-* ⚠️ Understanding the Graph
+* ✅ Understanding the Graph
+CLOSED: [2026-04-12 Sun 19:52]
 
-** ⚠️ Nodes
+** ✅ Nodes
+CLOSED: [2026-04-12 Sun 19:52]
 
 Each node in the graph represents a file:
 
@@ -50,14 +56,16 @@ Each node in the graph represents a file:
 - *Connected nodes* - Files that link to or from the center file
 - *Node size* - Larger nodes have more connections
 
-** ⚠️ Edges
+** ✅ Edges
+CLOSED: [2026-04-12 Sun 19:52]
 
 Edges (lines) represent links between files:
 
 - *Direction* - Arrows show link direction (source → target)
 - *Bidirectional* - Some file pairs may have links in both directions
 
-** ⚠️ Node Tooltips
+** ✅ Node Tooltips
+CLOSED: [2026-04-12 Sun 19:52]
 
 Hover over a node to see information about the file:
 
@@ -68,7 +76,8 @@ Hover over a node to see information about the file:
 - Tags present in the file
 - Modification time
 
-** ⚠️ Interacting with the Graph
+** ✅ Interacting with the Graph
+CLOSED: [2026-04-12 Sun 19:52]
 
 *** Click
 
@@ -83,9 +92,11 @@ Hover over a node to see information about the file:
 - *Drag nodes* - Move nodes around to arrange the layout
 - Nodes stay where you place them until you recenter
 
-* ⚠️ Graph Controls
+* ✅ Graph Controls
+CLOSED: [2026-04-12 Sun 19:52]
 
-** ⚠️ Depth
+** ✅ Depth
+CLOSED: [2026-04-12 Sun 19:52]
 
 Controls how many hops away from the center file to include:
 
@@ -97,7 +108,8 @@ Controls how many hops away from the center file to include:
 
 Larger depths show more of the network but can become cluttered.
 
-** ⚠️ Direction
+** ✅ Direction
+CLOSED: [2026-04-12 Sun 19:52]
 
 Controls which types of links to follow:
 
@@ -107,11 +119,13 @@ Controls which types of links to follow:
 | Outgoing  | Only show files this file links to     |
 | Incoming  | Only show files that link to this file |
 
-** ⚠️ Filters
+** ✅ Filters
+CLOSED: [2026-04-12 Sun 19:52]
 
 The filter panel allows you to narrow down which links appear in the graph based on various criteria.
 
-*** File Type Filter
+*** ✅ File Type Filter
+CLOSED: [2026-04-12 Sun 19:52]
 
 Filter by file extension:
 - =org= - Org-mode files only
@@ -140,7 +154,8 @@ Show only links in files modified after a certain date:
 - Enter a date in YYYY-MM-DD format
 - Useful for finding recently updated connections
 
-* ⚠️ Link Statistics
+* ✅ Link Statistics
+CLOSED: [2026-04-12 Sun 19:52]
 
 The =scimax.showLinkStats= command shows a summary of links for the current file:
 
@@ -157,11 +172,13 @@ Incoming links (backlinks): 3
 
 After viewing statistics, you can click "Show Graph" to open the full visualization.
 
-* ⚠️ How Links Are Indexed
+* ✅ How Links Are Indexed
+CLOSED: [2026-04-12 Sun 19:52]
 
 Links are extracted from your org and markdown files and stored in the database:
 
-** ⚠️ Link Types
+** ✅ Link Types
+CLOSED: [2026-04-12 Sun 19:52]
 
 | Type  | Description                       | Example                  |
 |-------+-----------------------------------+--------------------------|
@@ -172,7 +189,8 @@ Links are extracted from your org and markdown files and stored in the database:
 | id    | Links to headings by ID           | [[id:abc-123]]           |
 | nb    | Notebook project links            | [[nb:project::file.org]] |
 
-** ⚠️ Heading Association
+** ✅ Heading Association
+CLOSED: [2026-04-12 Sun 19:52]
 
 Each link is associated with its containing heading. This enables filtering:
 
@@ -180,9 +198,11 @@ Each link is associated with its containing heading. This enables filtering:
 - Filter by TODO state to see links in active vs completed tasks
 - Filter by priority to focus on important connections
 
-* ⚠️ Use Cases
+* ✅ Use Cases
+CLOSED: [2026-04-12 Sun 19:52]
 
-** ⚠️ Exploring Backlinks
+** ✅ Exploring Backlinks
+CLOSED: [2026-04-12 Sun 19:52]
 
 Want to see what references a particular file?
 
@@ -191,7 +211,8 @@ Want to see what references a particular file?
 3. Set direction to "Incoming"
 4. Explore which files cite this one
 
-** ⚠️ Tracing Topic Chains
+** ✅ Tracing Topic Chains
+CLOSED: [2026-04-12 Sun 19:52]
 
 Want to follow a chain of related topics?
 
@@ -200,7 +221,8 @@ Want to follow a chain of related topics?
 3. Double-click interesting nodes to recenter
 4. Follow the chain of connections
 
-** ⚠️ Finding Active Project Connections
+** ✅ Finding Active Project Connections
+CLOSED: [2026-04-12 Sun 19:52]
 
 Want to see links only in active tasks?
 
@@ -209,7 +231,8 @@ Want to see links only in active tasks?
 3. Or check "Exclude done" to hide completed items
 4. See which files are referenced by active work
 
-** ⚠️ Recent Modifications Review
+** ✅ Recent Modifications Review
+CLOSED: [2026-04-12 Sun 19:52]
 
 Want to see recently updated connections?
 
@@ -217,9 +240,11 @@ Want to see recently updated connections?
 2. See which connected files have been recently changed
 3. Useful for reviewing changes in a connected set of notes
 
-* ⚠️ Technical Details
+* ✅ Technical Details
+CLOSED: [2026-04-12 Sun 19:52]
 
-** ⚠️ Database Tables
+** ✅ Database Tables
+CLOSED: [2026-04-12 Sun 19:52]
 
 The link graph uses the =links= table in the Scimax database:
 
@@ -231,7 +256,8 @@ The link graph uses the =links= table in the Scimax database:
 | line_number | Line where link appears                |
 | heading_id  | ID of containing heading (for filters) |
 
-** ⚠️ Visualization Technology
+** ✅ Visualization Technology
+CLOSED: [2026-04-12 Sun 19:52]
 
 The graph is rendered using vis.js Network in a VS Code webview:
 
@@ -239,13 +265,15 @@ The graph is rendered using vis.js Network in a VS Code webview:
 - Physics simulation enables smooth dragging
 - SVG rendering for crisp display at any zoom level
 
-** ⚠️ Performance
+** ✅ Performance
+CLOSED: [2026-04-12 Sun 19:52]
 
 - Default maximum of 100 nodes to prevent overwhelming graphs
 - Truncation indicator shows when limit is reached
 - Use filters to narrow down large graphs
 
-* ⚠️ Related Topics
+* ✅ Related Topics
+CLOSED: [2026-04-12 Sun 19:52]
 
 - [[file:05-links.org][Hyperlinks]] - Creating and following links
 - [[file:18-database-search.org][Database and Search]] - Database structure and search

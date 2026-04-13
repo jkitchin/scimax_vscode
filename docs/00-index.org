@@ -383,6 +383,7 @@ Quick reference to find specific features across documentation.
 | Code blocks           | [[file:07-source-blocks.org][Source Code Blocks]]            | [[file:08-supported-languages.org][Supported Languages]], [[file:04-tables.org][Tables]]                                   |
 | Custom exporters      | [[file:10-export.org][Export]]                               | [[file:25-commands.org][Commands]] - User-defined JS/TS export backends                                       |
 | Command markup        | [[file:28-non-standard-features.org][Non-Standard Features]] | [[file:24-keybindings.org][Keybindings]], [[file:10-export.org][Export]]                                                   |
+| Comment toggle (DWIM) | [[file:25-commands.org][Commands]]                           | [[file:24-keybindings.org][Keybindings]] - `M-;` toggles `# ` prefix on line or selection                                  |
 | Configuration         | [[file:26-configuration.org][Configuration]]                 | Feature-specific docs                                                                                                      |
 | Deadlines             | [[file:06-timestamps.org][Timestamps]]                       | [[file:13-agenda.org][Agenda]], [[file:03-todo-items.org][TODO Items]]                                                     |
 | Definition lists      | [[file:01.5-basic-syntax.org][Basic Syntax]]                 | [[file:02-document-structure.org][Document Structure]]                                                                     |
@@ -415,6 +416,7 @@ Quick reference to find specific features across documentation.
 | Link graph            | [[file:39-link-graph.org][Link Graph]]                       | [[file:05-links.org][Links]], [[file:18-database-search.org][Database and Search]]                                         |
 | Lists (ordered)       | [[file:01.5-basic-syntax.org][Basic Syntax]]                 | [[file:02-document-structure.org][Document Structure]]                                                                     |
 | Lists (unordered)     | [[file:01.5-basic-syntax.org][Basic Syntax]]                 | [[file:02-document-structure.org][Document Structure]]                                                                     |
+| Markdown export       | [[file:10-export.org][Export]]                               | Pandoc-backed export of `.md` to HTML, LaTeX, PDF, DOCX                                                                    |
 | Markdown support      | [[file:30-markdown-compatibility.org][Markdown Compatibility]] | [[file:02-document-structure.org][Document Structure]], [[file:23-speed-commands.org][Speed Commands]], [[file:07-source-blocks.org][Source Blocks]] |
 | Mark ring             | [[file:24-keybindings.org][Keybindings]]                     | Emacs-style mark and region commands                                                                                       |
 | Markup (text)         | [[file:01.5-basic-syntax.org][Basic Syntax]]                 | [[file:10-export.org][Export]], bold, italic, underline, code                                            |
@@ -429,6 +431,7 @@ Quick reference to find specific features across documentation.
 | Projectile            | [[file:17-projectile.org][Projectile]]                       | [[file:16-notebook.org][Notebook]]                                                                                         |
 | Properties            | [[file:02-document-structure.org][Document Structure]]       | [[file:03-todo-items.org][TODO Items]]                                                                                     |
 | Quick capture         | [[file:15-capture.org][Capture]]                             | [[file:14-journal.org][Journal]], [[file:03-todo-items.org][TODO Items]]                                                   |
+| Recent files          | [[file:21-navigation.org][Navigation]]                       | `C-x b` fuzzy-picks recently modified org/md files                                                                         |
 | Scheduling            | [[file:06-timestamps.org][Timestamps]]                       | [[file:13-agenda.org][Agenda]], [[file:03-todo-items.org][TODO Items]]                                                     |
 | Semantic search       | [[file:18-database-search.org][Database and Search]]         | [[file:26-configuration.org][Configuration]]                                                                               |
 | Session execution     | [[file:07-source-blocks.org][Source Code Blocks]]            | [[file:09-jupyter.org][Jupyter Integration]]                                                                               |
@@ -437,6 +440,7 @@ Quick reference to find specific features across documentation.
 | Tables                | [[file:04-tables.org][Tables]]                               | [[file:10-export.org][Export]]                                                                                             |
 | Tags                  | [[file:02-document-structure.org][Document Structure]]       | [[file:13-agenda.org][Agenda]], [[file:03-todo-items.org][TODO Items]]                                                     |
 | Templates             | [[file:35-templates.org][Document Templates]]                 | [[file:15-capture.org][Capture]], [[file:14-journal.org][Journal]], [[file:26-configuration.org][Configuration]]              |
+| Terminal navigation   | [[file:30-cli.org][Command Line Interface]]                 | Open CLI-output file paths from the integrated terminal                                                                    |
 | TODO states           | [[file:03-todo-items.org][TODO Items]]                       | [[file:13-agenda.org][Agenda]], [[file:26-configuration.org][Configuration]]                                               |
 | TODO custom keywords  | [[file:03-todo-items.org][TODO Items]]                       | Per-file #+TODO: definitions                                                                                               |
 | Track changes         | [[file:20-editmarks.org][Editmarks]]                         | [[file:02-document-structure.org][Document Structure]]                                                                     |

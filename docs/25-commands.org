@@ -42,30 +42,30 @@ CLOSED: [2026-01-17 Sat 12:24]
 ** ✅ Org-Mode Heading Navigation
 CLOSED: [2026-01-17 Sat 12:24]
 
-| Command ID                        | Description       | Default Keybinding |
-|-----------------------------------+-------------------+--------------------|
-| [[cmd:scimax.org.jumpToHeading]]  | Jump to Heading   | C-c C-j            |
-| [[cmd:scimax.org.nextHeading]]    | Next Heading      | C-c C-n            |
-| [[cmd:scimax.org.previousHeading]]| Previous Heading  | C-c C-p            |
-| [[cmd:scimax.org.parentHeading]]  | Parent Heading    | -                  |
-| [[cmd:scimax.org.promoteHeading]] | Promote Heading   | M-LEFT (heading)   |
-| [[cmd:scimax.org.demoteHeading]]  | Demote Heading    | M-RIGHT (heading)  |
-| [[cmd:scimax.org.promoteSubtree]] | Promote Subtree   | M-S-LEFT           |
-| [[cmd:scimax.org.demoteSubtree]]  | Demote Subtree    | M-S-RIGHT          |
-| [[cmd:scimax.org.moveSubtreeUp]]  | Move Subtree Up   | M-UP (heading)     |
-| [[cmd:scimax.org.moveSubtreeDown]]| Move Subtree Down | M-DOWN (heading)   |
-| [[cmd:scimax.org.insertHeading]]   | Insert Heading           | C-RET (heading)    |
-| [[cmd:scimax.org.insertSubheading]]| Insert Subheading        | -                  |
-| [[cmd:scimax.org.insertInlineTask]]| Insert Inline Task       | -                  |
-| [[cmd:scimax.org.killSubtree]]     | Kill Subtree             | -                  |
-| [[cmd:scimax.org.cloneSubtree]]    | Clone Subtree            | -                  |
-| [[cmd:scimax.org.refile]]          | Refile Subtree           | C-c C-w            |
-| [[cmd:scimax.org.refileCopy]]      | Copy Subtree to Target   | C-c M-w            |
-| [[cmd:scimax.org.markSubtree]]     | Mark (Select) Subtree    | m (speed)          |
-| [[cmd:scimax.org.addIdToHeading]]  | Add ID to Heading        | -                  |
+| Command ID                          | Description            | Default Keybinding |
+|-------------------------------------+------------------------+--------------------|
+| [[cmd:scimax.org.jumpToHeading]]    | Jump to Heading        | C-c C-j            |
+| [[cmd:scimax.org.nextHeading]]      | Next Heading           | C-c C-n            |
+| [[cmd:scimax.org.previousHeading]]  | Previous Heading       | C-c C-p            |
+| [[cmd:scimax.org.parentHeading]]    | Parent Heading         | -                  |
+| [[cmd:scimax.org.promoteHeading]]   | Promote Heading        | M-LEFT (heading)   |
+| [[cmd:scimax.org.demoteHeading]]    | Demote Heading         | M-RIGHT (heading)  |
+| [[cmd:scimax.org.promoteSubtree]]   | Promote Subtree        | M-S-LEFT           |
+| [[cmd:scimax.org.demoteSubtree]]    | Demote Subtree         | M-S-RIGHT          |
+| [[cmd:scimax.org.moveSubtreeUp]]    | Move Subtree Up        | M-UP (heading)     |
+| [[cmd:scimax.org.moveSubtreeDown]]  | Move Subtree Down      | M-DOWN (heading)   |
+| [[cmd:scimax.org.insertHeading]]    | Insert Heading         | C-RET (heading)    |
+| [[cmd:scimax.org.insertSubheading]] | Insert Subheading      | -                  |
+| [[cmd:scimax.org.insertInlineTask]] | Insert Inline Task     | -                  |
+| [[cmd:scimax.org.killSubtree]]      | Kill Subtree           | -                  |
+| [[cmd:scimax.org.cloneSubtree]]     | Clone Subtree          | -                  |
+| [[cmd:scimax.org.refile]]           | Refile Subtree         | C-c C-w            |
+| [[cmd:scimax.org.refileCopy]]       | Copy Subtree to Target | C-c M-w            |
+| [[cmd:scimax.org.markSubtree]]      | Mark (Select) Subtree  | m (speed)          |
+| [[cmd:scimax.org.addIdToHeading]]   | Add ID to Heading      | -                  |
 
-** 👀 DWIM Commands
-CLOSED: [2026-01-17 Sat 15:21]
+** ✅ DWIM Commands
+CLOSED: [2026-04-12 Sun 19:53]
 
 | Command ID                    | Description                         | Default Keybinding |
 |-------------------------------+-------------------------------------+--------------------|
@@ -73,8 +73,8 @@ CLOSED: [2026-01-17 Sat 15:21]
 | [[cmd:scimax.insertNewline]]  | Insert Newline                      | -                  |
 | [[cmd:scimax.org.dwimComment]]| DWIM Comment (toggle =# = on lines) | M-;                |
 
-** 👀 Org Utility Commands
-CLOSED: [2026-01-18 Sun 09:57]
+** ✅ Org Utility Commands
+CLOSED: [2026-04-12 Sun 19:53]
 
 | Command ID                            | Description              | Default Keybinding |
 |---------------------------------------+--------------------------+--------------------|
@@ -289,7 +289,8 @@ CLOSED: [2026-01-17 Sat 12:27]
 |-----------------------------------+---------------------+--------------------|
 | [[cmd:scimax.org.exportMarkdown]] | Export to Markdown  | C-c C-e m m        |
 
-** ⚠️ Markdown File Export
+** ✅ Markdown File Export
+CLOSED: [2026-04-12 Sun 19:49]
 
 Export markdown (=.md=) files to other formats via Pandoc. Complements the org-to-markdown export above — these commands operate on markdown source files.
 
@@ -510,7 +511,8 @@ CLOSED: [2026-01-17 Sat 12:46]
 | [[cmd:scimax.db.ignoreCurrentFile]]| Add Current File to Ignore Patterns | -           |
 | [[cmd:scimax.db.ignoreFile]]       | Add File to Ignore Patterns  | -                  |
 
-** ⚠️ Link Graph Visualization
+** ✅ Link Graph Visualization
+CLOSED: [2026-04-12 Sun 19:49]
 
 Commands for visualizing file connections through links.
 
@@ -701,8 +703,8 @@ CLOSED: [2026-01-17 Sat 12:46]
 * ✅ Navigation
 CLOSED: [2026-01-17 Sat 12:47]
 
-** 👀 Fuzzy Search (Swiper)
-CLOSED: [2026-01-17 Sat 12:47]
+** ✅ Fuzzy Search (Swiper)
+CLOSED: [2026-04-12 Sun 19:53]
 
 | Command ID                             | Description                      | Default Keybinding |
 |----------------------------------------+----------------------------------+--------------------|
@@ -1400,7 +1402,8 @@ Emacs-style mark ring for navigation and selection. Save cursor positions (marks
 3. Select an entry to jump to that position
 4. Timestamps show how long ago each mark was set
 
-* ⚠️ Rectangle
+* ✅ Rectangle
+CLOSED: [2026-04-12 Sun 19:47]
 :PROPERTIES:
 :CUSTOM_ID: rectangle
 :END:
@@ -1420,14 +1423,16 @@ Emacs-style rectangle editing commands. A rectangle is a column-aligned block of
 | [[cmd:scimax.rectangle.confirm]]        | Confirm Rectangle Operation    | RET (mark mode)    |
 | [[cmd:scimax.rectangle.cancel]]         | Cancel Rectangle Operation     | ESC (mark mode)    |
 
-** ⚠️ Rectangle Concepts
+** ✅ Rectangle Concepts
+CLOSED: [2026-04-12 Sun 19:48]
 
 - **Rectangle**: A column-aligned region of text defined by two corners (the selection's anchor and active positions)
 - **Rectangle Clipboard**: A separate clipboard (not the system clipboard) that stores the last killed/copied rectangle. This matches Emacs behavior.
 - **Kill**: Delete the rectangle and save it to the rectangle clipboard
 - **Yank**: Insert the rectangle clipboard contents at the cursor position
 
-** ⚠️ Common Workflows
+** ✅ Common Workflows
+CLOSED: [2026-04-12 Sun 19:48]
 
 *** Cut and Paste a Column
 1. Select the rectangular region (anchor at one corner, cursor at the opposite corner)
@@ -1450,7 +1455,8 @@ Emacs-style rectangle editing commands. A rectangle is a column-aligned block of
 1. Select the rectangular region to remove
 2. Press =C-x r d= to delete without saving, or =C-x r k= to save for later yanking
 
-** ⚠️ Related Topics
+** ✅ Related Topics
+CLOSED: [2026-04-12 Sun 19:48]
 
 - [[file:24-keybindings.org::*Rectangle Commands (Emacs-style)][Keybinding Reference: Rectangle Commands]]
 - [[file:22-hydra-menus.org][Hydra Menus]] - Rectangle commands are available in the Hydra menu system

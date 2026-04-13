@@ -10,11 +10,12 @@ Work top to bottom. Don't tag until every box is checked.
 ### 1. Tests
 
 - [ ] `npm test` passes locally on your primary platform.
+- [ ] `npm run lint` is clean.
 - [ ] CI is green on `main` — check the latest
       [Tests workflow](../../actions/workflows/test.yml) run.
-- [ ] Performance baseline still holds:
-      `npm run test -- --testNamePattern="baseline"`
-      (see `src/parser/__tests__/orgParser.performance.test.ts` for thresholds).
+- [ ] Parser benchmarks still hold:
+      `npm run test -- --testNamePattern="Parser Benchmark Suite"`
+      (see `src/parser/__tests__/orgParserBenchmark.test.ts` for thresholds).
 - [ ] New features added in this release have tests. If you skipped tests for
       a feature, note the reason in the CHANGELOG entry so it is not forgotten.
 
@@ -39,11 +40,11 @@ Work top to bottom. Don't tag until every box is checked.
       versioned section with today's date.
       Keep the empty `## [Unreleased]` header in place for the next cycle.
 - [ ] Bump `version` in `package.json` following semver:
-      - patch (`0.3.1` → `0.3.2`) — bug fixes only
-      - minor (`0.3.1` → `0.4.0`) — new features, backwards-compatible
-      - major (`0.3.1` → `1.0.0`) — breaking changes
+      - patch (`0.4.0` → `0.4.1`) — bug fixes only
+      - minor (`0.4.0` → `0.5.0`) — new features, backwards-compatible
+      - major (`0.4.0` → `1.0.0`) — breaking changes
 - [ ] Commit the version bump and changelog as a single commit:
-      `chore: release vX.Y.Z`.
+      `Release vX.Y.Z`.
 
 ### 4. Build smoke test
 
@@ -59,12 +60,12 @@ Once the checklist is clean:
 
 ```bash
 # 1. Tag the release commit
-git tag -a v0.3.2 -m "Release v0.3.2"
+git tag -a v0.4.1 -m "Release v0.4.1"
 git push origin main --follow-tags
 
 # 2. Create the GitHub release from the tag
-gh release create v0.3.2 \
-    --title "v0.3.2" \
+gh release create v0.4.1 \
+    --title "v0.4.1" \
     --notes-from-tag
 ```
 
@@ -102,8 +103,8 @@ The automated publish lives in
 the Marketplace with `vsce publish`, and attaches the VSIX to the GitHub
 release as a downloadable asset.
 
-The version guard means: if you push a tag `v0.3.2` but forgot to bump
-`package.json` from `0.3.1`, the workflow fails before publishing — no stale
+The version guard means: if you push a tag `v0.4.1` but forgot to bump
+`package.json` from `0.4.0`, the workflow fails before publishing — no stale
 Marketplace builds.
 
 ### First-time setup
@@ -116,7 +117,7 @@ bootstrap:
 3. Manually run `npx vsce login jkitchin` once locally so the publisher is
    verified on your machine. This is not required for the workflow but makes
    local emergency publishes possible.
-4. Cut a patch release (e.g., `0.3.1 → 0.3.2`) with a trivial changelog entry
+4. Cut a patch release (e.g., `0.4.0 → 0.4.1`) with a trivial changelog entry
    to test the full pipeline end-to-end.
 
 ## Rolling back

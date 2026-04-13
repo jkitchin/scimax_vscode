@@ -246,16 +246,15 @@ Then reload VS Code (`Ctrl+Shift+P` → "Developer: Reload Window") to test chan
 
 ### Performance Regression Testing
 
-Before committing parser or database changes, run the performance baseline test:
+Before committing parser or database changes, run the parser benchmark suite:
 
 ```bash
-npm run test -- --testNamePattern="baseline"
+npm run test -- --testNamePattern="Parser Benchmark Suite"
 ```
 
-Compare results against the baseline in `src/parser/__tests__/orgParser.performance.test.ts`. Key metrics:
-- Parse time for 1000-line files should be < 50ms
-- Heading extraction should be < 10ms
-- Source block detection should be < 15ms
+The suite lives in `src/parser/__tests__/orgParserBenchmark.test.ts` and covers
+small/medium/large document parsing, inline object parsing, stress tests, and
+memory efficiency.
 
 If performance degrades significantly, investigate before committing.
 
