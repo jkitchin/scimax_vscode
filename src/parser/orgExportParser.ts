@@ -60,15 +60,15 @@ const LINK_PATTERN = /\[\[([^\]]+)\](?:\[([^\]]+)\])?\]/g;
 // Matches word chars, &, ;, ,, :, - but not trailing punctuation (,;)
 const CITATION_PATTERN = /(cite[pt]?|citenum|citeauthor|citeyear|Citep|Citet|citealp|citealt):([\w&;,:-]*[\w&:-])/g;
 const REF_PATTERN = /(ref|eqref|pageref|nameref|autoref|cref|Cref|label):([a-zA-Z0-9_:-]+)/g;
-const DOI_PATTERN = /doi:(10\.\d{4,9}\/[^\s<>\[\](){}]+)/g;
-const BIBLIOGRAPHY_PATTERN = /bibliography:([^\s<>\[\](){}]+)/g;
-const BIBSTYLE_PATTERN = /(?:bibliographystyle|bibstyle):([^\s<>\[\](){}]+)/g;
+const DOI_PATTERN = /doi:(10\.\d{4,9}\/[^\s<>[\](){}]+)/g;
+const BIBLIOGRAPHY_PATTERN = /bibliography:([^\s<>[\](){}]+)/g;
+const BIBSTYLE_PATTERN = /(?:bibliographystyle|bibstyle):([^\s<>[\](){}]+)/g;
 
 // Simplified markup patterns - use non-greedy matching with length limits
 // These are more permissive but much faster and won't cause backtracking
 // Opening marker must be preceded by start-of-string, whitespace, or - ( { ' "
 // Closing marker must be followed by end-of-string, whitespace, or - . , : ! ? ; ' " ) } \ [ ]
-const PRE = '(?:^|(?<=[\\s\\-({\'\"]))';
+const PRE = '(?:^|(?<=[\\s\\-({\'"]))';
 const POST = '(?=[\\s\\-.,:!?;\\\'")}\\\\\\[\\]]|$)';
 const BOLD_PATTERN = new RegExp(`${PRE}\\*([^\\s*](?:[^*]*[^\\s*])?)\\*${POST}`, 'g');
 const ITALIC_PATTERN = new RegExp(`${PRE}\\/([^\\s/](?:[^/]*[^\\s/])?)\\/(?![a-zA-Z0-9])${POST}`, 'g');
@@ -98,7 +98,7 @@ const LINE_BREAK_PATTERN = /\\\\(?:\s|$)/g;
 const LATEX_COMMAND_PATTERN = /\\([a-zA-Z]+)(?:\[[^\]]*\])?\{([^}]*)\}/g;
 // Standalone LaTeX command pattern: \noindent, \newpage, \clearpage, \bigskip, etc. (no braces)
 // Must not match \[ or \( (math delimiters) or \\ (line break) - those are handled separately
-const LATEX_STANDALONE_COMMAND_PATTERN = /\\([a-zA-Z]{2,})(?![a-zA-Z{[\(])/g;
+const LATEX_STANDALONE_COMMAND_PATTERN = /\\([a-zA-Z]{2,})(?![a-zA-Z{[(])/g;
 
 // Macro pattern: {{{macro(args)}}} or {{{macro}}}
 const MACRO_PATTERN = /\{\{\{([a-zA-Z0-9_-]+)(?:\(([^)]*)\))?\}\}\}/g;
@@ -137,7 +137,7 @@ export function parseObjectsFast(text: string): OrgObject[] {
         return [];
     }
 
-    if (text.length < 3 || !/[*/_+=~\[\]:$\\<{@^]/.test(text)) {
+    if (text.length < 3 || !/[*/_+=~[\]:$\\<{@^]/.test(text)) {
         return [createPlainText(text, 0, text.length)];
     }
 
@@ -1495,7 +1495,7 @@ function parseTimestampString(ts: string): TimestampObject | undefined {
 
     const isActive = ts.startsWith('<');
     // Match: <2024-01-15 Mon 10:00-11:00 +1w>
-    const match = ts.match(/^[<\[](\d{4})-(\d{2})-(\d{2})(?:\s+\w+)?(?:\s+(\d{2}):(\d{2}))?(?:-(\d{2}):(\d{2}))?(?:\s+([.+]+\d+[hdwmy]))?[>\]]/);
+    const match = ts.match(/^[<[](\d{4})-(\d{2})-(\d{2})(?:\s+\w+)?(?:\s+(\d{2}):(\d{2}))?(?:-(\d{2}):(\d{2}))?(?:\s+([.+]+\d+[hdwmy]))?[>\]]/);
 
     if (!match) return undefined;
 
@@ -1595,7 +1595,7 @@ function parseParagraph(state: FastParserState): ParagraphElement | null {
 
         // End of paragraph conditions
         if (line.trim() === '') break;
-        if (line.match(/^(\*+\s|[#:|\-])/)) break;
+        if (line.match(/^(\*+\s|[#:|-])/)) break;
         if (line.match(/^\s*[-+*]\s+/) || line.match(/^\s*\d+[.)]\s+/)) break;
         // Stop at LaTeX environments
         if (line.match(/^\\begin\{/)) break;

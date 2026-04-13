@@ -82,7 +82,7 @@ const RE_HEADLINE_SIMPLE = /^\*+ /;
 const RE_TODO_PREFIX = /^(\S+)\s+/;
 const RE_PRIORITY = /^\[#([A-Z])\]\s+/;
 // Use bounded character class to prevent ReDoS (allows alphanumeric, _, @, #, %, -)
-const RE_TAGS = /\s+:([\w@#%\-]+(?::[\w@#%\-]+){0,50}):$/;
+const RE_TAGS = /\s+:([\w@#%-]+(?::[\w@#%-]+){0,50}):$/;
 
 // Keyword and comment patterns
 const RE_KEYWORD = /^#\+(\w+):\s*(.*)$/;

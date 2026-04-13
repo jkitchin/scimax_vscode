@@ -92,7 +92,7 @@ export interface CaptionParseResult {
  * for use when there's no #+NAME: keyword.
  */
 export function parseCaption(text: string): CaptionParseResult {
-    let captionText = text;
+    const captionText = text;
     let inlineLabel: string | undefined;
 
     // Check for inline label at end of caption (org-ref style)

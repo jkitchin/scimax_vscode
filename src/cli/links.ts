@@ -46,6 +46,7 @@ export function hyperlink(text: string, url: string): string {
  * filePath must be absolute; if not, it is resolved relative to cwd.
  */
 export function vscodeLinkAt(filePath: string, lineNumber: number): string {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
     const abs = filePath.startsWith('/') ? filePath : require('path').resolve(filePath);
     const label = `${abs}:${lineNumber}`;
     const url = `vscode://file${abs}:${lineNumber}`;

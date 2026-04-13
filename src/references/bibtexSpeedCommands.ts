@@ -2836,7 +2836,7 @@ export async function applyToAllEntries(): Promise<void> {
         if (selected.operation === 'standardizeKey') {
             const keyMatch = transformed.match(/^@\w+\s*\{\s*([^,\s]+)/);
             if (keyMatch) {
-                let newKey = keyMatch[1];
+                const newKey = keyMatch[1];
                 let suffix = '';
                 let counter = 0;
 
@@ -3162,8 +3162,8 @@ async function toggleAllJournalAbbreviations(context: vscode.ExtensionContext, a
 
     const service = await getAbbrevService(context);
     let changed = 0;
-    let notFound: string[] = [];
-    let errors: string[] = [];
+    const notFound: string[] = [];
+    const errors: string[] = [];
 
     // We need to process entries from bottom to top to maintain correct ranges
     let newText = text;

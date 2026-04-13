@@ -9,7 +9,7 @@ import { DAY_NAMES_SHORT } from '../utils/dateConstants';
  * Pattern to match DEADLINE or SCHEDULED with repeater timestamp
  * Groups: 1=indent, 2=keyword, 3=year, 4=month, 5=day, 6=hour, 7=minute, 8=repeater
  */
-export const REPEATER_TIMESTAMP_PATTERN = /^(\s*)(DEADLINE|SCHEDULED):\s*<(\d{4})-(\d{2})-(\d{2})(?:\s+\w{2,3})?(?:\s+(\d{2}):(\d{2}))?(?:\s+([\.\+]+\d+[hdwmy]))\s*>/;
+export const REPEATER_TIMESTAMP_PATTERN = /^(\s*)(DEADLINE|SCHEDULED):\s*<(\d{4})-(\d{2})-(\d{2})(?:\s+\w{2,3})?(?:\s+(\d{2}):(\d{2}))?(?:\s+([.+]+\d+[hdwmy]))\s*>/;
 
 /**
  * Get day of week abbreviation for a date
@@ -24,7 +24,7 @@ export function getDayOfWeek(date: Date): string {
  * @returns Parsed components or null if invalid
  */
 export function parseRepeaterString(repeater: string): { type: string; value: number; unit: string } | null {
-    const match = repeater.match(/^([\.\+]+)(\d+)([hdwmy])$/);
+    const match = repeater.match(/^([.+]+)(\d+)([hdwmy])$/);
     if (!match) return null;
     return {
         type: match[1],
@@ -53,7 +53,7 @@ export function advanceDateByRepeater(
     day: number,
     repeater: string
 ): Date {
-    const repMatch = repeater.match(/^([\.\+]+)(\d+)([hdwmy])$/);
+    const repMatch = repeater.match(/^([.+]+)(\d+)([hdwmy])$/);
     if (!repMatch) {
         return new Date(year, month - 1, day);
     }

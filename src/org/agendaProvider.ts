@@ -1917,7 +1917,7 @@ export function registerAgendaCommands(context: vscode.ExtensionContext): void {
                         label: item.title,
                         description: formatItemDescription(item),
                         detail: `${path.basename(item.file)}:${item.line}`,
-                        // @ts-ignore - storing extra data
+                        // @ts-expect-error - storing extra data on QuickPickItem
                         agendaItem: item,
                     });
                 }
@@ -1946,7 +1946,6 @@ export function registerAgendaCommands(context: vscode.ExtensionContext): void {
                 label: `${item.overdue ? '$(warning)' : '$(clock)'} ${item.title}`,
                 description: formatItemDescription(item),
                 detail: `${path.basename(item.file)}:${item.line}`,
-                // @ts-ignore
                 agendaItem: item,
             }));
 
@@ -1972,7 +1971,6 @@ export function registerAgendaCommands(context: vscode.ExtensionContext): void {
                 label: `$(calendar) ${item.title}`,
                 description: formatItemDescription(item),
                 detail: `${path.basename(item.file)}:${item.line}`,
-                // @ts-ignore
                 agendaItem: item,
             }));
 
@@ -2020,7 +2018,6 @@ export function registerAgendaCommands(context: vscode.ExtensionContext): void {
                     label: item.title,
                     description: formatItemDescription(item),
                     detail: `${path.basename(item.file)}:${item.line}`,
-                    // @ts-ignore
                     agendaItem: item,
                 }));
 
@@ -2121,7 +2118,6 @@ export function registerAgendaCommands(context: vscode.ExtensionContext): void {
                 label: `${item.todoState ? `[${item.todoState}] ` : ''}${item.title}`,
                 description: formatItemDescription(item),
                 detail: `${path.basename(item.file)}:${item.line}${item.tags.length > 0 ? ` :${item.tags.join(':')}:` : ''}`,
-                // @ts-ignore
                 agendaItem: item,
             }));
 
@@ -2334,7 +2330,7 @@ async function showAgendaQuickPick(
                 label: `${getItemIcon(item)} ${item.title}`,
                 description: formatItemDescription(item),
                 detail: `${item.category || path.basename(item.file)}:${item.line}`,
-                // @ts-ignore
+                // @ts-expect-error - storing extra data on QuickPickItem
                 agendaItem: item,
             });
         }
@@ -2375,7 +2371,7 @@ async function showAgendaQuickPickForFile(
                 label: `${getItemIcon(item)} ${item.title}`,
                 description: formatItemDescription(item),
                 detail: `Line ${item.line}`,
-                // @ts-ignore
+                // @ts-expect-error - storing extra data on QuickPickItem
                 agendaItem: item,
             });
         }

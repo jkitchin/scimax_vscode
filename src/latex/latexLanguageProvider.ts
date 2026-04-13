@@ -139,7 +139,7 @@ export async function parseProject(masterFile: string): Promise<LaTeXProject> {
         // Find \addbibresource (biblatex)
         const addbibPattern = /\\addbibresource\{([^}]+)\}/g;
         while ((match = addbibPattern.exec(content)) !== null) {
-            let bibFile = match[1];
+            const bibFile = match[1];
             const fullPath = path.resolve(path.dirname(filePath), bibFile);
             if (!project.bibFiles.includes(fullPath)) {
                 project.bibFiles.push(fullPath);

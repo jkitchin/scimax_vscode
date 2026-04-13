@@ -289,6 +289,7 @@ export class NotebookManager {
         // Initialize git if requested
         if (options.initGit) {
             try {
+                // eslint-disable-next-line @typescript-eslint/no-var-requires
                 const { exec } = require('child_process');
                 await new Promise<void>((resolve, reject) => {
                     exec('git init', { cwd: projectPath }, (error: any) => {
@@ -559,6 +560,7 @@ ${config.description || ''}
         const archivePath = path.join(path.dirname(notebook.path), archiveName);
 
         try {
+            // eslint-disable-next-line @typescript-eslint/no-var-requires
             const { exec } = require('child_process');
             await new Promise<void>((resolve, reject) => {
                 exec(

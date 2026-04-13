@@ -231,7 +231,7 @@ export class PdfViewerPanel {
             });
 
             // Use offset if available, otherwise fall back to column
-            let col = result.offset > 0 ? result.offset : result.column;
+            const col = result.offset > 0 ? result.offset : result.column;
 
             // If we have clicked text, try to find it in the source line for more precise positioning
             if (clickedText) {
@@ -498,7 +498,7 @@ export class PdfViewerPanel {
         const lowerWord = word.toLowerCase();
 
         // Direct match first
-        let idx = lowerLine.indexOf(lowerWord);
+        const idx = lowerLine.indexOf(lowerWord);
         if (idx !== -1) return idx;
 
         // Try finding inside LaTeX commands like \textbf{word}
@@ -534,7 +534,7 @@ export class PdfViewerPanel {
         const mathPatterns = [
             /[αβγδεζηθικλμνξοπρστυφχψωΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡΣΤΥΦΧΨΩ]/,  // Greek letters
             /[∫∑∏∂∇∞±×÷≈≠≤≥∈∉⊂⊃∪∩√∝∀∃]/,  // Math symbols
-            /^\s*[\d\.\-\+\=\(\)]+\s*$/,  // Just numbers and operators
+            /^\s*[\d.\-+=()]+\s*$/,  // Just numbers and operators
             /^[a-zA-Z]\s*[=<>≤≥]\s*/,  // Variable = something
             /\d+\s*[×·]\s*\d+/,  // Multiplication
             /^[A-Z]\([a-z]+\)$/i,  // F(liq), x(t), etc. - function notation
@@ -621,6 +621,7 @@ export class PdfViewerPanel {
                 // Find ALL occurrences of the target word
                 const occurrences: number[] = [];
                 let searchStart = 0;
+                // eslint-disable-next-line no-constant-condition
                 while (true) {
                     const idx = lowerLine.indexOf(lowerTarget, searchStart);
                     if (idx === -1) break;
@@ -1375,7 +1376,7 @@ export class PdfViewerPanel {
 
                             // Find word boundaries around the click position
                             // Word characters: letters, numbers, hyphens
-                            const isWordChar = (c) => /[a-zA-Z0-9\-]/.test(c);
+                            const isWordChar = (c) => /[a-zA-Z0-9-]/.test(c);
 
                             let wordStart = charIndex;
                             let wordEnd = charIndex;
@@ -1396,7 +1397,7 @@ export class PdfViewerPanel {
                             // If we didn't find a word at click position, try to find nearest word
                             if (!clickedWord || clickedWord.length < 2) {
                                 // Find all words and pick closest to click position
-                                const wordMatches = [...text.matchAll(/[a-zA-Z0-9\-]+/g)];
+                                const wordMatches = [...text.matchAll(/[a-zA-Z0-9-]+/g)];
                                 if (wordMatches.length > 0) {
                                     let closest = wordMatches[0];
                                     let closestDist = Math.abs(charIndex - closest.index);
@@ -1414,7 +1415,7 @@ export class PdfViewerPanel {
                             console.log('Clicked word:', clickedWord, 'from position', wordStart, '-', wordEnd);
 
                             return {
-                                word: clickedWord || text.split(/\s+/)[0] || text,
+                                word: clickedWord || text.split(/\\s+/)[0] || text,
                                 context: text,
                                 allText: text
                             };

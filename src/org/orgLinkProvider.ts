@@ -100,6 +100,7 @@ export class OrgLinkProvider implements vscode.DocumentLinkProvider {
             const lowerText = text.toLowerCase();
             let searchStart = 0;
 
+            // eslint-disable-next-line no-constant-condition
             while (true) {
                 const index = lowerText.indexOf(targetLower, searchStart);
                 if (index === -1) break;

@@ -179,6 +179,7 @@ function readVSCodeSettings(): Record<string, unknown> {
             } catch {
                 // If individual value parse fails, try with escaping
                 try {
+                    // eslint-disable-next-line no-control-regex
                     const escaped = valueStr.replace(/[\x00-\x1f]/g, (c) => {
                         if (c === '\n') return '\\n';
                         if (c === '\r') return '\\r';

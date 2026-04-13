@@ -35,7 +35,7 @@ export function findDocumentBibliography(documentText: string, documentPath: str
 
     // Org-mode patterns
     // Match bibliography:path (org-ref style)
-    const bibLinkRegex = /bibliography:([^\s<>\[\](){}]+)/i;
+    const bibLinkRegex = /bibliography:([^\s<>[\](){}]+)/i;
     // Match #+BIBLIOGRAPHY: path
     const bibKeywordRegex = /^#\+BIBLIOGRAPHY:\s*(.+?\.bib)\s*$/im;
 

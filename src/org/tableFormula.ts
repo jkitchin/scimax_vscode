@@ -235,7 +235,7 @@ export function parseTableAt(
 
     for (let i = startLine; i <= endLine; i++) {
         const lineText = document.lineAt(i).text.trim();
-        const isHline = /^\|[-\+]+\|$/.test(lineText);
+        const isHline = /^\|[-+]+\|$/.test(lineText);
 
         if (isHline) {
             cells.push([{
@@ -286,7 +286,7 @@ export function parseTableAt(
     // Extract column names from header row
     for (let i = 0; i < headerRowCells.length; i++) {
         const name = headerRowCells[i].trim();
-        if (name && !name.startsWith('<') && !name.match(/^[-\+]+$/)) {
+        if (name && !name.startsWith('<') && !name.match(/^[-+]+$/)) {
             // Store column name -> column number (1-indexed)
             columnNames.set(name.toLowerCase(), i + 1);
         }
@@ -731,11 +731,11 @@ function resolveRange(rangeExpr: string, context: EvalContext, durationMode?: bo
     const rangeMatch = rangeExpr.match(/@([><0]|[+-]?\d+)\$([+-]?\d+)\.\.@([><0]|[+-]?\d+)\$([+-]?\d+)/);
     if (rangeMatch) {
         const startRow = resolveRowRefInExpr(rangeMatch[1], context.table, context.currentRow);
-        let startCol = rangeMatch[2].match(/^[+-]/)
+        const startCol = rangeMatch[2].match(/^[+-]/)
             ? context.currentCol + parseInt(rangeMatch[2], 10)
             : parseInt(rangeMatch[2], 10);
         const endRow = resolveRowRefInExpr(rangeMatch[3], context.table, context.currentRow);
-        let endCol = rangeMatch[4].match(/^[+-]/)
+        const endCol = rangeMatch[4].match(/^[+-]/)
             ? context.currentCol + parseInt(rangeMatch[4], 10)
             : parseInt(rangeMatch[4], 10);
 
@@ -752,10 +752,10 @@ function resolveRange(rangeExpr: string, context: EvalContext, durationMode?: bo
     // Also supports relative columns: $+1..$+3 or $1..$+2
     const colRangeMatch = rangeExpr.match(/\$([+-]?\d+)\.\.\$([+-]?\d+)/);
     if (colRangeMatch) {
-        let startCol = colRangeMatch[1].match(/^[+-]/)
+        const startCol = colRangeMatch[1].match(/^[+-]/)
             ? context.currentCol + parseInt(colRangeMatch[1], 10)
             : parseInt(colRangeMatch[1], 10);
-        let endCol = colRangeMatch[2].match(/^[+-]/)
+        const endCol = colRangeMatch[2].match(/^[+-]/)
             ? context.currentCol + parseInt(colRangeMatch[2], 10)
             : parseInt(colRangeMatch[2], 10);
 
@@ -783,10 +783,10 @@ function resolveRange(rangeExpr: string, context: EvalContext, durationMode?: bo
     const rowRangeMatch = rangeExpr.match(/@([><0]|[+-]?\d+)\$([+-]?\d+)\.\.@([><0]|[+-]?\d+)\$([+-]?\d+)/);
     if (rowRangeMatch) {
         const row = resolveRowRefInExpr(rowRangeMatch[1], context.table, context.currentRow);
-        let startCol = rowRangeMatch[2].match(/^[+-]/)
+        const startCol = rowRangeMatch[2].match(/^[+-]/)
             ? context.currentCol + parseInt(rowRangeMatch[2], 10)
             : parseInt(rowRangeMatch[2], 10);
-        let endCol = rowRangeMatch[4].match(/^[+-]/)
+        const endCol = rowRangeMatch[4].match(/^[+-]/)
             ? context.currentCol + parseInt(rowRangeMatch[4], 10)
             : parseInt(rowRangeMatch[4], 10);
 
@@ -815,7 +815,7 @@ function resolveCellRef(cellRef: string, context: EvalContext, durationMode?: bo
     const match = cellRef.match(/@([><0]|[+-]?\d+)\$([+-]?\d+)/);
     if (match) {
         const row = resolveRowRefInExpr(match[1], context.table, context.currentRow);
-        let col = match[2].match(/^[+-]/)
+        const col = match[2].match(/^[+-]/)
             ? context.currentCol + parseInt(match[2], 10)
             : parseInt(match[2], 10);
         return getCellValueForEval(context.table, row, col, durationMode);
@@ -986,7 +986,7 @@ interface ParseResult {
 }
 
 function parseExpression(tokens: Token[], pos: number): ParseResult {
-    let result = parseTerm(tokens, pos);
+    const result = parseTerm(tokens, pos);
 
     while (result.pos < tokens.length) {
         const token = tokens[result.pos];
@@ -1007,7 +1007,7 @@ function parseExpression(tokens: Token[], pos: number): ParseResult {
 }
 
 function parseTerm(tokens: Token[], pos: number): ParseResult {
-    let result = parsePower(tokens, pos);
+    const result = parsePower(tokens, pos);
 
     while (result.pos < tokens.length) {
         const token = tokens[result.pos];
@@ -1030,7 +1030,7 @@ function parseTerm(tokens: Token[], pos: number): ParseResult {
 }
 
 function parsePower(tokens: Token[], pos: number): ParseResult {
-    let result = parseFactor(tokens, pos);
+    const result = parseFactor(tokens, pos);
 
     if (result.pos < tokens.length) {
         const token = tokens[result.pos];
@@ -1291,7 +1291,7 @@ export function generateUpdatedTable(
     for (let i = table.startLine; i <= table.endLine; i++) {
         const originalLine = document.lineAt(i).text;
 
-        if (/^\s*\|[-\+]+\|\s*$/.test(originalLine)) {
+        if (/^\s*\|[-+]+\|\s*$/.test(originalLine)) {
             // Separator line - keep as is
             lines.push(originalLine);
             continue;

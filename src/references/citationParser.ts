@@ -132,7 +132,7 @@ function parseOrgRefCitations(
                 doubleSpace,
             ].filter((b): b is number => b > 0);
 
-            let endPos = boundaries.length > 0 ? Math.min(...boundaries) : remainingLine.length;
+            const endPos = boundaries.length > 0 ? Math.min(...boundaries) : remainingLine.length;
 
             // Take content up to the boundary
             v3Content = remainingLine.slice(0, endPos);

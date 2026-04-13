@@ -320,7 +320,7 @@ function extractTimestamp(timestamp: TimestampObject): LegacyTimestamp {
 
     // Determine timestamp type
     const tsType = props.timestampType;
-    let type: LegacyTimestamp['type'] = (tsType === 'active' || tsType === 'active-range') ? 'active' : 'inactive';
+    const type: LegacyTimestamp['type'] = (tsType === 'active' || tsType === 'active-range') ? 'active' : 'inactive';
 
     // Format date
     const year = props.yearStart || new Date().getFullYear();

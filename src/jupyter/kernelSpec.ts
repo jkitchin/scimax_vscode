@@ -262,7 +262,7 @@ export async function findKernelForLanguage(language: string): Promise<KernelSpe
     const normalizedLang = language.toLowerCase();
 
     // First try direct language match
-    let spec = await getDefaultKernelForLanguage(normalizedLang);
+    const spec = await getDefaultKernelForLanguage(normalizedLang);
     if (spec) return spec;
 
     // Try mapped kernel names

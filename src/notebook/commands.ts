@@ -119,6 +119,7 @@ export function registerNotebookCommands(
             // Select directory
             const defaultDir = vscode.workspace.getConfiguration('scimax.notebook')
                 .get<string>('directory') ||
+                // eslint-disable-next-line @typescript-eslint/no-var-requires
                 path.join(require('os').homedir(), 'notebooks');
 
             const directory = await vscode.window.showInputBox({
@@ -412,6 +413,7 @@ export function registerNotebookCommands(
 
             const configPath = path.join(notebook.path, '.scimax', 'config.json');
 
+            // eslint-disable-next-line @typescript-eslint/no-var-requires
             if (!require('fs').existsSync(configPath)) {
                 // Create default config
                 await notebookManager.saveConfig(notebook.path, {

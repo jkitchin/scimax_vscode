@@ -633,10 +633,10 @@ function parseChemicalFormula(formula: string): Array<{ symbol: string; count: n
 
     // Remove mhchem syntax elements that aren't part of the formula
     // Keep only element symbols and numbers
-    let cleaned = formula
+    const cleaned = formula
         .replace(/\^{[^}]*}/g, '')  // Remove superscripts like ^{2+}
         .replace(/_{[^}]*}/g, '')    // Remove subscripts in braces
-        .replace(/[\s\-\+\=\>\<\(\)\[\]]/g, '')  // Remove operators and brackets
+        .replace(/[\s\-+=><()[\]]/g, '')  // Remove operators and brackets
         .replace(/\\[a-zA-Z]+/g, ''); // Remove LaTeX commands
 
     // Match element symbols (1-2 letters, capital followed by optional lowercase) followed by optional number
@@ -1745,7 +1745,7 @@ export class LaTeXHoverProvider implements vscode.HoverProvider {
             const endCol = startCol + match[0].length;
 
             if (position.character >= startCol && position.character <= endCol) {
-                let imagePath = match[1];
+                const imagePath = match[1];
 
                 // Resolve path relative to document
                 const docDir = path.dirname(document.uri.fsPath);

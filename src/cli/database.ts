@@ -102,7 +102,7 @@ export class CliOllamaEmbeddingService implements CliEmbeddingService {
 
     async embed(text: string): Promise<number[]> {
         const maxChars = 6000;
-        let prompt = text.length > maxChars ? text.substring(0, maxChars) : text;
+        const prompt = text.length > maxChars ? text.substring(0, maxChars) : text;
         try {
             const response = await this.request('/api/embeddings', { model: this.model, prompt });
             return response.embedding;

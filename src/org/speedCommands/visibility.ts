@@ -18,7 +18,7 @@ export async function showAllChildren(): Promise<void> {
     const position = editor.selection.active;
 
     // Find the heading
-    let headingLine = position.line;
+    const headingLine = position.line;
     if (getHeadingLevel(document, headingLine) === 0) {
         vscode.window.showInformationMessage('Not on a heading');
         return;

@@ -5,6 +5,7 @@
 
 import * as fs from 'fs';
 import * as path from 'path';
+import { minimatch } from 'minimatch';
 
 /**
  * Default ignore patterns for common non-project directories/files
@@ -149,8 +150,6 @@ function matchPattern(text: string, pattern: string): boolean {
  * @param patterns Array of patterns (can be globs or absolute paths)
  */
 export function shouldIgnoreAbsolute(absolutePath: string, patterns: string[]): boolean {
-    const { minimatch } = require('minimatch');
-
     for (const pattern of patterns) {
         // Expand ~ in pattern
         let expandedPattern = pattern;

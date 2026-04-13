@@ -638,8 +638,8 @@ describe('Reference Validation', () => {
     it('should detect undefined references', () => {
         const labels = ['sec:intro', 'fig:one'];
         const refs = ['sec:intro', 'fig:one', 'fig:missing'];
-        const undefined = findUndefinedRefs(labels, refs);
-        expect(undefined).toEqual(['fig:missing']);
+        const undefinedRefs = findUndefinedRefs(labels, refs);
+        expect(undefinedRefs).toEqual(['fig:missing']);
     });
 
     it('should detect unused labels', () => {
@@ -652,8 +652,8 @@ describe('Reference Validation', () => {
     it('should handle empty labels', () => {
         const labels: string[] = [];
         const refs = ['sec:missing'];
-        const undefined = findUndefinedRefs(labels, refs);
-        expect(undefined).toEqual(['sec:missing']);
+        const undefinedRefs = findUndefinedRefs(labels, refs);
+        expect(undefinedRefs).toEqual(['sec:missing']);
     });
 
     it('should handle empty refs', () => {

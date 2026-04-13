@@ -47,7 +47,7 @@ const RE_STATISTICS_COOKIE = /^\[(\d+\/\d+|\d+%)\]/;
 
 // Timestamp patterns
 const RE_TIMESTAMP_CONTENT = /^(\d{4})-(\d{2})-(\d{2})(?:\s+\w+)?(?:\s+(\d{2}):(\d{2})(?:-(\d{2}):(\d{2}))?)?(?:\s+([.+]?\+\d+[hdwmy]))?(?:\s+(-\d+[hdwmy]))?/;
-const RE_TIMESTAMP_RANGE = /^[<\[](\d{4})-(\d{2})-(\d{2})(?:\s+\w+)?(?:\s+(\d{2}):(\d{2}))?[>\]]/;
+const RE_TIMESTAMP_RANGE = /^[<[](\d{4})-(\d{2})-(\d{2})(?:\s+\w+)?(?:\s+(\d{2}):(\d{2}))?[>\]]/;
 const RE_REPEATER = /^([.+]?\+)(\d+)([hdwmy])$/;
 const RE_WARNING = /^(-{1,2})(\d+)([hdwmy])$/;
 
@@ -86,7 +86,7 @@ const RE_PLAIN_LINK = new RegExp(`^(${PLAIN_LINK_TYPES.join('|')}):([-\\w&;,:./#
 
 // URL-style plain links (http://, https://)
 // These need special handling because URLs can have more complex paths
-const RE_URL_LINK = /^(https?):\/\/([^\s\[\]<>]+)/;
+const RE_URL_LINK = /^(https?):\/\/([^\s[\]<>]+)/;
 
 // =============================================================================
 // Object Parser Configuration

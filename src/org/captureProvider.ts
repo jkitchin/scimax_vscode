@@ -349,7 +349,7 @@ async function executeCapture(template: CaptureTemplate): Promise<void> {
     const selectedText = editor && selection ? editor.document.getText(selection) : '';
 
     // Create initial context
-    let context = createCaptureContext(template, {
+    const context = createCaptureContext(template, {
         initialContent: selectedText || await vscode.env.clipboard.readText(),
         sourceFile: editor?.document.uri.fsPath,
         sourceLine: selection ? selection.start.line + 1 : undefined,

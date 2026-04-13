@@ -172,6 +172,7 @@ describe('ZeroMQ Module Loading', () => {
         console.log('Temp directory:', os.tmpdir());
 
         // Check for Jupyter
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
         const { execSync } = require('child_process');
         try {
             const jupyterVersion = execSync('jupyter --version', { encoding: 'utf-8', timeout: 5000 });
@@ -192,6 +193,7 @@ describe('ZeroMQ Module Loading', () => {
 describe('Jupyter Message Protocol', () => {
     it('creates proper message headers', () => {
         // Test header creation logic
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
         const { v4: uuidv4 } = require('uuid');
 
         const msgType = 'execute_request';
@@ -213,6 +215,7 @@ describe('Jupyter Message Protocol', () => {
     });
 
     it('signs messages correctly', () => {
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
         const crypto = require('crypto');
 
         const key = 'test-key-12345';
@@ -251,6 +254,7 @@ describe('Jupyter Message Protocol', () => {
 describe('Kernel Manager', () => {
     it('generates valid connection info', async () => {
         // Test the connection info structure
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
         const crypto = require('crypto');
 
         const basePort = 10000 + Math.floor(Math.random() * 50000);

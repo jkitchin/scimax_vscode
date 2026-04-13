@@ -415,7 +415,7 @@ export async function clockOut(): Promise<void> {
             const position = editor.selection.active;
 
             // Find the heading
-            let headingLine = findContainingHeading(document, position.line);
+            const headingLine = findContainingHeading(document, position.line);
 
             if (headingLine >= 0) {
                 // Look for logbook

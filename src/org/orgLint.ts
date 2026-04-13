@@ -547,8 +547,8 @@ const timestampSyntax: OrgLintChecker = {
         const issues: LintIssue[] = [];
 
         // Regex for potential timestamps that might be malformed
-        const timestampPattern = /[<\[][\d-]+.*?[>\]]/g;
-        const validTimestamp = /^[<\[](\d{4})-(\d{2})-(\d{2})( [A-Za-z]{2,3})?( \d{1,2}:\d{2}(-\d{1,2}:\d{2})?)?( \+?\d+[hdwmy])?( -\d+[hdwmy])?[>\]]$/;
+        const timestampPattern = /[<[][\d-]+.*?[>\]]/g;
+        const validTimestamp = /^[<[](\d{4})-(\d{2})-(\d{2})( [A-Za-z]{2,3})?( \d{1,2}:\d{2}(-\d{1,2}:\d{2})?)?( \+?\d+[hdwmy])?( -\d+[hdwmy])?[>\]]$/;
 
         for (let i = 0; i < lines.length; i++) {
             const line = lines[i];
@@ -558,9 +558,9 @@ const timestampSyntax: OrgLintChecker = {
                 const ts = match[0];
 
                 // Check if it looks like a timestamp but is malformed
-                if (ts.match(/^[<\[]\d/) && !ts.match(validTimestamp)) {
+                if (ts.match(/^[<[]\d/) && !ts.match(validTimestamp)) {
                     // Validate date components
-                    const dateMatch = ts.match(/[<\[](\d{4})-(\d{2})-(\d{2})/);
+                    const dateMatch = ts.match(/[<[](\d{4})-(\d{2})-(\d{2})/);
                     if (dateMatch) {
                         const year = parseInt(dateMatch[1]);
                         const month = parseInt(dateMatch[2]);

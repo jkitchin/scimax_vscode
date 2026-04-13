@@ -1660,7 +1660,9 @@ function formatHeadingDescription(heading: HeadingRecord): string {
         if (Array.isArray(tags) && tags.length > 0) {
             parts.push(`:${tags.join(':')}:`);
         }
-    } catch { }
+    } catch {
+        // intentional no-op: invalid JSON tags are ignored
+    }
 
     if (heading.deadline) {
         parts.push(`DL: ${heading.deadline.split(' ')[0]}`);

@@ -1529,7 +1529,7 @@ export class ScimaxDbCore {
     public async searchByProperty(propertyName: string, value?: string): Promise<HeadingRecord[]> {
         if (!this.db) return [];
         const scope = this.getScopeClause();
-        let sql = `SELECT * FROM headings WHERE properties LIKE ?${scope.sql}`;
+        const sql = `SELECT * FROM headings WHERE properties LIKE ?${scope.sql}`;
         const args: any[] = value
             ? [`%"${propertyName}":"${value}%`, ...scope.args]
             : [`%"${propertyName}"%`, ...scope.args];

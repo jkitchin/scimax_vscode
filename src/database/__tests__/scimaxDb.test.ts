@@ -972,6 +972,7 @@ describe('Markdown Heading Parsing', () => {
 
 describe('Hash Computation', () => {
     const computeHash = (content: string): string => {
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
         const crypto = require('crypto');
         return crypto.createHash('md5').update(content).digest('hex');
     };

@@ -649,7 +649,7 @@ export class IpynbExportBackend implements ExportBackend {
 
         // Check for :eval no header
         const headers = srcBlock.properties.parameters || '';
-        const evalNo = /\:eval\s+no\b/i.test(headers);
+        const evalNo = /:eval\s+no\b/i.test(headers);
 
         if (isCodeCell && !evalNo) {
             // Flush markdown buffer before code cell
@@ -1285,8 +1285,8 @@ export class IpynbExportBackend implements ExportBackend {
             if (!section) return undefined;
 
             const filteredChildren: OrgElement[] = [];
-            let skipUntilEndSolution = false;
-            let skipUntilEndHidden = false;
+            const skipUntilEndSolution = false;
+            const skipUntilEndHidden = false;
 
             for (const child of section.children) {
                 // Check for solution markers in source blocks

@@ -88,7 +88,7 @@ import { getEntity } from './orgEntities';
  */
 function normalizeCiteKeys(path: string): string {
     if (path.includes('&')) {
-        const matches = path.match(/&([a-zA-Z0-9_:.\-]+)/g) || [];
+        const matches = path.match(/&([a-zA-Z0-9_:.-]+)/g) || [];
         return matches.map(k => k.slice(1)).join(',');
     }
     return path;
@@ -994,7 +994,7 @@ export class LatexExportBackend implements ExportBackend {
     private exportLink(link: LinkObject, state: ExportState): string {
         const { linkType, path, rawLink } = link.properties;
 
-        let description = link.children
+        const description = link.children
             ? exportObjects(link.children, this, state)
             : escapeString(rawLink || path, 'latex');
 

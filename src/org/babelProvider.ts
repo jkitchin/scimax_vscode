@@ -254,6 +254,7 @@ async function executeScimaxBlock(
             },
             // Helper to read and parse an org file
             parseOrgFile: (filePath: string) => {
+                // eslint-disable-next-line @typescript-eslint/no-var-requires
                 const fs = require('fs');
                 const absPath = path.isAbsolute(filePath)
                     ? filePath
@@ -264,6 +265,7 @@ async function executeScimaxBlock(
             },
             // Helper to get property from any org file (with inheritance)
             getPropertyFromFile: (filePath: string, propName: string, lineNum?: number) => {
+                // eslint-disable-next-line @typescript-eslint/no-var-requires
                 const fs = require('fs');
                 const absPath = path.isAbsolute(filePath)
                     ? filePath

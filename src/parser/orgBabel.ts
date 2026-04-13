@@ -646,6 +646,7 @@ while True:
         outputBuffer += data.toString();
 
         // Check for complete output blocks
+        // eslint-disable-next-line no-constant-condition
         while (true) {
             const startIdx = outputBuffer.indexOf(OUTPUT_START_MARKER);
             const endIdx = outputBuffer.indexOf(OUTPUT_END_MARKER);
@@ -885,6 +886,7 @@ if __org_babel_last_idx__ >= 0:
 
             proc.on('error', (error: NodeJS.ErrnoException) => {
                 // Provide more helpful error message for common issues
+                // eslint-disable-next-line @typescript-eslint/no-var-requires
                 const fs = require('fs');
                 let enhancedError = error;
                 if (error.code === 'ENOENT') {
@@ -1419,6 +1421,7 @@ export async function executeSourceBlock(
  * Compute SHA1 hash of code for caching
  */
 export function computeCodeHash(code: string): string {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
     const crypto = require('crypto');
     return crypto.createHash('sha1').update(code).digest('hex');
 }

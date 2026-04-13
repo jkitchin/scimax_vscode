@@ -901,7 +901,7 @@ export class HtmlExportBackend implements ExportBackend {
         }
 
         let href = path;
-        let description = link.children
+        const description = link.children
             ? exportObjects(link.children, this, state)
             : escapeString(rawLink || path, 'html');
 

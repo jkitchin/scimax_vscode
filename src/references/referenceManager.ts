@@ -177,7 +177,7 @@ export class ReferenceManager {
         const docDir = path.dirname(documentPath);
 
         // Match bibliography:path1,path2 (comma-separated)
-        const bibLinkRegex = /bibliography:([^\s<>\[\](){}]+)/gi;
+        const bibLinkRegex = /bibliography:([^\s<>[\](){}]+)/gi;
         // Match #+BIBLIOGRAPHY: path
         const bibKeywordRegex = /^#\+BIBLIOGRAPHY:\s*(.+?\.bib)\s*$/gim;
 

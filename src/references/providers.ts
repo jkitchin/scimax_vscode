@@ -215,7 +215,7 @@ export class BibliographyHoverProvider implements vscode.HoverProvider {
         // bibliography:path/to/file.bib,other.bib (comma-separated)
         const patterns: { regex: RegExp }[] = [
             { regex: /^(#\+BIBLIOGRAPHY:\s*)(.+?\.bib)\s*$/i },
-            { regex: /(bibliography:)([^\s<>\[\](){}]+)/i }
+            { regex: /(bibliography:)([^\s<>[\](){}]+)/i }
         ];
 
         for (const { regex } of patterns) {
@@ -414,7 +414,7 @@ export class RefHoverProvider implements vscode.HoverProvider {
 
         // Match org-ref style links: ref:label, eqref:label, pageref:label, etc.
         // Use negative lookbehind to avoid matching href:, etc.
-        const orgRefPattern = /(?<!\w)(ref|eqref|pageref|nameref|autoref|cref|Cref):([^\s<>\[\](){}:,]+)/g;
+        const orgRefPattern = /(?<!\w)(ref|eqref|pageref|nameref|autoref|cref|Cref):([^\s<>[\](){}:,]+)/g;
 
         let match;
         while ((match = orgRefPattern.exec(line)) !== null) {
@@ -753,13 +753,13 @@ export class DoiHoverProvider implements vscode.HoverProvider {
         // Patterns to match DOI links
         const patterns = [
             // doi:10.xxx/xxx
-            /doi:(10\.\d{4,9}\/[^\s<>\[\](){}]+)/gi,
+            /doi:(10\.\d{4,9}\/[^\s<>[\](){}]+)/gi,
             // https://doi.org/10.xxx or http://dx.doi.org/10.xxx
-            /https?:\/\/(?:dx\.)?doi\.org\/(10\.\d{4,9}\/[^\s<>\[\](){}]+)/gi,
+            /https?:\/\/(?:dx\.)?doi\.org\/(10\.\d{4,9}\/[^\s<>[\](){}]+)/gi,
             // [[doi:10.xxx/xxx]] org link
             /\[\[doi:(10\.\d{4,9}\/[^\]]+)\]\]/gi,
             // Bare DOI 10.xxx/xxx (when not preceded by letter)
-            /(?:^|[^\w\/])(10\.\d{4,9}\/[^\s<>\[\](){}]+)/gi
+            /(?:^|[^\w/])(10\.\d{4,9}\/[^\s<>[\](){}]+)/gi
         ];
 
         for (const pattern of patterns) {
@@ -770,7 +770,7 @@ export class DoiHoverProvider implements vscode.HoverProvider {
 
                 if (position >= fullStart && position <= fullEnd) {
                     // Clean DOI - remove trailing punctuation
-                    let doi = match[1].replace(/[.,;:)\]}>]+$/, '');
+                    const doi = match[1].replace(/[.,;:)\]}>]+$/, '');
                     return { doi, start: fullStart, end: fullEnd };
                 }
             }
@@ -1016,6 +1016,7 @@ export class DoiHoverProvider implements vscode.HoverProvider {
 
     private async fetchDoiMetadata(doi: string): Promise<DoiMetadata | null> {
         return new Promise((resolve) => {
+            // eslint-disable-next-line @typescript-eslint/no-var-requires
             const https = require('https');
 
             const options = {
@@ -1798,7 +1799,7 @@ export class BibliographyDiagnosticProvider {
         const docDir = path.dirname(document.uri.fsPath);
 
         // Match bibliography:path (with optional comma-separated paths)
-        const bibLinkRegex = /bibliography:([^\s<>\[\](){}]+)/gi;
+        const bibLinkRegex = /bibliography:([^\s<>[\](){}]+)/gi;
         // Match #+BIBLIOGRAPHY: path
         const bibKeywordRegex = /^(#\+BIBLIOGRAPHY:\s*)(.+?\.bib)\s*$/gim;
 

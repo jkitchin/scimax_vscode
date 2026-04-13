@@ -410,6 +410,7 @@ async function pickDate(title: string): Promise<Date | undefined> {
     // Start showing current month
     let displayMonth = new Date(today.getFullYear(), today.getMonth(), 1);
 
+    // eslint-disable-next-line no-constant-condition
     while (true) {
         const items: DateItem[] = [];
 
@@ -465,7 +466,7 @@ async function pickDate(title: string): Promise<Date | undefined> {
 
         while (currentDay <= totalDays) {
             // Build one week
-            let weekDates: (Date | null)[] = [];
+            const weekDates: (Date | null)[] = [];
             for (let dow = 0; dow < 7; dow++) {
                 if ((currentDay === 1 && dow < startPadding) || currentDay > totalDays) {
                     weekDates.push(null);

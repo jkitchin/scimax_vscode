@@ -580,7 +580,7 @@ describe('DiredManager', () => {
             await manager.loadDirectory();
 
             manager.setSort('name');
-            let state = manager.getState();
+            const state = manager.getState();
 
             // Find first file (non-directory) index
             const firstFileIndex = state.entries.findIndex((e) => !e.isDirectory);

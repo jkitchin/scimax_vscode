@@ -40,7 +40,7 @@ export async function archiveSubtree(): Promise<void> {
     const position = editor.selection.active;
 
     // Find the heading
-    let headingLine = position.line;
+    const headingLine = position.line;
     if (getHeadingLevel(document, headingLine) === 0) {
         vscode.window.showInformationMessage('Not on a heading');
         return;
@@ -120,7 +120,7 @@ export async function toggleArchiveTag(): Promise<void> {
     const position = editor.selection.active;
 
     // Find the heading
-    let headingLine = position.line;
+    const headingLine = position.line;
     if (getHeadingLevel(document, headingLine) === 0) {
         vscode.window.showInformationMessage('Not on a heading');
         return;
@@ -149,7 +149,7 @@ export async function archiveToSibling(): Promise<void> {
     const position = editor.selection.active;
 
     // Find the heading
-    let headingLine = position.line;
+    const headingLine = position.line;
     if (getHeadingLevel(document, headingLine) === 0) {
         vscode.window.showInformationMessage('Not on a heading');
         return;
@@ -159,7 +159,7 @@ export async function archiveToSibling(): Promise<void> {
     const { startLine, endLine } = getSubtreeRange(document, headingLine);
 
     // Find parent level
-    let parentLevel = level - 1;
+    const parentLevel = level - 1;
     let parentEnd = document.lineCount - 1;
 
     if (parentLevel > 0) {

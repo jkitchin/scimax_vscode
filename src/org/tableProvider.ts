@@ -275,7 +275,7 @@ function isSeparatorRow(line: string): boolean {
     if (!isTableRow(line)) return false;
 
     // Standard org separator: |---+---| or |---|---|
-    if (/^\|[\s\-\+\:]+\|$/.test(trimmed.replace(/\|/g, '|'))) {
+    if (/^\|[\s\-+:]+\|$/.test(trimmed.replace(/\|/g, '|'))) {
         return true;
     }
 
@@ -287,7 +287,7 @@ function isSeparatorRow(line: string): boolean {
     return cells.every(cell => {
         const content = cell.trim();
         // Cell is separator-like if empty or contains only dashes, colons, spaces
-        return content === '' || /^[\-\:]+$/.test(content);
+        return content === '' || /^[-:]+$/.test(content);
     });
 }
 
@@ -315,7 +315,7 @@ function isValidMarkupOpener(str: string, pos: number, marker: string): boolean 
     // Check PRE condition: preceded by whitespace, start, or punctuation
     if (pos > 0) {
         const prevChar = str[pos - 1];
-        const preChars = ' \t\n\r-({\'\"';
+        const preChars = ' \t\n\r-({\'"';
         if (!preChars.includes(prevChar)) {
             return false;
         }
@@ -356,7 +356,7 @@ function isValidMarkupCloser(str: string, pos: number, marker: string): boolean 
     // Check POST condition: followed by whitespace, end, or punctuation
     if (pos + 1 < str.length) {
         const nextChar = str[pos + 1];
-        const postChars = ' \t\n\r-.,;:!?\'\")}|';
+        const postChars = ' \t\n\r-.,;:!?\'")}|';
         if (!postChars.includes(nextChar)) {
             return false;
         }
@@ -1328,7 +1328,7 @@ export async function nextCell(): Promise<boolean> {
     const line = document.lineAt(position.line).text;
 
     // Find next | after cursor
-    let nextPipe = line.indexOf('|', position.character + 1);
+    const nextPipe = line.indexOf('|', position.character + 1);
 
     if (nextPipe === -1 || nextPipe >= line.length - 1) {
         // At end of row - try to move to next row
@@ -1392,7 +1392,7 @@ export async function prevCell(): Promise<boolean> {
     const line = document.lineAt(position.line).text;
 
     // Find previous | before cursor
-    let prevPipe = line.lastIndexOf('|', position.character - 2);
+    const prevPipe = line.lastIndexOf('|', position.character - 2);
 
     if (prevPipe <= 0) {
         // Move to previous row

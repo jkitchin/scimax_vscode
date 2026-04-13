@@ -423,7 +423,7 @@ export class OrgHoverProvider implements vscode.HoverProvider {
             const endCol = match.index + match[0].length;
 
             if (position.character >= startCol && position.character <= endCol) {
-                let imagePath = match[1];
+                const imagePath = match[1];
                 const description = match[2];
 
                 // Check if this is an image file
@@ -754,7 +754,7 @@ export class OrgHoverProvider implements vscode.HoverProvider {
     private getTimestampHover(line: string, position: vscode.Position): vscode.Hover | null {
         // Match active timestamps <YYYY-MM-DD ...> or inactive [YYYY-MM-DD ...]
         // Supports: day name, time range, repeater (+1w, .+1d, ++1m), warning period (-3d)
-        const tsPattern = /([<\[])(\d{4})-(\d{2})-(\d{2})(?:\s+([A-Za-z]+))?(?:\s+(\d{2}:\d{2})(?:-(\d{2}:\d{2}))?)?(?:\s+([+.]+\d+[hdwmy]))?(?:\s+(-\d+[hdwmy]))?([>\]])/g;
+        const tsPattern = /([<[])(\d{4})-(\d{2})-(\d{2})(?:\s+([A-Za-z]+))?(?:\s+(\d{2}:\d{2})(?:-(\d{2}:\d{2}))?)?(?:\s+([+.]+\d+[hdwmy]))?(?:\s+(-\d+[hdwmy]))?([>\]])/g;
         let match;
 
         while ((match = tsPattern.exec(line)) !== null) {

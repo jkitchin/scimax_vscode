@@ -3335,7 +3335,7 @@ export function getLinkAtPoint(document: vscode.TextDocument, position: vscode.P
 
             if (position.character >= start && position.character <= end) {
                 // Extract the actual URL
-                let url = match[1] || match[0]; // match[1] for bracket links, match[0] for others
+                const url = match[1] || match[0]; // match[1] for bracket links, match[0] for others
                 return { url, start, end };
             }
         }
@@ -3909,7 +3909,7 @@ function isOnHeading(document: vscode.TextDocument, position: vscode.Position): 
         return /^#+\s/.test(line);
     } else if (document.languageId === 'latex') {
         // LaTeX section commands (including starred variants)
-        return /^\s*\\(part|chapter|section|subsection|subsubsection|paragraph|subparagraph)\*?\s*[\[{]/.test(line);
+        return /^\s*\\(part|chapter|section|subsection|subsubsection|paragraph|subparagraph)\*?\s*[[{]/.test(line);
     }
 
     return false;
@@ -4036,6 +4036,7 @@ async function queryReplace(): Promise<void> {
     const matches: vscode.Range[] = [];
     let searchIndex = 0;
 
+    // eslint-disable-next-line no-constant-condition
     while (true) {
         const foundIndex = text.indexOf(searchTerm, searchIndex);
         if (foundIndex === -1) break;
@@ -4062,7 +4063,7 @@ async function queryReplace(): Promise<void> {
         let matchRange: vscode.Range | undefined;
 
         // Skip to the nth remaining match
-        let skipCount = currentIndex - replacedCount;
+        const skipCount = currentIndex - replacedCount;
         for (let i = 0; i <= skipCount; i++) {
             const foundIndex = currentText.indexOf(searchTerm, searchPos);
             if (foundIndex === -1) {

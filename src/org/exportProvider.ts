@@ -360,7 +360,7 @@ function extractBibPaths(content: string, basePath: string): string[] {
     }
 
     // Match plain bibliography:path links (org-ref style)
-    const plainBibRegex = /(?<!\[)bibliography:([^\s\[\]]+)/g;
+    const plainBibRegex = /(?<!\[)bibliography:([^\s[\]]+)/g;
     while ((match = plainBibRegex.exec(content)) !== null) {
         let bibPath = match[1].trim();
         if (!bibPath.endsWith('.bib')) {

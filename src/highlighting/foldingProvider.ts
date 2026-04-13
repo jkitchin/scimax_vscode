@@ -193,7 +193,7 @@ export class LaTeXFoldingRangeProvider implements vscode.FoldingRangeProvider {
         const sectionStack: { level: number; line: number }[] = [];
 
         // Regex to match LaTeX section commands
-        const sectionPattern = /^\s*\\(part|chapter|section|subsection|subsubsection|paragraph|subparagraph)\*?\s*[\[{]/;
+        const sectionPattern = /^\s*\\(part|chapter|section|subsection|subsubsection|paragraph|subparagraph)\*?\s*[[{]/;
 
         for (let i = 0; i < lines.length; i++) {
             if (token.isCancellationRequested) {
@@ -430,7 +430,7 @@ function isOrgHeading(line: string): boolean {
  * Check if a line is a LaTeX section command
  */
 function isLaTeXSection(line: string): boolean {
-    return /^\s*\\(part|chapter|section|subsection|subsubsection|paragraph|subparagraph)\*?\s*[\[{]/.test(line);
+    return /^\s*\\(part|chapter|section|subsection|subsubsection|paragraph|subparagraph)\*?\s*[[{]/.test(line);
 }
 
 /**

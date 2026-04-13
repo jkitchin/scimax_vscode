@@ -893,7 +893,7 @@ export async function publishFile(
         const metadata = extractMetadata(doc);
 
         // Load templates
-        let preambleContent = await loadTemplate(project.htmlPreamble, workspaceRoot);
+        const preambleContent = await loadTemplate(project.htmlPreamble, workspaceRoot);
         let postambleContent = await loadTemplate(project.htmlPostamble, workspaceRoot);
 
         // Add navigation links from TOC

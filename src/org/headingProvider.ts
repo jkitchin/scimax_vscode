@@ -392,7 +392,7 @@ export async function moveHeadingUp(): Promise<boolean> {
 
     // Find the previous sibling
     let prevStart = -1;
-    let prevEnd = currentStart - 1;
+    const prevEnd = currentStart - 1;
 
     for (let i = currentStart - 1; i >= 0; i--) {
         const checkLine = document.lineAt(i).text;
@@ -535,7 +535,7 @@ export async function moveHeadingDown(): Promise<boolean> {
     }
 
     // Find the next sibling
-    let nextStart = currentEnd + 1;
+    const nextStart = currentEnd + 1;
     let nextEnd = nextStart;
 
     if (nextStart >= document.lineCount) return false;

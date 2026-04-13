@@ -41,7 +41,7 @@ const RE_ALIGNMENT_COOKIE = /^<([lcr])(\d*)>$/;
 const RE_UNORDERED_BULLET = /^(\s*)([-+*])\s+/;
 const RE_ORDERED_BULLET = /^(\s*)(\d+[.)])\s+/;
 const RE_DESCRIPTIVE = /^(\s*)([-+*])\s+(.+?)\s*::\s*/;
-const RE_CHECKBOX = /^\[([X \-])\]\s*/;
+const RE_CHECKBOX = /^\[([X -])\]\s*/;
 const RE_DESCRIPTIVE_TAG = /^(\s*[-+*]\s+)(.+?)\s*::\s*/;
 
 // Planning patterns
@@ -740,7 +740,6 @@ function parseListItem(
     if (lines.length === 0) return null;
 
     const firstLine = lines[0];
-    let bullet: string;
     let checkbox: 'on' | 'off' | 'trans' | undefined;
     let tag: OrgObject[] | undefined;
     let contentStart: number;
@@ -751,7 +750,7 @@ function parseListItem(
 
     if (!bulletMatch) return null;
 
-    bullet = bulletMatch[2];
+    const bullet: string = bulletMatch[2];
     contentStart = bulletMatch[0].length;
 
     // Check for checkbox [ ], [X], [-]

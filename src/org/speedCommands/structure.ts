@@ -116,7 +116,7 @@ export async function copySubtree(): Promise<void> {
     const position = editor.selection.active;
 
     // Find the heading
-    let headingLine = position.line;
+    const headingLine = position.line;
     if (getHeadingLevel(document, headingLine) === 0) {
         vscode.window.showInformationMessage('Not on a heading');
         return;
@@ -145,7 +145,7 @@ export async function markSubtree(): Promise<void> {
     const position = editor.selection.active;
 
     // Find the heading
-    let headingLine = position.line;
+    const headingLine = position.line;
     if (getHeadingLevel(document, headingLine) === 0) {
         vscode.window.showInformationMessage('Not on a heading');
         return;

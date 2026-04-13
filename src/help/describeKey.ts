@@ -638,7 +638,7 @@ export class HelpSystem {
             const levelIndicator = '  '.repeat(entry.level - 1) + '•';
 
             // Show commands and keybindings if present
-            let extras: string[] = [];
+            const extras: string[] = [];
             if (entry.commands.length > 0) {
                 extras.push(`Commands: ${entry.commands.slice(0, 2).join(', ')}`);
             }

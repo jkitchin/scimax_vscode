@@ -158,11 +158,14 @@ export interface SimpleExecutorOptions {
  * ```
  */
 export function createSimpleExecutor(options: SimpleExecutorOptions): LanguageExecutor {
+    // Lazy-loaded Node built-ins to avoid overhead when this factory is unused
+    /* eslint-disable @typescript-eslint/no-var-requires */
     const { spawn } = require('child_process') as typeof import('child_process');
     const fs = require('fs').promises as typeof import('fs').promises;
     const path = require('path') as typeof import('path');
     const os = require('os') as typeof import('os');
     const crypto = require('crypto') as typeof import('crypto');
+    /* eslint-enable @typescript-eslint/no-var-requires */
 
     return {
         languages: options.languages,
@@ -250,6 +253,7 @@ export function createSimpleExecutor(options: SimpleExecutorOptions): LanguageEx
             }
 
             // Default: check if command exists by running --version
+            // eslint-disable-next-line @typescript-eslint/no-var-requires
             const { spawn } = require('child_process') as typeof import('child_process');
 
             return new Promise((resolve) => {
@@ -297,6 +301,7 @@ export interface SessionExecutorOptions extends SimpleExecutorOptions {
  * allowing variables and state to persist between executions.
  */
 export function createSessionExecutor(options: SessionExecutorOptions): LanguageExecutor {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
     const { spawn } = require('child_process') as typeof import('child_process');
     const sessions = new Map<string, { proc: ReturnType<typeof spawn>; pending: Array<(result: string) => void> }>();
 

@@ -398,9 +398,9 @@ async function cycleTodoState(forward: boolean): Promise<boolean> {
 
 const TIMESTAMP_PATTERNS = {
     // Org active: <2024-01-15 Mon> or <2024-01-15 Mon 14:30> or with repeater
-    orgActive: /<(\d{4})-(\d{2})-(\d{2})(?:\s+\w{2,3})?(?:\s+(\d{2}):(\d{2}))?(?:\s+([\.\+]+\d+[hdwmy]))?\s*>/g,
+    orgActive: /<(\d{4})-(\d{2})-(\d{2})(?:\s+\w{2,3})?(?:\s+(\d{2}):(\d{2}))?(?:\s+([.+]+\d+[hdwmy]))?\s*>/g,
     // Org inactive: [2024-01-15 Mon] or [2024-01-15 Mon 14:30]
-    orgInactive: /\[(\d{4})-(\d{2})-(\d{2})(?:\s+\w{2,3})?(?:\s+(\d{2}):(\d{2}))?(?:\s+([\.\+]+\d+[hdwmy]))?\]/g,
+    orgInactive: /\[(\d{4})-(\d{2})-(\d{2})(?:\s+\w{2,3})?(?:\s+(\d{2}):(\d{2}))?(?:\s+([.+]+\d+[hdwmy]))?\]/g,
     // Markdown style: @due(2024-01-15) or @scheduled(2024-01-15)
     markdown: /@(due|scheduled|deadline)\((\d{4})-(\d{2})-(\d{2})\)/g,
     // ISO date: 2024-01-15
@@ -492,7 +492,7 @@ function getTimestampComponent(
     const monthMatch = text.match(/\d{4}-(\d{2})/);
     const dayMatch = text.match(/\d{4}-\d{2}-(\d{2})/);
     const timeMatch = text.match(/(\d{2}):(\d{2})/);
-    const repeaterMatch = text.match(/([\.\+]+\d+[hdwmy])/);
+    const repeaterMatch = text.match(/([.+]+\d+[hdwmy])/);
 
     if (yearMatch && relativePos >= yearMatch.index! && relativePos < yearMatch.index! + 4) {
         return 'year';
@@ -566,7 +566,7 @@ function formatTimestamp(ts: TimestampMatch, date: Date): string {
  * Parse repeater string into components
  */
 function parseRepeater(repeater: string): { type: string; value: number; unit: string } | null {
-    const match = repeater.match(/^([\.\+]+)(\d+)([hdwmy])$/);
+    const match = repeater.match(/^([.+]+)(\d+)([hdwmy])$/);
     if (!match) return null;
     return {
         type: match[1],

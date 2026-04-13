@@ -167,7 +167,7 @@ export function parseRelativeDate(input: string): Date | null {
 
         if (month !== undefined && day >= 1 && day <= 31) {
             // Start with current year
-            let year = today.getFullYear();
+            const year = today.getFullYear();
             let d = new Date(year, month, day);
 
             // If the date is in the past, use next year
@@ -186,7 +186,7 @@ export function parseRelativeDate(input: string): Date | null {
         const month = monthNames[monthName];
 
         if (month !== undefined && day >= 1 && day <= 31) {
-            let year = today.getFullYear();
+            const year = today.getFullYear();
             let d = new Date(year, month, day);
 
             if (d < today) {

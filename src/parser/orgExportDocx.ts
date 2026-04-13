@@ -283,7 +283,7 @@ function convertLatexEnvironmentsForPandoc(content: string): string {
 
         result = result.replace(pattern, (_match: string, innerContent: string) => {
             // Strip \label{...} from the content (pandoc doesn't need it for OMML)
-            let mathContent = innerContent.replace(/\\label\{[^}]*\}/g, '');
+            const mathContent = innerContent.replace(/\\label\{[^}]*\}/g, '');
 
             // For non-starred environments, we keep the environment for numbering context
             // but wrap in $$ so pandoc recognizes it as math
@@ -313,7 +313,7 @@ function convertOrgRefToOrgCite(content: string): string {
     // Match org-ref citations: cite:key, citep:key, citet:key, citep:key1,key2
     // Use negative lookbehind (?<!\[) to avoid matching inside existing [cite:...]
     // Also avoid matching keys that start with @ (already org-cite format)
-    return content.replace(/(?<!\[)(cite[pt]?):(?!@)([^\s\[\](),.;]+(?:,[^\s\[\](),.;]+)*)/g, (match, citeType, keysStr) => {
+    return content.replace(/(?<!\[)(cite[pt]?):(?!@)([^\s[\](),.;]+(?:,[^\s[\](),.;]+)*)/g, (match, citeType, keysStr) => {
         // Handle comma-separated keys
         const keys = keysStr.split(',').map((k: string) => k.trim()).filter((k: string) => k);
 

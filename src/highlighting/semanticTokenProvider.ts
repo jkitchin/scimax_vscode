@@ -102,7 +102,7 @@ export class OrgSemanticTokenProvider implements vscode.DocumentSemanticTokensPr
         }
 
         // Plain URLs
-        const urlRegex = /(?<![\\w])https?:\/\/[^\s<>\[\](){}]+/g;
+        const urlRegex = /(?<![\\w])https?:\/\/[^\s<>[\](){}]+/g;
         while ((match = urlRegex.exec(line)) !== null) {
             tokens.push({
                 line: lineNum,

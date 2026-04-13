@@ -1022,7 +1022,7 @@ export function parseCallLine(line: string): CallSpec | null {
     const match = line.match(/^\s*#\+CALL:\s*(\S+?)(?:\[(.*?)\])?\((.*?)\)(?:\[(.*?)\])?/i);
     if (!match) return null;
 
-    let nameOrFileBlock = match[1];
+    const nameOrFileBlock = match[1];
     const insideHeaders = match[2] || '';
     const argsStr = match[3] || '';
     const endHeaders = match[4] || '';

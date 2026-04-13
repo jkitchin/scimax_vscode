@@ -200,6 +200,7 @@ export function registerReferenceCommands(
             if (activeEditor) {
                 const langId = activeEditor.document.languageId;
                 const docPath = activeEditor.document.uri.fsPath;
+                // eslint-disable-next-line @typescript-eslint/no-var-requires
                 const docDir = require('path').dirname(docPath);
 
                 if (langId === 'bibtex') {
@@ -223,9 +224,12 @@ export function registerReferenceCommands(
                         if (!bibRef.endsWith('.bib')) bibRef += '.bib';
                         const homeDir = process.env.HOME || process.env.USERPROFILE || '';
                         bibRef = bibRef.replace(/^~/, homeDir);
+                        // eslint-disable-next-line @typescript-eslint/no-var-requires
                         if (!require('path').isAbsolute(bibRef)) {
+                            // eslint-disable-next-line @typescript-eslint/no-var-requires
                             bibRef = require('path').join(docDir, bibRef);
                         }
+                        // eslint-disable-next-line @typescript-eslint/no-var-requires
                         if (require('fs').existsSync(bibRef)) {
                             targetBibFile = bibRef;
                         }
@@ -1133,6 +1137,7 @@ interface CrossRefWorkResult {
  */
 async function searchCrossRefWorks(query: string, rows: number = 20): Promise<CrossRefWorkResult[]> {
     return new Promise((resolve) => {
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
         const https = require('https');
 
         // Get email for polite pool access
@@ -1239,7 +1244,7 @@ async function collectLabels(currentDoc: vscode.TextDocument): Promise<LabelInfo
 
     // Patterns to find labels
     const patterns = [
-        { regex: /label:([^\s<>\[\](){}:,]+)/g, type: 'org-ref label' },
+        { regex: /label:([^\s<>[\](){}:,]+)/g, type: 'org-ref label' },
         { regex: /\\label\{([^}]+)\}/g, type: 'LaTeX label' },
         { regex: /^[ \t]*#\+NAME:\s*(.+?)\s*$/gm, type: 'Named element' },
         { regex: /^[ \t]*#\+LABEL:\s*(.+?)\s*$/gm, type: 'Figure/Table label' },

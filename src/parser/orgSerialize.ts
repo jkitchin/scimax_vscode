@@ -133,7 +133,7 @@ export function serializeHeadline(headline: HeadlineElement, options?: Serialize
 
     // Build headline line
     const stars = '*'.repeat(headline.properties.level);
-    let headlineParts: string[] = [stars];
+    const headlineParts: string[] = [stars];
 
     // TODO keyword
     if (headline.properties.todoKeyword) {
@@ -410,7 +410,7 @@ function serializeDynamicBlock(
 function serializeInlinetask(task: InlinetaskElement, opts: Required<SerializeOptions>): string {
     const parts: string[] = [];
     const stars = '*'.repeat(task.properties.level);
-    let headlineParts: string[] = [stars];
+    const headlineParts: string[] = [stars];
 
     if (task.properties.todoKeyword) {
         headlineParts.push(task.properties.todoKeyword);
