@@ -11,6 +11,11 @@ import { exportToHtml } from '../../parser/orgExportHtml';
 import { exportToLatex } from '../../parser/orgExportLatex';
 import { parseBibTeX } from '../../references/bibtexParser';
 import { loadSettings, expandPath, ExportSettings, RefSettings } from '../settings';
+import {
+    initializeExporterRegistry,
+    executeCustomExport,
+    ExporterRegistry,
+} from '../../export/customExporter';
 
 interface CliConfig {
     dbPath: string;
@@ -35,8 +40,9 @@ function parseClassOptions(classOptions: string): string[] {
 export async function exportCommand(config: CliConfig, args: ParsedArgs): Promise<void> {
     const inputFile = args.args[0];
 
-    if (!inputFile) {
-        console.error('Usage: scimax export <file.org> [--format html|latex|pdf] [--output path] [--json]');
+    if (!inputFile && !args.flags['list-exporters']) {
+        console.error('Usage: scimax export <file.org> [--format html|latex|pdf] [--exporter <id>] [--output path] [--json]');
+        console.error('       scimax export --list-exporters');
         process.exit(1);
     }
 
@@ -46,6 +52,36 @@ export async function exportCommand(config: CliConfig, args: ParsedArgs): Promis
     const json = args.flags.json === true;
     const format = (typeof args.flags.format === 'string' ? args.flags.format : 'html').toLowerCase();
     const outputPath = typeof args.flags.output === 'string' ? args.flags.output : undefined;
+    const exporterId = typeof args.flags.exporter === 'string' ? args.flags.exporter : undefined;
+
+    // Handle --list-exporters (can be invoked without input file)
+    if (args.flags['list-exporters']) {
+        await initializeExporterRegistry();
+        const registry = ExporterRegistry.getInstance();
+        const exporters = registry.getAll();
+        if (json) {
+            console.log(JSON.stringify({
+                success: true,
+                exporters: exporters.map(e => ({
+                    id: e.id,
+                    name: e.name,
+                    description: e.description,
+                    parent: e.parent,
+                    outputFormat: e.outputFormat,
+                })),
+            }));
+        } else if (exporters.length === 0) {
+            console.log('No custom exporters found.');
+            console.log('Place exporter definitions under ~/scimax/exporters/<id>/');
+        } else {
+            console.log(`Found ${exporters.length} custom exporter(s):`);
+            for (const e of exporters) {
+                console.log(`  ${e.id.padEnd(20)} ${e.name} (${e.parent} → ${e.outputFormat})`);
+                if (e.description) console.log(`    ${e.description}`);
+            }
+        }
+        return;
+    }
 
     // Read input file
     const inputPath = path.resolve(inputFile);
@@ -59,6 +95,13 @@ export async function exportCommand(config: CliConfig, args: ParsedArgs): Promis
     }
 
     const content = fs.readFileSync(inputPath, 'utf-8');
+
+    // Custom exporter path (bypasses normal format switch)
+    if (exporterId) {
+        await runCustomExporter(exporterId, content, inputPath, outputPath, settings.export, json);
+        return;
+    }
+
     const doc = parseOrgFast(content);
 
     // Look for bibliography file (check settings first, then local files)
@@ -174,6 +217,81 @@ function findBibFile(orgPath: string, refSettings: RefSettings): string | undefi
     }
 
     return undefined;
+}
+
+/**
+ * Run a custom exporter (e.g., cmu-memo) and write/compile its output.
+ */
+async function runCustomExporter(
+    exporterId: string,
+    content: string,
+    inputPath: string,
+    outputPath: string | undefined,
+    exportSettings: ExportSettings,
+    json: boolean
+): Promise<void> {
+    const log = (msg: string) => json ? process.stderr.write(msg + '\n') : console.log(msg);
+
+    await initializeExporterRegistry();
+    const registry = ExporterRegistry.getInstance();
+    const exporter = registry.get(exporterId);
+
+    if (!exporter) {
+        const available = registry.getAll().map(e => e.id).join(', ') || '(none)';
+        const errMsg = `Custom exporter not found: ${exporterId}. Available: ${available}`;
+        if (json) {
+            console.log(JSON.stringify({ success: false, error: errMsg }));
+        } else {
+            console.error(errMsg);
+            console.error('Run "scimax export --list-exporters" to see all available exporters.');
+        }
+        process.exit(1);
+    }
+
+    let rendered: string;
+    try {
+        rendered = await executeCustomExport(exporterId, content);
+    } catch (error) {
+        const msg = error instanceof Error ? error.message : String(error);
+        if (json) {
+            console.log(JSON.stringify({ success: false, error: `Custom export failed: ${msg}` }));
+        } else {
+            console.error(`Custom export failed: ${msg}`);
+        }
+        process.exit(1);
+    }
+
+    if (exporter.outputFormat === 'pdf') {
+        log(`Using exporter: ${exporter.name} (${exporter.id})`);
+        const result = await compilePdf(rendered, inputPath, outputPath, exportSettings, json);
+        if (result === '__PDF_WRITTEN__' && json) {
+            const pdfOut = outputPath || inputPath.replace(/\.org$/i, '.pdf');
+            console.log(JSON.stringify({
+                success: true,
+                input_file: inputPath,
+                output_path: pdfOut,
+                format: 'pdf',
+                exporter: exporterId,
+            }));
+        }
+        return;
+    }
+
+    // Non-PDF custom exporter: write rendered content to output path
+    const ext = `.${exporter.outputFormat}`;
+    const outPath = outputPath || inputPath.replace(/\.org$/i, ext);
+    fs.writeFileSync(outPath, rendered);
+    if (json) {
+        console.log(JSON.stringify({
+            success: true,
+            input_file: inputPath,
+            output_path: outPath,
+            format: exporter.outputFormat,
+            exporter: exporterId,
+        }));
+    } else {
+        console.log(`Exported to: ${outPath}`);
+    }
 }
 
 /**

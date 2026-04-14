@@ -14,6 +14,10 @@
  *   scimax publish [project] [--init|--list]
  */
 
+// Must be first: installs a 'vscode' module stub so CLI can load code that
+// transitively imports 'vscode' (e.g., utils/pathResolver).
+import './vscodeStub';
+
 import * as path from 'path';
 import * as fs from 'fs';
 
@@ -161,6 +165,8 @@ EXAMPLES:
     scimax search headings -t proposal
     scimax search headings --todo TODO -t grant
     scimax export paper.org --format html
+    scimax export memo.org --exporter cmu-memo
+    scimax export --list-exporters
     scimax cite extract paper.org
     scimax cite check paper.org --bib refs.bib
     scimax db rebuild
@@ -180,6 +186,8 @@ OPTIONS:
     --db <path>             Override database path
     --json                  Output structured JSON (agenda, search, db stats, cite, export, publish)
     --format <fmt>          Output format for export (html, pdf, latex)
+    --exporter <id>         Use a custom exporter (e.g., cmu-memo)
+    --list-exporters        List available custom exporters
     --output <path>         Output file or directory
 `);
 }
