@@ -61,3 +61,7 @@ scripts/*.d.ts
 scripts/*.d.ts.map
 
 .claude/
+
+# Personal/local working files (not part of the extension)
+why-org-mode.*
+/archive/

@@ -94,3 +94,7 @@ PLAN.md
 package-lock.json
 Makefile
 scripts/**
+
+# Personal/local working files not part of the extension
+why-org-mode.*
+archive/**

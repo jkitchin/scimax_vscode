@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [0.4.0] - 2026-04-12
+## [0.4.0] - 2026-04-14
 
 ### Added
 
@@ -41,12 +41,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Citation keys** may now contain `.`, `/`, and `+` (e.g., `doi:10.1021/ja.5b00123`)
 - **Markup export**: removed the 500-character length cap on inline bold/italic/code/verbatim patterns that was silently dropping long spans
 - **`org-store-link`** persistence and heading return behavior improvements
+- **DWIM return on heading lines**: pressing Enter at column 0 of a heading like `* test` was routed through the list-item handler (the list regex matched `*` bullets at column 0) and fell through to VS Code's default Enter, whose `increaseIndentPattern` then indented the heading to `    * test`. Headings are now checked first, `*` bullets require leading whitespace in both the language configuration and DWIM regexes, and heading return bails out when the cursor is at column 0 so a plain newline inserts above the heading
+- **Move-subtree trailing newline**: `scimax.org.moveSubtreeUp` / `moveSubtreeDown` used `Range(endLine + 1, 0)` to slice the subtree, which VS Code silently clamps to end-of-line when the final line has no trailing newline. The separator was dropped and output came out mashed like `* test3* test`. Switched to line-array collection joined with newlines
+- **Inline `\s+` regex** in the PDF viewer webview template (`pdfViewerPanel.ts:1418`) was being clobbered to `/s+/` at runtime by an unnecessary backslash escape. Masked as a lint nit until the ESLint burn-down uncovered it
 
 ### Infrastructure
 
 - **Release automation** - New `.github/workflows/publish.yml` fires on GitHub release, guards `package.json` version against the release tag, runs tests, publishes to the VS Code Marketplace via `vsce`, and attaches the VSIX as a release asset. Requires `VSCE_PAT` repo secret
-- **`RELEASING.md`** checklist and release process documentation at the repo root
+- **`RELEASING.md`** checklist and release process documentation at the repo root, with a clean-working-tree check and a `[Unreleased]`-not-empty check added during finalization
 - Database layer refactored so the CLI reuses `ScimaxDbCore` directly, sharing logic with the VS Code extension
+- **ESLint errors down to zero** (122 fixed: `no-useless-escape`, `no-var-requires`, `ban-ts-comment`, `no-constant-condition`, `no-shadow-restricted-names`, `prefer-const`, `no-empty`, `no-control-regex`). 872 warnings remain as accepted policy debt (`no-explicit-any`, `no-unused-vars`). Enables a local pre-commit lint hook with no grandfathered debt
+- **Makefile VSIX name** now derived from `package.json` version (was pinned to `0.3.1`), and `code --install-extension` passes `--force` so rebuilds over the same version actually replace the installed extension
+- **`.vscodeignore` / `.gitignore`** now exclude root-level personal working files (`why-org-mode.*`, `archive/`) so they cannot leak into packaged VSIX builds
+- **Lockfile sync**: `package-lock.json` was bumped to match `package.json` 0.4.0 so `npm ci` succeeds in CI and the publish workflow
 
 ## [0.3.1] - 2026-02-14
 

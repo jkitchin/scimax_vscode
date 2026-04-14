@@ -7,6 +7,13 @@ Marketplace.
 
 Work top to bottom. Don't tag until every box is checked.
 
+### 0. Repository state
+
+- [ ] You are on `main` and it is up to date with `origin/main`
+      (`git fetch && git status -sb`).
+- [ ] Working tree is clean — no uncommitted changes, no untracked files you
+      intended to include (`git status` shows nothing).
+
 ### 1. Tests
 
 - [ ] `npm test` passes locally on your primary platform.
@@ -36,6 +43,10 @@ Work top to bottom. Don't tag until every box is checked.
 
 ### 3. Changelog & version
 
+- [ ] `## [Unreleased]` in `CHANGELOG.md` is **not empty** and accurately
+      reflects the commits since the last release. Spot-check with
+      `git log --oneline vX.Y.Z..HEAD` against the last released tag. Every
+      user-visible change should have an entry.
 - [ ] Move everything under `## [Unreleased]` in `CHANGELOG.md` into a new
       versioned section with today's date.
       Keep the empty `## [Unreleased]` header in place for the next cycle.
