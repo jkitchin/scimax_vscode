@@ -1,6 +1,7 @@
 .PHONY: all clean deps compile package install uninstall publish
 
-VSIX = scimax-vscode-0.3.1.vsix
+VERSION = $(shell node -p "require('./package.json').version")
+VSIX = scimax-vscode-$(VERSION).vsix
 CODE = /Applications/Visual\ Studio\ Code.app/Contents/Resources/app/bin/code
 
 all: package
@@ -18,7 +19,7 @@ package: compile
 	npm run package
 
 install: package
-	$(CODE) --install-extension $(VSIX)
+	$(CODE) --install-extension $(VSIX) --force
 	npm link
 
 uninstall:

@@ -35,7 +35,7 @@
     }
   },
   "indentationRules": {
-    "increaseIndentPattern": "^[ \\t]*[-+*]|^[ \\t]*\\d+[.)]",
+    "increaseIndentPattern": "^[ \\t]*[-+]\\s|^[ \\t]+\\*\\s|^[ \\t]*\\d+[.)]\\s",
     "decreaseIndentPattern": "^[ \\t]*$"
   },
   "wordPattern": "[a-zA-Z0-9_\\-]+"

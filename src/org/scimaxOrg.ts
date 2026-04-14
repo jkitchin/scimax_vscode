@@ -978,19 +978,9 @@ export async function dwimReturn(): Promise<boolean> {
         return await handleTableReturn(editor, position);
     }
 
-    // Check if on a checkbox item (must check before regular list)
-    const checkboxMatch = lineText.match(/^(\s*)([-+*]|\d+[.)])\s+\[[ Xx-]\]\s*(.*)$/);
-    if (checkboxMatch) {
-        return await handleCheckboxReturn(editor, position, checkboxMatch);
-    }
-
-    // Check if on a list item
-    const listMatch = lineText.match(/^(\s*)([-+*]|\d+[.)])\s+(.*)$/);
-    if (listMatch) {
-        return await handleListReturn(editor, position, listMatch);
-    }
-
-    // Check if on a heading (but not inline task)
+    // Check if on a heading first (but not inline task). In org-mode `*` at
+    // column 0 is always a heading, never a list bullet, so this must be
+    // checked before the list/checkbox matchers.
     const headingMatch = lineText.match(/^(\*+)\s+/);
     if (headingMatch) {
         // Check for inline task (starts with many stars and ends with many stars)
@@ -1000,6 +990,26 @@ export async function dwimReturn(): Promise<boolean> {
             return false;
         }
         return await handleHeadingReturn(editor, position, headingMatch);
+    }
+
+    // Check if on a checkbox item (must check before regular list).
+    // `*` bullets require leading whitespace (otherwise it'd be a heading).
+    const checkboxMatch = lineText.match(/^(\s*[-+]|\s+\*|\s*\d+[.)])\s+\[[ Xx-]\]\s*(.*)$/);
+    if (checkboxMatch) {
+        // Re-parse into the (indent, bullet, content) shape handleCheckboxReturn expects.
+        const parts = lineText.match(/^(\s*)([-+*]|\d+[.)])\s+\[[ Xx-]\]\s*(.*)$/);
+        if (parts) {
+            return await handleCheckboxReturn(editor, position, parts);
+        }
+    }
+
+    // Check if on a list item. `*` bullets require leading whitespace to
+    // distinguish from headings.
+    const listMatch =
+        lineText.match(/^(\s*)([-+]|\d+[.)])\s+(.*)$/) ||
+        lineText.match(/^(\s+)(\*)\s+(.*)$/);
+    if (listMatch) {
+        return await handleListReturn(editor, position, listMatch);
     }
 
     // Default: normal newline
@@ -1198,6 +1208,12 @@ async function handleHeadingReturn(
     const stars = match[1];
     const currentLine = document.lineAt(position.line);
     const lineText = currentLine.text;
+
+    // Cursor at BOL: let the default newline fire so the user just gets a
+    // blank line inserted above the heading.
+    if (position.character === 0) {
+        return false;
+    }
 
     // Extract the heading title (after stars and space, before tags)
     const titleMatch = lineText.match(/^\*+\s+(.*?)(?:\s+:[\w:]+:)?\s*$/);
@@ -1615,13 +1631,25 @@ export async function moveSubtreeUp(): Promise<void> {
     // Get the previous subtree range
     const prev = getSubtreeRange(document, prevStart);
 
-    // Get both subtrees' text
-    const currentText = document.getText(new vscode.Range(current.startLine, 0, current.endLine + 1, 0));
-    const prevText = document.getText(new vscode.Range(prev.startLine, 0, prev.endLine + 1, 0));
+    // Collect both subtrees as line arrays so the swap preserves whatever
+    // trailing-newline state the document had. Using line+1 column 0 ranges
+    // breaks when current.endLine is the last line of a file without a final
+    // newline, producing mashed output like `* test3* test`.
+    const collectLines = (startLine: number, endLine: number): string[] => {
+        const lines: string[] = [];
+        for (let i = startLine; i <= endLine; i++) {
+            lines.push(document.lineAt(i).text);
+        }
+        return lines;
+    };
+    const currentLines = collectLines(current.startLine, current.endLine);
+    const prevLines = collectLines(prev.startLine, prev.endLine);
 
-    // Replace the combined range with swapped content
-    const combinedRange = new vscode.Range(prev.startLine, 0, current.endLine + 1, 0);
-    const swappedText = currentText + prevText;
+    const combinedRange = new vscode.Range(
+        new vscode.Position(prev.startLine, 0),
+        document.lineAt(current.endLine).range.end
+    );
+    const swappedText = [...currentLines, ...prevLines].join('\n');
 
     await editor.edit(editBuilder => {
         editBuilder.replace(combinedRange, swappedText);
@@ -1676,21 +1704,30 @@ export async function moveSubtreeDown(): Promise<void> {
     // Get the next subtree range
     const next = getSubtreeRange(document, nextStart);
 
-    // Get both subtrees' text
-    const currentText = document.getText(new vscode.Range(current.startLine, 0, current.endLine + 1, 0));
-    const nextText = document.getText(new vscode.Range(next.startLine, 0, next.endLine + 1, 0));
+    // Collect both subtrees as line arrays so the swap preserves whatever
+    // trailing-newline state the document had.
+    const collectLines = (startLine: number, endLine: number): string[] => {
+        const lines: string[] = [];
+        for (let i = startLine; i <= endLine; i++) {
+            lines.push(document.lineAt(i).text);
+        }
+        return lines;
+    };
+    const currentLines = collectLines(current.startLine, current.endLine);
+    const nextLines = collectLines(next.startLine, next.endLine);
 
-    // Replace the combined range with swapped content
-    const combinedRange = new vscode.Range(current.startLine, 0, next.endLine + 1, 0);
-    const swappedText = nextText + currentText;
+    const combinedRange = new vscode.Range(
+        new vscode.Position(current.startLine, 0),
+        document.lineAt(next.endLine).range.end
+    );
+    const swappedText = [...nextLines, ...currentLines].join('\n');
 
     await editor.edit(editBuilder => {
         editBuilder.replace(combinedRange, swappedText);
     });
 
     // Move cursor with the subtree (it moves down by the size of the next subtree)
-    const nextLines = next.endLine - next.startLine + 1;
-    const newLine = current.startLine + nextLines + (position.line - current.startLine);
+    const newLine = current.startLine + nextLines.length + (position.line - current.startLine);
     const newPos = new vscode.Position(newLine, position.character);
     editor.selection = new vscode.Selection(newPos, newPos);
     editor.revealRange(new vscode.Range(newPos, newPos), vscode.TextEditorRevealType.InCenterIfOutsideViewport);
