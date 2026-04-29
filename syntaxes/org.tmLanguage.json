@@ -1277,7 +1277,7 @@
         },
         {
           "name": "markup.underline.org",
-          "match": "(?:^|(?<=[\\s\\-({'\"]))(_)([^_\\n]+)(_)(?=[\\s.,;:!?)\\]}'\"\\-]|$)",
+          "match": "(?:^|(?<=[\\s\\-({'\"]))(_)([^_\\s\\n](?:[^_\\n]*[^_\\s\\n])?)(_)(?=[\\s.,;:!?)\\]}'\"\\-]|$)",
           "captures": {
             "1": { "name": "punctuation.definition.underline.begin.org" },
             "2": { "name": "markup.underline.content.org" },
@@ -1286,7 +1286,7 @@
         },
         {
           "name": "markup.raw.verbatim.org",
-          "match": "(?:^|(?<=[\\s\\-({'\"]))(=)([^=\\n]+)(=)(?=[\\s.,;:!?)\\]}'\"\\-]|$)",
+          "match": "(?:^|(?<=[\\s\\-({'\"]))(=)([^=\\s\\n](?:[^=\\n]*[^=\\s\\n])?)(=)(?=[\\s.,;:!?)\\]}'\"\\-]|$)",
           "captures": {
             "1": { "name": "punctuation.definition.verbatim.begin.org" },
             "2": { "name": "markup.raw.verbatim.content.org" },
@@ -1295,7 +1295,7 @@
         },
         {
           "name": "markup.inline.raw.org",
-          "match": "(?:^|(?<=[\\s\\-({'\"]))(~)([^~\\n]+)(~)(?=[\\s.,;:!?)\\]}'\"\\-]|$)",
+          "match": "(?:^|(?<=[\\s\\-({'\"]))(~)([^~\\s\\n](?:[^~\\n]*[^~\\s\\n])?)(~)(?=[\\s.,;:!?)\\]}'\"\\-]|$)",
           "captures": {
             "1": { "name": "punctuation.definition.raw.begin.org" },
             "2": { "name": "markup.inline.raw.content.org" },
@@ -1304,7 +1304,7 @@
         },
         {
           "name": "markup.strikethrough.org",
-          "match": "(?:^|(?<=[\\s\\-({'\"]))(\\+)([^+\\n\\\\]+)(\\+)(?=[\\s.,;:!?)\\]}'\"\\-]|$)",
+          "match": "(?:^|(?<=[\\s\\-({'\"]))(\\+)([^+\\s\\n\\\\](?:[^+\\n\\\\]*[^+\\s\\n\\\\])?)(\\+)(?=[\\s.,;:!?)\\]}'\"\\-]|$)",
           "captures": {
             "1": { "name": "punctuation.definition.strikethrough.begin.org" },
             "2": { "name": "markup.strikethrough.content.org" },
