@@ -54,19 +54,20 @@ export function parseTodoKeywordLine(line: string): TodoWorkflow | null {
         return null;
     }
 
-    // Check for | separator
-    const pipeIndex = statesString.indexOf('|');
+    // Use the LAST | as the active/done separator. Multiple | groups collapse:
+    // everything before the final | is active, everything after is done.
+    // Stray '|' tokens in either section are filtered out.
+    const pipeIndex = statesString.lastIndexOf('|');
 
     let activeStates: string[];
     let doneStates: string[];
 
     if (pipeIndex >= 0) {
-        // Split by |
         const beforePipe = statesString.slice(0, pipeIndex).trim();
         const afterPipe = statesString.slice(pipeIndex + 1).trim();
 
-        activeStates = beforePipe.split(/\s+/).filter(s => s.length > 0);
-        doneStates = afterPipe.split(/\s+/).filter(s => s.length > 0);
+        activeStates = beforePipe.split(/\s+/).filter(s => s.length > 0 && s !== '|');
+        doneStates = afterPipe.split(/\s+/).filter(s => s.length > 0 && s !== '|');
     } else {
         // No |, last state is done
         const allParsed = statesString.split(/\s+/).filter(s => s.length > 0);

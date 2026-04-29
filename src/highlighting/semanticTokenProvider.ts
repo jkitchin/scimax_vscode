@@ -1,4 +1,9 @@
 import * as vscode from 'vscode';
+import {
+    getTodoWorkflowForDocument,
+    DEFAULT_TODO_STATES,
+    type TodoWorkflow
+} from '../org/todoStates';
 
 // Define token types - must match package.json semanticTokenTypes
 const tokenTypes = [
@@ -31,6 +36,25 @@ interface TokenMatch {
     tokenModifiers: number;
 }
 
+function escapeRegex(s: string): string {
+    return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+function buildHeadingRegex(workflow: TodoWorkflow | null): RegExp {
+    // Union of document workflow states and default states so existing
+    // documents without #+TODO: still highlight standard keywords.
+    const stateSet = new Set<string>(workflow?.allStates ?? []);
+    for (const s of DEFAULT_TODO_STATES) {
+        stateSet.add(s);
+    }
+
+    const statePattern = [...stateSet].map(escapeRegex).join('|');
+
+    return new RegExp(
+        `^(\\*+)\\s+(?:(${statePattern})\\s+)?(?:(\\[#[A-Za-z0-9]\\])\\s+)?(?:(COMMENT)\\s+)?(.*?)(\\s+:[\\w@#%:]+:)?\\s*$`
+    );
+}
+
 export class OrgSemanticTokenProvider implements vscode.DocumentSemanticTokensProvider {
 
     provideDocumentSemanticTokens(
@@ -42,6 +66,14 @@ export class OrgSemanticTokenProvider implements vscode.DocumentSemanticTokensPr
 
         const text = document.getText();
         const lines = text.split('\n');
+
+        // Build a document-specific heading regex so custom #+TODO: states
+        // (e.g. ACCEPTED, REJECTED, PREPARATION) are recognized and can be
+        // colored as todo/done.
+        const workflow = document.languageId === 'org'
+            ? getTodoWorkflowForDocument(document)
+            : null;
+        const headingRegex = buildHeadingRegex(workflow);
 
         for (let lineNum = 0; lineNum < lines.length; lineNum++) {
             if (token.isCancellationRequested) {
@@ -60,7 +92,7 @@ export class OrgSemanticTokenProvider implements vscode.DocumentSemanticTokensPr
             this.findTimestamps(line, lineNum, tokens);
 
             // Find headings
-            this.findHeadings(line, lineNum, tokens);
+            this.findHeadings(line, lineNum, tokens, workflow, headingRegex);
 
             // Find tags
             this.findTags(line, lineNum, tokens);
@@ -199,13 +231,17 @@ export class OrgSemanticTokenProvider implements vscode.DocumentSemanticTokensPr
         }
     }
 
-    private findHeadings(line: string, lineNum: number, tokens: TokenMatch[]): void {
+    private findHeadings(
+        line: string,
+        lineNum: number,
+        tokens: TokenMatch[],
+        workflow: TodoWorkflow | null,
+        headingRegex: RegExp
+    ): void {
         // Match heading line: * TODO [#A] Title :tags:
-        const headingRegex = /^(\*+)\s+(?:(TODO|DONE|NEXT|WAITING|HOLD|CANCELLED)\s+)?(?:(\[#[A-Za-z0-9]\])\s+)?(?:(COMMENT)\s+)?(.*?)(\s+:[\w@#%:]+:)?\s*$/;
         const match = headingRegex.exec(line);
 
         if (match) {
-            const stars = match[1];
             const todo = match[2];
             const title = match[5];
             const tags = match[6];
@@ -228,7 +264,8 @@ export class OrgSemanticTokenProvider implements vscode.DocumentSemanticTokensPr
             if (todo) {
                 const todoStart = line.indexOf(todo);
                 if (todoStart >= 0) {
-                    const isDone = todo === 'DONE' || todo === 'CANCELLED';
+                    const doneStates = workflow?.doneStates ?? ['DONE', 'CANCELLED'];
+                    const isDone = doneStates.includes(todo);
                     tokens.push({
                         line: lineNum,
                         startChar: todoStart,

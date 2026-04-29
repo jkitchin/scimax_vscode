@@ -87,6 +87,18 @@ describe('TODO States Parser', () => {
             expect(result!.activeStates).toEqual([]);
             expect(result!.doneStates).toEqual(['DONE', 'CANCELLED']);
         });
+
+        it('should treat the last pipe as the active/done separator when multiple pipes exist', () => {
+            const result = parseTodoKeywordLine(
+                '#+TODO: TODO | PREPARATION SUBMITTED REVISING RESUBMITTED | ACCEPTED DONE REJECTED'
+            );
+            expect(result).not.toBeNull();
+            expect(result!.activeStates).toEqual([
+                'TODO', 'PREPARATION', 'SUBMITTED', 'REVISING', 'RESUBMITTED'
+            ]);
+            expect(result!.doneStates).toEqual(['ACCEPTED', 'DONE', 'REJECTED']);
+            expect(result!.allStates).not.toContain('|');
+        });
     });
 
     describe('parseTodoKeywords', () => {
