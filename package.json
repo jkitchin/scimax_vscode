@@ -2425,7 +2425,11 @@
       },
       {
         "command": "scimax.agenda.ignoreFileFromItem",
-        "title": "Exclude This File from Agenda"
+        "title": "Scimax: Exclude This File from Agenda"
+      },
+      {
+        "command": "scimax.agenda.ignoreFileFromTab",
+        "title": "Scimax: Exclude from Agenda"
       },
       {
         "command": "scimax.agenda.unignoreFile",
@@ -6339,6 +6343,10 @@
       "editor/title/context": [
         {
           "command": "scimax.openTerminalHere",
+          "group": "2_files"
+        },
+        {
+          "command": "scimax.agenda.ignoreFileFromTab",
           "group": "2_files"
         }
       ],

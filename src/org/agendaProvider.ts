@@ -279,6 +279,8 @@ export class AgendaManager {
 
         if (!current.includes(filePath)) {
             await config.update('exclude', [...current, filePath], vscode.ConfigurationTarget.Global);
+            // Reload config immediately so isFileExcluded() sees the new entry
+            this.config = this.loadConfig();
             // Remove from cache
             this.fileCache.delete(filePath);
             this.log(`Agenda: Added ${filePath} to exclude list`);
@@ -1792,6 +1794,27 @@ export function registerAgendaCommands(context: vscode.ExtensionContext): void {
             await manager.excludeFile(filePath);
             vscode.window.showInformationMessage(`Added to agenda exclude list: ${path.basename(filePath)}`);
             treeProvider.refresh();
+        }),
+
+        // Exclude file from agenda (right-click on tab)
+        vscode.commands.registerCommand('scimax.agenda.ignoreFileFromTab', async (uri?: vscode.Uri) => {
+            const filePath = uri?.fsPath || vscode.window.activeTextEditor?.document.uri.fsPath;
+            if (!filePath) {
+                vscode.window.showWarningMessage('No file selected');
+                return;
+            }
+
+            const pattern = await vscode.window.showInputBox({
+                prompt: 'Enter a glob pattern to exclude from the agenda (e.g. **/dir/** or exact path)',
+                value: filePath,
+                valueSelection: [0, filePath.length],
+            });
+
+            if (pattern) {
+                await manager.excludeFile(pattern);
+                vscode.window.showInformationMessage(`Added to agenda exclude list: ${pattern}`);
+                treeProvider.refresh();
+            }
         }),
 
         vscode.commands.registerCommand('scimax.agenda.unignoreFile', async () => {
