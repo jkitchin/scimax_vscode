@@ -414,7 +414,8 @@ export class RefHoverProvider implements vscode.HoverProvider {
 
         // Match org-ref style links: ref:label, eqref:label, pageref:label, etc.
         // Use negative lookbehind to avoid matching href:, etc.
-        const orgRefPattern = /(?<!\w)(ref|eqref|pageref|nameref|autoref|cref|Cref):([^\s<>[\](){}:,]+)/g;
+        // Labels may contain colons (e.g. ref:tab:flows-cmp), so colons are allowed inside the label.
+        const orgRefPattern = /(?<!\w)(ref|eqref|pageref|nameref|autoref|cref|Cref):([^\s<>[\](){},]+)/g;
 
         let match;
         while ((match = orgRefPattern.exec(line)) !== null) {

@@ -161,6 +161,12 @@ function parseOrgRefCitations(
         } else if (v2Match) {
             // v2: simple comma-separated keys
             content = v2Match[1];
+
+            // Strip trailing sentence punctuation that's not part of the citation.
+            // BibTeX keys can contain "." internally, but a trailing "." (or ",;!?")
+            // is almost always sentence punctuation, not part of the key.
+            content = content.replace(/[.,;!?]+$/, '');
+
             end = contentStart + content.length;
 
             const keys = content.split(',').map(k => k.trim()).filter(k => k);
