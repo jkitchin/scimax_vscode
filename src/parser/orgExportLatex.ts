@@ -396,8 +396,16 @@ export class LatexExportBackend implements ExportBackend {
                 return this.exportKeyword(element as KeywordElement, state);
             case 'horizontal-rule':
                 return '\\noindent\\rule{\\textwidth}{0.4pt}\n';
-            case 'comment-block':
-                return ''; // Comments not exported
+            case 'comment-block': {
+                const block = element as OrgElement & { properties?: { value?: string } };
+                const value = block.properties?.value ?? '';
+                if (!value.trim()) return '';
+                return value.split('\n').map(l => `% ${l}`).join('\n') + '\n';
+            }
+            case 'comment': {
+                const c = element as OrgElement & { properties?: { value?: string } };
+                return `% ${c.properties?.value ?? ''}\n`;
+            }
             case 'fixed-width':
                 return this.exportFixedWidth(element as FixedWidthElement, state);
             case 'footnote-definition':
@@ -485,7 +493,8 @@ export class LatexExportBackend implements ExportBackend {
     private exportHeadline(
         headline: HeadlineElement,
         state: ExportState,
-        opts: LatexExportOptions
+        opts: LatexExportOptions,
+        inheritedUnnumbered?: string
     ): string {
         const level = headline.properties.level;
         const startLevel = opts.headlineStartLevel || 1;
@@ -516,9 +525,16 @@ export class LatexExportBackend implements ExportBackend {
 
         const parts: string[] = [];
 
-        // Section command
-        const starred = (state.options.sectionNumbers === false || tags.includes('nonum')) ? '*' : '';
+        // Section command. :UNNUMBERED: is inherited by subheadings (Emacs org behavior).
+        const ownUnnumbered = headline.propertiesDrawer?.UNNUMBERED?.trim().toLowerCase();
+        const effectiveUnnumbered = ownUnnumbered ?? inheritedUnnumbered;
+        const isUnnumbered = !!effectiveUnnumbered && effectiveUnnumbered !== 'nil';
+        const starred = (state.options.sectionNumbers === false || tags.includes('nonum') || isUnnumbered) ? '*' : '';
         parts.push(`${sectionCmd}${starred}{${title}}`);
+        if (isUnnumbered && effectiveUnnumbered !== 'notoc' && sectionIndex < LATEX_SECTIONS.length - 1) {
+            const tocLevel = sectionCmd.slice(1);
+            parts.push(`\\addcontentsline{toc}{${tocLevel}}{${title}}`);
+        }
 
         // Add label for cross-references
         // Must match collectTargets() ID generation for [[*Headline]] links to work
@@ -532,10 +548,11 @@ export class LatexExportBackend implements ExportBackend {
             parts.push(this.exportSection(headline.section, state));
         }
 
-        // Child headlines
+        // Child headlines (propagate UNNUMBERED to descendants)
+        const childInherited = isUnnumbered ? effectiveUnnumbered : inheritedUnnumbered;
         for (const child of headline.children) {
             if (shouldExport(child, state.options)) {
-                parts.push(this.exportHeadline(child, state, opts));
+                parts.push(this.exportHeadline(child, state, opts, childInherited));
             }
         }
 
@@ -919,9 +936,13 @@ export class LatexExportBackend implements ExportBackend {
     }
 
     private exportKeyword(keyword: KeywordElement, state: ExportState): string {
-        // Most keywords are metadata
-        if (keyword.properties.key === 'TOC') {
+        const key = keyword.properties.key.toUpperCase();
+        if (key === 'TOC') {
             return '\\tableofcontents\n';
+        }
+        // Pass raw LaTeX through for #+LATEX: ...
+        if (key === 'LATEX') {
+            return keyword.properties.value + '\n';
         }
         return '';
     }

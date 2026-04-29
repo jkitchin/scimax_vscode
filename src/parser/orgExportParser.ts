@@ -91,11 +91,25 @@ const SUPERSCRIPT_SIMPLE_PATTERN = /(?<=[a-zA-Z0-9])\^([a-zA-Z0-9]+)(?![a-zA-Z0-
 // Display math: $$...$$ or \[...\]
 const DISPLAY_MATH_PATTERN = /\$\$([^$]+)\$\$|\\\[([^\]]+)\\\]/g;
 // Inline math: $...$ (not $$) or \(...\)
-const INLINE_MATH_PATTERN = /(?<!\$)\$([^$\n]+)\$(?!\$)|\\\(([^)]+)\\\)/g;
-// Line break: \\ (two backslashes)
-const LINE_BREAK_PATTERN = /\\\\(?:\s|$)/g;
-// LaTeX command pattern: \command{arg} or \command[opt]{arg} - for \ref, \cite, \eqref, \label, \pageref, \autoref, etc.
-const LATEX_COMMAND_PATTERN = /\\([a-zA-Z]+)(?:\[[^\]]*\])?\{([^}]*)\}/g;
+// Org-mode border rules (from org-latex-regexps):
+//   - Pre-char: must not be $
+//   - First content char: not in " \t\n\r,;.$"
+//   - Last content char:  not in " \t\n\r,.$"
+//   - Closing $ must not be followed by another $ (avoids $$ collision)
+//   - Content must not span newlines or contain $
+// These border rules alone suffice to reject currency like "$5K and $6K"
+// (content ends in space). Org's stricter post-char rule (no letters after
+// closing $) is intentionally relaxed so common forms like "$^{\circ}$C"
+// still render as math.
+const INLINE_MATH_PATTERN = /(?<!\$)\$([^ \t\n\r,;.$](?:[^$\n\r]*?[^ \t\n\r,.$])?)\$(?!\$)|\\\(([^)]+)\\\)/g;
+// Line break: \\ at end of line (optionally followed by trailing whitespace)
+// Matches the org-mode spec: PRE\\SPACE at end of a line.
+// Consuming the trailing whitespace through the line terminator prevents stray
+// newlines from leaking into the next plain-text segment (which would otherwise
+// produce a spurious paragraph break in LaTeX export).
+const LINE_BREAK_PATTERN = /\\\\[ \t]*(?:\n|$)/g;
+// LaTeX command pattern: \command{arg}, \command[opt]{arg}, or multi-arg like \setcounter{page}{1}
+const LATEX_COMMAND_PATTERN = /\\([a-zA-Z]+)(?:\[[^\]]*\])*\{([^}]*)\}(?:\{[^}]*\})*/g;
 // Standalone LaTeX command pattern: \noindent, \newpage, \clearpage, \bigskip, etc. (no braces)
 // Must not match \[ or \( (math delimiters) or \\ (line break) - those are handled separately
 const LATEX_STANDALONE_COMMAND_PATTERN = /\\([a-zA-Z]{2,})(?![a-zA-Z{[(])/g;
@@ -795,6 +809,20 @@ function parseHeadline(state: FastParserState): HeadlineElement | null {
     // Parse section content
     const sectionElements = parseSection(state, level);
 
+    // Extract property drawer (if any) into headline.propertiesDrawer
+    let propertiesDrawer: Record<string, string> | undefined;
+    const drawerEl = sectionElements.find(el => el.type === 'property-drawer') as
+        | (OrgElement & { children?: Array<{ key: string; value: string }> })
+        | undefined;
+    if (drawerEl) {
+        propertiesDrawer = {};
+        for (const child of drawerEl.children || []) {
+            if (child.key) {
+                propertiesDrawer[child.key] = child.value;
+            }
+        }
+    }
+
     // Parse child headlines
     const children: HeadlineElement[] = [];
     while (state.lineIndex < endLine) {
@@ -825,6 +853,7 @@ function parseHeadline(state: FastParserState): HeadlineElement | null {
             lineNumber: startLine + 1,
         },
         planning,
+        propertiesDrawer,
         section: sectionElements.length > 0 ? {
             type: 'section',
             range: { start: 0, end: 0 },
@@ -1144,9 +1173,9 @@ function parseSimpleBlock(state: FastParserState, type: 'example-block' | 'quote
         state.lineIndex++;
     }
 
-    if (type === 'example-block') {
+    if (type === 'example-block' || type === 'comment-block') {
         return {
-            type: 'example-block',
+            type,
             range: { start: 0, end: 0 },
             postBlank: 0,
             properties: {

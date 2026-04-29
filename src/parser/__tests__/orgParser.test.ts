@@ -472,6 +472,29 @@ describe('Inline Objects Parser', () => {
             const latex = result.find(r => r.type === 'latex-fragment') as LatexFragmentObject;
             expect(latex.properties.fragmentType).toBe('display-math');
         });
+
+        it('should not treat currency dollar signs as inline math', () => {
+            // Reproduces a real export bug: "$154K). We budgeted $5K for X and $6K for Y"
+            // would render as math. Org rules require the closing $ to be followed by
+            // punctuation/space/EOL (not a digit), and content not to start/end with whitespace.
+            const text = 'Budget (~$154K). We budgeted $5K for compute and $6K for travel.';
+            const result = parseObjects(text);
+            const fragments = result.filter(r => r.type === 'latex-fragment');
+            expect(fragments).toHaveLength(0);
+        });
+
+        it('should reject inline math whose content ends in whitespace', () => {
+            const result = parseObjects('a $x + y $ b');
+            expect(result.filter(r => r.type === 'latex-fragment')).toHaveLength(0);
+        });
+
+        it('should still parse math followed by a letter (e.g., degree symbol)', () => {
+            // $^{\circ}$C is a common idiom for degree Celsius and must remain math.
+            const result = parseObjects('Heated above $^{\\circ}$C in vacuum');
+            const fragments = result.filter(r => r.type === 'latex-fragment');
+            expect(fragments).toHaveLength(1);
+            expect((fragments[0] as LatexFragmentObject).properties.value).toBe('$^{\\circ}$');
+        });
     });
 
     describe('Subscripts and Superscripts', () => {

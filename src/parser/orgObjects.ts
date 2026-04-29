@@ -197,7 +197,7 @@ export function parseObjects(
             case '$':
                 // LaTeX fragment ($...$, $$...$$)
                 if (isAllowed('latex-fragment')) {
-                    parsed = tryParseLatexFragment(text, pos, baseOffset);
+                    parsed = tryParseLatexFragment(text, pos, baseOffset, prevChar);
                 }
                 break;
 
@@ -378,20 +378,44 @@ function tryParseLineBreak(text: string, pos: number, baseOffset: number): LineB
     return null;
 }
 
-function tryParseLatexFragment(text: string, pos: number, baseOffset: number): LatexFragmentObject | null {
+function tryParseLatexFragment(text: string, pos: number, baseOffset: number, prevChar: string = ' '): LatexFragmentObject | null {
     // Inline math: $...$
-    if (text[pos] === '$' && text[pos + 1] !== '$') {
-        const endPos = findClosingDelimiter(text, pos + 1, '$');
-        if (endPos > pos + 1 && !text.slice(pos + 1, endPos).includes('\n')) {
-            return {
-                type: 'latex-fragment',
-                range: { start: pos + baseOffset, end: endPos + 1 + baseOffset },
-                postBlank: 0,
-                properties: {
-                    value: text.slice(pos, endPos + 1),
-                    fragmentType: 'inline-math',
-                },
-            };
+    // Org-mode border rules (from org-latex-regexps in org.el):
+    //   - Pre-char: must not be $
+    //   - First content char: not in " \t\n\r,;.$"
+    //   - Last content char:  not in " \t\n\r,.$"
+    //   - Closing $ must not be followed by another $
+    //   - Content must not span newlines
+    // The border rules alone reject currency like "$5K and $6K" (content
+    // ends in space). Org's stricter post-char rule (no letter after the
+    // closing $) is relaxed so "$^{\circ}$C" still parses as math.
+    if (text[pos] === '$' && text[pos + 1] !== '$' && prevChar !== '$') {
+        const FORBIDDEN_FIRST = new Set([' ', '\t', '\n', '\r', ',', ';', '.', '$']);
+        const FORBIDDEN_LAST = new Set([' ', '\t', '\n', '\r', ',', '.', '$']);
+
+        const first = text[pos + 1];
+        if (first !== undefined && !FORBIDDEN_FIRST.has(first)) {
+            let searchFrom = pos + 2;
+            while (searchFrom < text.length) {
+                const endPos = findClosingDelimiter(text, searchFrom, '$');
+                if (endPos < 0) break;
+                const content = text.slice(pos + 1, endPos);
+                if (content.includes('\n')) break;
+                const last = content[content.length - 1];
+                const nextIsDollar = text[endPos + 1] === '$';
+                if (!FORBIDDEN_LAST.has(last) && !nextIsDollar) {
+                    return {
+                        type: 'latex-fragment',
+                        range: { start: pos + baseOffset, end: endPos + 1 + baseOffset },
+                        postBlank: 0,
+                        properties: {
+                            value: text.slice(pos, endPos + 1),
+                            fragmentType: 'inline-math',
+                        },
+                    };
+                }
+                searchFrom = endPos + 1;
+            }
         }
     }
 
