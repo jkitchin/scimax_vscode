@@ -751,10 +751,49 @@ export function registerLatexCompileCommands(context: vscode.ExtensionContext): 
                 normalized = normalized.replace(/%.*$/gm, '');
                 normalized = normalized.replace(/\\[a-zA-Z]+(\[[^\]]*\])?(\{[^}]*\})?/g, ' ');
                 normalized = normalized.replace(/\\(begin|end)\{[^}]+\}/g, '');
+            } else if (editor.document.languageId === 'org') {
+                // Strip org-mode markup so prose words aren't drowned out by syntax
+                // Block contents (source, example, export, verse, comment, quote): drop entirely
+                normalized = normalized.replace(
+                    /^[ \t]*#\+begin_(src|example|export|comment)\b[\s\S]*?^[ \t]*#\+end_\1[ \t]*$/gim,
+                    ''
+                );
+                // Properties / logbook / generic drawers
+                normalized = normalized.replace(
+                    /^[ \t]*:[A-Za-z][A-Za-z0-9_-]*:[ \t]*\n[\s\S]*?^[ \t]*:END:[ \t]*$/gim,
+                    ''
+                );
+                // LaTeX environments
+                normalized = normalized.replace(
+                    /\\begin\{([^}]+)\}[\s\S]*?\\end\{\1\}/g,
+                    ''
+                );
+                // #+KEYWORD: ... lines
+                normalized = normalized.replace(/^[ \t]*#\+[^\n]*$/gm, '');
+                // # comment lines
+                normalized = normalized.replace(/^[ \t]*#(?!\+)[^\n]*$/gm, '');
+                // Headline: drop leading stars + optional TODO/DONE keyword + trailing :tags:
+                normalized = normalized.replace(
+                    /^(\*+)[ \t]+(?:[A-Z][A-Z0-9_]*[ \t]+)?(.*?)(?:[ \t]+:[\w@#%:-]+:)?[ \t]*$/gm,
+                    '$2'
+                );
+                // Links: [[target][desc]] -> desc, [[target]] -> ''
+                normalized = normalized.replace(/\[\[[^\]]+\]\[([^\]]+)\]\]/g, '$1');
+                normalized = normalized.replace(/\[\[[^\]]+\]\]/g, '');
+                // Inline LaTeX math
+                normalized = normalized.replace(/\$\$[\s\S]*?\$\$/g, '');
+                normalized = normalized.replace(/\\\([\s\S]*?\\\)/g, '');
+                normalized = normalized.replace(/\\\[[\s\S]*?\\\]/g, '');
+                // Citations: cite:key, citep:key1,key2 — drop entirely
+                normalized = normalized.replace(/\b(?:cite[a-z*]*|citep|citet|citeauthor|citeyear|citenum|citeurl|nocite|autocite|textcite|parencite):[\w,;:./-]+/gi, '');
+                // Verbatim/code spans: =foo=, ~foo~ — keep inner text
+                normalized = normalized.replace(/[=~]([^\s=~][^=~]*?[^\s=~]|[^\s=~])[=~]/g, '$1');
+                // Emphasis markers around words
+                normalized = normalized.replace(/(^|[\s({'"])([*/_+])(\S(?:.*?\S)?)\2(?=[\s.,;:!?)}'"]|$)/gm, '$1$3');
             }
 
-            // Count words
-            const words = normalized.match(/\b[a-zA-Z0-9]+\b/g) || [];
+            // Count words (Unicode-aware: letters/numbers in any script)
+            const words = normalized.match(/[\p{L}\p{N}]+(?:[''-][\p{L}\p{N}]+)*/gu) || [];
             const wordCount = words.length;
 
             // Count characters (excluding whitespace)
