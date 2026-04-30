@@ -70,6 +70,7 @@ import {
     collectTargets,
     collectFootnotes,
     parseOptionsKeyword,
+    shouldRenderAsLiteral,
 } from './orgExport';
 
 import { blockExportRegistry } from '../adapters/blockExportAdapter';
@@ -1239,11 +1240,17 @@ export class LatexExportBackend implements ExportBackend {
 
     private exportSubscript(obj: SubscriptObject, state: ExportState): string {
         const content = exportObjects(obj.children, this, state);
+        if (shouldRenderAsLiteral(obj, state.options)) {
+            return `\\_${content}`;
+        }
         return `\\textsubscript{${content}}`;
     }
 
     private exportSuperscript(obj: SuperscriptObject, state: ExportState): string {
         const content = exportObjects(obj.children, this, state);
+        if (shouldRenderAsLiteral(obj, state.options)) {
+            return `\\^{}${content}`;
+        }
         return `\\textsuperscript{${content}}`;
     }
 

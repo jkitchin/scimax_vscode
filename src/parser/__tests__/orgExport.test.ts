@@ -350,7 +350,7 @@ describe('HTML Export', () => {
                 type: 'subscript' as const,
                 range: createRange(0, 3),
                 postBlank: 0,
-                properties: { usesBraces: false },
+                properties: { usesBraces: true },
                 children: [createPlainText('2')],
             };
             expect(backend.exportObject(sub, state)).toBe('<sub>2</sub>');
@@ -362,10 +362,34 @@ describe('HTML Export', () => {
                 type: 'superscript' as const,
                 range: createRange(0, 3),
                 postBlank: 0,
-                properties: { usesBraces: false },
+                properties: { usesBraces: true },
                 children: [createPlainText('2')],
             };
             expect(backend.exportObject(sup, state)).toBe('<sup>2</sup>');
+        });
+
+        it('renders bare a_b as literal under default subscripts: braces', () => {
+            const state = createExportState();
+            const sub = {
+                type: 'subscript' as const,
+                range: createRange(0, 3),
+                postBlank: 0,
+                properties: { usesBraces: false },
+                children: [createPlainText('2')],
+            };
+            expect(backend.exportObject(sub, state)).toBe('_2');
+        });
+
+        it('renders bare a^b as literal under default subscripts: braces', () => {
+            const state = createExportState();
+            const sup = {
+                type: 'superscript' as const,
+                range: createRange(0, 3),
+                postBlank: 0,
+                properties: { usesBraces: false },
+                children: [createPlainText('2')],
+            };
+            expect(backend.exportObject(sup, state)).toBe('^2');
         });
 
         it('exports line breaks', () => {
@@ -1068,10 +1092,22 @@ describe('LaTeX Export', () => {
                 type: 'subscript' as const,
                 range: createRange(0, 3),
                 postBlank: 0,
-                properties: { usesBraces: false },
+                properties: { usesBraces: true },
                 children: [createPlainText('2')],
             };
             expect(backend.exportObject(sub, state)).toBe('\\textsubscript{2}');
+        });
+
+        it('renders bare a_b as escaped underscore under default subscripts: braces', () => {
+            const state = createExportState();
+            const sub = {
+                type: 'subscript' as const,
+                range: createRange(0, 3),
+                postBlank: 0,
+                properties: { usesBraces: false },
+                children: [createPlainText('2')],
+            };
+            expect(backend.exportObject(sub, state)).toBe('\\_2');
         });
 
         it('exports line breaks', () => {

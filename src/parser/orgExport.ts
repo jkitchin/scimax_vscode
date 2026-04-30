@@ -144,7 +144,12 @@ export interface ExportOptions {
     includeProperties?: boolean;
     /** Include tables (|:t/nil) */
     includeTables?: boolean;
-    /** Subscript/superscript handling (^:t/nil/{}) */
+    /**
+     * Subscript/superscript handling (^:t/nil/{}). Controls both `_` and `^`.
+     * - `true` (default): both `a_b` and `a_{b}` (and `a^b`/`a^{b}`) render as sub/superscripts.
+     * - `'braces'`: only the brace form renders; bare `a_b` and `a^b` render as literal text.
+     * - `false`: never render as sub/superscripts (always literal).
+     */
     subscripts?: boolean | 'braces';
     /** Include fixed-width sections (::t/nil) */
     fixedWidth?: boolean;
@@ -184,7 +189,7 @@ export const DEFAULT_EXPORT_OPTIONS: ExportOptions = {
     includeDrawers: true,  // Changed to true to match Emacs default
     includeProperties: true,  // PROPERTIES drawers included by default
     includeTables: true,
-    subscripts: true,
+    subscripts: 'braces',
     fixedWidth: true,
     excludeTags: ['noexport'],
 };
@@ -374,6 +379,21 @@ export function parseOptionsKeyword(optionsLine: string): Partial<ExportOptions>
     }
 
     return opts;
+}
+
+/**
+ * Whether a subscript or superscript object should render as literal text
+ * rather than as `<sub>`/`<sup>` (or backend equivalent). Mirrors Emacs
+ * `org-export-with-sub-superscripts` semantics: `false` always literal,
+ * `'braces'` literal for the bare `a_b`/`a^b` form (only `a_{b}`/`a^{b}` render).
+ */
+export function shouldRenderAsLiteral(
+    obj: { properties: { usesBraces: boolean } },
+    options: ExportOptions
+): boolean {
+    if (options.subscripts === false) return true;
+    if (options.subscripts === 'braces' && !obj.properties.usesBraces) return true;
+    return false;
 }
 
 // =============================================================================

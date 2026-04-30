@@ -63,6 +63,7 @@ import {
     createExportState,
     exportObjects,
     shouldExport,
+    shouldRenderAsLiteral,
 } from './orgExport';
 
 import { ALL_CITATION_COMMANDS } from '../references/citationTypes';
@@ -1026,11 +1027,23 @@ export class IpynbExportBackend implements ExportBackend {
             case 'latex-fragment':
                 return this.latexFragmentToMarkdown(object as LatexFragmentObject);
 
-            case 'subscript':
-                return `<sub>${this.objectsToMarkdown((object as SubscriptObject).children || [], state)}</sub>`;
+            case 'subscript': {
+                const sub = object as SubscriptObject;
+                const content = this.objectsToMarkdown(sub.children || [], state);
+                if (shouldRenderAsLiteral(sub, state.options)) {
+                    return `\\_${content}`;
+                }
+                return `<sub>${content}</sub>`;
+            }
 
-            case 'superscript':
-                return `<sup>${this.objectsToMarkdown((object as SuperscriptObject).children || [], state)}</sup>`;
+            case 'superscript': {
+                const sup = object as SuperscriptObject;
+                const content = this.objectsToMarkdown(sup.children || [], state);
+                if (shouldRenderAsLiteral(sup, state.options)) {
+                    return `\\^${content}`;
+                }
+                return `<sup>${content}</sup>`;
+            }
 
             case 'line-break':
                 return '  \n';

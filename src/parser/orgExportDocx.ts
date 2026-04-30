@@ -10,7 +10,7 @@ import * as os from 'os';
 import * as crypto from 'crypto';
 
 import type { OrgDocumentNode } from './orgElementTypes';
-import { parseOptionsKeyword, ExportOptions, DEFAULT_EXPORT_OPTIONS, expandMacro, BUILTIN_MACROS } from './orgExport';
+import { parseOptionsKeyword, ExportOptions, DEFAULT_EXPORT_OPTIONS, expandMacro, BUILTIN_MACROS, shouldRenderAsLiteral } from './orgExport';
 
 // =============================================================================
 // Pandoc Availability Check
@@ -758,10 +758,20 @@ export class DocxExportBackend {
                 return obj.properties?.value || '';
             case 'entity':
                 return obj.properties?.latex || obj.properties?.utf8 || '';
-            case 'subscript':
-                return `_{${this.serializeObjects(obj.children || [], opts)}}`;
-            case 'superscript':
-                return `^{${this.serializeObjects(obj.children || [], opts)}}`;
+            case 'subscript': {
+                const subContent = this.serializeObjects(obj.children || [], opts);
+                if (shouldRenderAsLiteral(obj, opts)) {
+                    return `_${subContent}`;
+                }
+                return `_{${subContent}}`;
+            }
+            case 'superscript': {
+                const supContent = this.serializeObjects(obj.children || [], opts);
+                if (shouldRenderAsLiteral(obj, opts)) {
+                    return `^${supContent}`;
+                }
+                return `^{${supContent}}`;
+            }
             case 'line-break':
                 return '\\\\\n';
             case 'footnote-reference':

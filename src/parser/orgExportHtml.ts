@@ -77,6 +77,7 @@ import {
     EDITMARK_CSS,
     type EditmarkExportMode,
     parseOptionsKeyword,
+    shouldRenderAsLiteral,
 } from './orgExport';
 
 import { CitationProcessor, CSLStyleName } from '../references/citationProcessor';
@@ -1098,11 +1099,17 @@ export class HtmlExportBackend implements ExportBackend {
 
     private exportSubscript(obj: SubscriptObject, state: ExportState): string {
         const content = exportObjects(obj.children, this, state);
+        if (shouldRenderAsLiteral(obj, state.options)) {
+            return `_${content}`;
+        }
         return `<sub>${content}</sub>`;
     }
 
     private exportSuperscript(obj: SuperscriptObject, state: ExportState): string {
         const content = exportObjects(obj.children, this, state);
+        if (shouldRenderAsLiteral(obj, state.options)) {
+            return `^${content}`;
+        }
         return `<sup>${content}</sup>`;
     }
 
