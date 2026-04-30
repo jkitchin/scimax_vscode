@@ -1357,7 +1357,7 @@ The `#+OPTIONS' keyword controls various export behaviors:
 #+OPTIONS: key1:value1 key2:value2 ...
 #+END_SRC
 
-*** ✅ Complete OPTIONS Reference
+*** 👀 Complete OPTIONS Reference
 CLOSED: [2026-01-24 Sat 17:34]
 
 | Option       | Values             | Default | Description                               |
@@ -1379,7 +1379,7 @@ CLOSED: [2026-01-24 Sat 17:34]
 | d            | t, nil, (list)     | nil     | Include drawers (or specific drawers)     |
 | prop         | t, nil             | t       | Include PROPERTIES drawers                |
 | \vert{}      | t, nil             | t       | Include tables                            |
-| ^            | t, nil, {}         | t       | Sub/superscripts ({} requires braces)     |
+| ^            | t, nil, {}         | {}      | Sub/superscripts (default: only a_{b}/a^{b}; t: also a_b/a^b) |
 | :            | t, nil             | t       | Include fixed-width sections              |
 | \n           | t, nil             | nil     | Preserve line breaks                      |
 
@@ -1413,6 +1413,32 @@ CLOSED: [2026-01-24 Sat 17:34]
 *Hide tags from headlines but keep them in TOC:*
 #+BEGIN_SRC org
 #+OPTIONS: tags:not-in-toc
+#+END_SRC
+
+*** 👀 Subscripts and Superscripts
+
+The =^= option controls how =_= and =^= are interpreted in body text:
+
+| Value | Behavior                                                      |
+|-------+---------------------------------------------------------------|
+| ={}=  | (default) Only braced forms render: =a_{b}= → subscript, =a_b= → literal |
+| =t=   | Both forms render: =a_{b}= and =a_b= both produce a subscript |
+| =nil= | Never render as sub/superscripts; both forms stay literal     |
+
+The default was changed from =t= to ={}= because bare =_= and =^= in
+prose (filenames, identifiers, math expressions) are usually meant
+literally. If you have an existing document that relied on bare-form
+subscripts, add =#+OPTIONS: ^:t= to restore the old behavior.
+
+#+BEGIN_SRC org
+# Default behavior (subscripts only render with braces)
+H_{2}O is water.    # → H<sub>2</sub>O is water
+file_name.txt       # → literal: file_name.txt
+
+# Old behavior (any underscore is a subscript)
+#+OPTIONS: ^:t
+H_2O is water.      # → H<sub>2</sub>O is water
+file_name.txt       # → file<sub>name</sub>.txt (probably unwanted)
 #+END_SRC
 
 ** Document Keywords
@@ -2198,7 +2224,7 @@ CLOSED: [2026-01-17 Sat 09:29]
 | C-c C-e k l | Clipboard LaTeX          | Copy LaTeX source code       |
 | C-c C-e k m | Clipboard Markdown       | Copy Markdown source code    |
 
-** ✅ Export Options Quick Reference
+** 👀 Export Options Quick Reference
 CLOSED: [2026-01-24 Sat 17:36]
 
 | Option   | Values             | Default | Effect                                 |
@@ -2219,7 +2245,7 @@ CLOSED: [2026-01-24 Sat 17:36]
 | c        | t/nil              | nil     | Include CLOCK entries                  |
 | d        | t/nil/(list)       | nil     | Include drawers                        |
 | \vert{}  | t/nil              | t       | Include tables                         |
-| ^        | t/nil/{}           | t       | Sub/superscripts ({}=braces required)  |
+| ^        | t/nil/{}           | {}      | Sub/superscripts (default: only a_{b}/a^{b}; t: also a_b/a^b) |
 | :        | t/nil              | t       | Include fixed-width sections           |
 | \n       | t/nil              | nil     | Preserve line breaks                   |
 
