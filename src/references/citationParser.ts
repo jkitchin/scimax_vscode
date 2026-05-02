@@ -20,8 +20,10 @@ import {
  * Regular expressions for matching citations
  */
 const PATTERNS = {
-    // org-cite: [cite:@key] or [cite/style:prefix;@key suffix;]
-    'org-cite': /\[cite(?:\/([a-zA-Z]+))?:([^\]]+)\]/g,
+    // org-cite: [cite:@key], [cite/style:...], [cite/style/variant:...],
+    // [cite//variant:...] (default style + variant).
+    // Style segment allows letters, '/' (separates style from variants) and '-'.
+    'org-cite': /\[cite(?:\/([a-zA-Z/][a-zA-Z/-]*))?:([^\]]+)\]/g,
 
     // LaTeX: \cite{key} or \citep[pre][post]{key}
     'latex': /\\(cite[a-z]*)\*?(?:\[([^\]]*)\])?(?:\[([^\]]*)\])?\{([^}]+)\}/g,
@@ -197,15 +199,19 @@ function parseOrgCiteCitations(line: string): ParsedCitation[] {
     while ((match = regex.exec(line)) !== null) {
         const start = match.index;
         const end = start + match[0].length;
-        const style = match[1]; // may be undefined
+        const style = match[1]; // may be undefined; e.g. 't', 'a', 'a/c', 'bare-caps'
         const content = match[2];
 
         const parsed = parseNotesAndKeys(content, '@', ';');
 
-        // Map style to command
+        // Map style to command. The captured group may include variants
+        // (e.g. 'a/c' or 'bare-caps') — use only the base style for the
+        // legacy command lookup. Backend-aware mapping for variants happens
+        // in the LaTeX exporter.
         let command: CitationCommand | string = 'cite';
-        if (style && ORG_CITE_STYLE_MAP[style]) {
-            command = ORG_CITE_STYLE_MAP[style];
+        const baseStyle = style ? style.split('/')[0] : undefined;
+        if (baseStyle && ORG_CITE_STYLE_MAP[baseStyle]) {
+            command = ORG_CITE_STYLE_MAP[baseStyle];
         }
 
         citations.push({

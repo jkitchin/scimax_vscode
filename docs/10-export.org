@@ -975,6 +975,75 @@ Org-ref style citations work directly:
 - `citeauthor:key' → `\citeauthor{key}'
 - `citeyear:key' → `\citeyear{key}'
 
+*** 👀 Org-cite Citations =[cite/STYLE/VARIANTS:@key]=
+
+Org-cite citations are translated to LaTeX through a configurable backend. The
+default backend, =bibtex=, emits =natbib= commands; the =biblatex= backend
+emits the corresponding =biblatex= commands.
+
+Choose a backend with the setting =scimax.export.latex.citeBackend= (values
+=bibtex= or =biblatex=) or per-document with:
+
+#+BEGIN_SRC org
+#+cite_export: bibtex
+,#+cite_export: biblatex
+#+END_SRC
+
+Both the short and long org-cite spellings are accepted (=t= = =text=,
+=a= = =author=, =na= = =noauthor=, =n= = =nocite=, =y= = =year=). Variants are
+=b= (bare), =c= (caps), =f= (full); they may be combined as =bc=, =cf=, =bcf=
+or as hyphenated long names like =bare-caps=.
+
+**** Style → command mapping (=bibtex= backend, default)
+
+| Org-cite                  | LaTeX command   |
+|---------------------------+-----------------|
+| =[cite:@k]=               | =\citep{k}=     |
+| =[cite//c:@k]=            | =\Citep{k}=     |
+| =[cite//b:@k]=            | =\citealp{k}=   |
+| =[cite//bc:@k]=           | =\Citealp{k}=   |
+| =[cite/t:@k]=             | =\citet{k}=     |
+| =[cite/t/c:@k]=           | =\Citet{k}=     |
+| =[cite/t/b:@k]=           | =\citealt{k}=   |
+| =[cite/t/bc:@k]=          | =\Citealt{k}=   |
+| =[cite/a:@k]=             | =\citeauthor{k}=|
+| =[cite/a/c:@k]=           | =\Citeauthor{k}=|
+| =[cite/a/f:@k]=           | =\citeauthor*{k}= |
+| =[cite/na:@k]=            | =\citeyearpar{k}= |
+| =[cite/y:@k]=             | =\citeyearpar{k}= |
+| =[cite/y/b:@k]=           | =\citeyear{k}=  |
+| =[cite/n:@k]=             | =\nocite{k}=    |
+
+**** Style → command mapping (=biblatex= backend)
+
+| Org-cite                  | LaTeX command   |
+|---------------------------+-----------------|
+| =[cite:@k]=               | =\autocite{k}=  |
+| =[cite//c:@k]=            | =\Autocite{k}=  |
+| =[cite//b:@k]=            | =\cite{k}=      |
+| =[cite/t:@k]=             | =\textcite{k}=  |
+| =[cite/t/c:@k]=           | =\Textcite{k}=  |
+| =[cite/a:@k]=             | =\citeauthor{k}=|
+| =[cite/a/c:@k]=           | =\Citeauthor{k}=|
+| =[cite/na:@k]=            | =\autocite*{k}= |
+| =[cite/y:@k]=             | =\citeyear{k}=  |
+| =[cite/n:@k]=             | =\nocite{k}=    |
+| =[cite/b:@k]=             | =\fullcite{k}=  |
+| =[cite/ni:@k]=            | =\notecite{k}=  |
+
+**** Per-key prefix and suffix
+
+For *single-key* citations the per-key prefix and suffix are emitted as
+natbib's =[pre][post]{key}= bracketed arguments:
+
+| Org-cite                  | LaTeX command            |
+|---------------------------+--------------------------|
+| =[cite:@k p. 5]=          | =\citep[p. 5]{k}=        |
+| =[cite:see @k p. 5]=      | =\citep[see][p. 5]{k}=   |
+
+Multi-key citations always emit a single =\citep{k1,k2,...}= form (per-key
+notes have no clean LaTeX analogue).
+
 *** HTML Citation Export
 
 HTML export includes full citation processing using citation-js, which formats citations according to standard citation styles (CSL).

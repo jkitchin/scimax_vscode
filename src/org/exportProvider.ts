@@ -477,11 +477,18 @@ async function exportLatex(
     // Read default preamble from settings
     const defaultPreamble = config.get<string>('defaultPreamble', '');
 
+    // Read citation backend (bibtex|biblatex). Per-document #+cite_export takes
+    // precedence and is applied inside exportToLatex.
+    const citeBackendSetting = config.get<string>('citeBackend', 'bibtex');
+    const citeBackend: 'bibtex' | 'biblatex' =
+        citeBackendSetting === 'biblatex' ? 'biblatex' : 'bibtex';
+
     const latexOptions: LatexExportOptions = {
         ...metadata,
         documentClass: defaultDocumentClass,
         classOptions: defaultClassOptions,
         preamble: defaultPreamble,
+        citeBackend,
         ...options,
         customHeader,
         bodyOnly,

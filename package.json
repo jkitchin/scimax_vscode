@@ -5838,6 +5838,15 @@
           "default": "12pt,letterpaper",
           "description": "Default LaTeX class options as comma-separated values (e.g., '12pt,letterpaper'). Can be overridden by #+LATEX_CLASS_OPTIONS: in the document."
         },
+        "scimax.export.latex.citeBackend": {
+          "type": "string",
+          "enum": [
+            "bibtex",
+            "biblatex"
+          ],
+          "default": "bibtex",
+          "markdownDescription": "Backend used to translate org-cite citations (`[cite/style/variant:@key]`) into LaTeX.\n\n- `bibtex` (default): emits natbib commands (`\\citep`, `\\citet`, `\\citealp`, `\\Citet`, …). Use this with the standard bibtex/natbib stack.\n- `biblatex`: emits biblatex commands (`\\autocite`, `\\textcite`, `\\Autocite`, `\\fullcite`, …). Requires `\\usepackage{biblatex}` and biber.\n\nA per-document override is also supported via `#+cite_export: bibtex` or `#+cite_export: biblatex`."
+        },
         "scimax.export.latex.defaultPreamble": {
           "type": "string",
           "default": "\\usepackage[utf8]{inputenc}\n\\usepackage[T1]{fontenc}\n\\usepackage{lmodern}\n\\usepackage{graphicx}\n\\usepackage{longtable}\n\\usepackage{float}\n\\usepackage{wrapfig}\n\\usepackage{rotating}\n\\usepackage[normalem]{ulem}\n\\usepackage{amsmath}\n\\usepackage{amssymb}\n\\usepackage{capt-of}\n\\usepackage[numbers,super]{natbib}\n\\usepackage{natmove}\n\\usepackage{mhchem}",

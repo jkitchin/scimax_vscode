@@ -95,6 +95,150 @@ function normalizeCiteKeys(path: string): string {
     return path;
 }
 
+/**
+ * Normalize an org-cite base style to a canonical short form.
+ * Accepts both the long and short org-cite spellings.
+ */
+function normalizeOrgCiteStyle(s: string): string {
+    switch (s.toLowerCase()) {
+        case '':
+        case 'default':
+        case 'p':
+        case 'paren':            return 'default';
+        case 't':
+        case 'text':             return 'text';
+        case 'a':
+        case 'author':           return 'author';
+        case 'na':
+        case 'noauthor':         return 'noauthor';
+        case 'n':
+        case 'nocite':           return 'nocite';
+        case 'y':
+        case 'year':             return 'year';
+        case 'ni':
+        case 'noidx':            return 'noidx';
+        case 'b':
+        case 'bibentry':         return 'bibentry';
+        case 'l':
+        case 'locators':         return 'locators';
+        default:                 return s.toLowerCase();
+    }
+}
+
+/**
+ * Expand an org-cite variant token into a set of atomic flags.
+ *  - Short single chars: 'b' (bare), 'c' (caps), 'f' (full).
+ *  - Compounds: 'bc', 'cf', 'bcf' decompose into their letters.
+ *  - Long forms: 'bare', 'caps', 'full'.
+ *  - Hyphenated combos: 'bare-caps', 'caps-full', 'bare-caps-full'.
+ */
+function normalizeOrgCiteVariant(v: string): string {
+    const lower = v.toLowerCase();
+    if (lower.includes('-')) {
+        // Will be split by the caller via Set; return joined so caller can split.
+        return lower;
+    }
+    return lower;
+}
+
+function expandVariantFlags(variants: string[]): Set<string> {
+    const flags = new Set<string>();
+    const map: Record<string, string> = {
+        b: 'bare', bare: 'bare',
+        c: 'caps', caps: 'caps',
+        f: 'full', full: 'full',
+    };
+    for (const raw of variants) {
+        // Split on '-' first (bare-caps), then handle short letter combos (bc, cf, bcf).
+        const parts = raw.split('-').filter(Boolean);
+        for (const part of parts) {
+            if (map[part]) {
+                flags.add(map[part]);
+            } else if (/^[bcf]+$/i.test(part)) {
+                for (const ch of part) flags.add(map[ch.toLowerCase()]);
+            }
+        }
+    }
+    return flags;
+}
+
+/**
+ * Map (org-cite style, variants, backend) to a LaTeX citation command.
+ * Returns the command string including the leading backslash, e.g. '\\citep'.
+ */
+function mapOrgCiteToLatex(
+    style: string,
+    rawVariants: Set<string>,
+    backend: 'bibtex' | 'biblatex'
+): string {
+    const flags = expandVariantFlags([...rawVariants]);
+    const bare = flags.has('bare');
+    const caps = flags.has('caps');
+    const full = flags.has('full');
+
+    if (backend === 'biblatex') {
+        switch (style) {
+            case 'text':
+                return caps ? '\\Textcite' : '\\textcite';
+            case 'author':
+                return (caps ? '\\Citeauthor' : '\\citeauthor') + (full ? '*' : '');
+            case 'noauthor':
+                // biblatex: \autocite* suppresses author; bare drops the parens via \cite*.
+                if (bare) return caps ? '\\Cite*' : '\\cite*';
+                return caps ? '\\Autocite*' : '\\autocite*';
+            case 'year':
+                return full ? '\\citeyear*' : '\\citeyear';
+            case 'nocite':
+                return '\\nocite';
+            case 'noidx':
+                return '\\notecite';
+            case 'bibentry':
+                return '\\fullcite';
+            case 'locators':
+                return '\\citeurl';
+            case 'default':
+            default:
+                if (bare) return caps ? '\\Cite' : '\\cite';
+                return caps ? '\\Autocite' : '\\autocite';
+        }
+    }
+
+    // bibtex / natbib backend
+    switch (style) {
+        case 'text':
+            if (bare && caps) return '\\Citealt';
+            if (bare) return '\\citealt';
+            if (caps) return '\\Citet';
+            return full ? '\\citet*' : '\\citet';
+        case 'author':
+            if (caps) return full ? '\\Citeauthor*' : '\\Citeauthor';
+            return full ? '\\citeauthor*' : '\\citeauthor';
+        case 'noauthor':
+            // natbib has no direct "suppress author" in the parenthetical form;
+            // \citeyearpar gives "(2020)", \citeyear gives "2020". Use the latter
+            // when bare, the former otherwise.
+            return bare ? '\\citeyear' : '\\citeyearpar';
+        case 'year':
+            return bare ? '\\citeyear' : '\\citeyearpar';
+        case 'nocite':
+            return '\\nocite';
+        case 'noidx':
+            // natbib has no "no-index" variant; fall back to plain \cite.
+            return '\\cite';
+        case 'bibentry':
+            // Provided by the bibentry package.
+            return '\\bibentry';
+        case 'locators':
+            return '\\cite';
+        case 'default':
+        default:
+            if (bare && caps) return '\\Citealp';
+            if (bare) return '\\citealp';
+            if (caps) return '\\Citep';
+            return full ? '\\citep*' : '\\citep';
+    }
+}
+
 // =============================================================================
 // LaTeX Export Options
 // =============================================================================
@@ -130,6 +274,8 @@ export interface LatexExportOptions extends ExportOptions {
     bibStyle?: string;
     /** Bibliography file */
     bibFile?: string;
+    /** Citation backend for org-cite export: 'bibtex' (natbib) or 'biblatex'. Default 'bibtex'. */
+    citeBackend?: 'bibtex' | 'biblatex';
     /** Section numbering depth */
     secNumDepth?: number;
     /** TOC depth */
@@ -167,6 +313,7 @@ const DEFAULT_LATEX_OPTIONS: LatexExportOptions = {
     secNumDepth: 3,
     tocDepth: 3,
     headlineStartLevel: 1,
+    citeBackend: 'bibtex',
 };
 
 // =============================================================================
@@ -232,6 +379,20 @@ export class LatexExportBackend implements ExportBackend {
             ? (settingsPreamble ? settingsPreamble + '\n' : '') + latexHeaders.join('\n')
             : settingsPreamble;
 
+        // Per-document #+cite_export: bibtex|biblatex (org-cite convention).
+        // The keyword may carry extra args (processor, bibstyle, citestyle); we only
+        // care about the first token and only when it names a backend we support.
+        let citeBackendOverride: 'bibtex' | 'biblatex' | undefined;
+        const citeExportKeyword = doc.keywords['CITE_EXPORT'];
+        if (citeExportKeyword) {
+            const first = citeExportKeyword.trim().split(/\s+/)[0]?.toLowerCase();
+            if (first === 'bibtex' || first === 'natbib') {
+                citeBackendOverride = 'bibtex';
+            } else if (first === 'biblatex') {
+                citeBackendOverride = 'biblatex';
+            }
+        }
+
         let opts: LatexExportOptions = {
             ...DEFAULT_LATEX_OPTIONS,
             ...parsedOptions,  // OPTIONS keyword values
@@ -241,6 +402,7 @@ export class LatexExportBackend implements ExportBackend {
             preamble,
             noDefaults,
             backend: 'latex',
+            ...(citeBackendOverride ? { citeBackend: citeBackendOverride } : {}),
         };
 
         // Run pre-export hooks (can modify options)
@@ -1339,38 +1501,53 @@ export class LatexExportBackend implements ExportBackend {
     }
 
     /**
-     * Export org-cite citation to LaTeX
-     * Converts [cite:@key] to \cite{key}, with style variants
+     * Export org-cite citation to LaTeX. Handles the full
+     * [cite/STYLE/VARIANTS:common-prefix; pre @key post; ...; common-suffix]
+     * grammar, dispatching to natbib (bibtex backend) or biblatex commands.
+     *
+     * References:
+     *  - org manual: https://orgmode.org/manual/Citation-handling.html
+     *  - https://blog.tecosaur.com/tmio/2021-07-31-citations.html
      */
     private exportCitation(citation: any, state: ExportState): string {
-        const { style, keys } = citation.properties;
-
-        if (!keys || keys.length === 0) {
-            return citation.properties.rawValue || '';
+        const props = citation.properties || {};
+        const keys: string[] = props.keys || [];
+        if (keys.length === 0) {
+            return props.rawValue || '';
         }
+
+        const opts = state.options as LatexExportOptions;
+        const backend: 'bibtex' | 'biblatex' = opts.citeBackend === 'biblatex' ? 'biblatex' : 'bibtex';
+
+        const rawStyle: string = props.style || 'default';
+        const baseStyle = normalizeOrgCiteStyle(rawStyle);
+        const variants: string[] = (props.variants || []).map(normalizeOrgCiteVariant);
+        const variantSet = new Set(variants);
+
+        const command = mapOrgCiteToLatex(baseStyle, variantSet, backend);
 
         const keyStr = keys.join(',');
 
-        // Map org-cite styles to LaTeX commands
-        // See https://orgmode.org/manual/Citation-handling.html
-        switch (style) {
-            case 't':
-            case 'text':
-                return `\\citet{${keyStr}}`;
-            case 'a':
-            case 'author':
-                return `\\citeauthor{${keyStr}}`;
-            case 'na':
-            case 'noauthor':
-                return `\\citeyear{${keyStr}}`;
-            case 'n':
-            case 'nocite':
-                return `\\nocite{${keyStr}}`;
-            case 'p':
-            case 'paren':
-            default:
-                return `\\cite{${keyStr}}`;
+        // natbib supports \cmd[pre][post]{keys}; biblatex's parametric forms
+        // (\cite, \autocite, ...) also support \cmd[pre][post]{key}. We only
+        // emit a [pre][post] when there is a single key (mirrors what Emacs
+        // exporters do — multi-key per-reference notes have no clean LaTeX
+        // analogue).
+        if (keys.length === 1) {
+            const ref = (props.references && props.references[0]) || {};
+            const pre = (ref.prefix || props.prefix || '').trim();
+            const post = (ref.suffix || props.suffix || '').trim();
+            if (pre && post) {
+                return `${command}[${escapeString(pre, 'latex')}][${escapeString(post, 'latex')}]{${keyStr}}`;
+            }
+            if (post) {
+                return `${command}[${escapeString(post, 'latex')}]{${keyStr}}`;
+            }
+            // pre-only with no post is not expressible in natbib (single
+            // bracket means post-note), so fall through and drop the prenote.
         }
+
+        return `${command}{${keyStr}}`;
     }
 
     // =========================================================================

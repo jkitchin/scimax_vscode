@@ -129,9 +129,11 @@ const RADIO_TARGET_PATTERN = /<<<([^<>\n]+)>>>/g;
 // Footnote reference pattern: [fn:label] or [fn:label:inline definition] or [fn::inline definition]
 const FOOTNOTE_REF_PATTERN = /\[fn:([a-zA-Z0-9_-]*):?([^\]]*)\]/g;
 
-// Org-cite pattern: [cite:@key] or [cite/style:@key] or [cite:@key1;@key2]
-// Captures: [1]=style (optional), [2]=full citation content (keys with optional prefix/suffix)
-const ORG_CITE_PATTERN = /\[cite(?:\/([a-zA-Z]+))?:([^\]]+)\]/g;
+// Org-cite pattern: [cite:@key], [cite/style:@key], [cite/style/variant:@key],
+// [cite//variant:@key] (default style + variant), [cite:@key1;@key2]
+// Captures: [1]=style/variant string (optional; may begin with '/' for empty style),
+//           [2]=full citation content (keys with optional prefix/suffix)
+const ORG_CITE_PATTERN = /\[cite(?:\/([a-zA-Z/][a-zA-Z/-]*))?:([^\]]+)\]/g;
 
 // Statistics cookie pattern: [1/3] or [50%]
 const STATISTICS_COOKIE_PATTERN = /\[(\d+\/\d+|\d+%)\]/g;
@@ -550,18 +552,65 @@ export function parseObjectsFast(text: string): OrgObject[] {
         });
     }
 
-    // Org-cite citations: [cite:@key] or [cite/style:@key] or [cite:@key1;@key2]
+    // Org-cite citations: [cite:@key], [cite/style:@key], [cite/style/variant:@key],
+    // and the rich form [cite/style/variant:common-prefix; pre @key post; ...; common-suffix]
     if (text.includes('[cite')) {
         collectMatches(ORG_CITE_PATTERN, (m) => {
-            const style = m[1] || undefined;  // e.g., 't' for textual, 'a' for author
-            const content = m[2];  // e.g., '@key1;@key2' or 'see @key p. 5'
+            const styleRaw = m[1] || undefined;  // e.g., 't', 'a/c', 'bare-caps'
+            const content = m[2];
 
-            // Parse the citation keys from the content
-            // Keys are prefixed with @ and separated by ;
+            // Split style/variant. Org-cite separates the base style from variants
+            // with '/', and combined variants may use '-' (e.g., bare-caps) or 'cf'.
+            // Note: an empty first segment (from a leading '/', e.g. [cite//c:@k])
+            // means the default style with the listed variant(s).
+            let style = 'default';
+            let variants: string[] = [];
+            if (styleRaw) {
+                const parts = styleRaw.split('/');
+                style = parts[0] || 'default';
+                variants = parts.slice(1).filter(p => p.length > 0);
+            }
+
+            // Parse common prefix / per-key prefix-suffix / common suffix.
+            // Format: "common-prefix; pre1 @key1 post1; pre2 @key2 post2; common-suffix"
+            // Only segments containing '@' are key segments; segments before the
+            // first key segment are common prefix, segments after the last are common suffix.
+            const segments = content.split(';').map(s => s);
+            const keyIndices: number[] = [];
+            segments.forEach((seg, i) => { if (seg.includes('@')) keyIndices.push(i); });
+
+            let commonPrefix: string | undefined;
+            let commonSuffix: string | undefined;
+            const references: { key: string; prefix?: string; suffix?: string }[] = [];
             const keys: string[] = [];
-            const keyMatches = content.matchAll(/@([a-zA-Z0-9_:-]+)/g);
-            for (const keyMatch of keyMatches) {
-                keys.push(keyMatch[1]);
+
+            if (keyIndices.length === 0) {
+                // No '@' found - treat content as a single bare key (lenient fallback).
+                const trimmed = content.trim();
+                if (trimmed) {
+                    references.push({ key: trimmed });
+                    keys.push(trimmed);
+                }
+            } else {
+                const firstKeyIdx = keyIndices[0];
+                const lastKeyIdx = keyIndices[keyIndices.length - 1];
+                if (firstKeyIdx > 0) {
+                    commonPrefix = segments.slice(0, firstKeyIdx).join(';').trim() || undefined;
+                }
+                if (lastKeyIdx < segments.length - 1) {
+                    commonSuffix = segments.slice(lastKeyIdx + 1).join(';').trim() || undefined;
+                }
+                for (const i of keyIndices) {
+                    const seg = segments[i];
+                    const keyMatch = seg.match(/@([a-zA-Z0-9_][a-zA-Z0-9_.:/+-]*)/);
+                    if (!keyMatch) continue;
+                    const key = keyMatch[1];
+                    const at = seg.indexOf(keyMatch[0]);
+                    const pre = seg.slice(0, at).trim() || undefined;
+                    const post = seg.slice(at + keyMatch[0].length).trim() || undefined;
+                    references.push({ key, prefix: pre, suffix: post });
+                    keys.push(key);
+                }
             }
 
             return {
@@ -569,10 +618,12 @@ export function parseObjectsFast(text: string): OrgObject[] {
                 range: { start: m.index!, end: m.index! + m[0].length },
                 postBlank: 0,
                 properties: {
-                    style: style || 'default',
-                    prefix: undefined,  // Could parse prefix before first @
-                    suffix: undefined,  // Could parse suffix after last key
+                    style,
+                    variants,
+                    prefix: commonPrefix,
+                    suffix: commonSuffix,
                     keys,
+                    references,
                     rawValue: m[0],
                 },
             };

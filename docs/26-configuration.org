@@ -634,6 +634,7 @@ Configure LaTeX and PDF export options.
 | scimax.export.latex.documentClass   | string | "article"         | Default document class           |
 | scimax.export.latex.classOptions    | string | "12pt,letterpaper"| Default class options            |
 | scimax.export.latex.defaultPreamble | string | (see below)       | Default LaTeX packages           |
+| scimax.export.latex.citeBackend     | string | "bibtex"          | Org-cite backend (bibtex/biblatex) |
 
 *** scimax.export.latex.customHeader
 
@@ -684,6 +685,30 @@ Configure LaTeX and PDF export options.
 #+begin_src json
 {
   "scimax.export.latex.defaultPreamble": "\\usepackage[utf8]{inputenc}\n\\usepackage{graphicx}\n\\usepackage{amsmath}"
+}
+#+end_src
+
+*** ⚠️ scimax.export.latex.citeBackend
+
+- *Type*: string (enum)
+- *Default*: `"bibtex"'
+- *Options*: `"bibtex"', `"biblatex"'
+- *Description*: Backend used when translating org-cite citations
+  (=[cite/STYLE/VARIANTS:@key]=) into LaTeX.
+  - =bibtex= (default): emits =natbib= commands -- =\citep=, =\citet=,
+    =\citealp=, =\Citet=, etc. Use with the standard bibtex/natbib stack.
+  - =biblatex=: emits biblatex commands -- =\autocite=, =\textcite=,
+    =\Autocite=, =\fullcite=, etc. Requires =\usepackage{biblatex}= and
+    biber.
+
+A per-document override is also supported via =#+cite_export: bibtex= or
+=#+cite_export: biblatex=. See [[file:10-export.org][Export]] for the full
+style/variant → command mapping table.
+
+*Example*:
+#+begin_src json
+{
+  "scimax.export.latex.citeBackend": "biblatex"
 }
 #+end_src
 

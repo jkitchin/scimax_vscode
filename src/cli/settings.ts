@@ -45,6 +45,7 @@ export interface ExportSettings {
         classOptions: string;
         customHeader: string;
         defaultPreamble: string;
+        citeBackend: string;
     };
     pdf: {
         compiler: string;
@@ -297,6 +298,7 @@ export function loadSettings(): ScimaxSettings {
                 classOptions: getSetting<string>(settings, 'scimax.export.latex.classOptions', '12pt,letterpaper'),
                 customHeader: getSetting<string>(settings, 'scimax.export.latex.customHeader', ''),
                 defaultPreamble: getSetting<string>(settings, 'scimax.export.latex.defaultPreamble', DEFAULT_LATEX_PREAMBLE),
+                citeBackend: getSetting<string>(settings, 'scimax.export.latex.citeBackend', 'bibtex'),
             },
             pdf: {
                 compiler: getSetting<string>(settings, 'scimax.export.pdf.compiler', 'latexmk-lualatex'),

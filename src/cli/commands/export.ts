@@ -140,6 +140,7 @@ export async function exportCommand(config: CliConfig, args: ParsedArgs): Promis
                 classOptions: parseClassOptions(settings.export.latex.classOptions),
                 preamble: settings.export.latex.defaultPreamble,
                 customHeader: settings.export.latex.customHeader,
+                citeBackend: settings.export.latex.citeBackend === 'biblatex' ? 'biblatex' : 'bibtex',
             });
             defaultExt = '.tex';
             break;
@@ -151,6 +152,7 @@ export async function exportCommand(config: CliConfig, args: ParsedArgs): Promis
                 classOptions: parseClassOptions(settings.export.latex.classOptions),
                 preamble: settings.export.latex.defaultPreamble,
                 customHeader: settings.export.latex.customHeader,
+                citeBackend: settings.export.latex.citeBackend === 'biblatex' ? 'biblatex' : 'bibtex',
             });
             defaultExt = '.pdf';
             output = await compilePdf(latex, inputPath, outputPath, settings.export, json);
