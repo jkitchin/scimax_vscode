@@ -31,6 +31,7 @@ import { registerBuiltinFollowHandlers } from './adapters/linkFollowAdapter';
 import { registerSemanticTokenProvider } from './highlighting/semanticTokenProvider';
 import { registerFoldingProvider } from './highlighting/foldingProvider';
 import { registerBlockDecorations } from './highlighting/blockDecorations';
+import { registerCommandMarkupDecorations } from './highlighting/commandMarkupDecoration';
 import { registerCheckboxFeatures } from './markdown/checkboxProvider';
 import { registerMarkdownExportCommands } from './markdown/markdownExportCommands';
 import { registerTaskCommands } from './markdown/taskCommands';
@@ -425,6 +426,9 @@ export async function activate(context: vscode.ExtensionContext) {
 
     // Register Block Decorations (background colors for src blocks, etc.)
     registerBlockDecorations(context);
+
+    // Register Emacs-style `command' markup decorations (theme-independent)
+    registerCommandMarkupDecorations(context);
 
     // Register Markdown Checkbox Features
     registerCheckboxFeatures(context);

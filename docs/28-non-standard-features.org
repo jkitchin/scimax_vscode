@@ -83,13 +83,34 @@ CLOSED: [2026-01-16 Fri 11:16]
 
 See [[file:19-references.org][References]] for full documentation.
 
-* ✅ Emacs-style Command Markup
+* 👀 Emacs-style Command Markup
 CLOSED: [2026-01-16 Fri 11:17]
 
 The command markup syntax `command' (backtick  text  single quote) is used
 in Emacs documentation to reference commands, functions, and key sequences.
 
-This renders with dark red highlighting in the editor (with the Leuven theme).
+This renders with dark red highlighting in every theme via a decoration
+provider (so it is no longer Leuven-only). The colors are exposed as
+~scimax.commandMarkupForeground~ and ~scimax.commandMarkupDelimiterForeground~
+and can be customized via ~workbench.colorCustomizations~.
+
+** 👀 Hover Tooltip
+:PROPERTIES:
+:CUSTOM_ID: command-markup-hover
+:END:
+
+Hovering over command markup shows context-sensitive information:
+
+- *Command IDs* (text matching ~namespace.action~, e.g. `scimax.org.cycleTodo'):
+  shows the command title, category, and any keybindings bound to it.
+- *Key sequences* (Emacs-style like `C-c C-c' or VS Code-style like `ctrl+enter'):
+  shows the scimax command(s) bound to that key, including ~when~ clauses.
+- *Other text*: shown as plain command markup with no lookup.
+
+Lookups use the same in-memory tables as the help system (~C-h k~, ~C-h f~),
+which are built from this extension's ~package.json~. Bare VS Code commands
+or third-party extension commands are not in that table and will display
+without a title or binding.
 
 ** ✅ Keybinding
 CLOSED: [2026-01-16 Fri 11:17]

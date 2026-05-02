@@ -567,6 +567,24 @@
           "light": "#E8D0D0",
           "highContrast": "#B0721430"
         }
+      },
+      {
+        "id": "scimax.commandMarkupForeground",
+        "description": "Foreground color for Emacs-style `command' markup content",
+        "defaults": {
+          "dark": "#FF8888",
+          "light": "#8B0000",
+          "highContrast": "#FF6B6B"
+        }
+      },
+      {
+        "id": "scimax.commandMarkupDelimiterForeground",
+        "description": "Foreground color for the backtick/quote delimiters of Emacs-style command markup",
+        "defaults": {
+          "dark": "#B07070",
+          "light": "#CD5C5C",
+          "highContrast": "#CD5C5C"
+        }
       }
     ],
     "snippets": [

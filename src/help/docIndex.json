@@ -1,6 +1,6 @@
 {
-  "buildDate": "2026-04-30T12:20:22.850Z",
-  "count": 3364,
+  "buildDate": "2026-05-02T19:37:36.614Z",
+  "count": 3371,
   "entries": [
     {
       "heading": "Scimax VS Code",
@@ -27651,10 +27651,155 @@
       ]
     },
     {
-      "heading": "HTML Citation Export",
+      "heading": "Org-cite Citations =[cite/STYLE/VARIANTS:@key]=",
       "level": 3,
       "file": "10-export.org",
       "line": 978,
+      "content": "Org-cite citations are translated to LaTeX through a configurable backend. The default backend, =bibtex=, emits =natbib= commands; the =biblatex= backend emits the corresponding =biblatex= commands. Choose a backend with the setting =scimax.export.latex.citeBackend= (values =bibtex= or =biblatex=) or per-document with: #+BEGIN_SRC org #+cite_export: bibtex ,#+cite_export: biblatex #+END_SRC Both the short and long org-cite spellings are accepted (=t= = =text=, =a= = =author=, =na= = =noauthor=, ",
+      "path": [
+        "LaTeX Export Options",
+        "Bibliography Support"
+      ],
+      "commands": [
+        "scimax.export.latex.citeBackend"
+      ],
+      "keybindings": [],
+      "keywords": [
+        "org-cite",
+        "citations",
+        "citestylevariantskey",
+        "translated",
+        "latex",
+        "through",
+        "configurable",
+        "backend",
+        "default",
+        "bibtex",
+        "emits",
+        "natbib",
+        "commands",
+        "biblatex",
+        "corresponding",
+        "choose",
+        "setting",
+        "values",
+        "per-document",
+        "beginsrc"
+      ]
+    },
+    {
+      "heading": "Style → command mapping (=bibtex= backend, default)",
+      "level": 4,
+      "file": "10-export.org",
+      "line": 997,
+      "content": "| Org-cite                  | LaTeX command   | |---------------------------+-----------------| | =[cite:@k]=               | =\\citep{k}=     | | =[cite//c:@k]=            | =\\Citep{k}=     | | =[cite//b:@k]=            | =\\citealp{k}=   | | =[cite//bc:@k]=           | =\\Citealp{k}=   | | =[cite/t:@k]=             | =\\citet{k}=     | | =[cite/t/c:@k]=           | =\\Citet{k}=     | | =[cite/t/b:@k]=           | =\\citealt{k}=   | | =[cite/t/bc:@k]=          | =\\Citealt{k}=   | | =[cite/a:@k]=     ",
+      "path": [
+        "LaTeX Export Options",
+        "Bibliography Support",
+        "Org-cite Citations =[cite/STYLE/VARIANTS:@key]="
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "style",
+        "command",
+        "mapping",
+        "bibtex",
+        "backend",
+        "default",
+        "org-cite",
+        "latex",
+        "--------------------------------------------",
+        "citek",
+        "citep",
+        "citeck",
+        "citebk",
+        "citealp",
+        "citebck",
+        "citetk",
+        "citet",
+        "citetck",
+        "citetbk",
+        "citealt"
+      ]
+    },
+    {
+      "heading": "Style → command mapping (=biblatex= backend)",
+      "level": 4,
+      "file": "10-export.org",
+      "line": 1017,
+      "content": "| Org-cite                  | LaTeX command   | |---------------------------+-----------------| | =[cite:@k]=               | =\\autocite{k}=  | | =[cite//c:@k]=            | =\\Autocite{k}=  | | =[cite//b:@k]=            | =\\cite{k}=      | | =[cite/t:@k]=             | =\\textcite{k}=  | | =[cite/t/c:@k]=           | =\\Textcite{k}=  | | =[cite/a:@k]=             | =\\citeauthor{k}=| | =[cite/a/c:@k]=           | =\\Citeauthor{k}=| | =[cite/na:@k]=            | =\\autocite*{k}= | | =[cite/y:@k]=     ",
+      "path": [
+        "LaTeX Export Options",
+        "Bibliography Support",
+        "Org-cite Citations =[cite/STYLE/VARIANTS:@key]="
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "style",
+        "command",
+        "mapping",
+        "biblatex",
+        "backend",
+        "org-cite",
+        "latex",
+        "--------------------------------------------",
+        "citek",
+        "autocite",
+        "citeck",
+        "citebk",
+        "cite",
+        "citetk",
+        "textcite",
+        "citetck",
+        "citeak",
+        "citeauthor",
+        "citeack",
+        "citenak"
+      ]
+    },
+    {
+      "heading": "Per-key prefix and suffix",
+      "level": 4,
+      "file": "10-export.org",
+      "line": 1034,
+      "content": "For *single-key* citations the per-key prefix and suffix are emitted as natbib's =[pre][post]{key}= bracketed arguments: | Org-cite                  | LaTeX command            | |---------------------------+--------------------------| | =[cite:@k p. 5]=          | =\\citep[p. 5]{k}=        | | =[cite:see @k p. 5]=      | =\\citep[see][p. 5]{k}=   | Multi-key citations always emit a single =\\citep{k1,k2,...}= form (per-key notes have no clean LaTeX analogue).",
+      "path": [
+        "LaTeX Export Options",
+        "Bibliography Support",
+        "Org-cite Citations =[cite/STYLE/VARIANTS:@key]="
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "per-key",
+        "prefix",
+        "suffix",
+        "single-key",
+        "citations",
+        "emitted",
+        "natbib",
+        "pre",
+        "post",
+        "key",
+        "bracketed",
+        "arguments",
+        "org-cite",
+        "latex",
+        "command",
+        "-----------------------------------------------------",
+        "citek",
+        "citep",
+        "citesee",
+        "multi-key"
+      ]
+    },
+    {
+      "heading": "HTML Citation Export",
+      "level": 3,
+      "file": "10-export.org",
+      "line": 1047,
       "content": "HTML export includes full citation processing using citation-js, which formats citations according to standard citation styles (CSL).",
       "path": [
         "LaTeX Export Options",
@@ -27682,7 +27827,7 @@
       "heading": "Supported Citation Formats",
       "level": 4,
       "file": "10-export.org",
-      "line": 982,
+      "line": 1051,
       "content": "The following citation link types are supported in HTML export: | Link Type        | Example              | Output Style                    | |------------------+----------------------+---------------------------------| | =cite:=          | =cite:knuth1984=     | Parenthetical (Smith, 2020)     | | =citep:=         | =citep:knuth1984=    | Parenthetical (Smith, 2020)     | | =citet:=         | =citet:knuth1984=    | Textual: Smith (2020)           | | =citeauthor:=    | =citeauthor:knuth1984= | ",
       "path": [
         "LaTeX Export Options",
@@ -27718,7 +27863,7 @@
       "heading": "Specifying Bibliography Files",
       "level": 4,
       "file": "10-export.org",
-      "line": 995,
+      "line": 1064,
       "content": "To include citations in HTML export, specify your bibliography file(s): #+BEGIN_SRC org #+BIBLIOGRAPHY: references.bib Or use a bibliography link: [[bibliography:~/path/to/references.bib]] #+END_SRC The export system automatically: 1. Finds all =#+BIBLIOGRAPHY:= keywords and =[[bibliography:...]]= links 2. Loads the BibTeX entries from those files 3. Formats citations according to the selected style 4. Generates a bibliography section at the end of the document",
       "path": [
         "LaTeX Export Options",
@@ -27754,7 +27899,7 @@
       "heading": "Citation Styles",
       "level": 4,
       "file": "10-export.org",
-      "line": 1012,
+      "line": 1081,
       "content": "The default citation style is APA. You can change it with the =#+CSL_STYLE:= keyword: #+BEGIN_SRC org #+CSL_STYLE: apa #+END_SRC Available built-in styles: | Style        | Description                              | |--------------+------------------------------------------| | =apa=        | American Psychological Association (default) | | =mla=        | Modern Language Association              | | =chicago=    | Chicago Manual of Style                  | | =harvard=    | Harvard referencing    ",
       "path": [
         "LaTeX Export Options",
@@ -27790,7 +27935,7 @@
       "heading": "Example Document with Citations",
       "level": 4,
       "file": "10-export.org",
-      "line": 1030,
+      "line": 1099,
       "content": "#+BEGIN_SRC org #+TITLE: My Research Paper #+AUTHOR: Jane Doe #+BIBLIOGRAPHY: references.bib #+CSL_STYLE: apa ,* Introduction Recent advances in machine learning cite:lecun2015 have enabled remarkable progress in computer vision. According to citet:krizhevsky2012, deep convolutional networks outperform traditional methods. ,* Methods We follow the approach of citep:he2016,simonyan2014 for our experiments. #+END_SRC",
       "path": [
         "LaTeX Export Options",
@@ -27826,7 +27971,7 @@
       "heading": "Bibliography Output",
       "level": 4,
       "file": "10-export.org",
-      "line": 1049,
+      "line": 1118,
       "content": "The bibliography section is automatically generated at the end of the HTML document with: - A \"References\" heading (customizable) - Properly formatted entries according to the CSL style - Hanging indent formatting for readability",
       "path": [
         "LaTeX Export Options",
@@ -27862,7 +28007,7 @@
       "heading": "Missing Citations",
       "level": 4,
       "file": "10-export.org",
-      "line": 1056,
+      "line": 1125,
       "content": "If a citation key is not found in the bibliography: - The citation appears with a \"missing\" CSS class - It renders as =[missing: key]= in red italic text - Check your =.bib= file for the correct key spelling",
       "path": [
         "LaTeX Export Options",
@@ -27895,7 +28040,7 @@
       "heading": "Configuring Citation Defaults",
       "level": 4,
       "file": "10-export.org",
-      "line": 1063,
+      "line": 1132,
       "content": "You can configure default citation behavior in VS Code settings: #+BEGIN_SRC json { \"scimax.references.defaultCiteStyle\": \"citep\" } #+END_SRC Options: =cite=, =citep=, =citet=, =citeauthor=, =citeyear=",
       "path": [
         "LaTeX Export Options",
@@ -27930,7 +28075,7 @@
       "heading": "Advanced LaTeX Features",
       "level": 2,
       "file": "10-export.org",
-      "line": 1075,
+      "line": 1144,
       "content": "",
       "path": [
         "LaTeX Export Options"
@@ -27947,7 +28092,7 @@
       "heading": "Custom Environments",
       "level": 3,
       "file": "10-export.org",
-      "line": 1077,
+      "line": 1146,
       "content": "Use `#+BEGIN_LATEX' blocks for raw LaTeX: #+BEGIN_SRC org #+BEGIN_LATEX \\begin{theorem}[Pythagorean Theorem] For a right triangle with legs $a$ and $b$ and hypotenuse $c$: \\[a^2 + b^2 = c^2\\] \\end{theorem} #+END_LATEX #+END_SRC",
       "path": [
         "LaTeX Export Options",
@@ -27980,7 +28125,7 @@
       "heading": "Special Blocks",
       "level": 3,
       "file": "10-export.org",
-      "line": 1090,
+      "line": 1159,
       "content": "Special blocks map to LaTeX environments: #+BEGIN_SRC org #+BEGIN_abstract This paper presents a novel approach... #+END_abstract #+BEGIN_theorem If $P$, then $Q$. #+END_theorem #+BEGIN_proof Assume $P$. Then... #+END_proof #+END_SRC",
       "path": [
         "LaTeX Export Options",
@@ -28014,7 +28159,7 @@
       "heading": "Math Environments",
       "level": 3,
       "file": "10-export.org",
-      "line": 1108,
+      "line": 1177,
       "content": "LaTeX math environments work directly: #+BEGIN_SRC org \\begin{equation} E = mc^2 \\label{eq:einstein} \\end{equation} \\begin{align} x &= a + b \\\\ y &= c + d \\end{align} #+END_SRC",
       "path": [
         "LaTeX Export Options",
@@ -28044,7 +28189,7 @@
       "heading": "PDF Export Configuration",
       "level": 1,
       "file": "10-export.org",
-      "line": 1124,
+      "line": 1193,
       "content": "",
       "path": [],
       "commands": [],
@@ -28059,7 +28204,7 @@
       "heading": "Compiler Selection",
       "level": 2,
       "file": "10-export.org",
-      "line": 1126,
+      "line": 1195,
       "content": "Set the LaTeX compiler in VS Code settings:",
       "path": [
         "PDF Export Configuration"
@@ -28079,7 +28224,7 @@
       "heading": "pdflatex (default)",
       "level": 3,
       "file": "10-export.org",
-      "line": 1130,
+      "line": 1199,
       "content": "- Fast compilation - Wide compatibility - Standard LaTeX packages - ASCII and Latin-1 support Configuration: #+BEGIN_SRC json { \"scimax.latexLivePreview.compiler\": \"pdflatex\" } #+END_SRC",
       "path": [
         "PDF Export Configuration",
@@ -28112,7 +28257,7 @@
       "heading": "xelatex",
       "level": 3,
       "file": "10-export.org",
-      "line": 1143,
+      "line": 1212,
       "content": "- Unicode support (UTF-8) - System fonts (TrueType, OpenType) - Modern typography - Required for non-Latin scripts Configuration: #+BEGIN_SRC json { \"scimax.latexLivePreview.compiler\": \"xelatex\" } #+END_SRC Example with system fonts: #+BEGIN_SRC org #+LATEX_HEADER: \\usepackage{fontspec} #+LATEX_HEADER: \\setmainfont{Libertinus Serif} #+LATEX_HEADER: \\setmonofont{Fira Code} #+END_SRC",
       "path": [
         "PDF Export Configuration",
@@ -28149,7 +28294,7 @@
       "heading": "lualatex",
       "level": 3,
       "file": "10-export.org",
-      "line": 1163,
+      "line": 1232,
       "content": "- Unicode support - Lua scripting in LaTeX - Advanced typography - Memory-efficient for large documents Configuration: #+BEGIN_SRC json { \"scimax.latexLivePreview.compiler\": \"lualatex\" } #+END_SRC",
       "path": [
         "PDF Export Configuration",
@@ -28181,7 +28326,7 @@
       "heading": "latexmk Configuration",
       "level": 2,
       "file": "10-export.org",
-      "line": 1176,
+      "line": 1245,
       "content": "The export system uses `latexmk' for reliable compilation:",
       "path": [
         "PDF Export Configuration"
@@ -28202,7 +28347,7 @@
       "heading": "Benefits",
       "level": 3,
       "file": "10-export.org",
-      "line": 1180,
+      "line": 1249,
       "content": "- Automatic multiple passes (for TOC, references, etc.) - Bibliography processing (BibTeX/Biber) - Dependency tracking - Incremental builds",
       "path": [
         "PDF Export Configuration",
@@ -28231,7 +28376,7 @@
       "heading": "Configuration File",
       "level": 3,
       "file": "10-export.org",
-      "line": 1186,
+      "line": 1255,
       "content": "Create `.latexmkrc' in your project directory: #+BEGIN_SRC perl # Use pdflatex $pdf_mode = 1; # Clean auxiliary files $clean_ext = \"synctex.gz synctex.gz(busy) run.xml\"; # Custom compiler options $pdflatex = 'pdflatex -interaction=nonstopmode -shell-escape %O %S'; #+END_SRC",
       "path": [
         "PDF Export Configuration",
@@ -28266,7 +28411,7 @@
       "heading": "Disabling latexmk",
       "level": 3,
       "file": "10-export.org",
-      "line": 1201,
+      "line": 1270,
       "content": "If you prefer direct compiler invocation: #+BEGIN_SRC json { \"scimax.latexLivePreview.useLatexmk\": false } #+END_SRC",
       "path": [
         "PDF Export Configuration",
@@ -28293,7 +28438,7 @@
       "heading": "Build Automation",
       "level": 2,
       "file": "10-export.org",
-      "line": 1210,
+      "line": 1279,
       "content": "",
       "path": [
         "PDF Export Configuration"
@@ -28309,7 +28454,7 @@
       "heading": "Build on Save",
       "level": 3,
       "file": "10-export.org",
-      "line": 1212,
+      "line": 1281,
       "content": "Automatically rebuild PDF when saving: #+BEGIN_SRC json { \"scimax.latexLivePreview.buildOnSave\": true } #+END_SRC",
       "path": [
         "PDF Export Configuration",
@@ -28336,7 +28481,7 @@
       "heading": "Build on Idle",
       "level": 3,
       "file": "10-export.org",
-      "line": 1221,
+      "line": 1290,
       "content": "Build after idle period (useful for live preview): #+BEGIN_SRC json { \"scimax.latexLivePreview.buildOnIdle\": true, \"scimax.latexLivePreview.idleDelay\": 2000 } #+END_SRC",
       "path": [
         "PDF Export Configuration",
@@ -28366,7 +28511,7 @@
       "heading": "SyncTeX Integration",
       "level": 2,
       "file": "10-export.org",
-      "line": 1231,
+      "line": 1300,
       "content": "SyncTeX enables bidirectional sync between source and PDF:",
       "path": [
         "PDF Export Configuration"
@@ -28388,7 +28533,7 @@
       "heading": "Forward Sync (Source → PDF)",
       "level": 3,
       "file": "10-export.org",
-      "line": 1235,
+      "line": 1304,
       "content": "1. Place cursor in org file 2. Press `C-c C-e l s' 3. PDF viewer jumps to corresponding location",
       "path": [
         "PDF Export Configuration",
@@ -28419,7 +28564,7 @@
       "heading": "Reverse Sync (PDF → Source)",
       "level": 3,
       "file": "10-export.org",
-      "line": 1240,
+      "line": 1309,
       "content": "C-click in PDF viewer (if supported) to jump to source line.",
       "path": [
         "PDF Export Configuration",
@@ -28445,7 +28590,7 @@
       "heading": "Markdown Export Details",
       "level": 1,
       "file": "10-export.org",
-      "line": 1243,
+      "line": 1312,
       "content": "",
       "path": [],
       "commands": [],
@@ -28460,7 +28605,7 @@
       "heading": "GitHub-Flavored Markdown (GFM)",
       "level": 2,
       "file": "10-export.org",
-      "line": 1245,
+      "line": 1314,
       "content": "The Markdown export follows GitHub's flavor for maximum compatibility.",
       "path": [
         "Markdown Export Details"
@@ -28483,7 +28628,7 @@
       "heading": "Supported Elements",
       "level": 2,
       "file": "10-export.org",
-      "line": 1249,
+      "line": 1318,
       "content": "",
       "path": [
         "Markdown Export Details"
@@ -28499,7 +28644,7 @@
       "heading": "Headings",
       "level": 3,
       "file": "10-export.org",
-      "line": 1251,
+      "line": 1320,
       "content": "#+BEGIN_SRC org ,* Level 1      →  # Level 1 ,** Level 2     →  ## Level 2 ,*** Level 3    →  ### Level 3 #+END_SRC",
       "path": [
         "Markdown Export Details",
@@ -28519,7 +28664,7 @@
       "heading": "Text Formatting",
       "level": 3,
       "file": "10-export.org",
-      "line": 1258,
+      "line": 1327,
       "content": "#+BEGIN_SRC org *bold*          →  **bold** /italic/        →  *italic* _underline_     →  _underline_ +strikethrough+ →  ~~strikethrough~~ =code=          →  `code` ~verbatim~      →  `verbatim` #+END_SRC",
       "path": [
         "Markdown Export Details",
@@ -28545,7 +28690,7 @@
       "heading": "Lists",
       "level": 3,
       "file": "10-export.org",
-      "line": 1268,
+      "line": 1337,
       "content": "*Unordered:* #+BEGIN_SRC org - Item 1 - Item 2 - Nested #+END_SRC *Ordered:* #+BEGIN_SRC org 1. First 2. Second 3. Third #+END_SRC",
       "path": [
         "Markdown Export Details",
@@ -28571,7 +28716,7 @@
       "heading": "Code Blocks",
       "level": 3,
       "file": "10-export.org",
-      "line": 1284,
+      "line": 1353,
       "content": "#+BEGIN_SRC org #+BEGIN_SRC python def hello(): print(\"Hello\") #+END_SRC #+END_SRC Exports to: #+BEGIN_SRC markdown ```python def hello(): print(\"Hello\") ``` #+END_SRC",
       "path": [
         "Markdown Export Details",
@@ -28597,7 +28742,7 @@
       "heading": "Tables",
       "level": 3,
       "file": "10-export.org",
-      "line": 1301,
+      "line": 1370,
       "content": "#+BEGIN_SRC org | Name  | Age | City       | |-------+-----+------------| | Alice |  30 | New York   | | Bob   |  25 | London     | #+END_SRC Exports to: #+BEGIN_SRC markdown | Name  | Age | City       | | ---   | --- | ---        | | Alice | 30  | New York   | | Bob   | 25  | London     | #+END_SRC",
       "path": [
         "Markdown Export Details",
@@ -28628,7 +28773,7 @@
       "heading": "Links",
       "level": 3,
       "file": "10-export.org",
-      "line": 1318,
+      "line": 1387,
       "content": "#+BEGIN_SRC org [[https://example.com][Example Site]]  →  [Example Site](https://example.com) [[file:image.png]]                     →  [image.png](image.png) #+END_SRC",
       "path": [
         "Markdown Export Details",
@@ -28652,7 +28797,7 @@
       "heading": "Images",
       "level": 3,
       "file": "10-export.org",
-      "line": 1325,
+      "line": 1394,
       "content": "#+BEGIN_SRC org [[file:diagram.png]]  →  ![](diagram.png) #+END_SRC",
       "path": [
         "Markdown Export Details",
@@ -28673,7 +28818,7 @@
       "heading": "Metadata Handling",
       "level": 2,
       "file": "10-export.org",
-      "line": 1331,
+      "line": 1400,
       "content": "Document metadata is converted: #+BEGIN_SRC org #+TITLE: My Document #+AUTHOR: Jane Doe #+DATE: 2024-01-15 #+END_SRC Becomes: #+BEGIN_SRC markdown # My Document *Jane Doe* 2024-01-15 #+END_SRC",
       "path": [
         "Markdown Export Details"
@@ -28702,7 +28847,7 @@
       "heading": "Export Options Reference",
       "level": 1,
       "file": "10-export.org",
-      "line": 1349,
+      "line": 1418,
       "content": "",
       "path": [],
       "commands": [],
@@ -28717,7 +28862,7 @@
       "heading": "#+OPTIONS Keyword",
       "level": 2,
       "file": "10-export.org",
-      "line": 1351,
+      "line": 1420,
       "content": "The `#+OPTIONS' keyword controls various export behaviors:",
       "path": [
         "Export Options Reference"
@@ -28737,7 +28882,7 @@
       "heading": "Syntax",
       "level": 3,
       "file": "10-export.org",
-      "line": 1355,
+      "line": 1424,
       "content": "#+BEGIN_SRC org #+OPTIONS: key1:value1 key2:value2 ... #+END_SRC",
       "path": [
         "Export Options Reference",
@@ -28759,7 +28904,7 @@
       "heading": "Complete OPTIONS Reference",
       "level": 3,
       "file": "10-export.org",
-      "line": 1360,
+      "line": 1429,
       "content": "CLOSED: [2026-01-24 Sat 17:34] | Option       | Values             | Default | Description                               | |--------------+--------------------+---------+-------------------------------------------| | toc          | t, nil, N          | nil     | Table of contents (N  depth)              | | num          | t, nil, N          | t       | Section numbering (N  depth)              | | H            | N                  | 0       | Headline levels to export (0  all)        | | author ",
       "path": [
         "Export Options Reference",
@@ -28794,7 +28939,7 @@
       "heading": "Examples",
       "level": 3,
       "file": "10-export.org",
-      "line": 1386,
+      "line": 1455,
       "content": "*Full configuration:* #+BEGIN_SRC org #+OPTIONS: toc:3 num:t H:4 author:t date:t tags:nil todo:nil #+END_SRC *Minimal export (no metadata):* #+BEGIN_SRC org #+OPTIONS: toc:nil num:nil author:nil date:nil tags:nil todo:nil pri:nil #+END_SRC *Academic paper:* #+BEGIN_SRC org #+OPTIONS: toc:t num:t H:3 ^:{} author:t date:t email:t #+END_SRC *Include all drawers:* #+BEGIN_SRC org #+OPTIONS: d:t c:t p:t #+END_SRC *Include only specific drawers:* #+BEGIN_SRC org #+OPTIONS: d:(\"LOGBOOK\" \"NOTES\") #+END_",
       "path": [
         "Export Options Reference",
@@ -28829,7 +28974,7 @@
       "heading": "Subscripts and Superscripts",
       "level": 3,
       "file": "10-export.org",
-      "line": 1418,
+      "line": 1487,
       "content": "The =^= option controls how =_= and =^= are interpreted in body text: | Value | Behavior                                                      | |-------+---------------------------------------------------------------| | ={}=  | (default) Only braced forms render: =a_{b}= → subscript, =a_b= → literal | | =t=   | Both forms render: =a_{b}= and =a_b= both produce a subscript | | =nil= | Never render as sub/superscripts; both forms stay literal     | The default was changed from =t= to ={}= because ",
       "path": [
         "Export Options Reference",
@@ -28864,7 +29009,7 @@
       "heading": "Document Keywords",
       "level": 2,
       "file": "10-export.org",
-      "line": 1444,
+      "line": 1513,
       "content": "",
       "path": [
         "Export Options Reference"
@@ -28880,7 +29025,7 @@
       "heading": "Required Keywords",
       "level": 3,
       "file": "10-export.org",
-      "line": 1446,
+      "line": 1515,
       "content": "#+BEGIN_SRC org #+TITLE: Document Title #+AUTHOR: Your Name #+DATE: 2024-01-15 #+EMAIL: you@example.com #+LANGUAGE: en #+END_SRC Note: =#+EMAIL= is only included in output when =email:t= is set in OPTIONS.",
       "path": [
         "Export Options Reference",
@@ -28915,7 +29060,7 @@
       "heading": "HTML-Specific Keywords",
       "level": 3,
       "file": "10-export.org",
-      "line": 1458,
+      "line": 1527,
       "content": "#+BEGIN_SRC org #+HTML_HEAD: <style>body { font-family: sans-serif; }</style> #+HTML_HEAD_EXTRA: <meta name=\"keywords\" content=\"research, science\" /> #+HTML_LINK_HOME: index.html #+HTML_LINK_UP: ../index.html #+END_SRC",
       "path": [
         "Export Options Reference",
@@ -28949,7 +29094,7 @@
       "heading": "LaTeX-Specific Keywords",
       "level": 3,
       "file": "10-export.org",
-      "line": 1467,
+      "line": 1536,
       "content": "#+BEGIN_SRC org #+LATEX_CLASS: article #+LATEX_CLASS_OPTIONS: [11pt,a4paper] #+LATEX_HEADER: \\usepackage{geometry} #+LATEX_HEADER: \\geometry{margin=1in} #+LATEX_COMPILER: pdflatex #+END_SRC",
       "path": [
         "Export Options Reference",
@@ -28980,7 +29125,7 @@
       "heading": "Export Settings Keywords",
       "level": 3,
       "file": "10-export.org",
-      "line": 1477,
+      "line": 1546,
       "content": "CLOSED: [2026-01-24 Sat 17:35]",
       "path": [
         "Export Options Reference",
@@ -29002,7 +29147,7 @@
       "heading": "EXPORT_FILE_NAME",
       "level": 4,
       "file": "10-export.org",
-      "line": 1480,
+      "line": 1549,
       "content": "Override the output file name: #+BEGIN_SRC org #+EXPORT_FILE_NAME: custom-output-name #+END_SRC - If set to =custom-output-name=, exporting to HTML produces =custom-output-name.html= - The extension is automatically appended based on export format - If the keyword already includes the correct extension, it's used as-is - Paths are relative to the org file's directory Example: #+BEGIN_SRC org #+TITLE: My Report #+EXPORT_FILE_NAME: final-report-v2 ,* Content here... #+END_SRC Exporting to PDF prod",
       "path": [
         "Export Options Reference",
@@ -29038,7 +29183,7 @@
       "heading": "EXCLUDE_TAGS",
       "level": 4,
       "file": "10-export.org",
-      "line": 1503,
+      "line": 1572,
       "content": "Exclude headlines with specific tags from export: #+BEGIN_SRC org #+EXCLUDE_TAGS: noexport private draft #+END_SRC - Space-separated list of tags - =noexport= is always excluded by default (even if not specified) - Headlines with any of these tags (and their children) are omitted - Useful for keeping internal notes, drafts, or private content",
       "path": [
         "Export Options Reference",
@@ -29074,7 +29219,7 @@
       "heading": "SELECT_TAGS",
       "level": 4,
       "file": "10-export.org",
-      "line": 1516,
+      "line": 1585,
       "content": "Export *only* headlines with specific tags: #+BEGIN_SRC org #+SELECT_TAGS: export publish #+END_SRC - When set, only headlines with at least one of these tags are exported - Headlines without a select tag are excluded (unless a child has one) - Overrides normal export behavior for selective publishing Example workflow: #+BEGIN_SRC org #+SELECT_TAGS: publish #+EXCLUDE_TAGS: noexport ,* Internal Notes                                    :noexport: Not exported (excluded). ,* Introduction Not export",
       "path": [
         "Export Options Reference",
@@ -29110,7 +29255,7 @@
       "heading": "Configuration Settings",
       "level": 1,
       "file": "10-export.org",
-      "line": 1546,
+      "line": 1615,
       "content": "",
       "path": [],
       "commands": [],
@@ -29124,7 +29269,7 @@
       "heading": "Export Settings Location",
       "level": 2,
       "file": "10-export.org",
-      "line": 1548,
+      "line": 1617,
       "content": "All export settings are in VS Code preferences: 1. `C-,' (`s-,' on Mac) to open Settings 2. Search for \"scimax export\" or \"scimax latex\" 3. Modify settings as needed",
       "path": [
         "Configuration Settings"
@@ -29150,7 +29295,7 @@
       "heading": "LaTeX Export Configuration",
       "level": 2,
       "file": "10-export.org",
-      "line": 1555,
+      "line": 1624,
       "content": "",
       "path": [
         "Configuration Settings"
@@ -29167,7 +29312,7 @@
       "heading": "Custom Header",
       "level": 3,
       "file": "10-export.org",
-      "line": 1557,
+      "line": 1626,
       "content": "*Setting:* `scimax.export.latex.customHeader' *Type:* String (multiline) *Description:* Complete custom LaTeX preamble replacing auto-generated one. *Example:* #+BEGIN_SRC json { \"scimax.export.latex.customHeader\": \"\\\\documentclass[12pt]{article}\\n\\\\usepackage[utf8]{inputenc}\\n\\\\usepackage{graphicx}\\n\\\\usepackage{amsmath}\" } #+END_SRC Or in `settings.json': #+BEGIN_SRC json { \"scimax.export.latex.customHeader\": [ \"\\\\documentclass[12pt]{article}\", \"\\\\usepackage[utf8]{inputenc}\", \"\\\\usepackage{gra",
       "path": [
         "Configuration Settings",
@@ -29204,7 +29349,7 @@
       "heading": "LaTeX Preview Settings",
       "level": 2,
       "file": "10-export.org",
-      "line": 1585,
+      "line": 1654,
       "content": "",
       "path": [
         "Configuration Settings"
@@ -29221,7 +29366,7 @@
       "heading": "Compiler",
       "level": 3,
       "file": "10-export.org",
-      "line": 1587,
+      "line": 1656,
       "content": "*Setting:* `scimax.latexLivePreview.compiler' *Values:* `\"pdflatex\"', `\"xelatex\"', `\"lualatex\"' *Default:* `\"pdflatex\"' *Example:* #+BEGIN_SRC json { \"scimax.latexLivePreview.compiler\": \"xelatex\" } #+END_SRC",
       "path": [
         "Configuration Settings",
@@ -29249,7 +29394,7 @@
       "heading": "Use latexmk",
       "level": 3,
       "file": "10-export.org",
-      "line": 1602,
+      "line": 1671,
       "content": "*Setting:* `scimax.latexLivePreview.useLatexmk' *Type:* Boolean *Default:* `true' *Description:* Use latexmk for smart incremental builds (recommended).",
       "path": [
         "Configuration Settings",
@@ -29277,7 +29422,7 @@
       "heading": "Build on Save",
       "level": 3,
       "file": "10-export.org",
-      "line": 1612,
+      "line": 1681,
       "content": "*Setting:* `scimax.latexLivePreview.buildOnSave' *Type:* Boolean *Default:* `true' *Description:* Automatically rebuild PDF when org file is saved.",
       "path": [
         "Configuration Settings",
@@ -29307,7 +29452,7 @@
       "heading": "Build on Idle",
       "level": 3,
       "file": "10-export.org",
-      "line": 1622,
+      "line": 1691,
       "content": "*Setting:* `scimax.latexLivePreview.buildOnIdle' *Type:* Boolean *Default:* `false' *Description:* Rebuild PDF after idle period (for live preview).",
       "path": [
         "Configuration Settings",
@@ -29338,7 +29483,7 @@
       "heading": "Idle Delay",
       "level": 3,
       "file": "10-export.org",
-      "line": 1632,
+      "line": 1701,
       "content": "*Setting:* `scimax.latexLivePreview.idleDelay' *Type:* Number (milliseconds) *Default:* `2000' *Description:* Delay before idle build triggers.",
       "path": [
         "Configuration Settings",
@@ -29367,7 +29512,7 @@
       "heading": "Complete Configuration Example",
       "level": 2,
       "file": "10-export.org",
-      "line": 1642,
+      "line": 1711,
       "content": "#+BEGIN_SRC json { // LaTeX Export \"scimax.export.latex.customHeader\": \"\", // LaTeX Preview \"scimax.latexLivePreview.compiler\": \"pdflatex\", \"scimax.latexLivePreview.useLatexmk\": true, \"scimax.latexLivePreview.buildOnSave\": true, \"scimax.latexLivePreview.buildOnIdle\": false, \"scimax.latexLivePreview.idleDelay\": 2000, // LaTeX Equation Preview \"scimax.latexPreview.enabled\": true, \"scimax.latexPreview.cacheEnabled\": true, \"scimax.latexPreview.darkModeAware\": true } #+END_SRC",
       "path": [
         "Configuration Settings"
@@ -29405,7 +29550,7 @@
       "heading": "Advanced Export Techniques",
       "level": 1,
       "file": "10-export.org",
-      "line": 1663,
+      "line": 1732,
       "content": "",
       "path": [],
       "commands": [],
@@ -29420,7 +29565,7 @@
       "heading": "Conditional Export",
       "level": 2,
       "file": "10-export.org",
-      "line": 1665,
+      "line": 1734,
       "content": "",
       "path": [
         "Advanced Export Techniques"
@@ -29436,7 +29581,7 @@
       "heading": "Exclude Content by Tag",
       "level": 3,
       "file": "10-export.org",
-      "line": 1667,
+      "line": 1736,
       "content": "Tag headlines to exclude them from export: #+BEGIN_SRC org #+EXCLUDE_TAGS: noexport private draft ,* Public Section Content for everyone. ,* Private Notes                                    :noexport: Internal notes not included in export. ,* Draft Ideas                                      :draft: Work in progress, excluded. #+END_SRC",
       "path": [
         "Advanced Export Techniques",
@@ -29471,7 +29616,7 @@
       "heading": "Select Content by Tag",
       "level": 3,
       "file": "10-export.org",
-      "line": 1684,
+      "line": 1753,
       "content": "Only export tagged content: #+BEGIN_SRC org #+SELECT_TAGS: export publish ,* Internal Document This section won't be exported. ,* Published Chapter                                 :export: This section will be exported. #+END_SRC",
       "path": [
         "Advanced Export Techniques",
@@ -29503,7 +29648,7 @@
       "heading": "Backend-Specific Content",
       "level": 2,
       "file": "10-export.org",
-      "line": 1698,
+      "line": 1767,
       "content": "",
       "path": [
         "Advanced Export Techniques"
@@ -29519,7 +29664,7 @@
       "heading": "HTML-Only Content",
       "level": 3,
       "file": "10-export.org",
-      "line": 1700,
+      "line": 1769,
       "content": "#+BEGIN_SRC org #+BEGIN_EXPORT html <div class=\"alert alert-info\"> This appears only in HTML export. </div> #+END_EXPORT #+END_SRC",
       "path": [
         "Advanced Export Techniques",
@@ -29548,7 +29693,7 @@
       "heading": "LaTeX-Only Content",
       "level": 3,
       "file": "10-export.org",
-      "line": 1710,
+      "line": 1779,
       "content": "#+BEGIN_SRC org #+BEGIN_EXPORT latex \\begin{tcolorbox}[title=Important] This appears only in LaTeX/PDF export. \\end{tcolorbox} #+END_EXPORT #+END_SRC",
       "path": [
         "Advanced Export Techniques",
@@ -29579,7 +29724,7 @@
       "heading": "Export Snippets",
       "level": 3,
       "file": "10-export.org",
-      "line": 1720,
+      "line": 1789,
       "content": "Inline backend-specific content: #+BEGIN_SRC org Click @@html:<button>@@here@@html:</button>@@ to continue. The value is @@latex:\\textcolor{red}{@@important@@latex:}@@. #+END_SRC",
       "path": [
         "Advanced Export Techniques",
@@ -29609,7 +29754,7 @@
       "heading": "Macros for Reusable Content",
       "level": 2,
       "file": "10-export.org",
-      "line": 1730,
+      "line": 1799,
       "content": "Define macros for repeated content: #+BEGIN_SRC org #+MACRO: version 2.5.0 #+MACRO: author-email john.doe@example.com Current version: {{{version}}} Contact: {{{author-email}}} #+END_SRC Built-in macros: - `{{{date}}}' - Current date - `{{{time}}}' - Current time - `{{{title}}}' - Document title - `{{{author}}}' - Document author",
       "path": [
         "Advanced Export Techniques"
@@ -29643,7 +29788,7 @@
       "heading": "Include Files",
       "level": 2,
       "file": "10-export.org",
-      "line": 1749,
+      "line": 1818,
       "content": "Include content from other files using the `#+INCLUDE:' directive. Files are processed during export, allowing modular document organization.",
       "path": [
         "Advanced Export Techniques"
@@ -29667,7 +29812,7 @@
       "heading": "Basic Syntax",
       "level": 3,
       "file": "10-export.org",
-      "line": 1754,
+      "line": 1823,
       "content": "#+BEGIN_SRC org ,#+INCLUDE: \"chapter1.org\" ,#+INCLUDE: \"path/to/file.org\" #+END_SRC Paths can be relative (to the current document) or absolute.",
       "path": [
         "Advanced Export Techniques",
@@ -29695,7 +29840,7 @@
       "heading": "Block Wrappers",
       "level": 3,
       "file": "10-export.org",
-      "line": 1763,
+      "line": 1832,
       "content": "Wrap included content in a block: #+BEGIN_SRC org ,# Include as source code block ,#+INCLUDE: \"code/example.py\" src python ,#+INCLUDE: \"script.sh\" src bash ,# Include as example (verbatim) block ,#+INCLUDE: \"output.txt\" example ,# Include as quote block ,#+INCLUDE: \"excerpt.txt\" quote ,# Include as export block (raw format) ,#+INCLUDE: \"custom.html\" export html #+END_SRC",
       "path": [
         "Advanced Export Techniques",
@@ -29730,7 +29875,7 @@
       "heading": "Line Selection with :lines",
       "level": 3,
       "file": "10-export.org",
-      "line": 1782,
+      "line": 1851,
       "content": "Include only specific lines from a file: #+BEGIN_SRC org ,# Lines 10 through 20 (inclusive, 1-indexed) ,#+INCLUDE: \"data.org\" :lines \"10-20\" ,# From line 10 to end of file ,#+INCLUDE: \"data.org\" :lines \"10-\" ,# From beginning to line 20 ,#+INCLUDE: \"data.org\" :lines \"-20\" ,# Single line ,#+INCLUDE: \"data.org\" :lines \"15\" #+END_SRC",
       "path": [
         "Advanced Export Techniques",
@@ -29763,7 +29908,7 @@
       "heading": "Headline Level Adjustment with :minlevel",
       "level": 3,
       "file": "10-export.org",
-      "line": 1800,
+      "line": 1869,
       "content": "Shift all headlines in the included file to a minimum level: #+BEGIN_SRC org ,# Shift headlines so the minimum level is 2 ,#+INCLUDE: \"chapter.org\" :minlevel 2 #+END_SRC This is useful for including a standalone document as a section: - A file with `* Heading' becomes `** Heading' with `:minlevel 2' - Sub-headlines are adjusted proportionally",
       "path": [
         "Advanced Export Techniques",
@@ -29798,7 +29943,7 @@
       "heading": "Content Only with :only-contents",
       "level": 3,
       "file": "10-export.org",
-      "line": 1813,
+      "line": 1882,
       "content": "Strip the first headline and include only its contents: #+BEGIN_SRC org ,#+INCLUDE: \"section.org\" :only-contents t #+END_SRC This extracts the body of the first headline without including the headline itself.",
       "path": [
         "Advanced Export Techniques",
@@ -29829,7 +29974,7 @@
       "heading": "Combining Options",
       "level": 3,
       "file": "10-export.org",
-      "line": 1824,
+      "line": 1893,
       "content": "Options can be combined: #+BEGIN_SRC org ,# Include lines 5-25 of Python file, shift headlines to level 3 ,#+INCLUDE: \"code.py\" src python :lines \"5-25\" ,# Include chapter, make it a subsection (minlevel 2) ,#+INCLUDE: \"chapter.org\" :minlevel 2 :only-contents t #+END_SRC",
       "path": [
         "Advanced Export Techniques",
@@ -29864,7 +30009,7 @@
       "heading": "Recursive Includes",
       "level": 3,
       "file": "10-export.org",
-      "line": 1836,
+      "line": 1905,
       "content": "Included files can themselves contain `#+INCLUDE:' directives, which are processed recursively. A maximum depth of 10 levels prevents infinite loops.",
       "path": [
         "Advanced Export Techniques",
@@ -29894,7 +30039,7 @@
       "heading": "Example: Modular Book Structure",
       "level": 3,
       "file": "10-export.org",
-      "line": 1841,
+      "line": 1910,
       "content": "#+BEGIN_SRC org ,#+TITLE: My Book ,#+AUTHOR: Author Name ,#+INCLUDE: \"frontmatter.org\" ,* Part I: Introduction ,#+INCLUDE: \"chapters/intro.org\" :minlevel 2 ,* Part II: Main Content ,#+INCLUDE: \"chapters/chapter1.org\" :minlevel 2 ,#+INCLUDE: \"chapters/chapter2.org\" :minlevel 2 ,* Appendices ,#+INCLUDE: \"appendices/code-samples.org\" :minlevel 2 ,* Index ,#+INCLUDE: \"backmatter/index.org\" :only-contents t #+END_SRC",
       "path": [
         "Advanced Export Techniques",
@@ -29929,7 +30074,7 @@
       "heading": "Custom Link Types",
       "level": 2,
       "file": "10-export.org",
-      "line": 1863,
+      "line": 1932,
       "content": "Define custom export behavior for link types: #+BEGIN_SRC org # Link to bug tracker [[bug:1234][Bug #1234]] # Link to commit [[commit:abc123][View commit]] #+END_SRC",
       "path": [
         "Advanced Export Techniques"
@@ -29959,7 +30104,7 @@
       "heading": "Troubleshooting",
       "level": 1,
       "file": "10-export.org",
-      "line": 1875,
+      "line": 1944,
       "content": "",
       "path": [],
       "commands": [],
@@ -29972,7 +30117,7 @@
       "heading": "HTML Export Issues",
       "level": 2,
       "file": "10-export.org",
-      "line": 1877,
+      "line": 1946,
       "content": "",
       "path": [
         "Troubleshooting"
@@ -29989,7 +30134,7 @@
       "heading": "MathJax Not Rendering",
       "level": 3,
       "file": "10-export.org",
-      "line": 1879,
+      "line": 1948,
       "content": "*Problem:* Math equations appear as plain text. *Solution:* 1. Ensure internet connection (MathJax loads from CDN) 2. Check browser console for errors 3. Verify math syntax (use `\\(...\\)' or `$...$' for inline, `\\[...\\]' for display)",
       "path": [
         "Troubleshooting",
@@ -30024,7 +30169,7 @@
       "heading": "Broken Images",
       "level": 3,
       "file": "10-export.org",
-      "line": 1888,
+      "line": 1957,
       "content": "*Problem:* Images don't appear in exported HTML. *Solution:* 1. Use relative paths: `[[file:./images/plot.png]]' 2. Ensure images are in same directory or subdirectory 3. Check image file names (case-sensitive on Linux)",
       "path": [
         "Troubleshooting",
@@ -30058,7 +30203,7 @@
       "heading": "CSS Not Applied",
       "level": 3,
       "file": "10-export.org",
-      "line": 1897,
+      "line": 1966,
       "content": "*Problem:* Custom CSS doesn't show. *Solution:* 1. Verify `#+HTML_HEAD:' syntax 2. Check CSS selector specificity 3. Inspect generated HTML for CSS inclusion",
       "path": [
         "Troubleshooting",
@@ -30090,7 +30235,7 @@
       "heading": "LaTeX/PDF Export Issues",
       "level": 2,
       "file": "10-export.org",
-      "line": 1906,
+      "line": 1975,
       "content": "",
       "path": [
         "Troubleshooting"
@@ -30107,7 +30252,7 @@
       "heading": "Missing Packages",
       "level": 3,
       "file": "10-export.org",
-      "line": 1908,
+      "line": 1977,
       "content": "*Problem:* Compilation fails with \"! LaTeX Error: File `xyz.sty' not found\" *Solution:* #+BEGIN_SRC bash # TeX Live sudo tlmgr install xyz # MiKTeX (Windows) miktex packages install xyz # MacTeX sudo tlmgr install xyz #+END_SRC",
       "path": [
         "Troubleshooting",
@@ -30142,7 +30287,7 @@
       "heading": "Unicode Errors",
       "level": 3,
       "file": "10-export.org",
-      "line": 1924,
+      "line": 1993,
       "content": "*Problem:* \"! Package inputenc Error: Unicode character ... not set up\" *Solution:* 1. Switch to XeLaTeX or LuaLaTeX: #+BEGIN_SRC json { \"scimax.latexLivePreview.compiler\": \"xelatex\" } #+END_SRC 2. Or use LaTeX-safe characters",
       "path": [
         "Troubleshooting",
@@ -30176,7 +30321,7 @@
       "heading": "Bibliography Not Generated",
       "level": 3,
       "file": "10-export.org",
-      "line": 1936,
+      "line": 2005,
       "content": "*Problem:* Citations show as `[?]' in PDF. *Solution:* 1. Ensure `.bib' file exists 2. Use `latexmk' (handles BibTeX automatically) 3. Check citation keys match bibliography entries 4. Verify `bibliography:' and `bibliographystyle:' links",
       "path": [
         "Troubleshooting",
@@ -30211,7 +30356,7 @@
       "heading": "Images Not Found",
       "level": 3,
       "file": "10-export.org",
-      "line": 1946,
+      "line": 2015,
       "content": "*Problem:* LaTeX can't find image files. *Solution:* 1. Use relative paths from org file location 2. Avoid spaces in filenames 3. Use supported formats: PNG, JPG, PDF, EPS 4. Check `\\graphicspath' if using custom image directories",
       "path": [
         "Troubleshooting",
@@ -30246,7 +30391,7 @@
       "heading": "Compilation Timeout",
       "level": 3,
       "file": "10-export.org",
-      "line": 1956,
+      "line": 2025,
       "content": "*Problem:* PDF export hangs or times out. *Solution:* 1. Check for infinite loops in LaTeX code 2. Reduce document size 3. Disable auto-build: `buildOnSave: false' 4. Review `.log' file for warnings",
       "path": [
         "Troubleshooting",
@@ -30281,7 +30426,7 @@
       "heading": "Markdown Export Issues",
       "level": 2,
       "file": "10-export.org",
-      "line": 1966,
+      "line": 2035,
       "content": "",
       "path": [
         "Troubleshooting"
@@ -30298,7 +30443,7 @@
       "heading": "Table Alignment",
       "level": 3,
       "file": "10-export.org",
-      "line": 1968,
+      "line": 2037,
       "content": "*Problem:* Tables don't align properly. *Solution:* - GitHub-flavored Markdown tables are left-aligned by default - Org-mode alignment hints (`<l>', `<c>', `<r>') are not supported - Consider using HTML tables for complex layouts",
       "path": [
         "Troubleshooting",
@@ -30332,7 +30477,7 @@
       "heading": "Math Not Rendering",
       "level": 3,
       "file": "10-export.org",
-      "line": 1977,
+      "line": 2046,
       "content": "*Problem:* Math equations don't work. *Solution:* - GitHub supports some math via `$$...$$' (display) and `$...$' (inline) - Other platforms may require MathJax integration - Consider exporting to HTML for math-heavy content",
       "path": [
         "Troubleshooting",
@@ -30367,7 +30512,7 @@
       "heading": "General Export Issues",
       "level": 2,
       "file": "10-export.org",
-      "line": 1986,
+      "line": 2055,
       "content": "",
       "path": [
         "Troubleshooting"
@@ -30384,7 +30529,7 @@
       "heading": "Empty Export",
       "level": 3,
       "file": "10-export.org",
-      "line": 1988,
+      "line": 2057,
       "content": "*Problem:* Export produces empty or minimal file. *Solution:* 1. Check export scope (full vs. subtree) 2. Verify content isn't excluded by tags 3. Ensure headlines match `H:' level setting 4. Review `#+OPTIONS' settings",
       "path": [
         "Troubleshooting",
@@ -30419,7 +30564,7 @@
       "heading": "Slow Export",
       "level": 3,
       "file": "10-export.org",
-      "line": 1998,
+      "line": 2067,
       "content": "*Problem:* Export takes very long. *Solution:* 1. Disable `buildOnIdle' for PDF export 2. Reduce `toc' depth 3. Split large documents into smaller files 4. Use `#+INCLUDE:' for modular organization",
       "path": [
         "Troubleshooting",
@@ -30454,7 +30599,7 @@
       "heading": "Wrong Output Location",
       "level": 3,
       "file": "10-export.org",
-      "line": 2008,
+      "line": 2077,
       "content": "*Problem:* Export file appears in unexpected location. *Solution:* 1. Check `#+EXPORT_FILE_NAME:' keyword 2. Verify save dialog selection 3. Review file permissions in target directory",
       "path": [
         "Troubleshooting",
@@ -30488,7 +30633,7 @@
       "heading": "Best Practices",
       "level": 1,
       "file": "10-export.org",
-      "line": 2017,
+      "line": 2086,
       "content": "",
       "path": [],
       "commands": [],
@@ -30502,7 +30647,7 @@
       "heading": "Document Organization",
       "level": 2,
       "file": "10-export.org",
-      "line": 2019,
+      "line": 2088,
       "content": "",
       "path": [
         "Best Practices"
@@ -30518,7 +30663,7 @@
       "heading": "Use Meaningful Headings",
       "level": 3,
       "file": "10-export.org",
-      "line": 2021,
+      "line": 2090,
       "content": "- Clear, descriptive headline text - Logical hierarchy (avoid jumping levels) - Consistent depth for similar content",
       "path": [
         "Best Practices",
@@ -30548,7 +30693,7 @@
       "heading": "Metadata at Top",
       "level": 3,
       "file": "10-export.org",
-      "line": 2026,
+      "line": 2095,
       "content": "#+BEGIN_SRC org #+TITLE: Document Title #+AUTHOR: Your Name #+DATE: 2024-01-15 #+OPTIONS: toc:t num:t #+LATEX_CLASS: article #+END_SRC",
       "path": [
         "Best Practices",
@@ -30579,7 +30724,7 @@
       "heading": "Separate Concerns",
       "level": 3,
       "file": "10-export.org",
-      "line": 2035,
+      "line": 2104,
       "content": "- Content in main file - References in `.bib' file - Images in `images/' directory - Custom styles in `.css' file",
       "path": [
         "Best Practices",
@@ -30605,7 +30750,7 @@
       "heading": "Version Control",
       "level": 2,
       "file": "10-export.org",
-      "line": 2041,
+      "line": 2110,
       "content": "",
       "path": [
         "Best Practices"
@@ -30621,7 +30766,7 @@
       "heading": "Track Generated Files Separately",
       "level": 3,
       "file": "10-export.org",
-      "line": 2043,
+      "line": 2112,
       "content": "Add to `.gitignore': #+BEGIN_SRC text *.pdf *.html *.tex *.aux *.log *.out *.toc #+END_SRC",
       "path": [
         "Best Practices",
@@ -30651,7 +30796,7 @@
       "heading": "Use Meaningful Commit Messages",
       "level": 3,
       "file": "10-export.org",
-      "line": 2055,
+      "line": 2124,
       "content": "#+BEGIN_SRC text Update export configuration for XeLaTeX support Add custom LaTeX preamble for ACM format Fix image paths in HTML export #+END_SRC",
       "path": [
         "Best Practices",
@@ -30686,7 +30831,7 @@
       "heading": "Performance Optimization",
       "level": 2,
       "file": "10-export.org",
-      "line": 2062,
+      "line": 2131,
       "content": "CLOSED: [2026-01-17 Sat 09:25]",
       "path": [
         "Best Practices"
@@ -30706,7 +30851,7 @@
       "heading": "For Large Documents",
       "level": 3,
       "file": "10-export.org",
-      "line": 2065,
+      "line": 2134,
       "content": "CLOSED: [2026-01-17 Sat 09:25] 1. Disable auto-build during editing 2. Use `#+INCLUDE:' for modular structure 3. Cache expensive computations 4. Optimize image sizes",
       "path": [
         "Best Practices",
@@ -30740,7 +30885,7 @@
       "heading": "For Fast Iteration",
       "level": 3,
       "file": "10-export.org",
-      "line": 2072,
+      "line": 2141,
       "content": "CLOSED: [2026-01-17 Sat 09:25] 1. Use HTML preview for quick checks 2. Enable `buildOnIdle' with appropriate delay 3. Use body-only export for faster generation 4. Minimize custom packages",
       "path": [
         "Best Practices",
@@ -30775,7 +30920,7 @@
       "heading": "Example Workflows",
       "level": 1,
       "file": "10-export.org",
-      "line": 2079,
+      "line": 2148,
       "content": "CLOSED: [2026-01-17 Sat 09:26]",
       "path": [],
       "commands": [],
@@ -30793,7 +30938,7 @@
       "heading": "Academic Paper Workflow",
       "level": 2,
       "file": "10-export.org",
-      "line": 2082,
+      "line": 2151,
       "content": "CLOSED: [2026-01-17 Sat 09:26]",
       "path": [
         "Example Workflows"
@@ -30814,7 +30959,7 @@
       "heading": "1. Initial Setup",
       "level": 3,
       "file": "10-export.org",
-      "line": 2085,
+      "line": 2154,
       "content": "#+BEGIN_SRC org #+TITLE: Novel Approach to Machine Learning #+AUTHOR: Dr. Jane Smith #+DATE: \\today #+OPTIONS: toc:t num:t H:3 #+LATEX_CLASS: IEEEtran #+LATEX_HEADER: \\usepackage{amsmath,amssymb} #+LATEX_HEADER: \\usepackage{algorithm,algorithmic} #+BIBLIOGRAPHY: references.bib #+END_SRC",
       "path": [
         "Example Workflows",
@@ -30849,7 +30994,7 @@
       "heading": "2. Write Content",
       "level": 3,
       "file": "10-export.org",
-      "line": 2097,
+      "line": 2166,
       "content": "Structure with standard sections: - Abstract - Introduction - Related Work - Methodology - Results - Discussion - Conclusion",
       "path": [
         "Example Workflows",
@@ -30877,7 +31022,7 @@
       "heading": "3. Add Citations",
       "level": 3,
       "file": "10-export.org",
-      "line": 2107,
+      "line": 2176,
       "content": "#+BEGIN_SRC org Recent work cite:smith2023 has shown... #+END_SRC",
       "path": [
         "Example Workflows",
@@ -30901,7 +31046,7 @@
       "heading": "4. Export to PDF",
       "level": 3,
       "file": "10-export.org",
-      "line": 2112,
+      "line": 2181,
       "content": "`C-c C-e l p' → PDF via LaTeX",
       "path": [
         "Example Workflows",
@@ -30924,7 +31069,7 @@
       "heading": "5. Submit",
       "level": 3,
       "file": "10-export.org",
-      "line": 2115,
+      "line": 2184,
       "content": "Review generated PDF, make final edits, submit.",
       "path": [
         "Example Workflows",
@@ -30946,7 +31091,7 @@
       "heading": "Technical Documentation Workflow",
       "level": 2,
       "file": "10-export.org",
-      "line": 2118,
+      "line": 2187,
       "content": "",
       "path": [
         "Example Workflows"
@@ -30963,7 +31108,7 @@
       "heading": "1. Setup",
       "level": 3,
       "file": "10-export.org",
-      "line": 2120,
+      "line": 2189,
       "content": "#+BEGIN_SRC org #+TITLE: API Documentation #+AUTHOR: Development Team #+OPTIONS: toc:2 num:nil H:4 #+HTML_HEAD: <link rel=\"stylesheet\" href=\"docs.css\" /> #+END_SRC",
       "path": [
         "Example Workflows",
@@ -30997,7 +31142,7 @@
       "heading": "2. Write Sections",
       "level": 3,
       "file": "10-export.org",
-      "line": 2128,
+      "line": 2197,
       "content": "- Getting Started - API Reference - Examples - Troubleshooting",
       "path": [
         "Example Workflows",
@@ -31020,7 +31165,7 @@
       "heading": "3. Export to HTML",
       "level": 3,
       "file": "10-export.org",
-      "line": 2134,
+      "line": 2203,
       "content": "`C-c C-e h h' → HTML",
       "path": [
         "Example Workflows",
@@ -31041,7 +31186,7 @@
       "heading": "4. Deploy",
       "level": 3,
       "file": "10-export.org",
-      "line": 2137,
+      "line": 2206,
       "content": "Copy HTML and CSS to docs server or GitHub Pages.",
       "path": [
         "Example Workflows",
@@ -31064,7 +31209,7 @@
       "heading": "Blog Post Workflow",
       "level": 2,
       "file": "10-export.org",
-      "line": 2140,
+      "line": 2209,
       "content": "CLOSED: [2026-01-17 Sat 09:27]",
       "path": [
         "Example Workflows"
@@ -31085,7 +31230,7 @@
       "heading": "1. Write in Org",
       "level": 3,
       "file": "10-export.org",
-      "line": 2143,
+      "line": 2212,
       "content": "CLOSED: [2026-01-17 Sat 09:27] #+BEGIN_SRC org #+TITLE: 10 Tips for Better Python Code #+AUTHOR: Tech Blogger #+DATE: 2024-01-15 #+OPTIONS: toc:nil num:nil #+END_SRC",
       "path": [
         "Example Workflows",
@@ -31120,7 +31265,7 @@
       "heading": "2. Export to Markdown",
       "level": 3,
       "file": "10-export.org",
-      "line": 2152,
+      "line": 2221,
       "content": "CLOSED: [2026-01-17 Sat 09:27] `C-c C-e m m' → Markdown",
       "path": [
         "Example Workflows",
@@ -31145,7 +31290,7 @@
       "heading": "3. Publish",
       "level": 3,
       "file": "10-export.org",
-      "line": 2156,
+      "line": 2225,
       "content": "CLOSED: [2026-01-17 Sat 09:27] Copy Markdown to CMS or static site generator (Hugo, Jekyll, etc.)",
       "path": [
         "Example Workflows",
@@ -31174,7 +31319,7 @@
       "heading": "Resources",
       "level": 1,
       "file": "10-export.org",
-      "line": 2161,
+      "line": 2230,
       "content": "CLOSED: [2026-01-17 Sat 09:29]",
       "path": [],
       "commands": [],
@@ -31191,7 +31336,7 @@
       "heading": "External Links",
       "level": 2,
       "file": "10-export.org",
-      "line": 2164,
+      "line": 2233,
       "content": "CLOSED: [2026-01-17 Sat 09:29]",
       "path": [
         "Resources"
@@ -31211,7 +31356,7 @@
       "heading": "Org-Mode Documentation",
       "level": 3,
       "file": "10-export.org",
-      "line": 2167,
+      "line": 2236,
       "content": "CLOSED: [2026-01-17 Sat 09:29] - [[https://orgmode.org/manual/Exporting.html][Official Export Documentation]] - [[https://orgmode.org/worg/org-tutorials/org-latex-export.html][LaTeX Export Tutorial]] - [[https://orgmode.org/worg/org-tutorials/org-publish-html-tutorial.html][HTML Export Tutorial]]",
       "path": [
         "Resources",
@@ -31240,7 +31385,7 @@
       "heading": "LaTeX Resources",
       "level": 3,
       "file": "10-export.org",
-      "line": 2173,
+      "line": 2242,
       "content": "CLOSED: [2026-01-17 Sat 09:29] - [[https://www.latex-project.org/][LaTeX Project]] - [[https://ctan.org/][CTAN - Package Archive]] - [[https://www.overleaf.com/learn][Overleaf Learn LaTeX]]",
       "path": [
         "Resources",
@@ -31270,7 +31415,7 @@
       "heading": "Tools",
       "level": 3,
       "file": "10-export.org",
-      "line": 2179,
+      "line": 2248,
       "content": "CLOSED: [2026-01-17 Sat 09:29] - [[https://www.mathjax.org/][MathJax Documentation]] - [[https://highlightjs.org/][highlight.js]] - [[https://pandoc.org/][Pandoc - Universal Document Converter]]",
       "path": [
         "Resources",
@@ -31300,7 +31445,7 @@
       "heading": "Related Scimax Documentation",
       "level": 2,
       "file": "10-export.org",
-      "line": 2185,
+      "line": 2254,
       "content": "CLOSED: [2026-01-17 Sat 09:29] - [[file:01-getting-started.org][Getting Started with Scimax]] - [[file:04-tables.org][Working with Tables]] - [[file:05-links.org][Links and Cross-References]] - [[file:03-todo-items.org][TODO Items and Planning]]",
       "path": [
         "Resources"
@@ -31334,7 +31479,7 @@
       "heading": "Community",
       "level": 2,
       "file": "10-export.org",
-      "line": 2193,
+      "line": 2262,
       "content": "CLOSED: [2026-01-17 Sat 09:29] - [[https://github.com/jkitchin/scimax_vscode][Scimax VS Code Repository]] - [[https://github.com/jkitchin/scimax_vscode/issues][Issue Tracker]] - [[https://github.com/jkitchin/scimax_vscode/discussions][Discussions]]",
       "path": [
         "Resources"
@@ -31362,7 +31507,7 @@
       "heading": "Appendix",
       "level": 1,
       "file": "10-export.org",
-      "line": 2200,
+      "line": 2269,
       "content": "CLOSED: [2026-01-17 Sat 09:29]",
       "path": [],
       "commands": [],
@@ -31379,7 +31524,7 @@
       "heading": "Complete Keybinding Reference",
       "level": 2,
       "file": "10-export.org",
-      "line": 2203,
+      "line": 2272,
       "content": "CLOSED: [2026-01-17 Sat 09:29] | Keybinding  | Command                  | Description                  | |-------------+--------------------------+------------------------------| | C-c C-e     | Export dispatcher        | Open export menu             | | C-c C-e h h | HTML export              | Export to .html              | | C-c C-e h o | HTML export and open     | Export and open in browser   | | C-c C-e h p | HTML preview             | Preview in VS Code webview   | | C-c C-e l l | LaTeX exp",
       "path": [
         "Appendix"
@@ -31415,7 +31560,7 @@
       "heading": "Export Options Quick Reference",
       "level": 2,
       "file": "10-export.org",
-      "line": 2227,
+      "line": 2296,
       "content": "CLOSED: [2026-01-24 Sat 17:36] | Option   | Values             | Default | Effect                                 | |----------+--------------------+---------+----------------------------------------| | toc      | t/nil/N            | nil     | Table of contents (N = depth)          | | num      | t/nil/N            | t       | Section numbering (N = depth)          | | H        | N                  | 0       | Export headlines up to level N         | | author   | t/nil              | t       | ",
       "path": [
         "Appendix"
@@ -31449,7 +31594,7 @@
       "heading": "LaTeX Package Reference",
       "level": 2,
       "file": "10-export.org",
-      "line": 2252,
+      "line": 2321,
       "content": "",
       "path": [
         "Appendix"
@@ -31466,7 +31611,7 @@
       "heading": "Essential Packages (Auto-Included)",
       "level": 3,
       "file": "10-export.org",
-      "line": 2254,
+      "line": 2323,
       "content": "| Package       | Purpose                              | |---------------+--------------------------------------| | inputenc    | Character encoding (UTF-8)           | | fontenc     | Font encoding (T1)                   | | hyperref    | Hyperlinks and PDF metadata          | | graphicx    | Image inclusion                      | | amsmath     | Mathematical typesetting             | | amssymb     | Math symbols                         | | booktabs    | Professional tables                  | |",
       "path": [
         "Appendix",
@@ -31501,7 +31646,7 @@
       "heading": "Optional Packages",
       "level": 3,
       "file": "10-export.org",
-      "line": 2268,
+      "line": 2337,
       "content": "| Package       | Purpose                              | Add With                        | |---------------+--------------------------------------+---------------------------------| | geometry    | Page layout                          | #+LATEX_HEADER:               | | natbib      | Bibliography                         | #+LATEX_HEADER:               | | minted      | Advanced syntax highlighting         | #+LATEX_HEADER:               | | tikz        | Graphics and diagrams                | #+",
       "path": [
         "Appendix",
@@ -31535,7 +31680,7 @@
       "heading": "HTML Classes and IDs",
       "level": 2,
       "file": "10-export.org",
-      "line": 2280,
+      "line": 2349,
       "content": "Exported HTML uses semantic classes for styling:",
       "path": [
         "Appendix"
@@ -31556,7 +31701,7 @@
       "heading": "Document Structure",
       "level": 3,
       "file": "10-export.org",
-      "line": 2284,
+      "line": 2353,
       "content": "- `.org-content' - Main content container - `.org-section' - Document section - `.org-preamble' - Document preamble - `#title-block' - Title, author, date header",
       "path": [
         "Appendix",
@@ -31586,7 +31731,7 @@
       "heading": "Headings and TOC",
       "level": 3,
       "file": "10-export.org",
-      "line": 2290,
+      "line": 2359,
       "content": "- `.org-toc' - Table of contents - `.section-number' - Section number prefix",
       "path": [
         "Appendix",
@@ -31610,7 +31755,7 @@
       "heading": "Text Elements",
       "level": 3,
       "file": "10-export.org",
-      "line": 2294,
+      "line": 2363,
       "content": "- `.org-todo' - TODO keyword - `.org-done' - DONE keyword - `.org-priority' - Priority marker - `.org-tags' - Tag container - `.org-tag' - Individual tag - `.org-timestamp' - Timestamp - `.org-underline' - Underlined text",
       "path": [
         "Appendix",
@@ -31644,7 +31789,7 @@
       "heading": "Blocks",
       "level": 3,
       "file": "10-export.org",
-      "line": 2303,
+      "line": 2372,
       "content": "- `.org-src-container' - Source block wrapper - `.src' - Source block pre element - `.example' - Example block - `.org-center' - Centered content - `.org-latex-environment' - LaTeX environment",
       "path": [
         "Appendix",
@@ -31674,7 +31819,7 @@
       "heading": "Tables and Lists",
       "level": 3,
       "file": "10-export.org",
-      "line": 2310,
+      "line": 2379,
       "content": "- `.org-table' - Table element - `.org-footnotes' - Footnotes container - `.org-footnote' - Individual footnote - `.org-footnote-ref' - Footnote reference link",
       "path": [
         "Appendix",
@@ -31703,7 +31848,7 @@
       "heading": "Admonitions",
       "level": 3,
       "file": "10-export.org",
-      "line": 2316,
+      "line": 2385,
       "content": "- `.admonition' - Generic admonition - `.org-warning' - Warning box - `.org-note' - Note box - `.org-tip' - Tip box - `.org-important' - Important box",
       "path": [
         "Appendix",
@@ -31730,7 +31875,7 @@
       "heading": "Troubleshooting Decision Tree",
       "level": 2,
       "file": "10-export.org",
-      "line": 2323,
+      "line": 2392,
       "content": "#+BEGIN_SRC text Export Problem? ├─ HTML Export │  ├─ Math not rendering → Check MathJax CDN, internet connection │  ├─ Images broken → Verify paths, file existence │  └─ Styling wrong → Check CSS inclusion, specificity ├─ PDF Export │  ├─ Compilation fails │  │  ├─ Missing package → Install via tlmgr/MiKTeX │  │  ├─ Unicode error → Switch to XeLaTeX/LuaLaTeX │  │  └─ Timeout → Review .log, reduce complexity │  ├─ Bibliography missing → Check .bib file, use latexmk │  └─ Images not found → Verif",
       "path": [
         "Appendix"
@@ -31764,7 +31909,7 @@
       "heading": "Related Topics",
       "level": 1,
       "file": "10-export.org",
-      "line": 2352,
+      "line": 2421,
       "content": "- [[file:07-source-blocks.org][Source Code Blocks]] - Code execution in documents - [[file:11-latex-preview.org][LaTeX Preview]] - Math preview before export - [[file:19-references.org][References]] - Citations and bibliography in exports - [[file:04-tables.org][Tables]] - Table formatting in exports - [[file:26-configuration.org][Configuration]] - Export settings and customization",
       "path": [],
       "commands": [],
@@ -31796,7 +31941,7 @@
       "heading": "Navigation",
       "level": 1,
       "file": "10-export.org",
-      "line": 2360,
+      "line": 2429,
       "content": "- Previous: [[file:09-jupyter.org][Jupyter]] - Index: [[file:00-index.org][Documentation Index]] - Next: [[file:11-latex-preview.org][LaTeX Preview]]",
       "path": [],
       "commands": [],
@@ -61450,7 +61595,7 @@
       "level": 2,
       "file": "20-editmarks.org",
       "line": 371,
-      "content": "| Command                      | Keybinding   | Description            | |------------------------------+--------------+------------------------| | =scimax.editmarks.insertion= | C-c e i | Mark text as insertion |",
+      "content": "| Command                      | Keybinding | Description            | |------------------------------+------------+------------------------| | =scimax.editmarks.insertion= | C-c e i    | Mark text as insertion |",
       "path": [
         "Complete Command Reference"
       ],
@@ -61466,7 +61611,7 @@
         "command",
         "keybinding",
         "description",
-        "--------------------------------------------------------------------",
+        "------------------------------------------------------------------",
         "c-c",
         "mark",
         "text"
@@ -61477,7 +61622,7 @@
       "level": 2,
       "file": "20-editmarks.org",
       "line": 377,
-      "content": "| Command                     | Keybinding | Description            | |-----------------------------+------------+------------------------| | =scimax.editmarks.deletion= | C-c e d | Mark text for deletion |",
+      "content": "| Command                     | Keybinding | Description            | |-----------------------------+------------+------------------------| | =scimax.editmarks.deletion= | C-c e d    | Mark text for deletion |",
       "path": [
         "Complete Command Reference"
       ],
@@ -61504,7 +61649,7 @@
       "level": 2,
       "file": "20-editmarks.org",
       "line": 384,
-      "content": "| Command                    | Keybinding | Description         | |----------------------------+------------+---------------------| | =scimax.editmarks.comment= | C-c e c | Insert edit comment |",
+      "content": "| Command                    | Keybinding | Description         | |----------------------------+------------+---------------------| | =scimax.editmarks.comment= | C-c e c    | Insert edit comment |",
       "path": [
         "Complete Command Reference"
       ],
@@ -61531,7 +61676,7 @@
       "level": 2,
       "file": "20-editmarks.org",
       "line": 390,
-      "content": "| Command                 | Keybinding | Description          | |-------------------------+------------+----------------------| | =scimax.editmarks.typo= | C-c e t | Mark typo correction |",
+      "content": "| Command                 | Keybinding | Description          | |-------------------------+------------+----------------------| | =scimax.editmarks.typo= | C-c e t    | Mark typo correction |",
       "path": [
         "Complete Command Reference"
       ],
@@ -61558,7 +61703,7 @@
       "level": 2,
       "file": "20-editmarks.org",
       "line": 397,
-      "content": "| Command                      | Keybinding | Description           | |------------------------------+------------+-----------------------| | =scimax.editmarks.accept=    | C-c e a | Accept mark at cursor | | =scimax.editmarks.reject=    | C-c e r | Reject mark at cursor | | =scimax.editmarks.acceptAll= | (none)     | Accept all marks      | | =scimax.editmarks.rejectAll= | (none)     | Reject all marks      |",
+      "content": "| Command                      | Keybinding | Description           | |------------------------------+------------+-----------------------| | =scimax.editmarks.accept=    | C-c e a    | Accept mark at cursor | | =scimax.editmarks.reject=    | C-c e r    | Reject mark at cursor | | =scimax.editmarks.acceptAll= | (none)     | Accept all marks      | | =scimax.editmarks.rejectAll= | (none)     | Reject all marks      |",
       "path": [
         "Complete Command Reference"
       ],
@@ -61592,7 +61737,7 @@
       "level": 2,
       "file": "20-editmarks.org",
       "line": 406,
-      "content": "| Command                 | Keybinding | Description           | |-------------------------+------------+-----------------------| | =scimax.editmarks.next= | C-c e ] | Jump to next mark     | | =scimax.editmarks.prev= | C-c e [ | Jump to previous mark |",
+      "content": "| Command                 | Keybinding | Description           | |-------------------------+------------+-----------------------| | =scimax.editmarks.next= | C-c e ]    | Jump to next mark     | | =scimax.editmarks.prev= | C-c e [    | Jump to previous mark |",
       "path": [
         "Complete Command Reference"
       ],
@@ -61622,7 +61767,7 @@
       "level": 2,
       "file": "20-editmarks.org",
       "line": 413,
-      "content": "| Command                    | Keybinding | Description            | |----------------------------+------------+------------------------| | =scimax.editmarks.summary= | C-c e s | Show all marks summary |",
+      "content": "| Command                    | Keybinding | Description            | |----------------------------+------------+------------------------| | =scimax.editmarks.summary= | C-c e s    | Show all marks summary |",
       "path": [
         "Complete Command Reference"
       ],
@@ -78840,7 +78985,7 @@
       "heading": "scimax.export.latex.customHeader",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 638,
+      "line": 639,
       "content": "- *Type*: string - *Default*: `\"\"' - *Description*: Custom LaTeX header (preamble) that replaces the auto-generated one. Should include `\\documentclass' through all `\\usepackage' commands. *Example*: #+begin_src json { \"scimax.export.latex.customHeader\": \"\\\\documentclass[11pt]{article}\\n\\\\usepackage[utf8]{inputenc}\\n\\\\usepackage{graphicx}\\n\\\\usepackage{amsmath}\\n\\\\usepackage[margin1in]{geometry}\" } #+end_src",
       "path": [
         "Export Settings",
@@ -78877,7 +79022,7 @@
       "heading": "scimax.export.latex.documentClass",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 651,
+      "line": 652,
       "content": "- *Type*: string - *Default*: `\"article\"' - *Description*: Default LaTeX document class. Can be overridden by =#+LATEX_CLASS:= in the document. *Example*: #+begin_src json { \"scimax.export.latex.documentClass\": \"report\" } #+end_src",
       "path": [
         "Export Settings",
@@ -78909,7 +79054,7 @@
       "heading": "scimax.export.latex.classOptions",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 664,
+      "line": 665,
       "content": "- *Type*: string - *Default*: `\"12pt,letterpaper\"' - *Description*: Default LaTeX class options. Can be overridden by =#+LATEX_CLASS_OPTIONS:= in the document. *Example*: #+begin_src json { \"scimax.export.latex.classOptions\": \"11pt,a4paper,twoside\" } #+end_src",
       "path": [
         "Export Settings",
@@ -78942,7 +79087,7 @@
       "heading": "scimax.export.latex.defaultPreamble",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 677,
+      "line": 678,
       "content": "- *Type*: string - *Default*: Standard academic packages (inputenc, graphicx, amsmath, etc.) - *Description*: Default LaTeX preamble packages. Can be extended by =#+LATEX_HEADER:= in the document. *Example*: #+begin_src json { \"scimax.export.latex.defaultPreamble\": \"\\\\usepackage[utf8]{inputenc}\\n\\\\usepackage{graphicx}\\n\\\\usepackage{amsmath}\" } #+end_src",
       "path": [
         "Export Settings",
@@ -78976,10 +79121,47 @@
       ]
     },
     {
+      "heading": "scimax.export.latex.citeBackend",
+      "level": 3,
+      "file": "26-configuration.org",
+      "line": 691,
+      "content": "- *Type*: string (enum) - *Default*: `\"bibtex\"' - *Options*: `\"bibtex\"', `\"biblatex\"' - *Description*: Backend used when translating org-cite citations (=[cite/STYLE/VARIANTS:@key]=) into LaTeX. - =bibtex= (default): emits =natbib= commands -- =\\citep=, =\\citet=, =\\citealp=, =\\Citet=, etc. Use with the standard bibtex/natbib stack. - =biblatex=: emits biblatex commands -- =\\autocite=, =\\textcite=, =\\Autocite=, =\\fullcite=, etc. Requires =\\usepackage{biblatex}= and biber. A per-document override ",
+      "path": [
+        "Export Settings",
+        "LaTeX Export Settings"
+      ],
+      "commands": [
+        "scimax.export.latex.citeBackend"
+      ],
+      "keybindings": [],
+      "keywords": [
+        "type",
+        "string",
+        "enum",
+        "default",
+        "bibtex",
+        "options",
+        "biblatex",
+        "description",
+        "backend",
+        "translating",
+        "org-cite",
+        "citations",
+        "citestylevariantskey",
+        "into",
+        "latex",
+        "emits",
+        "natbib",
+        "commands",
+        "citep",
+        "citet"
+      ]
+    },
+    {
       "heading": "PDF Export Settings",
       "level": 2,
       "file": "26-configuration.org",
-      "line": 690,
+      "line": 715,
       "content": "| Setting                         | Type    | Default           | Description                      | |---------------------------------+---------+-------------------+----------------------------------| | scimax.export.pdf.compiler      | string  | \"latexmk-lualatex\"| LaTeX compiler for PDF           | | scimax.export.pdf.bibtexCommand | string  | \"bibtex\"          | Bibliography processor           | | scimax.export.pdf.shellEscape   | string  | \"restricted\"      | Shell escape mode             ",
       "path": [
         "Export Settings"
@@ -79016,7 +79198,7 @@
       "heading": "scimax.export.pdf.compiler",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 701,
+      "line": 726,
       "content": "- *Type*: string (enum) - *Default*: `\"latexmk-lualatex\"' - *Options*: `\"latexmk-lualatex\"', `\"latexmk-pdflatex\"', `\"latexmk-xelatex\"', `\"lualatex\"', `\"pdflatex\"', `\"xelatex\"' - *Description*: LaTeX compiler to use for PDF generation - =latexmk-*=: Uses latexmk which automatically handles multiple passes for references and bibliography (recommended) - Direct compilers: Manual handling of bibliography passes *Example*: #+begin_src json { \"scimax.export.pdf.compiler\": \"latexmk-xelatex\" } #+end_src",
       "path": [
         "Export Settings",
@@ -79053,7 +79235,7 @@
       "heading": "scimax.export.pdf.bibtexCommand",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 717,
+      "line": 742,
       "content": "- *Type*: string (enum) - *Default*: `\"bibtex\"' - *Options*: `\"biber\"', `\"bibtex\"' - *Description*: Bibliography processor (only used when not using latexmk) - =bibtex=: Traditional, works with .bst styles - =biber=: Modern, required for biblatex *Example*: #+begin_src json { \"scimax.export.pdf.bibtexCommand\": \"biber\" } #+end_src",
       "path": [
         "Export Settings",
@@ -79090,7 +79272,7 @@
       "heading": "scimax.export.pdf.shellEscape",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 733,
+      "line": 758,
       "content": "- *Type*: string (enum) - *Default*: `\"restricted\"' - *Options*: `\"restricted\"', `\"full\"', `\"disabled\"' - *Description*: Shell escape mode for LaTeX compilation - =restricted=: Allows minted/pygments but blocks dangerous commands (safe default) - =full=: Allows all shell commands (security risk, but needed for some packages) - =disabled=: No shell escape *Example*: #+begin_src json { \"scimax.export.pdf.shellEscape\": \"full\" } #+end_src",
       "path": [
         "Export Settings",
@@ -79127,7 +79309,7 @@
       "heading": "scimax.export.pdf.extraArgs",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 750,
+      "line": 775,
       "content": "- *Type*: string - *Default*: `\"\"' - *Description*: Extra arguments to pass to the LaTeX compiler *Example*: #+begin_src json { \"scimax.export.pdf.extraArgs\": \"-synctex=1\" } #+end_src",
       "path": [
         "Export Settings",
@@ -79158,7 +79340,7 @@
       "heading": "scimax.export.pdf.openLogOnError",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 763,
+      "line": 788,
       "content": "- *Type*: boolean - *Default*: `true' - *Description*: Automatically open the log file when PDF compilation fails",
       "path": [
         "Export Settings",
@@ -79186,7 +79368,7 @@
       "heading": "scimax.export.pdf.cleanAuxFiles",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 769,
+      "line": 794,
       "content": "- *Type*: boolean - *Default*: `true' - *Description*: Clean up auxiliary files (.aux, .bbl, .blg, etc.) after successful compilation",
       "path": [
         "Export Settings",
@@ -79217,7 +79399,7 @@
       "heading": "LaTeX Preview Settings",
       "level": 1,
       "file": "26-configuration.org",
-      "line": 775,
+      "line": 800,
       "content": "Configure inline LaTeX equation previews.",
       "path": [],
       "commands": [],
@@ -79236,7 +79418,7 @@
       "heading": "Settings Overview",
       "level": 2,
       "file": "26-configuration.org",
-      "line": 779,
+      "line": 804,
       "content": "| Setting                           | Type    | Default | Description                      | |-----------------------------------+---------+---------+----------------------------------| | scimax.latexPreview.enabled       | boolean | true    | Enable LaTeX preview on hover    | | scimax.latexPreview.cacheEnabled  | boolean | true    | Cache rendered equations         | | scimax.latexPreview.darkModeAware | boolean | true    | Adjust rendering for dark themes |",
       "path": [
         "LaTeX Preview Settings"
@@ -79274,7 +79456,7 @@
       "heading": "Detailed Configuration",
       "level": 2,
       "file": "26-configuration.org",
-      "line": 787,
+      "line": 812,
       "content": "",
       "path": [
         "LaTeX Preview Settings"
@@ -79290,7 +79472,7 @@
       "heading": "scimax.latexPreview.enabled",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 789,
+      "line": 814,
       "content": "- *Type*: boolean - *Default*: `true' - *Description*: Enable LaTeX equation preview on hover *Example*: #+begin_src json { \"scimax.latexPreview.enabled\": true } #+end_src",
       "path": [
         "LaTeX Preview Settings",
@@ -79321,7 +79503,7 @@
       "heading": "scimax.latexPreview.cacheEnabled",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 802,
+      "line": 827,
       "content": "- *Type*: boolean - *Default*: `true' - *Description*: Cache rendered equations for faster hover responses *Example*: #+begin_src json { \"scimax.latexPreview.cacheEnabled\": true } #+end_src",
       "path": [
         "LaTeX Preview Settings",
@@ -79353,7 +79535,7 @@
       "heading": "scimax.latexPreview.darkModeAware",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 815,
+      "line": 840,
       "content": "- *Type*: boolean - *Default*: `true' - *Description*: Automatically adjust equation rendering for dark/light themes *Example*: #+begin_src json { \"scimax.latexPreview.darkModeAware\": true } #+end_src",
       "path": [
         "LaTeX Preview Settings",
@@ -79385,7 +79567,7 @@
       "heading": "LaTeX Live Preview Settings",
       "level": 1,
       "file": "26-configuration.org",
-      "line": 828,
+      "line": 853,
       "content": "Configure automatic PDF building and live preview.",
       "path": [],
       "commands": [],
@@ -79405,7 +79587,7 @@
       "heading": "Settings Overview",
       "level": 2,
       "file": "26-configuration.org",
-      "line": 832,
+      "line": 857,
       "content": "| Setting                             | Type    | Default    | Description                    | |-------------------------------------+---------+------------+--------------------------------| | scimax.latexLivePreview.buildOnSave | boolean | true       | Auto-rebuild PDF on save       | | scimax.latexLivePreview.buildOnIdle | boolean | false      | Auto-rebuild after idle period | | scimax.latexLivePreview.idleDelay   | number  | 2000       | Idle delay in milliseconds     | | scimax.latexLivePr",
       "path": [
         "LaTeX Live Preview Settings"
@@ -79444,7 +79626,7 @@
       "heading": "Detailed Configuration",
       "level": 2,
       "file": "26-configuration.org",
-      "line": 842,
+      "line": 867,
       "content": "",
       "path": [
         "LaTeX Live Preview Settings"
@@ -79460,7 +79642,7 @@
       "heading": "scimax.latexLivePreview.buildOnSave",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 844,
+      "line": 869,
       "content": "- *Type*: boolean - *Default*: `true' - *Description*: Automatically rebuild PDF when the org file is saved *Example*: #+begin_src json { \"scimax.latexLivePreview.buildOnSave\": true } #+end_src",
       "path": [
         "LaTeX Live Preview Settings",
@@ -79491,7 +79673,7 @@
       "heading": "scimax.latexLivePreview.buildOnIdle",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 857,
+      "line": 882,
       "content": "- *Type*: boolean - *Default*: `false' - *Description*: Automatically rebuild PDF after idle period (no typing) *Example*: #+begin_src json { \"scimax.latexLivePreview.buildOnIdle\": true, \"scimax.latexLivePreview.idleDelay\": 3000 } #+end_src",
       "path": [
         "LaTeX Live Preview Settings",
@@ -79527,7 +79709,7 @@
       "heading": "scimax.latexLivePreview.idleDelay",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 871,
+      "line": 896,
       "content": "- *Type*: number - *Default*: `2000' - *Description*: Delay in milliseconds before idle build triggers *Example*: #+begin_src json { \"scimax.latexLivePreview.buildOnIdle\": true, \"scimax.latexLivePreview.idleDelay\": 5000 } #+end_src",
       "path": [
         "LaTeX Live Preview Settings",
@@ -79562,7 +79744,7 @@
       "heading": "scimax.latexLivePreview.compiler",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 885,
+      "line": 910,
       "content": "- *Type*: string (enum) - *Default*: `\"pdflatex\"' - *Options*: `\"pdflatex\"', `\"xelatex\"', `\"lualatex\"' - *Description*: LaTeX compiler to use - `pdflatex': Standard, fast - `xelatex': Better Unicode and font support - `lualatex': Modern, Lua scripting support *Example*: #+begin_src json { \"scimax.latexLivePreview.compiler\": \"xelatex\" } #+end_src",
       "path": [
         "LaTeX Live Preview Settings",
@@ -79599,7 +79781,7 @@
       "heading": "scimax.latexLivePreview.useLatexmk",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 902,
+      "line": 927,
       "content": "- *Type*: boolean - *Default*: `true' - *Description*: Use latexmk for smart incremental builds (recommended). Automatically handles multiple passes for references, bibliography, etc. *Example*: #+begin_src json { \"scimax.latexLivePreview.useLatexmk\": true } #+end_src",
       "path": [
         "LaTeX Live Preview Settings",
@@ -79636,7 +79818,7 @@
       "heading": "Notebook Settings",
       "level": 1,
       "file": "26-configuration.org",
-      "line": 915,
+      "line": 940,
       "content": "Configure the project-based notebook system.",
       "path": [],
       "commands": [],
@@ -79653,7 +79835,7 @@
       "heading": "Settings Overview",
       "level": 2,
       "file": "26-configuration.org",
-      "line": 919,
+      "line": 944,
       "content": "| Setting                         | Type    | Default    | Description              | |---------------------------------+---------+------------+--------------------------| | scimax.notebook.directory       | string  | \"\"         | Default parent directory | | scimax.notebook.defaultTemplate | string  | \"research\" | Default template         | | scimax.notebook.autoDetect      | boolean | true       | Auto-detect projects     |",
       "path": [
         "Notebook Settings"
@@ -79687,7 +79869,7 @@
       "heading": "Detailed Configuration",
       "level": 2,
       "file": "26-configuration.org",
-      "line": 927,
+      "line": 952,
       "content": "",
       "path": [
         "Notebook Settings"
@@ -79703,7 +79885,7 @@
       "heading": "scimax.notebook.directory",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 929,
+      "line": 954,
       "content": "- *Type*: string - *Default*: `\"\"' - *Description*: Default parent directory for new notebooks *Example*: #+begin_src json { \"scimax.notebook.directory\": \"~/projects\" } #+end_src",
       "path": [
         "Notebook Settings",
@@ -79733,7 +79915,7 @@
       "heading": "scimax.notebook.defaultTemplate",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 942,
+      "line": 967,
       "content": "- *Type*: string (enum) - *Default*: `\"research\"' - *Options*: `\"empty\"', `\"research\"', `\"software\"', `\"notes\"' - *Description*: Default template for new notebooks - `empty': Minimal structure - `research': Research project layout - `software': Software development layout - `notes': Note-taking layout *Example*: #+begin_src json { \"scimax.notebook.defaultTemplate\": \"software\" } #+end_src",
       "path": [
         "Notebook Settings",
@@ -79770,7 +79952,7 @@
       "heading": "scimax.notebook.autoDetect",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 960,
+      "line": 985,
       "content": "- *Type*: boolean - *Default*: `true' - *Description*: Automatically detect and track projects in workspace *Example*: #+begin_src json { \"scimax.notebook.autoDetect\": false } #+end_src",
       "path": [
         "Notebook Settings",
@@ -79802,7 +79984,7 @@
       "heading": "Hydra Menu Settings",
       "level": 1,
       "file": "26-configuration.org",
-      "line": 973,
+      "line": 998,
       "content": "Configure the Hydra menu system for quick command access.",
       "path": [],
       "commands": [],
@@ -79822,7 +80004,7 @@
       "heading": "Settings Overview",
       "level": 2,
       "file": "26-configuration.org",
-      "line": 977,
+      "line": 1002,
       "content": "| Setting                         | Type    | Default | Description                     | |---------------------------------+---------+---------+---------------------------------| | scimax.hydra.showKeyHints       | boolean | true    | Show keyboard shortcuts inline  | | scimax.hydra.singleKeySelection | boolean | true    | Single keypress selection       | | scimax.hydra.dimNonMatching     | boolean | true    | Dim non-matching items          | | scimax.hydra.sortByKey          | boolean | fals",
       "path": [
         "Hydra Menu Settings"
@@ -79861,7 +80043,7 @@
       "heading": "Detailed Configuration",
       "level": 2,
       "file": "26-configuration.org",
-      "line": 986,
+      "line": 1011,
       "content": "",
       "path": [
         "Hydra Menu Settings"
@@ -79877,7 +80059,7 @@
       "heading": "scimax.hydra.showKeyHints",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 988,
+      "line": 1013,
       "content": "- *Type*: boolean - *Default*: `true' - *Description*: Show keyboard shortcuts inline with menu items *Example*: #+begin_src json { \"scimax.hydra.showKeyHints\": true } #+end_src",
       "path": [
         "Hydra Menu Settings",
@@ -79909,7 +80091,7 @@
       "heading": "scimax.hydra.singleKeySelection",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 1001,
+      "line": 1026,
       "content": "- *Type*: boolean - *Default*: `true' - *Description*: Select menu items with a single keypress (no Enter needed) *Example*: #+begin_src json { \"scimax.hydra.singleKeySelection\": true } #+end_src",
       "path": [
         "Hydra Menu Settings",
@@ -79942,7 +80124,7 @@
       "heading": "scimax.hydra.dimNonMatching",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 1014,
+      "line": 1039,
       "content": "- *Type*: boolean - *Default*: `true' - *Description*: Dim menu items that don't match the current filter *Example*: #+begin_src json { \"scimax.hydra.dimNonMatching\": true } #+end_src",
       "path": [
         "Hydra Menu Settings",
@@ -79975,7 +80157,7 @@
       "heading": "scimax.hydra.sortByKey",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 1027,
+      "line": 1052,
       "content": "- *Type*: boolean - *Default*: `false' - *Description*: Sort menu items by their keyboard shortcut instead of logical grouping *Example*: #+begin_src json { \"scimax.hydra.sortByKey\": false } #+end_src",
       "path": [
         "Hydra Menu Settings",
@@ -80009,7 +80191,7 @@
       "heading": "Speed Commands Settings",
       "level": 1,
       "file": "26-configuration.org",
-      "line": 1040,
+      "line": 1065,
       "content": "Configure org-mode style speed commands.",
       "path": [],
       "commands": [],
@@ -80027,7 +80209,7 @@
       "heading": "Settings Overview",
       "level": 2,
       "file": "26-configuration.org",
-      "line": 1044,
+      "line": 1069,
       "content": "| Setting                      | Type    | Default | Description                            | |------------------------------+---------+---------+----------------------------------------| | scimax.speedCommands.enabled | boolean | true    | Enable speed commands at heading start |",
       "path": [
         "Speed Commands Settings"
@@ -80057,7 +80239,7 @@
       "heading": "Detailed Configuration",
       "level": 2,
       "file": "26-configuration.org",
-      "line": 1050,
+      "line": 1075,
       "content": "",
       "path": [
         "Speed Commands Settings"
@@ -80073,7 +80255,7 @@
       "heading": "scimax.speedCommands.enabled",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 1052,
+      "line": 1077,
       "content": "- *Type*: boolean - *Default*: `true' - *Description*: Enable org-mode speed commands (single-key shortcuts at beginning of headings) When enabled, you can use single-key shortcuts (like `n', `p', `u') when the cursor is at the beginning of a heading line. *Example*: #+begin_src json { \"scimax.speedCommands.enabled\": true } #+end_src",
       "path": [
         "Speed Commands Settings",
@@ -80110,7 +80292,7 @@
       "heading": "Agenda Settings",
       "level": 1,
       "file": "26-configuration.org",
-      "line": 1067,
+      "line": 1092,
       "content": "Configure the agenda view and TODO tracking.",
       "path": [],
       "commands": [],
@@ -80128,7 +80310,7 @@
       "heading": "Settings Overview",
       "level": 2,
       "file": "26-configuration.org",
-      "line": 1071,
+      "line": 1096,
       "content": "| Setting                        | Type    | Default                     | Description                    | |--------------------------------+---------+-----------------------------+--------------------------------| | scimax.agenda.includeJournal   | boolean | true                        | Include journal in agenda      | | scimax.agenda.includeWorkspace | boolean | true                        | Include workspace folders      | | scimax.agenda.includeProjects  | boolean | true                   ",
       "path": [
         "Agenda Settings"
@@ -80160,7 +80342,7 @@
       "heading": "Detailed Configuration",
       "level": 2,
       "file": "26-configuration.org",
-      "line": 1086,
+      "line": 1111,
       "content": "",
       "path": [
         "Agenda Settings"
@@ -80176,7 +80358,7 @@
       "heading": "scimax.agenda.includeJournal",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 1088,
+      "line": 1113,
       "content": "- *Type*: boolean - *Default*: =true= - *Description*: Include the journal directory in agenda scanning When enabled, the journal directory (from =scimax.journal.directory=) is automatically included in agenda scanning. Disable this if you don't want journal entries in your agenda.",
       "path": [
         "Agenda Settings",
@@ -80211,7 +80393,7 @@
       "heading": "scimax.agenda.includeWorkspace",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 1096,
+      "line": 1121,
       "content": "- *Type*: boolean - *Default*: =true= - *Description*: Include workspace folders in agenda scanning",
       "path": [
         "Agenda Settings",
@@ -80238,7 +80420,7 @@
       "heading": "scimax.agenda.includeProjects",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 1102,
+      "line": 1127,
       "content": "- *Type*: boolean - *Default*: =true= - *Description*: Include all scimax projects in agenda scanning When enabled, all projects registered with scimax projectile are included in agenda scanning. This is useful because projects often contain TODO items and tasks.",
       "path": [
         "Agenda Settings",
@@ -80275,7 +80457,7 @@
       "heading": "scimax.agenda.include",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 1110,
+      "line": 1135,
       "content": "- *Type*: array of strings - *Default*: =[ ]= (empty) - *Description*: Additional directories or files to include in the agenda (supports ~ for home directory) *Example*: #+begin_src json { \"scimax.agenda.include\": [ \"~/Documents/org\", \"~/work/projects\" ] } #+end_src",
       "path": [
         "Agenda Settings",
@@ -80311,7 +80493,7 @@
       "heading": "scimax.agenda.exclude",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 1126,
+      "line": 1151,
       "content": "- *Type*: array of strings - *Default*: =[\"**/node_modules/**\", \"**/.git/**\", \"**/archive/**\"]= - *Description*: Patterns or paths to exclude from agenda scanning. Supports both glob patterns (containing =*=) and absolute paths. *Example*: #+begin_src json { \"scimax.agenda.exclude\": [ \"**/node_modules/**\", \"**/.git/**\", \"**/archive/**\", \"~/org/scratch.org\" ] } #+end_src",
       "path": [
         "Agenda Settings",
@@ -80348,7 +80530,7 @@
       "heading": "scimax.agenda.defaultSpan",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 1144,
+      "line": 1169,
       "content": "- *Type*: number - *Default*: `7' - *Description*: Default number of days to show in agenda view *Example*: #+begin_src json { \"scimax.agenda.defaultSpan\": 14 } #+end_src",
       "path": [
         "Agenda Settings",
@@ -80377,7 +80559,7 @@
       "heading": "scimax.agenda.showDone",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 1157,
+      "line": 1182,
       "content": "- *Type*: boolean - *Default*: `false' - *Description*: Show completed (DONE) items in agenda view *Example*: #+begin_src json { \"scimax.agenda.showDone\": true } #+end_src",
       "path": [
         "Agenda Settings",
@@ -80410,7 +80592,7 @@
       "heading": "scimax.agenda.showHabits",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 1170,
+      "line": 1195,
       "content": "- *Type*: boolean - *Default*: `true' - *Description*: Show items tagged with `:HABIT:' *Example*: #+begin_src json { \"scimax.agenda.showHabits\": false } #+end_src",
       "path": [
         "Agenda Settings",
@@ -80441,7 +80623,7 @@
       "heading": "scimax.agenda.todoStates",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 1183,
+      "line": 1208,
       "content": "- *Type*: array of strings - *Default*: `[\"TODO\", \"NEXT\", \"WAITING\"]' - *Description*: Active TODO states to show in TODO list *Example*: #+begin_src json { \"scimax.agenda.todoStates\": [ \"TODO\", \"NEXT\", \"IN-PROGRESS\", \"WAITING\", \"SOMEDAY\" ] } #+end_src",
       "path": [
         "Agenda Settings",
@@ -80476,7 +80658,7 @@
       "heading": "scimax.agenda.doneStates",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 1202,
+      "line": 1227,
       "content": "- *Type*: array of strings - *Default*: `[\"DONE\", \"CANCELLED\"]' - *Description*: Completed TODO states *Example*: #+begin_src json { \"scimax.agenda.doneStates\": [ \"DONE\", \"CANCELLED\", \"DEFERRED\", \"ARCHIVED\" ] } #+end_src",
       "path": [
         "Agenda Settings",
@@ -80509,7 +80691,7 @@
       "heading": "Image Overlay Settings",
       "level": 1,
       "file": "26-configuration.org",
-      "line": 1220,
+      "line": 1245,
       "content": "Configure inline image thumbnails in org-mode files.",
       "path": [],
       "commands": [],
@@ -80528,7 +80710,7 @@
       "heading": "Settings Overview",
       "level": 2,
       "file": "26-configuration.org",
-      "line": 1224,
+      "line": 1249,
       "content": "| Setting                                      | Type    | Default  | Description                        | |----------------------------------------------+---------+----------+------------------------------------| | scimax.imageOverlays.enabled                 | boolean | true     | Enable inline image thumbnails     | | scimax.imageOverlays.maxWidth                | number  | 96       | Maximum thumbnail width in pixels  | | scimax.imageOverlays.maxHeight               | number  | 96       | Ma",
       "path": [
         "Image Overlay Settings"
@@ -80564,7 +80746,7 @@
       "heading": "Detailed Configuration",
       "level": 2,
       "file": "26-configuration.org",
-      "line": 1238,
+      "line": 1263,
       "content": "",
       "path": [
         "Image Overlay Settings"
@@ -80580,7 +80762,7 @@
       "heading": "scimax.imageOverlays.enabled",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 1240,
+      "line": 1265,
       "content": "- *Type*: boolean - *Default*: `true' - *Description*: Enable inline image thumbnails in org-mode files *Example*: #+begin_src json { \"scimax.imageOverlays.enabled\": true } #+end_src",
       "path": [
         "Image Overlay Settings",
@@ -80611,7 +80793,7 @@
       "heading": "scimax.imageOverlays.maxWidth",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 1253,
+      "line": 1278,
       "content": "- *Type*: number - *Default*: `96' - *Description*: Maximum width in pixels for thumbnail icons *Example*: #+begin_src json { \"scimax.imageOverlays.maxWidth\": 128 } #+end_src",
       "path": [
         "Image Overlay Settings",
@@ -80642,7 +80824,7 @@
       "heading": "scimax.imageOverlays.maxHeight",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 1266,
+      "line": 1291,
       "content": "- *Type*: number - *Default*: `96' - *Description*: Maximum height in pixels for thumbnail icons *Example*: #+begin_src json { \"scimax.imageOverlays.maxHeight\": 128 } #+end_src",
       "path": [
         "Image Overlay Settings",
@@ -80673,7 +80855,7 @@
       "heading": "scimax.imageOverlays.renderMode",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 1279,
+      "line": 1304,
       "content": "- *Type*: string (enum) - *Default*: `\"gutter\"' - *Options*: `\"gutter\"', `\"after\"', `\"both\"' - *Description*: Where to display image thumbnails - `gutter': In the line margin (gutter) - `after': Inline emoji after the link - `both': Both locations *Example*: #+begin_src json { \"scimax.imageOverlays.renderMode\": \"both\" } #+end_src",
       "path": [
         "Image Overlay Settings",
@@ -80710,7 +80892,7 @@
       "heading": "scimax.imageOverlays.onlyWhenCursorNotInLink",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 1296,
+      "line": 1321,
       "content": "- *Type*: boolean - *Default*: `true' - *Description*: Hide overlay when cursor is inside the image link (prevents interference with editing) *Example*: #+begin_src json { \"scimax.imageOverlays.onlyWhenCursorNotInLink\": true } #+end_src",
       "path": [
         "Image Overlay Settings",
@@ -80745,7 +80927,7 @@
       "heading": "scimax.imageOverlays.excludePatterns",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 1309,
+      "line": 1334,
       "content": "- *Type*: array of strings - *Default*: `[ ]' - *Description*: Regex patterns for image paths to exclude from overlays *Example*: #+begin_src json { \"scimax.imageOverlays.excludePatterns\": [ \".*\\\\.ico$\", \".*thumbnail.*\" ] } #+end_src",
       "path": [
         "Image Overlay Settings",
@@ -80779,7 +80961,7 @@
       "heading": "scimax.imageOverlays.maxOverlaysPerDocument",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 1325,
+      "line": 1350,
       "content": "- *Type*: number - *Default*: `200' - *Description*: Maximum number of image overlays to display per document (prevents performance issues) *Example*: #+begin_src json { \"scimax.imageOverlays.maxOverlaysPerDocument\": 500 } #+end_src",
       "path": [
         "Image Overlay Settings",
@@ -80815,7 +80997,7 @@
       "heading": "scimax.imageOverlays.showDimensions",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 1338,
+      "line": 1363,
       "content": "- *Type*: boolean - *Default*: `true' - *Description*: Show image dimensions in the after-content decoration *Example*: #+begin_src json { \"scimax.imageOverlays.showDimensions\": false } #+end_src",
       "path": [
         "Image Overlay Settings",
@@ -80847,7 +81029,7 @@
       "heading": "scimax.imageOverlays.cacheEnabled",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 1351,
+      "line": 1376,
       "content": "- *Type*: boolean - *Default*: `true' - *Description*: Cache generated thumbnails for faster loading *Example*: #+begin_src json { \"scimax.imageOverlays.cacheEnabled\": true } #+end_src",
       "path": [
         "Image Overlay Settings",
@@ -80878,7 +81060,7 @@
       "heading": "Capture Settings",
       "level": 1,
       "file": "26-configuration.org",
-      "line": 1364,
+      "line": 1389,
       "content": "Configure the org-capture system for quick note-taking.",
       "path": [],
       "commands": [],
@@ -80897,7 +81079,7 @@
       "heading": "Settings Overview",
       "level": 2,
       "file": "26-configuration.org",
-      "line": 1368,
+      "line": 1393,
       "content": "| Setting                       | Type    | Default           | Description             | |-------------------------------+---------+-------------------+-------------------------| | scimax.capture.templates      | array   | [ ]               | Capture templates       | | scimax.capture.defaultFile    | string  | \"~/org/notes.org\" | Default capture file    | | scimax.capture.datetreeFormat | string  | \"day\"             | Datetree granularity    | | scimax.capture.autoSave       | boolean | true  ",
       "path": [
         "Capture Settings"
@@ -80933,7 +81115,7 @@
       "heading": "Detailed Configuration",
       "level": 2,
       "file": "26-configuration.org",
-      "line": 1377,
+      "line": 1402,
       "content": "",
       "path": [
         "Capture Settings"
@@ -80949,7 +81131,7 @@
       "heading": "scimax.capture.templates",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 1379,
+      "line": 1404,
       "content": "- *Type*: array of objects - *Default*: `[ ]' - *Description*: Capture templates for quick note-taking. Each template has: - `key': Single character shortcut - `name': Template name - `type': entry, item, or table-line - `file': Target file - `headline': Optional target headline - `datetree': Boolean, use datetree structure - `template': Template text with placeholders *Template placeholders*: - `%^{prompt}': Prompt for input - `%t': Current timestamp - `%T': Current timestamp with time - `%i': ",
       "path": [
         "Capture Settings",
@@ -80986,7 +81168,7 @@
       "heading": "scimax.capture.defaultFile",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 1431,
+      "line": 1456,
       "content": "- *Type*: string - *Default*: `\"~/org/notes.org\"' - *Description*: Default file for captures when no target file is specified in template *Example*: #+begin_src json { \"scimax.capture.defaultFile\": \"~/Documents/inbox.org\" } #+end_src",
       "path": [
         "Capture Settings",
@@ -81017,7 +81199,7 @@
       "heading": "scimax.capture.datetreeFormat",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 1444,
+      "line": 1469,
       "content": "- *Type*: string (enum) - *Default*: `\"day\"' - *Options*: `\"day\"', `\"week\"', `\"month\"' - *Description*: Granularity of datetree entries - `day': Year > Month > Day - `week': Year > Week number - `month': Year > Month *Example*: #+begin_src json { \"scimax.capture.datetreeFormat\": \"week\" } #+end_src",
       "path": [
         "Capture Settings",
@@ -81052,7 +81234,7 @@
       "heading": "scimax.capture.autoSave",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 1461,
+      "line": 1486,
       "content": "- *Type*: boolean - *Default*: `true' - *Description*: Automatically save the file after capture *Example*: #+begin_src json { \"scimax.capture.autoSave\": true } #+end_src",
       "path": [
         "Capture Settings",
@@ -81082,7 +81264,7 @@
       "heading": "Common Configurations",
       "level": 1,
       "file": "26-configuration.org",
-      "line": 1474,
+      "line": 1499,
       "content": "This section provides complete `settings.json' examples for different use cases.",
       "path": [],
       "commands": [],
@@ -81103,7 +81285,7 @@
       "heading": "Academic Writing Setup",
       "level": 2,
       "file": "26-configuration.org",
-      "line": 1478,
+      "line": 1503,
       "content": "Perfect for researchers, graduate students, and academic writers: #+begin_src json { // Journal for daily research log \"scimax.journal.directory\": \"~/research/journal\", \"scimax.journal.format\": \"org\", \"scimax.journal.autoTimestamp\": true, // References and bibliography \"scimax.ref.bibliographyFiles\": [ \"~/research/bibliography/main.bib\", \"~/research/bibliography/conferences.bib\" ], \"scimax.ref.pdfDirectory\": \"~/research/papers\", \"scimax.ref.notesDirectory\": \"~/research/notes\", \"scimax.ref.defaul",
       "path": [
         "Common Configurations"
@@ -81145,7 +81327,7 @@
       "heading": "Software Development Setup",
       "level": 2,
       "file": "26-configuration.org",
-      "line": 1545,
+      "line": 1570,
       "content": "Optimized for software developers and programmers: #+begin_src json { // Journal for development log \"scimax.journal.directory\": \"~/devlog\", \"scimax.journal.format\": \"markdown\", \"scimax.journal.template\": \"daily-standup\", // Code execution \"scimax.literate.pythonPath\": \"~/.pyenv/shims/python\", \"scimax.literate.jupyterPath\": \"~/.pyenv/shims/jupyter\", // Database - index project documentation \"scimax.db.include\": [ \"~/projects\", \"~/docs\" ], \"scimax.db.exclude\": [ \"**/node_modules/**\",",
       "path": [
         "Common Configurations"
@@ -81187,7 +81369,7 @@
       "heading": "Personal Notes & PKM Setup",
       "level": 2,
       "file": "26-configuration.org",
-      "line": 1615,
+      "line": 1640,
       "content": "For personal knowledge management and note-taking: #+begin_src json { // Journal \"scimax.journal.directory\": \"~/notes/journal\", \"scimax.journal.format\": \"org\", \"scimax.journal.weekStartsOn\": \"monday\", \"scimax.journal.autoTimestamp\": true, // Database with semantic search \"scimax.db.include\": [ \"~/notes\", \"~/books\", \"~/articles\" ], \"scimax.db.exclude\": [ \"**/archive/**\", \"**/temp/**\" ], \"scimax.db.autoIndex\": true, \"scimax.db.embeddingProvider\": \"ollama\", \"scimax.db.ollamaModel\": \"nomic-embed-tex",
       "path": [
         "Common Configurations"
@@ -81231,7 +81413,7 @@
       "heading": "Minimal Configuration",
       "level": 2,
       "file": "26-configuration.org",
-      "line": 1706,
+      "line": 1731,
       "content": "Bare-bones setup with just the essentials: #+begin_src json { \"scimax.journal.directory\": \"~/journal\", \"scimax.db.autoIndex\": false, \"scimax.agenda.include\": [\"~/notes\"] } #+end_src",
       "path": [
         "Common Configurations"
@@ -81260,7 +81442,7 @@
       "heading": "Troubleshooting",
       "level": 1,
       "file": "26-configuration.org",
-      "line": 1718,
+      "line": 1743,
       "content": "",
       "path": [],
       "commands": [],
@@ -81273,7 +81455,7 @@
       "heading": "Database Performance",
       "level": 2,
       "file": "26-configuration.org",
-      "line": 1720,
+      "line": 1745,
       "content": "If database indexing is slow or uses too much memory: #+begin_src json { \"scimax.db.autoIndex\": false, \"scimax.db.exclude\": [ \"**/node_modules/**\", \"**/.git/**\", \"**/dist/**\", \"**/build/**\", \"**/*.min.js\", \"**/archive/**\" ] } #+end_src Then manually trigger indexing with `C-S-P' → \"Scimax: Reindex Files\"",
       "path": [
         "Troubleshooting"
@@ -81312,7 +81494,7 @@
       "heading": "Jupyter Kernels Not Found",
       "level": 2,
       "file": "26-configuration.org",
-      "line": 1740,
+      "line": 1765,
       "content": "Ensure Jupyter is in your PATH or specify the full path: #+begin_src json { \"scimax.literate.jupyterPath\": \"/usr/local/bin/jupyter\" } #+end_src Check available kernels with `C-S-P' → \"Scimax: Show Available Jupyter Kernels\"",
       "path": [
         "Troubleshooting"
@@ -81346,7 +81528,7 @@
       "heading": "LaTeX Preview Not Working",
       "level": 2,
       "file": "26-configuration.org",
-      "line": 1752,
+      "line": 1777,
       "content": "Ensure you have a LaTeX distribution installed (TeX Live, MiKTeX, etc.), then: #+begin_src json { \"scimax.latexPreview.enabled\": true, \"scimax.latexPreview.cacheEnabled\": false } #+end_src",
       "path": [
         "Troubleshooting"
@@ -81378,7 +81560,7 @@
       "heading": "Semantic Search Not Working",
       "level": 2,
       "file": "26-configuration.org",
-      "line": 1763,
+      "line": 1788,
       "content": "Ensure the Ollama server is running and the embedding model is pulled: #+begin_src bash curl http://localhost:11434/api/version #+end_src",
       "path": [
         "Troubleshooting"
@@ -81407,7 +81589,7 @@
       "heading": "Related Documentation",
       "level": 1,
       "file": "26-configuration.org",
-      "line": 1770,
+      "line": 1795,
       "content": "- [[file:01-getting-started.org][Getting Started Guide]] - [[file:07-source-blocks.org][Source Blocks Documentation]] - [[file:10-export.org][Export Documentation]] - [[file:24-keybindings.org][Keybindings Reference]]",
       "path": [],
       "commands": [],
@@ -81433,7 +81615,7 @@
       "heading": "Navigation",
       "level": 1,
       "file": "26-configuration.org",
-      "line": 1777,
+      "line": 1802,
       "content": "- Previous: [[file:25-commands.org][Commands]] - Index: [[file:00-index.org][Documentation Index]] - Next: [[file:27-org-api.org][Org API]]",
       "path": [],
       "commands": [],
@@ -83819,10 +84001,30 @@
       ]
     },
     {
-      "heading": "org-ref Citation Links",
+      "heading": "Editmarks",
       "level": 1,
       "file": "28-non-standard-features.org",
       "line": 19,
+      "content": "The editmark syntax described in [[file:20-editmarks.org][20-editmarks.org]] is a non-standard syntax for org-mode.",
+      "path": [],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "editmarks",
+        "editmark",
+        "syntax",
+        "described",
+        "file20-editmarksorg",
+        "20-editmarksorg",
+        "non-standard",
+        "org-mode"
+      ]
+    },
+    {
+      "heading": "org-ref Citation Links",
+      "level": 1,
+      "file": "28-non-standard-features.org",
+      "line": 23,
       "content": "CLOSED: [2026-01-16 Fri 11:15] The citation system (`cite:', `citet:', `citep:', etc.) comes from the org-ref package for Emacs, not from core org-mode.",
       "path": [],
       "commands": [],
@@ -83851,7 +84053,7 @@
       "heading": "Citation Styles",
       "level": 2,
       "file": "28-non-standard-features.org",
-      "line": 25,
+      "line": 29,
       "content": "CLOSED: [2026-01-16 Fri 11:15] | Style           | Syntax              | Description                    | |-----------------+---------------------+--------------------------------| | cite            | cite:key            | Basic citation                 | | citet           | citet:key           | Textual citation (Author, Year)| | citep           | citep:key           | Parenthetical citation         | | citeauthor      | citeauthor:key      | Author name only               | | citeyear        |",
       "path": [
         "org-ref Citation Links"
@@ -83885,7 +84087,7 @@
       "heading": "Export Behavior",
       "level": 2,
       "file": "28-non-standard-features.org",
-      "line": 37,
+      "line": 41,
       "content": "CLOSED: [2026-01-16 Fri 11:16]",
       "path": [
         "org-ref Citation Links"
@@ -83905,7 +84107,7 @@
       "heading": "LaTeX/PDF Export",
       "level": 3,
       "file": "28-non-standard-features.org",
-      "line": 40,
+      "line": 44,
       "content": "CLOSED: [2026-01-16 Fri 11:16] Citations are converted directly to LaTeX cite commands: | Org Citation     | LaTeX Output        | |------------------+---------------------| | cite:key         | \\cite{key}          | | citet:key        | \\citet{key}         | | citep:key        | \\citep{key}         | | citeauthor:key   | \\citeauthor{key}    | | citeyear:key     | \\citeyear{key}      | | cite:k1,k2       | \\cite{k1,k2}        | Requires `natbib' or `biblatex' package in your LaTeX preamble.",
       "path": [
         "org-ref Citation Links",
@@ -83940,7 +84142,7 @@
       "heading": "HTML Export",
       "level": 3,
       "file": "28-non-standard-features.org",
-      "line": 56,
+      "line": 60,
       "content": "CLOSED: [2026-01-16 Fri 11:16] Citations are rendered as clickable links with CSS classes for styling.",
       "path": [
         "org-ref Citation Links",
@@ -83968,7 +84170,7 @@
       "heading": "Markdown Export",
       "level": 3,
       "file": "28-non-standard-features.org",
-      "line": 61,
+      "line": 65,
       "content": "CLOSED: [2026-01-16 Fri 11:16] Citations are converted to Pandoc-style citations: | Org Citation     | Pandoc Markdown     | |------------------+---------------------| | cite:key         | [@key]              | | citet:key        | @key                | | citep:key        | [@key]              | | cite:k1,k2       | [@k1; @k2]          |",
       "path": [
         "org-ref Citation Links",
@@ -84001,7 +84203,7 @@
       "heading": "Compatibility Notes",
       "level": 2,
       "file": "28-non-standard-features.org",
-      "line": 73,
+      "line": 77,
       "content": "CLOSED: [2026-01-16 Fri 11:16] - Emacs org-mode users will find this syntax familiar - Standard org-mode uses `[[cite:@key]]' syntax (org-cite) which is also supported - The org-ref style `cite:key' is more concise for scientific writing See [[file:19-references.org][References]] for full documentation.",
       "path": [
         "org-ref Citation Links"
@@ -84035,10 +84237,13 @@
       "heading": "Emacs-style Command Markup",
       "level": 1,
       "file": "28-non-standard-features.org",
-      "line": 82,
-      "content": "CLOSED: [2026-01-16 Fri 11:17] The command markup syntax `command' (backtick  text  single quote) is used in Emacs documentation to reference commands, functions, and key sequences. This renders with dark red highlighting in the editor (with the Leuven theme).",
+      "line": 86,
+      "content": "CLOSED: [2026-01-16 Fri 11:17] The command markup syntax `command' (backtick  text  single quote) is used in Emacs documentation to reference commands, functions, and key sequences. This renders with dark red highlighting in every theme via a decoration provider (so it is no longer Leuven-only). The colors are exposed as ~scimax.commandMarkupForeground~ and ~scimax.commandMarkupDelimiterForeground~ and can be customized via ~workbench.colorCustomizations~.",
       "path": [],
-      "commands": [],
+      "commands": [
+        "scimax.commandMarkupForeground",
+        "scimax.commandMarkupDelimiterForeground"
+      ],
       "keybindings": [],
       "keywords": [
         "emacs-style",
@@ -84064,10 +84269,48 @@
       ]
     },
     {
+      "heading": "Hover Tooltip",
+      "level": 2,
+      "file": "28-non-standard-features.org",
+      "line": 97,
+      "content": ":PROPERTIES: :CUSTOM_ID: command-markup-hover :END: Hovering over command markup shows context-sensitive information: - *Command IDs* (text matching ~namespace.action~, e.g. `scimax.org.cycleTodo'): shows the command title, category, and any keybindings bound to it. - *Key sequences* (Emacs-style like `C-c C-c' or VS Code-style like `ctrl+enter'): shows the scimax command(s) bound to that key, including ~when~ clauses. - *Other text*: shown as plain command markup with no lookup. Lookups use the",
+      "path": [
+        "Emacs-style Command Markup"
+      ],
+      "commands": [
+        "scimax.org.cycleTodo"
+      ],
+      "keybindings": [
+        "C-c C-c"
+      ],
+      "keywords": [
+        "hover",
+        "tooltip",
+        "properties",
+        "customid",
+        "command-markup-hover",
+        "end",
+        "hovering",
+        "over",
+        "command",
+        "markup",
+        "shows",
+        "context-sensitive",
+        "information",
+        "ids",
+        "text",
+        "matching",
+        "namespaceaction",
+        "title",
+        "category",
+        "any"
+      ]
+    },
+    {
       "heading": "Keybinding",
       "level": 2,
       "file": "28-non-standard-features.org",
-      "line": 90,
+      "line": 115,
       "content": "CLOSED: [2026-01-16 Fri 11:17] | Key   | Command                 | Description          | |-------+-------------------------+----------------------| | C-c ' | scimax.markup.command   | Insert command markup| When text is selected, it wraps the selection. Otherwise, it inserts the markers and positions the cursor between them.",
       "path": [
         "Emacs-style Command Markup"
@@ -84105,7 +84348,7 @@
       "heading": "Export Behavior",
       "level": 2,
       "file": "28-non-standard-features.org",
-      "line": 100,
+      "line": 125,
       "content": "CLOSED: [2026-01-16 Fri 11:17]",
       "path": [
         "Emacs-style Command Markup"
@@ -84125,7 +84368,7 @@
       "heading": "HTML Export",
       "level": 3,
       "file": "28-non-standard-features.org",
-      "line": 103,
+      "line": 128,
       "content": "CLOSED: [2026-01-16 Fri 11:17] Command markup is exported as `<kbd>' elements: #+BEGIN_EXAMPLE `my-command' → <kbd>my-command</kbd> #+END_EXAMPLE The `<kbd>' element is semantically appropriate for keyboard input and command names.",
       "path": [
         "Emacs-style Command Markup",
@@ -84160,7 +84403,7 @@
       "heading": "LaTeX Export",
       "level": 3,
       "file": "28-non-standard-features.org",
-      "line": 115,
+      "line": 140,
       "content": "CLOSED: [2026-01-16 Fri 11:17] Command markup is exported as `\\texttt{}': #+BEGIN_EXAMPLE `my-command' → \\texttt{my-command} #+END_EXAMPLE",
       "path": [
         "Emacs-style Command Markup",
@@ -84188,7 +84431,7 @@
       "heading": "Why Non-Standard?",
       "level": 2,
       "file": "28-non-standard-features.org",
-      "line": 124,
+      "line": 149,
       "content": "CLOSED: [2026-01-16 Fri 11:18] - This syntax is not part of the org-mode specification - Standard org code markup uses ~code~ or =verbatim= - The ``command'' style is specific to Emacs/Elisp documentation conventions - We implement it for Emacs users who are familiar with this convention and because we think it looks nicer.",
       "path": [
         "Emacs-style Command Markup"
@@ -84222,7 +84465,7 @@
       "heading": "Alternatives",
       "level": 2,
       "file": "28-non-standard-features.org",
-      "line": 132,
+      "line": 157,
       "content": "CLOSED: [2026-01-16 Fri 11:18] If you need portable org documents, use standard markup: | Our Syntax  | Standard Alternative | Description          | |-------------+----------------------+----------------------| | `command'   | ~command~            | Org code markup      | | `command'   | =command=            | Org verbatim markup  |",
       "path": [
         "Emacs-style Command Markup"
@@ -84254,8 +84497,8 @@
       "heading": "Future Non-Standard Features",
       "level": 1,
       "file": "28-non-standard-features.org",
-      "line": 142,
-      "content": "CLOSED: [2026-01-16 Fri 11:19] This section will be updated as additional non-standard features are added.",
+      "line": 167,
+      "content": "CLOSED: [2026-01-16 Fri 11:19] This section will be updated as additional non-standard features are added. There are no planned features as of [2026-05-02 Sat].",
       "path": [],
       "commands": [],
       "keybindings": [],
@@ -84270,14 +84513,18 @@
         "section",
         "updated",
         "additional",
-        "added"
+        "added",
+        "there",
+        "planned",
+        "2026-05-02",
+        "sat"
       ]
     },
     {
       "heading": "Related Topics",
       "level": 1,
       "file": "28-non-standard-features.org",
-      "line": 147,
+      "line": 172,
       "content": "CLOSED: [2026-01-16 Fri 11:19] - [[file:19-references.org][References]] - Full citation and bibliography documentation - [[file:10-export.org][Export]] - Export to HTML, LaTeX, PDF - [[file:24-keybindings.org][Keybindings]] - All keyboard shortcuts",
       "path": [],
       "commands": [],
@@ -84309,7 +84556,7 @@
       "heading": "Navigation",
       "level": 1,
       "file": "28-non-standard-features.org",
-      "line": 154,
+      "line": 179,
       "content": "CLOSED: [2026-01-16 Fri 11:19] - Previous: [[file:27-org-api.org][Org API]] - Index: [[file:00-index.org][Documentation Index]]",
       "path": [],
       "commands": [],

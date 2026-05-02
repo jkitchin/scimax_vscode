@@ -20,6 +20,7 @@ import {
     formatDurationLong,
     parseEffort,
 } from '../parser/orgClocking';
+import { getHelpSystem } from '../help';
 
 // Entity lookup map for fast access
 const ENTITY_MAP = new Map<string, { utf8: string; latex: string; html: string }>();
@@ -292,6 +293,22 @@ const LINK_TYPE_DESCRIPTIONS: Record<string, string> = {
 const DAY_NAMES = DAY_NAMES_SHORT;
 const MONTH_NAMES = MONTH_NAMES_SHORT;
 
+// Emacs-style modifier prefixes (C-, M-, S-, s-, A-, H-) appearing as the
+// leading token of a chord, optionally with chord continuations.
+const EMACS_KEY_PATTERN = /^([CMSsAH]-|<[a-zA-Z]+>)([CMSsAH]-)*[A-Za-z0-9!@#$%^&*()_+\-=[\]{};:'",.<>/?\\|`~]/;
+// VS Code-style key spec, e.g. ctrl+enter, ctrl+c ctrl+t, alt+shift+f
+const VSCODE_KEY_PATTERN = /^(ctrl|alt|cmd|meta|shift|super)\+/i;
+// A command id looks like ns.subns.action — at least one dot, no whitespace.
+const COMMAND_ID_PATTERN = /^[A-Za-z][\w.-]*\.[\w.-]+$/;
+
+function isKeySequence(text: string): boolean {
+    return EMACS_KEY_PATTERN.test(text) || VSCODE_KEY_PATTERN.test(text);
+}
+
+function isCommandId(text: string): boolean {
+    return !text.includes(' ') && COMMAND_ID_PATTERN.test(text);
+}
+
 /**
  * Org-mode hover provider
  */
@@ -316,6 +333,10 @@ export class OrgHoverProvider implements vscode.HoverProvider {
 
         // Entity hover (backslash entities like \alpha)
         hover = this.getEntityHover(line, position);
+        if (hover) return hover;
+
+        // Emacs-style command markup `command' or `C-c C-c'
+        hover = await this.getCommandMarkupHover(line, position);
         if (hover) return hover;
 
         // LaTeX equation hover (shows rendered equation preview)
@@ -404,6 +425,104 @@ export class OrgHoverProvider implements vscode.HoverProvider {
         }
 
         return null;
+    }
+
+    /**
+     * Hover for Emacs-style `command' markup.
+     *
+     * Classifies the inner text three ways:
+     *   - Command ID  (looks like a VS Code command, e.g. `scimax.org.cycleTodo`)
+     *     → look up title and any keybindings via HelpSystem.
+     *   - Key sequence (Emacs-style like `C-c C-c` or VS Code-style like `ctrl+enter`)
+     *     → look up which command(s) it's bound to via HelpSystem.
+     *   - Anything else → minimal hover, just labels it as command markup.
+     *
+     * Only scimax-contributed commands and keybindings are known to HelpSystem
+     * (it reads our own package.json). Bare VS Code commands or third-party
+     * extensions won't resolve to a title.
+     */
+    private async getCommandMarkupHover(
+        line: string,
+        position: vscode.Position
+    ): Promise<vscode.Hover | null> {
+        if (line.indexOf('`') < 0 || line.indexOf("'") < 0) {
+            return null;
+        }
+        const re = /`([^`'\n]+)'/g;
+        let match: RegExpExecArray | null;
+        while ((match = re.exec(line)) !== null) {
+            const start = match.index;
+            const end = match.index + match[0].length;
+            if (position.character < start || position.character > end) {
+                continue;
+            }
+            const text = match[1];
+            const range = new vscode.Range(position.line, start, position.line, end);
+            const md = this.formatCommandMarkupHover(text);
+            return new vscode.Hover(md, range);
+        }
+        return null;
+    }
+
+    private formatCommandMarkupHover(text: string): vscode.MarkdownString {
+        const md = new vscode.MarkdownString();
+        md.isTrusted = false;
+        const help = getHelpSystem();
+
+        const looksLikeKey = isKeySequence(text);
+        const looksLikeCommandId = isCommandId(text);
+
+        if (help && looksLikeKey) {
+            const results = help.lookupKey(text);
+            if (results.length > 0) {
+                md.appendMarkdown(`**Key:** \`${text}\`\n\n`);
+                md.appendMarkdown(`Bound to:\n\n`);
+                for (const r of results) {
+                    const title = r.commandInfo?.title || r.keybinding.command;
+                    md.appendMarkdown(`- **${title}** — \`${r.keybinding.command}\``);
+                    if (r.keybinding.when) {
+                        md.appendMarkdown(`  \n  _when:_ \`${r.keybinding.when}\``);
+                    }
+                    md.appendMarkdown('\n');
+                }
+                return md;
+            }
+            md.appendMarkdown(`**Key:** \`${text}\`\n\n_No scimax binding for this key sequence._`);
+            return md;
+        }
+
+        if (help && looksLikeCommandId) {
+            const info = help.getCommandInfo(text);
+            const bindings = help.lookupCommand(text);
+            if (info || bindings.length > 0) {
+                md.appendMarkdown(`**Command:** \`${text}\`\n\n`);
+                if (info?.title) {
+                    md.appendMarkdown(`${info.title}\n\n`);
+                }
+                if (info?.category) {
+                    md.appendMarkdown(`_Category:_ ${info.category}\n\n`);
+                }
+                if (bindings.length > 0) {
+                    md.appendMarkdown(`**Keybindings:**\n\n`);
+                    for (const kb of bindings) {
+                        md.appendMarkdown(`- \`${help.formatKeybinding(kb)}\``);
+                        if (kb.when) {
+                            md.appendMarkdown(`  _(when ${kb.when})_`);
+                        }
+                        md.appendMarkdown('\n');
+                    }
+                } else {
+                    md.appendMarkdown(`_No keybinding assigned._`);
+                }
+                return md;
+            }
+            // Not a scimax command — could still be a VS Code or extension command.
+            md.appendMarkdown(`**Command:** \`${text}\`\n\n_Not a known scimax command. May be a VS Code or third-party command._`);
+            return md;
+        }
+
+        md.appendMarkdown(`**Command markup:** \`${text}\``);
+        return md;
     }
 
     /**
