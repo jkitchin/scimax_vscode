@@ -16,6 +16,10 @@ provide additional functionality for scientific writing.
 This document describes these non-standard features and their behavior during
 export.
 
+* Editmarks
+
+The editmark syntax described in [[file:20-editmarks.org][20-editmarks.org]] is a non-standard syntax for org-mode.
+
 * ✅ org-ref Citation Links
 CLOSED: [2026-01-16 Fri 11:15]
 
@@ -142,7 +146,7 @@ If you need portable org documents, use standard markup:
 * ✅ Future Non-Standard Features
 CLOSED: [2026-01-16 Fri 11:19]
 
-This section will be updated as additional non-standard features are added.
+This section will be updated as additional non-standard features are added. There are no planned features as of [2026-05-02 Sat].
 
 * ✅ Related Topics
 CLOSED: [2026-01-16 Fri 11:19]
