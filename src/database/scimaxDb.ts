@@ -422,6 +422,44 @@ export class ScimaxDb extends ScimaxDbCore {
     // Rebuild (VS Code-specific, uses workspace folders + globalState)
     // ----------------------------------------------------------
 
+    /**
+     * Single source of truth for "what directories does the index cover?".
+     * Both rebuild() and the reindex command use this so the two commands
+     * can never disagree about which folders are in scope.
+     *
+     * Reads only `scimax.db.*` settings — agenda settings are display-only.
+     */
+    public collectIndexDirectories(): string[] {
+        const dbConfig = vscode.workspace.getConfiguration('scimax.db');
+        const directories: string[] = [];
+        const add = (dir: string | undefined | null) => {
+            if (!dir) return;
+            if (!fs.existsSync(dir)) return;
+            if (!directories.includes(dir)) directories.push(dir);
+        };
+
+        if (dbConfig.get<boolean>('includeProjects', true)) {
+            const projects = this.context.globalState.get<any[]>('scimax.projects', []);
+            for (const project of projects) add(project?.path);
+        }
+
+        if (dbConfig.get<boolean>('includeWorkspace', true)) {
+            for (const folder of vscode.workspace.workspaceFolders || []) {
+                add(folder.uri.fsPath);
+            }
+        }
+
+        if (dbConfig.get<boolean>('includeJournal', true)) {
+            add(this.resolveScimaxPath('scimax.journal.directory', 'journal'));
+        }
+
+        for (const dir of dbConfig.get<string[]>('include', [])) {
+            add(dir.startsWith('~') ? dir.replace(/^~/, process.env.HOME || '') : dir);
+        }
+
+        return directories;
+    }
+
     public async rebuild(options: {
         onProgress?: (status: { phase: string; current: number; total: number }) => void;
         cancellationToken?: { cancelled: boolean };
@@ -437,29 +475,7 @@ export class ScimaxDb extends ScimaxDbCore {
         if (cancellationToken?.cancelled) return result;
 
         onProgress?.({ phase: 'Collecting directories', current: 0, total: 1 });
-        const directories: string[] = [];
-
-        const projects = this.context.globalState.get<any[]>('scimax.projects', []);
-        for (const project of projects) {
-            if (project.path && fs.existsSync(project.path)) directories.push(project.path);
-        }
-
-        const workspaceFolders = vscode.workspace.workspaceFolders || [];
-        for (const folder of workspaceFolders) {
-            if (!directories.includes(folder.uri.fsPath)) directories.push(folder.uri.fsPath);
-        }
-
-        const journalDir = this.resolveScimaxPath('scimax.journal.directory', 'journal');
-        if (journalDir && fs.existsSync(journalDir) && !directories.includes(journalDir)) {
-            directories.push(journalDir);
-        }
-
-        const agendaConfig = vscode.workspace.getConfiguration('scimax.agenda');
-        const agendaInclude = agendaConfig.get<string[]>('include', []);
-        for (const dir of agendaInclude) {
-            const expanded = dir.startsWith('~') ? dir.replace(/^~/, process.env.HOME || '') : dir;
-            if (fs.existsSync(expanded) && !directories.includes(expanded)) directories.push(expanded);
-        }
+        const directories = this.collectIndexDirectories();
 
         if (cancellationToken?.cancelled) return result;
 

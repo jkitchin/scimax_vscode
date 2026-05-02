@@ -13,8 +13,7 @@ import {
     testEmbeddingService,
     OllamaEmbeddingService
 } from './embeddingService';
-import { getDatabase, getExtensionContext, cancelStaleFileCheck } from './lazyDb';
-import { resolveScimaxPath } from '../utils/pathResolver';
+import { getDatabase, cancelStaleFileCheck } from './lazyDb';
 import { databaseLogger as log } from '../utils/logger';
 import { showFuzzyQuickPick } from '../utils/fuzzyQuickPick';
 
@@ -163,10 +162,18 @@ export function registerDbCommands(
         })
     );
 
-    // Reindex all files (two-phase: scan paths first, then batch index)
+    // Refresh: incremental, mtime-driven re-index of every directory in the
+    // configured include set. This is the daily-driver command — fast on
+    // unchanged collections, picks up Dropbox-synced edits made while VS
+    // Code was closed. `scimax.db.reindex` is a back-compat alias.
     context.subscriptions.push(
-        vscode.commands.registerCommand('scimax.db.reindex', async () => {
-            log.info('=== REINDEX COMMAND STARTED ===');
+        vscode.commands.registerCommand('scimax.db.reindex', () =>
+            vscode.commands.executeCommand('scimax.db.refresh')
+        )
+    );
+    context.subscriptions.push(
+        vscode.commands.registerCommand('scimax.db.refresh', async () => {
+            log.info('=== REFRESH COMMAND STARTED ===');
             const db = await requireDatabase();
             if (!db) {
                 log.error('Reindex failed: database not available');
@@ -177,7 +184,7 @@ export function registerDbCommands(
 
             await vscode.window.withProgress({
                 location: vscode.ProgressLocation.Notification,
-                title: 'Reindexing files',
+                title: 'Refreshing database',
                 cancellable: true
             }, async (progress, token) => {
                 // Set up cancellation
@@ -226,61 +233,9 @@ export function registerDbCommands(
                 }
 
                 // ========== Collect directories to scan ==========
-                log.info('--- Collecting directories to scan ---');
-
-                // Include journal directory if enabled
-                if (config.get<boolean>('includeJournal', true)) {
-                    const journalDir = resolveScimaxPath('scimax.journal.directory', 'journal');
-                    if (journalDir && fs.existsSync(journalDir)) {
-                        directoriesToIndex.push(journalDir);
-                        log.debug('Added journal directory', { path: journalDir });
-                    }
-                }
-
-                // Include workspace folders if enabled
-                if (config.get<boolean>('includeWorkspace', true)) {
-                    const workspaceFolders = vscode.workspace.workspaceFolders || [];
-                    for (const folder of workspaceFolders) {
-                        directoriesToIndex.push(folder.uri.fsPath);
-                    }
-                    log.debug('Added workspace folders', { count: workspaceFolders.length });
-                }
-
-                // Include scimax projects if enabled
-                if (config.get<boolean>('includeProjects', true)) {
-                    const ctx = getExtensionContext();
-                    if (ctx) {
-                        interface Project { path: string; }
-                        const projects = ctx.globalState.get<Project[]>('scimax.projects', []);
-                        let addedProjects = 0;
-                        for (const project of projects) {
-                            if (fs.existsSync(project.path)) {
-                                directoriesToIndex.push(project.path);
-                                addedProjects++;
-                            }
-                        }
-                        log.debug('Added scimax projects', { total: projects.length, existing: addedProjects });
-                    }
-                }
-
-                // Include additional directories from config
-                const additionalDirs = config.get<string[]>('include') || [];
-                let addedAdditional = 0;
-                for (let dir of additionalDirs) {
-                    // Expand ~ for home directory
-                    if (dir.startsWith('~')) {
-                        dir = dir.replace(/^~/, process.env.HOME || '');
-                    }
-                    if (fs.existsSync(dir)) {
-                        directoriesToIndex.push(dir);
-                        addedAdditional++;
-                    }
-                }
-                if (additionalDirs.length > 0) {
-                    log.debug('Added additional directories', { configured: additionalDirs.length, existing: addedAdditional });
-                }
-
-                // Deduplicate directories
+                // Single source of truth shared with rebuild(): see
+                // ScimaxDb.collectIndexDirectories. Reads scimax.db.* only.
+                directoriesToIndex.push(...db.collectIndexDirectories());
                 const uniqueDirs = [...new Set(directoriesToIndex)];
                 log.info('Directories to scan', { total: uniqueDirs.length });
 

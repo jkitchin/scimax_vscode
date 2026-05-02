@@ -802,8 +802,12 @@
         "title": "Scimax: Show Journal Calendar"
       },
       {
+        "command": "scimax.db.refresh",
+        "title": "Scimax: Refresh Database (incremental)"
+      },
+      {
         "command": "scimax.db.reindex",
-        "title": "Scimax: Reindex Files"
+        "title": "Scimax: Reindex Files (alias for Refresh)"
       },
       {
         "command": "scimax.db.search",
@@ -1139,7 +1143,7 @@
       },
       {
         "command": "scimax.db.rebuild",
-        "title": "Scimax: Rebuild Database"
+        "title": "Scimax: Rebuild Database (from scratch)"
       },
       {
         "command": "scimax.db.verify",
@@ -6456,7 +6460,7 @@
           "group": "navigation"
         },
         {
-          "command": "scimax.db.reindex",
+          "command": "scimax.db.refresh",
           "when": "view == scimax.database",
           "group": "1_actions"
         },
