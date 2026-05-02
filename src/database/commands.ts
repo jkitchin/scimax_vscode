@@ -5,7 +5,6 @@ import {
     ScimaxDb,
     HeadingRecord,
     SearchResult,
-    AgendaItem,
     SearchScope,
     AdvancedSearchResult
 } from './scimaxDb';
@@ -967,130 +966,17 @@ export function registerDbCommands(
         })
     );
 
-    // Show TODOs
+    // The canonical view commands live in agendaProvider.ts under the
+    // scimax.agenda.* namespace. Keep the scimax.db.* names registered as
+    // thin aliases so existing keybindings and palette muscle memory keep
+    // working — no second implementation to drift out of sync.
     context.subscriptions.push(
-        vscode.commands.registerCommand('scimax.db.showTodos', async () => {
-            const db = await requireDatabase();
-            if (!db) return;
-
-            const todos = await db.getTodos();
-
-            if (todos.length === 0) {
-                vscode.window.showInformationMessage('No TODO items found');
-                return;
-            }
-
-            const states = await db.getAllTodoStates();
-            const stateItems = [
-                { label: '$(list-flat) All TODOs', state: undefined },
-                ...states.map(state => ({
-                    label: `$(${getTodoIcon(state)}) ${state}`,
-                    state
-                }))
-            ];
-
-            const stateChoice = await vscode.window.showQuickPick(stateItems, {
-                placeHolder: 'Filter by state'
-            });
-
-            if (!stateChoice) return;
-
-            const filtered = stateChoice.state
-                ? todos.filter(t => t.todo_state === stateChoice.state)
-                : todos;
-
-            const items = filtered.map(todo => ({
-                label: `$(${getTodoIcon(todo.todo_state!)}) ${todo.title}`,
-                description: formatHeadingDescription(todo),
-                detail: `${path.basename(todo.file_path)}:${todo.line_number}`,
-                todo
-            }));
-
-            const selected = await vscode.window.showQuickPick(items, {
-                placeHolder: `${filtered.length} TODO items`
-            });
-
-            if (selected) {
-                await openFileAtLine(selected.todo.file_path, selected.todo.line_number);
-            }
-        })
-    );
-
-    // Show Agenda
-    context.subscriptions.push(
-        vscode.commands.registerCommand('scimax.db.agenda', async () => {
-            const periodItems = [
-                { label: '$(calendar) Next 2 weeks', period: '+2w' },
-                { label: '$(calendar) Next month', period: '+1m' },
-                { label: '$(calendar) Next 3 months', period: '+3m' },
-                { label: '$(list-flat) All items', period: undefined }
-            ];
-
-            const periodChoice = await vscode.window.showQuickPick(periodItems, {
-                placeHolder: 'Select time period for agenda'
-            });
-
-            if (!periodChoice) return;
-
-            const db = await requireDatabase();
-            if (!db) return;
-
-            const agendaItems = await db.getAgenda({
-                before: periodChoice.period,
-                includeUnscheduled: true
-            });
-
-            if (agendaItems.length === 0) {
-                vscode.window.showInformationMessage('No agenda items found');
-                return;
-            }
-
-            const items = agendaItems.map(item => ({
-                label: `${getAgendaIcon(item)} ${item.heading.title}`,
-                description: formatAgendaDescription(item),
-                detail: `${path.basename(item.heading.file_path)}:${item.heading.line_number}`,
-                item
-            }));
-
-            const selected = await vscode.window.showQuickPick(items, {
-                placeHolder: `${agendaItems.length} agenda items`
-            });
-
-            if (selected) {
-                await openFileAtLine(selected.item.heading.file_path, selected.item.heading.line_number);
-            }
-        })
-    );
-
-    // Show Deadlines
-    context.subscriptions.push(
-        vscode.commands.registerCommand('scimax.db.deadlines', async () => {
-            const db = await requireDatabase();
-            if (!db) return;
-
-            const agendaItems = (await db.getAgenda({ before: '+2w' }))
-                .filter(item => item.type === 'deadline');
-
-            if (agendaItems.length === 0) {
-                vscode.window.showInformationMessage('No upcoming deadlines');
-                return;
-            }
-
-            const items = agendaItems.map(item => ({
-                label: `${getAgendaIcon(item)} ${item.heading.title}`,
-                description: formatAgendaDescription(item),
-                detail: `${path.basename(item.heading.file_path)}:${item.heading.line_number}`,
-                item
-            }));
-
-            const selected = await vscode.window.showQuickPick(items, {
-                placeHolder: `${agendaItems.length} upcoming deadlines`
-            });
-
-            if (selected) {
-                await openFileAtLine(selected.item.heading.file_path, selected.item.heading.line_number);
-            }
-        })
+        vscode.commands.registerCommand('scimax.db.showTodos', () =>
+            vscode.commands.executeCommand('scimax.agenda.todoList')),
+        vscode.commands.registerCommand('scimax.db.agenda', () =>
+            vscode.commands.executeCommand('scimax.agenda.month')),
+        vscode.commands.registerCommand('scimax.db.deadlines', () =>
+            vscode.commands.executeCommand('scimax.agenda.deadlines')),
     );
 
     // Set search scope
@@ -1647,57 +1533,6 @@ function getTodoIcon(state: string): string {
         default:
             return 'circle-outline';
     }
-}
-
-function getAgendaIcon(item: AgendaItem): string {
-    if (item.overdue) {
-        return '$(warning)';
-    }
-
-    switch (item.type) {
-        case 'deadline':
-            return '$(bell)';
-        case 'scheduled':
-            return '$(calendar)';
-        case 'todo':
-            return '$(circle-outline)';
-        default:
-            return '$(list-tree)';
-    }
-}
-
-function formatAgendaDescription(item: AgendaItem): string {
-    const parts: string[] = [];
-
-    if (item.type === 'deadline') {
-        parts.push('DEADLINE');
-    } else if (item.type === 'scheduled') {
-        parts.push('SCHEDULED');
-    }
-
-    if (item.date) {
-        parts.push(item.date.split(' ')[0]);
-    }
-
-    if (item.days_until !== undefined) {
-        if (item.days_until === 0) {
-            parts.push('(TODAY)');
-        } else if (item.days_until === 1) {
-            parts.push('(tomorrow)');
-        } else if (item.days_until === -1) {
-            parts.push('(yesterday)');
-        } else if (item.days_until < 0) {
-            parts.push(`(${Math.abs(item.days_until)} days ago)`);
-        } else {
-            parts.push(`(in ${item.days_until} days)`);
-        }
-    }
-
-    if (item.heading.priority) {
-        parts.push(`[#${item.heading.priority}]`);
-    }
-
-    return parts.join(' ');
 }
 
 async function openFileAtLine(filePath: string, lineNumber: number): Promise<void> {

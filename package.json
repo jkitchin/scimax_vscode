@@ -1055,15 +1055,15 @@
       },
       {
         "command": "scimax.db.showTodos",
-        "title": "Scimax: Show TODO Items"
+        "title": "Scimax: Show TODO Items (alias of Agenda: TODO List)"
       },
       {
         "command": "scimax.db.agenda",
-        "title": "Scimax: Show Agenda"
+        "title": "Scimax: Show Agenda (alias of Agenda: Month)"
       },
       {
         "command": "scimax.db.deadlines",
-        "title": "Scimax: Show Upcoming Deadlines"
+        "title": "Scimax: Show Upcoming Deadlines (alias of Agenda: Deadlines)"
       },
       {
         "command": "scimax.db.browseFiles",
@@ -1079,11 +1079,11 @@
       },
       {
         "command": "scimax.db.ignoreFile",
-        "title": "Scimax: Add File to Ignore Patterns"
+        "title": "Scimax: Don't Index File (removes from database)"
       },
       {
         "command": "scimax.db.ignoreCurrentFile",
-        "title": "Scimax: Add Current File to Ignore Patterns"
+        "title": "Scimax: Don't Index Current File (removes from database)"
       },
       {
         "command": "scimax.db.setScope",
@@ -2438,19 +2438,19 @@
       },
       {
         "command": "scimax.agenda.ignoreFile",
-        "title": "Scimax: Exclude File from Agenda"
+        "title": "Scimax: Hide File from Agenda View (still indexed)"
       },
       {
         "command": "scimax.agenda.ignoreFileFromItem",
-        "title": "Scimax: Exclude This File from Agenda"
+        "title": "Scimax: Hide This File from Agenda View (still indexed)"
       },
       {
         "command": "scimax.agenda.ignoreFileFromTab",
-        "title": "Scimax: Exclude from Agenda"
+        "title": "Scimax: Hide from Agenda View (still indexed)"
       },
       {
         "command": "scimax.agenda.unignoreFile",
-        "title": "Scimax: Remove File from Agenda Exclude List"
+        "title": "Scimax: Show File in Agenda View Again"
       },
       {
         "command": "scimax.agenda.showAgenda",
