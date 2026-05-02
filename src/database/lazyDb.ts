@@ -99,6 +99,10 @@ async function initializeDatabase(context: vscode.ExtensionContext): Promise<Sci
     // Schedule background stale file check after a delay
     scheduleStaleFileCheck(db);
 
+    // Lightweight prompt-only check for users who don't want auto-indexing
+    // but do want to know when their Dropbox-synced files are out of date.
+    scheduleStaleCheckPrompt(db);
+
     return db;
 }
 
@@ -321,6 +325,61 @@ function scheduleStaleFileCheck(db: ScimaxDb): void {
         }
 
         staleCheckCancellation = null;
+    }, delayMs);
+}
+
+/**
+ * Lightweight prompt-only stale check.
+ *
+ * Reads the file table once, stats each path, and counts files where the
+ * filesystem mtime is newer than what we last indexed. If any are found,
+ * shows a single toast offering to run Refresh — never auto-indexes.
+ *
+ * This is the daily-driver story for users who sync via Dropbox: open VS
+ * Code on a different machine, see "X files changed since last index"
+ * toast, click Refresh.
+ *
+ * Skipped when scimax.db.autoCheckStale is on (that does the actual
+ * reindexing already).
+ */
+function scheduleStaleCheckPrompt(db: ScimaxDb): void {
+    const config = vscode.workspace.getConfiguration('scimax.db');
+    if (!config.get<boolean>('checkStaleOnActivation', true)) return;
+    if (config.get<boolean>('autoCheckStale', false)) return;
+
+    const delayMs = config.get<number>('staleCheckDelayMs', 5000);
+    setTimeout(async () => {
+        try {
+            const files = await db.getFiles();
+            if (files.length === 0) return;
+
+            let stale = 0;
+            let missing = 0;
+            for (const file of files) {
+                try {
+                    const stats = fs.statSync(file.path);
+                    if (stats.mtimeMs > file.mtime) stale++;
+                } catch {
+                    missing++;
+                }
+            }
+
+            if (stale === 0 && missing === 0) return;
+
+            const parts: string[] = [];
+            if (stale > 0) parts.push(`${stale} file${stale === 1 ? '' : 's'} changed`);
+            if (missing > 0) parts.push(`${missing} missing`);
+            const choice = await vscode.window.showInformationMessage(
+                `Scimax: ${parts.join(', ')} since last index. Refresh now?`,
+                'Refresh',
+                'Dismiss'
+            );
+            if (choice === 'Refresh') {
+                vscode.commands.executeCommand('scimax.db.refresh');
+            }
+        } catch (error) {
+            log.warn('Stale-check prompt failed', { error: (error as Error).message });
+        }
     }, delayMs);
 }
 

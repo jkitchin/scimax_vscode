@@ -5569,7 +5569,12 @@
         "scimax.db.autoCheckStale": {
           "type": "boolean",
           "default": false,
-          "description": "Automatically check for externally modified files on startup. Disabled by default to prevent memory issues with large collections. Use manual 'Reindex Files' command instead."
+          "description": "Automatically check for externally modified files on startup AND reindex them in the background. Disabled by default to prevent memory issues with large collections. Use manual 'Refresh Database' command instead, or scimax.db.checkStaleOnActivation for a prompt-only variant."
+        },
+        "scimax.db.checkStaleOnActivation": {
+          "type": "boolean",
+          "default": true,
+          "description": "On activation, check whether any indexed files have changed on disk and show a one-time prompt offering to run Refresh. Useful for catching changes synced from another machine (e.g. Dropbox) while VS Code was closed. Skipped if autoCheckStale is on."
         },
         "scimax.db.staleCheckDelayMs": {
           "type": "number",
