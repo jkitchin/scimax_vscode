@@ -2433,11 +2433,6 @@
         "icon": "$(refresh)"
       },
       {
-        "command": "scimax.agenda.cancelScan",
-        "title": "Scimax: Cancel Agenda Scan",
-        "icon": "$(stop)"
-      },
-      {
         "command": "scimax.agenda.toggleVerbose",
         "title": "Scimax: Toggle Agenda Verbose Logging"
       },
@@ -6135,17 +6130,20 @@
         "scimax.agenda.includeJournal": {
           "type": "boolean",
           "default": true,
-          "description": "Include journal directory in agenda scanning (uses scimax.journal.directory)"
+          "description": "Deprecated. The agenda is a view over the Scimax database; use scimax.db.includeJournal to control what gets indexed.",
+          "deprecationMessage": "Deprecated: use scimax.db.includeJournal. The agenda no longer scans files itself."
         },
         "scimax.agenda.includeWorkspace": {
           "type": "boolean",
           "default": true,
-          "description": "Include workspace folders in agenda scanning"
+          "description": "Deprecated. Use scimax.db.includeWorkspace instead.",
+          "deprecationMessage": "Deprecated: use scimax.db.includeWorkspace. The agenda no longer scans files itself."
         },
         "scimax.agenda.includeProjects": {
           "type": "boolean",
           "default": true,
-          "description": "Include all scimax projects in agenda scanning"
+          "description": "Deprecated. Use scimax.db.includeProjects instead.",
+          "deprecationMessage": "Deprecated: use scimax.db.includeProjects. The agenda no longer scans files itself."
         },
         "scimax.agenda.include": {
           "type": "array",
@@ -6153,7 +6151,8 @@
             "type": "string"
           },
           "default": [],
-          "description": "Additional directories or files to include in agenda (supports ~ for home directory)"
+          "description": "Deprecated. Use scimax.db.include to add directories to the index.",
+          "deprecationMessage": "Deprecated: use scimax.db.include. The agenda no longer scans files itself."
         },
         "scimax.agenda.exclude": {
           "type": "array",
@@ -6214,21 +6213,24 @@
           "type": "number",
           "default": 0,
           "minimum": 0,
-          "description": "Maximum number of files to scan for agenda items (0 = unlimited)"
+          "description": "Deprecated. The agenda no longer scans files; this setting has no effect.",
+          "deprecationMessage": "Deprecated: the agenda no longer scans files."
         },
         "scimax.agenda.batchSize": {
           "type": "number",
           "default": 10,
           "minimum": 1,
           "maximum": 100,
-          "description": "Number of files to process per batch during agenda scanning. Lower values reduce memory pressure but increase scan time."
+          "description": "Deprecated. The agenda no longer scans files; this setting has no effect.",
+          "deprecationMessage": "Deprecated: the agenda no longer scans files."
         },
         "scimax.agenda.batchDelayMs": {
           "type": "number",
           "default": 5,
           "minimum": 0,
           "maximum": 1000,
-          "description": "Delay in milliseconds between processing batches. Allows the event loop to remain responsive during large scans."
+          "description": "Deprecated. The agenda no longer scans files; this setting has no effect.",
+          "deprecationMessage": "Deprecated: the agenda no longer scans files."
         },
         "scimax.imageOverlays.enabled": {
           "type": "boolean",
@@ -6416,11 +6418,6 @@
         },
         {
           "command": "scimax.agenda.refresh",
-          "when": "view == scimax.agenda",
-          "group": "navigation"
-        },
-        {
-          "command": "scimax.agenda.cancelScan",
           "when": "view == scimax.agenda",
           "group": "navigation"
         },

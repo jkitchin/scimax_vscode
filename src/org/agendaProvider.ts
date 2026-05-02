@@ -1,7 +1,7 @@
 /**
- * Native Org-mode Agenda Provider
- * Provides agenda views by scanning org files directly
- * Can optionally use ScimaxDb for project paths (if available)
+ * Org-mode Agenda Provider
+ * The agenda is a view over the Scimax database. File parsing happens at
+ * index time; the agenda itself only queries the db.
  */
 
 import * as vscode from 'vscode';
@@ -10,51 +10,31 @@ import * as fs from 'fs';
 import { parseOrg } from '../parser/orgParserUnified';
 import {
     generateAgendaView,
-    generateTodoList,
     formatAgendaItem,
     AgendaItem,
     AgendaView,
     AgendaGroup,
     AgendaViewConfig,
     TodoListView,
-    DiarySexpEntry,
 } from '../parser/orgAgenda';
-import type { HeadlineElement, OrgDocumentNode, DiarySexpElement, OrgElement } from '../parser/orgElementTypes';
+import type { HeadlineElement } from '../parser/orgElementTypes';
 import {
     collectAllClockEntries,
     generateTimeReport,
     formatTimeReport,
     formatDuration,
 } from '../parser/orgClocking';
-import { resolveScimaxPath } from '../utils/pathResolver';
 import { minimatch } from 'minimatch';
 import { getDatabase } from '../database/lazyDb';
-import type { ScimaxDb, AgendaItem as DbAgendaItem, HeadingRecord } from '../database/scimaxDb';
+import type { ScimaxDb, AgendaItem as DbAgendaItem } from '../database/scimaxDb';
 import { format, addDays, startOfDay, isSameDay, differenceInDays, parse } from 'date-fns';
 
 // =============================================================================
 // Types
 // =============================================================================
 
-export interface AgendaFile {
-    path: string;
-    // Note: document is NOT cached to avoid memory issues with large file sets
-    // For operations needing the full AST (like clock reports), re-parse on demand
-    headlines: HeadlineElement[];
-    diarySexps: DiarySexpEntry[];
-    mtime: number;
-}
-
 export interface AgendaConfig {
-    /** Include journal directory in agenda scanning */
-    includeJournal: boolean;
-    /** Also scan org files in workspace folders */
-    includeWorkspace: boolean;
-    /** Include all scimax projects in agenda scanning */
-    includeProjects: boolean;
-    /** Additional directories or files to include */
-    include: string[];
-    /** Patterns or absolute paths to exclude (globs and paths) */
+    /** Patterns or absolute paths to exclude from the agenda view (globs and paths) */
     exclude: string[];
     /** Default view span in days */
     defaultSpan: number;
@@ -68,12 +48,6 @@ export interface AgendaConfig {
     todoStates: string[];
     /** Done states */
     doneStates: string[];
-    /** Maximum number of files to scan (0 = unlimited) */
-    maxFiles: number;
-    /** Batch size for lazy loading */
-    batchSize: number;
-    /** Delay between batches in ms (for rate limiting) */
-    batchDelayMs: number;
 }
 
 // =============================================================================
@@ -85,7 +59,6 @@ export interface AgendaConfig {
  */
 export class AgendaManager {
     private context: vscode.ExtensionContext;
-    private fileCache: Map<string, AgendaFile> = new Map();
     private config: AgendaConfig;
     private outputChannel: vscode.OutputChannel;
     private disposables: vscode.Disposable[] = [];
@@ -94,31 +67,14 @@ export class AgendaManager {
     private verbose: boolean = false;
     private db: ScimaxDb | null = null;
 
-    // Debouncing for file watcher
     private refreshDebounceTimer: NodeJS.Timeout | null = null;
-    private pendingInvalidations: Set<string> = new Set();
     private static readonly REFRESH_DEBOUNCE_MS = 500;
-
-    // Regex to quickly check if file has agenda-relevant content
-    // Matches: SCHEDULED:, DEADLINE:, timestamps like <2024-01-15>, diary sexps %%()
-    private static readonly AGENDA_CONTENT_REGEX = /SCHEDULED:|DEADLINE:|<\d{4}-\d{2}-\d{2}|%%\(/;
-
-    // Cache persistence key
-    private static readonly CACHE_KEY = 'scimax.agenda.fileCache';
-    private static readonly CACHE_VERSION = 1;
 
     constructor(context: vscode.ExtensionContext) {
         this.context = context;
         this.config = this.loadConfig();
         this.outputChannel = vscode.window.createOutputChannel('Org Agenda');
 
-        // Load persisted cache
-        this.loadPersistedCache();
-
-        // Watch for file changes
-        this.setupFileWatcher();
-
-        // Watch for config changes
         this.disposables.push(
             vscode.workspace.onDidChangeConfiguration((e) => {
                 if (e.affectsConfiguration('scimax.agenda')) {
@@ -128,12 +84,6 @@ export class AgendaManager {
             })
         );
 
-        // Persist cache on deactivation
-        this.disposables.push({
-            dispose: () => this.persistCache()
-        });
-
-        // Subscribe to database index events to refresh agenda when files are indexed
         this.setupDatabaseSubscription();
     }
 
@@ -192,10 +142,6 @@ export class AgendaManager {
     private loadConfig(): AgendaConfig {
         const config = vscode.workspace.getConfiguration('scimax.agenda');
         return {
-            includeJournal: config.get<boolean>('includeJournal', true),
-            includeWorkspace: config.get<boolean>('includeWorkspace', true),
-            includeProjects: config.get<boolean>('includeProjects', true),
-            include: config.get<string[]>('include', []),
             exclude: config.get<string[]>('exclude', ['**/node_modules/**', '**/.git/**', '**/archive/**']),
             defaultSpan: config.get<number>('defaultSpan', 7),
             showDone: config.get<boolean>('showDone', false),
@@ -203,9 +149,6 @@ export class AgendaManager {
             requireTodoState: config.get<boolean>('requireTodoState', true),
             todoStates: config.get<string[]>('todoStates', ['TODO', 'NEXT', 'WAITING']),
             doneStates: config.get<string[]>('doneStates', ['DONE', 'CANCELLED']),
-            maxFiles: config.get<number>('maxFiles', 0), // 0 = unlimited
-            batchSize: config.get<number>('batchSize', 10),
-            batchDelayMs: config.get<number>('batchDelayMs', 5),
         };
     }
 
@@ -260,64 +203,18 @@ export class AgendaManager {
         return false;
     }
 
-    /**
-     * Get project paths from database (if available) or global state
-     */
-    private async getProjectPathsAsync(): Promise<string[]> {
-        // Try to get database lazily if not already set
-        const db = this.db || await getDatabase();
-
-        // Try database first (source of truth)
-        if (db) {
-            try {
-                const projects = await db.getProjects();
-                return projects.map(p => p.path).filter(p => fs.existsSync(p));
-            } catch (e) {
-                this.log(`Agenda: Error getting projects from database: ${e}`);
-                // Fall through to globalState
-            }
-        }
-
-        // Fallback to globalState
-        interface Project {
-            path: string;
-        }
-        const projects = this.context.globalState.get<Project[]>('scimax.projects', []);
-        return projects.map(p => p.path).filter(p => fs.existsSync(p));
-    }
-
-    /**
-     * Get project paths (sync version for compatibility)
-     * @deprecated Use getProjectPathsAsync instead
-     */
-    private getProjectPaths(): string[] {
-        interface Project {
-            path: string;
-        }
-        const projects = this.context.globalState.get<Project[]>('scimax.projects', []);
-        return projects.map(p => p.path).filter(p => fs.existsSync(p));
-    }
-
-    /**
-     * Add a file to the exclude list and remove from cache
-     */
     async excludeFile(filePath: string): Promise<void> {
         const config = vscode.workspace.getConfiguration('scimax.agenda');
         const current = config.get<string[]>('exclude', []);
 
         if (!current.includes(filePath)) {
             await config.update('exclude', [...current, filePath], vscode.ConfigurationTarget.Global);
-            // Reload config immediately so isFileExcluded() sees the new entry
             this.config = this.loadConfig();
-            // Remove from cache
-            this.fileCache.delete(filePath);
+            this.refreshEmitter.fire();
             this.log(`Agenda: Added ${filePath} to exclude list`);
         }
     }
 
-    /**
-     * Remove a file from the exclude list
-     */
     async unexcludeFile(filePath: string): Promise<void> {
         const config = vscode.workspace.getConfiguration('scimax.agenda');
         const current = config.get<string[]>('exclude', []);
@@ -327,96 +224,12 @@ export class AgendaManager {
             const updated = [...current];
             updated.splice(index, 1);
             await config.update('exclude', updated, vscode.ConfigurationTarget.Global);
-            // Remove from cache so it gets re-scanned
-            this.fileCache.delete(filePath);
+            this.config = this.loadConfig();
+            this.refreshEmitter.fire();
             this.log(`Agenda: Removed ${filePath} from exclude list`);
         }
     }
 
-    /**
-     * Load persisted cache from globalState
-     * Only loads entries where the file still exists and mtime matches
-     */
-    private loadPersistedCache(): void {
-        try {
-            const cached = this.context.globalState.get<{
-                version: number;
-                entries: Array<{
-                    path: string;
-                    mtime: number;
-                    headlines: HeadlineElement[];
-                    diarySexps: DiarySexpEntry[];
-                }>;
-            }>(AgendaManager.CACHE_KEY);
-
-            if (!cached || cached.version !== AgendaManager.CACHE_VERSION) {
-                this.log('Agenda: No valid persisted cache found');
-                return;
-            }
-
-            let loaded = 0;
-            let skipped = 0;
-            for (const entry of cached.entries) {
-                try {
-                    // Check if file still exists and mtime matches
-                    const stat = fs.statSync(entry.path);
-                    if (stat.mtimeMs === entry.mtime) {
-                        this.fileCache.set(entry.path, {
-                            path: entry.path,
-                            headlines: entry.headlines,
-                            diarySexps: entry.diarySexps,
-                            mtime: entry.mtime,
-                        });
-                        loaded++;
-                    } else {
-                        skipped++;
-                    }
-                } catch {
-                    // File doesn't exist anymore
-                    skipped++;
-                }
-            }
-            this.log(`Agenda: Loaded ${loaded} cached files, skipped ${skipped} stale entries`);
-        } catch (error) {
-            this.log(`Agenda: Failed to load persisted cache: ${error}`);
-        }
-    }
-
-    /**
-     * Persist cache to globalState for faster startup next time
-     */
-    private persistCache(): void {
-        try {
-            const entries: Array<{
-                path: string;
-                mtime: number;
-                headlines: HeadlineElement[];
-                diarySexps: DiarySexpEntry[];
-            }> = [];
-
-            for (const [path, file] of this.fileCache) {
-                entries.push({
-                    path,
-                    mtime: file.mtime,
-                    headlines: file.headlines,
-                    diarySexps: file.diarySexps,
-                });
-            }
-
-            this.context.globalState.update(AgendaManager.CACHE_KEY, {
-                version: AgendaManager.CACHE_VERSION,
-                entries,
-            });
-
-            this.log(`Agenda: Persisted ${entries.length} cached files`);
-        } catch (error) {
-            this.log(`Agenda: Failed to persist cache: ${error}`);
-        }
-    }
-
-    /**
-     * Log a message to the output channel (only when verbose mode is enabled)
-     */
     private log(message: string): void {
         if (this.verbose) {
             this.outputChannel.appendLine(message);
@@ -444,580 +257,45 @@ export class AgendaManager {
         return this.verbose;
     }
 
-    private setupFileWatcher(): void {
-        // Watch for org file changes
-        const watcher = vscode.workspace.createFileSystemWatcher('**/*.org');
-
-        watcher.onDidChange((uri) => {
-            this.invalidateFile(uri.fsPath);
-            this.debouncedRefresh();
-        });
-
-        watcher.onDidCreate((uri) => {
-            this.debouncedRefresh();
-        });
-
-        watcher.onDidDelete((uri) => {
-            this.fileCache.delete(uri.fsPath);
-            this.debouncedRefresh();
-        });
-
-        this.disposables.push(watcher);
-    }
-
-    /**
-     * Debounced refresh - batches multiple file changes into a single refresh
-     */
     private debouncedRefresh(): void {
         if (this.refreshDebounceTimer) {
             clearTimeout(this.refreshDebounceTimer);
         }
         this.refreshDebounceTimer = setTimeout(() => {
             this.refreshDebounceTimer = null;
-            // Process any pending invalidations
-            for (const filePath of this.pendingInvalidations) {
-                this.fileCache.delete(filePath);
-            }
-            this.pendingInvalidations.clear();
             this.refreshEmitter.fire();
         }, AgendaManager.REFRESH_DEBOUNCE_MS);
-    }
-
-    private invalidateFile(filePath: string): void {
-        // Queue for batch invalidation
-        this.pendingInvalidations.add(filePath);
-    }
-
-    // Cancellation support for long-running scans
-    private currentScanCts: vscode.CancellationTokenSource | null = null;
-    private scanInProgress: boolean = false;
-
-    /**
-     * Cancel any ongoing file scan
-     */
-    public cancelScan(): void {
-        if (this.currentScanCts) {
-            this.currentScanCts.cancel();
-            this.currentScanCts.dispose();
-            this.currentScanCts = null;
-        }
-        this.scanInProgress = false;
-    }
-
-    /**
-     * Check if a scan is currently in progress
-     */
-    public isScanInProgress(): boolean {
-        return this.scanInProgress;
-    }
-
-    /**
-     * Delay helper for rate limiting
-     */
-    private delay(ms: number): Promise<void> {
-        return new Promise(resolve => setTimeout(resolve, ms));
-    }
-
-    /**
-     * Yield to event loop to prevent blocking
-     */
-    private yieldToEventLoop(): Promise<void> {
-        return new Promise(resolve => setImmediate(resolve));
-    }
-
-    /**
-     * Get glob patterns from the exclude list (patterns containing *)
-     */
-    private getExcludeGlobPatterns(): string[] {
-        return this.config.exclude.filter(p => p.includes('*'));
-    }
-
-    /**
-     * Async generator that lazily yields agenda files in batches
-     * Supports cancellation and rate limiting
-     */
-    async *getAgendaFilesLazy(
-        token?: vscode.CancellationToken
-    ): AsyncGenerator<string[], void, unknown> {
-        const allFiles: string[] = [];
-        const excludeGlobs = this.getExcludeGlobPatterns();
-        const excludePattern = excludeGlobs.length > 0 ? `{${excludeGlobs.join(',')}}` : undefined;
-
-        // Include journal directory if enabled
-        if (this.config.includeJournal) {
-            if (token?.isCancellationRequested) return;
-            const journalDir = resolveScimaxPath('scimax.journal.directory', 'journal');
-            if (journalDir && fs.existsSync(journalDir)) {
-                const expanded = await this.expandPattern(journalDir);
-                allFiles.push(...expanded);
-            }
-        }
-
-        // Include workspace folders if enabled
-        if (this.config.includeWorkspace) {
-            const workspaceFolders = vscode.workspace.workspaceFolders || [];
-            for (const folder of workspaceFolders) {
-                if (token?.isCancellationRequested) return;
-                const orgFiles = await vscode.workspace.findFiles(
-                    new vscode.RelativePattern(folder, '**/*.org'),
-                    excludePattern
-                );
-                allFiles.push(...orgFiles.map(uri => uri.fsPath));
-            }
-        }
-
-        // Include all scimax projects if enabled
-        if (this.config.includeProjects) {
-            const projectPaths = await this.getProjectPathsAsync();
-            for (const projectPath of projectPaths) {
-                if (token?.isCancellationRequested) return;
-                const expanded = await this.expandPattern(projectPath);
-                allFiles.push(...expanded);
-            }
-        }
-
-        // Add additional include paths
-        for (const pattern of this.config.include) {
-            if (token?.isCancellationRequested) return;
-            const expanded = await this.expandPattern(pattern);
-            allFiles.push(...expanded);
-        }
-
-        // Deduplicate
-        const uniqueFiles = [...new Set(allFiles)];
-
-        // Log what we're about to scan
-        this.log(`Agenda: Found ${uniqueFiles.length} org files to scan`);
-        this.log(`Agenda: Config: includeJournal=${this.config.includeJournal}, includeWorkspace=${this.config.includeWorkspace}, includeProjects=${this.config.includeProjects}, include=${JSON.stringify(this.config.include)}`);
-        this.log(`Agenda: Workspace folders: ${vscode.workspace.workspaceFolders?.map(f => f.uri.fsPath).join(', ') || 'none'}`);
-        // Only show output channel in verbose mode to avoid popup on every save
-        if (this.verbose) {
-            this.outputChannel.show(true);
-        }
-
-        // Apply max files limit
-        const maxFiles = this.config.maxFiles;
-        const filesToProcess = maxFiles > 0 ? uniqueFiles.slice(0, maxFiles) : uniqueFiles;
-
-        if (filesToProcess.length < uniqueFiles.length) {
-            this.log(
-                `Agenda: Limited scan to ${maxFiles} files (${uniqueFiles.length} total found). ` +
-                `Configure 'scimax.agenda.include' to specify directories or increase 'scimax.agenda.maxFiles'.`
-            );
-        }
-
-        this.log(`Agenda: Will process ${filesToProcess.length} files`);
-
-        // Yield files in batches
-        const batchSize = this.config.batchSize;
-        for (let i = 0; i < filesToProcess.length; i += batchSize) {
-            if (token?.isCancellationRequested) return;
-
-            const batch = filesToProcess.slice(i, i + batchSize);
-            yield batch;
-
-            // Rate limiting: delay between batches and yield to event loop
-            if (i + batchSize < filesToProcess.length) {
-                if (this.config.batchDelayMs > 0) {
-                    await this.delay(this.config.batchDelayMs);
-                }
-                await this.yieldToEventLoop();
-            }
-        }
-    }
-
-    /**
-     * Get all org files to scan
-     */
-    async getAgendaFiles(): Promise<string[]> {
-        const files: string[] = [];
-        const excludeGlobs = this.getExcludeGlobPatterns();
-        const excludePattern = excludeGlobs.length > 0 ? `{${excludeGlobs.join(',')}}` : undefined;
-
-        // Include journal directory if enabled
-        if (this.config.includeJournal) {
-            const journalDir = resolveScimaxPath('scimax.journal.directory', 'journal');
-            if (journalDir && fs.existsSync(journalDir)) {
-                const expanded = await this.expandPattern(journalDir);
-                files.push(...expanded);
-            }
-        }
-
-        // Include workspace folders if enabled
-        if (this.config.includeWorkspace) {
-            const workspaceFolders = vscode.workspace.workspaceFolders || [];
-            for (const folder of workspaceFolders) {
-                const orgFiles = await vscode.workspace.findFiles(
-                    new vscode.RelativePattern(folder, '**/*.org'),
-                    excludePattern
-                );
-                files.push(...orgFiles.map(uri => uri.fsPath));
-            }
-        }
-
-        // Include all scimax projects if enabled
-        if (this.config.includeProjects) {
-            const projectPaths = await this.getProjectPathsAsync();
-            for (const projectPath of projectPaths) {
-                const expanded = await this.expandPattern(projectPath);
-                files.push(...expanded);
-            }
-        }
-
-        // Add additional include paths
-        for (const pattern of this.config.include) {
-            const expanded = await this.expandPattern(pattern);
-            files.push(...expanded);
-        }
-
-        return [...new Set(files)]; // Deduplicate
-    }
-
-    private async expandPattern(pattern: string): Promise<string[]> {
-        // Handle ~ for home directory
-        if (pattern.startsWith('~')) {
-            pattern = pattern.replace(/^~/, process.env.HOME || '');
-        }
-
-        const excludeGlobs = this.getExcludeGlobPatterns();
-        const excludePattern = excludeGlobs.length > 0 ? `{${excludeGlobs.join(',')}}` : undefined;
-
-        // If it's a directory, find all org files in it
-        try {
-            const stat = fs.statSync(pattern);
-            if (stat.isDirectory()) {
-                const files = await vscode.workspace.findFiles(
-                    new vscode.RelativePattern(pattern, '**/*.org'),
-                    excludePattern
-                );
-                return files.map(uri => uri.fsPath);
-            } else if (stat.isFile() && pattern.endsWith('.org')) {
-                return [pattern];
-            }
-        } catch {
-            // Pattern might be a glob
-            const files = await vscode.workspace.findFiles(pattern);
-            return files.filter(uri => uri.fsPath.endsWith('.org')).map(uri => uri.fsPath);
-        }
-
-        return [];
-    }
-
-    /**
-     * Parse an org file and cache the result (async for better responsiveness)
-     */
-    async parseFile(filePath: string): Promise<AgendaFile | null> {
-        const basename = path.basename(filePath);
-        const startTime = Date.now();
-
-        // Check if file is excluded
-        if (this.isFileExcluded(filePath)) {
-            this.log(`  ${basename}: excluded`);
-            return null;
-        }
-
-        try {
-            const stat = await fs.promises.stat(filePath);
-            const sizeKB = Math.round(stat.size / 1024);
-
-            const cached = this.fileCache.get(filePath);
-
-            // Return cached if not modified
-            if (cached && cached.mtime === stat.mtimeMs) {
-                this.log(`  ${basename} (${sizeKB}KB): cached`);
-                return cached;
-            }
-
-            // Skip very large files (> 100KB) to prevent OOM
-            if (stat.size > 100 * 1024) {
-                this.log(`  ${basename}: skipping (${sizeKB}KB > 100KB)`);
-                return null;
-            }
-
-            this.log(`  ${basename} (${sizeKB}KB): reading...`);
-            const content = await fs.promises.readFile(filePath, 'utf-8');
-            const readTime = Date.now();
-
-            // Fast pre-filter: skip full parse if file has no agenda-relevant content
-            // This dramatically reduces work for journal/note files without timestamps
-            if (!AgendaManager.AGENDA_CONTENT_REGEX.test(content)) {
-                this.log(`  ${basename}: no agenda content, skipping parse`);
-                // Cache empty result to avoid re-reading
-                const emptyFile: AgendaFile = {
-                    path: filePath,
-                    headlines: [],
-                    diarySexps: [],
-                    mtime: stat.mtimeMs,
-                };
-                this.fileCache.set(filePath, emptyFile);
-                return emptyFile;
-            }
-
-            this.log(`  ${basename}: read ${readTime - startTime}ms, parsing...`);
-
-            const document = parseOrg(content, {
-                parseInlineObjects: false,
-                addPositions: false,
-            });
-            const parseTime = Date.now();
-            this.log(`  ${basename}: parsed ${parseTime - readTime}ms, extracting...`);
-
-            const headlines = this.extractHeadlines(document);
-            const diarySexps = this.extractDiarySexps(document, filePath, content);
-            const extractTime = Date.now();
-
-            const agendaFile: AgendaFile = {
-                path: filePath,
-                headlines,
-                diarySexps,
-                mtime: stat.mtimeMs,
-            };
-
-            this.fileCache.set(filePath, agendaFile);
-
-            this.log(
-                `  ${basename}: done (read=${readTime - startTime}ms, parse=${parseTime - readTime}ms, extract=${extractTime - parseTime}ms, headlines=${headlines.length})`
-            );
-
-            return agendaFile;
-        } catch (error) {
-            this.log(`  ${basename}: ERROR ${error}`);
-            return null;
-        }
-    }
-
-    private extractHeadlines(doc: OrgDocumentNode): HeadlineElement[] {
-        const headlines: HeadlineElement[] = [];
-
-        for (const child of doc.children) {
-            if (child.type === 'headline') {
-                // Strip section content to save memory - agenda only needs metadata
-                const stripped = this.stripHeadlineSection(child as HeadlineElement);
-                headlines.push(stripped);
-            }
-        }
-
-        return headlines;
-    }
-
-    /**
-     * Create a lightweight copy of headline with only agenda-relevant fields
-     * This avoids copying the entire AST structure which can be very large
-     * IMPORTANT: We must deep-copy nested objects to avoid keeping AST references alive
-     */
-    private stripHeadlineSection(headline: HeadlineElement): HeadlineElement {
-        // Deep copy planning to avoid AST references
-        let planning: any = undefined;
-        if (headline.planning) {
-            planning = {
-                type: 'planning',
-                range: headline.planning.range,
-                postBlank: headline.planning.postBlank,
-                properties: {
-                    scheduled: headline.planning.properties.scheduled ? { ...headline.planning.properties.scheduled } : undefined,
-                    deadline: headline.planning.properties.deadline ? { ...headline.planning.properties.deadline } : undefined,
-                    closed: headline.planning.properties.closed ? { ...headline.planning.properties.closed } : undefined,
-                }
-            };
-        }
-
-        // Deep copy properties drawer (it's just key-value pairs)
-        const propertiesDrawer = headline.propertiesDrawer ? { ...headline.propertiesDrawer } : undefined;
-
-        return {
-            type: 'headline',
-            range: headline.range,
-            postBlank: headline.postBlank,
-            properties: {
-                level: headline.properties.level,
-                rawValue: headline.properties.rawValue,
-                todoKeyword: headline.properties.todoKeyword,
-                todoType: headline.properties.todoType,
-                priority: headline.properties.priority,
-                tags: [...headline.properties.tags], // Copy array
-                archivedp: headline.properties.archivedp,
-                commentedp: headline.properties.commentedp,
-                footnoteSection: headline.properties.footnoteSection,
-                customId: headline.properties.customId,
-                id: headline.properties.id,
-                category: headline.properties.category,
-                effort: headline.properties.effort,
-                lineNumber: headline.properties.lineNumber,
-            },
-            planning,
-            propertiesDrawer,
-            // No section - that's the heavy part we want to exclude
-            children: headline.children.map(child => this.stripHeadlineSection(child)),
-        };
-    }
-
-    /**
-     * Extract diary sexp entries from a document
-     * @param doc The parsed org document
-     * @param filePath Path to the file (for metadata)
-     * @param content File content (passed to avoid re-reading)
-     */
-    private extractDiarySexps(doc: OrgDocumentNode, filePath: string, content: string): DiarySexpEntry[] {
-        const entries: DiarySexpEntry[] = [];
-        const lines = content.split('\n');
-
-        // Helper to extract diary sexps from an element's children
-        const extractFromElements = (elements: OrgElement[], category?: string) => {
-            for (const element of elements) {
-                if (element.type === 'diary-sexp') {
-                    const diarySexp = element as DiarySexpElement;
-                    // Find line number from the element's range
-                    let lineNumber = 1;
-                    let charCount = 0;
-                    for (let i = 0; i < lines.length; i++) {
-                        if (charCount >= element.range.start) {
-                            lineNumber = i + 1;
-                            break;
-                        }
-                        charCount += lines[i].length + 1; // +1 for newline
-                    }
-
-                    // Use description from sexp if available, otherwise look at context
-                    const title = diarySexp.properties.description ||
-                                  this.getDiarySexpTitle(lines, lineNumber - 1);
-
-                    entries.push({
-                        sexp: diarySexp.properties.value,
-                        title: title,
-                        file: filePath,
-                        line: lineNumber,
-                        category: category || path.basename(filePath, '.org'),
-                    });
-                }
-            }
-        };
-
-        // Check the document's top-level section
-        if (doc.section) {
-            extractFromElements(doc.section.children);
-        }
-
-        // Check headlines recursively
-        const processHeadline = (headline: HeadlineElement) => {
-            const category = headline.propertiesDrawer?.CATEGORY ||
-                           path.basename(filePath, '.org');
-
-            // Check headline's section
-            if (headline.section) {
-                extractFromElements(headline.section.children, category);
-            }
-
-            // Process children headlines
-            for (const child of headline.children) {
-                processHeadline(child);
-            }
-        };
-
-        for (const child of doc.children) {
-            if (child.type === 'headline') {
-                processHeadline(child as HeadlineElement);
-            }
-        }
-
-        return entries;
-    }
-
-    /**
-     * Get a title for a diary sexp entry from surrounding context
-     */
-    private getDiarySexpTitle(lines: string[], lineIndex: number): string {
-        // Try to find a meaningful title from surrounding lines
-        // Check current line for any text after the sexp
-        const currentLine = lines[lineIndex] || '';
-        const afterSexp = currentLine.replace(/^%%\([^)]+\)\s*/, '').trim();
-        if (afterSexp) {
-            return afterSexp;
-        }
-
-        // Check previous line for a headline or descriptive text
-        if (lineIndex > 0) {
-            const prevLine = lines[lineIndex - 1].trim();
-            if (prevLine.startsWith('*')) {
-                // It's a headline, extract the text
-                return prevLine.replace(/^\*+\s*(?:TODO|DONE|NEXT|WAITING)?\s*(?:\[#[ABC]\])?\s*/, '')
-                    .replace(/\s*:[^:]+:\s*$/, '') // Remove tags
-                    .trim();
-            }
-        }
-
-        // Default to a generic title based on the sexp type
-        const match = currentLine.match(/%%\((\w+-\w+)/);
-        if (match) {
-            return `Diary: ${match[1]}`;
-        }
-
-        return 'Diary entry';
     }
 
     /**
      * Generate agenda view with lazy loading and rate limiting
      */
     async getAgendaView(config?: Partial<AgendaViewConfig>): Promise<AgendaView> {
-        // Cancel any previous scan
-        this.cancelScan();
+        // The agenda is now a view over the database. If the db isn't ready,
+        // return an empty view rather than re-scanning files — the TreeView
+        // will surface the "Database not ready" message and the stale-check
+        // prompt will tell the user to refresh.
+        const view = await this.getAgendaViewFromDb(config);
+        if (view) return view;
 
-        // Create new cancellation token
-        this.currentScanCts = new vscode.CancellationTokenSource();
-        const token = this.currentScanCts.token;
-        this.scanInProgress = true;
-
-        const allHeadlines: HeadlineElement[] = [];
-        const allDiarySexps: DiarySexpEntry[] = [];
-        const fileMap = new Map<string, string>();
-        let filesProcessed = 0;
-
-        try {
-            // Use lazy generator for rate-limited file processing
-            for await (const batch of this.getAgendaFilesLazy(token)) {
-                if (token.isCancellationRequested) {
-                    this.log('Agenda scan cancelled');
-                    break;
-                }
-
-                // Process each file in the batch
-                this.log(`Processing batch of ${batch.length} files...`);
-                for (let i = 0; i < batch.length; i++) {
-                    const filePath = batch[i];
-                    if (token.isCancellationRequested) break;
-
-                    this.log(`Starting file ${i + 1}/${batch.length}: ${filePath}`);
-                    const agendaFile = await this.parseFile(filePath);
-                    if (agendaFile) {
-                        this.log(`  - Collecting ${agendaFile.headlines.length} headlines...`);
-                        for (const headline of agendaFile.headlines) {
-                            this.collectHeadlinesWithFile(headline, filePath, allHeadlines, fileMap);
-                        }
-                        this.log(`  - Total headlines so far: ${allHeadlines.length}`);
-                        // Collect diary sexps
-                        allDiarySexps.push(...agendaFile.diarySexps);
-                    }
-                    filesProcessed++;
-                    this.log(`  - File ${filesProcessed} complete`);
-                }
-                this.log(`Batch complete. Total: ${filesProcessed} files, ${allHeadlines.length} headlines`);
-
-                // Log progress for large scans
-                if (filesProcessed % 50 === 0) {
-                    this.log(`Agenda: Processed ${filesProcessed} files...`);
-                }
-            }
-
-            this.log(`Agenda: Scan complete. Processed ${filesProcessed} files, found ${allHeadlines.length} headlines, ${allDiarySexps.length} diary sexps.`);
-        } finally {
-            this.scanInProgress = false;
-        }
-
-        return generateAgendaView(allHeadlines, fileMap, {
-            showDone: this.config.showDone,
-            showHabits: this.config.showHabits,
-            days: this.config.defaultSpan,
-            ...config,
-        }, allDiarySexps, filesProcessed);
+        const startDate = startOfDay(new Date());
+        const days = config?.days ?? this.config.defaultSpan;
+        return {
+            config: {
+                type: 'week',
+                startDate,
+                days,
+                showDone: this.config.showDone,
+                showHabits: this.config.showHabits,
+                sortBy: 'time',
+                groupBy: 'date',
+                ...config,
+            },
+            groups: [],
+            totalItems: 0,
+            totalFiles: 0,
+            dateRange: { start: startDate, end: addDays(startDate, days) },
+        };
     }
 
     /**
@@ -1239,49 +517,13 @@ export class AgendaManager {
         excludeDone?: boolean;
         tags?: string[];
     }): Promise<TodoListView> {
-        // Cancel any previous scan
-        this.cancelScan();
-
-        // Create new cancellation token
-        this.currentScanCts = new vscode.CancellationTokenSource();
-        const token = this.currentScanCts.token;
-        this.scanInProgress = true;
-
-        const allHeadlines: HeadlineElement[] = [];
-        const fileMap = new Map<string, string>();
-        let filesProcessed = 0;
-
-        try {
-            // Use lazy generator for rate-limited file processing
-            for await (const batch of this.getAgendaFilesLazy(token)) {
-                if (token.isCancellationRequested) {
-                    this.log('TODO list scan cancelled');
-                    break;
-                }
-
-                // Process each file in the batch
-                for (const filePath of batch) {
-                    if (token.isCancellationRequested) break;
-
-                    const agendaFile = await this.parseFile(filePath);
-                    if (agendaFile) {
-                        for (const headline of agendaFile.headlines) {
-                            this.collectHeadlinesWithFile(headline, filePath, allHeadlines, fileMap);
-                        }
-                    }
-                    filesProcessed++;
-                }
-            }
-
-            this.log(`TODO list: Scan complete. Processed ${filesProcessed} files.`);
-        } finally {
-            this.scanInProgress = false;
-        }
-
-        return generateTodoList(allHeadlines, fileMap, {
-            excludeDone: options?.excludeDone ?? true,
-            ...options,
-        });
+        const view = await this.getTodoListFromDb();
+        if (view) return view;
+        return {
+            byState: new Map(),
+            byPriority: new Map(),
+            counts: { total: 0, byState: {}, byPriority: {} },
+        };
     }
 
     /**
@@ -1364,82 +606,49 @@ export class AgendaManager {
     }
 
     /**
-     * Refresh agenda (clear cache and re-scan)
+     * Refresh agenda (re-read config, fire refresh event).
+     *
+     * The agenda is purely a view over the db now, so refreshing the agenda
+     * means re-reading config and re-querying. To pick up disk changes the
+     * user runs `Scimax: Refresh Database`, which fires onDidRebuild and
+     * gets us back here through the subscription.
      */
     async refresh(): Promise<void> {
         this.config = this.loadConfig();
-        this.fileCache.clear();
-
-        // Re-index agenda files in the database so the view reflects current state
-        if (this.db) {
-            const files = await this.getAgendaFiles();
-            if (files.length > 0) {
-                await this.db.reindexFiles(files);
-            }
-        }
-
         this.refreshEmitter.fire();
     }
 
     /**
-     * Get the file cache for external access (e.g., clock reports)
-     */
-    getFileCache(): Map<string, AgendaFile> {
-        return this.fileCache;
-    }
-
-    /**
-     * Get a description of the agenda sources for display in tooltips
+     * Describe the agenda's display-time filters for tooltips.
+     * The agenda is now a view over the database, so the only thing it
+     * controls is what to hide from that view.
      */
     getSourcesDescription(): string {
-        const parts: string[] = [];
-
-        if (this.config.includeJournal) {
-            const journalDir = resolveScimaxPath('scimax.journal.directory', 'journal');
-            if (journalDir) {
-                parts.push(`Journal: ${journalDir}`);
-            }
-        }
-
-        if (this.config.includeWorkspace) {
-            const workspaceFolders = vscode.workspace.workspaceFolders || [];
-            if (workspaceFolders.length > 0) {
-                parts.push(`Workspace: ${workspaceFolders.map(f => f.name).join(', ')}`);
-            }
-        }
-
-        if (this.config.includeProjects) {
-            const projectPaths = this.getProjectPaths();
-            if (projectPaths.length > 0) {
-                parts.push(`Projects: ${projectPaths.length} registered`);
-            }
-        }
-
-        if (this.config.include.length > 0) {
-            parts.push(`Include: ${this.config.include.join(', ')}`);
-        }
-
+        const parts: string[] = ['Source: Scimax database'];
         if (this.config.exclude.length > 0) {
-            const excludeCount = this.config.exclude.length;
-            parts.push(`Exclude: ${excludeCount} patterns`);
+            parts.push(`Exclude: ${this.config.exclude.length} patterns`);
         }
-
         return parts.join('\n');
     }
 
     /**
-     * Get agenda view for a single file (current file)
+     * Build an agenda view for a single file by parsing it once. No caching,
+     * no scanning — used for the "agenda for current file" command.
      */
     async getAgendaViewForFile(filePath: string, config?: Partial<AgendaViewConfig>): Promise<AgendaView> {
         const allHeadlines: HeadlineElement[] = [];
         const fileMap = new Map<string, string>();
 
-        // Parse the single file
-        const agendaFile = await this.parseFile(filePath);
-        if (agendaFile) {
-            for (const headline of agendaFile.headlines) {
-                this.collectHeadlinesWithFile(headline, filePath, allHeadlines, fileMap);
+        try {
+            const content = await fs.promises.readFile(filePath, 'utf-8');
+            const document = parseOrg(content, { parseInlineObjects: false, addPositions: false });
+            for (const child of document.children) {
+                if (child.type === 'headline') {
+                    this.collectHeadlinesWithFile(child as HeadlineElement, filePath, allHeadlines, fileMap);
+                }
             }
+        } catch (error) {
+            this.log(`getAgendaViewForFile: failed to read/parse ${filePath}: ${error}`);
         }
 
         return generateAgendaView(allHeadlines, fileMap, {
@@ -1448,13 +657,14 @@ export class AgendaManager {
             days: this.config.defaultSpan,
             files: [filePath],
             ...config,
-        }, agendaFile?.diarySexps || [], 1);
+        }, [], 1);
     }
 
     dispose(): void {
-        // Cancel any ongoing scan
-        this.cancelScan();
-
+        if (this.refreshDebounceTimer) {
+            clearTimeout(this.refreshDebounceTimer);
+            this.refreshDebounceTimer = null;
+        }
         for (const d of this.disposables) {
             d.dispose();
         }
@@ -1752,7 +962,44 @@ export class AgendaTreeProvider implements vscode.TreeDataProvider<AgendaTreeIte
 // Commands
 // =============================================================================
 
+/**
+ * Show a one-shot toast on activation if the user has set any of the now-
+ * deprecated scimax.agenda.* indexing settings to a non-default value. The
+ * agenda is purely a view over the db now, so those settings have no effect.
+ */
+function warnDeprecatedAgendaSettings(): void {
+    const cfg = vscode.workspace.getConfiguration('scimax.agenda');
+    const deprecated: string[] = [];
+
+    const inspect = (key: string, defaultValue: unknown): boolean => {
+        const info = cfg.inspect(key);
+        const explicit = info?.globalValue ?? info?.workspaceValue ?? info?.workspaceFolderValue;
+        if (explicit === undefined) return false;
+        return JSON.stringify(explicit) !== JSON.stringify(defaultValue);
+    };
+
+    if (inspect('includeJournal', true)) deprecated.push('scimax.agenda.includeJournal');
+    if (inspect('includeWorkspace', true)) deprecated.push('scimax.agenda.includeWorkspace');
+    if (inspect('includeProjects', true)) deprecated.push('scimax.agenda.includeProjects');
+    if (inspect('include', [])) deprecated.push('scimax.agenda.include');
+    if (inspect('maxFiles', 0)) deprecated.push('scimax.agenda.maxFiles');
+
+    if (deprecated.length === 0) return;
+
+    vscode.window.showInformationMessage(
+        `Scimax: ${deprecated.length} agenda indexing setting(s) are deprecated. ` +
+        `The agenda is now a view over the database — use scimax.db.* to control indexing. ` +
+        `(${deprecated.join(', ')})`,
+        'Open Settings'
+    ).then((choice) => {
+        if (choice === 'Open Settings') {
+            vscode.commands.executeCommand('workbench.action.openSettings', 'scimax.db');
+        }
+    });
+}
+
 export function registerAgendaCommands(context: vscode.ExtensionContext): void {
+    warnDeprecatedAgendaSettings();
     const manager = new AgendaManager(context);
     const treeProvider = new AgendaTreeProvider(manager);
 
@@ -1786,16 +1033,6 @@ export function registerAgendaCommands(context: vscode.ExtensionContext): void {
         vscode.commands.registerCommand('scimax.agenda.refresh', async () => {
             await manager.refresh();
             vscode.window.setStatusBarMessage('$(check) Agenda refreshed', 2000);
-        }),
-
-        // Cancel ongoing scan
-        vscode.commands.registerCommand('scimax.agenda.cancelScan', () => {
-            if (manager.isScanInProgress()) {
-                manager.cancelScan();
-                vscode.window.showInformationMessage('Agenda scan cancelled');
-            } else {
-                vscode.window.showInformationMessage('No agenda scan in progress');
-            }
         }),
 
         // Toggle verbose logging
@@ -2218,7 +1455,9 @@ export function registerAgendaCommands(context: vscode.ExtensionContext): void {
                 let totalMinutes = 0;
                 let totalEntries = 0;
 
-                for (const [filePath] of manager.getFileCache()) {
+                const db = await getDatabase();
+                const indexedFiles = db ? (await db.getFiles()).map(f => f.path) : [];
+                for (const filePath of indexedFiles) {
                     try {
                         // Re-parse file to get clock entries
                         const content = fs.readFileSync(filePath, 'utf-8');
