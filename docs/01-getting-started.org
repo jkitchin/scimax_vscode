@@ -373,7 +373,7 @@ Now that you're set up, explore these topics:
 
 ** Search Not Finding Results
 
-1. Run `scimax.db.reindex' to rebuild the search index
+1. Run `scimax.db.refresh' to refresh the search index incrementally
 2. Check that files aren't in excluded patterns
 3. Verify the search scope (`scimax.db.setScope')
 

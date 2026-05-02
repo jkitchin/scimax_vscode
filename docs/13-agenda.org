@@ -587,70 +587,62 @@ CLOSED: [2026-01-17 Sat 13:26]
 
 Configure agenda behavior through VS Code settings.
 
-** ✅ Agenda Sources
+** 👀 Agenda Sources
 CLOSED: [2026-01-22 Thu 21:16]
 
-The agenda automatically includes files from these sources:
+The agenda is a *view over the Scimax database* — anything indexed in
+the database is agenda-eligible. Configure indexing scope via
+=scimax.db.*= (see [[file:18-database-search.org][Database & Search]]):
 
-| Setting                        | Default | Description                        |
-|--------------------------------+---------+------------------------------------|
-| scimax.agenda.includeJournal   | true    | Include journal directory          |
-| scimax.agenda.includeWorkspace | true    | Include workspace folders          |
-| scimax.agenda.includeProjects  | true    | Include all scimax projects        |
-| scimax.agenda.include          | []      | Additional directories/files       |
+| Setting                    | Default | Description                  |
+|----------------------------+---------+------------------------------|
+| scimax.db.includeJournal   | true    | Index journal directory      |
+| scimax.db.includeWorkspace | true    | Index workspace folders      |
+| scimax.db.includeProjects  | true    | Index all scimax projects    |
+| scimax.db.include          | []      | Additional directories/files |
 
-By default, the agenda includes:
-1. Your journal directory (from =scimax.journal.directory=)
-2. All org files in your workspace folders
-3. All scimax projects (registered via projectile)
-
-To add additional files or directories:
-
-#+BEGIN_SRC text
-Command: scimax.agenda.configure
-→ Select: "Add directory to agenda"
-→ Select directory to add
-#+END_SRC
-
-Or manually in settings:
+Add ad-hoc directories (e.g. a Dropbox-shared notes folder) via
+=scimax.db.include=:
 
 #+BEGIN_SRC json
 {
-  "scimax.agenda.include": [
+  "scimax.db.include": [
     "/home/user/org/work.org",
-    "/home/user/org/personal.org",
-    "/home/user/projects"
+    "/home/user/Dropbox/shared-notes"
   ]
 }
 #+END_SRC
 
-To disable journal or projects in agenda:
+After changing indexing settings, run =Scimax: Refresh Database
+(incremental)= ([[cmd:scimax.db.refresh]]) to pick up new files.
 
-#+BEGIN_SRC json
-{
-  "scimax.agenda.includeJournal": false,
-  "scimax.agenda.includeProjects": false
-}
-#+END_SRC
+The legacy =scimax.agenda.includeJournal/includeWorkspace/includeProjects/include=
+settings are deprecated and have no effect — the agenda no longer scans
+files itself. On activation, Scimax shows a one-shot toast if any of
+these are set, with a button that opens the new =scimax.db.*= settings.
 
-** ✅ Exclude Patterns
+** 👀 Exclude Patterns
 CLOSED: [2026-01-22 Thu 21:16]
 
-Exclude files from agenda using glob patterns or absolute paths:
+There are two distinct exclude lists. Pick the one that matches your
+intent:
 
-| Setting               | Default                                              |
-|-----------------------+------------------------------------------------------|
-| scimax.agenda.exclude | =["**/node_modules/**", "**/.git/**", "**/archive/**"]= |
+| Setting               | Effect                                                          |
+|-----------------------+-----------------------------------------------------------------|
+| =scimax.db.exclude=     | Don't index. The file is invisible to search and agenda.        |
+| =scimax.agenda.exclude= | Index normally, but hide from agenda. Search still finds it.    |
 
-The exclude list supports:
-- Glob patterns (containing =*=): =**/archive/**=
-- Absolute paths: =~/org/scratch.org=
+Use =scimax.db.exclude= when a file shouldn't be in the index at all
+(backup files, archives, Emacs caches). Use =scimax.agenda.exclude= for
+files that you want searchable but cluttering the day/week view.
 
 #+BEGIN_SRC json
 {
-  "scimax.agenda.exclude": [
+  "scimax.db.exclude": [
     "**/node_modules/**",
-    "**/.git/**",
+    "**/.git/**"
+  ],
+  "scimax.agenda.exclude": [
     "**/archive/**",
     "**/drafts/**",
     "~/org/scratch.org"
@@ -658,7 +650,12 @@ The exclude list supports:
 }
 #+END_SRC
 
-Use =Scimax: Exclude File from Agenda= command to quickly exclude the current file.
+Both lists support glob patterns (containing =*=) and absolute paths
+(supporting =~= for home).
+
+Quick commands:
+- =Scimax: Hide File from Agenda View (still indexed)= ([[cmd:scimax.agenda.ignoreFile]])
+- =Scimax: Don't Index File (removes from database)= ([[cmd:scimax.db.ignoreFile]])
 
 ** ✅ Default Time Span
 CLOSED: [2026-01-17 Sat 13:25]
@@ -741,17 +738,19 @@ The database agenda (scimax.db.agenda) offers:
 3. *Semantic search* - Find items by meaning
 4. *Hybrid views* - Combine agenda with search
 
-** ✅ Indexing for Agenda
+** 👀 Indexing for Agenda
 CLOSED: [2026-01-17 Sat 12:32]
 
-Before using database agenda, index your files:
+Before using the agenda, index your files:
 
-| Command                   | Description         |
-|---------------------------+---------------------|
-| [[cmd:scimax.db.reindex]] | Index all org files |
+| Command                   | Description                                |
+|---------------------------+--------------------------------------------|
+| [[cmd:scimax.db.refresh]] | Refresh database incrementally (mtime)     |
+| [[cmd:scimax.db.rebuild]] | Rebuild database from scratch              |
 
-The database automatically tracks changes, but manual reindex ensures
-everything is current.
+For day-to-day use across machines (e.g. Dropbox sync), run =Refresh=
+on activation when prompted, or any time you want the agenda to pick up
+new edits.
 
 ** ✅ Database Agenda Commands
 CLOSED: [2026-01-17 Sat 12:33]
@@ -1143,7 +1142,7 @@ CLOSED: [2026-01-18 Sun 12:50]
 
 4. *Reindex database* (for database agenda):
    #+BEGIN_SRC text
-   Command: scimax.db.reindex
+   Command: scimax.db.refresh
    #+END_SRC
 
 5. *Check exclude patterns*:
@@ -1164,7 +1163,7 @@ CLOSED: [2026-01-18 Sun 12:50]
 
 2. *Reindex database*:
    #+BEGIN_SRC text
-   Command: scimax.db.reindex
+   Command: scimax.db.refresh
    #+END_SRC
 
 3. *Check file watcher*:
@@ -1280,7 +1279,8 @@ CLOSED: [2026-01-18 Sun 12:55]
 | [[cmd:scimax.db.showTodos]]   | Database TODO list     |
 | [[cmd:scimax.db.searchByTag]] | Database tag search    |
 | [[cmd:scimax.db.setScope]]    | Set search scope       |
-| [[cmd:scimax.db.reindex]]     | Reindex all files      |
+| [[cmd:scimax.db.refresh]]     | Refresh database (incremental) |
+| [[cmd:scimax.db.rebuild]]     | Rebuild database (from scratch) |
 
 ** ✅ Tree View Commands
 CLOSED: [2026-01-18 Sun 12:49]
@@ -1294,21 +1294,30 @@ CLOSED: [2026-01-18 Sun 12:49]
 | [[cmd:scimax.agenda.groupByPriority]]      | Group by priority              |
 | [[cmd:scimax.agenda.gotoItem]]             | Go to item in file             |
 
-** ✅ Configuration Settings
+** 👀 Configuration Settings
 CLOSED: [2026-01-22 Thu 21:43]
 
-| Setting                        | Default      | Description               |
-|--------------------------------+--------------+---------------------------|
-| scimax.agenda.includeJournal   | true         | Include journal           |
-| scimax.agenda.includeWorkspace | true         | Include workspace         |
-| scimax.agenda.includeProjects  | true         | Include scimax projects   |
-| scimax.agenda.include          | [] (empty)   | Additional paths          |
-| scimax.agenda.exclude          | node_modules | Patterns/paths to exclude |
-| scimax.agenda.defaultSpan      | 7            | Default days to show      |
-| scimax.agenda.showDone         | false        | Show DONE items           |
-| scimax.agenda.showHabits       | true         | Show habit items          |
-| scimax.agenda.todoStates       | [TODO, ...]  | TODO keyword list         |
-| scimax.agenda.doneStates       | [DONE, ...]  | DONE keyword list         |
+Indexing scope (what's available to the agenda) lives under
+=scimax.db.*=. The agenda's own settings are display-only:
+
+| Setting                   | Default      | Description                  |
+|---------------------------+--------------+------------------------------|
+| scimax.agenda.exclude     | node_modules | Hide from view (still index) |
+| scimax.agenda.defaultSpan | 7            | Default days to show         |
+| scimax.agenda.showDone    | false        | Show DONE items              |
+| scimax.agenda.showHabits  | true         | Show habit items             |
+| scimax.agenda.todoStates  | [TODO, ...]  | TODO keyword list            |
+| scimax.agenda.doneStates  | [DONE, ...]  | DONE keyword list            |
+
+Indexing settings (see [[file:18-database-search.org][Database & Search]]):
+
+| Setting                    | Default | Description                |
+|----------------------------+---------+----------------------------|
+| scimax.db.includeJournal   | true    | Index journal              |
+| scimax.db.includeWorkspace | true    | Index workspace folders    |
+| scimax.db.includeProjects  | true    | Index scimax projects      |
+| scimax.db.include          | []      | Additional paths to index  |
+| scimax.db.exclude          | []      | Don't index these          |
 
 ** ✅ Agenda Item Properties
 CLOSED: [2026-01-18 Sun 12:49]

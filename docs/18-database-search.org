@@ -225,7 +225,7 @@ Semantic search requires:
 
 1. *Vector search support in libsql* - The database must support vector operations
 2. *Embedding provider configured* - Ollama must be running locally
-3. *Files indexed with embeddings* - Run `scimax.db.reindex' after configuring
+3. *Files indexed with embeddings* - Run `scimax.db.refresh' after configuring
 
 *** Checking Availability
 
@@ -327,7 +327,8 @@ Results include:
 
 After configuring an embedding provider, you *must reindex* your files:
 
-1. Run `Scimax: Reindex Files' (`scimax.db.reindex')
+1. Run `Scimax: Refresh Database (incremental)' (`scimax.db.refresh').
+   For a full embeddings rebuild, use `Scimax: Rebuild Database (from scratch)' (`scimax.db.rebuild').
 2. Wait for indexing to complete
 3. The database will generate embeddings for all text chunks
 4. Semantic search will now be available
@@ -902,16 +903,24 @@ Search scope: directory (my-project)
 
 * Database Management
 
-** Reindexing
+** Refreshing the Index
 
-*** Full Reindex
-Command: `Scimax: Reindex Files' (`scimax.db.reindex'). [[cmd:scimax.db.reindex]]
+*** 👀 Incremental Refresh (daily use)
+Command: `Scimax: Refresh Database (incremental)' (`scimax.db.refresh'). [[cmd:scimax.db.refresh]]
 
-- Scans all workspace folders
-- Checks file modification times
-- Only reindexes changed files
-- Shows progress notification
-- Reports statistics on completion
+- Scans all configured directories (=scimax.db.includeJournal=,
+  =includeWorkspace=, =includeProjects=, plus =scimax.db.include=)
+- Checks file modification times against the database
+- Only re-indexes changed files
+- This is the everyday command for picking up edits, especially when
+  syncing across machines via Dropbox.
+- =scimax.db.reindex= is kept as an alias for backwards compatibility.
+
+*** 👀 Full Rebuild
+Command: `Scimax: Rebuild Database (from scratch)' (`scimax.db.rebuild'). [[cmd:scimax.db.rebuild]]
+
+- Wipes the database and re-indexes everything
+- Use after schema changes or to recover from corruption
 
 *** ✅ Auto-Indexing
 CLOSED: [2026-01-17 Sat 12:08]
@@ -1226,7 +1235,8 @@ Ollama embedding model name.
 
 | Command                       | Description                 |
 |-------------------------------+-----------------------------|
-| scimax.db.reindex             | Reindex all files           |
+| scimax.db.refresh             | Refresh database (incremental) |
+| scimax.db.rebuild             | Rebuild database (from scratch) |
 | scimax.db.optimize            | Optimize database           |
 | scimax.db.clear               | Clear database              |
 | scimax.db.stats               | Show database statistics    |
@@ -1402,7 +1412,7 @@ Searches return empty results despite having files.
 
 *** Solutions
 1. Run `Scimax: Show Database Stats' to check file count
-2. If files ` 0, run 'Scimax: Reindex Files
+2. If files = 0, run `Scimax: Refresh Database (incremental)' (`scimax.db.refresh')
 3. Check file extensions (.org, .md, .ipynb)
 4. Verify files aren't in ignored directories
 5. Check search scope is set to "All files"

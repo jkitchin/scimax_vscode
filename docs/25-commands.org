@@ -414,7 +414,6 @@ CLOSED: [2026-01-17 Sat 12:51]
 | [[cmd:scimax.agenda.filterByTag]]     | Agenda Filter by Tag     | -                  |
 | [[cmd:scimax.agenda.clockReport]]     | Agenda Clock Report      | -                  |
 | [[cmd:scimax.agenda.refresh]]         | Refresh Agenda           | -                  |
-| [[cmd:scimax.agenda.cancelScan]]      | Cancel Agenda Scan       | -                  |
 | [[cmd:scimax.agenda.showAgenda]]      | Show Agenda View         | -                  |
 | [[cmd:scimax.agenda.showTodos]]       | Show TODO List View      | -                  |
 | [[cmd:scimax.agenda.groupByDate]]     | Group Agenda by Date     | -                  |
@@ -426,6 +425,7 @@ CLOSED: [2026-01-17 Sat 12:51]
 | [[cmd:scimax.agenda.toggleVerbose]]   | Toggle Verbose Mode      | -                  |
 | [[cmd:scimax.agenda.ignoreFile]]      | Ignore File in Agenda    | -                  |
 | [[cmd:scimax.agenda.ignoreFileFromItem]]| Ignore File from Agenda Item | -            |
+| [[cmd:scimax.agenda.ignoreFileFromTab]] | Ignore File from Editor Tab  | -            |
 | [[cmd:scimax.agenda.unignoreFile]]    | Unignore File in Agenda  | -                  |
 
 * ✅ Journal
@@ -461,14 +461,16 @@ CLOSED: [2026-01-17 Sat 12:45]
 ** ✅ Basic Database Operations
 CLOSED: [2026-01-17 Sat 12:45]
 
-| Command ID                       | Description          | Default Keybinding |
-|----------------------------------+----------------------+--------------------|
-| [[cmd:scimax.db.reindex]]        | Reindex Files        | -                  |
-| [[cmd:scimax.db.search]]         | Search All Files     | -                  |
-| [[cmd:scimax.db.searchHeadings]] | Search Headings      | -                  |
-| [[cmd:scimax.db.browseFiles]]    | Browse Indexed Files | -                  |
-| [[cmd:scimax.db.setScope]]       | Set Search Scope     | -                  |
-| [[cmd:scimax.showDbMenu]]        | Database Menu        | C-M-v              |
+| Command ID                       | Description                     | Default Keybinding |
+|----------------------------------+---------------------------------+--------------------|
+| [[cmd:scimax.db.refresh]]        | Refresh Database (incremental)  | -                  |
+| [[cmd:scimax.db.reindex]]        | Alias of ~scimax.db.refresh~    | -                  |
+| [[cmd:scimax.db.rebuild]]        | Rebuild Database (from scratch) | -                  |
+| [[cmd:scimax.db.search]]         | Search All Files                | -                  |
+| [[cmd:scimax.db.searchHeadings]] | Search Headings                 | -                  |
+| [[cmd:scimax.db.browseFiles]]    | Browse Indexed Files            | -                  |
+| [[cmd:scimax.db.setScope]]       | Set Search Scope                | -                  |
+| [[cmd:scimax.showDbMenu]]        | Database Menu                   | C-M-v              |
 
 ** ✅ Advanced Search
 CLOSED: [2026-01-17 Sat 12:45]

@@ -1095,64 +1095,48 @@ Configure the agenda view and TODO tracking.
 
 ** Settings Overview
 
-| Setting                        | Type    | Default                     | Description                    |
-|--------------------------------+---------+-----------------------------+--------------------------------|
-| scimax.agenda.includeJournal   | boolean | true                        | Include journal in agenda      |
-| scimax.agenda.includeWorkspace | boolean | true                        | Include workspace folders      |
-| scimax.agenda.includeProjects  | boolean | true                        | Include scimax projects        |
-| scimax.agenda.include          | array   | [ ]                         | Additional dirs/files          |
-| scimax.agenda.exclude          | array   | See below                   | Patterns/paths to exclude      |
-| scimax.agenda.defaultSpan      | number  | 7                           | Days to show in agenda         |
-| scimax.agenda.showDone         | boolean | false                       | Show completed items           |
-| scimax.agenda.showHabits       | boolean | true                        | Show habit-tagged items        |
-| scimax.agenda.todoStates       | array   | ["TODO", "NEXT", "WAITING"] | Active TODO states             |
-| scimax.agenda.doneStates       | array   | ["DONE", "CANCELLED"]       | Completed states               |
+The agenda is now a *view over the Scimax database*. Indexing scope
+(what files exist in the database, and therefore what's eligible for
+the agenda) is controlled by =scimax.db.*= settings. The
+=scimax.agenda.*= settings below are display-only.
+
+| Setting                   | Type    | Default                     | Description                  |
+|---------------------------+---------+-----------------------------+------------------------------|
+| scimax.agenda.exclude     | array   | See below                   | Hide from view (still index) |
+| scimax.agenda.defaultSpan | number  | 7                           | Days to show in agenda       |
+| scimax.agenda.showDone    | boolean | false                       | Show completed items         |
+| scimax.agenda.showHabits  | boolean | true                        | Show habit-tagged items      |
+| scimax.agenda.todoStates  | array   | ["TODO", "NEXT", "WAITING"] | Active TODO states           |
+| scimax.agenda.doneStates  | array   | ["DONE", "CANCELLED"]       | Completed states             |
+
+The following =scimax.agenda.*= settings are *deprecated* — they have
+no effect. Use the =scimax.db.*= equivalents instead:
+
+| Deprecated                     | Use instead                |
+|--------------------------------+----------------------------|
+| scimax.agenda.includeJournal   | scimax.db.includeJournal   |
+| scimax.agenda.includeWorkspace | scimax.db.includeWorkspace |
+| scimax.agenda.includeProjects  | scimax.db.includeProjects  |
+| scimax.agenda.include          | scimax.db.include          |
+| scimax.agenda.maxFiles         | (no longer applicable)     |
+| scimax.agenda.batchSize        | (no longer applicable)     |
+| scimax.agenda.batchDelayMs     | (no longer applicable)     |
+
+On activation, Scimax shows a one-shot toast if any deprecated agenda
+indexing setting is set non-default in your config.
 
 ** Detailed Configuration
-
-*** scimax.agenda.includeJournal
-
-- *Type*: boolean
-- *Default*: =true=
-- *Description*: Include the journal directory in agenda scanning
-
-When enabled, the journal directory (from =scimax.journal.directory=) is automatically included in agenda scanning. Disable this if you don't want journal entries in your agenda.
-
-*** scimax.agenda.includeWorkspace
-
-- *Type*: boolean
-- *Default*: =true=
-- *Description*: Include workspace folders in agenda scanning
-
-*** scimax.agenda.includeProjects
-
-- *Type*: boolean
-- *Default*: =true=
-- *Description*: Include all scimax projects in agenda scanning
-
-When enabled, all projects registered with scimax projectile are included in agenda scanning. This is useful because projects often contain TODO items and tasks.
-
-*** scimax.agenda.include
-
-- *Type*: array of strings
-- *Default*: =[ ]= (empty)
-- *Description*: Additional directories or files to include in the agenda (supports ~ for home directory)
-
-*Example*:
-#+begin_src json
-{
-  "scimax.agenda.include": [
-    "~/Documents/org",
-    "~/work/projects"
-  ]
-}
-#+end_src
 
 *** scimax.agenda.exclude
 
 - *Type*: array of strings
 - *Default*: =["**/node_modules/**", "**/.git/**", "**/archive/**"]=
-- *Description*: Patterns or paths to exclude from agenda scanning. Supports both glob patterns (containing =*=) and absolute paths.
+- *Description*: Patterns or paths to *hide* from the agenda view.
+  Files matching these stay in the database (search still finds them);
+  they just don't show up in day/week/month views. Supports both glob
+  patterns (containing =*=) and absolute paths.
+
+  To *not index* a file at all, use =scimax.db.exclude= instead.
 
 *Example*:
 #+begin_src json
@@ -1760,7 +1744,7 @@ If database indexing is slow or uses too much memory:
 }
 #+end_src
 
-Then manually trigger indexing with `C-S-P' → "Scimax: Reindex Files"
+Then manually trigger indexing with `C-S-P' → "Scimax: Refresh Database (incremental)"
 
 ** Jupyter Kernels Not Found
 

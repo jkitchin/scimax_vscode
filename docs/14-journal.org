@@ -647,9 +647,14 @@ This means journal entries with TODO items, scheduled items, and deadlines will 
 - Scimax: Show TODO Items - All TODO items
 - Scimax: Show Upcoming Deadlines - Deadline tracking
 
-The journal directory is automatically included in both the agenda and database indexing by default (via =scimax.agenda.includeJournal= and =scimax.db.includeJournal=).
+The journal directory is automatically indexed in the database by
+default (via =scimax.db.includeJournal=). Because the agenda is a view
+over the database, journal entries appear in agenda and TODO views
+without further configuration.
 
-To reindex journal entries, run =Scimax: Reindex Files=.
+To pick up changes (especially edits made on another machine via
+Dropbox sync), run =Scimax: Refresh Database (incremental)=
+([[cmd:scimax.db.refresh]]).
 
 ** ✅ Cross-Referencing
 CLOSED: [2026-01-17 Sat 14:20]
