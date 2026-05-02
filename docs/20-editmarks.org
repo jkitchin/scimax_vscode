@@ -370,36 +370,36 @@ All decorations include:
 
 ** Insertion Commands
 
-| Command                      | Keybinding   | Description            |
-|------------------------------+--------------+------------------------|
-| =scimax.editmarks.insertion= | C-c e i | Mark text as insertion |
+| Command                      | Keybinding | Description            |
+|------------------------------+------------+------------------------|
+| =scimax.editmarks.insertion= | C-c e i    | Mark text as insertion |
 
 ** Deletion Commands
 
 | Command                     | Keybinding | Description            |
 |-----------------------------+------------+------------------------|
-| =scimax.editmarks.deletion= | C-c e d | Mark text for deletion |
+| =scimax.editmarks.deletion= | C-c e d    | Mark text for deletion |
 
 
 ** Comment Commands
 
 | Command                    | Keybinding | Description         |
 |----------------------------+------------+---------------------|
-| =scimax.editmarks.comment= | C-c e c | Insert edit comment |
+| =scimax.editmarks.comment= | C-c e c    | Insert edit comment |
 
 ** Typo Correction Commands
 
 | Command                 | Keybinding | Description          |
 |-------------------------+------------+----------------------|
-| =scimax.editmarks.typo= | C-c e t | Mark typo correction |
+| =scimax.editmarks.typo= | C-c e t    | Mark typo correction |
 
 
 ** Review Commands
 
 | Command                      | Keybinding | Description           |
 |------------------------------+------------+-----------------------|
-| =scimax.editmarks.accept=    | C-c e a | Accept mark at cursor |
-| =scimax.editmarks.reject=    | C-c e r | Reject mark at cursor |
+| =scimax.editmarks.accept=    | C-c e a    | Accept mark at cursor |
+| =scimax.editmarks.reject=    | C-c e r    | Reject mark at cursor |
 | =scimax.editmarks.acceptAll= | (none)     | Accept all marks      |
 | =scimax.editmarks.rejectAll= | (none)     | Reject all marks      |
 
@@ -407,14 +407,14 @@ All decorations include:
 
 | Command                 | Keybinding | Description           |
 |-------------------------+------------+-----------------------|
-| =scimax.editmarks.next= | C-c e ] | Jump to next mark     |
-| =scimax.editmarks.prev= | C-c e [ | Jump to previous mark |
+| =scimax.editmarks.next= | C-c e ]    | Jump to next mark     |
+| =scimax.editmarks.prev= | C-c e [    | Jump to previous mark |
 
 ** Utility Commands
 
 | Command                    | Keybinding | Description            |
 |----------------------------+------------+------------------------|
-| =scimax.editmarks.summary= | C-c e s | Show all marks summary |
+| =scimax.editmarks.summary= | C-c e s    | Show all marks summary |
 
 * Keybinding Pattern
 
