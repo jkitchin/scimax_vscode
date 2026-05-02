@@ -138,19 +138,47 @@ export class AgendaManager {
     }
 
     /**
-     * Subscribe to database file index events
-     * When a file is indexed, refresh the agenda
+     * Subscribe to database mutation events. The agenda must reflect the db
+     * after any of: a file is (re)indexed, the db is cleared, or a full rebuild
+     * finishes. Without these the TreeView shows stale snapshots.
+     *
+     * The db client is created lazily, so retry until it's available rather
+     * than silently no-op.
      */
+    private subscriptionInstalled = false;
     private async setupDatabaseSubscription(): Promise<void> {
+        if (this.subscriptionInstalled) return;
         const db = await getDatabase();
         if (db) {
-            this.db = db;
-            this.disposables.push(
-                db.onDidIndexFile(() => {
-                    this.debouncedRefresh();
-                })
-            );
+            this.installDbListeners(db);
+            return;
         }
+        // Retry: poll once a second up to a minute. Most cold starts resolve in
+        // a few hundred ms; the upper bound guards against a permanently broken
+        // db without leaking a forever-running timer.
+        let attempts = 0;
+        const interval = setInterval(async () => {
+            attempts++;
+            const ready = await getDatabase();
+            if (ready) {
+                clearInterval(interval);
+                this.installDbListeners(ready);
+            } else if (attempts >= 60) {
+                clearInterval(interval);
+            }
+        }, 1000);
+        this.disposables.push({ dispose: () => clearInterval(interval) });
+    }
+
+    private installDbListeners(db: ScimaxDb): void {
+        if (this.subscriptionInstalled) return;
+        this.subscriptionInstalled = true;
+        this.db = db;
+        this.disposables.push(
+            db.onDidIndexFile(() => this.debouncedRefresh()),
+            db.onDidClear(() => this.debouncedRefresh()),
+            db.onDidRebuild(() => this.debouncedRefresh()),
+        );
     }
 
     /**
@@ -158,7 +186,7 @@ export class AgendaManager {
      * If set, uses database for project list instead of globalState
      */
     setDatabase(db: ScimaxDb): void {
-        this.db = db;
+        this.installDbListeners(db);
     }
 
     private loadConfig(): AgendaConfig {
@@ -1621,7 +1649,9 @@ export class AgendaTreeProvider implements vscode.TreeDataProvider<AgendaTreeIte
                 this.agendaView = dbView;
                 if (this.treeView) {
                     this.treeView.description = `${dbView.totalItems} items`;
-                    this.treeView.message = undefined;
+                    this.treeView.message = dbView.totalItems === 0
+                        ? 'No agenda items. Run "Scimax: Refresh Database" if files have changed.'
+                        : undefined;
                 }
             } else {
                 if (this.treeView) {
@@ -1635,7 +1665,9 @@ export class AgendaTreeProvider implements vscode.TreeDataProvider<AgendaTreeIte
                 this.todoList = dbTodos;
                 if (this.treeView) {
                     this.treeView.description = `${dbTodos.counts.total} items`;
-                    this.treeView.message = undefined;
+                    this.treeView.message = dbTodos.counts.total === 0
+                        ? 'No TODO items. Run "Scimax: Refresh Database" if files have changed.'
+                        : undefined;
                 }
             } else {
                 if (this.treeView) {

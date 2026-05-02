@@ -62,6 +62,18 @@ export class ScimaxDb extends ScimaxDbCore {
     private _onDidIndexFile = new vscode.EventEmitter<string>();
     readonly onDidIndexFile = this._onDidIndexFile.event;
 
+    // Fires after clear() empties every table. Subscribers (e.g. agenda
+    // TreeView) use this to drop stale views; without it the agenda keeps
+    // showing the pre-clear snapshot until something else triggers a refresh.
+    private _onDidClear = new vscode.EventEmitter<void>();
+    readonly onDidClear = this._onDidClear.event;
+
+    // Fires once at the end of a full rebuild. Per-file onDidIndexFile events
+    // are debounced and can be eaten when files arrive faster than the timer
+    // resets, so this is the guaranteed end-of-run signal.
+    private _onDidRebuild = new vscode.EventEmitter<{ filesIndexed: number; errors: number }>();
+    readonly onDidRebuild = this._onDidRebuild.event;
+
     // Advanced search engine
     private advancedSearchEngine: AdvancedSearchEngine | null = null;
 
@@ -476,7 +488,14 @@ export class ScimaxDb extends ScimaxDbCore {
         }
 
         onProgress?.({ phase: 'Complete', current: result.filesIndexed, total: result.filesIndexed });
+        this._onDidRebuild.fire(result);
         return result;
+    }
+
+    // Override core clear() to fire onDidClear so views can drop stale data.
+    public async clear(): Promise<void> {
+        await super.clear();
+        this._onDidClear.fire();
     }
 
     // ----------------------------------------------------------
@@ -609,6 +628,8 @@ export class ScimaxDb extends ScimaxDbCore {
             this.embeddingStatusBar = null;
         }
         this._onDidIndexFile.dispose();
+        this._onDidClear.dispose();
+        this._onDidRebuild.dispose();
         await super.close();
     }
 }
