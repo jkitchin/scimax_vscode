@@ -587,8 +587,8 @@ CLOSED: [2026-01-17 Sat 13:26]
 
 Configure agenda behavior through VS Code settings.
 
-** 👀 Agenda Sources
-CLOSED: [2026-01-22 Thu 21:16]
+** ✅ Agenda Sources
+CLOSED: [2026-05-03 Sun 08:00]
 
 The agenda is a *view over the Scimax database* — anything indexed in
 the database is agenda-eligible. Configure indexing scope via
@@ -621,8 +621,8 @@ settings are deprecated and have no effect — the agenda no longer scans
 files itself. On activation, Scimax shows a one-shot toast if any of
 these are set, with a button that opens the new =scimax.db.*= settings.
 
-** 👀 Exclude Patterns
-CLOSED: [2026-01-22 Thu 21:16]
+** ✅ Exclude Patterns
+CLOSED: [2026-05-03 Sun 08:00]
 
 There are two distinct exclude lists. Pick the one that matches your
 intent:
@@ -738,8 +738,8 @@ The database agenda (scimax.db.agenda) offers:
 3. *Semantic search* - Find items by meaning
 4. *Hybrid views* - Combine agenda with search
 
-** 👀 Indexing for Agenda
-CLOSED: [2026-01-17 Sat 12:32]
+** ✅ Indexing for Agenda
+CLOSED: [2026-05-03 Sun 08:00]
 
 Before using the agenda, index your files:
 
@@ -1294,8 +1294,8 @@ CLOSED: [2026-01-18 Sun 12:49]
 | [[cmd:scimax.agenda.groupByPriority]]      | Group by priority              |
 | [[cmd:scimax.agenda.gotoItem]]             | Go to item in file             |
 
-** 👀 Configuration Settings
-CLOSED: [2026-01-22 Thu 21:43]
+** ✅ Configuration Settings
+CLOSED: [2026-05-03 Sun 08:00]
 
 Indexing scope (what's available to the agenda) lives under
 =scimax.db.*=. The agenda's own settings are display-only:

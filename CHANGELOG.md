@@ -7,6 +7,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.5.0] - 2026-05-03
+
+### Added
+
+- **Custom TODO workflows** - Support multiple pipes (e.g. `TODO IN-PROGRESS | DONE CANCELLED`) and assign semantic colors per state, matching org-mode's full TODO grammar
+- **"Exclude from Agenda" tab context action** - Right-click an editor tab to hide a file from the agenda view (still indexed for search)
+- **Hover for Emacs-style command markup** - `~scimax.foo~`, `=scimax.foo=`, and similar markup now show command details on hover; markup colors are theme-independent (#43)
+- **Full org-cite style/variant grammar in LaTeX export** - `[cite/style/variant: ...]` parses every documented org-cite style and variant combination and emits the right `\citestyle` (#42)
+- **Stale-index activation prompt** - New setting `scimax.db.checkStaleOnActivation` (default `true`) checks on startup whether any indexed files changed on disk and offers a one-shot Refresh. Useful for catching Dropbox-synced edits made while VS Code was closed.
+- **CLI `scimax export --exporter` flag** - Pass through to the custom-exporter pipeline so user-defined exporters work from the terminal
+- **CLI `scimax project` management flags** - `--remove <path>`, `--cleanup` (drop projects whose paths no longer exist), and `--scan <dir>` (discover git/projectile projects under a directory)
+
+### Changed
+
+- **Sub/superscript default is now braces-only** - `H_2O` no longer renders the `2` as a subscript; you must write `H_{2}O`. Honors `#+OPTIONS: ^:{}` for parity with Emacs org-mode. Set `#+OPTIONS: ^:t` to restore the old behavior per file.
+- **Database reindex renamed to refresh** - Command palette entry is now *Refresh Database (incremental)* (`scimax.db.refresh`); `scimax.db.reindex` stays registered as an alias so existing keybindings keep working
+- **Agenda is now a pure view over the database** - Removed the duplicate file-scan path; agenda always reflects what's indexed. `rebuild` and `refresh` share one directory-collection helper that reads `scimax.db.*` exclusively.
+- **Database agenda/todo/deadline commands collapsed to aliases** - `scimax.db.agenda`, `scimax.db.showTodos`, and `scimax.db.deadlines` now delegate to the corresponding `scimax.agenda.*` commands; one implementation, consistent behavior regardless of entry point
+- **Word Count is org-aware and Unicode-friendly** - Strips org markup, handles non-ASCII text correctly; works on any buffer with selection-aware counting
+- **org-ref hover and citation parsing** - Improved tooltip content and tolerance for pre/post notes, multi-key citations, and odd whitespace
+
+### Fixed
+
+- **Currency `$` no longer triggers math mode** - Sentences like "It cost $5 then $10" no longer render as a stray inline equation; LaTeX export polish for the same edge cases
+- **Emphasis whitespace at boundaries** - TextMate grammar fix: `*bold *` and similar boundary cases now follow org-mode's rules
+- **Equation regex** - Fixed a regexp that mis-handled certain equation patterns
+- **Agenda after db clear/rebuild** - Agenda now refreshes automatically after the database is cleared or rebuilt, and recovers cleanly when the database initializes after activation
+
 ## [0.4.0] - 2026-04-14
 
 ### Added

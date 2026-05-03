@@ -83,7 +83,7 @@ CLOSED: [2026-01-16 Fri 11:16]
 
 See [[file:19-references.org][References]] for full documentation.
 
-* 👀 Emacs-style Command Markup
+* Emacs-style Command Markup
 CLOSED: [2026-01-16 Fri 11:17]
 
 The command markup syntax `command' (backtick  text  single quote) is used
@@ -94,7 +94,7 @@ provider (so it is no longer Leuven-only). The colors are exposed as
 ~scimax.commandMarkupForeground~ and ~scimax.commandMarkupDelimiterForeground~
 and can be customized via ~workbench.colorCustomizations~.
 
-** 👀 Hover Tooltip
+** Hover Tooltip
 :PROPERTIES:
 :CUSTOM_ID: command-markup-hover
 :END:

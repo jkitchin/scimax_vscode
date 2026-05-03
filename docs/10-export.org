@@ -975,7 +975,7 @@ Org-ref style citations work directly:
 - `citeauthor:key' → `\citeauthor{key}'
 - `citeyear:key' → `\citeyear{key}'
 
-*** 👀 Org-cite Citations =[cite/STYLE/VARIANTS:@key]=
+*** Org-cite Citations =[cite/STYLE/VARIANTS:@key]=
 
 Org-cite citations are translated to LaTeX through a configurable backend. The
 default backend, =bibtex=, emits =natbib= commands; the =biblatex= backend
@@ -1426,31 +1426,31 @@ The `#+OPTIONS' keyword controls various export behaviors:
 #+OPTIONS: key1:value1 key2:value2 ...
 #+END_SRC
 
-*** 👀 Complete OPTIONS Reference
+*** Complete OPTIONS Reference
 CLOSED: [2026-01-24 Sat 17:34]
 
-| Option       | Values             | Default | Description                               |
-|--------------+--------------------+---------+-------------------------------------------|
-| toc          | t, nil, N          | nil     | Table of contents (N  depth)              |
-| num          | t, nil, N          | t       | Section numbering (N  depth)              |
-| H            | N                  | 0       | Headline levels to export (0  all)        |
-| author       | t, nil             | t       | Include author in output                  |
-| date         | t, nil             | t       | Include date in output                    |
-| email        | t, nil             | nil     | Include email in output                   |
-| tags         | t, nil, not-in-toc | t       | Include tags in headlines                 |
-| todo         | t, nil             | t       | Include TODO keywords in headlines        |
-| pri          | t, nil             | nil     | Include priority cookies ([#A], etc.)     |
-| <, timestamp | t, nil             | t       | Include timestamps                        |
-| creator      | t, nil             | nil     | Include creator string in postamble       |
-| f            | t, nil             | t       | Include footnotes                         |
-| p            | t, nil             | nil     | Include statistics cookies ([1/3], [50%]) |
-| c            | t, nil             | nil     | Include CLOCK entries                     |
-| d            | t, nil, (list)     | nil     | Include drawers (or specific drawers)     |
-| prop         | t, nil             | t       | Include PROPERTIES drawers                |
-| \vert{}      | t, nil             | t       | Include tables                            |
+| Option       | Values             | Default | Description                                                   |
+|--------------+--------------------+---------+---------------------------------------------------------------|
+| toc          | t, nil, N          | nil     | Table of contents (N  depth)                                  |
+| num          | t, nil, N          | t       | Section numbering (N  depth)                                  |
+| H            | N                  | 0       | Headline levels to export (0  all)                            |
+| author       | t, nil             | t       | Include author in output                                      |
+| date         | t, nil             | t       | Include date in output                                        |
+| email        | t, nil             | nil     | Include email in output                                       |
+| tags         | t, nil, not-in-toc | t       | Include tags in headlines                                     |
+| todo         | t, nil             | t       | Include TODO keywords in headlines                            |
+| pri          | t, nil             | nil     | Include priority cookies ([#A], etc.)                         |
+| <, timestamp | t, nil             | t       | Include timestamps                                            |
+| creator      | t, nil             | nil     | Include creator string in postamble                           |
+| f            | t, nil             | t       | Include footnotes                                             |
+| p            | t, nil             | nil     | Include statistics cookies ([1/3], [50%])                     |
+| c            | t, nil             | nil     | Include CLOCK entries                                         |
+| d            | t, nil, (list)     | nil     | Include drawers (or specific drawers)                         |
+| prop         | t, nil             | t       | Include PROPERTIES drawers                                    |
+| \vert{}      | t, nil             | t       | Include tables                                                |
 | ^            | t, nil, {}         | {}      | Sub/superscripts (default: only a_{b}/a^{b}; t: also a_b/a^b) |
-| :            | t, nil             | t       | Include fixed-width sections              |
-| \n           | t, nil             | nil     | Preserve line breaks                      |
+| :            | t, nil             | t       | Include fixed-width sections                                  |
+| \n           | t, nil             | nil     | Preserve line breaks                                          |
 
 *** Examples
 
@@ -1484,7 +1484,7 @@ CLOSED: [2026-01-24 Sat 17:34]
 #+OPTIONS: tags:not-in-toc
 #+END_SRC
 
-*** 👀 Subscripts and Superscripts
+*** Subscripts and Superscripts
 
 The =^= option controls how =_= and =^= are interpreted in body text:
 
@@ -2293,7 +2293,7 @@ CLOSED: [2026-01-17 Sat 09:29]
 | C-c C-e k l | Clipboard LaTeX          | Copy LaTeX source code       |
 | C-c C-e k m | Clipboard Markdown       | Copy Markdown source code    |
 
-** 👀 Export Options Quick Reference
+** Export Options Quick Reference
 CLOSED: [2026-01-24 Sat 17:36]
 
 | Option   | Values             | Default | Effect                                 |

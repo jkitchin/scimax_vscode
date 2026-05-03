@@ -905,7 +905,7 @@ Search scope: directory (my-project)
 
 ** Refreshing the Index
 
-*** 👀 Incremental Refresh (daily use)
+*** Incremental Refresh (daily use)
 Command: `Scimax: Refresh Database (incremental)' (`scimax.db.refresh'). [[cmd:scimax.db.refresh]]
 
 - Scans all configured directories (=scimax.db.includeJournal=,
@@ -916,7 +916,7 @@ Command: `Scimax: Refresh Database (incremental)' (`scimax.db.refresh'). [[cmd:s
   syncing across machines via Dropbox.
 - =scimax.db.reindex= is kept as an alias for backwards compatibility.
 
-*** 👀 Full Rebuild
+*** Full Rebuild
 Command: `Scimax: Rebuild Database (from scratch)' (`scimax.db.rebuild'). [[cmd:scimax.db.rebuild]]
 
 - Wipes the database and re-indexes everything

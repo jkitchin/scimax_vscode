@@ -270,6 +270,7 @@ Configure the full-text search database and semantic search capabilities.
 | scimax.db.include           | array   | [ ]                       | Additional directories/files           |
 | scimax.db.exclude           | array   | See below                 | Patterns/paths to exclude              |
 | scimax.db.autoIndex         | boolean | false                     | Auto-index workspace on activation     |
+| scimax.db.checkStaleOnActivation | boolean | true                 | Prompt to refresh on activation if indexed files changed on disk |
 | scimax.db.embeddingProvider | string  | "ollama"                  | Embedding provider for semantic search |
 | scimax.db.ollamaUrl         | string  | "http://localhost:11434"  | Ollama API URL                         |
 | scimax.db.ollamaModel       | string  | "nomic-embed-text"        | Ollama embedding model                 |
@@ -344,6 +345,24 @@ Configure the full-text search database and semantic search capabilities.
 #+begin_src json
 {
   "scimax.db.autoIndex": true
+}
+#+end_src
+
+*** ✅ scimax.db.checkStaleOnActivation
+CLOSED: [2026-05-03 Sun 07:59]
+
+- *Type*: boolean
+- *Default*: `true'
+- *Description*: On activation, check whether any indexed files have changed on
+  disk and show a one-time prompt offering to run *Refresh*. Useful for
+  catching changes synced from another machine (e.g. Dropbox) while VS Code
+  was closed. Skipped if `scimax.db.autoCheckStale' is on (which auto-refreshes
+  in the background instead).
+
+*Example* (disable the prompt):
+#+begin_src json
+{
+  "scimax.db.checkStaleOnActivation": false
 }
 #+end_src
 
@@ -688,7 +707,8 @@ Configure LaTeX and PDF export options.
 }
 #+end_src
 
-*** ⚠️ scimax.export.latex.citeBackend
+*** ✅ scimax.export.latex.citeBackend
+CLOSED: [2026-05-03 Sun 07:59]
 
 - *Type*: string (enum)
 - *Default*: `"bibtex"'
