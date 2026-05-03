@@ -176,6 +176,9 @@ EXAMPLES:
     scimax project
     scimax project myapp
     scimax project --list
+    scimax project --cleanup
+    scimax project --remove /old/path
+    scimax project --scan ~/projects
     scimax publish
     scimax publish --init
     scimax skill install

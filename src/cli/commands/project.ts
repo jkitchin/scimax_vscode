@@ -5,6 +5,9 @@
  *   scimax project                     Fuzzy-select from known projects
  *   scimax project <query>             Filter projects matching query
  *   scimax project --add <path>        Register a new project
+ *   scimax project --remove <path>     Remove a project from the database
+ *   scimax project --cleanup           Remove projects whose paths no longer exist
+ *   scimax project --scan <dir>        Scan a directory for git/projectile projects
  *   scimax project --list              List all known projects
  *   scimax project --json              Output project list as JSON
  */
@@ -142,9 +145,69 @@ export async function projectCommand(config: CliConfig, args: ParsedArgs): Promi
     const json = args.flags.json === true;
     const list = args.flags.list === true;
     const add = args.flags.add;
+    const remove = args.flags.remove;
+    const cleanup = args.flags.cleanup === true;
+    const scan = args.flags.scan;
     const query = args.subcommand || undefined;
 
     const db = await createCliDatabase(config.dbPath);
+
+    // Cleanup: remove projects whose paths no longer exist on disk
+    if (cleanup) {
+        try {
+            const removed = await db.cleanupProjects();
+            if (json) {
+                console.log(JSON.stringify({ removed }));
+            } else {
+                console.log(`Removed ${removed} non-existent project${removed === 1 ? '' : 's'}.`);
+            }
+        } finally {
+            await db.close();
+        }
+        return;
+    }
+
+    // Remove a single project by path
+    if (remove) {
+        if (typeof remove !== 'string') {
+            console.error('Error: --remove requires a path argument');
+            await db.close();
+            process.exit(1);
+        }
+        const resolved = path.resolve(remove);
+        try {
+            await db.removeProject(resolved);
+            if (json) {
+                console.log(JSON.stringify({ removed: resolved }));
+            } else {
+                console.log(`Removed project: ${resolved}`);
+            }
+        } finally {
+            await db.close();
+        }
+        return;
+    }
+
+    // Scan a directory tree for git/projectile projects
+    if (scan) {
+        const dir = typeof scan === 'string' ? path.resolve(scan) : process.cwd();
+        if (!fs.existsSync(dir)) {
+            console.error(`Error: directory does not exist: ${dir}`);
+            await db.close();
+            process.exit(1);
+        }
+        try {
+            const found = await db.scanForProjects(dir);
+            if (json) {
+                console.log(JSON.stringify({ found, directory: dir }));
+            } else {
+                console.log(`Found and registered ${found} project${found === 1 ? '' : 's'} under ${dir}.`);
+            }
+        } finally {
+            await db.close();
+        }
+        return;
+    }
 
     // Add a new project
     if (add) {
