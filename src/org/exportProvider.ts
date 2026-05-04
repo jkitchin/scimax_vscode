@@ -10,6 +10,7 @@ import { spawn } from 'child_process';
 import { parseOrgFast } from '../parser/orgExportParser';
 import { exportToHtml, HtmlExportOptions } from '../parser/orgExportHtml';
 import { exportToLatex, LatexExportOptions } from '../parser/orgExportLatex';
+import { exportToBeamer, BeamerExportOptions } from '../parser/orgExportBeamer';
 import { exportToDocx, DocxExportOptions } from '../parser/orgExportDocx';
 import { processIncludes, hasIncludes } from '../parser/orgInclude';
 import { exportOrgToLatexWithMappings, storeSyncData, orgForwardSync, orgInverseSync, hasSyncData, getSyncData } from './orgPdfSync';
@@ -140,6 +141,20 @@ const EXPORT_FORMATS: ExportFormat[] = [
         id: 'pdf',
         label: 'PDF (via LaTeX)',
         description: 'Export to PDF via LaTeX compilation',
+        extension: '.pdf',
+        icon: '$(file-pdf)',
+    },
+    {
+        id: 'beamer',
+        label: 'Beamer (LaTeX)',
+        description: 'Export to Beamer LaTeX slides',
+        extension: '.tex',
+        icon: '$(file-code)',
+    },
+    {
+        id: 'beamer-pdf',
+        label: 'Beamer PDF',
+        description: 'Export to PDF via Beamer LaTeX compilation',
         extension: '.pdf',
         icon: '$(file-pdf)',
     },
@@ -506,6 +521,68 @@ async function exportLatex(
 }
 
 /**
+ * Export to Beamer LaTeX format
+ */
+async function exportBeamer(
+    content: string,
+    options: Partial<BeamerExportOptions>,
+    bodyOnly: boolean
+): Promise<string> {
+    await new Promise(resolve => setImmediate(resolve));
+
+    const doc = parseOrgFast(content);
+
+    await new Promise(resolve => setImmediate(resolve));
+
+    const metadata = extractMetadata(doc);
+
+    const beamerCfg = vscode.workspace.getConfiguration('scimax.export.beamer');
+    const latexCfg = vscode.workspace.getConfiguration('scimax.export.latex');
+
+    const customHeader = options.customHeader || latexCfg.get<string>('customHeader');
+    const defaultPreamble = beamerCfg.get<string>('defaultPreamble', '');
+
+    const aspectRatio = beamerCfg.get<string>('aspectRatio', '');
+    const classOptionsStr = beamerCfg.get<string>('classOptions', 'presentation');
+    let classOptions = classOptionsStr
+        ? classOptionsStr.split(',').map(s => s.trim()).filter(Boolean)
+        : ['presentation'];
+    if (aspectRatio && !classOptions.some(o => o.startsWith('aspectratio='))) {
+        classOptions = [...classOptions, `aspectratio=${aspectRatio}`];
+    }
+
+    const citeBackendSetting = latexCfg.get<string>('citeBackend', 'bibtex');
+    const citeBackend: 'bibtex' | 'biblatex' =
+        citeBackendSetting === 'biblatex' ? 'biblatex' : 'bibtex';
+
+    const beamerOptions: BeamerExportOptions = {
+        ...metadata,
+        documentClass: 'beamer',
+        classOptions,
+        preamble: defaultPreamble,
+        citeBackend,
+        theme: beamerCfg.get<string>('theme') || undefined,
+        colorTheme: beamerCfg.get<string>('colorTheme') || undefined,
+        fontTheme: beamerCfg.get<string>('fontTheme') || undefined,
+        innerTheme: beamerCfg.get<string>('innerTheme') || undefined,
+        outerTheme: beamerCfg.get<string>('outerTheme') || undefined,
+        frameLevel: beamerCfg.get<number>('frameLevel', 1),
+        boldIsAlert: beamerCfg.get<boolean>('boldIsAlert', true),
+        ...options,
+        customHeader,
+        bodyOnly,
+    };
+
+    await new Promise(resolve => setImmediate(resolve));
+
+    const result = exportToBeamer(doc, beamerOptions);
+
+    await new Promise(resolve => setImmediate(resolve));
+
+    return result;
+}
+
+/**
  * PDF compilation configuration
  */
 interface PdfCompilerConfig {
@@ -711,6 +788,94 @@ async function exportPdf(
             await fs.promises.unlink(path.join(tempDir, `${baseName}.log`));
         } catch {
             // Ignore cleanup errors
+        }
+    }
+
+    return undefined;
+}
+
+/**
+ * Export to Beamer PDF: build .tex via the Beamer backend and compile it
+ * with the existing PDF pipeline.
+ */
+async function exportBeamerPdf(
+    content: string,
+    options: Partial<BeamerExportOptions>,
+    outputPath: string
+): Promise<string | undefined> {
+    const pdfConfig = loadPdfConfig();
+
+    const latexContent = await exportBeamer(content, options, false);
+
+    const tempDir = path.dirname(outputPath);
+    const baseName = path.basename(outputPath, '.pdf');
+    const texPath = path.join(tempDir, `${baseName}.tex`);
+    const logPath = path.join(tempDir, `${baseName}.log`);
+
+    await fs.promises.writeFile(texPath, latexContent, 'utf-8');
+
+    const { command, args } = buildCompileArgs(texPath, tempDir, pdfConfig);
+
+    try {
+        await spawnAsync(command, args, { cwd: tempDir, timeout: 180000 });
+    } catch {
+        // Compiler may exit non-zero even when PDF is produced
+    }
+
+    if (!pdfConfig.compiler.startsWith('latexmk')) {
+        const auxPath = path.join(tempDir, `${baseName}.aux`);
+        if (fs.existsSync(auxPath)) {
+            const auxContent = await fs.promises.readFile(auxPath, 'utf-8');
+            if (auxContent.includes('\\citation') || auxContent.includes('\\bibdata')) {
+                try {
+                    await spawnAsync(pdfConfig.bibtexCommand, [baseName], { cwd: tempDir, timeout: 60000 });
+                    const recompile = buildCompileArgs(texPath, tempDir, pdfConfig);
+                    await spawnAsync(recompile.command, recompile.args, { cwd: tempDir, timeout: 120000 });
+                    await spawnAsync(recompile.command, recompile.args, { cwd: tempDir, timeout: 120000 });
+                } catch {
+                    // ignore
+                }
+            }
+        }
+    }
+
+    const pdfCreated = fs.existsSync(outputPath);
+
+    if (pdfConfig.cleanAuxFiles) {
+        const auxFiles = ['.aux', '.bbl', '.blg', '.fdb_latexmk', '.fls', '.nav', '.snm', '.out', '.toc', '.vrb', '.run.xml', '.bcf'];
+        for (const ext of auxFiles) {
+            try {
+                await fs.promises.unlink(path.join(tempDir, `${baseName}${ext}`));
+            } catch {
+                // ignore
+            }
+        }
+        // Beamer numbered per-frame verbatim caches: <baseName>.<N>.vrb
+        try {
+            const escaped = baseName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            const vrbPattern = new RegExp(`^${escaped}\\.\\d+\\.vrb$`);
+            const entries = await fs.promises.readdir(tempDir);
+            for (const entry of entries) {
+                if (vrbPattern.test(entry)) {
+                    try {
+                        await fs.promises.unlink(path.join(tempDir, entry));
+                    } catch {
+                        // ignore
+                    }
+                }
+            }
+        } catch {
+            // Ignore directory read errors
+        }
+    }
+
+    if (!pdfCreated) return logPath;
+
+    if (pdfConfig.cleanAuxFiles) {
+        try {
+            await fs.promises.unlink(path.join(tempDir, `${baseName}.log`));
+        } catch {
+            // ignore
         }
     }
 
@@ -1156,6 +1321,15 @@ async function showExportDispatcher(): Promise<void> {
                         await exportPdf(content, options, outputPath);
                         break;
 
+                    case 'beamer':
+                        result = await exportBeamer(content, options, false);
+                        await fs.promises.writeFile(outputPath, result, 'utf-8');
+                        break;
+
+                    case 'beamer-pdf':
+                        await exportBeamerPdf(content, options, outputPath);
+                        break;
+
                     case 'markdown':
                         result = await exportMarkdown(content, options);
                         await fs.promises.writeFile(outputPath, result, 'utf-8');
@@ -1571,6 +1745,93 @@ async function previewHtml(): Promise<void> {
 }
 
 /**
+ * Quick export to Beamer LaTeX
+ */
+async function quickExportBeamer(): Promise<void> {
+    const editor = vscode.window.activeTextEditor;
+    if (!editor || editor.document.languageId !== 'org') {
+        vscode.window.showWarningMessage('No org-mode file open');
+        return;
+    }
+
+    const inputPath = editor.document.uri.fsPath;
+    const inputDir = path.dirname(inputPath);
+    const inputName = path.basename(inputPath, '.org');
+    const content = preprocessContent(editor.document.getText(), inputDir);
+    const bodyOnly = isBodyOnlyMode();
+
+    const doc = parseOrgFast(content);
+    const metadata = extractMetadata(doc);
+
+    const outputFileName = getExportFileName(metadata.exportFileName, inputName, 'tex');
+    const outputPath = path.join(inputDir, outputFileName);
+
+    try {
+        await deleteExistingOutput(outputPath);
+        const result = await exportBeamer(content, metadata, bodyOnly);
+        await fs.promises.writeFile(outputPath, result, 'utf-8');
+        const suffix = bodyOnly ? ' (body only)' : '';
+        vscode.window.showInformationMessage(`Exported to ${path.basename(outputPath)}${suffix}`);
+    } catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
+        vscode.window.showErrorMessage(`Beamer export failed: ${message}`);
+    }
+}
+
+/**
+ * Quick export to Beamer PDF
+ */
+async function quickExportBeamerPdf(openAfter: boolean = false): Promise<void> {
+    const editor = vscode.window.activeTextEditor;
+    if (!editor || editor.document.languageId !== 'org') {
+        vscode.window.showWarningMessage('No org-mode file open');
+        return;
+    }
+
+    const inputPath = editor.document.uri.fsPath;
+    const inputDir = path.dirname(inputPath);
+    const inputName = path.basename(inputPath, '.org');
+    const content = preprocessContent(editor.document.getText(), inputDir);
+    const compilerDesc = getPdfCompilerDescription();
+
+    const doc = parseOrgFast(content);
+    const metadata = extractMetadata(doc);
+
+    const outputFileName = getExportFileName(metadata.exportFileName, inputName, 'pdf');
+    const outputPath = path.join(inputDir, outputFileName);
+
+    await vscode.window.withProgress(
+        {
+            location: vscode.ProgressLocation.Notification,
+            title: `Exporting Beamer PDF via ${compilerDesc}...`,
+            cancellable: false,
+        },
+        async () => {
+            try {
+                await deleteExistingOutput(outputPath);
+                const logPath = await exportBeamerPdf(content, metadata, outputPath);
+                if (logPath) {
+                    await handlePdfExportError(logPath);
+                } else if (openAfter) {
+                    await vscode.env.openExternal(vscode.Uri.file(outputPath));
+                } else {
+                    const action = await vscode.window.showInformationMessage(
+                        `Exported to ${path.basename(outputPath)}`,
+                        'Open'
+                    );
+                    if (action === 'Open') {
+                        await vscode.env.openExternal(vscode.Uri.file(outputPath));
+                    }
+                }
+            } catch (error) {
+                const message = error instanceof Error ? error.message : String(error);
+                vscode.window.showErrorMessage(`Beamer PDF export failed: ${message}`);
+            }
+        }
+    );
+}
+
+/**
  * Register export commands
  */
 export function registerExportCommands(context: vscode.ExtensionContext): void {
@@ -1615,6 +1876,27 @@ export function registerExportCommands(context: vscode.ExtensionContext): void {
         vscode.commands.registerCommand(
             'scimax.org.exportDocx',
             quickExportDocx
+        )
+    );
+
+    context.subscriptions.push(
+        vscode.commands.registerCommand(
+            'scimax.org.exportBeamer',
+            quickExportBeamer
+        )
+    );
+
+    context.subscriptions.push(
+        vscode.commands.registerCommand(
+            'scimax.org.exportBeamerPdf',
+            () => quickExportBeamerPdf(false)
+        )
+    );
+
+    context.subscriptions.push(
+        vscode.commands.registerCommand(
+            'scimax.org.exportBeamerOpen',
+            () => quickExportBeamerPdf(true)
         )
     );
 

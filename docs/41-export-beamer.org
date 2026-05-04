@@ -1,0 +1,268 @@
+#+TITLE: Beamer Export
+#+AUTHOR: Scimax VS Code
+#+DATE: 2026-05-04
+#+STARTUP: overview
+#+OPTIONS: toc:t num:t
+#+TODO: ⚠️ 👀 | ✅
+
+* ⚠️ Overview
+
+The Beamer backend exports an org document to a LaTeX presentation built on
+the [[https://ctan.org/pkg/beamer][beamer]] document class. It is a dedicated subclass of the standard LaTeX
+exporter, so all of the LaTeX machinery (citations, tables, source blocks,
+math fragments, images, links, footnotes) works the same way; the Beamer
+backend only changes what is genuinely Beamer-specific:
+
+- Headlines are dispatched into ~\section~, ~\begin{frame}~, or block
+  environments based on their depth and on ~BEAMER_env~.
+- Theme directives (~#+BEAMER_THEME~, ~#+BEAMER_COLOR_THEME~, etc.) translate
+  to ~\usetheme~ / ~\usecolortheme~ / ~\usefonttheme~ / ~\useinnertheme~ /
+  ~\useoutertheme~ in the preamble.
+- ~*bold*~ becomes ~\alert{...}~ by default (Beamer's emphasis macro).
+- Frames containing verbatim-flavored content (source blocks, examples,
+  ~\verb~) are automatically marked ~fragile~.
+- Frames get an automatic ~label=...~ unless they use ~allowframebreaks~ or
+  the user already supplied a label.
+- Sibling headlines with ~:BEAMER_col:~ are auto-wrapped in a
+  ~\begin{columns}...\end{columns}~ block.
+
+This page documents the keywords, properties, settings, and commands that the
+backend understands. The reference for the underlying syntax is the [[https://orgmode.org/manual/Beamer-Export.html][Org
+Manual: Beamer Export]] chapter and the [[https://orgmode.org/worg/exporters/beamer/tutorial.html][Worg Beamer tutorial]].
+
+* ⚠️ Commands
+
+The backend registers three commands. They appear under "Scimax" in the
+command palette and through the regular export dispatcher (~C-c C-e~).
+
+| Command                          | Title                                  | What it does                                              |
+|----------------------------------+----------------------------------------+-----------------------------------------------------------|
+| ~scimax.org.exportBeamer~        | Scimax: Export to Beamer (LaTeX)       | Writes a ~.tex~ file using the Beamer backend             |
+| ~scimax.org.exportBeamerPdf~     | Scimax: Export to Beamer PDF           | Writes ~.tex~ and compiles it to PDF                      |
+| ~scimax.org.exportBeamerOpen~    | Scimax: Export to Beamer PDF and Open  | Same as above, then opens the PDF with the system viewer  |
+
+From the export dispatcher (=C-c C-e=), the Beamer submenu is at =s= (slides):
+
+- =C-c C-e s b= — Beamer .tex
+- =C-c C-e s p= — Beamer PDF
+- =C-c C-e s o= — Beamer PDF and open
+
+* ⚠️ Document Keywords
+
+All keywords are case-insensitive; the canonical form is uppercase.
+
+| Keyword                  | Effect                                                                      |
+|--------------------------+-----------------------------------------------------------------------------|
+| =#+TITLE:=               | Title slide (~\frame{\titlepage}~).                                         |
+| =#+SUBTITLE:=            | Subtitle on the title slide.                                                |
+| =#+AUTHOR:=              | =\author{...}= in the preamble.                                             |
+| =#+DATE:=                | =\date{...}= in the preamble (defaults to ~\today~).                        |
+| =#+OPTIONS: H:N=         | Set the frame level (depth at which headlines become frames).               |
+| =#+OPTIONS: toc:t=       | Emit ~\tableofcontents~ wrapped in its own frame after the title slide.     |
+| =#+LATEX_CLASS:=         | Override the document class (defaults to ~beamer~).                         |
+| =#+LATEX_CLASS_OPTIONS:= | Class options, e.g. =[presentation,aspectratio=169]=.                       |
+| =#+LATEX_HEADER:=        | Verbatim preamble lines (collected, multiple allowed).                      |
+| =#+BEAMER_THEME:=        | =\usetheme{...}= — accepts =[opts] name= form.                              |
+| =#+BEAMER_COLOR_THEME:=  | =\usecolortheme{...}=.                                                      |
+| =#+BEAMER_FONT_THEME:=   | =\usefonttheme{...}=.                                                       |
+| =#+BEAMER_INNER_THEME:=  | =\useinnertheme{...}=.                                                      |
+| =#+BEAMER_OUTER_THEME:=  | =\useoutertheme{...}=.                                                      |
+| =#+BEAMER_HEADER:=       | Verbatim preamble lines (collected, multiple allowed).                      |
+| =#+CITE_EXPORT:=         | =bibtex= / =biblatex= override (same semantics as the LaTeX backend).       |
+
+* ⚠️ Headline Properties
+
+Headlines control frame/section/block dispatch through their property drawer.
+All keys are case-insensitive (the parser uppercases them).
+
+| Property             | Effect                                                                                       |
+|----------------------+----------------------------------------------------------------------------------------------|
+| =:BEAMER_env:=       | Environment for this headline. See "Environments" below.                                     |
+| =:BEAMER_act:=       | Overlay specification, e.g. =<2->= or =[<2->]=. Emitted as =\begin{frame}<2->= etc.          |
+| =:BEAMER_opt:=       | Frame/environment options (=fragile=, =allowframebreaks=, =t=, =b=, =plain=, =label=foo=).  |
+| =:BEAMER_col:=       | Column width, e.g. =0.4=. Implies a column wrapper.                                          |
+| =:BEAMER_ref:=       | Reference for =:BEAMER_env: againframe:= (the label of an earlier frame).                    |
+| =:BEAMER_SUBTITLE:=  | Frame subtitle ({...} after the title).                                                      |
+
+The backend also accepts the equivalent tag-based shortcuts:
+
+- =:B_<envname>:= — same as =:BEAMER_env: <envname>:=. For example, =:B_alertblock:=.
+- =:BMCOL:= — same as =:BEAMER_col: 0.5:=.
+
+* ⚠️ Environments
+
+Built-in environment names (case-insensitive):
+
+| Name                | LaTeX environment           | Notes                                              |
+|---------------------+-----------------------------+----------------------------------------------------|
+| =frame=             | =\begin{frame}{title}=      | Forces the headline to be a frame at any depth.    |
+| =fullframe=         | =\begin{frame}{}=           | Frame with empty title (full-bleed content).       |
+| =columns=           | =\begin{columns}=           | Wraps children with =:BEAMER_col:= as columns.     |
+| =column=            | =\begin{column}{width}=     | One column inside a =columns= environment.         |
+| =block=             | =\begin{block}{title}=      | Default for headlines deeper than the frame level. |
+| =alertblock=        | =\begin{alertblock}{title}= | Highlighted block.                                 |
+| =exampleblock=      | =\begin{exampleblock}=      | Example-styled block.                              |
+| =theorem=           | =\begin{theorem}=           | Math theorem environment.                          |
+| =definition=        | =\begin{definition}=        | Math definition environment.                       |
+| =example=           | =\begin{example}=           | Math example environment.                          |
+| =proof=             | =\begin{proof}=             | Math proof environment.                            |
+| =verse=             | =\begin{verse}=             |                                                    |
+| =quote=             | =\begin{quote}=             |                                                    |
+| =quotation=         | =\begin{quotation}=         |                                                    |
+| =onlyenv=           | =\begin{onlyenv}=           |                                                    |
+| =structureenv=      | =\begin{structureenv}=      |                                                    |
+| =beamercolorbox=    | =\begin{beamercolorbox}=    |                                                    |
+| =note=              | =\note{title body}=         | Speaker note attached to the surrounding frame.    |
+| =noteNH=            | =\note{body}=               | Speaker note without a title.                      |
+| =againframe=        | =\againframe{ref}=          | Re-runs an earlier frame; needs =:BEAMER_ref:=.    |
+| =appendix=          | =\appendix= + continue       | Marks subsequent headlines as appendix.            |
+| =ignoreheading=     | (none)                      | Drops the headline; emits its body inline.         |
+
+* ⚠️ Frame Behavior
+
+** Auto-fragile
+
+A frame is automatically promoted to =[fragile]= when its body contains any
+verbatim-flavored element: =#+BEGIN_SRC=, =#+BEGIN_EXAMPLE=, =#+BEGIN_VERBATIM=,
+=:fixed-width:= drawers, =verb=/=verb*= constructs, inline-src blocks, or
+=~code~= objects. You can still set =:BEAMER_opt: fragile:= explicitly; it
+won't be added twice.
+
+** Auto-label
+
+Each frame gets =label=<id>= unless any of the following is true:
+- The frame uses =allowframebreaks= (Beamer can't label such frames).
+- The user already supplied =label=<...>= in =:BEAMER_opt:=.
+
+The label is derived from =:CUSTOM_ID:= → =:ID:= → a hash of the headline
+title.
+
+** Fragile guard
+
+A literal =\begin{frame}= sequence in the body would close the surrounding
+frame prematurely. The backend rewrites it to =\begin {frame}= (note the
+space) before emission. Real frames written by the backend are unaffected.
+
+* ⚠️ Columns
+
+Two ways to lay out columns:
+
+** Explicit
+
+#+BEGIN_SRC org
+,* Two columns
+  :PROPERTIES:
+  :BEAMER_env: columns
+  :BEAMER_opt: T
+  :END:
+
+,** Left
+   :PROPERTIES:
+   :BEAMER_col: 0.4
+   :END:
+
+   Left-side content.
+
+,** Right
+   :PROPERTIES:
+   :BEAMER_col: 0.6
+   :END:
+
+   Right-side content.
+#+END_SRC
+
+** Implicit
+
+If a parent has no =BEAMER_env: columns:= but a run of consecutive sibling
+headlines all carry =:BEAMER_col:=, they are auto-wrapped in a
+=\begin{columns}...\end{columns}= block. The =:BMCOL:= tag is treated as
+=:BEAMER_col: 0.5:=.
+
+* ⚠️ Inline Markup
+
+| Org input                  | Beamer output                            | Notes                              |
+|----------------------------+------------------------------------------+------------------------------------|
+| =*bold*=                   | =\alert{bold}=                           | Override with =boldIsAlert=false=. |
+| =/italic/=                 | =\textit{italic}=                        | Inherited from LaTeX backend.      |
+| =~code~=                   | =\verb~code~=                            | Triggers auto-fragile.             |
+| =#+BEGIN_SRC ... #+END_SRC=| =\begin{minted}/listings...=             | Triggers auto-fragile.             |
+| =@@beamer:<2->@@=          | =<2->=                                   | Inline overlay snippet.            |
+| =#+ATTR_BEAMER: :overlay <+->= on a list | overlay applied to each =\item= |                                    |
+| =#+BEGIN_EXPORT beamer=    | passthrough verbatim                     | Backend-specific export block.     |
+
+* ⚠️ Configuration
+
+All settings live under =scimax.export.beamer.*=:
+
+| Setting                    | Type    | Default         | Description                                                   |
+|----------------------------+---------+-----------------+---------------------------------------------------------------|
+| =theme=                    | string  | =""=            | Default theme; overridden by =#+BEAMER_THEME=.                |
+| =colorTheme=               | string  | =""=            | Default color theme.                                          |
+| =fontTheme=                | string  | =""=            | Default font theme.                                           |
+| =innerTheme=               | string  | =""=            | Default inner theme.                                          |
+| =outerTheme=               | string  | =""=            | Default outer theme.                                          |
+| =frameLevel=               | number  | =1=             | Headline depth at which a heading becomes a frame.            |
+| =boldIsAlert=              | boolean | =true=          | =*bold*= → =\alert{...}= when true.                           |
+| =aspectRatio=              | string  | =""=            | One of =""=, =43=, =169=, =1610=, =54=, =32=, =141=.          |
+| =classOptions=             | string  | =presentation=  | Comma-separated =\documentclass[...]{beamer}= options.        |
+| =defaultPreamble=          | string  | =""=            | Extra preamble appended after theme commands.                 |
+
+* ⚠️ Example
+
+#+BEGIN_SRC org
+,#+TITLE: Beamer demo
+,#+AUTHOR: Me
+,#+OPTIONS: H:2 toc:t
+,#+BEAMER_THEME: Madrid
+,#+BEAMER_COLOR_THEME: beaver
+
+,* Introduction
+,** Goals
+   - First goal
+   - *Second* goal      ; renders as \alert{Second}
+
+,** A code frame
+   :PROPERTIES:
+   :BEAMER_opt: fragile
+   :END:
+
+   ,#+BEGIN_SRC python
+   print("hello, beamer")
+   ,#+END_SRC
+
+,* Layout
+,** Side by side
+   :PROPERTIES:
+   :BEAMER_env: columns
+   :BEAMER_opt: T
+   :END:
+,*** Left
+    :PROPERTIES:
+    :BEAMER_col: 0.5
+    :END:
+
+    Left content
+,*** Right
+    :PROPERTIES:
+    :BEAMER_col: 0.5
+    :END:
+
+    Right content
+
+,* Theorem
+,** Pythagoras
+   :PROPERTIES:
+   :BEAMER_env: theorem
+   :END:
+
+   $a^2 + b^2 = c^2$
+#+END_SRC
+
+* ⚠️ Related Topics
+
+- [[file:10-export.org][Export System Overview]]
+- [[file:26-configuration.org][Configuration Reference]]
+- [[file:25-commands.org][Command Reference]]
+- [[file:24-keybindings.org][Keybinding Reference]]
+- [[https://orgmode.org/manual/Beamer-Export.html][Org Manual: Beamer Export]]
+- [[https://orgmode.org/worg/exporters/beamer/tutorial.html][Worg Beamer Tutorial]]

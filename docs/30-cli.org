@@ -168,6 +168,12 @@ scimax export paper.org --format latex
 # Export to PDF (requires pdflatex/latexmk)
 scimax export paper.org --format pdf
 
+# Export to Beamer slides (.tex)
+scimax export slides.org --format beamer
+
+# Compile Beamer slides to PDF
+scimax export slides.org --format beamer-pdf
+
 # Specify output file
 scimax export paper.org --format html --output build/paper.html
 

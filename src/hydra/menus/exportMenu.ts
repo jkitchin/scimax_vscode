@@ -86,6 +86,14 @@ export const exportMenu: HydraMenuDefinition = {
                     action: 'scimax.export.latex',
                 },
                 {
+                    key: 's',
+                    label: 'Beamer slides',
+                    description: 'Export to Beamer slides',
+                    icon: 'preview',
+                    exit: 'submenu',
+                    action: 'scimax.export.beamer',
+                },
+                {
                     key: 'm',
                     label: 'Markdown exports',
                     description: 'Export to Markdown',
@@ -223,6 +231,45 @@ export const latexExportMenu: HydraMenuDefinition = {
                     icon: 'sync',
                     exit: 'exit',
                     action: 'scimax.latex.forwardSync',
+                },
+            ],
+        },
+    ],
+};
+
+/**
+ * Beamer export submenu
+ */
+export const beamerExportMenu: HydraMenuDefinition = {
+    id: 'scimax.export.beamer',
+    title: 'Beamer Export',
+    parent: 'scimax.export',
+    groups: [
+        {
+            items: [
+                {
+                    key: 'b',
+                    label: 'Beamer (LaTeX)',
+                    description: 'Export to Beamer .tex file',
+                    icon: 'file-code',
+                    exit: 'exit',
+                    action: 'scimax.org.exportBeamer',
+                },
+                {
+                    key: 'p',
+                    label: 'Beamer PDF',
+                    description: 'Compile Beamer to PDF',
+                    icon: 'file-pdf',
+                    exit: 'exit',
+                    action: 'scimax.org.exportBeamerPdf',
+                },
+                {
+                    key: 'o',
+                    label: 'Beamer PDF and open',
+                    description: 'Export Beamer PDF and open',
+                    icon: 'link-external',
+                    exit: 'exit',
+                    action: 'scimax.org.exportBeamerOpen',
                 },
             ],
         },
@@ -572,6 +619,7 @@ export const exportMenus: HydraMenuDefinition[] = [
     exportMenu,
     htmlExportMenu,
     latexExportMenu,
+    beamerExportMenu,
     markdownExportMenu,
     docxExportMenu,
     jupyterExportMenu,

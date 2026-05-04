@@ -6,7 +6,7 @@
  *   scimax agenda [today|week|todos]
  *   scimax search <query> [--semantic]
  *   scimax search headings [query] [-t tag] [--todo STATE]
- *   scimax export <file> [--format html|pdf|latex]
+ *   scimax export <file> [--format html|pdf|latex|beamer|beamer-pdf]
  *   scimax cite [extract|check] <file>
  *   scimax db [rebuild|stats]
  *   scimax journal [date]
@@ -165,6 +165,8 @@ EXAMPLES:
     scimax search headings -t proposal
     scimax search headings --todo TODO -t grant
     scimax export paper.org --format html
+    scimax export slides.org --format beamer
+    scimax export slides.org --format beamer-pdf
     scimax export memo.org --exporter cmu-memo
     scimax export --list-exporters
     scimax cite extract paper.org
@@ -188,7 +190,7 @@ OPTIONS:
     --help, -h              Show help for a command
     --db <path>             Override database path
     --json                  Output structured JSON (agenda, search, db stats, cite, export, publish)
-    --format <fmt>          Output format for export (html, pdf, latex)
+    --format <fmt>          Output format for export (html, pdf, latex, beamer, beamer-pdf)
     --exporter <id>         Use a custom exporter (e.g., cmu-memo)
     --list-exporters        List available custom exporters
     --output <path>         Output file or directory

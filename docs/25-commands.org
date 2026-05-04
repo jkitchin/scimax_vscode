@@ -274,13 +274,16 @@ CLOSED: [2026-01-17 Sat 12:27]
 ** ✅ LaTeX/PDF Export
 CLOSED: [2026-01-17 Sat 12:27]
 
-| Command ID                        | Description             | Default Keybinding |
-|-----------------------------------+-------------------------+--------------------|
-| [[cmd:scimax.org.exportLatex]]    | Export to LaTeX         | C-c C-e l l        |
-| [[cmd:scimax.org.exportPdf]]      | Export to PDF           | C-c C-e l p        |
-| [[cmd:scimax.org.exportLatexOpen]]| Export to PDF and Open  | C-c C-e l o        |
-| [[cmd:scimax.org.viewPdfPanel]]   | View PDF in Panel       | -                  |
-| [[cmd:scimax.org.jumpToPdf]]      | Jump to PDF (forward sync) | -               |
+| Command ID                         | Description                  | Default Keybinding |
+|------------------------------------+------------------------------+--------------------|
+| [[cmd:scimax.org.exportLatex]]     | Export to LaTeX              | C-c C-e l l        |
+| [[cmd:scimax.org.exportPdf]]       | Export to PDF                | C-c C-e l p        |
+| [[cmd:scimax.org.exportLatexOpen]] | Export to PDF and Open       | C-c C-e l o        |
+| [[cmd:scimax.org.exportBeamer]]    | ⚠️ Export to Beamer (LaTeX)   | -                  |
+| [[cmd:scimax.org.exportBeamerPdf]] | ⚠️ Export to Beamer PDF       | -                  |
+| [[cmd:scimax.org.exportBeamerOpen]]| ⚠️ Export to Beamer PDF and Open | -              |
+| [[cmd:scimax.org.viewPdfPanel]]    | View PDF in Panel            | -                  |
+| [[cmd:scimax.org.jumpToPdf]]       | Jump to PDF (forward sync)   | -                  |
 
 ** ✅ Other Export Formats
 CLOSED: [2026-01-17 Sat 12:27]

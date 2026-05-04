@@ -318,6 +318,23 @@ export async function compileFinalPdf(options: {
         // File doesn't exist or can't be deleted - ignore
       }
     }
+
+    // Beamer numbered per-frame verbatim caches: <basename>.<N>.vrb
+    try {
+      const vrbPattern = new RegExp(`^${basename.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\.\\d+\\.vrb$`);
+      const entries = await fs.readdir(workingDir);
+      for (const entry of entries) {
+        if (vrbPattern.test(entry)) {
+          try {
+            await fs.unlink(path.join(workingDir, entry));
+          } catch {
+            // ignore
+          }
+        }
+      }
+    } catch {
+      // Ignore directory read errors
+    }
   }
 
   return {

@@ -732,6 +732,23 @@ style/variant → command mapping table.
 }
 #+end_src
 
+** ⚠️ Beamer Export Settings
+
+See [[file:41-export-beamer.org][Beamer Export]] for the full feature reference.
+
+| Setting                              | Type    | Default        | Description                                                  |
+|--------------------------------------+---------+----------------+--------------------------------------------------------------|
+| scimax.export.beamer.theme           | string  | ""             | Default Beamer theme (e.g. "Madrid")                         |
+| scimax.export.beamer.colorTheme      | string  | ""             | Default color theme (e.g. "beaver")                          |
+| scimax.export.beamer.fontTheme       | string  | ""             | Default font theme                                           |
+| scimax.export.beamer.innerTheme      | string  | ""             | Default inner theme                                          |
+| scimax.export.beamer.outerTheme      | string  | ""             | Default outer theme                                          |
+| scimax.export.beamer.frameLevel      | number  | 1              | Headline depth at which a heading becomes a frame            |
+| scimax.export.beamer.boldIsAlert     | boolean | true           | Render =*bold*= as =\alert{...}=                             |
+| scimax.export.beamer.aspectRatio     | string  | ""             | Beamer aspect ratio: "", 43, 169, 1610, 54, 32, 141          |
+| scimax.export.beamer.classOptions    | string  | "presentation" | Comma-separated =\documentclass[...]{beamer}= options        |
+| scimax.export.beamer.defaultPreamble | string  | ""             | Extra preamble appended after theme commands                 |
+
 ** PDF Export Settings
 
 | Setting                         | Type    | Default           | Description                      |

@@ -38,6 +38,8 @@ You are an executive assistant and expert for the **scimax-vscode** extension. Y
 | Search notes | `scimax search "query"` |
 | Export to HTML | `scimax export file.org --format html` |
 | Export to PDF | `scimax export file.org --format pdf` |
+| Export to Beamer slides | `scimax export slides.org --format beamer` |
+| Compile Beamer to PDF | `scimax export slides.org --format beamer-pdf` |
 | Check citations | `scimax cite check file.org` |
 | Extract citations | `scimax cite extract file.org` |
 | Database stats | `scimax db stats` |

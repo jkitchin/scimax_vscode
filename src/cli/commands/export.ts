@@ -9,6 +9,7 @@ import * as path from 'path';
 import { parseOrgFast } from '../../parser/orgExportParser';
 import { exportToHtml } from '../../parser/orgExportHtml';
 import { exportToLatex } from '../../parser/orgExportLatex';
+import { exportToBeamer, BeamerExportOptions } from '../../parser/orgExportBeamer';
 import { parseBibTeX } from '../../references/bibtexParser';
 import { loadSettings, expandPath, ExportSettings, RefSettings } from '../settings';
 import {
@@ -37,11 +38,32 @@ function parseClassOptions(classOptions: string): string[] {
     return classOptions.split(',').map(s => s.trim()).filter(s => s);
 }
 
+/**
+ * Build BeamerExportOptions from VS Code-style settings.
+ */
+function buildBeamerOptions(exportSettings: ExportSettings): Partial<BeamerExportOptions> {
+    const b = exportSettings.beamer;
+    const opts: Partial<BeamerExportOptions> = {
+        documentClass: 'beamer',
+        classOptions: parseClassOptions(b.classOptions),
+        preamble: b.defaultPreamble || undefined,
+        frameLevel: b.frameLevel,
+        boldIsAlert: b.boldIsAlert,
+        aspectRatio: b.aspectRatio,
+    };
+    if (b.theme) opts.theme = b.theme;
+    if (b.colorTheme) opts.colorTheme = b.colorTheme;
+    if (b.fontTheme) opts.fontTheme = b.fontTheme;
+    if (b.innerTheme) opts.innerTheme = b.innerTheme;
+    if (b.outerTheme) opts.outerTheme = b.outerTheme;
+    return opts;
+}
+
 export async function exportCommand(config: CliConfig, args: ParsedArgs): Promise<void> {
     const inputFile = args.args[0];
 
     if (!inputFile && !args.flags['list-exporters']) {
-        console.error('Usage: scimax export <file.org> [--format html|latex|pdf] [--exporter <id>] [--output path] [--json]');
+        console.error('Usage: scimax export <file.org> [--format html|latex|pdf|beamer|beamer-pdf] [--exporter <id>] [--output path] [--json]');
         console.error('       scimax export --list-exporters');
         process.exit(1);
     }
@@ -166,12 +188,32 @@ export async function exportCommand(config: CliConfig, args: ParsedArgs): Promis
             break;
         }
 
+        case 'beamer':
+        case 'beamer-tex':
+            output = exportToBeamer(doc, buildBeamerOptions(settings.export));
+            defaultExt = '.tex';
+            break;
+
+        case 'beamer-pdf': {
+            const beamerTex = exportToBeamer(doc, buildBeamerOptions(settings.export));
+            defaultExt = '.pdf';
+            output = await compilePdf(beamerTex, inputPath, outputPath, settings.export, json);
+            if (output === '__PDF_WRITTEN__') {
+                if (json) {
+                    const pdfOut = outputPath || inputPath.replace(/\.org$/i, '.pdf');
+                    console.log(JSON.stringify({ success: true, input_file: inputPath, output_path: pdfOut, format: 'beamer-pdf' }));
+                }
+                return;
+            }
+            break;
+        }
+
         default:
             if (json) {
-                console.log(JSON.stringify({ success: false, error: `Unknown format: ${format}. Supported: html, latex, pdf` }));
+                console.log(JSON.stringify({ success: false, error: `Unknown format: ${format}. Supported: html, latex, pdf, beamer, beamer-pdf` }));
             } else {
                 console.error(`Unknown format: ${format}`);
-                console.error('Supported formats: html, latex, pdf');
+                console.error('Supported formats: html, latex, pdf, beamer, beamer-pdf');
             }
             process.exit(1);
     }
@@ -384,7 +426,11 @@ async function compilePdf(
 
     // Clean auxiliary files if configured
     if (exportSettings.pdf.cleanAuxFiles) {
-        const auxExtensions = ['.aux', '.log', '.out', '.toc', '.lof', '.lot', '.fls', '.fdb_latexmk'];
+        const auxExtensions = [
+            '.aux', '.log', '.out', '.toc', '.lof', '.lot', '.fls', '.fdb_latexmk',
+            // Beamer-specific
+            '.nav', '.snm', '.vrb',
+        ];
         for (const ext of auxExtensions) {
             const auxPath = path.join(dir, `${basename}${ext}`);
             if (fs.existsSync(auxPath)) {
@@ -394,6 +440,17 @@ async function compilePdf(
                     // Ignore cleanup errors
                 }
             }
+        }
+        // Beamer numbered per-frame verbatim caches: <basename>.<N>.vrb
+        try {
+            const vrbPattern = new RegExp(`^${basename.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\.\\d+\\.vrb$`);
+            for (const entry of fs.readdirSync(dir)) {
+                if (vrbPattern.test(entry)) {
+                    try { fs.unlinkSync(path.join(dir, entry)); } catch { /* ignore */ }
+                }
+            }
+        } catch {
+            // Ignore directory read errors
         }
     }
 

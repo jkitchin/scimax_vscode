@@ -737,6 +737,7 @@ export function parseOrgFast(content: string): OrgDocumentNode {
         'LATEX_HEADER_EXTRA',
         'HTML_HEAD',
         'HTML_HEAD_EXTRA',
+        'BEAMER_HEADER',
         'MACRO',
     ]);
 

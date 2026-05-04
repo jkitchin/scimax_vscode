@@ -1,0 +1,405 @@
+#+TITLE: Beamer Export Feature Tour
+#+SUBTITLE: A demo of every option the Beamer backend understands
+#+AUTHOR: Scimax VS Code
+#+EMAIL: scimax@example.com
+#+DATE: \today
+#+LANGUAGE: en
+
+# ----------------------------------------------------------------------
+# Document-level Beamer configuration. Each of these has a corresponding
+# scimax.export.beamer.* setting that acts as the default when the
+# keyword is absent.
+# ----------------------------------------------------------------------
+#+LATEX_CLASS: beamer
+#+LATEX_CLASS_OPTIONS: [presentation,aspectratio=169]
+#+BEAMER_THEME: [height=0.7cm]Madrid
+#+BEAMER_COLOR_THEME: beaver
+#+BEAMER_FONT_THEME: serif
+#+BEAMER_INNER_THEME: rounded
+#+BEAMER_OUTER_THEME: shadow
+
+# Verbatim preamble lines. Multiple BEAMER_HEADER and LATEX_HEADER
+# entries are collected in order.
+#+BEAMER_HEADER: \setbeamertemplate{navigation symbols}{}
+#+BEAMER_HEADER: \setbeamertemplate{caption}[numbered]
+#+LATEX_HEADER: \usepackage{tikz}
+#+LATEX_HEADER: \usepackage{xcolor}
+
+# H:2  -> level-1 = \section, level-2 = frame, level-3 = block
+# toc:t -> emit a table-of-contents frame after the title slide
+# num:t -> number sections in the TOC
+#+OPTIONS: H:2 toc:t num:t
+
+# Citations follow the LaTeX backend rules; switch to biblatex per-doc
+# if you prefer.
+# #+CITE_EXPORT: biblatex
+
+* Introduction
+** Welcome
+This is a regular frame at the frame level (=H:2=).
+
+A *bold* word renders as =\alert{bold}= by default. Italics like /this/ and
+~code~ stay the way the LaTeX backend would produce them.
+
+Inline overlays via export snippets: place text @@beamer:<2->@@between
+those markers@@beamer:<.->@@ and they appear only on the matching slide.
+
+Special characters are escaped: 100\% & < > $ # _ ^ { }.
+
+** A short bullet list
+- First point
+- Second point with *emphasis*
+- Third point with $a^2 + b^2 = c^2$
+- Final point
+
+** A list with overlays
+:PROPERTIES:
+:ATTR_BEAMER: :overlay <+->
+:END:
+
+#+ATTR_BEAMER: :overlay <+->
+- Reveals first
+- Reveals second
+- Reveals third
+
+* Frame Options
+** Action overlay on the frame
+:PROPERTIES:
+:BEAMER_act: <2->
+:END:
+
+This whole frame is wrapped in =\begin{frame}<2->=, so it doesn't appear
+until the second overlay step of its enclosing slideshow chunk.
+
+** Fragile is added automatically
+A frame whose body contains verbatim-flavored content is automatically
+promoted to =[fragile]=. No need to set it manually.
+
+#+BEGIN_SRC python
+def hello():
+    print("hello, beamer")
+#+END_SRC
+
+** allowframebreaks
+:PROPERTIES:
+:BEAMER_opt: allowframebreaks
+:END:
+
+When a frame is too long for one slide, =allowframebreaks= lets Beamer
+spill it across multiple slides. Auto-label is suppressed (Beamer does
+not label split frames).
+
+- Bullet 1
+- Bullet 2
+- Bullet 3
+- Bullet 4
+- Bullet 5
+- Bullet 6
+- Bullet 7
+- Bullet 8
+
+** Custom label and extra options
+:PROPERTIES:
+:BEAMER_opt: fragile,label=summary,t
+:END:
+
+Frames can carry any of: =fragile=, =plain=, =t=, =b=, =c=,
+=allowframebreaks=, =label=, =shrink=, etc.
+
+** A subtitle on the frame
+:PROPERTIES:
+:BEAMER_SUBTITLE: extra context
+:END:
+
+The =BEAMER_SUBTITLE= property fills in the second brace of
+=\begin{frame}{title}{subtitle}=.
+
+** A full-bleed frame
+:PROPERTIES:
+:BEAMER_env: fullframe
+:END:
+
+A frame with an empty title — useful for image-only or quote-only slides.
+
+** Fragile guard for verbatim begin frame
+A literal beamer frame opener that appears in =verbatim= text inside
+the body is rewritten with an extra space so it does not close the
+surrounding frame prematurely.
+
+# Plain comment lines stay out of the export entirely.
+
+* Block Environments
+** Default block
+:PROPERTIES:
+:BEAMER_env: block
+:END:
+
+The default environment for headlines deeper than the frame level. With
+=H:2= we have to force =BEAMER_env: block= at level 2 to demo it
+explicitly; otherwise level-3 children of a frame would be blocks
+automatically.
+
+** Alert and example blocks
+The =B_*= tags are sugar for =BEAMER_env=. Both forms work.
+
+*** Alertblock                                              :B_alertblock:
+:PROPERTIES:
+:BEAMER_env: alertblock
+:END:
+
+This block uses the alertblock environment.
+
+*** Exampleblock                                            :B_exampleblock:
+:PROPERTIES:
+:BEAMER_env: exampleblock
+:END:
+
+And this one uses exampleblock.
+
+** Theorem-flavored environments
+*** Pythagoras
+:PROPERTIES:
+:BEAMER_env: theorem
+:END:
+
+For any right triangle, $a^2 + b^2 = c^2$.
+
+*** Definition
+:PROPERTIES:
+:BEAMER_env: definition
+:END:
+
+A /right triangle/ has one 90° angle.
+
+*** Example
+:PROPERTIES:
+:BEAMER_env: example
+:END:
+
+3-4-5 triangle: $3^2 + 4^2 = 9 + 16 = 25 = 5^2$.
+
+*** Proof sketch
+:PROPERTIES:
+:BEAMER_env: proof
+:END:
+
+Geometric proof by rearrangement.
+
+** Verse and quote
+*** A short verse
+:PROPERTIES:
+:BEAMER_env: verse
+:END:
+
+Roses are red,\\
+Violets are blue,\\
+Beamer is fine,\\
+And so are you.
+
+*** A quotation
+:PROPERTIES:
+:BEAMER_env: quotation
+:END:
+
+Premature optimization is the root of all evil.
+
+* Columns
+** Explicit columns layout
+:PROPERTIES:
+:BEAMER_env: columns
+:BEAMER_opt: T
+:END:
+
+*** Left half
+:PROPERTIES:
+:BEAMER_col: 0.5
+:END:
+
+This column is exactly half the slide. =T= aligns the columns by their
+top.
+
+- Bullet A
+- Bullet B
+
+*** Right half
+:PROPERTIES:
+:BEAMER_col: 0.5
+:END:
+
+Right side. The math here:
+
+\[
+\int_0^1 x^2 \, dx = \frac{1}{3}
+\]
+
+** Implicit columns auto-wrap
+
+Sibling headlines that all carry =:BEAMER_col:= but no parent =columns=
+env get auto-wrapped in a =\begin{columns}...\end{columns}= block.
+
+*** 0.4 width
+:PROPERTIES:
+:BEAMER_col: 0.4
+:END:
+
+Forty percent.
+
+*** 0.6 width
+:PROPERTIES:
+:BEAMER_col: 0.6
+:END:
+
+Sixty percent.
+
+** BMCOL tag
+
+The =:BMCOL:= tag is shorthand for =:BEAMER_col: 0.5:=.
+
+*** Tagged left                                                     :BMCOL:
+:PROPERTIES:
+:BEAMER_col: 0.5
+:END:
+
+Left half, tagged.
+
+*** Tagged right                                                    :BMCOL:
+:PROPERTIES:
+:BEAMER_col: 0.5
+:END:
+
+Right half, tagged.
+
+* Source Code
+** Python
+A =minted= block is automatically marked fragile.
+
+#+BEGIN_SRC python
+import math
+
+def gcd(a, b):
+    """Greatest common divisor."""
+    while b:
+        a, b = b, a % b
+    return a
+
+print(gcd(48, 18))   # -> 6
+#+END_SRC
+
+** Shell
+#+BEGIN_SRC sh
+ls -1 *.org | wc -l
+#+END_SRC
+
+** Inline code and verbatim
+A frame with inline-code like ~scimax-org-mode~ or =verbatim= text is
+also promoted to fragile automatically.
+
+* Tables and Figures
+** A table
+#+CAPTION: Sample data with booktabs styling.
+#+NAME: tab:demo
+| Item    | Count | Mean |
+|---------+-------+------|
+| Alpha   |    10 |  1.2 |
+| Beta    |    15 |  3.4 |
+| Gamma   |     7 |  2.0 |
+| /Total/ |    32 |  6.6 |
+
+The table inherits the LaTeX backend's =booktabs= rendering.
+
+** A figure (placeholder)
+A figure link of the form =[[file:my-image.png]]= would emit
+=\includegraphics{my-image.png}= via the LaTeX backend's image handler.
+Captions and labels come from =#+CAPTION:= and =#+NAME:=.
+
+* Math and References
+** Inline and display math
+Inline math like $\sin^2\theta + \cos^2\theta = 1$ works the same as in
+the LaTeX backend.
+
+\begin{equation}
+\label{eq:euler}
+e^{i\pi} + 1 = 0
+\end{equation}
+
+Reference Equation [[eq:euler]] above.
+
+** Citations (commented out)
+Citations use the standard org-cite syntax. The Beamer backend reuses
+the LaTeX citation logic verbatim, so =#+CITE_EXPORT: bibtex= or
+=biblatex= behaves the same way. Add a =#+BIBLIOGRAPHY:= keyword and
+=\usepackage{natbib}= via =#+LATEX_HEADER:= to enable rendering.
+
+* Speaker Notes and Repeats
+** A frame with a separate note
+:PROPERTIES:
+:BEAMER_opt: label=funfact
+:END:
+
+Did you know Beamer was authored by Till Tantau?
+
+** Speaker note for the previous frame
+:PROPERTIES:
+:BEAMER_env: note
+:END:
+
+This shows up on the speaker's monitor only. The headline title becomes
+the note's heading.
+
+** Speaker note without a heading
+:PROPERTIES:
+:BEAMER_env: noteNH
+:END:
+
+Body-only speaker note (=noteNH= drops the heading).
+
+** Show the funfact frame again
+:PROPERTIES:
+:BEAMER_env: againframe
+:BEAMER_ref: funfact
+:BEAMER_act: <1->
+:END:
+
+This emits =\againframe<1->{funfact}=, replaying the labeled frame from
+earlier.
+
+* Heading Manipulation
+** This heading does not appear
+:PROPERTIES:
+:BEAMER_env: ignoreheading
+:END:
+
+The headline is dropped, but its body content is rendered at the parent
+scope. Useful for inserting raw LaTeX without an extra slide title.
+
+** Inline raw LaTeX
+You can also drop into raw LaTeX with an export block:
+
+#+BEGIN_EXPORT beamer
+\begin{tikzpicture}
+  \draw[->, thick] (0,0) -- (2,1) node[right]{$\vec v$};
+\end{tikzpicture}
+#+END_EXPORT
+
+Or with single-line passthroughs:
+
+#+BEAMER: \pause
+
+* Appendix
+** Switch to appendix
+:PROPERTIES:
+:BEAMER_env: appendix
+:END:
+
+Everything from this heading onward is in the appendix; Beamer formats
+appendix slides differently in the navigation bar and TOC.
+
+** Appendix slide
+A frame after =\appendix= — typically used for backup data, references,
+or long derivations you don't want in the main flow.
+
+** Bibliography (placeholder)
+\begin{thebibliography}{9}
+\bibitem{knuth1984} Donald E. Knuth. /Literate Programming/. The
+Computer Journal, 27(2):97-111, 1984.
+\end{thebibliography}

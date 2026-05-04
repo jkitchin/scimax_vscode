@@ -288,7 +288,7 @@ export interface LatexExportOptions extends ExportOptions {
     noDefaults?: boolean;
 }
 
-const DEFAULT_LATEX_OPTIONS: LatexExportOptions = {
+export const DEFAULT_LATEX_OPTIONS: LatexExportOptions = {
     documentClass: 'article',
     classOptions: ['11pt', 'a4paper'],
     packages: [],
@@ -320,7 +320,7 @@ const DEFAULT_LATEX_OPTIONS: LatexExportOptions = {
 // LaTeX Sectioning Commands
 // =============================================================================
 
-const LATEX_SECTIONS = [
+export const LATEX_SECTIONS = [
     '\\part',
     '\\chapter',
     '\\section',
@@ -335,7 +335,7 @@ const LATEX_SECTIONS = [
 // =============================================================================
 
 export class LatexExportBackend implements ExportBackend {
-    public readonly name = 'latex';
+    public readonly name: string = 'latex';
 
     /**
      * Export a complete document to LaTeX
@@ -472,7 +472,7 @@ export class LatexExportBackend implements ExportBackend {
     /**
      * Export document content (without preamble)
      */
-    private exportDocumentContent(
+    protected exportDocumentContent(
         doc: OrgDocumentNode,
         state: ExportState,
         opts: LatexExportOptions
@@ -523,7 +523,7 @@ export class LatexExportBackend implements ExportBackend {
     /**
      * Export element content (without affiliated keywords)
      */
-    private exportElementContent(element: OrgElement, state: ExportState): string {
+    protected exportElementContent(element: OrgElement, state: ExportState): string {
         const opts = state.options as LatexExportOptions;
 
         switch (element.type) {
@@ -653,7 +653,7 @@ export class LatexExportBackend implements ExportBackend {
     // Element Exporters
     // =========================================================================
 
-    private exportHeadline(
+    protected exportHeadline(
         headline: HeadlineElement,
         state: ExportState,
         opts: LatexExportOptions,
@@ -722,7 +722,7 @@ export class LatexExportBackend implements ExportBackend {
         return parts.join('\n');
     }
 
-    private exportSection(section: SectionElement, state: ExportState): string {
+    protected exportSection(section: SectionElement, state: ExportState): string {
         const parts: string[] = [];
         for (const child of section.children) {
             parts.push(this.exportElement(child, state));
@@ -730,7 +730,7 @@ export class LatexExportBackend implements ExportBackend {
         return parts.join('\n\n');
     }
 
-    private exportParagraph(paragraph: ParagraphElement, state: ExportState): string {
+    protected exportParagraph(paragraph: ParagraphElement, state: ExportState): string {
         // Pass affiliated keywords to child objects (for image captions)
         const previousAffiliated = state.currentAffiliated;
         state.currentAffiliated = paragraph.affiliated;
@@ -743,7 +743,7 @@ export class LatexExportBackend implements ExportBackend {
         return content + '\n';
     }
 
-    private exportSrcBlock(
+    protected exportSrcBlock(
         block: SrcBlockElement,
         state: ExportState,
         opts: LatexExportOptions
@@ -842,7 +842,7 @@ export class LatexExportBackend implements ExportBackend {
         return `\\begin{center}\n${content}\\end{center}\n`;
     }
 
-    private exportSpecialBlock(block: SpecialBlockElement, state: ExportState): string {
+    protected exportSpecialBlock(block: SpecialBlockElement, state: ExportState): string {
         const blockType = block.properties.blockType.toLowerCase();
         const content = block.children
             .map(child => this.exportElement(child, state))
@@ -1008,7 +1008,7 @@ export class LatexExportBackend implements ExportBackend {
         return wrapper + tabular + endWrapper;
     }
 
-    private exportPlainList(list: PlainListElement, state: ExportState): string {
+    protected exportPlainList(list: PlainListElement, state: ExportState): string {
         const listType = list.properties.listType;
         let envName: string;
 
@@ -1033,7 +1033,7 @@ export class LatexExportBackend implements ExportBackend {
         return latex;
     }
 
-    private exportListItem(item: ItemElement, state: ExportState, listType: string): string {
+    protected exportListItem(item: ItemElement, state: ExportState, listType: string): string {
         let latex = '';
 
         if (listType === 'descriptive' && item.properties.tag) {
@@ -1131,7 +1131,7 @@ export class LatexExportBackend implements ExportBackend {
     // Object Exporters
     // =========================================================================
 
-    private exportBold(obj: BoldObject, state: ExportState): string {
+    protected exportBold(obj: BoldObject, state: ExportState): string {
         const content = exportObjects(obj.children, this, state);
         return `\\textbf{${content}}`;
     }
@@ -1476,7 +1476,7 @@ export class LatexExportBackend implements ExportBackend {
         return `\\texttt{${result}}`;
     }
 
-    private exportExportSnippet(obj: ExportSnippetObject, state: ExportState): string {
+    protected exportExportSnippet(obj: ExportSnippetObject, state: ExportState): string {
         if (obj.properties.backend.toLowerCase() === 'latex') {
             return obj.properties.value;
         }
@@ -1554,7 +1554,7 @@ export class LatexExportBackend implements ExportBackend {
     // Document Structure
     // =========================================================================
 
-    private wrapInLatexDocument(
+    protected wrapInLatexDocument(
         content: string,
         meta: {
             title: string;

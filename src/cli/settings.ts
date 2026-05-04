@@ -59,6 +59,18 @@ export interface ExportSettings {
         embedImages: boolean;
         includeResults: boolean;
     };
+    beamer: {
+        theme: string;
+        colorTheme: string;
+        fontTheme: string;
+        innerTheme: string;
+        outerTheme: string;
+        frameLevel: number;
+        boldIsAlert: boolean;
+        aspectRatio: string;
+        classOptions: string;
+        defaultPreamble: string;
+    };
 }
 
 /**
@@ -311,6 +323,18 @@ export function loadSettings(): ScimaxSettings {
                 defaultKernel: getSetting<string>(settings, 'scimax.export.ipynb.defaultKernel', 'python3'),
                 embedImages: getSetting<boolean>(settings, 'scimax.export.ipynb.embedImages', true),
                 includeResults: getSetting<boolean>(settings, 'scimax.export.ipynb.includeResults', true),
+            },
+            beamer: {
+                theme: getSetting<string>(settings, 'scimax.export.beamer.theme', 'default'),
+                colorTheme: getSetting<string>(settings, 'scimax.export.beamer.colorTheme', ''),
+                fontTheme: getSetting<string>(settings, 'scimax.export.beamer.fontTheme', ''),
+                innerTheme: getSetting<string>(settings, 'scimax.export.beamer.innerTheme', ''),
+                outerTheme: getSetting<string>(settings, 'scimax.export.beamer.outerTheme', ''),
+                frameLevel: getSetting<number>(settings, 'scimax.export.beamer.frameLevel', 1),
+                boldIsAlert: getSetting<boolean>(settings, 'scimax.export.beamer.boldIsAlert', true),
+                aspectRatio: getSetting<string>(settings, 'scimax.export.beamer.aspectRatio', '43'),
+                classOptions: getSetting<string>(settings, 'scimax.export.beamer.classOptions', ''),
+                defaultPreamble: getSetting<string>(settings, 'scimax.export.beamer.defaultPreamble', ''),
             },
         },
         journal: {

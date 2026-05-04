@@ -888,6 +888,18 @@
         "title": "Scimax: Export to PDF"
       },
       {
+        "command": "scimax.org.exportBeamer",
+        "title": "Scimax: Export to Beamer (LaTeX)"
+      },
+      {
+        "command": "scimax.org.exportBeamerPdf",
+        "title": "Scimax: Export to Beamer PDF"
+      },
+      {
+        "command": "scimax.org.exportBeamerOpen",
+        "title": "Scimax: Export to Beamer PDF and Open"
+      },
+      {
         "command": "scimax.org.viewPdfPanel",
         "title": "Scimax Org: View PDF in Panel (with sync)"
       },
@@ -5926,6 +5938,66 @@
           "type": "boolean",
           "default": false,
           "description": "Enable double-click on a word in org files to sync to PDF position. Can be triggered accidentally when selecting text."
+        },
+        "scimax.export.beamer.theme": {
+          "type": "string",
+          "default": "",
+          "markdownDescription": "Default Beamer theme (e.g. `Madrid`, `Berlin`, `Warsaw`). Can be overridden by `#+BEAMER_THEME:` in the document."
+        },
+        "scimax.export.beamer.colorTheme": {
+          "type": "string",
+          "default": "",
+          "markdownDescription": "Default Beamer color theme (e.g. `beaver`, `dolphin`). Can be overridden by `#+BEAMER_COLOR_THEME:`."
+        },
+        "scimax.export.beamer.fontTheme": {
+          "type": "string",
+          "default": "",
+          "markdownDescription": "Default Beamer font theme. Can be overridden by `#+BEAMER_FONT_THEME:`."
+        },
+        "scimax.export.beamer.innerTheme": {
+          "type": "string",
+          "default": "",
+          "markdownDescription": "Default Beamer inner theme. Can be overridden by `#+BEAMER_INNER_THEME:`."
+        },
+        "scimax.export.beamer.outerTheme": {
+          "type": "string",
+          "default": "",
+          "markdownDescription": "Default Beamer outer theme. Can be overridden by `#+BEAMER_OUTER_THEME:`."
+        },
+        "scimax.export.beamer.frameLevel": {
+          "type": "number",
+          "default": 1,
+          "markdownDescription": "Headline depth at which a heading becomes a frame. Headlines shallower than this become sections; deeper headlines become blocks. Can be overridden per-document with `#+OPTIONS: H:N`."
+        },
+        "scimax.export.beamer.boldIsAlert": {
+          "type": "boolean",
+          "default": true,
+          "markdownDescription": "Render `*bold*` text as `\\alert{...}` (Beamer's emphasis macro). When false, falls back to `\\textbf{...}`."
+        },
+        "scimax.export.beamer.aspectRatio": {
+          "type": "string",
+          "enum": [
+            "",
+            "43",
+            "169",
+            "1610",
+            "54",
+            "32",
+            "141"
+          ],
+          "default": "",
+          "markdownDescription": "Beamer slide aspect ratio:\n- `` (empty): no aspectratio option\n- `43`: 4:3\n- `169`: 16:9\n- `1610`: 16:10\n- `54`: 5:4\n- `32`: 3:2\n- `141`: 14:1"
+        },
+        "scimax.export.beamer.classOptions": {
+          "type": "string",
+          "default": "presentation",
+          "markdownDescription": "Comma-separated `\\documentclass[...]{beamer}` options. The `aspectRatio` setting is appended automatically when set."
+        },
+        "scimax.export.beamer.defaultPreamble": {
+          "type": "string",
+          "default": "",
+          "editPresentation": "multilineText",
+          "markdownDescription": "Extra preamble appended after Beamer theme commands (and before any `#+BEAMER_HEADER:` from the document)."
         },
         "scimax.export.editmarkMode": {
           "type": "string",

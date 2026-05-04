@@ -57,9 +57,11 @@ scimax search "machine learning" --limit 5  # Find notes on a topic
 Convert org files to other formats.
 
 ```bash
-scimax export paper.org --format html       # Export to HTML
-scimax export paper.org --format latex      # Export to LaTeX
-scimax export paper.org --format pdf        # Export to PDF (requires LaTeX)
+scimax export paper.org --format html         # Export to HTML
+scimax export paper.org --format latex        # Export to LaTeX
+scimax export paper.org --format pdf          # Export to PDF (requires LaTeX)
+scimax export slides.org --format beamer      # Export to Beamer .tex
+scimax export slides.org --format beamer-pdf  # Compile Beamer slides to PDF
 scimax export paper.org --format html --output ~/public/  # Custom output directory
 ```
 

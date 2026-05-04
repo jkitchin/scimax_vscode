@@ -39,6 +39,13 @@ CLOSED: [2026-01-16 Fri 20:55]
 - `[l p]' PDF file - Export to PDF via LaTeX compilation
 - `[l o]' PDF and open - Export to PDF and open with system viewer
 
+*** ⚠️ Beamer Exports
+- `[s b]' Beamer (LaTeX) - Export to Beamer .tex file
+- `[s p]' Beamer PDF - Compile Beamer to PDF
+- `[s o]' Beamer PDF and open - Compile and open with system viewer
+
+See [[file:41-export-beamer.org][Beamer Export]] for the keyword/property reference.
+
 *** ✅ Markdown Exports
 CLOSED: [2026-01-16 Fri 20:55]
 - `[m m]' Markdown file - Export to .md file
