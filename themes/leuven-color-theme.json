@@ -687,6 +687,12 @@
     "string": "#008000",
     "number": "#7F7F7F",
     "regexp": "#D0372D",
-    "operator": "#333333"
+    "operator": "#333333",
+    "orgHeading1": { "foreground": "#3C3C3C", "bold": true },
+    "orgHeading2": { "foreground": "#123555", "bold": true },
+    "orgHeading3": { "foreground": "#005522", "bold": true },
+    "orgHeading4": { "foreground": "#EA6300", "bold": true },
+    "orgHeading5": { "foreground": "#E3258D", "bold": true },
+    "orgHeading6": { "foreground": "#0077CC", "bold": true }
   }
 }

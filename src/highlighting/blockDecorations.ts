@@ -14,6 +14,9 @@ let quoteBlockDecoration: vscode.TextEditorDecorationType;
 let resultsDecoration: vscode.TextEditorDecorationType;
 let tableDecoration: vscode.TextEditorDecorationType;
 
+// Whole-line decoration per heading level (index 0 = level 1, ... index 5 = level 6+)
+const headingDecorations: vscode.TextEditorDecorationType[] = [];
+
 // Per-language decoration types for source blocks
 const languageDecorations: Map<string, vscode.TextEditorDecorationType> = new Map();
 const languageHeaderDecorations: Map<string, vscode.TextEditorDecorationType> = new Map();
@@ -55,6 +58,11 @@ function createDecorationTypes(): void {
     quoteBlockDecoration?.dispose();
     resultsDecoration?.dispose();
     tableDecoration?.dispose();
+
+    for (const decoration of headingDecorations) {
+        decoration.dispose();
+    }
+    headingDecorations.length = 0;
 
     // Dispose language-specific decorations
     for (const decoration of languageDecorations.values()) {
@@ -120,6 +128,20 @@ function createDecorationTypes(): void {
         backgroundColor: new vscode.ThemeColor('scimax.tableBackground'),
         isWholeLine: true,
     });
+
+    // Heading whole-line backgrounds, one per level (1..6)
+    for (let level = 1; level <= 6; level++) {
+        headingDecorations.push(vscode.window.createTextEditorDecorationType({
+            backgroundColor: new vscode.ThemeColor(`scimax.heading${level}Background`),
+            isWholeLine: true,
+        }));
+    }
+}
+
+function headingBarsEnabled(): boolean {
+    return vscode.workspace
+        .getConfiguration('scimax.highlighting')
+        .get<boolean>('headingBackgroundBars', true);
 }
 
 /**
@@ -160,10 +182,27 @@ function updateDecorations(editor: vscode.TextEditor): void {
     const resultsBlocks: vscode.DecorationOptions[] = [];
     const tableRows: vscode.DecorationOptions[] = [];
 
+    // Per-level heading lines (index 0 = level 1, ... index 5 = level 6+)
+    const headingLines: vscode.DecorationOptions[][] = [[], [], [], [], [], []];
+    const headingsEnabled = headingBarsEnabled();
+
     let i = 0;
     while (i < lines.length) {
         const line = lines[i];
         const lineLower = line.toLowerCase();
+
+        // Headings: ^\*+\s ... (outside source/example/quote blocks, since those branches advance i past their bodies)
+        if (headingsEnabled) {
+            const headingMatch = line.match(/^(\*+)\s/);
+            if (headingMatch) {
+                const level = Math.min(headingMatch[1].length, 6);
+                headingLines[level - 1].push({
+                    range: new vscode.Range(i, 0, i, line.length),
+                });
+                i++;
+                continue;
+            }
+        }
 
         // Source blocks
         const srcMatch = line.match(/^#\+begin_src\s+(\S+)/i);
@@ -353,6 +392,11 @@ function updateDecorations(editor: vscode.TextEditor): void {
     editor.setDecorations(quoteBlockDecoration, quoteBlocks);
     editor.setDecorations(resultsDecoration, resultsBlocks);
     editor.setDecorations(tableDecoration, tableRows);
+
+    // Apply per-level heading background bars (clears them when disabled, since headingLines is empty)
+    for (let level = 0; level < headingDecorations.length; level++) {
+        editor.setDecorations(headingDecorations[level], headingLines[level]);
+    }
 }
 
 /**
@@ -400,7 +444,8 @@ export function registerBlockDecorations(context: vscode.ExtensionContext): void
     // Update when configuration changes
     context.subscriptions.push(
         vscode.workspace.onDidChangeConfiguration(event => {
-            if (event.affectsConfiguration('scimax.org')) {
+            if (event.affectsConfiguration('scimax.org')
+                || event.affectsConfiguration('scimax.highlighting')) {
                 createDecorationTypes();
                 if (vscode.window.activeTextEditor) {
                     updateDecorations(vscode.window.activeTextEditor);
@@ -418,6 +463,11 @@ export function registerBlockDecorations(context: vscode.ExtensionContext): void
             quoteBlockDecoration?.dispose();
             resultsDecoration?.dispose();
             tableDecoration?.dispose();
+
+            for (const decoration of headingDecorations) {
+                decoration.dispose();
+            }
+            headingDecorations.length = 0;
 
             // Dispose language-specific decorations
             for (const decoration of languageDecorations.values()) {

@@ -585,6 +585,60 @@
           "light": "#CD5C5C",
           "highContrast": "#CD5C5C"
         }
+      },
+      {
+        "id": "scimax.heading1Background",
+        "description": "Whole-line background tint for level 1 org headings",
+        "defaults": {
+          "dark": "#FFFFFF14",
+          "light": "#0000001A",
+          "highContrast": "#FFFFFF20"
+        }
+      },
+      {
+        "id": "scimax.heading2Background",
+        "description": "Whole-line background tint for level 2 org headings",
+        "defaults": {
+          "dark": "#FFFFFF10",
+          "light": "#00000014",
+          "highContrast": "#FFFFFF18"
+        }
+      },
+      {
+        "id": "scimax.heading3Background",
+        "description": "Whole-line background tint for level 3 org headings",
+        "defaults": {
+          "dark": "#FFFFFF0C",
+          "light": "#0000000F",
+          "highContrast": "#FFFFFF12"
+        }
+      },
+      {
+        "id": "scimax.heading4Background",
+        "description": "Whole-line background tint for level 4 org headings",
+        "defaults": {
+          "dark": "#FFFFFF09",
+          "light": "#0000000B",
+          "highContrast": "#FFFFFF0E"
+        }
+      },
+      {
+        "id": "scimax.heading5Background",
+        "description": "Whole-line background tint for level 5 org headings",
+        "defaults": {
+          "dark": "#FFFFFF06",
+          "light": "#00000008",
+          "highContrast": "#FFFFFF0A"
+        }
+      },
+      {
+        "id": "scimax.heading6Background",
+        "description": "Whole-line background tint for level 6 (and deeper) org headings",
+        "defaults": {
+          "dark": "#FFFFFF04",
+          "light": "#00000006",
+          "highContrast": "#FFFFFF08"
+        }
       }
     ],
     "snippets": [
@@ -610,9 +664,34 @@
         "description": "Org-mode timestamp"
       },
       {
-        "id": "orgHeading",
+        "id": "orgHeading1",
         "superType": "class",
-        "description": "Org-mode heading"
+        "description": "Org-mode heading, level 1"
+      },
+      {
+        "id": "orgHeading2",
+        "superType": "class",
+        "description": "Org-mode heading, level 2"
+      },
+      {
+        "id": "orgHeading3",
+        "superType": "class",
+        "description": "Org-mode heading, level 3"
+      },
+      {
+        "id": "orgHeading4",
+        "superType": "class",
+        "description": "Org-mode heading, level 4"
+      },
+      {
+        "id": "orgHeading5",
+        "superType": "class",
+        "description": "Org-mode heading, level 5"
+      },
+      {
+        "id": "orgHeading6",
+        "superType": "class",
+        "description": "Org-mode heading, level 6 and deeper"
       },
       {
         "id": "orgTodo",
@@ -657,7 +736,28 @@
           "orgTimestamp": [
             "constant.other.timestamp.org"
           ],
-          "orgHeading": [
+          "orgHeading1": [
+            "markup.heading.1.org",
+            "entity.name.section.org"
+          ],
+          "orgHeading2": [
+            "markup.heading.2.org",
+            "entity.name.section.org"
+          ],
+          "orgHeading3": [
+            "markup.heading.3.org",
+            "entity.name.section.org"
+          ],
+          "orgHeading4": [
+            "markup.heading.4.org",
+            "entity.name.section.org"
+          ],
+          "orgHeading5": [
+            "markup.heading.5.org",
+            "entity.name.section.org"
+          ],
+          "orgHeading6": [
+            "markup.heading.6.org",
             "entity.name.section.org"
           ],
           "orgTodo": [
@@ -757,6 +857,26 @@
           "orgDone": {
             "foreground": "#4CAF50",
             "bold": true
+          },
+          "orgHeading1": {
+            "foreground": "#3C3C3C",
+            "bold": true
+          },
+          "orgHeading2": {
+            "foreground": "#123555",
+            "bold": true
+          },
+          "orgHeading3": {
+            "foreground": "#005522"
+          },
+          "orgHeading4": {
+            "foreground": "#EA6300"
+          },
+          "orgHeading5": {
+            "foreground": "#E3258D"
+          },
+          "orgHeading6": {
+            "foreground": "#0077CC"
           }
         }
       },
@@ -5383,6 +5503,11 @@
           "minimum": 20,
           "maximum": 200,
           "description": "Column at which to wrap text when filling paragraphs (Alt+Q). Similar to Emacs fill-column."
+        },
+        "scimax.highlighting.headingBackgroundBars": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show a tinted whole-line background behind each org heading, fading at deeper levels. Per-level colors are configured via the scimax.heading1Background ... scimax.heading6Background theme colors."
         },
         "scimax.journal.directory": {
           "type": "string",

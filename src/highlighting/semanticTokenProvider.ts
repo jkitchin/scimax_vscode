@@ -10,7 +10,12 @@ const tokenTypes = [
     'orgLink',
     'orgCitation',
     'orgTimestamp',
-    'orgHeading',
+    'orgHeading1',
+    'orgHeading2',
+    'orgHeading3',
+    'orgHeading4',
+    'orgHeading5',
+    'orgHeading6',
     'orgTodo',
     'orgDone',
     'orgTag'
@@ -39,6 +44,21 @@ interface TokenMatch {
 function escapeRegex(s: string): string {
     return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
+
+// Map a heading's leading stars to a 1..6 level. Levels deeper than 6
+// share H6 styling because there are only six per-level token types.
+export function headingLevelFromStars(stars: string): number {
+    return Math.min(stars.length, 6);
+}
+
+export const HEADING_TOKEN_TYPES = [
+    'orgHeading1',
+    'orgHeading2',
+    'orgHeading3',
+    'orgHeading4',
+    'orgHeading5',
+    'orgHeading6',
+] as const;
 
 function buildHeadingRegex(workflow: TodoWorkflow | null): RegExp {
     // Union of document workflow states and default states so existing
@@ -242,9 +262,14 @@ export class OrgSemanticTokenProvider implements vscode.DocumentSemanticTokensPr
         const match = headingRegex.exec(line);
 
         if (match) {
+            const stars = match[1];
             const todo = match[2];
             const title = match[5];
             const tags = match[6];
+
+            // Heading level capped at 6 (deeper levels share H6 styling)
+            const level = headingLevelFromStars(stars);
+            const headingTokenType = HEADING_TOKEN_TYPES[level - 1];
 
             // Token for the title portion
             if (title && title.trim()) {
@@ -254,7 +279,7 @@ export class OrgSemanticTokenProvider implements vscode.DocumentSemanticTokensPr
                         line: lineNum,
                         startChar: titleStart,
                         length: title.length,
-                        tokenType: tokenTypes.indexOf('orgHeading'),
+                        tokenType: tokenTypes.indexOf(headingTokenType),
                         tokenModifiers: 0
                     });
                 }
