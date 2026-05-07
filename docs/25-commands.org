@@ -467,7 +467,7 @@ CLOSED: [2026-01-17 Sat 12:45]
 | Command ID                       | Description                     | Default Keybinding |
 |----------------------------------+---------------------------------+--------------------|
 | [[cmd:scimax.db.refresh]]        | Refresh Database (incremental)  | -                  |
-| [[cmd:scimax.db.reindex]]        | Alias of ~scimax.db.refresh~    | -                  |
+| [[cmd:scimax.db.reindex]]        | Sync Files                      | -                  |
 | [[cmd:scimax.db.rebuild]]        | Rebuild Database (from scratch) | -                  |
 | [[cmd:scimax.db.search]]         | Search All Files                | -                  |
 | [[cmd:scimax.db.searchHeadings]] | Search Headings                 | -                  |

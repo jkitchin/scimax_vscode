@@ -1140,9 +1140,9 @@ CLOSED: [2026-01-18 Sun 12:50]
    - Day view only shows today's items
    - Try week or month view for more items
 
-4. *Reindex database* (for database agenda):
+4. *Sync database* (for database agenda):
    #+BEGIN_SRC text
-   Command: scimax.db.refresh
+   Command: scimax.db.reindex
    #+END_SRC
 
 5. *Check exclude patterns*:
@@ -1161,9 +1161,9 @@ CLOSED: [2026-01-18 Sun 12:50]
    Command: scimax.agenda.refresh
    #+END_SRC
 
-2. *Reindex database*:
+2. *Sync database*:
    #+BEGIN_SRC text
-   Command: scimax.db.refresh
+   Command: scimax.db.reindex
    #+END_SRC
 
 3. *Check file watcher*:

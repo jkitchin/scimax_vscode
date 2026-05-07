@@ -126,8 +126,8 @@ export const databaseMenu: HydraMenuDefinition = {
                 },
                 {
                     key: 'i',
-                    label: 'Reindex All Files',
-                    description: 'Re-index all files in workspace',
+                    label: 'Sync All Files',
+                    description: 'Reconcile the index with the filesystem',
                     icon: 'sync',
                     exit: 'exit',
                     action: 'scimax.db.reindex',

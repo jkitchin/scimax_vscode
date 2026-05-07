@@ -8,7 +8,7 @@
  *   scimax search headings [query] [-t tag] [--todo STATE]
  *   scimax export <file> [--format html|pdf|latex|beamer|beamer-pdf]
  *   scimax cite [extract|check] <file>
- *   scimax db [rebuild|stats]
+ *   scimax db [sync|clear|stats|scan|check|remove|ignore]
  *   scimax journal [date]
  *   scimax project [query] [--add path] [--list]
  *   scimax publish [project] [--init|--list]
@@ -150,7 +150,7 @@ COMMANDS:
     search headings         Search headings by title, tag, or TODO state
     export <file>           Export org file to HTML, PDF, or LaTeX
     cite <subcommand>       Citation operations (extract, check, convert)
-    db <subcommand>         Database operations (rebuild, stats)
+    db <subcommand>         Database operations (sync, clear, stats, scan, check, remove, ignore)
     journal [date]          Open journal entry (today, tomorrow, "next friday", etc.)
     project [query]         Fuzzy-select and open a known project in VS Code
     publish [project]       Publish org project(s) to HTML
@@ -171,7 +171,8 @@ EXAMPLES:
     scimax export --list-exporters
     scimax cite extract paper.org
     scimax cite check paper.org --bib refs.bib
-    scimax db rebuild
+    scimax db sync
+    scimax db sync --dry-run
     scimax journal
     scimax journal tomorrow
     scimax journal --date "next friday"

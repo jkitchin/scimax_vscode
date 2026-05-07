@@ -662,7 +662,7 @@ SQLite database powered by [libsql](https://github.com/tursodatabase/libsql) wit
 **Commands:**
 | Command                               | Description                             |
 | ---------                             | -------------                           |
-| `Scimax: Reindex Files`               | Reindex all files in workspace          |
+| `Scimax: Sync Files`                  | Reconcile the index with the filesystem |
 | `Scimax: Search All Files`            | Full-text search with BM25 ranking      |
 | `Scimax: Semantic Search (AI)`        | Find by meaning using embeddings        |
 | `Scimax: Hybrid Search`               | Combined keyword + semantic search      |
@@ -898,12 +898,12 @@ This package almost achieves feature parity with Emacs Scimax. If there are feat
 
 | Metric              | Count    |
 |---------------------|----------|
-| TypeScript files    | 316      |
-| Lines of TypeScript | ~178,800 |
-| Test files          | 71       |
-| Unit tests          | 2791     |
-| Documentation files | 48       |
-| Commands            | 984      |
+| TypeScript files    | 312      |
+| Lines of TypeScript | ~176,700 |
+| Test files          | 70       |
+| Unit tests          | 2719     |
+| Documentation files | 47       |
+| Commands            | 980      |
 | Keybindings         | 423      |
 
 ### Supported Languages (Babel Execution)

@@ -360,53 +360,81 @@ MISSING: deleted-folder/notes.org
 Total files in database: 42
 Missing files: 2
 
-Open VS Code to rebuild the index.
+Run =scimax db sync= to bring the index up to date.
 #+end_example
 
-*** ✅ Reindex
-CLOSED: [2026-04-12 Sun 19:54]
+*** ⚠️ Sync
 
-Re-parse and re-index all files already in the database. This is the most accurate way to refresh the index since it processes exactly the files VS Code has indexed.
+Bring the database into agreement with the configured scan roots and the filesystem in one pass: pick up new files, refresh changed files (mtime-based), refresh in-scope files that are stale, and prune entries for files that no longer exist.
+
+Scan roots are unioned from:
+1. =scimax.db.include= (VS Code settings)
+2. =scimax.journal.directory=
+3. =scimax.agenda.include=
+4. NotebookManager projects (every project you have opened in VS Code, persisted in =notebooks.json=)
+
+Files in the database that do not fall under any current root are still refreshed if they exist and their mtime has advanced; otherwise they are left alone.
 
 #+begin_src bash
-scimax db reindex
+# Default daily driver
+scimax db sync
+
+# Preview what sync would do without changing the DB
+scimax db sync --dry-run
+
+# Show a line per file (in addition to the summary)
+scimax db sync --verbose
 #+end_src
 
 Output:
 #+begin_example
-Database path: /home/user/.config/Code/User/globalStorage/jkitchin.scimax-vscode/scimax-db.sqlite
+Database: ~/Library/Application Support/Code/User/globalStorage/jkitchin.scimax-vscode/scimax-db.sqlite
 
-Found 12385 file(s) in database.
+Scan roots (3):
+  ~/Dropbox/org
+  ~/Dropbox/journal
+  ~/Dropbox/projects/scimax_vscode
 
-  Indexing: ~/Documents/org/notes.org... OK
-  Indexing: ~/projects/paper.org... OK
-  Removing (missing): ~/old/deleted.org... OK
-  ...
-
-Indexed: 12380 file(s)
-Removed (missing): 5 file(s)
+sync complete in 1.4s
+  +12 new
+  ~5 updated
+  -2 removed
+  1834 unchanged
 #+end_example
 
-Files that no longer exist are automatically removed from the database.
+The summary uses these markers:
 
-*** ✅ Rebuild
-CLOSED: [2026-04-12 Sun 19:54]
+| Marker | Meaning                                                 |
+|--------+---------------------------------------------------------|
+| =+=    | New file added to the database                          |
+| =~=    | Existing file re-indexed (mtime newer)                  |
+| =*=    | Out-of-scope file refreshed because mtime advanced      |
+| =-=    | File removed from the database (no longer on disk)      |
+| =     | Unchanged                                                |
 
-Discover directories and scan for org files. Use this to find and add new files that aren't yet in the database.
+*** ⚠️ Clear
 
-The rebuild command discovers directories from:
-1. VS Code settings (=scimax.db.include=, =scimax.journal.directory=)
-2. Root directories derived from already-indexed files
+Wipe the database. Use this before a full re-sync, after a schema change, or when troubleshooting suspected corruption. Requires confirmation.
 
 #+begin_src bash
-# Auto-discover directories and scan for new files
-scimax db rebuild
+# Interactive confirmation
+scimax db clear
 
-# Scan only a specific directory
-scimax db rebuild --path ./docs
+# Skip the prompt
+scimax db clear --yes
+
+# Typical reset workflow
+scimax db clear --yes && scimax db sync
 #+end_src
 
-Note: For refreshing existing files, use =scimax db reindex= instead.
+Output:
+#+begin_example
+Database: ~/Library/Application Support/Code/User/globalStorage/jkitchin.scimax-vscode/scimax-db.sqlite
+This will delete 1853 file(s), 12044 heading(s), 3201 source block(s).
+Continue? [y/N] y
+Database cleared.
+Run "scimax db sync" to repopulate.
+#+end_example
 
 *** ✅ Scan Directory
 CLOSED: [2026-01-22 Thu 20:57]
@@ -455,17 +483,20 @@ crontab -e
 */30 * * * * cd /path/to/project && scimax db scan ~/work/notes && scimax db scan ~/personal/org
 #+end_src
 
-**** ✅ Command Comparison
-CLOSED: [2026-04-12 Sun 19:54]
+**** ⚠️ Command Comparison
 
-| Command                | Use Case                                           |
-|------------------------+----------------------------------------------------|
-| =scimax db reindex=    | Refresh all files already in DB (most accurate)    |
-| =scimax db rebuild=    | Discover directories and scan for new files        |
-| =scimax db scan <dir>= | Add files from a specific directory                |
+| Command                | Use Case                                                  |
+|------------------------+-----------------------------------------------------------|
+| =scimax db sync=       | Daily driver: discover, refresh, and prune in one pass    |
+| =scimax db clear=      | Wipe the database (followed by =sync= for a full rebuild) |
+| =scimax db scan <dir>= | Ad-hoc scan of a single directory                         |
+| =scimax db check=      | Read-only integrity report (no changes)                   |
 
-- Use *reindex* to refresh the index after making changes to existing files
-- Use *rebuild* or *scan* to add new files that VS Code hasn't indexed yet
+- Use *sync* for routine maintenance, including the morning's first pass.
+- Use *scan* for one-off directories outside the configured scan roots.
+- Use *clear* + *sync* only when you genuinely need to start over.
+
+The =rebuild= and =reindex= subcommands have been removed. Use =sync= (or =clear= + =sync=) instead.
 
 * Scripting Examples
 
@@ -518,11 +549,11 @@ The CLI has some limitations compared to the VS Code extension:
 
 1. *Semantic Search*: Requires embeddings which need the embedding service configured in VS Code.
 
-2. *Live Updates*: The CLI reads a snapshot of the database. Changes made to org files won't be reflected until you run =scimax db rebuild= or VS Code re-indexes them.
+2. *Live Updates*: The CLI reads a snapshot of the database. Changes made to org files won't be reflected until you run =scimax db sync= or VS Code re-indexes them.
 
 3. *Interactive Features*: No support for interactive features like completion or live preview.
 
-4. *FTS Index*: The CLI rebuild populates the main tables but doesn't rebuild the FTS5 full-text index triggers. For full FTS support, use VS Code to create the initial database.
+4. *FTS Index*: =scimax db sync= populates the main tables but doesn't rebuild the FTS5 full-text index triggers. For full FTS support, use VS Code to create the initial database.
 
 * Related Topics
 

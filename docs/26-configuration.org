@@ -1781,7 +1781,7 @@ If database indexing is slow or uses too much memory:
 }
 #+end_src
 
-Then manually trigger indexing with `C-S-P' → "Scimax: Refresh Database (incremental)"
+Then manually trigger indexing with `C-S-P' → "Scimax: Sync Files"
 
 ** Jupyter Kernels Not Found
 

@@ -183,7 +183,7 @@ export function registerDbCommands(
 
             await vscode.window.withProgress({
                 location: vscode.ProgressLocation.Notification,
-                title: 'Refreshing database',
+                title: 'Syncing files',
                 cancellable: true
             }, async (progress, token) => {
                 // Set up cancellation
@@ -227,7 +227,7 @@ export function registerDbCommands(
 
                 if (cancellationToken.cancelled) {
                     log.info('Reindex cancelled after Phase 1');
-                    vscode.window.showInformationMessage('Reindex cancelled');
+                    vscode.window.showInformationMessage('Sync cancelled');
                     return;
                 }
 
@@ -274,7 +274,7 @@ export function registerDbCommands(
 
                 if (cancellationToken.cancelled) {
                     log.info('Reindex cancelled during Phase 2');
-                    vscode.window.showInformationMessage('Reindex cancelled');
+                    vscode.window.showInformationMessage('Sync cancelled');
                     return;
                 }
 
@@ -317,7 +317,7 @@ export function registerDbCommands(
 
                 if (cancellationToken.cancelled) {
                     log.info('Reindex cancelled during Phase 3');
-                    vscode.window.showInformationMessage('Reindex cancelled');
+                    vscode.window.showInformationMessage('Sync cancelled');
                     return;
                 }
 
@@ -432,7 +432,7 @@ export function registerDbCommands(
                 if (cancellationToken.cancelled) {
                     log.info('Reindex cancelled during Phase 4', { indexed: totalIndexed });
                     vscode.window.showInformationMessage(
-                        `Reindex cancelled. Indexed ${totalIndexed} files before stopping.`
+                        `Sync cancelled. Indexed ${totalIndexed} files before stopping.`
                     );
                     return;
                 }
@@ -699,7 +699,7 @@ export function registerDbCommands(
                     db.setEmbeddingService(testService);
                 }
                 vscode.window.showInformationMessage(
-                    `Configured Ollama with ${modelChoice.label}. Run "Reindex Files" to enable semantic search.`
+                    `Configured Ollama with ${modelChoice.label}. Run "Sync Files" to enable semantic search.`
                 );
 
             } else {
@@ -1043,7 +1043,7 @@ export function registerDbCommands(
             const files = await db.getFiles();
 
             if (files.length === 0) {
-                vscode.window.showInformationMessage('No files indexed. Run "Scimax: Reindex Files" first.');
+                vscode.window.showInformationMessage('No files indexed. Run "Scimax: Sync Files" first.');
                 return;
             }
 

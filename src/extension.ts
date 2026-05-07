@@ -622,7 +622,7 @@ export async function activate(context: vscode.ExtensionContext) {
                 { label: '$(clock) Deadlines', description: 'Upcoming deadlines', command: 'scimax.db.deadlines' },
                 { label: '$(book) Search References', description: 'Search bibliography entries', command: 'scimax.ref.searchReferences' },
                 { label: '$(notebook) Open Notebook', description: 'Open a scimax notebook', command: 'scimax.notebook.open' },
-                { label: '$(sync) Reindex Files', description: 'Rebuild the search index', command: 'scimax.db.reindex' },
+                { label: '$(sync) Sync Files', description: 'Reconcile the search index with the filesystem', command: 'scimax.db.reindex' },
             ];
 
             const selected = await vscode.window.showQuickPick(items, {

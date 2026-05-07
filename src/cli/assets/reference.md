@@ -101,19 +101,21 @@ The scimax database indexes org files for fast search and agenda queries.
 
 ```bash
 scimax db stats                             # Overview: file count, headings, TODOs
-scimax db reindex                           # Refresh files that have changed (fast)
-scimax db reindex --force                   # Force reindex all files
-scimax db scan <dir>                        # Add a new directory to the index
-scimax db rebuild                           # Full rebuild from scratch
-scimax db rebuild --path <dir>              # Rebuild from a specific directory
-scimax db check                             # Find stale/missing entries
+scimax db sync                              # Reconcile DB with filesystem (daily driver)
+scimax db sync --dry-run                    # Preview what sync would do
+scimax db sync --verbose                    # Show per-file actions
+scimax db scan <dir>                        # Ad-hoc one-off scan of a single directory
+scimax db clear                             # Wipe the database (interactive confirm)
+scimax db clear --yes && scimax db sync     # Full rebuild from scratch
+scimax db check                             # Find stale/missing entries (read-only)
 ```
 
 **Guidance:**
 - Start with `db stats` to understand the current state of the index
-- Use `db reindex` for routine updates (checks mtime, skips unchanged files)
-- Use `db scan` when adding a new folder of org files
-- Use `db rebuild` only when the index is corrupted or starting fresh
+- Use `db sync` for routine updates: it picks up new files, refreshes changed files (mtime-based), and prunes entries for files that no longer exist
+- Sync's scan roots are the union of `scimax.db.include`, `scimax.journal.directory`, `scimax.agenda.include`, and any NotebookManager projects
+- Use `db scan` only for one-off directories outside the configured scan roots
+- Use `db clear` + `db sync` only when the index is corrupted or starting fresh
 - `db check` is useful for diagnosing why certain files aren't showing up in search
 
 ---
@@ -227,7 +229,7 @@ Grep: pattern="^\#\+TITLE:", glob="**/*.org"
 2. **Finding notes:** Use `scimax search` first, then `Read` the best match for context
 3. **Before exporting:** Check citations with `scimax cite check`, then export
 4. **After adding files:** Run `scimax db scan <new-dir>` to index them
-5. **When search feels stale:** Run `scimax db reindex` to refresh
+5. **When search feels stale:** Run `scimax db sync` to refresh
 
 ---
 

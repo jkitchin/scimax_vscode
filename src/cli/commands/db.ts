@@ -1,22 +1,20 @@
 /**
- * Database command - rebuild, stats, maintenance
+ * Database command - sync, clear, stats, maintenance
  *
  * Uses the same settings as the VS Code extension for consistent behavior.
  */
 
 import * as fs from 'fs';
 import * as path from 'path';
+import * as readline from 'readline';
 import { minimatch } from 'minimatch';
 import { createCliDatabase, createCliEmbeddingService, testCliEmbeddingService } from '../database';
-import type { ScimaxDbCore } from '../../database/scimaxDbCore';
 import {
     loadSettings,
     expandPath,
-    shouldExclude,
     findOrgFiles,
     getDirectoriesToScan,
-    getVSCodeSettingsPath,
-    ScimaxSettings
+    getVSCodeSettingsPath
 } from '../settings';
 
 interface CliConfig {
@@ -35,11 +33,11 @@ export async function dbCommand(config: CliConfig, args: ParsedArgs): Promise<vo
     const subcommand = args.subcommand || 'stats';
 
     switch (subcommand) {
-        case 'reindex':
-            await reindexFiles(config, args);
+        case 'sync':
+            await syncDatabase(config, args);
             break;
-        case 'rebuild':
-            await rebuildDatabase(config, args);
+        case 'clear':
+            await clearDatabase(config, args);
             break;
         case 'scan':
             await scanDirectory(config, args);
@@ -56,22 +54,30 @@ export async function dbCommand(config: CliConfig, args: ParsedArgs): Promise<vo
         case 'ignore':
             await ignoreFile(config, args);
             break;
+        case 'rebuild':
+        case 'reindex':
+            console.error(`'scimax db ${subcommand}' has been removed.`);
+            console.error(`Use 'scimax db sync' to bring the database in sync with the filesystem.`);
+            console.error(`Use 'scimax db clear' followed by 'scimax db sync' for a full rebuild.`);
+            process.exit(2);
+            break;
         default:
             console.log(`
 scimax db - Database operations
 
 USAGE:
-    scimax db stats             Show database statistics
-    scimax db reindex           Re-index changed files (skips unchanged by mtime)
-    scimax db rebuild           Rebuild database from org files
-    scimax db scan <dir>        Scan a specific directory and add to database
-    scimax db check             Check for stale/missing entries
+    scimax db stats                Show database statistics
+    scimax db sync                 Discover, refresh, and prune in one pass
+    scimax db clear                Wipe the database (requires --yes or confirm)
+    scimax db scan <dir>           Scan a specific directory and add to database
+    scimax db check                Check for stale/missing entries
     scimax db remove <file|glob>   Remove file(s) from the database
     scimax db ignore <file|glob>   Remove file(s) from DB and add to exclude list
 
 OPTIONS:
-    --path <dir>       Directory to scan (default: current) [for rebuild]
-    --force            Force reindex of all files (ignore mtime)
+    --dry-run          Compute and print the sync plan without changing the DB
+    --verbose          Show per-file actions during sync
+    --yes              Skip the confirmation prompt for clear
     --embeddings       Also update embeddings (requires Ollama configured)
     --no-embeddings    Skip embedding generation
     --json             Output JSON (stats, remove, ignore)
@@ -116,20 +122,132 @@ async function showStats(config: CliConfig, args: ParsedArgs): Promise<void> {
 }
 
 /**
- * Re-index all files already in the database.
+ * Action assigned to each file when sync reconciles disk and DB state.
  */
-async function reindexFiles(config: CliConfig, args: ParsedArgs): Promise<void> {
-    console.log(`Database path: ${config.dbPath}`);
-    console.log();
+type SyncAction = 'new' | 'updated' | 'unchanged' | 'out-of-scope-refresh' | 'out-of-scope-skip' | 'removed';
+
+interface SyncEntry {
+    path: string;
+    action: SyncAction;
+}
+
+interface DbFileSlim {
+    path: string;
+    mtime: number;
+}
+
+interface DiskFileSlim {
+    path: string;
+    mtimeMs: number;
+}
+
+/** Treat mtime differences below 1s as noise (matches the legacy reindex behavior). */
+const MTIME_EPSILON_MS = 1000;
+
+/**
+ * Pure classification: given the files discovered under the active scan roots
+ * and the files currently in the DB (plus a stat function for resolving
+ * out-of-scope DB entries), produce one entry per affected file.
+ *
+ * Exported for unit testing.
+ */
+export function classifyForSync(
+    diskFiles: DiskFileSlim[],
+    dbFiles: DbFileSlim[],
+    statOutOfScope: (filePath: string) => { mtimeMs: number } | null
+): SyncEntry[] {
+    const dbByPath = new Map(dbFiles.map(f => [f.path, f]));
+    const diskByPath = new Map(diskFiles.map(f => [f.path, f]));
+    const entries: SyncEntry[] = [];
+
+    for (const disk of diskFiles) {
+        const db = dbByPath.get(disk.path);
+        if (!db) {
+            entries.push({ path: disk.path, action: 'new' });
+        } else if (Math.abs(disk.mtimeMs - db.mtime) >= MTIME_EPSILON_MS) {
+            entries.push({ path: disk.path, action: 'updated' });
+        } else {
+            entries.push({ path: disk.path, action: 'unchanged' });
+        }
+    }
+
+    for (const db of dbFiles) {
+        if (diskByPath.has(db.path)) continue;
+        const stat = statOutOfScope(db.path);
+        if (stat === null) {
+            entries.push({ path: db.path, action: 'removed' });
+        } else if (Math.abs(stat.mtimeMs - db.mtime) >= MTIME_EPSILON_MS) {
+            entries.push({ path: db.path, action: 'out-of-scope-refresh' });
+        } else {
+            entries.push({ path: db.path, action: 'out-of-scope-skip' });
+        }
+    }
+
+    return entries;
+}
+
+function statSyncOrNull(filePath: string): { mtimeMs: number } | null {
+    try {
+        const s = fs.statSync(filePath);
+        if (!s.isFile()) return null;
+        return { mtimeMs: s.mtimeMs };
+    } catch {
+        return null;
+    }
+}
+
+function homeDisplay(p: string): string {
+    const home = process.env.HOME || '';
+    return home && p.startsWith(home) ? '~' + p.slice(home.length) : p;
+}
+
+/**
+ * Bring the database into agreement with configured scan roots and the
+ * filesystem: discover new files, refresh changed ones, and prune entries
+ * for files that no longer exist.
+ */
+async function syncDatabase(config: CliConfig, args: ParsedArgs): Promise<void> {
+    const dryRun = !!args.flags['dry-run'];
+    const verbose = !!args.flags.verbose;
+    const start = Date.now();
 
     const settings = loadSettings();
+    const roots = getDirectoriesToScan(settings);
+
+    console.log(`Database: ${config.dbPath}`);
+    if (dryRun) console.log('Mode: dry-run (no changes will be written)');
+    console.log();
+
+    if (roots.length === 0) {
+        console.log('No scan roots found. Configure at least one of:');
+        console.log('  - scimax.db.include (VS Code settings)');
+        console.log('  - scimax.journal.directory');
+        console.log('  - scimax.agenda.include');
+        console.log('  - A NotebookManager project (open a project folder in VS Code)');
+        return;
+    }
+
+    console.log(`Scan roots (${roots.length}):`);
+    for (const r of roots) console.log(`  ${homeDisplay(r)}`);
+    console.log();
+
+    const discovered: DiskFileSlim[] = [];
+    const seenDisk = new Set<string>();
+    for (const root of roots) {
+        const found = findOrgFiles(root, settings.db.exclude, { maxFileSizeMB: settings.db.maxFileSizeMB });
+        for (const filePath of found) {
+            if (seenDisk.has(filePath)) continue;
+            seenDisk.add(filePath);
+            const s = statSyncOrNull(filePath);
+            if (s !== null) discovered.push({ path: filePath, mtimeMs: s.mtimeMs });
+        }
+    }
+
     const db = await createCliDatabase(config.dbPath);
 
-    // Setup embedding service
     let updateEmbeddings = false;
-
     if (args.flags['no-embeddings']) {
-        console.log('Embeddings: Disabled (--no-embeddings flag)');
+        console.log('Embeddings: disabled (--no-embeddings)');
     } else if (args.flags.embeddings || settings.embedding.provider !== 'none') {
         const embeddingService = createCliEmbeddingService(settings.embedding);
         if (embeddingService) {
@@ -139,210 +257,132 @@ async function reindexFiles(config: CliConfig, args: ParsedArgs): Promise<void> 
                 updateEmbeddings = true;
                 db.setEmbeddingService(embeddingService);
                 console.log(' OK');
-                console.log(`  Provider: ${settings.embedding.provider}`);
-                console.log(`  Model: ${settings.embedding.ollamaModel}`);
-                console.log(`  Dimensions: ${embeddingService.dimensions}`);
+                console.log(`  Provider: ${settings.embedding.provider}, Model: ${settings.embedding.ollamaModel}`);
             } else {
-                console.log(' FAILED');
-                console.log('  Embeddings will be skipped. Is Ollama running?');
+                console.log(' FAILED (embeddings will be skipped)');
             }
-        } else {
-            console.log('Embeddings: No provider configured');
         }
-    } else {
-        console.log('Embeddings: Disabled (no provider configured)');
     }
     console.log();
 
-    const forceReindex = !!args.flags.force;
-    if (forceReindex) {
-        console.log('Force mode: will reindex all files regardless of mtime');
-        console.log();
-    }
-
     try {
-        // Get all files already in the database using getFiles()
-        const files = await db.getFiles();
-        console.log(`Found ${files.length} file(s) in database.`);
-        console.log();
+        const dbFiles = await db.getFiles();
+        const dbSlim: DbFileSlim[] = dbFiles.map(f => ({ path: f.path, mtime: f.mtime }));
 
-        if (files.length === 0) {
-            console.log('No files to reindex. Use "scimax db scan <dir>" to add files.');
-            return;
-        }
+        const entries = classifyForSync(discovered, dbSlim, statSyncOrNull);
 
-        let indexed = 0;
-        let skipped = 0;
-        let deleted = 0;
+        let added = 0;
+        let updated = 0;
+        let unchanged = 0;
+        let refreshedOutOfScope = 0;
+        let skippedOutOfScope = 0;
+        let removed = 0;
         let errors = 0;
-        let embeddingsGenerated = 0;
 
-        for (const file of files) {
-            const filePath = file.path;
-            const displayPath = filePath.replace(process.env.HOME || '', '~');
-
-            // Check if file still exists
-            if (!fs.existsSync(filePath)) {
-                process.stdout.write(`  Removing (missing): ${displayPath}...`);
-                try {
-                    await db.removeFile(filePath);
-                    deleted++;
-                    console.log(' OK');
-                } catch (err) {
-                    console.log(` ERROR: ${err instanceof Error ? err.message : String(err)}`);
-                }
-                continue;
-            }
-
-            // Check if file has changed (by mtime) unless --force is set
-            if (!forceReindex && file.mtime) {
-                try {
-                    const stats = fs.statSync(filePath);
-                    if (Math.abs(stats.mtimeMs - file.mtime) < 1000) {
-                        skipped++;
-                        continue;
+        for (const entry of entries) {
+            const display = homeDisplay(entry.path);
+            switch (entry.action) {
+                case 'unchanged':
+                    unchanged++;
+                    if (verbose) console.log(`  =  ${display}`);
+                    break;
+                case 'out-of-scope-skip':
+                    skippedOutOfScope++;
+                    if (verbose) console.log(`  .  ${display} (out of scope, unchanged)`);
+                    break;
+                case 'new':
+                case 'updated':
+                case 'out-of-scope-refresh': {
+                    const sigil = entry.action === 'new' ? '+' : entry.action === 'updated' ? '~' : '*';
+                    if (verbose) {
+                        const note = entry.action === 'out-of-scope-refresh' ? ' (out of scope, mtime newer)' : '';
+                        console.log(`  ${sigil}  ${display}${note}`);
                     }
-                } catch {
-                    // If we can't stat, proceed with reindexing
+                    if (!dryRun) {
+                        try {
+                            await db.indexFile(entry.path, { queueEmbeddings: updateEmbeddings });
+                            if (entry.action === 'new') added++;
+                            else if (entry.action === 'updated') updated++;
+                            else refreshedOutOfScope++;
+                        } catch (err) {
+                            errors++;
+                            console.error(`  ! ${display}: ${err instanceof Error ? err.message : String(err)}`);
+                        }
+                    } else {
+                        if (entry.action === 'new') added++;
+                        else if (entry.action === 'updated') updated++;
+                        else refreshedOutOfScope++;
+                    }
+                    break;
                 }
-            }
-
-            process.stdout.write(`  Indexing: ${displayPath}...`);
-
-            try {
-                // Use ScimaxDbCore.indexFile directly - it handles parsing internally
-                await db.indexFile(filePath, { queueEmbeddings: updateEmbeddings });
-                indexed++;
-
-                if (updateEmbeddings) {
-                    // indexFile with queueEmbeddings=true already queued it
-                    embeddingsGenerated++;
-                    console.log(' OK (+embeddings queued)');
-                } else {
-                    console.log(' OK');
-                }
-            } catch (err) {
-                errors++;
-                console.log(` ERROR: ${err instanceof Error ? err.message : String(err)}`);
+                case 'removed':
+                    if (verbose) console.log(`  -  ${display}`);
+                    if (!dryRun) {
+                        try {
+                            await db.removeFile(entry.path);
+                            removed++;
+                        } catch (err) {
+                            errors++;
+                            console.error(`  ! ${display}: ${err instanceof Error ? err.message : String(err)}`);
+                        }
+                    } else {
+                        removed++;
+                    }
+                    break;
             }
         }
 
+        const elapsed = ((Date.now() - start) / 1000).toFixed(1);
         console.log();
-        console.log(`Indexed: ${indexed} file(s)`);
-        if (skipped > 0) console.log(`Skipped (unchanged): ${skipped} file(s)`);
-        if (updateEmbeddings) console.log(`Embeddings queued: ${embeddingsGenerated} file(s)`);
-        if (deleted > 0) console.log(`Removed (missing): ${deleted} file(s)`);
-        if (errors > 0) console.log(`Errors: ${errors} file(s)`);
+        console.log(`${dryRun ? 'sync (dry-run) plan' : 'sync complete'} in ${elapsed}s`);
+        console.log(`  +${added} new`);
+        console.log(`  ~${updated} updated`);
+        if (refreshedOutOfScope > 0) console.log(`  *${refreshedOutOfScope} refreshed (out of scope)`);
+        console.log(`  -${removed} removed`);
+        console.log(`  ${unchanged} unchanged`);
+        if (skippedOutOfScope > 0) console.log(`  ${skippedOutOfScope} out-of-scope unchanged`);
+        if (updateEmbeddings && !dryRun) console.log(`  embeddings queued for changed files`);
+        if (errors > 0) console.log(`  ${errors} error(s)`);
     } finally {
         await db.close();
     }
 }
 
-async function rebuildDatabase(config: CliConfig, args: ParsedArgs): Promise<void> {
-    console.log(`Database path: ${config.dbPath}`);
-    console.log();
-
-    const settings = loadSettings();
-
-    console.log('Using exclude patterns:');
-    for (const pattern of settings.db.exclude) {
-        console.log(`  ${pattern}`);
+async function promptYesNo(question: string): Promise<boolean> {
+    const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
+    try {
+        const answer = await new Promise<string>(resolve => rl.question(question, resolve));
+        return /^(y|yes)$/i.test(answer.trim());
+    } finally {
+        rl.close();
     }
-    console.log();
+}
 
-    // Collect directories to scan
-    const directoriesToScan: string[] = [];
-
-    if (typeof args.flags.path === 'string') {
-        directoriesToScan.push(path.resolve(args.flags.path));
-        console.log('Scanning specified directory:');
-    } else {
-        console.log('Discovering directories to scan...');
-        const configDirs = getDirectoriesToScan(settings);
-        if (configDirs.length > 0) {
-            console.log(`  From VS Code settings: ${configDirs.length} directories`);
-            directoriesToScan.push(...configDirs);
-        }
-        if (directoriesToScan.length === 0) {
-            console.log('  No configured directories found, using current directory');
-            console.log('  Tip: Set scimax.db.include in VS Code settings to specify directories.');
-            directoriesToScan.push(config.rootDir);
-        }
-    }
-
-    const uniqueDirs = [...new Set(directoriesToScan)].filter(dir => {
-        if (!fs.existsSync(dir)) { console.log(`  Skipping (not found): ${dir}`); return false; }
-        if (!fs.statSync(dir).isDirectory()) { console.log(`  Skipping (not a directory): ${dir}`); return false; }
-        return true;
-    });
-
-    console.log();
-    console.log('Directories to scan:');
-    for (const dir of uniqueDirs) console.log(`  ${dir}`);
-    console.log();
-
-    const allOrgFiles: string[] = [];
-    for (const dir of uniqueDirs) {
-        const files = findOrgFiles(dir, settings.db.exclude, { maxFileSizeMB: settings.db.maxFileSizeMB });
-        allOrgFiles.push(...files);
-    }
-    const orgFiles = [...new Set(allOrgFiles)];
-    console.log(`Found ${orgFiles.length} org file(s) to index.`);
-    console.log();
-
-    if (orgFiles.length === 0) {
-        console.log('No org files found.');
+async function clearDatabase(config: CliConfig, args: ParsedArgs): Promise<void> {
+    if (!fs.existsSync(config.dbPath)) {
+        console.log(`Database not found: ${config.dbPath}`);
+        console.log('Nothing to clear.');
         return;
     }
 
     const db = await createCliDatabase(config.dbPath);
-
-    // Setup embedding service
-    let updateEmbeddings = false;
-    if (args.flags['no-embeddings']) {
-        console.log('Embeddings: Disabled (--no-embeddings flag)');
-    } else if (args.flags.embeddings || settings.embedding.provider !== 'none') {
-        const embeddingService = createCliEmbeddingService(settings.embedding);
-        if (embeddingService) {
-            process.stdout.write('Testing embedding service connection...');
-            const ok = await testCliEmbeddingService(embeddingService);
-            if (ok) {
-                updateEmbeddings = true;
-                db.setEmbeddingService(embeddingService);
-                console.log(' OK');
-                console.log(`  Provider: ${settings.embedding.provider}`);
-                console.log(`  Model: ${settings.embedding.ollamaModel}`);
-            } else {
-                console.log(' FAILED');
-                console.log('  Embeddings will be skipped. Is Ollama running?');
-            }
-        }
-    }
-    console.log();
-
     try {
-        let indexed = 0;
-        let errors = 0;
+        const stats = await db.getStats();
+        console.log(`Database: ${config.dbPath}`);
+        console.log(`This will delete ${stats.files} file(s), ${stats.headings} heading(s), ${stats.blocks} source block(s).`);
 
-        for (const filePath of orgFiles) {
-            const displayPath = filePath.replace(process.env.HOME || '', '~');
-            process.stdout.write(`  Indexing: ${displayPath}...`);
-
-            try {
-                // ScimaxDbCore.indexFile handles all parsing and insertion internally
-                await db.indexFile(filePath, { queueEmbeddings: updateEmbeddings });
-                indexed++;
-                console.log(updateEmbeddings ? ' OK (+embeddings queued)' : ' OK');
-            } catch (err) {
-                errors++;
-                console.log(` ERROR: ${err instanceof Error ? err.message : String(err)}`);
+        const skipPrompt = !!args.flags.yes;
+        if (!skipPrompt) {
+            const ok = await promptYesNo('Continue? [y/N] ');
+            if (!ok) {
+                console.log('Aborted.');
+                return;
             }
         }
 
-        console.log();
-        console.log(`Indexed: ${indexed} file(s)`);
-        if (updateEmbeddings) console.log(`Embeddings queued for async processing.`);
-        if (errors > 0) console.log(`Errors: ${errors} file(s)`);
+        await db.clear();
+        console.log('Database cleared.');
+        console.log('Run "scimax db sync" to repopulate.');
     } finally {
         await db.close();
     }

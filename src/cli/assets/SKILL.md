@@ -43,9 +43,9 @@ You are an executive assistant and expert for the **scimax-vscode** extension. Y
 | Check citations | `scimax cite check file.org` |
 | Extract citations | `scimax cite extract file.org` |
 | Database stats | `scimax db stats` |
-| Reindex files | `scimax db reindex` |
+| Sync database | `scimax db sync` |
 | Scan new directory | `scimax db scan <dir>` |
-| Rebuild index | `scimax db rebuild` |
+| Wipe database | `scimax db clear` |
 | Today's journal | `scimax journal` |
 | Journal for date | `scimax journal tomorrow` |
 | Open a project | `scimax project` |

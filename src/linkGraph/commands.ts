@@ -19,7 +19,7 @@ let graphProvider: LinkGraphProvider | undefined;
 async function getDatabaseClient() {
     const db = await getDatabase();
     if (!db) {
-        vscode.window.showErrorMessage('Database not available. Try running "Scimax: Reindex Files" first.');
+        vscode.window.showErrorMessage('Database not available. Try running "Scimax: Sync Files" first.');
         return null;
     }
     const client = db.getClient();

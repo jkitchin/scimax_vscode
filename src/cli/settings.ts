@@ -154,6 +154,77 @@ export function getVSCodeSettingsPath(): string {
     }
 }
 
+/** Extension id, must match package.json publisher.name */
+export const SCIMAX_EXTENSION_ID = 'jkitchin.scimax-vscode';
+
+/** VS Code-compatible editor variants, probed in order */
+const VSCODE_VARIANTS = ['Code', 'Code - Insiders', 'Cursor', 'VSCodium'] as const;
+
+/**
+ * Return the platform-specific globalStorage base directories for each
+ * supported VS Code variant. The variant directory may or may not exist.
+ */
+function getGlobalStorageBaseDirs(): string[] {
+    const home = process.env.HOME || process.env.USERPROFILE || '';
+    const platform = process.platform;
+
+    return VSCODE_VARIANTS.map(variant => {
+        if (platform === 'darwin') {
+            return path.join(home, 'Library', 'Application Support', variant, 'User', 'globalStorage');
+        } else if (platform === 'win32') {
+            return path.join(process.env.APPDATA || '', variant, 'User', 'globalStorage');
+        } else {
+            return path.join(home, '.config', variant, 'User', 'globalStorage');
+        }
+    });
+}
+
+/**
+ * Locate the NotebookManager-managed notebooks.json file across the supported
+ * VS Code variants. Returns null if no file exists. Honors the
+ * SCIMAX_NOTEBOOKS_JSON env var as an override (used by tests).
+ */
+export function findNotebooksJson(): string | null {
+    const override = process.env.SCIMAX_NOTEBOOKS_JSON;
+    if (override) {
+        return fs.existsSync(override) ? override : null;
+    }
+
+    for (const baseDir of getGlobalStorageBaseDirs()) {
+        const candidate = path.join(baseDir, SCIMAX_EXTENSION_ID, 'notebooks.json');
+        if (fs.existsSync(candidate)) {
+            return candidate;
+        }
+    }
+
+    return null;
+}
+
+/**
+ * Read the project paths registered with NotebookManager. Returns the empty
+ * list if the file is missing or unreadable, never throws.
+ */
+export function getNotebookProjectPaths(): string[] {
+    const file = findNotebooksJson();
+    if (!file) return [];
+
+    try {
+        const raw = JSON.parse(fs.readFileSync(file, 'utf-8'));
+        const notebooks: unknown = raw?.notebooks;
+        if (!Array.isArray(notebooks)) return [];
+        const paths: string[] = [];
+        for (const nb of notebooks) {
+            if (nb && typeof (nb as { path?: unknown }).path === 'string') {
+                const p = (nb as { path: string }).path;
+                if (p.length > 0) paths.push(p);
+            }
+        }
+        return paths;
+    } catch {
+        return [];
+    }
+}
+
 /**
  * Read and parse VS Code settings.json
  * Handles JSONC (comments) and control characters in string values
@@ -410,39 +481,34 @@ export function findOrgFiles(
 }
 
 /**
- * Get directories to scan for org files
- * Combines configured includes with workspace/journal directories
+ * Get directories to scan for org files. Unions:
+ *   - scimax.db.include
+ *   - scimax.journal.directory
+ *   - scimax.agenda.include
+ *   - NotebookManager project paths from notebooks.json
+ *
+ * Each path is expanded (~), checked for existence, and deduplicated.
  */
 export function getDirectoriesToScan(settings: ScimaxSettings): string[] {
     const dirs: string[] = [];
 
-    // Add scimax.db.include directories
-    for (const dir of settings.db.include) {
-        const expanded = expandPath(dir);
-        if (fs.existsSync(expanded) && fs.statSync(expanded).isDirectory()) {
-            dirs.push(expanded);
-        }
-    }
-
-    // Add journal directory
-    if (settings.journal.directory) {
-        const expanded = expandPath(settings.journal.directory);
-        if (fs.existsSync(expanded) && fs.statSync(expanded).isDirectory()) {
-            if (!dirs.includes(expanded)) {
+    const tryAdd = (raw: string): void => {
+        if (!raw) return;
+        const expanded = expandPath(raw);
+        if (dirs.includes(expanded)) return;
+        try {
+            if (fs.existsSync(expanded) && fs.statSync(expanded).isDirectory()) {
                 dirs.push(expanded);
             }
+        } catch {
+            // ignore stat errors (broken symlinks, permission denied)
         }
-    }
+    };
 
-    // Add agenda include directories
-    for (const dir of settings.agenda.include) {
-        const expanded = expandPath(dir);
-        if (fs.existsSync(expanded) && fs.statSync(expanded).isDirectory()) {
-            if (!dirs.includes(expanded)) {
-                dirs.push(expanded);
-            }
-        }
-    }
+    for (const dir of settings.db.include) tryAdd(dir);
+    if (settings.journal.directory) tryAdd(settings.journal.directory);
+    for (const dir of settings.agenda.include) tryAdd(dir);
+    for (const dir of getNotebookProjectPaths()) tryAdd(dir);
 
     return dirs;
 }

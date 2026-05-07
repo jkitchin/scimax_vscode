@@ -553,7 +553,8 @@ The extension includes a command-line interface for batch operations and scripti
 ```bash
 # If linked globally
 scimax db scan ~/org-files      # Scan directory and index
-scimax db rebuild               # Full database rebuild
+scimax db sync                  # Reconcile DB with filesystem (incremental)
+scimax db clear                 # Wipe DB (run before `sync` for a full rebuild)
 scimax db stats                 # Show database statistics
 scimax search "query"           # Full-text search
 scimax agenda today             # Show today's agenda

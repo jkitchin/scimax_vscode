@@ -183,7 +183,7 @@ async function searchSemantic(db: ScimaxDbCore, query: string, limit: number, js
         const stats = await db.getStats();
         if (!stats.has_embeddings) {
             console.error('Semantic search requires embeddings.');
-            console.error('Configure scimax.db.embeddingProvider in VS Code settings, then run: scimax db rebuild');
+            console.error('Configure scimax.db.embeddingProvider in VS Code settings, then run: scimax db clear --yes && scimax db sync');
         } else {
             console.error('Semantic search requires an Ollama embedding service.');
             console.error('Set scimax.db.embeddingProvider to "ollama" in VS Code settings.');
