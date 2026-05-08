@@ -68,8 +68,10 @@ const BIBSTYLE_PATTERN = /(?:bibliographystyle|bibstyle):([^\s<>[\](){}]+)/g;
 // These are more permissive but much faster and won't cause backtracking
 // Opening marker must be preceded by start-of-string, whitespace, or - ( { ' "
 // Closing marker must be followed by end-of-string, whitespace, or - . , : ! ? ; ' " ) } \ [ ]
-const PRE = '(?:^|(?<=[\\s\\-({\'"]))';
-const POST = '(?=[\\s\\-.,:!?;\\\'")}\\\\\\[\\]]|$)';
+// Org emphasis markers (*/_+=~) are also allowed on either side so that
+// chained markup like =foo=/=bar= or *a*/=b= parses each span individually.
+const PRE = '(?:^|(?<=[\\s\\-({\'"*/_+=~]))';
+const POST = '(?=[\\s\\-.,:!?;\\\'")}\\\\\\[\\]*/_+=~]|$)';
 const BOLD_PATTERN = new RegExp(`${PRE}\\*([^\\s*](?:[^*]*[^\\s*])?)\\*${POST}`, 'g');
 const ITALIC_PATTERN = new RegExp(`${PRE}\\/([^\\s/](?:[^/]*[^\\s/])?)\\/(?![a-zA-Z0-9])${POST}`, 'g');
 const UNDERLINE_PATTERN = new RegExp(`${PRE}_([^\\s_](?:[^_]*[^\\s_])?)_(?![a-zA-Z])${POST}`, 'g');
@@ -89,7 +91,9 @@ const SUPERSCRIPT_SIMPLE_PATTERN = /(?<=[a-zA-Z0-9])\^([a-zA-Z0-9]+)(?![a-zA-Z0-
 
 // LaTeX math patterns
 // Display math: $$...$$ or \[...\]
-const DISPLAY_MATH_PATTERN = /\$\$([^$]+)\$\$|\\\[([^\]]+)\\\]/g;
+// The \[...\] form uses a lazy match terminated by literal \] so content
+// may contain bracketed groups like \\[2pt] without prematurely closing.
+const DISPLAY_MATH_PATTERN = /\$\$([^$]+)\$\$|\\\[([\s\S]+?)\\\]/g;
 // Inline math: $...$ (not $$) or \(...\)
 // Org-mode border rules (from org-latex-regexps):
 //   - Pre-char: must not be $
@@ -101,7 +105,10 @@ const DISPLAY_MATH_PATTERN = /\$\$([^$]+)\$\$|\\\[([^\]]+)\\\]/g;
 // (content ends in space). Org's stricter post-char rule (no letters after
 // closing $) is intentionally relaxed so common forms like "$^{\circ}$C"
 // still render as math.
-const INLINE_MATH_PATTERN = /(?<!\$)\$([^ \t\n\r,;.$](?:[^$\n\r]*?[^ \t\n\r,.$])?)\$(?!\$)|\\\(([^)]+)\\\)/g;
+// The \(...\) form uses a lazy match terminated by literal \) so content
+// may contain ordinary parentheses like \(E(\mathbf{x}_i)\). The unified
+// parser allows the content to span newlines, so we mirror that here.
+const INLINE_MATH_PATTERN = /(?<!\$)\$([^ \t\n\r,;.$](?:[^$\n\r]*?[^ \t\n\r,.$])?)\$(?!\$)|\\\(([\s\S]+?)\\\)/g;
 // Line break: \\ at end of line (optionally followed by trailing whitespace)
 // Matches the org-mode spec: PRE\\SPACE at end of a line.
 // Consuming the trailing whitespace through the line terminator prevents stray
@@ -663,6 +670,28 @@ export function parseObjectsFast(text: string): OrgObject[] {
     // If no matches found, return text as single plain text object
     if (allMatches.length === 0) {
         return [createPlainText(text, 0, text.length)];
+    }
+
+    // Verbatim/code spans take priority over emphasis (bold, italic,
+    // underline, strike-through) when an emphasis match strictly contains
+    // a verbatim/code match. This prevents `=foo=/=bar=/=baz=` from being
+    // misread as `=foo=` followed by italic `/=bar=/` followed by `=baz=`.
+    const codeRanges = allMatches
+        .filter(m => m.object.type === 'verbatim' || m.object.type === 'code')
+        .map(m => ({ start: m.start, end: m.end }));
+    if (codeRanges.length > 0) {
+        const isEmphasis = (t: string) =>
+            t === 'italic' || t === 'bold' || t === 'underline' || t === 'strike-through';
+        for (let i = allMatches.length - 1; i >= 0; i--) {
+            const m = allMatches[i];
+            if (!isEmphasis(m.object.type)) continue;
+            for (const r of codeRanges) {
+                if (m.start < r.start && m.end > r.end) {
+                    allMatches.splice(i, 1);
+                    break;
+                }
+            }
+        }
     }
 
     // Sort by start position
@@ -1670,16 +1699,33 @@ function parseFootnoteDefinition(state: FastParserState): FootnoteDefinitionElem
 
 function parseParagraph(state: FastParserState): ParagraphElement | null {
     const lines: string[] = [];
+    // Track open \[...\] display math so its content (which may contain
+    // lines starting with `|` or other paragraph-breaking characters) is
+    // kept inside the same paragraph and parsed as one math fragment.
+    let inDisplayMath = false;
 
     while (state.lineIndex < state.lines.length) {
         const line = state.lines[state.lineIndex];
 
-        // End of paragraph conditions
-        if (line.trim() === '') break;
-        if (line.match(/^(\*+\s|[#:|-])/)) break;
-        if (line.match(/^\s*[-+*]\s+/) || line.match(/^\s*\d+[.)]\s+/)) break;
-        // Stop at LaTeX environments
-        if (line.match(/^\\begin\{/)) break;
+        if (!inDisplayMath) {
+            // End of paragraph conditions
+            if (line.trim() === '') break;
+            if (line.match(/^(\*+\s|[#:|-])/)) break;
+            if (line.match(/^\s*[-+*]\s+/) || line.match(/^\s*\d+[.)]\s+/)) break;
+            // Stop at LaTeX environments
+            if (line.match(/^\\begin\{/)) break;
+        }
+
+        // Track \[ ... \] spans across lines so paragraph-break rules are
+        // suspended until the math closes. Count balance per line in case
+        // a single line opens and closes.
+        const opens = (line.match(/\\\[/g) || []).length;
+        const closes = (line.match(/\\\]/g) || []).length;
+        if (inDisplayMath) {
+            if (closes > opens) inDisplayMath = false;
+        } else if (opens > closes) {
+            inDisplayMath = true;
+        }
 
         lines.push(line);
         state.lineIndex++;
