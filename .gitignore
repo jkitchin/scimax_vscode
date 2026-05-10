@@ -44,6 +44,10 @@ tasks.pdf
 tasks.tex
 docx-export-debug.org
 
+# Beamer demo build artifacts (source: examples/templates/org/beamer-demo.org)
+examples/templates/org/beamer-demo.tex
+examples/templates/org/beamer-demo.pdf
+
 # TypeScript compiled config files
 vitest.config.d.mts
 vitest.config.d.mts.map

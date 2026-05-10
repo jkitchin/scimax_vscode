@@ -1099,6 +1099,48 @@ Configure the Hydra menu system for quick command access.
 }
 #+end_src
 
+* ⚠️ Highlighting Settings
+
+Configure the visual decoration of org headings and source blocks.
+
+** Settings Overview
+
+| Setting                                   | Type    | Default | Description                                                |
+|-------------------------------------------+---------+---------+------------------------------------------------------------|
+| scimax.highlighting.headingBackgroundBars | boolean | true    | Tinted whole-line background behind each org heading       |
+
+** Detailed Configuration
+
+*** ⚠️ scimax.highlighting.headingBackgroundBars
+
+- *Type*: boolean
+- *Default*: =true=
+- *Description*: Show a tinted whole-line background behind each org heading,
+  fading at deeper levels.
+
+The bar color for each level is configured via the workbench color
+customizations =scimax.heading1Background= ... =scimax.heading6Background=.
+Override them in =settings.json= under =workbench.colorCustomizations= to
+match your theme:
+
+#+begin_src json
+{
+  "scimax.highlighting.headingBackgroundBars": true,
+  "workbench.colorCustomizations": {
+    "scimax.heading1Background": "#3b82f622",
+    "scimax.heading2Background": "#3b82f618",
+    "scimax.heading3Background": "#3b82f614",
+    "scimax.heading4Background": "#3b82f610",
+    "scimax.heading5Background": "#3b82f60c",
+    "scimax.heading6Background": "#3b82f608"
+  }
+}
+#+end_src
+
+The matching foreground colors for each heading level are exposed as the
+=orgHeading1= ... =orgHeading6= semantic token types and can be themed via
+=editor.semanticTokenColorCustomizations=.
+
 * Speed Commands Settings
 
 Configure org-mode style speed commands.

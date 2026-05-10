@@ -231,6 +231,7 @@ This documentation is organized into several sections:
 | [[file:35-templates.org][Document Templates]]           | Template system for documents    |
 | [[file:36-manuscript.org][Manuscript Flattening]]        | Prepare LaTeX for submission     |
 | [[file:39-link-graph.org][Link Graph]]                   | Visualize file connections       |
+| [[file:41-export-beamer.org][Beamer Export]]             | Slide presentations via Beamer   |
 
 ** Quick Start
 
@@ -371,6 +372,7 @@ Quick reference to find specific features across documentation.
 | Avy-style navigation  | [[file:21-navigation.org][Navigation]]                       | [[file:24-keybindings.org][Keybindings]]                                                                                   |
 | Babel execution       | [[file:07-source-blocks.org][Source Code Blocks]]            | [[file:08-supported-languages.org][Supported Languages]], [[file:09-jupyter.org][Jupyter]]                                 |
 | Basic syntax          | [[file:01.5-basic-syntax.org][Basic Syntax]]                 | [[file:02-document-structure.org][Document Structure]], [[file:10-export.org][Export]]                                   |
+| Beamer slides         | [[file:41-export-beamer.org][Beamer Export]]                | [[file:10-export.org][Export]] - LaTeX presentations with frames, themes, overlays                          |
 | Bibliography          | [[file:19-references.org][References]]                       | [[file:05-links.org][Links]], [[file:10-export.org][Export]], [[file:34-bibtex.org][BibTeX Editing]]                                   |
 | BibTeX editing        | [[file:34-bibtex.org][BibTeX Editing]]                       | [[file:19-references.org][References]], [[file:23-speed-commands.org][Speed Commands]]                                         |
 | BibTeX speed commands | [[file:34-bibtex.org][BibTeX Editing]]                       | [[file:23-speed-commands.org][Speed Commands]], [[file:33-latex-navigation.org][LaTeX Navigation]]                             |
@@ -400,6 +402,7 @@ Quick reference to find specific features across documentation.
 | Formulas              | [[file:04-tables.org][Tables]]                               | [[file:11-latex-preview.org][LaTeX Preview]]                                                                               |
 | Full-text search      | [[file:18-database-search.org][Database and Search]]         | [[file:21-navigation.org][Navigation]]                                                                                     |
 | Fuzzy search          | [[file:21-navigation.org][Navigation]]                       | [[file:18-database-search.org][Database and Search]]                                                                       |
+| Heading background    | [[file:26-configuration.org][Configuration]]                 | =scimax.highlighting.headingBackgroundBars= and per-level color customization                                              |
 | Heading navigation    | [[file:21-navigation.org][Navigation]]                       | [[file:02-document-structure.org][Document Structure]], [[file:23-speed-commands.org][Speed Commands]]                     |
 | Headings              | [[file:02-document-structure.org][Document Structure]]       | [[file:21-navigation.org][Navigation]], [[file:03-todo-items.org][TODO Items]]                                             |
 | Hydra menus           | [[file:22-hydra-menus.org][Hydra Menus]]                     | [[file:24-keybindings.org][Keybindings]], [[file:26-configuration.org][Configuration]]                                     |

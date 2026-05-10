@@ -7,6 +7,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.5.1] - 2026-05-10
+
+### Added
+
+- **Beamer export backend** - New `scimax.org.exportBeamer`, `exportBeamerPdf`, and `exportBeamerOpen` commands generate LaTeX Beamer presentations from org files. Supports themes, color/font/inner/outer themes, columns, overlays (`\pause`, action specifications), notes, `\alert{}` for bold, aspect ratios, multi-line `#+BEAMER_HEADER` preamble, and tag/property frame configuration. Doc-level `#+OPTIONS: H:N` overrides the configured frame level. CLI: `scimax export <file> --format beamer|beamer-pdf`. New settings under `scimax.export.beamer.*` and demo at `examples/templates/org/beamer-demo.org`. Documented in [`docs/41-export-beamer.org`](docs/41-export-beamer.org).
+- **Beamer aux-file cleanup** - Beamer-specific artifacts (`.nav`, `.snm`, `.vrb`, per-frame `*.<N>.vrb`) are removed after PDF compilation in CLI, manuscript compiler, and VS Code Beamer-PDF paths.
+- **Per-level heading colors and tinted background bars** - Org headings now expose `orgHeading1`...`orgHeading6` semantic tokens with matching `scimax.heading1Background`...`scimax.heading6Background` workbench colors, plus a new `scimax.highlighting.headingBackgroundBars` setting (default `true`) that draws a whole-line tint behind each heading, fading at deeper levels.
+
+### Changed
+
+- **CLI database commands consolidated** - `scimax db sync` is the single daily-driver subcommand: it discovers, refreshes, and prunes in one pass over `scimax.db.include` ∪ journal ∪ `agenda.include` ∪ NotebookManager projects. `scimax db clear` wipes the index. The legacy `db reindex` and `db rebuild` subcommands print a migration message and exit. The VS Code command palette entry "Reindex Files" is renamed to **Sync Files**.
+
+### Fixed
+
+- **Speed commands not activating until cursor moves** (#44) - Context keys (`scimax.atHeadingStart`, `atSrcBlockStart`, `atLatexSectionStart`, `atLatexEnvironmentStart`) now refresh on activation, tab switches, and same-line edits — not only on selection-change. Opening an org file with the cursor already on a heading and pressing a speed key now works immediately.
+- **Export parser: chained markup and multi-line math** - Three related fixes to the fast export parser. Emphasis border characters widen `PRE`/`POST` so chained markup like `=foo=/=bar=/=baz=` parses each span individually. Verbatim/code wins when an emphasis match strictly contains it. Display and inline math (`\[...\]`, `\(...\)`) switch to lazy matching so content may span newlines and contain bracketed groups like `\\[2pt]` or `\(E(\mathbf{x}_i)\)`. Paragraph-break rules are suspended while `\[...\]` is open.
+
+### Infrastructure
+
+- **Restored `registerCommandMarkupDecorations`** in `extension.ts` that had been dropped during a Dropbox/git resolution.
+- **`.gitignore`** - Beamer demo build artifacts (`examples/templates/org/beamer-demo.{tex,pdf}`) are now ignored, matching the existing pattern for `test-features.*` and `tasks.*`.
+
 ## [0.5.0] - 2026-05-03
 
 ### Added

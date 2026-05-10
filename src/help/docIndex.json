@@ -1,6 +1,6 @@
 {
-  "buildDate": "2026-05-07T01:06:01.266Z",
-  "count": 3387,
+  "buildDate": "2026-05-10T14:07:07.535Z",
+  "count": 3391,
   "entries": [
     {
       "heading": "Scimax VS Code",
@@ -748,7 +748,7 @@
       "heading": "Quick Start",
       "level": 2,
       "file": "00-index.org",
-      "line": 235,
+      "line": 236,
       "content": "1. *Install the extension* from the VS Code marketplace or from a VSIX file 2. *Open or create an org file* with the `.org' extension 3. *Create a heading* by typing `* My First Heading' 4. *Add a source block* and execute it: #+BEGIN_SRC org ,#+BEGIN_SRC python :results output print(\"Hello, Scimax VS Code!\") ,#+END_SRC #+END_SRC Press `C-<return>' or `C-c C-c' to execute. 5. *Explore the menus* with `C-c m' (main menu) or `C-c C-m' (context menu) See [[file:01-getting-started.org][Getting Start",
       "path": [
         "Scimax VS Code"
@@ -786,7 +786,7 @@
       "heading": "Getting Help",
       "level": 2,
       "file": "00-index.org",
-      "line": 255,
+      "line": 256,
       "content": "",
       "path": [
         "Scimax VS Code"
@@ -802,7 +802,7 @@
       "heading": "Within VS Code",
       "level": 3,
       "file": "00-index.org",
-      "line": 257,
+      "line": 258,
       "content": "- Press `C-c m' to open the main Hydra menu - Press `C-c C-m' for context-sensitive menus - Use `C-S-P' and search for \"Scimax\" commands - Hover over elements for tooltips and information",
       "path": [
         "Scimax VS Code",
@@ -841,7 +841,7 @@
       "heading": "Online Resources",
       "level": 3,
       "file": "00-index.org",
-      "line": 264,
+      "line": 265,
       "content": "- GitHub Issues: Report bugs and request features - Documentation: This documentation set",
       "path": [
         "Scimax VS Code",
@@ -866,7 +866,7 @@
       "heading": "Keybinding Help",
       "level": 3,
       "file": "00-index.org",
-      "line": 269,
+      "line": 270,
       "content": "Press `? ' at the beginning of a heading (with speed commands enabled) to see available speed commands. See [[file:24-keybindings.org][Keybindings]] for the complete reference.",
       "path": [
         "Scimax VS Code",
@@ -894,7 +894,7 @@
       "heading": "Acknowledgments",
       "level": 2,
       "file": "00-index.org",
-      "line": 276,
+      "line": 277,
       "content": "Scimax VS Code is inspired by: - [[https://github.com/jkitchin/scimax][Scimax]] - The original Emacs package by John Kitchin - [[https://orgmode.org][Org-mode]] - The powerful Emacs major mode for notes and planning - [[https://orgmode.org/worg/org-contrib/babel/][Org Babel]] - Literate programming in Org-mode",
       "path": [
         "Scimax VS Code"
@@ -928,7 +928,7 @@
       "heading": "License",
       "level": 2,
       "file": "00-index.org",
-      "line": 284,
+      "line": 285,
       "content": "Scimax VS Code is open source software. See the LICENSE file for details.",
       "path": [
         "Scimax VS Code"
@@ -949,7 +949,7 @@
       "heading": "Complete Documentation Index",
       "level": 1,
       "file": "00-index.org",
-      "line": 288,
+      "line": 289,
       "content": "This section provides a comprehensive index of all documentation topics with links for quick navigation.",
       "path": [],
       "commands": [],
@@ -971,7 +971,7 @@
       "heading": "Navigation Guides",
       "level": 2,
       "file": "00-index.org",
-      "line": 292,
+      "line": 293,
       "content": "| Document                                         | Topics Covered                                   | |--------------------------------------------------+--------------------------------------------------| | [[file:01-getting-started.org][Getting Started]] | Installation, first steps, basic usage           | | [[file:01.5-basic-syntax.org][Basic Syntax]]    | Text markup, lists, equations, blocks            | | [[file:21-navigation.org][Navigation]]           | Fuzzy search, avy-style jump, ou",
       "path": [
         "Complete Documentation Index"
@@ -1005,7 +1005,7 @@
       "heading": "Document Editing",
       "level": 2,
       "file": "00-index.org",
-      "line": 304,
+      "line": 305,
       "content": "| Document                                                       | Topics Covered                             | |----------------------------------------------------------------+--------------------------------------------| | [[file:02-document-structure.org][Document Structure]]         | Headings, folding, properties, drawers     | | [[file:30-markdown-compatibility.org][Markdown Compatibility]] | Markdown structural editing, navigation    | | [[file:03-todo-items.org][TODO Items]]            ",
       "path": [
         "Complete Documentation Index"
@@ -1038,7 +1038,7 @@
       "heading": "Code Execution",
       "level": 2,
       "file": "00-index.org",
-      "line": 316,
+      "line": 317,
       "content": "| Document                                                 | Topics Covered                               | |----------------------------------------------------------+----------------------------------------------| | [[file:07-source-blocks.org][Source Code Blocks]]        | Babel execution, header arguments            | | [[file:08-supported-languages.org][Supported Languages]] | Python, R, Julia, Shell, and more            | | [[file:09-jupyter.org][Jupyter Integration]]             | Kernel ",
       "path": [
         "Complete Documentation Index"
@@ -1072,7 +1072,7 @@
       "heading": "Export and Preview",
       "level": 2,
       "file": "00-index.org",
-      "line": 325,
+      "line": 326,
       "content": "| Document                                       | Topics Covered                    | |------------------------------------------------+-----------------------------------| | [[file:10-export.org][Export]]                 | HTML, LaTeX, PDF, Markdown export | | [[file:11-latex-preview.org][LaTeX Preview]]   | Math rendering, equation preview  | | [[file:12-image-overlays.org][Image Overlays]] | Inline image display              | | [[file:32-excalidraw.org][Excalidraw]]         | Diagram creati",
       "path": [
         "Complete Documentation Index"
@@ -1106,7 +1106,7 @@
       "heading": "Organization and Planning",
       "level": 2,
       "file": "00-index.org",
-      "line": 334,
+      "line": 335,
       "content": "| Document                               | Topics Covered                        | |----------------------------------------+---------------------------------------| | [[file:13-agenda.org][Agenda]]         | Agenda views, task filtering          | | [[file:14-journal.org][Journal]]       | Daily journaling, calendar navigation | | [[file:15-capture.org][Capture]]       | Quick note capture, templates         | | [[file:16-notebook.org][Notebook]]     | Project-based organization            | | ",
       "path": [
         "Complete Documentation Index"
@@ -1140,7 +1140,7 @@
       "heading": "Search and Database",
       "level": 2,
       "file": "00-index.org",
-      "line": 344,
+      "line": 345,
       "content": "| Document                                             | Topics Covered                                | |------------------------------------------------------+-----------------------------------------------| | [[file:18-database-search.org][Database and Search]] | Full-text search, semantic search, embeddings | | [[file:19-references.org][References]]               | Citations, bibliography, DOI lookup           |",
       "path": [
         "Complete Documentation Index"
@@ -1170,7 +1170,7 @@
       "heading": "Specialized File Editing",
       "level": 2,
       "file": "00-index.org",
-      "line": 351,
+      "line": 352,
       "content": "| Document                                             | Topics Covered                                         | |------------------------------------------------------+--------------------------------------------------------| | [[file:33-latex-navigation.org][LaTeX Navigation]]   | LaTeX speed commands, structure navigation             | | [[file:34-bibtex.org][BibTeX Editing]]               | BibTeX speed commands, entry/file operations, sorting  |",
       "path": [
         "Complete Documentation Index"
@@ -1201,7 +1201,7 @@
       "heading": "Configuration",
       "level": 2,
       "file": "00-index.org",
-      "line": 358,
+      "line": 359,
       "content": "| Document                                     | Topics Covered                      | |----------------------------------------------+-------------------------------------| | [[file:26-configuration.org][Configuration]] | All settings, customization options |",
       "path": [
         "Complete Documentation Index"
@@ -1224,7 +1224,7 @@
       "heading": "Topic Index",
       "level": 1,
       "file": "00-index.org",
-      "line": 364,
+      "line": 365,
       "content": "Quick reference to find specific features across documentation. | Topic                 | Primary Documentation                                        | Related Documentation                                                                                                      | |-----------------------+--------------------------------------------------------------+----------------------------------------------------------------------------------------------------------------------------| | Agenda",
       "path": [],
       "commands": [],
@@ -1249,7 +1249,7 @@
       "heading": "Quick Start by Use Case",
       "level": 1,
       "file": "00-index.org",
-      "line": 450,
+      "line": 453,
       "content": "",
       "path": [],
       "commands": [],
@@ -1264,7 +1264,7 @@
       "heading": "I want to...",
       "level": 2,
       "file": "00-index.org",
-      "line": 452,
+      "line": 455,
       "content": "",
       "path": [
         "Quick Start by Use Case"
@@ -1279,7 +1279,7 @@
       "heading": "Take notes and organize information",
       "level": 3,
       "file": "00-index.org",
-      "line": 454,
+      "line": 457,
       "content": "- Start with [[file:01-getting-started.org][Getting Started]] - Learn [[file:01.5-basic-syntax.org][Basic Syntax]] for formatting text - Learn [[file:02-document-structure.org][Document Structure]] for headings and organization - Use [[file:15-capture.org][Capture]] for quick note-taking - Search with [[file:18-database-search.org][Database and Search]]",
       "path": [
         "Quick Start by Use Case",
@@ -1314,7 +1314,7 @@
       "heading": "Manage tasks and projects",
       "level": 3,
       "file": "00-index.org",
-      "line": 461,
+      "line": 464,
       "content": "- Set up tasks with [[file:03-todo-items.org][TODO Items]] - Add dates with [[file:06-timestamps.org][Timestamps]] - View agenda with [[file:13-agenda.org][Agenda]] - Organize projects with [[file:17-projectile.org][Projectile]] or [[file:16-notebook.org][Notebook]]",
       "path": [
         "Quick Start by Use Case",
@@ -1348,7 +1348,7 @@
       "heading": "Write scientific documents",
       "level": 3,
       "file": "00-index.org",
-      "line": 467,
+      "line": 470,
       "content": "- Execute code with [[file:07-source-blocks.org][Source Code Blocks]] - Preview math with [[file:11-latex-preview.org][LaTeX Preview]] - Manage citations with [[file:19-references.org][References]] - Export with [[file:10-export.org][Export]]",
       "path": [
         "Quick Start by Use Case",
@@ -1381,7 +1381,7 @@
       "heading": "Keep a journal",
       "level": 3,
       "file": "00-index.org",
-      "line": 473,
+      "line": 476,
       "content": "- Set up with [[file:14-journal.org][Journal]] - Use templates from [[file:15-capture.org][Capture]] - Navigate entries with [[file:21-navigation.org][Navigation]]",
       "path": [
         "Quick Start by Use Case",
@@ -1407,7 +1407,7 @@
       "heading": "Navigate efficiently",
       "level": 3,
       "file": "00-index.org",
-      "line": 478,
+      "line": 481,
       "content": "- Learn [[file:21-navigation.org][Navigation]] techniques - Master [[file:23-speed-commands.org][Speed Commands]] - Use [[file:22-hydra-menus.org][Hydra Menus]] for discovery - Reference [[file:24-keybindings.org][Keybindings]]",
       "path": [
         "Quick Start by Use Case",
@@ -1439,7 +1439,7 @@
       "heading": "Programmatically modify org files",
       "level": 3,
       "file": "00-index.org",
-      "line": 484,
+      "line": 487,
       "content": "CLOSED: [2026-01-16 Fri 20:04] - Use the [[file:27-org-api.org][Org API]] in TypeScript source blocks - Bulk update TODO states, properties, and tags - Extract and transform table data - Automate repetitive org file operations",
       "path": [
         "Quick Start by Use Case",
@@ -1474,7 +1474,7 @@
       "heading": "Configure the extension",
       "level": 3,
       "file": "00-index.org",
-      "line": 491,
+      "line": 494,
       "content": "CLOSED: [2026-01-16 Fri 20:04] - See all options in [[file:26-configuration.org][Configuration]] - Set up keybindings with [[file:24-keybindings.org][Keybindings]] - Customize menus with [[file:22-hydra-menus.org][Hydra Menus]]",
       "path": [
         "Quick Start by Use Case",
@@ -1505,7 +1505,7 @@
       "heading": "Navigation",
       "level": 1,
       "file": "00-index.org",
-      "line": 497,
+      "line": 500,
       "content": "- Index: [[file:00-index.org][Documentation Index]] - Next: [[file:01-getting-started.org][Getting Started]]",
       "path": [],
       "commands": [],
@@ -80330,10 +80330,118 @@
       ]
     },
     {
-      "heading": "Speed Commands Settings",
+      "heading": "Highlighting Settings",
       "level": 1,
       "file": "26-configuration.org",
       "line": 1102,
+      "content": "Configure the visual decoration of org headings and source blocks.",
+      "path": [],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "highlighting",
+        "settings",
+        "configure",
+        "visual",
+        "decoration",
+        "org",
+        "headings",
+        "source",
+        "blocks"
+      ]
+    },
+    {
+      "heading": "Settings Overview",
+      "level": 2,
+      "file": "26-configuration.org",
+      "line": 1106,
+      "content": "| Setting                                   | Type    | Default | Description                                                | |-------------------------------------------+---------+---------+------------------------------------------------------------| | scimax.highlighting.headingBackgroundBars | boolean | true    | Tinted whole-line background behind each org heading       |",
+      "path": [
+        "Highlighting Settings"
+      ],
+      "commands": [
+        "scimax.highlighting.headingBackgroundBars"
+      ],
+      "keybindings": [],
+      "keywords": [
+        "settings",
+        "overview",
+        "setting",
+        "type",
+        "default",
+        "description",
+        "-------------------------------------------------------------------------------------------------------------------------",
+        "boolean",
+        "true",
+        "tinted",
+        "whole-line",
+        "background",
+        "behind",
+        "org",
+        "heading"
+      ]
+    },
+    {
+      "heading": "Detailed Configuration",
+      "level": 2,
+      "file": "26-configuration.org",
+      "line": 1112,
+      "content": "",
+      "path": [
+        "Highlighting Settings"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "detailed",
+        "configuration"
+      ]
+    },
+    {
+      "heading": "scimax.highlighting.headingBackgroundBars",
+      "level": 3,
+      "file": "26-configuration.org",
+      "line": 1114,
+      "content": "- *Type*: boolean - *Default*: =true= - *Description*: Show a tinted whole-line background behind each org heading, fading at deeper levels. The bar color for each level is configured via the workbench color customizations =scimax.heading1Background= ... =scimax.heading6Background=. Override them in =settings.json= under =workbench.colorCustomizations= to match your theme: #+begin_src json { \"scimax.highlighting.headingBackgroundBars\": true, \"workbench.colorCustomizations\": { \"scimax.heading1Bac",
+      "path": [
+        "Highlighting Settings",
+        "Detailed Configuration"
+      ],
+      "commands": [
+        "scimax.highlighting.headingBackgroundBars",
+        "scimax.heading1Background",
+        "scimax.heading6Background",
+        "scimax.heading1Bac"
+      ],
+      "keybindings": [],
+      "keywords": [
+        "type",
+        "boolean",
+        "default",
+        "true",
+        "description",
+        "show",
+        "tinted",
+        "whole-line",
+        "background",
+        "behind",
+        "org",
+        "heading",
+        "fading",
+        "deeper",
+        "levels",
+        "bar",
+        "color",
+        "level",
+        "configured",
+        "via"
+      ]
+    },
+    {
+      "heading": "Speed Commands Settings",
+      "level": 1,
+      "file": "26-configuration.org",
+      "line": 1144,
       "content": "Configure org-mode style speed commands.",
       "path": [],
       "commands": [],
@@ -80351,7 +80459,7 @@
       "heading": "Settings Overview",
       "level": 2,
       "file": "26-configuration.org",
-      "line": 1106,
+      "line": 1148,
       "content": "| Setting                      | Type    | Default | Description                            | |------------------------------+---------+---------+----------------------------------------| | scimax.speedCommands.enabled | boolean | true    | Enable speed commands at heading start |",
       "path": [
         "Speed Commands Settings"
@@ -80381,7 +80489,7 @@
       "heading": "Detailed Configuration",
       "level": 2,
       "file": "26-configuration.org",
-      "line": 1112,
+      "line": 1154,
       "content": "",
       "path": [
         "Speed Commands Settings"
@@ -80397,7 +80505,7 @@
       "heading": "scimax.speedCommands.enabled",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 1114,
+      "line": 1156,
       "content": "- *Type*: boolean - *Default*: `true' - *Description*: Enable org-mode speed commands (single-key shortcuts at beginning of headings) When enabled, you can use single-key shortcuts (like `n', `p', `u') when the cursor is at the beginning of a heading line. *Example*: #+begin_src json { \"scimax.speedCommands.enabled\": true } #+end_src",
       "path": [
         "Speed Commands Settings",
@@ -80434,7 +80542,7 @@
       "heading": "Agenda Settings",
       "level": 1,
       "file": "26-configuration.org",
-      "line": 1129,
+      "line": 1171,
       "content": "Configure the agenda view and TODO tracking.",
       "path": [],
       "commands": [],
@@ -80452,7 +80560,7 @@
       "heading": "Settings Overview",
       "level": 2,
       "file": "26-configuration.org",
-      "line": 1133,
+      "line": 1175,
       "content": "The agenda is now a *view over the Scimax database*. Indexing scope (what files exist in the database, and therefore what's eligible for the agenda) is controlled by =scimax.db.*= settings. The =scimax.agenda.*= settings below are display-only. | Setting                   | Type    | Default                     | Description                  | |---------------------------+---------+-----------------------------+------------------------------| | scimax.agenda.exclude     | array   | See below    ",
       "path": [
         "Agenda Settings"
@@ -80490,7 +80598,7 @@
       "heading": "Detailed Configuration",
       "level": 2,
       "file": "26-configuration.org",
-      "line": 1165,
+      "line": 1207,
       "content": "",
       "path": [
         "Agenda Settings"
@@ -80506,7 +80614,7 @@
       "heading": "scimax.agenda.exclude",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 1167,
+      "line": 1209,
       "content": "- *Type*: array of strings - *Default*: =[\"**/node_modules/**\", \"**/.git/**\", \"**/archive/**\"]= - *Description*: Patterns or paths to *hide* from the agenda view. Files matching these stay in the database (search still finds them); they just don't show up in day/week/month views. Supports both glob patterns (containing =*=) and absolute paths. To *not index* a file at all, use =scimax.db.exclude= instead. *Example*: #+begin_src json { \"scimax.agenda.exclude\": [ \"**/node_modules/**\", \"**/.git/**\"",
       "path": [
         "Agenda Settings",
@@ -80544,7 +80652,7 @@
       "heading": "scimax.agenda.defaultSpan",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 1190,
+      "line": 1232,
       "content": "- *Type*: number - *Default*: `7' - *Description*: Default number of days to show in agenda view *Example*: #+begin_src json { \"scimax.agenda.defaultSpan\": 14 } #+end_src",
       "path": [
         "Agenda Settings",
@@ -80573,7 +80681,7 @@
       "heading": "scimax.agenda.showDone",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 1203,
+      "line": 1245,
       "content": "- *Type*: boolean - *Default*: `false' - *Description*: Show completed (DONE) items in agenda view *Example*: #+begin_src json { \"scimax.agenda.showDone\": true } #+end_src",
       "path": [
         "Agenda Settings",
@@ -80606,7 +80714,7 @@
       "heading": "scimax.agenda.showHabits",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 1216,
+      "line": 1258,
       "content": "- *Type*: boolean - *Default*: `true' - *Description*: Show items tagged with `:HABIT:' *Example*: #+begin_src json { \"scimax.agenda.showHabits\": false } #+end_src",
       "path": [
         "Agenda Settings",
@@ -80637,7 +80745,7 @@
       "heading": "scimax.agenda.todoStates",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 1229,
+      "line": 1271,
       "content": "- *Type*: array of strings - *Default*: `[\"TODO\", \"NEXT\", \"WAITING\"]' - *Description*: Active TODO states to show in TODO list *Example*: #+begin_src json { \"scimax.agenda.todoStates\": [ \"TODO\", \"NEXT\", \"IN-PROGRESS\", \"WAITING\", \"SOMEDAY\" ] } #+end_src",
       "path": [
         "Agenda Settings",
@@ -80672,7 +80780,7 @@
       "heading": "scimax.agenda.doneStates",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 1248,
+      "line": 1290,
       "content": "- *Type*: array of strings - *Default*: `[\"DONE\", \"CANCELLED\"]' - *Description*: Completed TODO states *Example*: #+begin_src json { \"scimax.agenda.doneStates\": [ \"DONE\", \"CANCELLED\", \"DEFERRED\", \"ARCHIVED\" ] } #+end_src",
       "path": [
         "Agenda Settings",
@@ -80705,7 +80813,7 @@
       "heading": "Image Overlay Settings",
       "level": 1,
       "file": "26-configuration.org",
-      "line": 1266,
+      "line": 1308,
       "content": "Configure inline image thumbnails in org-mode files.",
       "path": [],
       "commands": [],
@@ -80724,7 +80832,7 @@
       "heading": "Settings Overview",
       "level": 2,
       "file": "26-configuration.org",
-      "line": 1270,
+      "line": 1312,
       "content": "| Setting                                      | Type    | Default  | Description                        | |----------------------------------------------+---------+----------+------------------------------------| | scimax.imageOverlays.enabled                 | boolean | true     | Enable inline image thumbnails     | | scimax.imageOverlays.maxWidth                | number  | 96       | Maximum thumbnail width in pixels  | | scimax.imageOverlays.maxHeight               | number  | 96       | Ma",
       "path": [
         "Image Overlay Settings"
@@ -80760,7 +80868,7 @@
       "heading": "Detailed Configuration",
       "level": 2,
       "file": "26-configuration.org",
-      "line": 1284,
+      "line": 1326,
       "content": "",
       "path": [
         "Image Overlay Settings"
@@ -80776,7 +80884,7 @@
       "heading": "scimax.imageOverlays.enabled",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 1286,
+      "line": 1328,
       "content": "- *Type*: boolean - *Default*: `true' - *Description*: Enable inline image thumbnails in org-mode files *Example*: #+begin_src json { \"scimax.imageOverlays.enabled\": true } #+end_src",
       "path": [
         "Image Overlay Settings",
@@ -80807,7 +80915,7 @@
       "heading": "scimax.imageOverlays.maxWidth",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 1299,
+      "line": 1341,
       "content": "- *Type*: number - *Default*: `96' - *Description*: Maximum width in pixels for thumbnail icons *Example*: #+begin_src json { \"scimax.imageOverlays.maxWidth\": 128 } #+end_src",
       "path": [
         "Image Overlay Settings",
@@ -80838,7 +80946,7 @@
       "heading": "scimax.imageOverlays.maxHeight",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 1312,
+      "line": 1354,
       "content": "- *Type*: number - *Default*: `96' - *Description*: Maximum height in pixels for thumbnail icons *Example*: #+begin_src json { \"scimax.imageOverlays.maxHeight\": 128 } #+end_src",
       "path": [
         "Image Overlay Settings",
@@ -80869,7 +80977,7 @@
       "heading": "scimax.imageOverlays.renderMode",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 1325,
+      "line": 1367,
       "content": "- *Type*: string (enum) - *Default*: `\"gutter\"' - *Options*: `\"gutter\"', `\"after\"', `\"both\"' - *Description*: Where to display image thumbnails - `gutter': In the line margin (gutter) - `after': Inline emoji after the link - `both': Both locations *Example*: #+begin_src json { \"scimax.imageOverlays.renderMode\": \"both\" } #+end_src",
       "path": [
         "Image Overlay Settings",
@@ -80906,7 +81014,7 @@
       "heading": "scimax.imageOverlays.onlyWhenCursorNotInLink",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 1342,
+      "line": 1384,
       "content": "- *Type*: boolean - *Default*: `true' - *Description*: Hide overlay when cursor is inside the image link (prevents interference with editing) *Example*: #+begin_src json { \"scimax.imageOverlays.onlyWhenCursorNotInLink\": true } #+end_src",
       "path": [
         "Image Overlay Settings",
@@ -80941,7 +81049,7 @@
       "heading": "scimax.imageOverlays.excludePatterns",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 1355,
+      "line": 1397,
       "content": "- *Type*: array of strings - *Default*: `[ ]' - *Description*: Regex patterns for image paths to exclude from overlays *Example*: #+begin_src json { \"scimax.imageOverlays.excludePatterns\": [ \".*\\\\.ico$\", \".*thumbnail.*\" ] } #+end_src",
       "path": [
         "Image Overlay Settings",
@@ -80975,7 +81083,7 @@
       "heading": "scimax.imageOverlays.maxOverlaysPerDocument",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 1371,
+      "line": 1413,
       "content": "- *Type*: number - *Default*: `200' - *Description*: Maximum number of image overlays to display per document (prevents performance issues) *Example*: #+begin_src json { \"scimax.imageOverlays.maxOverlaysPerDocument\": 500 } #+end_src",
       "path": [
         "Image Overlay Settings",
@@ -81011,7 +81119,7 @@
       "heading": "scimax.imageOverlays.showDimensions",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 1384,
+      "line": 1426,
       "content": "- *Type*: boolean - *Default*: `true' - *Description*: Show image dimensions in the after-content decoration *Example*: #+begin_src json { \"scimax.imageOverlays.showDimensions\": false } #+end_src",
       "path": [
         "Image Overlay Settings",
@@ -81043,7 +81151,7 @@
       "heading": "scimax.imageOverlays.cacheEnabled",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 1397,
+      "line": 1439,
       "content": "- *Type*: boolean - *Default*: `true' - *Description*: Cache generated thumbnails for faster loading *Example*: #+begin_src json { \"scimax.imageOverlays.cacheEnabled\": true } #+end_src",
       "path": [
         "Image Overlay Settings",
@@ -81074,7 +81182,7 @@
       "heading": "Capture Settings",
       "level": 1,
       "file": "26-configuration.org",
-      "line": 1410,
+      "line": 1452,
       "content": "Configure the org-capture system for quick note-taking.",
       "path": [],
       "commands": [],
@@ -81093,7 +81201,7 @@
       "heading": "Settings Overview",
       "level": 2,
       "file": "26-configuration.org",
-      "line": 1414,
+      "line": 1456,
       "content": "| Setting                       | Type    | Default           | Description             | |-------------------------------+---------+-------------------+-------------------------| | scimax.capture.templates      | array   | [ ]               | Capture templates       | | scimax.capture.defaultFile    | string  | \"~/org/notes.org\" | Default capture file    | | scimax.capture.datetreeFormat | string  | \"day\"             | Datetree granularity    | | scimax.capture.autoSave       | boolean | true  ",
       "path": [
         "Capture Settings"
@@ -81129,7 +81237,7 @@
       "heading": "Detailed Configuration",
       "level": 2,
       "file": "26-configuration.org",
-      "line": 1423,
+      "line": 1465,
       "content": "",
       "path": [
         "Capture Settings"
@@ -81145,7 +81253,7 @@
       "heading": "scimax.capture.templates",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 1425,
+      "line": 1467,
       "content": "- *Type*: array of objects - *Default*: `[ ]' - *Description*: Capture templates for quick note-taking. Each template has: - `key': Single character shortcut - `name': Template name - `type': entry, item, or table-line - `file': Target file - `headline': Optional target headline - `datetree': Boolean, use datetree structure - `template': Template text with placeholders *Template placeholders*: - `%^{prompt}': Prompt for input - `%t': Current timestamp - `%T': Current timestamp with time - `%i': ",
       "path": [
         "Capture Settings",
@@ -81182,7 +81290,7 @@
       "heading": "scimax.capture.defaultFile",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 1477,
+      "line": 1519,
       "content": "- *Type*: string - *Default*: `\"~/org/notes.org\"' - *Description*: Default file for captures when no target file is specified in template *Example*: #+begin_src json { \"scimax.capture.defaultFile\": \"~/Documents/inbox.org\" } #+end_src",
       "path": [
         "Capture Settings",
@@ -81213,7 +81321,7 @@
       "heading": "scimax.capture.datetreeFormat",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 1490,
+      "line": 1532,
       "content": "- *Type*: string (enum) - *Default*: `\"day\"' - *Options*: `\"day\"', `\"week\"', `\"month\"' - *Description*: Granularity of datetree entries - `day': Year > Month > Day - `week': Year > Week number - `month': Year > Month *Example*: #+begin_src json { \"scimax.capture.datetreeFormat\": \"week\" } #+end_src",
       "path": [
         "Capture Settings",
@@ -81248,7 +81356,7 @@
       "heading": "scimax.capture.autoSave",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 1507,
+      "line": 1549,
       "content": "- *Type*: boolean - *Default*: `true' - *Description*: Automatically save the file after capture *Example*: #+begin_src json { \"scimax.capture.autoSave\": true } #+end_src",
       "path": [
         "Capture Settings",
@@ -81278,7 +81386,7 @@
       "heading": "Common Configurations",
       "level": 1,
       "file": "26-configuration.org",
-      "line": 1520,
+      "line": 1562,
       "content": "This section provides complete `settings.json' examples for different use cases.",
       "path": [],
       "commands": [],
@@ -81299,7 +81407,7 @@
       "heading": "Academic Writing Setup",
       "level": 2,
       "file": "26-configuration.org",
-      "line": 1524,
+      "line": 1566,
       "content": "Perfect for researchers, graduate students, and academic writers: #+begin_src json { // Journal for daily research log \"scimax.journal.directory\": \"~/research/journal\", \"scimax.journal.format\": \"org\", \"scimax.journal.autoTimestamp\": true, // References and bibliography \"scimax.ref.bibliographyFiles\": [ \"~/research/bibliography/main.bib\", \"~/research/bibliography/conferences.bib\" ], \"scimax.ref.pdfDirectory\": \"~/research/papers\", \"scimax.ref.notesDirectory\": \"~/research/notes\", \"scimax.ref.defaul",
       "path": [
         "Common Configurations"
@@ -81341,7 +81449,7 @@
       "heading": "Software Development Setup",
       "level": 2,
       "file": "26-configuration.org",
-      "line": 1591,
+      "line": 1633,
       "content": "Optimized for software developers and programmers: #+begin_src json { // Journal for development log \"scimax.journal.directory\": \"~/devlog\", \"scimax.journal.format\": \"markdown\", \"scimax.journal.template\": \"daily-standup\", // Code execution \"scimax.literate.pythonPath\": \"~/.pyenv/shims/python\", \"scimax.literate.jupyterPath\": \"~/.pyenv/shims/jupyter\", // Database - index project documentation \"scimax.db.include\": [ \"~/projects\", \"~/docs\" ], \"scimax.db.exclude\": [ \"**/node_modules/**\",",
       "path": [
         "Common Configurations"
@@ -81383,7 +81491,7 @@
       "heading": "Personal Notes & PKM Setup",
       "level": 2,
       "file": "26-configuration.org",
-      "line": 1661,
+      "line": 1703,
       "content": "For personal knowledge management and note-taking: #+begin_src json { // Journal \"scimax.journal.directory\": \"~/notes/journal\", \"scimax.journal.format\": \"org\", \"scimax.journal.weekStartsOn\": \"monday\", \"scimax.journal.autoTimestamp\": true, // Database with semantic search \"scimax.db.include\": [ \"~/notes\", \"~/books\", \"~/articles\" ], \"scimax.db.exclude\": [ \"**/archive/**\", \"**/temp/**\" ], \"scimax.db.autoIndex\": true, \"scimax.db.embeddingProvider\": \"ollama\", \"scimax.db.ollamaModel\": \"nomic-embed-tex",
       "path": [
         "Common Configurations"
@@ -81427,7 +81535,7 @@
       "heading": "Minimal Configuration",
       "level": 2,
       "file": "26-configuration.org",
-      "line": 1752,
+      "line": 1794,
       "content": "Bare-bones setup with just the essentials: #+begin_src json { \"scimax.journal.directory\": \"~/journal\", \"scimax.db.autoIndex\": false, \"scimax.agenda.include\": [\"~/notes\"] } #+end_src",
       "path": [
         "Common Configurations"
@@ -81456,7 +81564,7 @@
       "heading": "Troubleshooting",
       "level": 1,
       "file": "26-configuration.org",
-      "line": 1764,
+      "line": 1806,
       "content": "",
       "path": [],
       "commands": [],
@@ -81469,7 +81577,7 @@
       "heading": "Database Performance",
       "level": 2,
       "file": "26-configuration.org",
-      "line": 1766,
+      "line": 1808,
       "content": "If database indexing is slow or uses too much memory: #+begin_src json { \"scimax.db.autoIndex\": false, \"scimax.db.exclude\": [ \"**/node_modules/**\", \"**/.git/**\", \"**/dist/**\", \"**/build/**\", \"**/*.min.js\", \"**/archive/**\" ] } #+end_src Then manually trigger indexing with `C-S-P' → \"Scimax: Sync Files\"",
       "path": [
         "Troubleshooting"
@@ -81508,7 +81616,7 @@
       "heading": "Jupyter Kernels Not Found",
       "level": 2,
       "file": "26-configuration.org",
-      "line": 1786,
+      "line": 1828,
       "content": "Ensure Jupyter is in your PATH or specify the full path: #+begin_src json { \"scimax.literate.jupyterPath\": \"/usr/local/bin/jupyter\" } #+end_src Check available kernels with `C-S-P' → \"Scimax: Show Available Jupyter Kernels\"",
       "path": [
         "Troubleshooting"
@@ -81542,7 +81650,7 @@
       "heading": "LaTeX Preview Not Working",
       "level": 2,
       "file": "26-configuration.org",
-      "line": 1798,
+      "line": 1840,
       "content": "Ensure you have a LaTeX distribution installed (TeX Live, MiKTeX, etc.), then: #+begin_src json { \"scimax.latexPreview.enabled\": true, \"scimax.latexPreview.cacheEnabled\": false } #+end_src",
       "path": [
         "Troubleshooting"
@@ -81574,7 +81682,7 @@
       "heading": "Semantic Search Not Working",
       "level": 2,
       "file": "26-configuration.org",
-      "line": 1809,
+      "line": 1851,
       "content": "Ensure the Ollama server is running and the embedding model is pulled: #+begin_src bash curl http://localhost:11434/api/version #+end_src",
       "path": [
         "Troubleshooting"
@@ -81603,7 +81711,7 @@
       "heading": "Related Documentation",
       "level": 1,
       "file": "26-configuration.org",
-      "line": 1816,
+      "line": 1858,
       "content": "- [[file:01-getting-started.org][Getting Started Guide]] - [[file:07-source-blocks.org][Source Blocks Documentation]] - [[file:10-export.org][Export Documentation]] - [[file:24-keybindings.org][Keybindings Reference]]",
       "path": [],
       "commands": [],
@@ -81629,7 +81737,7 @@
       "heading": "Navigation",
       "level": 1,
       "file": "26-configuration.org",
-      "line": 1823,
+      "line": 1865,
       "content": "- Previous: [[file:25-commands.org][Commands]] - Index: [[file:00-index.org][Documentation Index]] - Next: [[file:27-org-api.org][Org API]]",
       "path": [],
       "commands": [],

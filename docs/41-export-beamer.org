@@ -5,7 +5,8 @@
 #+OPTIONS: toc:t num:t
 #+TODO: ⚠️ 👀 | ✅
 
-* ⚠️ Overview
+* ✅ Overview
+CLOSED: [2026-05-10 Sun 10:13]
 
 The Beamer backend exports an org document to a LaTeX presentation built on
 the [[https://ctan.org/pkg/beamer][beamer]] document class. It is a dedicated subclass of the standard LaTeX
@@ -30,7 +31,8 @@ This page documents the keywords, properties, settings, and commands that the
 backend understands. The reference for the underlying syntax is the [[https://orgmode.org/manual/Beamer-Export.html][Org
 Manual: Beamer Export]] chapter and the [[https://orgmode.org/worg/exporters/beamer/tutorial.html][Worg Beamer tutorial]].
 
-* ⚠️ Commands
+* ✅ Commands
+CLOSED: [2026-05-10 Sun 10:13]
 
 The backend registers three commands. They appear under "Scimax" in the
 command palette and through the regular export dispatcher (~C-c C-e~).
@@ -47,7 +49,8 @@ From the export dispatcher (=C-c C-e=), the Beamer submenu is at =s= (slides):
 - =C-c C-e s p= — Beamer PDF
 - =C-c C-e s o= — Beamer PDF and open
 
-* ⚠️ Document Keywords
+* ✅ Document Keywords
+CLOSED: [2026-05-10 Sun 10:13]
 
 All keywords are case-insensitive; the canonical form is uppercase.
 
@@ -70,7 +73,8 @@ All keywords are case-insensitive; the canonical form is uppercase.
 | =#+BEAMER_HEADER:=       | Verbatim preamble lines (collected, multiple allowed).                      |
 | =#+CITE_EXPORT:=         | =bibtex= / =biblatex= override (same semantics as the LaTeX backend).       |
 
-* ⚠️ Headline Properties
+* ✅ Headline Properties
+CLOSED: [2026-05-10 Sun 10:14]
 
 Headlines control frame/section/block dispatch through their property drawer.
 All keys are case-insensitive (the parser uppercases them).
@@ -89,7 +93,8 @@ The backend also accepts the equivalent tag-based shortcuts:
 - =:B_<envname>:= — same as =:BEAMER_env: <envname>:=. For example, =:B_alertblock:=.
 - =:BMCOL:= — same as =:BEAMER_col: 0.5:=.
 
-* ⚠️ Environments
+* ✅ Environments
+CLOSED: [2026-05-10 Sun 10:14]
 
 Built-in environment names (case-insensitive):
 
@@ -118,7 +123,8 @@ Built-in environment names (case-insensitive):
 | =appendix=          | =\appendix= + continue       | Marks subsequent headlines as appendix.            |
 | =ignoreheading=     | (none)                      | Drops the headline; emits its body inline.         |
 
-* ⚠️ Frame Behavior
+* ✅ Frame Behavior
+CLOSED: [2026-05-10 Sun 10:14]
 
 ** Auto-fragile
 
@@ -143,7 +149,8 @@ A literal =\begin{frame}= sequence in the body would close the surrounding
 frame prematurely. The backend rewrites it to =\begin {frame}= (note the
 space) before emission. Real frames written by the backend are unaffected.
 
-* ⚠️ Columns
+* ✅ Columns
+CLOSED: [2026-05-10 Sun 10:14]
 
 Two ways to lay out columns:
 
@@ -178,7 +185,8 @@ headlines all carry =:BEAMER_col:=, they are auto-wrapped in a
 =\begin{columns}...\end{columns}= block. The =:BMCOL:= tag is treated as
 =:BEAMER_col: 0.5:=.
 
-* ⚠️ Inline Markup
+* ✅ Inline Markup
+CLOSED: [2026-05-10 Sun 10:14]
 
 | Org input                  | Beamer output                            | Notes                              |
 |----------------------------+------------------------------------------+------------------------------------|
@@ -190,7 +198,8 @@ headlines all carry =:BEAMER_col:=, they are auto-wrapped in a
 | =#+ATTR_BEAMER: :overlay <+->= on a list | overlay applied to each =\item= |                                    |
 | =#+BEGIN_EXPORT beamer=    | passthrough verbatim                     | Backend-specific export block.     |
 
-* ⚠️ Configuration
+* ✅ Configuration
+CLOSED: [2026-05-10 Sun 10:14]
 
 All settings live under =scimax.export.beamer.*=:
 
@@ -207,8 +216,8 @@ All settings live under =scimax.export.beamer.*=:
 | =classOptions=             | string  | =presentation=  | Comma-separated =\documentclass[...]{beamer}= options.        |
 | =defaultPreamble=          | string  | =""=            | Extra preamble appended after theme commands.                 |
 
-* ⚠️ Example
-
+* ✅ Example
+CLOSED: [2026-05-10 Sun 10:14]
 #+BEGIN_SRC org
 ,#+TITLE: Beamer demo
 ,#+AUTHOR: Me
@@ -258,7 +267,8 @@ All settings live under =scimax.export.beamer.*=:
    $a^2 + b^2 = c^2$
 #+END_SRC
 
-* ⚠️ Related Topics
+* ✅ Related Topics
+CLOSED: [2026-05-10 Sun 10:14]
 
 - [[file:10-export.org][Export System Overview]]
 - [[file:26-configuration.org][Configuration Reference]]
