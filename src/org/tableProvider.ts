@@ -367,8 +367,71 @@ function isValidMarkupCloser(str: string, pos: number, marker: string): boolean 
 }
 
 /**
+ * Border rules for $...$ inline math, mirroring org-mode (see
+ * src/parser/orgObjects.ts). Kept loose enough that "$^{\circ}$C" parses
+ * but strict enough that "Profit ($)" does not.
+ */
+const DOLLAR_FORBIDDEN_FIRST = new Set([' ', '\t', '\n', '\r', ',', ';', '.', '$']);
+const DOLLAR_FORBIDDEN_LAST = new Set([' ', '\t', '\n', '\r', ',', '.', '$']);
+
+/**
+ * If `str[pos]` opens a LaTeX math span, return the index just past its end;
+ * otherwise return -1. Recognizes \(...\), \[...\], $$...$$, and $...$ with
+ * org-mode's border rules.
+ */
+function mathSpanEnd(str: string, pos: number, prevChar: string): number {
+    const ch = str[pos];
+
+    if (ch === '\\') {
+        const next = str[pos + 1];
+        if (next === '(' || next === '[') {
+            const closer = next === '(' ? '\\)' : '\\]';
+            const end = str.indexOf(closer, pos + 2);
+            return end >= 0 ? end + 2 : -1;
+        }
+        return -1;
+    }
+
+    if (ch !== '$') return -1;
+
+    // Display math $$...$$
+    if (str[pos + 1] === '$') {
+        const end = str.indexOf('$$', pos + 2);
+        return end >= 0 ? end + 2 : -1;
+    }
+
+    // Inline math $...$
+    if (prevChar === '$') return -1;
+    const first = str[pos + 1];
+    if (first === undefined || DOLLAR_FORBIDDEN_FIRST.has(first)) return -1;
+
+    let searchFrom = pos + 2;
+    while (searchFrom < str.length) {
+        // Find next $, skipping \X escapes (matches orgObjects.findClosingDelimiter)
+        let endPos = -1;
+        for (let j = searchFrom; j < str.length; j++) {
+            if (str[j] === '$') { endPos = j; break; }
+            if (str[j] === '\\') { j++; }
+        }
+        if (endPos < 0) return -1;
+
+        const content = str.slice(pos + 1, endPos);
+        if (content.includes('\n')) return -1;
+        const last = content[content.length - 1];
+        const nextIsDollar = str[endPos + 1] === '$';
+        if (!DOLLAR_FORBIDDEN_LAST.has(last) && !nextIsDollar) {
+            return endPos + 1;
+        }
+        searchFrom = endPos + 1;
+    }
+    return -1;
+}
+
+/**
  * Parse a table row into cells
- * Handles pipes inside markup spans (code, verbatim, bold, etc.) and escaped pipes (\|)
+ * Handles pipes inside markup spans (code, verbatim, bold, etc.),
+ * pipes inside LaTeX math (\(...\), \[...\], $...$, $$...$$),
+ * and escaped pipes (\|)
  */
 export function parseRow(line: string): string[] {
     const trimmed = line.trim();
@@ -388,6 +451,18 @@ export function parseRow(line: string): string[] {
             current += '|';
             i += 2;
             continue;
+        }
+
+        // Handle LaTeX math: \(...\), \[...\], $...$, $$...$$
+        // Pipes inside math (e.g., |x| for absolute value) must not split cells.
+        if (char === '\\' || char === '$') {
+            const prev = i > 0 ? inner[i - 1] : ' ';
+            const mathEnd = mathSpanEnd(inner, i, prev);
+            if (mathEnd > i) {
+                current += inner.slice(i, mathEnd);
+                i = mathEnd;
+                continue;
+            }
         }
 
         // Check if this is a markup delimiter
@@ -668,12 +743,36 @@ function formatSpecRow(
 function getColumnAtCursor(line: string, cursorCol: number): number {
     if (!isTableRow(line)) return -1;
 
-    // Count how many | characters appear before the cursor
+    // Count pipes before the cursor, skipping escaped pipes (\|) and any
+    // pipes that live inside a LaTeX math span (\(...\), \[...\], $...$, $$...$$).
     let pipeCount = 0;
-    for (let i = 0; i < cursorCol && i < line.length; i++) {
-        if (line[i] === '|') {
+    const limit = Math.min(cursorCol, line.length);
+    let i = 0;
+    while (i < limit) {
+        const ch = line[i];
+
+        if (ch === '\\' && line[i + 1] === '|') {
+            i += 2;
+            continue;
+        }
+
+        if (ch === '\\' || ch === '$') {
+            const prev = i > 0 ? line[i - 1] : ' ';
+            const mathEnd = mathSpanEnd(line, i, prev);
+            if (mathEnd > i) {
+                if (mathEnd > limit) {
+                    // Cursor is inside the math span — no further pipes count.
+                    break;
+                }
+                i = mathEnd;
+                continue;
+            }
+        }
+
+        if (ch === '|') {
             pipeCount++;
         }
+        i++;
     }
 
     // Column index is pipeCount - 1 (first pipe starts column 0)
