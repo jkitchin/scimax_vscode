@@ -605,12 +605,32 @@ CLOSED: [2026-01-15 Thu 19:48]
 ** ✅ Commands
 CLOSED: [2026-01-15 Thu 19:53]
 
-| Command                   | Description          |
-|---------------------------+----------------------|
-| scimax.org.storeLink      | Store a new link     |
-| scimax.org.insertLink     | Insert a new link    |
-| scimax.org.openLink       | Open link at cursor  |
-| scimax.ref.insertCitation | Insert citation link |
+| Command                       | Description                                |
+|-------------------------------+--------------------------------------------|
+| scimax.org.storeLink          | Store a new link                           |
+| scimax.org.insertLink         | Insert a new link                          |
+| scimax.org.openLink           | Open link at cursor                        |
+| scimax.org.insertFinderLink   | Insert link from Finder selection (macOS)  |
+| scimax.org.insertChromeLink   | Insert link from front Chrome tab (macOS)  |
+| scimax.ref.insertCitation     | Insert citation link                       |
+
+** ⚠️ macOS Quick Links
+
+Two commands pull link targets from other macOS apps via AppleScript and
+insert them at the cursor as org-mode links.
+
+| Command                     | What it inserts                                              |
+|-----------------------------+--------------------------------------------------------------|
+| scimax.org.insertFinderLink | =[[file:/path][name]]= for each item selected in Finder.     |
+|                             | Falls back to the front Finder window's folder if no items.  |
+| scimax.org.insertChromeLink | =[[url][title]]= for the front tab of Google Chrome.         |
+
+Both commands require macOS. On first run, macOS will prompt you to grant
+VS Code permission to control Finder / Google Chrome via Automation
+(System Settings → Privacy & Security → Automation).
+
+These commands are intentionally unbound by default — assign your own
+keybindings in =keybindings.json= if you use them often.
 
 ** ✅ Link Syntax Summary
 CLOSED: [2026-01-15 Thu 19:53]

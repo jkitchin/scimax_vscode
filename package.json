@@ -2167,6 +2167,14 @@
         "title": "Scimax: Delete File Link (and optionally file)"
       },
       {
+        "command": "scimax.org.insertFinderLink",
+        "title": "Scimax: Insert Link from Finder Selection (macOS)"
+      },
+      {
+        "command": "scimax.org.insertChromeLink",
+        "title": "Scimax: Insert Link from Front Chrome Tab (macOS)"
+      },
+      {
         "command": "scimax.org.dwimReturn",
         "title": "Scimax: DWIM Return"
       },

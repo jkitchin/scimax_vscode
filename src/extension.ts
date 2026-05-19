@@ -48,6 +48,7 @@ import { registerBabelAdvancedCommands } from './parser/orgBabelAdvanced';
 import { registerExportCommands } from './org/exportProvider';
 import { registerCustomExportCommands } from './export/commands';
 import { registerScimaxOrgCommands } from './org/scimaxOrg';
+import { registerMacLinkCommands } from './org/macLinks';
 import { registerScreenshotCommands } from './org/screenshotProvider';
 import { registerScimaxObCommands } from './org/scimaxOb';
 import { registerRefileCommands } from './org/refileProvider';
@@ -516,6 +517,9 @@ export async function activate(context: vscode.ExtensionContext) {
 
     // Register Scimax-org commands (text markup, DWIM return, navigation)
     registerScimaxOrgCommands(context);
+
+    // Register macOS Finder/Chrome link commands
+    registerMacLinkCommands(context);
 
     // Register Screenshot commands
     registerScreenshotCommands(context);
