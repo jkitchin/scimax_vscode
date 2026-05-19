@@ -7,6 +7,8 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
 import * as fs from 'fs';
+import * as os from 'os';
+import * as crypto from 'crypto';
 import { spawn } from 'child_process';
 import { createLogger } from '../utils/logger';
 import Tesseract from 'tesseract.js';
@@ -110,19 +112,71 @@ interface ScreenshotResult {
  * -x: no sound
  */
 async function screenshotMacOS(outputPath: string): Promise<ScreenshotResult> {
-    return new Promise((resolve) => {
-        const proc = spawn('screencapture', ['-i', '-x', outputPath]);
+    // Some macOS configurations (e.g., recent Dropbox virtual-mount setups)
+    // silently drop writes from `screencapture` when the destination is on
+    // the cloud-synced volume. Capture to /tmp first, then copy into place.
+    const tmpPath = path.join(
+        os.tmpdir(),
+        `scimax-screencapture-${crypto.randomBytes(8).toString('hex')}.png`
+    );
 
-        proc.on('close', (code) => {
-            if (code === 0) {
-                // Check if file was actually created (user might have pressed Escape)
-                if (fs.existsSync(outputPath)) {
-                    resolve({ success: true, filePath: outputPath });
+    return new Promise((resolve) => {
+        const proc = spawn('screencapture', ['-i', '-x', tmpPath]);
+        let stderr = '';
+        proc.stderr?.on('data', (chunk) => { stderr += chunk.toString(); });
+
+        proc.on('close', async (code) => {
+            // screencapture exits 0 both on success and on user-Escape;
+            // distinguish by whether the file appeared.
+            const deadline = Date.now() + 750;
+            let exists = fs.existsSync(tmpPath);
+            while (!exists && Date.now() < deadline) {
+                await new Promise(r => setTimeout(r, 50));
+                exists = fs.existsSync(tmpPath);
+            }
+
+            if (!exists) {
+                const stderrTrimmed = stderr.trim();
+                // macOS prints "could not create image from rect" when
+                // Screen Recording permission is missing for the calling
+                // process. Surface that clearly instead of "cancelled".
+                if (/could not create image/i.test(stderrTrimmed)) {
+                    log.error('screencapture failed: missing Screen Recording permission', undefined, { stderr: stderrTrimmed });
+                    resolve({
+                        success: false,
+                        error: 'Screen Recording permission is missing for VS Code. Open System Settings → Privacy & Security → Screen & System Audio Recording and enable VS Code, then fully quit and reopen it.'
+                    });
+                    return;
+                }
+                if (code !== 0) {
+                    resolve({ success: false, error: `screencapture exited with code ${code}${stderrTrimmed ? `: ${stderrTrimmed}` : ''}` });
                 } else {
+                    log.info('screencapture produced no file (treated as cancelled)', { exitCode: code, tmpPath, stderr: stderrTrimmed });
                     resolve({ success: false, cancelled: true });
                 }
-            } else {
-                resolve({ success: false, error: `screencapture exited with code ${code}` });
+                return;
+            }
+
+            try {
+                fs.mkdirSync(path.dirname(outputPath), { recursive: true });
+                // copyFileSync (unlike rename) works across volumes, including
+                // macOS virtual mounts for Dropbox/iCloud Drive.
+                fs.copyFileSync(tmpPath, outputPath);
+                try { fs.unlinkSync(tmpPath); } catch { /* ignore */ }
+                resolve({ success: true, filePath: outputPath });
+            } catch (moveErr) {
+                const msg = moveErr instanceof Error ? moveErr.message : String(moveErr);
+                log.error(
+                    'Captured screenshot but could not copy to destination',
+                    moveErr instanceof Error ? moveErr : undefined,
+                    { tmpPath, outputPath }
+                );
+                // Leave tmpPath in place so the screenshot isn't lost; tell
+                // the user where to find it.
+                resolve({
+                    success: false,
+                    error: `Captured to ${tmpPath} but could not write to ${outputPath}: ${msg}`
+                });
             }
         });
 
