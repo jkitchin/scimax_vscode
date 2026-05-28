@@ -734,6 +734,17 @@ CLOSED: [2026-01-17 Sat 12:47]
 | [[cmd:scimax.jump.copyLine]]    | Jump Copy Line               | -                  |
 | [[cmd:scimax.jump.killLine]]    | Jump Kill Line               | -                  |
 
+** ⚠️ Recenter
+
+| Command ID                       | Description         | Default Keybinding |
+|----------------------------------+---------------------+--------------------|
+| [[cmd:scimax.recenterTopBottom]] | Recenter Top Bottom | C-l                |
+
+Emacs-style =recenter-top-bottom=. Pressing =C-l= repeatedly while the cursor
+stays put cycles the cursor line through three scroll positions: center on the
+first press, top on the second, bottom on the third, then back to center.
+Moving the cursor or switching editors resets the cycle to center.
+
 * ✅ Projectile
 CLOSED: [2026-01-17 Sat 12:47]
 
@@ -1533,6 +1544,7 @@ Miscellaneous utility commands.
 | [[cmd:scimax.googleSearch]]         | Google Search Selection               | C-c C-g            |
 | [[cmd:scimax.killLine]]             | Kill Line (copy to clipboard)         | C-k                |
 | [[cmd:scimax.openTerminalHere]]     | Open Terminal in Document's Directory | -                  |
+| [[cmd:scimax.openInNewWindow]]      | 👀 Open File/Folder in New Window     | -                  |
 | [[cmd:scimax.dired.open]]           | Open Dired (Directory Editor)         | C-x d              |
 | [[cmd:scimax.dired.openCurrent]]    | Open Dired for Current File Dir       | -                  |
 | [[cmd:scimax.dired.openWorkspace]]  | Open Dired for Workspace              | -                  |

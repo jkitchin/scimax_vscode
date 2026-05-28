@@ -1704,6 +1704,11 @@
         "icon": "$(terminal)"
       },
       {
+        "command": "scimax.openInNewWindow",
+        "title": "Scimax: Open in New Window",
+        "icon": "$(empty-window)"
+      },
+      {
         "command": "scimax.findFile",
         "title": "Scimax: Find File (C-x C-f)",
         "icon": "$(file)"
@@ -1807,6 +1812,10 @@
       {
         "command": "scimax.fuzzySearchRecentFiles",
         "title": "Scimax: Recent Files"
+      },
+      {
+        "command": "scimax.recenterTopBottom",
+        "title": "Scimax: Recenter Top Bottom"
       },
       {
         "command": "scimax.jump.gotoChar",
@@ -3935,6 +3944,12 @@
         "command": "scimax.fuzzySearchOutline",
         "key": "ctrl+c alt+s",
         "mac": "ctrl+c alt+s",
+        "when": "editorTextFocus && !terminalFocus"
+      },
+      {
+        "command": "scimax.recenterTopBottom",
+        "key": "ctrl+l",
+        "mac": "ctrl+l",
         "when": "editorTextFocus && !terminalFocus"
       },
       {
@@ -6589,8 +6604,18 @@
           "group": "2_files"
         },
         {
+          "command": "scimax.openInNewWindow",
+          "group": "2_files"
+        },
+        {
           "command": "scimax.agenda.ignoreFileFromTab",
           "group": "2_files"
+        }
+      ],
+      "explorer/context": [
+        {
+          "command": "scimax.openInNewWindow",
+          "group": "navigation@10"
         }
       ],
       "editor/context": [

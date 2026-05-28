@@ -1,5 +1,6 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
+import * as fs from 'fs';
 import { JournalManager } from './journal/journalManager';
 import { JournalCalendarProvider } from './journal/calendarView';
 import { JournalStatusBar } from './journal/statusBar';
@@ -67,6 +68,7 @@ import { ProjectTreeProvider } from './projectile/projectTreeProvider';
 import { registerFuzzySearchCommands } from './fuzzySearch/commands';
 import { registerJumpCommands } from './jump/commands';
 import { registerMarkCommands } from './mark/markRing';
+import { registerRecenterCommands } from './recenter/recenter';
 import { registerCitationManipulationCommands, checkCitationContext } from './references/citationManipulation';
 import { registerBibtexSpeedCommands } from './references/bibtexSpeedCommands';
 import { registerEditmarkCommands } from './editmarks/editmarks';
@@ -148,6 +150,58 @@ export async function activate(context: vscode.ExtensionContext) {
             const dir = path.dirname(uri.fsPath);
             const terminal = vscode.window.createTerminal({ cwd: dir });
             terminal.show();
+        })
+    );
+
+    // Open in New Window - opens a file or folder as workspace in a new window.
+    // For a file, walks up to find a project root (.git, .projectile, package.json, etc.)
+    // and opens that as the workspace, then opens the file inside the new window.
+    const PROJECT_MARKERS = [
+        '.projectile', '.git', '.scimax', 'package.json',
+        'pyproject.toml', 'Cargo.toml', 'go.mod', 'pom.xml',
+        'build.gradle', '.project'
+    ];
+    const findProjectRoot = (startPath: string): string | undefined => {
+        let current = startPath;
+        const root = path.parse(current).root;
+        while (current !== root) {
+            for (const marker of PROJECT_MARKERS) {
+                if (fs.existsSync(path.join(current, marker))) {
+                    return current;
+                }
+            }
+            current = path.dirname(current);
+        }
+        return undefined;
+    };
+    context.subscriptions.push(
+        vscode.commands.registerCommand('scimax.openInNewWindow', async (uri?: vscode.Uri) => {
+            if (!uri) {
+                uri = vscode.window.activeTextEditor?.document.uri;
+            }
+            if (!uri || uri.scheme !== 'file') {
+                vscode.window.showWarningMessage('No file or folder to open');
+                return;
+            }
+
+            let stat: fs.Stats;
+            try {
+                stat = fs.statSync(uri.fsPath);
+            } catch (err) {
+                vscode.window.showErrorMessage(`Cannot open: ${(err as Error).message}`);
+                return;
+            }
+
+            if (stat.isDirectory()) {
+                await vscode.commands.executeCommand('vscode.openFolder', uri, { forceNewWindow: true });
+                return;
+            }
+
+            // It's a file: find project root (fallback to parent dir) and open as workspace.
+            const parent = path.dirname(uri.fsPath);
+            const projectRoot = findProjectRoot(parent) ?? parent;
+            const folderUri = vscode.Uri.file(projectRoot);
+            await vscode.commands.executeCommand('vscode.openFolder', folderUri, { forceNewWindow: true });
         })
     );
 
@@ -884,6 +938,9 @@ export async function activate(context: vscode.ExtensionContext) {
 
     // Register Mark Ring Commands (Emacs-style mark ring)
     registerMarkCommands(context);
+
+    // Register Recenter Command (Emacs-style C-l recenter-top-bottom)
+    registerRecenterCommands(context);
 
     // Register Editmark Commands (track changes)
     registerEditmarkCommands(context);
