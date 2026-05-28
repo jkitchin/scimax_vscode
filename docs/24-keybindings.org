@@ -307,6 +307,16 @@ org-mode, markdown, and LaTeX files with consistent behavior.
 | C-c j o | Jump to symbol/outline |
 | C-c j s | Jump to subword        |
 
+** ⚠️ Recenter
+
+| Key | Action                                         |
+|-----+------------------------------------------------|
+| C-l | Recenter top/bottom (center → top → bottom)    |
+
+Emacs-style =recenter-top-bottom=. Press =C-l= repeatedly while the cursor
+stays put to cycle the cursor line through center, top, and bottom of the
+viewport. Moving the cursor resets the cycle to center.
+
 ** Projectile
 
 | Key       | Action                          |
