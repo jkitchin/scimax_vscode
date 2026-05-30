@@ -1,5 +1,5 @@
 {
-  "buildDate": "2026-05-28T14:53:37.561Z",
+  "buildDate": "2026-05-30T15:36:28.145Z",
   "count": 3394,
   "entries": [
     {
@@ -96427,7 +96427,7 @@
       "level": 2,
       "file": "38-find-file.org",
       "line": 16,
-      "content": "| Key                   | Action                                              | |-----------------------+-----------------------------------------------------| | ~Up~ / ~C-p~          | Move selection up                                   | | ~Down~ / ~C-n~        | Move selection down                                 | | ~Tab~                 | Enter selected directory                            | | ~Backspace~           | Go to parent directory (or delete filter character) | | ~Enter~           ",
+      "content": "| Key                   | Action                                                              | |-----------------------+---------------------------------------------------------------------| | ~Up~ / ~C-p~          | Move selection up                                                   | | ~Down~ / ~C-n~        | Move selection down                                                 | | ~Tab~                 | Enter selected directory (navigate within panel)                    | | ~Backspace~       ",
       "path": [
         "Find File (C-x C-f)"
       ],
@@ -96440,7 +96440,7 @@
         "navigation",
         "key",
         "action",
-        "----------------------------------------------------------------------------",
+        "--------------------------------------------------------------------------------------------",
         "c-p",
         "move",
         "selection",
@@ -96450,11 +96450,10 @@
         "enter",
         "selected",
         "directory",
-        "backspace",
-        "parent",
-        "delete",
-        "filter",
-        "character"
+        "navigate",
+        "within",
+        "panel",
+        "backspace"
       ]
     },
     {

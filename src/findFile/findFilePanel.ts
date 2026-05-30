@@ -184,9 +184,13 @@ export class FindFilePanel {
             if (entry.name === '..') {
                 await this.manager.navigateToParent();
             } else {
-                // Open directory in dired
+                // Open directory as a project in a new window
                 this.dispose();
-                await vscode.commands.executeCommand('scimax.dired', entry.path);
+                await vscode.commands.executeCommand(
+                    'vscode.openFolder',
+                    vscode.Uri.file(entry.path),
+                    { forceNewWindow: true }
+                );
             }
         } else {
             // Open file in editor and close panel

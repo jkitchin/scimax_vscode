@@ -15,15 +15,15 @@ Find File provides Emacs-style file navigation in VS Code. It displays a filtera
 
 ** Navigation
 
-| Key                   | Action                                              |
-|-----------------------+-----------------------------------------------------|
-| ~Up~ / ~C-p~          | Move selection up                                   |
-| ~Down~ / ~C-n~        | Move selection down                                 |
-| ~Tab~                 | Enter selected directory                            |
-| ~Backspace~           | Go to parent directory (or delete filter character) |
-| ~Enter~               | Open file in editor, or open directory in dired     |
-| ~PageUp~ / ~PageDown~ | Move selection by 10                                |
-| ~Home~ / ~End~        | Jump to first/last entry                            |
+| Key                   | Action                                                              |
+|-----------------------+---------------------------------------------------------------------|
+| ~Up~ / ~C-p~          | Move selection up                                                   |
+| ~Down~ / ~C-n~        | Move selection down                                                 |
+| ~Tab~                 | Enter selected directory (navigate within panel)                    |
+| ~Backspace~           | Go to parent directory (or delete filter character)                 |
+| ~Enter~               | Open file in editor, or open directory as a project in a new window |
+| ~PageUp~ / ~PageDown~ | Move selection by 10                                                |
+| ~Home~ / ~End~        | Jump to first/last entry                                            |
 
 ** Filtering
 
