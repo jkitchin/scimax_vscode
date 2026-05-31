@@ -14,6 +14,28 @@ import {
     EXAMPLE_CMU_MEMO_MANIFEST,
     EXAMPLE_CMU_MEMO_TEMPLATE,
 } from './customExporter';
+import { parseOrgFast } from '../parser/orgExportParser';
+
+/**
+ * Determine the base output name (without extension) for a custom export,
+ * honoring the #+EXPORT_FILE_NAME keyword when present.
+ *
+ * Any trailing known output extension on EXPORT_FILE_NAME is stripped so the
+ * appropriate extension for the current stage (e.g. .tex then .pdf) can be
+ * applied. Falls back to the input file's base name when the keyword is unset.
+ */
+function getCustomExportBaseName(content: string, defaultName: string): string {
+    try {
+        const doc = parseOrgFast(content);
+        const exportFileName = doc.keywords?.EXPORT_FILE_NAME?.trim();
+        if (exportFileName) {
+            return exportFileName.replace(/\.(pdf|tex|html|md)$/i, '');
+        }
+    } catch {
+        // Fall through to default on any parse error
+    }
+    return defaultName;
+}
 
 /**
  * Get custom exporter search paths from settings
@@ -122,9 +144,10 @@ async function executeCustomExportCommand(exporterId: string): Promise<void> {
     const inputName = path.basename(inputPath, '.org');
     const content = editor.document.getText();
 
-    // Determine output extension
+    // Determine output name, honoring #+EXPORT_FILE_NAME if set
+    const baseName = getCustomExportBaseName(content, inputName);
     const outputExt = exporter.outputFormat === 'pdf' ? '.tex' : `.${exporter.outputFormat}`;
-    const outputPath = path.join(inputDir, `${inputName}${outputExt}`);
+    const outputPath = path.join(inputDir, `${baseName}${outputExt}`);
 
     await vscode.window.withProgress(
         {

@@ -305,6 +305,24 @@ async function runCustomExporter(
         process.exit(1);
     }
 
+    // Honor #+EXPORT_FILE_NAME when no explicit --output was given.
+    if (!outputPath) {
+        try {
+            const exportFileName = parseOrgFast(content).keywords?.EXPORT_FILE_NAME?.trim();
+            if (exportFileName) {
+                const base = exportFileName.replace(/\.(pdf|tex|html|md)$/i, '');
+                const ext = exporter.outputFormat === 'pdf' ? '.pdf' : `.${exporter.outputFormat}`;
+                const resolved = `${base}${ext}`;
+                // Resolve relative to the input file's directory
+                outputPath = path.isAbsolute(resolved)
+                    ? resolved
+                    : path.join(path.dirname(inputPath), resolved);
+            }
+        } catch {
+            // Ignore parse errors and fall back to default naming
+        }
+    }
+
     if (exporter.outputFormat === 'pdf') {
         log(`Using exporter: ${exporter.name} (${exporter.id})`);
         const result = await compilePdf(rendered, inputPath, outputPath, exportSettings, json);
