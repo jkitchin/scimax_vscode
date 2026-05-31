@@ -1236,9 +1236,17 @@ function findEmphasisClose(text: string, start: number, marker: string): number 
 
     while (pos < text.length) {
         if (text[pos] === marker) {
-            // Check that it's not at the start of a word
+            // A valid closing marker must (a) be preceded by a non-whitespace
+            // char (not at the start of a word) and (b) be followed by a valid
+            // post-emphasis char or the end of input. When the char after the
+            // marker is invalid (e.g. a letter, as in the interior slash of
+            // "/J. Phys. Chem. A/C/"), this marker can't close the emphasis, so
+            // keep scanning for a later valid closer instead of bailing out.
             const prevChar = pos > start ? text[pos - 1] : '';
-            if (prevChar && !/\s/.test(prevChar)) {
+            const nextChar = text[pos + 1];
+            const prevOk = prevChar !== '' && !/\s/.test(prevChar);
+            const nextOk = nextChar === undefined || POST_EMPHASIS_SET.has(nextChar);
+            if (prevOk && nextOk) {
                 return pos;
             }
         }

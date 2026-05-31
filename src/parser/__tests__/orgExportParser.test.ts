@@ -357,6 +357,34 @@ Centered text
             expect(italic).toBeDefined();
         });
 
+        it('parses italic text containing an interior slash', () => {
+            // The slash after "A" is followed by a letter, so it is not a valid
+            // closing marker; the final slash closes the emphasis.
+            const objects = parseObjectsFast('See /J. Phys. Chem. A/C/, 2024.');
+            const italic = objects.find(o => o.type === 'italic') as any;
+            expect(italic).toBeDefined();
+            const text = italic.children.map((c: any) => c.properties?.value ?? '').join('');
+            expect(text).toBe('J. Phys. Chem. A/C');
+        });
+
+        it('parses subsequent italics after one containing a slash', () => {
+            // Regression: an italic whose content contains a special char (the
+            // interior slash here) recurses into parseObjectsFast; that recursion
+            // must not corrupt the stateful regex iteration and drop later spans.
+            const objects = parseObjectsFast(
+                '/Combustion and Flame/, /J. Phys. Chem. A/C/, /J. Chem. Theory and Computation/, /ACS Catalysis/'
+            );
+            const italics = objects
+                .filter(o => o.type === 'italic')
+                .map((o: any) => o.children.map((c: any) => c.properties?.value ?? '').join(''));
+            expect(italics).toEqual([
+                'Combustion and Flame',
+                'J. Phys. Chem. A/C',
+                'J. Chem. Theory and Computation',
+                'ACS Catalysis',
+            ]);
+        });
+
         it('does not parse fractions as italic', () => {
             const objects = parseObjectsFast('38/117 problems and more on 57/117');
             const italic = objects.find(o => o.type === 'italic');

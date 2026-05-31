@@ -73,7 +73,11 @@ const BIBSTYLE_PATTERN = /(?:bibliographystyle|bibstyle):([^\s<>[\](){}]+)/g;
 const PRE = '(?:^|(?<=[\\s\\-({\'"*/_+=~]))';
 const POST = '(?=[\\s\\-.,:!?;\\\'")}\\\\\\[\\]*/_+=~]|$)';
 const BOLD_PATTERN = new RegExp(`${PRE}\\*([^\\s*](?:[^*]*[^\\s*])?)\\*${POST}`, 'g');
-const ITALIC_PATTERN = new RegExp(`${PRE}\\/([^\\s/](?:[^/]*[^\\s/])?)\\/(?![a-zA-Z0-9])${POST}`, 'g');
+// Italic content may contain an interior slash as long as that slash is
+// immediately followed by an alphanumeric (so it is NOT a valid closing
+// marker), e.g. "/J. Phys. Chem. A/C/". The closing slash still requires a
+// non-alphanumeric / post-emphasis char after it.
+const ITALIC_PATTERN = new RegExp(`${PRE}\\/([^\\s/](?:(?:[^/]|\\/(?=[a-zA-Z0-9]))*[^\\s/])?)\\/(?![a-zA-Z0-9])${POST}`, 'g');
 const UNDERLINE_PATTERN = new RegExp(`${PRE}_([^\\s_](?:[^_]*[^\\s_])?)_(?![a-zA-Z])${POST}`, 'g');
 const STRIKE_PATTERN = new RegExp(`${PRE}\\+([^\\s+](?:[^+]*[^\\s+])?)\\+(?![a-zA-Z0-9])${POST}`, 'g');
 const CODE_PATTERN = new RegExp(`${PRE}=([^\\s=](?:[^=]*[^\\s=])?)=${POST}`, 'g');
@@ -174,7 +178,14 @@ export function parseObjectsFast(text: string): OrgObject[] {
 
     const allMatches: MatchInfo[] = [];
 
-    // Helper to run a pattern and collect matches
+    // Helper to run a pattern and collect matches.
+    //
+    // The handler may call parseObjectsFast() recursively to parse nested
+    // markup (e.g. the content of an italic span). Because the module-level
+    // patterns are stateful (the `g` flag tracks lastIndex), that recursion can
+    // re-enter and reset THIS pattern's lastIndex mid-iteration, corrupting the
+    // loop and silently dropping later matches. To stay reentrancy-safe, fully
+    // drain the regex into a local array first, then invoke handlers.
     const collectMatches = (
         pattern: RegExp,
         handler: (m: RegExpExecArray) => OrgObject | null
@@ -184,18 +195,23 @@ export function parseObjectsFast(text: string): OrgObject[] {
         let iterations = 0;
         const maxIterations = 10000; // Safety limit
 
+        const rawMatches: RegExpExecArray[] = [];
         while ((match = pattern.exec(text)) !== null && iterations++ < maxIterations) {
-            const obj = handler(match);
-            if (obj) {
-                allMatches.push({
-                    start: match.index,
-                    end: match.index + match[0].length,
-                    object: obj,
-                });
-            }
+            rawMatches.push(match);
             // Prevent infinite loops on zero-length matches
             if (match[0].length === 0) {
                 pattern.lastIndex++;
+            }
+        }
+
+        for (const m of rawMatches) {
+            const obj = handler(m);
+            if (obj) {
+                allMatches.push({
+                    start: m.index,
+                    end: m.index + m[0].length,
+                    object: obj,
+                });
             }
         }
     };

@@ -253,6 +253,17 @@ describe('Inline Objects Parser', () => {
             expect(result[1].type).toBe('italic');
         });
 
+        it('should parse italic text containing an interior slash', () => {
+            // The interior slash is followed by a letter, so it is not a valid
+            // closing marker; the parser must skip it and use the final slash.
+            const result = parseObjects('/J. Phys. Chem. A/C/');
+            expect(result).toHaveLength(1);
+            expect(result[0].type).toBe('italic');
+            const italic = result[0] as any;
+            const text = italic.children.map((c: any) => c.properties?.value ?? '').join('');
+            expect(text).toBe('J. Phys. Chem. A/C');
+        });
+
         it('should parse underline text', () => {
             const result = parseObjects('This is _underline_ text');
             expect(result).toHaveLength(3);
