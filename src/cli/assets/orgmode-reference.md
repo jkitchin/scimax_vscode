@@ -294,6 +294,20 @@ Table formula syntax:
 - `@-1` — row above last
 - `vsum(@2..@-1)` — sum rows 2 through second-to-last
 
+**Best practice — fit tables within the margins:**
+- When creating tables, make sure they fit within the page margins.
+- Keep the total width modest: prefer fewer columns and short headers.
+- For wide content, wrap long cell text, abbreviate headers, or split one wide
+  table into several narrower ones.
+- For LaTeX/PDF export, if a table is still too wide, scale or wrap it so it does
+  not overflow the margins, e.g.:
+  ```org
+  #+ATTR_LATEX: :environment tabular :align p{3cm}p{3cm}p{3cm}
+  #+ATTR_LATEX: :width \textwidth
+  ```
+  or wrap the table in `\resizebox{\textwidth}{!}{...}` / the `adjustbox`
+  package, or reduce the font with a `\small`/`\footnotesize` block.
+
 ---
 
 ## LaTeX and Math
@@ -465,6 +479,16 @@ Org-mode entities render as special characters in export:
 \nbsp                               Non-breaking space
 \mdash \ndash                       Dashes: — –
 ```
+
+**Best practice — prefer ASCII and LaTeX over raw Unicode:**
+- Avoid non-ASCII characters. Write plain ASCII by default.
+- Use raw Unicode glyphs only when genuinely needed (a symbol with no reasonable
+  ASCII or LaTeX/entity equivalent).
+- Prefer LaTeX/entity representations over literal Unicode glyphs. For example,
+  write `\alpha`, `\Delta`, `\times`, `\pm`, `\le`, `\ge`, `\mdash` rather than
+  `α`, `Δ`, `×`, `±`, `≤`, `≥`, `—`; use straight quotes `"` `'` instead of
+  curly quotes `“” ‘’`.
+- This keeps org files portable, diff-friendly, and clean for LaTeX/PDF export.
 
 ---
 

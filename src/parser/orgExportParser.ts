@@ -1402,11 +1402,48 @@ function parseList(state: FastParserState): PlainListElement {
     const listType = firstLine.match(/^\s*\d+[.)]/) ? 'ordered' : 'unordered';
     const baseIndent = firstLine.match(/^(\s*)/)?.[1].length || 0;
 
+    let currentItem: ItemElement | null = null;
+    const pendingContent: string[] = [];
+
+    // Convert any accumulated continuation prose into a paragraph child on the
+    // current item. Continuation lines (wrapped text beyond the bullet) must be
+    // collected here, otherwise multi-line items get truncated to their first
+    // physical line on export.
+    const flushParagraph = () => {
+        if (!currentItem) return;
+        const content = pendingContent.join('\n').trim();
+        pendingContent.length = 0;
+        if (content) {
+            currentItem.children.push({
+                type: 'paragraph',
+                range: { start: 0, end: 0 },
+                postBlank: 0,
+                children: parseObjectsFast(content),
+            });
+        }
+    };
+
+    const flushItem = () => {
+        if (!currentItem) return;
+        flushParagraph();
+        if (currentItem.children.length === 0) {
+            // Preserve an empty paragraph for empty items (matches prior behavior).
+            currentItem.children.push({
+                type: 'paragraph',
+                range: { start: 0, end: 0 },
+                postBlank: 0,
+                children: parseObjectsFast(''),
+            });
+        }
+        items.push(currentItem);
+        currentItem = null;
+    };
+
     while (state.lineIndex < state.lines.length) {
         const line = state.lines[state.lineIndex];
         const indent = line.match(/^(\s*)/)?.[1].length || 0;
 
-        // Check if still in list
+        // Blank lines are skipped; a following less-indented line terminates the list.
         if (line.trim() === '') {
             state.lineIndex++;
             continue;
@@ -1419,10 +1456,10 @@ function parseList(state: FastParserState): PlainListElement {
 
         const itemMatch = line.match(/^(\s*)([-+*]|\d+[.)])\s+(?:\[([ Xx-])\]\s+)?(.*)$/);
         if (itemMatch && indent === baseIndent) {
+            // Start a new item at the list's base indentation.
+            flushItem();
             const checkbox = itemMatch[3] ? (itemMatch[3] === 'X' || itemMatch[3] === 'x' ? 'on' : itemMatch[3] === '-' ? 'trans' : 'off') as 'on' | 'off' | 'trans' : undefined;
-            const content = itemMatch[4];
-
-            items.push({
+            currentItem = {
                 type: 'item',
                 range: { start: 0, end: 0 },
                 postBlank: 0,
@@ -1432,21 +1469,27 @@ function parseList(state: FastParserState): PlainListElement {
                     checkbox,
                     tag: undefined,
                 },
-                children: [{
-                    type: 'paragraph',
-                    range: { start: 0, end: 0 },
-                    postBlank: 0,
-                    children: parseObjectsFast(content),
-                }],
-            });
+                children: [],
+            };
+            pendingContent.push(itemMatch[4]);
             state.lineIndex++;
-        } else if (indent > baseIndent) {
-            // Continuation of previous item or nested list
-            state.lineIndex++;
+        } else if (indent > baseIndent && currentItem) {
+            // Content indented past the bullet belongs to the current item: either a
+            // nested list or wrapped continuation prose.
+            if (line.match(/^\s*([-+*]|\d+[.)])\s+/)) {
+                // Nested list: emit any pending prose first, then recurse.
+                flushParagraph();
+                currentItem.children.push(parseList(state));
+            } else {
+                pendingContent.push(line.trim());
+                state.lineIndex++;
+            }
         } else {
             break;
         }
     }
+
+    flushItem();
 
     return {
         type: 'plain-list',

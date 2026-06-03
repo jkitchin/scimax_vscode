@@ -1603,6 +1603,10 @@ export class LatexExportBackend implements ExportBackend {
 
             // Default packages (matching Emacs org-mode LaTeX export defaults)
             const preambleStr = meta.preamble || '';
+            // Non-ASCII characters in body text are translated to LaTeX macros at
+            // export time (see escapeLatex/NON_ASCII_MAP), so the output is
+            // engine-agnostic. inputenc/fontenc remain to cover any incidental
+            // raw UTF-8 (e.g. characters outside NON_ASCII_MAP) under pdflatex.
             parts.push('\\usepackage[utf8]{inputenc}');
             parts.push('\\usepackage[T1]{fontenc}');
             if (!preambleStr.includes('geometry')) {
