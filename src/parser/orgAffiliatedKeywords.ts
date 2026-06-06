@@ -121,6 +121,44 @@ export function parseCaption(text: string): CaptionParseResult {
 }
 
 /**
+ * Merge a newly parsed caption into an existing one. Org concatenates multiple
+ * consecutive #+CAPTION: lines on the same element into a single caption,
+ * joining their (long) text with a space and preserving document order.
+ *
+ * Captions may be a plain string or a [short, long] tuple. The long parts are
+ * joined; a short caption (the optional [..] prefix) is preserved if any line
+ * had one, preferring the one that comes first in the document.
+ *
+ * @param existing  caption accumulated so far (may be undefined)
+ * @param incoming  caption parsed from the new line
+ * @param prepend   true when collecting backwards (the new line precedes the
+ *                  accumulated text in the document); false when appending
+ */
+export function mergeCaptions(
+    existing: string | [string, string] | undefined,
+    incoming: string | [string, string],
+    prepend = false
+): string | [string, string] {
+    if (existing === undefined) return incoming;
+
+    const longOf = (c: string | [string, string]): string => Array.isArray(c) ? c[1] : c;
+    const shortOf = (c: string | [string, string]): string | undefined =>
+        Array.isArray(c) ? c[0] : undefined;
+    const join = (a: string, b: string): string => (a && b) ? `${a} ${b}` : (a || b);
+
+    const exLong = longOf(existing);
+    const inLong = longOf(incoming);
+    const combinedLong = prepend ? join(inLong, exLong) : join(exLong, inLong);
+
+    // Prefer the short caption from whichever line comes first in the document.
+    const short = prepend
+        ? (shortOf(incoming) ?? shortOf(existing))
+        : (shortOf(existing) ?? shortOf(incoming));
+
+    return short !== undefined ? [short, combinedLong] : combinedLong;
+}
+
+/**
  * Result of parsing affiliated keywords
  */
 export interface AffiliatedKeywordsResult {
@@ -187,7 +225,9 @@ export function parseAffiliatedKeywords(
             switch (keyword) {
                 case 'CAPTION': {
                     const captionResult = parseCaption(value);
-                    affiliated.caption = captionResult.caption;
+                    // We scan backwards, so this line precedes any caption text
+                    // collected so far in the document: prepend.
+                    affiliated.caption = mergeCaptions(affiliated.caption, captionResult.caption, true);
                     // Use inline label if no explicit #+NAME: or #+LABEL: is set
                     if (captionResult.inlineLabel && !affiliated.name) {
                         affiliated.name = captionResult.inlineLabel;

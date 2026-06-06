@@ -1526,6 +1526,59 @@ Text with Cu_{x}Pd_{1-x} subscripts.
             expect(latex).not.toContain('\\bottomrule');
         });
 
+        it('wraps plain tables in adjustbox to fit the text width by default', async () => {
+            const { parseOrgFast } = await import('../orgExportParser');
+            const orgContent = `| Name | Age |
+|------+-----|
+| Alice | 30 |
+`;
+            const doc = parseOrgFast(orgContent);
+            const latex = exportToLatex(doc);
+            expect(latex).toContain('\\usepackage{adjustbox}');
+            expect(latex).toContain('\\begin{adjustbox}{max width=\\textwidth}');
+            expect(latex).toContain('\\end{adjustbox}');
+        });
+
+        it('does not wrap plain tables when fitTablesToTextWidth is false', async () => {
+            const { parseOrgFast } = await import('../orgExportParser');
+            const orgContent = `| Name | Age |
+|------+-----|
+| Alice | 30 |
+`;
+            const doc = parseOrgFast(orgContent);
+            const latex = exportToLatex(doc, { fitTablesToTextWidth: false });
+            expect(latex).not.toContain('adjustbox');
+        });
+
+        it('does not wrap tabularx tables in adjustbox (they set their own width)', async () => {
+            const { parseOrgFast } = await import('../orgExportParser');
+            const orgContent = `#+ATTR_LATEX: :environment tabularx :width \\textwidth :align {l l}
+| Name | Age |
+|------+-----|
+| Alice | 30 |
+`;
+            const doc = parseOrgFast(orgContent);
+            const latex = exportToLatex(doc);
+            expect(latex).not.toContain('\\begin{adjustbox}');
+        });
+
+        it('concatenates multiple #+CAPTION: lines into a single caption', async () => {
+            const { parseOrgFast } = await import('../orgExportParser');
+            const orgContent = `#+CAPTION: First part of the caption
+#+CAPTION: second part of the caption
+#+CAPTION: and the third part.
+#+NAME: fig:demo
+[[file:figures/demo.png]]
+`;
+            const doc = parseOrgFast(orgContent);
+            const latex = exportToLatex(doc);
+            expect(latex).toContain(
+                '\\caption{First part of the caption second part of the caption and the third part.}'
+            );
+            // The intermediate lines must not survive as separate captions.
+            expect((latex.match(/\\caption\{/g) || []).length).toBe(1);
+        });
+
         it('includes table of contents when enabled', () => {
             const doc = createSimpleDocument('Test');
             const result = exportToLatex(doc, { toc: true });

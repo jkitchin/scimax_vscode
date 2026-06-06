@@ -270,6 +270,14 @@ export interface LatexExportOptions extends ExportOptions {
     floatPlacement?: string;
     /** Use booktabs for tables */
     booktabs?: boolean;
+    /**
+     * Shrink over-wide tables to fit the text width. When true (default), plain
+     * `tabular` environments are wrapped in an adjustbox with `max width=\textwidth`,
+     * so tables wider than the margins are scaled down to fit while narrower tables
+     * are left unchanged. Tables with an explicit ATTR_LATEX :width / tabularx
+     * environment are not wrapped (they already control their own width).
+     */
+    fitTablesToTextWidth?: boolean;
     /** Bibliography style */
     bibStyle?: string;
     /** Bibliography file */
@@ -310,6 +318,7 @@ export const DEFAULT_LATEX_OPTIONS: LatexExportOptions = {
     imageWidth: '0.8\\textwidth',
     floatPlacement: 'htbp',
     booktabs: true,
+    fitTablesToTextWidth: true,
     secNumDepth: 3,
     tocDepth: 3,
     headlineStartLevel: 1,
@@ -928,6 +937,13 @@ export class LatexExportBackend implements ExportBackend {
             }
 
             endWrapper += '\\end{table}\n';
+        } else {
+            // No caption/name: not a float. Wrap in a center environment like
+            // org-mode's LaTeX exporter does, which centers the table and adds
+            // vertical space before and after it (otherwise the tabular sits
+            // flush against the surrounding paragraphs).
+            wrapper = '\\begin{center}\n';
+            endWrapper = '\\end{center}\n';
         }
 
         // Apply ATTR_LATEX options
@@ -1004,6 +1020,16 @@ export class LatexExportBackend implements ExportBackend {
         }
 
         tabular += `\\end{${environment}}\n`;
+
+        // Shrink over-wide tables to fit the text width. A plain tabular with
+        // l/c/r columns does not wrap or scale, so long cell content runs past
+        // the right margin. Wrapping it in adjustbox with max width=\textwidth
+        // scales oversized tables down to fit while leaving narrower tables
+        // untouched. Skip this for tabularx/longtable (which manage their own
+        // width) and when the user set an explicit ATTR_LATEX :width.
+        if (opts.fitTablesToTextWidth && environment === 'tabular' && !width) {
+            tabular = `\\begin{adjustbox}{max width=\\textwidth}\n${tabular}\\end{adjustbox}\n`;
+        }
 
         return wrapper + tabular + endWrapper;
     }
@@ -1653,6 +1679,12 @@ export class LatexExportBackend implements ExportBackend {
             // Booktabs for nicer tables
             if (meta.booktabs !== false && !preambleStr.includes('booktabs')) {
                 parts.push('\\usepackage{booktabs}');
+            }
+
+            // adjustbox lets over-wide tables be scaled down to fit the margins
+            // (see fitTablesToTextWidth in exportTable).
+            if (meta.fitTablesToTextWidth !== false && !preambleStr.includes('adjustbox')) {
+                parts.push('\\usepackage{adjustbox}');
             }
 
             // Inject minted package if enabled and not already in user preamble

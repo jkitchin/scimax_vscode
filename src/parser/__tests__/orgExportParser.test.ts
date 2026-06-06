@@ -207,6 +207,30 @@ console.log("js");
             const list = doc.children[0].section?.children.find(c => c.type === 'plain-list');
             expect(list).toBeDefined();
         });
+
+        it('parses a table nested inside a list item', () => {
+            // Indented table rows under a list item must become a real table
+            // child, not leak into the item paragraph as literal | text.
+            const content = `1. Surrogate results:
+
+   | Output | R2     |
+   |--------+--------|
+   | a      | 0.9992 |
+   | b      | 0.9987 |
+
+   Aggregate is good.`;
+            const doc = parseOrgFast(content);
+            const list = doc.section?.children.find(c => c.type === 'plain-list') as any;
+            expect(list).toBeDefined();
+            const item = list.children[0];
+            const table = item.children.find((c: any) => c.type === 'table');
+            expect(table).toBeDefined();
+            // Header + separator + 2 data rows
+            expect(table.children).toHaveLength(4);
+            // Surrounding prose is preserved as paragraphs, not merged with the table.
+            const paragraphs = item.children.filter((c: any) => c.type === 'paragraph');
+            expect(paragraphs.length).toBeGreaterThanOrEqual(2);
+        });
     });
 
     describe('Tables', () => {
@@ -263,6 +287,34 @@ Centered text
             const doc = parseOrgFast(content);
             const block = doc.section?.children.find(c => c.type === 'center-block');
             expect(block).toBeDefined();
+        });
+
+        it('parses a verbatim block as a literal (example) block', () => {
+            // #+begin_verbatim is not standard org, but is expected to be literal.
+            const content = `#+begin_verbatim
+maximize    f(x)   [keep   spacing]
+subject to  g(x) <= 0
+#+end_verbatim`;
+            const doc = parseOrgFast(content);
+            const block = doc.section?.children.find(c => c.type === 'example-block') as any;
+            expect(block).toBeDefined();
+            // Content kept raw, including interior spacing.
+            expect(block.properties.value).toBe(
+                'maximize    f(x)   [keep   spacing]\nsubject to  g(x) <= 0'
+            );
+        });
+
+        it('parses an unknown block as a special-block instead of a paragraph', () => {
+            const content = `#+begin_theorem
+The theorem statement.
+#+end_theorem`;
+            const doc = parseOrgFast(content);
+            const block = doc.section?.children.find(c => c.type === 'special-block') as any;
+            expect(block).toBeDefined();
+            expect(block.properties.blockType).toBe('theorem');
+            // Delimiters must not leak into a paragraph.
+            const para = doc.section?.children.find(c => c.type === 'paragraph');
+            expect(para).toBeUndefined();
         });
     });
 
@@ -383,6 +435,34 @@ Centered text
                 'J. Chem. Theory and Computation',
                 'ACS Catalysis',
             ]);
+        });
+
+        it('parses an italic that follows a bracketed link containing slashes', () => {
+            // Regression: the slashes inside the link URL/description previously let
+            // the italic regex open inside the link and run to the real closing "/",
+            // forming one giant match that overlapped the link, was discarded, and
+            // swallowed the real italic. The link's interior markers are now masked.
+            const objects = parseObjectsFast(
+                'see ([[https://github.com/IDAES/idaes-pse][IDAES/idaes-pse]]) the /Open items requiring SATC input/ table'
+            );
+            const link = objects.find(o => o.type === 'link') as any;
+            expect(link).toBeDefined();
+            expect(link.properties.path).toBe('https://github.com/IDAES/idaes-pse');
+            const italic = objects.find(o => o.type === 'italic') as any;
+            expect(italic).toBeDefined();
+            const text = italic.children.map((c: any) => c.properties?.value ?? '').join('');
+            expect(text).toBe('Open items requiring SATC input');
+        });
+
+        it('recovers a link nested inside bold even when its URL has slashes', () => {
+            // Emphasis content is re-parsed from the original text, so a link inside
+            // the span is recovered rather than corrupted by the marker masking.
+            const objects = parseObjectsFast('*with [[http://x/y/z][t]]* after');
+            const bold = objects.find(o => o.type === 'bold') as any;
+            expect(bold).toBeDefined();
+            const link = bold.children.find((c: any) => c.type === 'link');
+            expect(link).toBeDefined();
+            expect(link.properties.path).toBe('http://x/y/z');
         });
 
         it('does not parse fractions as italic', () => {

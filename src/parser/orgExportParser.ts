@@ -45,7 +45,7 @@ import type {
 } from './orgElementTypes';
 
 import { createPlainText } from './orgObjects';
-import { parseCaption, parseColonAttributes } from './orgAffiliatedKeywords';
+import { parseCaption, parseColonAttributes, mergeCaptions } from './orgAffiliatedKeywords';
 import { getEntity } from './orgEntities';
 import { normalizeLineEndings } from '../utils/escapeUtils';
 
@@ -178,6 +178,15 @@ export function parseObjectsFast(text: string): OrgObject[] {
 
     const allMatches: MatchInfo[] = [];
 
+    // The text the patterns are scanned against. Initially the original text,
+    // but after the high-priority link-like objects are claimed it is replaced
+    // by a version with emphasis-marker characters (*/_+=~) inside those claimed
+    // ranges neutralized — see the masking step below the link patterns. This
+    // keeps an emphasis span from being anchored or extended by a marker that
+    // lives inside a link/citation (e.g. the slashes in a URL). Match indices
+    // and lengths still line up with `text` because masking preserves length.
+    let scanText = text;
+
     // Helper to run a pattern and collect matches.
     //
     // The handler may call parseObjectsFast() recursively to parse nested
@@ -196,7 +205,7 @@ export function parseObjectsFast(text: string): OrgObject[] {
         const maxIterations = 10000; // Safety limit
 
         const rawMatches: RegExpExecArray[] = [];
-        while ((match = pattern.exec(text)) !== null && iterations++ < maxIterations) {
+        while ((match = pattern.exec(scanText)) !== null && iterations++ < maxIterations) {
             rawMatches.push(match);
             // Prevent infinite loops on zero-length matches
             if (match[0].length === 0) {
@@ -232,7 +241,10 @@ export function parseObjectsFast(text: string): OrgObject[] {
                 linkType,
                 path,
                 format: 'bracket' as const,
-                rawLink: m[0],
+                // rawLink is the URL portion WITHOUT the surrounding [[ ]] brackets,
+                // matching the canonical parser (orgObjects.ts). Using m[0] here
+                // leaked the literal brackets into export output for bare links.
+                rawLink: m[1],
             },
             children: m[2] ? [createPlainText(m[2], m.index! + m[1].length + 3, m.index! + m[1].length + 3 + m[2].length)] : undefined,
         };
@@ -303,6 +315,34 @@ export function parseObjectsFast(text: string): OrgObject[] {
         },
     }));
 
+    // Neutralize emphasis-marker characters that live inside an already-claimed
+    // range (links, citations, refs, …) so they cannot anchor or extend an
+    // emphasis span. Without this, a bracketed link whose URL contains slashes
+    // (e.g. [[https://github.com/org/repo][...]]) lets the italic regex open
+    // inside the URL and run to a later closing "/", producing one giant match
+    // that overlaps the link, gets discarded as an overlap, and swallows the
+    // real emphasis with it. Masking preserves length so indices stay aligned;
+    // emphasis handlers below derive their content from the original `text`.
+    if (allMatches.length > 0) {
+        const MARKERS = new Set(['*', '/', '_', '+', '=', '~']);
+        const chars = text.split('');
+        for (const claimed of allMatches) {
+            for (let i = claimed.start; i < claimed.end; i++) {
+                if (MARKERS.has(chars[i])) {
+                    chars[i] = '\x00';
+                }
+            }
+        }
+        scanText = chars.join('');
+    }
+
+    // Content of an emphasis span, taken from the ORIGINAL text (not scanText)
+    // so neutralized markers never leak into the output. Emphasis markers are a
+    // single character and the PRE/POST guards are zero-width lookarounds, so
+    // m[0] is exactly "<marker>content<marker>".
+    const emphContent = (m: RegExpExecArray): string =>
+        text.slice(m.index! + 1, m.index! + m[0].length - 1);
+
     // Text markup (only if text contains the marker characters)
     // Recursively parse children to support nested markup like */bold italic/*
     if (text.includes('*')) {
@@ -310,7 +350,7 @@ export function parseObjectsFast(text: string): OrgObject[] {
             type: 'bold' as const,
             range: { start: m.index!, end: m.index! + m[0].length },
             postBlank: 0,
-            children: parseObjectsFast(m[1]),
+            children: parseObjectsFast(emphContent(m)),
         }));
     }
 
@@ -319,7 +359,7 @@ export function parseObjectsFast(text: string): OrgObject[] {
             type: 'italic' as const,
             range: { start: m.index!, end: m.index! + m[0].length },
             postBlank: 0,
-            children: parseObjectsFast(m[1]),
+            children: parseObjectsFast(emphContent(m)),
         }));
     }
 
@@ -349,7 +389,7 @@ export function parseObjectsFast(text: string): OrgObject[] {
             type: 'underline' as const,
             range: { start: m.index!, end: m.index! + m[0].length },
             postBlank: 0,
-            children: parseObjectsFast(m[1]),
+            children: parseObjectsFast(emphContent(m)),
         }));
     }
 
@@ -378,7 +418,7 @@ export function parseObjectsFast(text: string): OrgObject[] {
             type: 'strike-through' as const,
             range: { start: m.index!, end: m.index! + m[0].length },
             postBlank: 0,
-            children: parseObjectsFast(m[1]),
+            children: parseObjectsFast(emphContent(m)),
         }));
     }
 
@@ -387,7 +427,7 @@ export function parseObjectsFast(text: string): OrgObject[] {
             type: 'verbatim' as const,  // =text= is verbatim in org-mode
             range: { start: m.index!, end: m.index! + m[0].length },
             postBlank: 0,
-            properties: { value: m[1] },
+            properties: { value: emphContent(m) },
         }));
     }
 
@@ -396,7 +436,7 @@ export function parseObjectsFast(text: string): OrgObject[] {
             type: 'code' as const,  // ~text~ is code in org-mode
             range: { start: m.index!, end: m.index! + m[0].length },
             postBlank: 0,
-            properties: { value: m[1] },
+            properties: { value: emphContent(m) },
         }));
     }
 
@@ -1011,7 +1051,9 @@ function collectAffiliatedKeyword(
     switch (upperKey) {
         case 'CAPTION': {
             const captionResult = parseCaption(value);
-            affiliated.caption = captionResult.caption;
+            // Multiple consecutive #+CAPTION: lines are concatenated into one
+            // caption (this parser collects forward, so append).
+            affiliated.caption = mergeCaptions(affiliated.caption, captionResult.caption);
             if (captionResult.inlineLabel && !affiliated.name) {
                 affiliated.name = captionResult.inlineLabel;
             }
@@ -1147,9 +1189,25 @@ function parseElement(state: FastParserState): OrgElement | null {
         return parseSimpleBlock(state, 'comment-block', 'COMMENT');
     }
 
+    // Verbatim block. Not a standard org block, but the name strongly implies
+    // literal preformatted text, so treat it like an example block: keep the
+    // content raw (unparsed, unescaped) and export it inside a verbatim
+    // environment. Must come before the generic special-block handler below.
+    if (line.match(/^#\+BEGIN_VERBATIM\b/i)) {
+        return parseSimpleBlock(state, 'example-block', 'VERBATIM');
+    }
+
     // Export block
     if (line.match(/^#\+BEGIN_EXPORT\s+(\w+)/i)) {
         return parseExportBlock(state);
+    }
+
+    // Generic special block: any other #+BEGIN_<name> ... #+END_<name>. Without
+    // this, an unknown block falls through to parseParagraph and its delimiter
+    // lines and content get flattened into a paragraph.
+    const specialBlockMatch = line.match(/^#\+BEGIN_([A-Za-z][\w-]*)/i);
+    if (specialBlockMatch) {
+        return parseSpecialBlockFast(state, specialBlockMatch[1]);
     }
 
     // LaTeX environment: \begin{...}...\end{...}
@@ -1293,6 +1351,41 @@ function parseSimpleBlock(state: FastParserState, type: 'example-block' | 'quote
             })),
         } as QuoteBlockElement;
     }
+}
+
+/**
+ * Parse a generic special block (#+BEGIN_<name> ... #+END_<name>) whose name is
+ * not one of the recognized block types. Content is parsed as org (one paragraph
+ * per line, matching the quote/verse/center handling), and the block type is
+ * preserved so the export backends can emit \begin{<name>} / <div class="<name>">.
+ */
+function parseSpecialBlockFast(state: FastParserState, blockType: string): OrgElement {
+    state.lineIndex++;
+    const contentLines: string[] = [];
+    const endRe = new RegExp(`^#\\+END_${blockType}\\b`, 'i');
+
+    while (state.lineIndex < state.lines.length) {
+        const line = state.lines[state.lineIndex];
+        if (endRe.test(line)) {
+            state.lineIndex++;
+            break;
+        }
+        contentLines.push(line);
+        state.lineIndex++;
+    }
+
+    return {
+        type: 'special-block',
+        range: { start: 0, end: 0 },
+        postBlank: 0,
+        properties: { blockType },
+        children: contentLines.map(line => ({
+            type: 'paragraph' as const,
+            range: { start: 0, end: 0 },
+            postBlank: 0,
+            children: parseObjectsFast(line),
+        })),
+    } as OrgElement;
 }
 
 function parseExportBlock(state: FastParserState): OrgElement | null {
@@ -1474,9 +1567,15 @@ function parseList(state: FastParserState): PlainListElement {
             pendingContent.push(itemMatch[4]);
             state.lineIndex++;
         } else if (indent > baseIndent && currentItem) {
-            // Content indented past the bullet belongs to the current item: either a
-            // nested list or wrapped continuation prose.
-            if (line.match(/^\s*([-+*]|\d+[.)])\s+/)) {
+            // Content indented past the bullet belongs to the current item: a
+            // nested list, a table, or wrapped continuation prose.
+            if (line.match(/^\s*\|/)) {
+                // Table nested in the item: emit any pending prose first, then
+                // parse the table block (otherwise its rows leak into the
+                // paragraph as literal | text on export).
+                flushParagraph();
+                currentItem.children.push(parseTable(state));
+            } else if (line.match(/^\s*([-+*]|\d+[.)])\s+/)) {
                 // Nested list: emit any pending prose first, then recurse.
                 flushParagraph();
                 currentItem.children.push(parseList(state));

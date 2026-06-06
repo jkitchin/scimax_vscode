@@ -227,6 +227,30 @@ B & 0.97 & 15.6 \\
 \end{table}
 #+END_SRC
 
+*** 👀 Wide tables fit the margins automatically
+
+Plain ~tabular~ columns (=l=, =c=, =r=) do not wrap or shrink, so a table with
+long cell content would otherwise run past the right page margin. By default the
+LaTeX exporter wraps each plain table in an ~adjustbox~ with =max width=\textwidth=,
+which scales over-wide tables down to fit the text width while leaving narrower
+tables at their natural size:
+
+#+BEGIN_SRC latex
+\begin{adjustbox}{max width=\textwidth}
+\begin{tabular}{lll}
+...
+\end{tabular}
+\end{adjustbox}
+#+END_SRC
+
+This adds ~\usepackage{adjustbox}~ to the preamble. Tables that set their own
+width via ~#+ATTR_LATEX: :environment tabularx :width \textwidth~ (or =longtable=)
+are left alone, since they already control their width. The behavior is controlled
+by the ~fitTablesToTextWidth~ export option (default ~true~); set it to ~false~ to
+emit a bare ~tabular~. If a scaled table's text becomes too small, prefer a
+~tabularx~ table with wrapping ~X~ columns, which keeps the font size and wraps
+long cells instead.
+
 *** Cross-References
 
 Use `#+NAME:' for labeled elements and link to them:

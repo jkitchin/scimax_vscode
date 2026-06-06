@@ -239,6 +239,7 @@ export const NON_ASCII_MAP: Record<string, NonAsciiReplacement> = {
     '′': { ascii: "'", latex: "'", html: '&prime;' },
     '″': { ascii: "''", latex: "''", html: '&Prime;' },
     '±': { ascii: '+/-', latex: '$\\pm$', html: '&plusmn;' },
+    '−': { ascii: '-', latex: '$-$', html: '&minus;' }, // U+2212 minus sign
     '×': { ascii: 'x', latex: '$\\times$', html: '&times;' },
     '÷': { ascii: '/', latex: '$\\div$', html: '&divide;' },
     '≤': { ascii: '<=', latex: '$\\leq$', html: '&le;' },
