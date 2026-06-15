@@ -623,12 +623,12 @@ export class FindFilePanel {
         }
     </style>
 </head>
-<body>
+<body tabindex="-1">
     <div class="header">
         <div class="path" id="current-path">/</div>
         <div class="filter-container">
             <span class="filter-label">Filter:</span>
-            <input type="text" class="filter-input" id="filter-input" placeholder="Type to filter..." readonly>
+            <input type="text" class="filter-input" id="filter-input" placeholder="Type to filter..." readonly tabindex="-1">
         </div>
     </div>
 
@@ -675,6 +675,28 @@ export class FindFilePanel {
         let state = null;
         let actionsMode = false;
 
+        // Keyboard events only reach the webview's document handler while the
+        // iframe holds keyboard focus. Grab focus on load and whenever the
+        // panel becomes visible/focused again so the arrow/navigation keys
+        // keep working (some VS Code versions no longer focus webviews
+        // automatically on creation).
+        function grabFocus() {
+            const input = document.getElementById('filter-input');
+            if (input) {
+                input.focus();
+            } else {
+                document.body.focus();
+            }
+        }
+        window.addEventListener('focus', grabFocus);
+        document.addEventListener('visibilitychange', () => {
+            if (!document.hidden) {
+                grabFocus();
+            }
+        });
+        window.addEventListener('load', grabFocus);
+        grabFocus();
+
         // Action key mappings
         const actionKeys = {
             'o': 'open',
@@ -719,6 +741,7 @@ export class FindFilePanel {
         function hideActionsPanel() {
             actionsMode = false;
             document.getElementById('actions-overlay').classList.remove('visible');
+            grabFocus();
         }
 
         // Set up click handlers for status bar buttons
