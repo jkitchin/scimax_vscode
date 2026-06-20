@@ -1374,17 +1374,36 @@ function parseSpecialBlockFast(state: FastParserState, blockType: string): OrgEl
         state.lineIndex++;
     }
 
+    // Group consecutive non-blank lines into paragraphs (split on blank lines)
+    // rather than one paragraph per line, so inline objects that span multiple
+    // lines (e.g. \(...\) math) are parsed as a whole.
+    const paragraphs: OrgElement[] = [];
+    let buffer: string[] = [];
+    const flush = () => {
+        if (buffer.length === 0) return;
+        paragraphs.push({
+            type: 'paragraph' as const,
+            range: { start: 0, end: 0 },
+            postBlank: 0,
+            children: parseObjectsFast(buffer.join('\n')),
+        } as OrgElement);
+        buffer = [];
+    };
+    for (const line of contentLines) {
+        if (line.trim() === '') {
+            flush();
+        } else {
+            buffer.push(line);
+        }
+    }
+    flush();
+
     return {
         type: 'special-block',
         range: { start: 0, end: 0 },
         postBlank: 0,
         properties: { blockType },
-        children: contentLines.map(line => ({
-            type: 'paragraph' as const,
-            range: { start: 0, end: 0 },
-            postBlank: 0,
-            children: parseObjectsFast(line),
-        })),
+        children: paragraphs,
     } as OrgElement;
 }
 
