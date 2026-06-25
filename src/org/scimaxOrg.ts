@@ -3661,6 +3661,7 @@ function updateHeadingContexts(editor: vscode.TextEditor | undefined): void {
         vscode.commands.executeCommand('setContext', 'scimax.onDrawer', false);
         vscode.commands.executeCommand('setContext', 'scimax.onStatisticsCookie', false);
         vscode.commands.executeCommand('setContext', 'scimax.onLatexBegin', false);
+        vscode.commands.executeCommand('setContext', 'scimax.onBlockBegin', false);
         return;
     }
 
@@ -3673,6 +3674,7 @@ function updateHeadingContexts(editor: vscode.TextEditor | undefined): void {
         vscode.commands.executeCommand('setContext', 'scimax.onDrawer', false);
         vscode.commands.executeCommand('setContext', 'scimax.onStatisticsCookie', false);
         vscode.commands.executeCommand('setContext', 'scimax.onLatexBegin', false);
+        vscode.commands.executeCommand('setContext', 'scimax.onBlockBegin', false);
         return;
     }
 
@@ -3697,6 +3699,12 @@ function updateHeadingContexts(editor: vscode.TextEditor | undefined): void {
     // Check if on LaTeX \begin{...} line
     const onLatexBegin = document.languageId === 'latex' && /^\s*\\begin\{/.test(line);
     vscode.commands.executeCommand('setContext', 'scimax.onLatexBegin', onLatexBegin);
+
+    // Check if on a block begin line (#+BEGIN_SRC, #+BEGIN_EXAMPLE, etc.) so Tab
+    // can fold the block. Matches the line check in toggleFoldAtCursor.
+    const onBlockBegin = (document.languageId === 'org' || document.languageId === 'markdown')
+        && /^\s*#\+BEGIN_/i.test(line);
+    vscode.commands.executeCommand('setContext', 'scimax.onBlockBegin', onBlockBegin);
 }
 
 /**

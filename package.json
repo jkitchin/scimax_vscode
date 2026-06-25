@@ -3551,6 +3551,11 @@
       {
         "command": "scimax.org.toggleFold",
         "key": "tab",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.onBlockBegin && !editorHasSelection && !suggestWidgetVisible && !inlineSuggestionVisible && !inSnippetMode"
+      },
+      {
+        "command": "scimax.org.toggleFold",
+        "key": "tab",
         "when": "editorTextFocus && editorLangId == 'latex' && scimax.onLatexBegin && !editorHasSelection && !suggestWidgetVisible && !inlineSuggestionVisible && !inSnippetMode"
       },
       {

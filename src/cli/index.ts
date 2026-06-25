@@ -25,6 +25,7 @@ import * as fs from 'fs';
 import { agendaCommand } from './commands/agenda';
 import { searchCommand } from './commands/search';
 import { exportCommand } from './commands/export';
+import { tangleCommand } from './commands/tangle';
 import { citeCommand } from './commands/cite';
 import { dbCommand } from './commands/db';
 import { publishCommand } from './commands/publish';
@@ -149,6 +150,7 @@ COMMANDS:
     search <query>          Full-text search across org files
     search headings         Search headings by title, tag, or TODO state
     export <file>           Export org file to HTML, PDF, or LaTeX
+    tangle <file>           Extract source blocks to their :tangle target files
     cite <subcommand>       Citation operations (extract, check, convert)
     db <subcommand>         Database operations (sync, clear, stats, scan, check, remove, ignore)
     journal [date]          Open journal entry (today, tomorrow, "next friday", etc.)
@@ -169,6 +171,8 @@ EXAMPLES:
     scimax export slides.org --format beamer-pdf
     scimax export memo.org --exporter cmu-memo
     scimax export --list-exporters
+    scimax tangle setup.org
+    scimax tangle setup.org --only init,config
     scimax cite extract paper.org
     scimax cite check paper.org --bib refs.bib
     scimax db sync
@@ -222,6 +226,9 @@ async function main(): Promise<void> {
                 break;
             case 'export':
                 await exportCommand(config, args);
+                break;
+            case 'tangle':
+                await tangleCommand(config, args);
                 break;
             case 'cite':
                 await citeCommand(config, args);

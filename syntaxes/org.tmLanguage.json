@@ -363,6 +363,22 @@
           "patterns": [{ "include": "source.julia" }]
         },
         {
+          "comment": "Lean blocks highlight only when a Lean extension (e.g. leanprover.lean4, scope source.lean4) is installed; otherwise they fall back to raw text.",
+          "name": "meta.embedded.block.lean.org",
+          "begin": "(?i)^(\\s*)(#\\+BEGIN_SRC)\\s+(lean4|lean)(.*)$",
+          "end": "(?i)^(\\1)(#\\+END_SRC)\\s*$",
+          "beginCaptures": {
+            "2": { "name": "keyword.control.block.begin.org" },
+            "3": { "name": "storage.type.language.org" },
+            "4": { "name": "meta.block.header.org" }
+          },
+          "endCaptures": {
+            "2": { "name": "keyword.control.block.end.org" }
+          },
+          "contentName": "meta.embedded.block.lean4",
+          "patterns": [{ "include": "source.lean4" }]
+        },
+        {
           "name": "meta.embedded.block.c.org",
           "begin": "(?i)^(\\s*)(#\\+BEGIN_SRC)\\s+(c)(.*)$",
           "end": "(?i)^(\\1)(#\\+END_SRC)\\s*$",
@@ -1267,12 +1283,38 @@
           }
         },
         {
+          "comment": "Multi-line bold: org allows emphasis to span a line break. Fallback after the single-line rule above; the single-line match wins when the span fits on one line. End is bounded by a blank line so an unclosed marker cannot run past the paragraph.",
+          "name": "markup.bold.org",
+          "contentName": "markup.bold.content.org",
+          "begin": "(?:^|(?<=[\\s\\-({'\"]))(\\*)(?=[^*\\s])",
+          "end": "(?<=[^*\\s])(\\*)(?=[\\s.,;:!?)\\]}'\"\\-]|$)|^\\s*$",
+          "beginCaptures": {
+            "1": { "name": "punctuation.definition.bold.begin.org" }
+          },
+          "endCaptures": {
+            "1": { "name": "punctuation.definition.bold.end.org" }
+          }
+        },
+        {
           "name": "markup.italic.org",
           "match": "(?:^|(?<=[\\s\\-({'\"]))(\\/)([^\\/\\s\\n](?:(?:[^\\/\\n]|\\/(?=[A-Za-z0-9]))*[^\\/\\s\\n])?)(\\/)(?=[\\s.,;:!?)\\]}'\"\\-]|$)",
           "captures": {
             "1": { "name": "punctuation.definition.italic.begin.org" },
             "2": { "name": "markup.italic.content.org" },
             "3": { "name": "punctuation.definition.italic.end.org" }
+          }
+        },
+        {
+          "comment": "Multi-line italic: org allows emphasis to span a line break. Fallback after the single-line rule above. The close still rejects a slash followed by an alphanumeric so interior slashes (e.g. A/C) are not closers. End is bounded by a blank line.",
+          "name": "markup.italic.org",
+          "contentName": "markup.italic.content.org",
+          "begin": "(?:^|(?<=[\\s\\-({'\"]))(\\/)(?=[^\\/\\s])",
+          "end": "(?<=[^\\/\\s])(\\/)(?![A-Za-z0-9])(?=[\\s.,;:!?)\\]}'\"\\-]|$)|^\\s*$",
+          "beginCaptures": {
+            "1": { "name": "punctuation.definition.italic.begin.org" }
+          },
+          "endCaptures": {
+            "1": { "name": "punctuation.definition.italic.end.org" }
           }
         },
         {
@@ -1285,12 +1327,38 @@
           }
         },
         {
+          "comment": "Multi-line underline: org allows emphasis to span a line break. Fallback after the single-line rule above. End is bounded by a blank line.",
+          "name": "markup.underline.org",
+          "contentName": "markup.underline.content.org",
+          "begin": "(?:^|(?<=[\\s\\-({'\"]))(_)(?=[^_\\s])",
+          "end": "(?<=[^_\\s])(_)(?![A-Za-z])(?=[\\s.,;:!?)\\]}'\"\\-]|$)|^\\s*$",
+          "beginCaptures": {
+            "1": { "name": "punctuation.definition.underline.begin.org" }
+          },
+          "endCaptures": {
+            "1": { "name": "punctuation.definition.underline.end.org" }
+          }
+        },
+        {
           "name": "markup.raw.verbatim.org",
           "match": "(?:^|(?<=[\\s\\-({'\"]))(=)([^=\\s\\n](?:[^=\\n]*[^=\\s\\n])?)(=)(?=[\\s.,;:!?)\\]}'\"\\-]|$)",
           "captures": {
             "1": { "name": "punctuation.definition.verbatim.begin.org" },
             "2": { "name": "markup.raw.verbatim.content.org" },
             "3": { "name": "punctuation.definition.verbatim.end.org" }
+          }
+        },
+        {
+          "comment": "Multi-line verbatim: org allows emphasis to span a line break. Fallback after the single-line rule above. End is bounded by a blank line.",
+          "name": "markup.raw.verbatim.org",
+          "contentName": "markup.raw.verbatim.content.org",
+          "begin": "(?:^|(?<=[\\s\\-({'\"]))(=)(?=[^=\\s])",
+          "end": "(?<=[^=\\s])(=)(?=[\\s.,;:!?)\\]}'\"\\-]|$)|^\\s*$",
+          "beginCaptures": {
+            "1": { "name": "punctuation.definition.verbatim.begin.org" }
+          },
+          "endCaptures": {
+            "1": { "name": "punctuation.definition.verbatim.end.org" }
           }
         },
         {
@@ -1303,12 +1371,38 @@
           }
         },
         {
+          "comment": "Multi-line inline code: org allows emphasis to span a line break. Fallback after the single-line rule above. End is bounded by a blank line.",
+          "name": "markup.inline.raw.org",
+          "contentName": "markup.inline.raw.content.org",
+          "begin": "(?:^|(?<=[\\s\\-({'\"]))(~)(?=[^~\\s])",
+          "end": "(?<=[^~\\s])(~)(?=[\\s.,;:!?)\\]}'\"\\-]|$)|^\\s*$",
+          "beginCaptures": {
+            "1": { "name": "punctuation.definition.raw.begin.org" }
+          },
+          "endCaptures": {
+            "1": { "name": "punctuation.definition.raw.end.org" }
+          }
+        },
+        {
           "name": "markup.strikethrough.org",
           "match": "(?:^|(?<=[\\s\\-({'\"]))(\\+)([^+\\s\\n\\\\](?:[^+\\n\\\\]*[^+\\s\\n\\\\])?)(\\+)(?=[\\s.,;:!?)\\]}'\"\\-]|$)",
           "captures": {
             "1": { "name": "punctuation.definition.strikethrough.begin.org" },
             "2": { "name": "markup.strikethrough.content.org" },
             "3": { "name": "punctuation.definition.strikethrough.end.org" }
+          }
+        },
+        {
+          "comment": "Multi-line strike-through: org allows emphasis to span a line break. Fallback after the single-line rule above. End is bounded by a blank line.",
+          "name": "markup.strikethrough.org",
+          "contentName": "markup.strikethrough.content.org",
+          "begin": "(?:^|(?<=[\\s\\-({'\"]))(\\+)(?=[^+\\s\\\\])",
+          "end": "(?<=[^+\\s\\\\])(\\+)(?![A-Za-z0-9])(?=[\\s.,;:!?)\\]}'\"\\-]|$)|^\\s*$",
+          "beginCaptures": {
+            "1": { "name": "punctuation.definition.strikethrough.begin.org" }
+          },
+          "endCaptures": {
+            "1": { "name": "punctuation.definition.strikethrough.end.org" }
           }
         },
         {

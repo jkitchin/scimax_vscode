@@ -186,6 +186,26 @@ scimax export paper.org --format html --bib refs.bib --csl ieee
 
 The export command automatically looks for bibliography files in the same directory (=refs.bib=, =references.bib=, or =<filename>.bib=).
 
+** 👀 Tangle
+
+Extract source blocks to their =:tangle= target files (org-babel tangling). Each block with a =:tangle <filename>= header argument is written to that file, with multiple blocks targeting the same file concatenated in document order. Blocks with =:tangle no= (or no =:tangle= header) are skipped. Noweb references (=<<name>>=) are expanded by default for blocks marked =:noweb yes= or =:noweb tangle=.
+
+#+begin_src bash
+# Tangle all blocks in a file to their :tangle targets
+scimax tangle setup.org
+
+# Only tangle specific named blocks (matches #+NAME: of the block)
+scimax tangle setup.org --only init,config
+
+# Disable noweb reference expansion
+scimax tangle setup.org --no-noweb
+
+# Structured JSON output (files written, block/line counts, errors)
+scimax tangle setup.org --json
+#+end_src
+
+Relative =:tangle= paths are resolved against the directory of the source file, and parent directories are created as needed. Note that =--only= filters *named* blocks; unnamed blocks with a =:tangle= target are always tangled.
+
 ** Citations
 
 Citation-related operations.
