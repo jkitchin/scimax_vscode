@@ -86,10 +86,23 @@ Settings for org-mode document behavior including TODO states, progress logging,
 ** ✅ Settings Overview
 CLOSED: [2026-01-24 Sat 17:41]
 
-| Setting                    | Type                 | Default  | Description                     |
-|----------------------------+----------------------+----------+---------------------------------|
-| scimax.org.logRepeat       | string (enum)        | "false"  | Enable progress logging         |
-| scimax.org.logIntoDrawer   | boolean or string    | false    | Where to log state changes      |
+| Setting                            | Type                 | Default  | Description                     |
+|------------------------------------+----------------------+----------+---------------------------------|
+| scimax.org.logRepeat               | string (enum)        | "false"  | Enable progress logging         |
+| scimax.org.logIntoDrawer           | boolean or string    | false    | Where to log state changes      |
+| scimax.org.diagnostics.orphanLinks | boolean              | true     | Warn on unresolved internal links |
+
+** ⚠️ Orphan Link Diagnostics
+
+When =scimax.org.diagnostics.orphanLinks= is enabled (the default), scimax
+warns when an internal link (=[[name]]= or =[[*Heading]]=) resolves to nothing:
+no =<<target>>= / =<<<radio target>>>= / =#+NAME= anchor, no heading, and no
+matching text. This catches the case where an anchor was deleted but a link to
+it remains. Resolution mirrors what following the link actually does (in-file
+anchors/headings/text first, then a workspace-wide anchor lookup in the
+database), so valid cross-file anchor links are not flagged. Custom-id
+(=[[#id]]=) and =id:= links are checked by the separate org-lint =broken-link=
+checker. Set this to =false= to turn the warnings off.
 
 ** ✅ Detailed Configuration
 CLOSED: [2026-01-24 Sat 17:41]

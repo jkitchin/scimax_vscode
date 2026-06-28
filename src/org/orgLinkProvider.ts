@@ -1,6 +1,8 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
 import * as fs from 'fs';
+import { getDatabase } from '../database/lazyDb';
+import { slugifyAnchor } from '../parser/orgAnchors';
 
 // Excalidraw file extensions
 const EXCALIDRAW_EXTENSIONS = ['.excalidraw', '.excalidraw.json', '.excalidraw.svg', '.excalidraw.png'];
@@ -863,6 +865,28 @@ export function registerOrgLinkCommands(context: vscode.ExtensionContext): void 
                     return;
                 }
 
+                // Cross-file fallback: ask the database for an anchor with this
+                // text anywhere in the workspace (granular addressing index).
+                try {
+                    const db = await getDatabase();
+                    if (db) {
+                        const hit = await db.resolveAnchor(target, file);
+                        if (hit && (hit.file_path !== file || hit.line_number - 1 !== editor.selection.active.line)) {
+                            const targetDoc = await vscode.workspace.openTextDocument(hit.file_path);
+                            const targetEditor = await vscode.window.showTextDocument(targetDoc);
+                            const position = new vscode.Position(Math.max(0, hit.line_number - 1), 0);
+                            targetEditor.selection = new vscode.Selection(position, position);
+                            targetEditor.revealRange(
+                                new vscode.Range(position, position),
+                                vscode.TextEditorRevealType.InCenter
+                            );
+                            return;
+                        }
+                    }
+                } catch {
+                    // fall through to the not-found warning
+                }
+
                 vscode.window.showWarningMessage(`Target not found: ${target}`);
             } catch (error) {
                 vscode.window.showErrorMessage(`Failed to open file: ${file}`);
@@ -1043,6 +1067,100 @@ export function registerOrgLinkCommands(context: vscode.ExtensionContext): void 
             await vscode.commands.executeCommand('editor.toggleFold', {
                 selectionLines: [line]
             });
+        })
+    );
+
+    // Granular addressing: drop a human-readable dedicated target at point and
+    // copy a [[link]] to it. The anchor lives in the text, so it travels with
+    // its content under edits; no UUIDs, no sidecar.
+    context.subscriptions.push(
+        vscode.commands.registerCommand('scimax.org.linkToHere', async () => {
+            const editor = vscode.window.activeTextEditor;
+            if (!editor) return;
+            const doc = editor.document;
+            const pos = editor.selection.active;
+
+            // Build a legible slug from the nearest heading + words on this line.
+            let headingText = '';
+            for (let i = pos.line; i >= 0; i--) {
+                const hm = doc.lineAt(i).text.match(/^\*+\s+(.*)$/);
+                if (hm) { headingText = hm[1].replace(/\s+:[^:]+:\s*$/, ''); break; }
+            }
+            const lineWords = doc.lineAt(pos.line).text.trim().split(/\s+/).slice(0, 4).join(' ');
+            let base = slugifyAnchor(headingText, lineWords);
+
+            // Disambiguate against existing anchors of the same text.
+            let slug = base;
+            try {
+                const db = await getDatabase();
+                if (db) {
+                    let n = 2;
+                    while (await db.resolveAnchor(slug)) { slug = `${base}-${n++}`; }
+                }
+            } catch { /* best-effort uniqueness */ }
+
+            // Let the user adjust the proposed name.
+            const chosen = await vscode.window.showInputBox({
+                prompt: 'Anchor name (a dedicated target inserted at point)',
+                value: slug
+            });
+            if (!chosen) return;
+            const finalSlug = chosen.trim();
+
+            await editor.edit(eb => eb.insert(pos, `<<${finalSlug}>>`));
+            await vscode.env.clipboard.writeText(`[[${finalSlug}]]`);
+            vscode.window.showInformationMessage(`Inserted <<${finalSlug}>> and copied [[${finalSlug}]] to clipboard.`);
+        })
+    );
+
+    // Granular addressing: show object-level back-links to the anchor at point.
+    context.subscriptions.push(
+        vscode.commands.registerCommand('scimax.org.showBacklinks', async () => {
+            const editor = vscode.window.activeTextEditor;
+            if (!editor) return;
+            const lineText = editor.document.lineAt(editor.selection.active.line).text;
+
+            // Detect an anchor on the current line: radio, dedicated, or #+NAME.
+            let anchorText: string | undefined;
+            const radio = lineText.match(/<<<([^<>]+)>>>/);
+            const target = lineText.match(/<<([^<>]+)>>/);
+            const name = lineText.match(/^[ \t]*#\+NAME:[ \t]*(.+?)[ \t]*$/i);
+            if (radio) anchorText = radio[1].trim();
+            else if (target) anchorText = target[1].trim();
+            else if (name) anchorText = name[1].trim();
+
+            if (!anchorText) {
+                anchorText = await vscode.window.showInputBox({ prompt: 'Anchor name to find back-links for' });
+                if (!anchorText) return;
+            }
+
+            const db = await getDatabase();
+            if (!db) {
+                vscode.window.showWarningMessage('Database not available.');
+                return;
+            }
+            const backlinks = await db.getAnchorBacklinks(anchorText);
+            if (backlinks.length === 0) {
+                vscode.window.showInformationMessage(`No back-links to "${anchorText}".`);
+                return;
+            }
+
+            const items = backlinks.map(b => ({
+                label: `$(references) ${path.basename(b.file_path)}:${b.line_number}`,
+                description: b.heading_title || '',
+                detail: b.description || '',
+                file: b.file_path,
+                line: b.line_number
+            }));
+            const pick = await vscode.window.showQuickPick(items, {
+                placeHolder: `${backlinks.length} back-link(s) to "${anchorText}"`
+            });
+            if (!pick) return;
+            const targetDoc = await vscode.workspace.openTextDocument(pick.file);
+            const targetEditor = await vscode.window.showTextDocument(targetDoc);
+            const position = new vscode.Position(Math.max(0, pick.line - 1), 0);
+            targetEditor.selection = new vscode.Selection(position, position);
+            targetEditor.revealRange(new vscode.Range(position, position), vscode.TextEditorRevealType.InCenter);
         })
     );
 }

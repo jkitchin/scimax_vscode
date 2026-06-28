@@ -1,0 +1,218 @@
+#+TITLE: Granular Addressing (Anchors and Back-links)
+#+AUTHOR: Scimax VS Code Team
+#+DATE: 2026-06-28
+#+STARTUP: overview
+#+OPTIONS: toc:2 num:t H:4
+#+TODO: ⚠️ 👀 | ✅
+
+* ⚠️ Overview
+
+/Granular addressing/ is the ability to point a link at a location finer than a
+whole file or heading, and to have that pointer survive editing. It is inspired
+by Doug Engelbart's principle that every object in a document should be
+intrinsically addressable and linkable.
+
+In scimax this is built on three native org-mode constructs, called /anchors/,
+plus a database index that resolves them across files and tracks back-links:
+
+- *Dedicated target* =<<name>>= - a point you can link to with =[[name]]=.
+- *Radio target* =<<<name>>>= - every occurrence of the phrase auto-links.
+- *Named element* =#+NAME: name= - names a block, table, or other element.
+
+Because an anchor lives in the document text, it travels with its content when
+you move a paragraph and disappears with it when you delete one. There are no
+hidden identifiers, no UUIDs scattered through your prose, and no sidecar files:
+the text is the source of truth, and the scimax database is a derived index that
+is rebuilt whenever a file is saved.
+
+* ⚠️ Anchors
+
+** ⚠️ Dedicated targets
+
+A dedicated target marks a specific point. Place =<<name>>= anywhere in the text
+and link to it with =[[name]]=:
+
+#+BEGIN_SRC org
+We chose SQLite for portability <<why-sqlite>> and zero-config embedding.
+
+Later, in another paragraph or file:
+See the rationale at [[why-sqlite]].
+#+END_SRC
+
+The anchor name is human-readable (Engelbart's requirement that addresses be
+interpretable by people). Use a descriptive slug rather than a cryptic code.
+
+** ⚠️ Radio targets
+
+A radio target turns /every/ occurrence of a phrase into a link to one
+definition, with no explicit =[[...]]= syntax:
+
+#+BEGIN_SRC org
+A <<<dynamic knowledge repository>>> is a continuously integrated knowledge base.
+
+Elsewhere, any mention of dynamic knowledge repository becomes a live link.
+#+END_SRC
+
+Use radio targets for /named things/ (defined terms, decisions, glossary
+entries). Because they auto-link every literal occurrence, reserve them for
+distinctive phrases, not common words.
+
+** ⚠️ Named elements
+
+=#+NAME:= gives a stable name to the element that follows (a source block,
+table, figure, equation):
+
+#+BEGIN_SRC org
+#+NAME: results-table
+| x | y |
+|---+---|
+| 1 | 2 |
+
+Refer to it with [[results-table]].
+#+END_SRC
+
+** ⚠️ When to use which
+
+| Construct          | Syntax           | Linked by        | Best for                          |
+|--------------------+------------------+------------------+-----------------------------------|
+| Dedicated target   | =<<name>>=       | =[[name]]=       | An arbitrary location (a passage) |
+| Radio target       | =<<<name>>>=     | any occurrence   | A named term, decision, concept   |
+| Named element      | =#+NAME: name=   | =[[name]]=       | A block, table, figure, equation  |
+
+* ⚠️ How addressing survives editing
+
+This is the core property that makes anchors useful in living documents.
+
+- *Move a paragraph* (within a section, to another section, or to another
+  file): the =<<anchor>>= moves with the text, so the link still resolves.
+- *Delete a paragraph*: the anchor goes with it. The link does not silently
+  point at the wrong place; it becomes a detectable /orphan/ (see
+  [[*Orphan link diagnostics][Orphan link diagnostics]]).
+- *Rename or heavily rewrite*: if you change the anchor text, links to the old
+  name orphan, again surfaced as a warning rather than a silent error.
+
+You get this for free because the database is rebuilt from the file on every
+save. There is nothing to keep in sync by hand.
+
+* ⚠️ Commands
+
+| Command                       | Title                                    | What it does                                                        |
+|-------------------------------+------------------------------------------+---------------------------------------------------------------------|
+| =scimax.org.linkToHere=       | Scimax: Link to Here                     | Insert a readable =<<anchor>>= at point and copy =[[anchor]]= to the clipboard |
+| =scimax.org.showBacklinks=    | Scimax: Show Back-links to Anchor        | List the links that point at the anchor on the current line          |
+
+Both are available from the Command Palette (=C-S-P=, search "Scimax").
+
+** ⚠️ Link to Here
+
+Place the cursor where you want an addressable point and run *Link to Here*. It:
+
+1. Proposes a human-readable anchor name derived from the nearest heading and the
+   words on the current line (for example =design-notes-why-sqlite=).
+2. Checks the workspace index and disambiguates the name if it already exists.
+3. Lets you edit the proposed name.
+4. Inserts =<<name>>= at the cursor and copies =[[name]]= to the clipboard, ready
+   to paste wherever you want the reference.
+
+** ⚠️ Show Back-links
+
+Put the cursor on a line that contains an anchor (=<<name>>=, =<<<name>>>=, or
+=#+NAME: name=) and run *Show Back-links*. scimax queries the database for every
+link that points at that anchor (in any file) and shows them in a picker; choose
+one to jump to the linking location. If the cursor is not on an anchor, you are
+prompted for a name.
+
+This is /object-level/ back-linking: it resolves links to the specific anchor
+they target, not merely file-to-file. For whole-file relationship views, see the
+[[file:39-link-graph.org][Link Graph]].
+
+** ⚠️ Following links across files
+
+Following a =[[name]]= link first searches the current file. If the anchor is
+not in the current file, scimax consults the database and jumps to a matching
+anchor anywhere in the workspace. This is what makes the =[[name]]= link copied
+by *Link to Here* work even when the anchor lives in a different file.
+
+* ⚠️ The anchor index
+
+Anchors are stored in the scimax database (the same database used for search and
+the link graph), in an =anchors= table that records the anchor text, its kind
+(=target=, =radio=, or =name=), its file, line, character offset, and the
+heading that contains it. The index is:
+
+- *Derived, not authoritative*: the org file is the truth; the index is rebuilt
+  on save and can be regenerated at any time with =scimax db sync=.
+- *Cross-file*: anchor names resolve across the whole indexed workspace.
+- *Collision-aware*: *Link to Here* checks the index to keep new anchor names
+  unique.
+
+Anchors inside =#+BEGIN_SRC=, =#+BEGIN_EXAMPLE=, and similar blocks are ignored,
+so =<<...>>= in code is not treated as an anchor.
+
+* ⚠️ Orphan link diagnostics
+
+When the setting =scimax.org.diagnostics.orphanLinks= is enabled (the default),
+scimax warns when an internal link resolves to nothing. A link is flagged only
+when it is confidently unresolvable, so valid links are never marked:
+
+- =[[name]]= is flagged when there is no =<<name>>= / =<<<name>>>= / =#+NAME:
+  name= anchor, no heading with that text, no matching =CUSTOM_ID=, the name
+  does not appear as ordinary text in the file, and no anchor of that name
+  exists elsewhere in the workspace.
+- =[[*Heading]]= is flagged when no heading with that title exists in the file.
+
+Resolution deliberately mirrors what following the link actually does, so the
+diagnostic never contradicts navigation. The typical trigger is deleting an
+anchor while a link to it remains: you see a yellow warning on the link target,
+"Unresolved link: ... The target may have been deleted."
+
+Custom-id (=[[#id]]=) and =id:= links are validated by the separate org-lint
+=broken-link= checker. Cross-file fragment links (=[[file.org::name]]=) are not
+checked in this version.
+
+To turn the warnings off, set in your settings:
+
+#+BEGIN_SRC json
+{
+  "scimax.org.diagnostics.orphanLinks": false
+}
+#+END_SRC
+
+* ⚠️ Worked example
+
+#+BEGIN_SRC org
+# decisions.org
+* Architecture decisions
+We chose an embedded database <<why-sqlite>> to avoid a server dependency.
+
+# review.org (another file)
+* Review notes
+The reasoning for the storage choice is at [[why-sqlite]].
+#+END_SRC
+
+- Following =[[why-sqlite]]= in =review.org= jumps to =decisions.org= (cross-file
+  resolution via the index).
+- Running *Show Back-links* on the =<<why-sqlite>>= line in =decisions.org= lists
+  the link in =review.org=.
+- If you delete the =<<why-sqlite>>= anchor and save, the link in =review.org=
+  is flagged as an orphan.
+
+* ⚠️ Limitations
+
+- *Point, not region*: an anchor addresses the point where it sits. To address a
+  paragraph you place an anchor in it; arbitrary elements are not addressable
+  until anchored ("intrinsic on demand" rather than "intrinsic always").
+- *Uniqueness*: anchor names should be unique within their resolution scope.
+  *Link to Here* disambiguates automatically, but a hand-written duplicate name
+  resolves to the first match.
+- *Cross-file fragments*: =[[file.org::name]]= links are followed but are not
+  yet covered by orphan diagnostics.
+
+* ⚠️ Related Topics
+
+- [[file:05-links.org][Links]] - all link types and link following
+- [[file:39-link-graph.org][Link Graph]] - file-level relationship visualization
+- [[file:18-database-search.org][Database and Search]] - the index that powers anchor resolution
+- [[file:25-commands.org][Commands]] - full command reference
+- [[file:26-configuration.org][Configuration]] - the =orphanLinks= and other settings
+- [[file:02-document-structure.org][Document Structure]] - headings, CUSTOM_ID, and IDs

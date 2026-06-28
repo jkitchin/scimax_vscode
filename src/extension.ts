@@ -60,6 +60,7 @@ import { registerAgendaCommands } from './org/agendaProvider';
 import { registerTableFormulaCommands } from './org/tableFormula';
 import { registerCaptureCommands } from './org/captureProvider';
 import { OrgLintProvider, registerOrgLintCommands } from './org/orgLintProvider';
+import { registerOrphanLinkDiagnostics } from './org/orphanLinkDiagnostics';
 // Jupyter commands imported dynamically to handle zeromq errors gracefully
 // import { registerJupyterCommands } from './jupyter/commands';
 import { ProjectileManager, Project } from './projectile/projectileManager';
@@ -615,6 +616,10 @@ export async function activate(context: vscode.ExtensionContext) {
     const orgLintProvider = new OrgLintProvider();
     registerOrgLintCommands(context, orgLintProvider);
     context.subscriptions.push(orgLintProvider);
+
+    // Orphan link diagnostics (granular addressing): flag [[name]] links whose
+    // anchor/heading/text target no longer resolves.
+    registerOrphanLinkDiagnostics(context);
 
     // Track cursor position to set context for keybinding differentiation
     // This enables different keybindings when cursor is in a table vs on a heading

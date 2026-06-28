@@ -24,6 +24,7 @@ import {
     UnifiedParserAdapter,
     LegacyDocument,
 } from '../parser/orgParserAdapter';
+import { extractAnchors, normalizeAnchorText } from '../parser/orgAnchors';
 // Migration data - inlined here to avoid importing migrations.ts which pulls in vscode via logger.
 // Keep in sync with src/database/migrations.ts.
 
@@ -147,6 +148,32 @@ const coreMigrations: CoreMigration[] = [
             `CREATE INDEX IF NOT EXISTS idx_links_heading ON links(heading_id)`,
             `CREATE INDEX IF NOT EXISTS idx_links_target ON links(target)`,
             `CREATE INDEX IF NOT EXISTS idx_links_file_type ON links(file_path, link_type)`
+        ]
+    },
+    {
+        version: 5,
+        description: 'Add anchors table for granular addressing (targets, radio targets, NAME) and raw_target on links',
+        up: [
+            `CREATE TABLE IF NOT EXISTS anchors (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                file_id INTEGER NOT NULL,
+                file_path TEXT NOT NULL,
+                anchor_text TEXT NOT NULL,
+                anchor_text_lower TEXT NOT NULL,
+                kind TEXT NOT NULL,
+                line_number INTEGER NOT NULL,
+                char_offset INTEGER NOT NULL,
+                heading_id INTEGER REFERENCES headings(id) ON DELETE SET NULL,
+                FOREIGN KEY (file_id) REFERENCES files(id) ON DELETE CASCADE
+            )`,
+            `CREATE INDEX IF NOT EXISTS idx_anchors_text ON anchors(anchor_text_lower)`,
+            `CREATE INDEX IF NOT EXISTS idx_anchors_file ON anchors(file_id)`,
+            `CREATE INDEX IF NOT EXISTS idx_anchors_heading ON anchors(heading_id)`,
+            // Raw (unresolved) link target so internal [[target]] links can be
+            // matched back to anchors; the existing `target` column stays
+            // path-resolved for the file-level graph.
+            `ALTER TABLE links ADD COLUMN raw_target TEXT`,
+            `CREATE INDEX IF NOT EXISTS idx_links_raw_target ON links(raw_target)`
         ]
     }
 ];
@@ -833,6 +860,7 @@ export class ScimaxDbCore {
                         { sql: 'DELETE FROM headings WHERE file_path = ?', args: [filePath] },
                         { sql: 'DELETE FROM source_blocks WHERE file_path = ?', args: [filePath] },
                         { sql: 'DELETE FROM links WHERE file_path = ?', args: [filePath] },
+                        { sql: 'DELETE FROM anchors WHERE file_path = ?', args: [filePath] },
                         { sql: 'DELETE FROM hashtags WHERE file_path = ?', args: [filePath] },
                         { sql: 'DELETE FROM chunks WHERE file_path = ?', args: [filePath] },
                         { sql: 'DELETE FROM fts_content WHERE file_path = ?', args: [filePath] },
@@ -984,6 +1012,136 @@ export class ScimaxDbCore {
         if (doc.links.length > 0) {
             await this.indexLinks(fileId, filePath, doc.links);
         }
+
+        await this.indexAnchors(fileId, filePath, content, linePositions);
+    }
+
+    /**
+     * Index org anchors (<<target>>, <<<radio>>>, #+NAME:) for granular
+     * addressing. Each anchor is associated with its containing heading and an
+     * absolute char offset so links can resolve to a location finer than a
+     * heading and back-links can be computed at the object level.
+     */
+    private async indexAnchors(
+        fileId: number,
+        filePath: string,
+        content: string,
+        linePositions: number[]
+    ): Promise<void> {
+        if (!this.db) return;
+
+        const anchors = extractAnchors(content);
+        if (anchors.length === 0) return;
+
+        const headingsResult = await this.db.execute({
+            sql: 'SELECT id, line_number FROM headings WHERE file_path = ? ORDER BY line_number',
+            args: [filePath]
+        });
+        const headings = headingsResult.rows.map(row => ({
+            id: row.id as number,
+            lineNumber: row.line_number as number
+        }));
+
+        const statements: { sql: string; args: (string | number | null)[] }[] = [];
+        for (const anchor of anchors) {
+            const headingId = this.findContainingHeadingId(anchor.lineNumber, headings);
+            const charOffset = (linePositions[anchor.lineNumber - 1] || 0) + anchor.column;
+            statements.push({
+                sql: `INSERT INTO anchors
+                      (file_id, file_path, anchor_text, anchor_text_lower, kind,
+                       line_number, char_offset, heading_id)
+                      VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+                args: [
+                    fileId, filePath, anchor.text, normalizeAnchorText(anchor.text),
+                    anchor.kind, anchor.lineNumber, charOffset, headingId
+                ]
+            });
+        }
+
+        const BATCH_SIZE = 50;
+        for (let i = 0; i < statements.length; i += BATCH_SIZE) {
+            await this.db.batch(statements.slice(i, i + BATCH_SIZE));
+        }
+    }
+
+    /**
+     * Resolve an anchor name to a location. Prefers an anchor in `scopeFilePath`
+     * (same-file resolution), then falls back to anywhere in the workspace.
+     * Returns null when no anchor with that text is indexed.
+     */
+    public async resolveAnchor(
+        text: string,
+        scopeFilePath?: string
+    ): Promise<{ file_path: string; line_number: number; char_offset: number; kind: string } | null> {
+        if (!this.db) return null;
+        const key = normalizeAnchorText(text);
+        if (!key) return null;
+
+        if (scopeFilePath) {
+            const local = await this.db.execute({
+                sql: `SELECT file_path, line_number, char_offset, kind FROM anchors
+                      WHERE anchor_text_lower = ? AND file_path = ?
+                      ORDER BY line_number LIMIT 1`,
+                args: [key, scopeFilePath]
+            });
+            if (local.rows.length > 0) {
+                const r = local.rows[0];
+                return {
+                    file_path: r.file_path as string,
+                    line_number: r.line_number as number,
+                    char_offset: r.char_offset as number,
+                    kind: r.kind as string
+                };
+            }
+        }
+
+        const any = await this.db.execute({
+            sql: `SELECT file_path, line_number, char_offset, kind FROM anchors
+                  WHERE anchor_text_lower = ?
+                  ORDER BY file_path, line_number LIMIT 1`,
+            args: [key]
+        });
+        if (any.rows.length === 0) return null;
+        const r = any.rows[0];
+        return {
+            file_path: r.file_path as string,
+            line_number: r.line_number as number,
+            char_offset: r.char_offset as number,
+            kind: r.kind as string
+        };
+    }
+
+    /**
+     * Object-level back-links: links that point at an anchor with the given
+     * text. Matches bare internal links ([[text]]) and ::-suffixed links
+     * ([[file::text]]) via the raw (unresolved) link target. Each result names
+     * the source file, line, and the heading that contains the link.
+     *
+     * Note: matching is by anchor text, so a same-named anchor in another file
+     * can appear; this is the documented uniqueness limitation for v1.
+     */
+    public async getAnchorBacklinks(
+        text: string
+    ): Promise<Array<{ file_path: string; line_number: number; description: string | null; heading_title: string | null }>> {
+        if (!this.db) return [];
+        const key = normalizeAnchorText(text);
+        if (!key) return [];
+
+        const result = await this.db.execute({
+            sql: `SELECT l.file_path, l.line_number, l.description, h.title AS heading_title
+                  FROM links l
+                  LEFT JOIN headings h ON l.heading_id = h.id
+                  WHERE l.link_type IN ('internal', 'file', 'fuzzy')
+                    AND (lower(trim(l.raw_target)) = ? OR lower(trim(l.raw_target)) LIKE '%::' || ?)
+                  ORDER BY l.file_path, l.line_number`,
+            args: [key, key]
+        });
+        return result.rows.map(r => ({
+            file_path: r.file_path as string,
+            line_number: r.line_number as number,
+            description: (r.description as string) ?? null,
+            heading_title: (r.heading_title as string) ?? null
+        }));
     }
 
     private async indexLinks(
@@ -1023,9 +1181,9 @@ export class ScimaxDbCore {
 
             linkStatements.push({
                 sql: `INSERT INTO links
-                      (file_id, file_path, link_type, target, description, line_number, heading_id)
-                      VALUES (?, ?, ?, ?, ?, ?, ?)`,
-                args: [fileId, filePath, link.type, resolvedTarget, link.description || null, link.lineNumber, headingId]
+                      (file_id, file_path, link_type, target, description, line_number, heading_id, raw_target)
+                      VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+                args: [fileId, filePath, link.type, resolvedTarget, link.description || null, link.lineNumber, headingId, link.target]
             });
         }
 
@@ -1232,6 +1390,7 @@ export class ScimaxDbCore {
                     { sql: 'DELETE FROM headings WHERE file_path LIKE ?', args: [pattern] },
                     { sql: 'DELETE FROM source_blocks WHERE file_path LIKE ?', args: [pattern] },
                     { sql: 'DELETE FROM links WHERE file_path LIKE ?', args: [pattern] },
+                    { sql: 'DELETE FROM anchors WHERE file_path LIKE ?', args: [pattern] },
                     { sql: 'DELETE FROM hashtags WHERE file_path LIKE ?', args: [pattern] },
                     { sql: 'DELETE FROM chunks WHERE file_path LIKE ?', args: [pattern] },
                     { sql: 'DELETE FROM fts_content WHERE file_path LIKE ?', args: [pattern] },
@@ -1251,6 +1410,7 @@ export class ScimaxDbCore {
                     { sql: 'DELETE FROM headings WHERE file_path = ?', args: [filePath] },
                     { sql: 'DELETE FROM source_blocks WHERE file_path = ?', args: [filePath] },
                     { sql: 'DELETE FROM links WHERE file_path = ?', args: [filePath] },
+                    { sql: 'DELETE FROM anchors WHERE file_path = ?', args: [filePath] },
                     { sql: 'DELETE FROM hashtags WHERE file_path = ?', args: [filePath] },
                     { sql: 'DELETE FROM chunks WHERE file_path = ?', args: [filePath] },
                     { sql: 'DELETE FROM fts_content WHERE file_path = ?', args: [filePath] },
@@ -1783,6 +1943,7 @@ export class ScimaxDbCore {
                 'DELETE FROM chunks',
                 'DELETE FROM fts_content',
                 'DELETE FROM hashtags',
+                'DELETE FROM anchors',
                 'DELETE FROM links',
                 'DELETE FROM source_blocks',
                 'DELETE FROM headings',

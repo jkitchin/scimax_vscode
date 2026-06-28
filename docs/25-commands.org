@@ -64,6 +64,24 @@ CLOSED: [2026-01-17 Sat 12:24]
 | [[cmd:scimax.org.markSubtree]]      | Mark (Select) Subtree  | m (speed)          |
 | [[cmd:scimax.org.addIdToHeading]]   | Add ID to Heading      | -                  |
 
+** ⚠️ Granular Addressing (Anchors)
+
+These commands implement /granular addressing/: pointing a link at a location
+finer than a heading. An anchor is a native org target (=<<name>>=), radio
+target (=<<<name>>>=), or =#+NAME:= keyword. Because the anchor lives in the
+text, it travels with its content when you move a paragraph and disappears with
+it when you delete one (the link then becomes a detectable orphan). Anchors are
+indexed in the scimax database, so =[[name]]= links resolve across files and
+back-links are tracked at the object level.
+
+| Command ID                       | Description                                         | Default Keybinding |
+|----------------------------------+-----------------------------------------------------+--------------------|
+| [[cmd:scimax.org.linkToHere]]    | Insert a readable =<<anchor>>= at point, copy =[[anchor]]= to clipboard | -    |
+| [[cmd:scimax.org.showBacklinks]] | Show object-level back-links to the anchor at point | -                  |
+
+Following a =[[name]]= link first searches the current file, then falls back to
+the database to resolve an anchor of that name anywhere in the workspace.
+
 ** ✅ DWIM Commands
 CLOSED: [2026-04-12 Sun 19:53]
 

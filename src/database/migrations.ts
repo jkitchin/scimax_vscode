@@ -177,6 +177,34 @@ export const migrations: Migration[] = [
             // Composite index for common query pattern (file + link type)
             `CREATE INDEX IF NOT EXISTS idx_links_file_type ON links(file_path, link_type)`
         ]
+    },
+    {
+        version: 5,
+        description: 'Add anchors table for granular addressing (targets, radio targets, NAME) and raw_target on links',
+        up: [
+            // Granular addressing: every org target/radio-target/#+NAME becomes
+            // an indexed, addressable anchor below the heading level.
+            `CREATE TABLE IF NOT EXISTS anchors (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                file_id INTEGER NOT NULL,
+                file_path TEXT NOT NULL,
+                anchor_text TEXT NOT NULL,
+                anchor_text_lower TEXT NOT NULL,
+                kind TEXT NOT NULL,
+                line_number INTEGER NOT NULL,
+                char_offset INTEGER NOT NULL,
+                heading_id INTEGER REFERENCES headings(id) ON DELETE SET NULL,
+                FOREIGN KEY (file_id) REFERENCES files(id) ON DELETE CASCADE
+            )`,
+            `CREATE INDEX IF NOT EXISTS idx_anchors_text ON anchors(anchor_text_lower)`,
+            `CREATE INDEX IF NOT EXISTS idx_anchors_file ON anchors(file_id)`,
+            `CREATE INDEX IF NOT EXISTS idx_anchors_heading ON anchors(heading_id)`,
+
+            // Raw (unresolved) link target so internal [[target]] links can be
+            // matched back to anchors; existing `target` stays path-resolved.
+            `ALTER TABLE links ADD COLUMN raw_target TEXT`,
+            `CREATE INDEX IF NOT EXISTS idx_links_raw_target ON links(raw_target)`
+        ]
     }
 ];
 

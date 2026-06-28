@@ -107,6 +107,37 @@ Link types supported by scimax:
 | `#` | `[[#my-id]]` | Custom ID (`#+CUSTOM_ID: my-id`) |
 | `doi:` | `[[doi:10.1000/xyz]]` | DOI link |
 | `cite:` | `cite:key` | Citation (see Citations section) |
+| (name) | `[[my-anchor]]` | Anchor or heading (see Granular Addressing) |
+
+### Granular Addressing (Anchors and Back-links)
+
+Point a link at a location finer than a heading using an *anchor*. Because the
+anchor lives in the text, it moves with its content and is removed when the
+content is deleted (the link then becomes a detectable orphan). Anchors are
+indexed in the scimax database, so `[[name]]` resolves across files.
+
+```org
+<<why-sqlite>>            dedicated target; link with [[why-sqlite]]
+<<<key concept>>>         radio target; every occurrence of the phrase auto-links
+#+NAME: results-table     names a block/table; link with [[results-table]]
+```
+
+| Construct        | Syntax         | Best for                          |
+|------------------|----------------|-----------------------------------|
+| Dedicated target | `<<name>>`     | An arbitrary point (a passage)    |
+| Radio target     | `<<<name>>>`   | A named term, concept, decision   |
+| Named element    | `#+NAME: name` | A block, table, figure, equation  |
+
+In-editor commands (Command Palette, not the CLI):
+- **Scimax: Link to Here** (`scimax.org.linkToHere`) inserts a readable
+  `<<anchor>>` at point and copies `[[anchor]]` to the clipboard.
+- **Scimax: Show Back-links to Anchor** (`scimax.org.showBacklinks`) lists the
+  links that point at the anchor on the current line (object-level back-links).
+
+Orphan diagnostics: when `scimax.org.diagnostics.orphanLinks` is enabled
+(default), scimax warns on an internal `[[name]]`/`[[*Heading]]` link that
+resolves to no anchor, heading, or text. The anchor index is rebuilt on save and
+can be regenerated with `scimax db sync`.
 
 ---
 

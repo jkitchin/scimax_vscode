@@ -2110,6 +2110,14 @@
         "title": "Scimax: Add ID to Heading"
       },
       {
+        "command": "scimax.org.linkToHere",
+        "title": "Scimax: Link to Here (insert anchor, copy link)"
+      },
+      {
+        "command": "scimax.org.showBacklinks",
+        "title": "Scimax: Show Back-links to Anchor"
+      },
+      {
         "command": "scimax.org.cycleTodo",
         "title": "Scimax: Cycle TODO State"
       },
@@ -6543,6 +6551,11 @@
           },
           "default": [],
           "description": "List of org-lint checker IDs to disable. Available checkers: duplicate-custom-id, duplicate-name, missing-language-in-src-block, invalid-block, incomplete-drawer, broken-link, undefined-footnote-reference, unreferenced-footnote-definition, timestamp-syntax, clock-issues, orphaned-affiliated-keywords, wrong-header-argument, planning-inactive, heading-level-skip"
+        },
+        "scimax.org.diagnostics.orphanLinks": {
+          "type": "boolean",
+          "default": true,
+          "description": "Warn when an internal link ([[name]] or [[*Heading]]) resolves to no anchor, heading, or text. Anchors come from <<targets>>, <<<radio targets>>>, and #+NAME, indexed across the workspace (granular addressing)."
         },
         "scimax.templates.directory": {
           "type": "string",

@@ -376,9 +376,8 @@ const brokenLink: OrgLintChecker = {
     check(doc: OrgDocumentNode): LintIssue[] {
         const issues: LintIssue[] = [];
 
-        // Collect all targets (CUSTOM_ID, NAME, dedicated targets, headlines)
+        // Collect in-document targets (CUSTOM_ID and ID) for the checks below.
         const targets = new Set<string>();
-        const headlineTitles = new Set<string>();
 
         visitNodes(doc, (node) => {
             if (node.type === 'headline') {
@@ -389,8 +388,6 @@ const brokenLink: OrgLintChecker = {
                 if (headline.properties.id) {
                     targets.add(headline.properties.id);
                 }
-                // Add headline text as fuzzy target
-                headlineTitles.add(headline.properties.rawValue.toLowerCase().trim());
             }
             if (node.type === 'keyword') {
                 const kw = node as KeywordElement;
@@ -437,18 +434,12 @@ const brokenLink: OrgLintChecker = {
                     }
                 }
 
-                // Check fuzzy links (internal references)
-                if (linkType === 'fuzzy') {
-                    const lowerPath = path.toLowerCase().trim();
-                    if (!targets.has(path) && !headlineTitles.has(lowerPath)) {
-                        issues.push({
-                            range: positionToRange(link.position),
-                            message: `Broken link: target "${path}" not found`,
-                            severity: vscode.DiagnosticSeverity.Warning,
-                            code: 'broken-link'
-                        });
-                    }
-                }
+                // Fuzzy links ([[name]], [[*Heading]]) are handled by the
+                // cross-file-aware orphan link diagnostics provider
+                // (orphanLinkDiagnostics.ts), which also understands workspace
+                // anchors and the text-search fallback. Checking them here would
+                // false-flag valid cross-file anchor links, so this checker
+                // limits itself to in-document custom-id and id targets above.
             }
         });
 
