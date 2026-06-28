@@ -127,6 +127,11 @@
           "icon": "$(folder)"
         },
         {
+          "id": "scimax.notes",
+          "name": "Notes",
+          "icon": "$(comment-discussion)"
+        },
+        {
           "id": "scimax.journal.calendar",
           "type": "webview",
           "name": "Journal Calendar",
@@ -2116,6 +2121,15 @@
       {
         "command": "scimax.org.showBacklinks",
         "title": "Scimax: Show Back-links to Anchor"
+      },
+      {
+        "command": "scimax.org.addNote",
+        "title": "Scimax: Add Note (Decision/Question) on Selection"
+      },
+      {
+        "command": "scimax.notes.refresh",
+        "title": "Scimax: Refresh Notes Panel",
+        "icon": "$(refresh)"
       },
       {
         "command": "scimax.org.cycleTodo",
@@ -6557,6 +6571,21 @@
           "default": true,
           "description": "Warn when an internal link ([[name]] or [[*Heading]]) resolves to no anchor, heading, or text. Anchors come from <<targets>>, <<<radio targets>>>, and #+NAME, indexed across the workspace (granular addressing)."
         },
+        "scimax.org.notes.excludeFromExport": {
+          "type": "boolean",
+          "default": true,
+          "description": "Exclude dialog notes (footnotes whose label starts with the notes prefix, e.g. [fn:note-...]) from exported HTML/PDF/DOCX/etc. Notes are meta, not document content."
+        },
+        "scimax.org.notes.labelPrefix": {
+          "type": "string",
+          "default": "note-",
+          "description": "Footnote label prefix that marks a footnote as a dialog note (e.g. note- means [fn:note-why-db])."
+        },
+        "scimax.org.notes.author": {
+          "type": "string",
+          "default": "",
+          "description": "Author name recorded on new notes. Defaults to the OS username when empty."
+        },
         "scimax.templates.directory": {
           "type": "string",
           "default": "",
@@ -6643,6 +6672,11 @@
           "group": "scimax"
         },
         {
+          "command": "scimax.org.addNote",
+          "when": "editorLangId == org",
+          "group": "scimax"
+        },
+        {
           "command": "scimax.latex.jumpToPdf",
           "when": "editorLangId == latex",
           "group": "scimax"
@@ -6659,6 +6693,11 @@
         }
       ],
       "view/title": [
+        {
+          "command": "scimax.notes.refresh",
+          "when": "view == scimax.notes",
+          "group": "navigation"
+        },
         {
           "command": "scimax.agenda.search",
           "when": "view == scimax.agenda",

@@ -11,6 +11,7 @@ import * as crypto from 'crypto';
 
 import type { OrgDocumentNode } from './orgElementTypes';
 import { parseOptionsKeyword, ExportOptions, DEFAULT_EXPORT_OPTIONS, expandMacro, BUILTIN_MACROS, shouldRenderAsLiteral } from './orgExport';
+import { stripNoteFootnotes } from './orgNotes';
 
 // =============================================================================
 // Pandoc Availability Check
@@ -1034,6 +1035,9 @@ export async function exportToDocx(
     doc: OrgDocumentNode,
     options?: Partial<DocxExportOptions>
 ): Promise<Buffer> {
+    if (options?.excludeNoteFootnotes !== false) {
+        stripNoteFootnotes(doc);
+    }
     const backend = new DocxExportBackend();
     return backend.exportDocument(doc, options);
 }

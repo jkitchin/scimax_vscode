@@ -58,6 +58,7 @@ import type {
     ExportState,
     ExportOptions,
 } from './orgExport';
+import { stripNoteFootnotes } from './orgNotes';
 
 import {
     createExportState,
@@ -1482,6 +1483,9 @@ export function exportToIpynb(
     doc: OrgDocumentNode,
     options?: Partial<IpynbExportOptions>
 ): string {
+    if (options?.excludeNoteFootnotes !== false) {
+        stripNoteFootnotes(doc);
+    }
     const backend = new IpynbExportBackend();
     return backend.exportDocument(doc, options);
 }
@@ -1493,6 +1497,9 @@ export function exportToIpynbParticipant(
     doc: OrgDocumentNode,
     options?: Partial<IpynbExportOptions>
 ): string {
+    if (options?.excludeNoteFootnotes !== false) {
+        stripNoteFootnotes(doc);
+    }
     const backend = new IpynbExportBackend();
     return backend.exportDocument(doc, {
         ...options,

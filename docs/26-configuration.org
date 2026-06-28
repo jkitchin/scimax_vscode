@@ -86,11 +86,14 @@ Settings for org-mode document behavior including TODO states, progress logging,
 ** ✅ Settings Overview
 CLOSED: [2026-01-24 Sat 17:41]
 
-| Setting                            | Type                 | Default  | Description                     |
-|------------------------------------+----------------------+----------+---------------------------------|
-| scimax.org.logRepeat               | string (enum)        | "false"  | Enable progress logging         |
-| scimax.org.logIntoDrawer           | boolean or string    | false    | Where to log state changes      |
+| Setting                            | Type                 | Default  | Description                       |
+|------------------------------------+----------------------+----------+-----------------------------------|
+| scimax.org.logRepeat               | string (enum)        | "false"  | Enable progress logging           |
+| scimax.org.logIntoDrawer           | boolean or string    | false    | Where to log state changes        |
 | scimax.org.diagnostics.orphanLinks | boolean              | true     | Warn on unresolved internal links |
+| scimax.org.notes.excludeFromExport | boolean              | true     | Strip dialog notes from exports   |
+| scimax.org.notes.labelPrefix       | string               | "note-"  | Footnote label prefix for notes   |
+| scimax.org.notes.author            | string               | ""       | Author recorded on new notes      |
 
 ** ⚠️ Orphan Link Diagnostics
 

@@ -34,6 +34,7 @@ import type {
 import type {
     ExportState,
 } from './orgExport';
+import { stripNoteFootnotes } from './orgNotes';
 
 import {
     createExportState,
@@ -1081,6 +1082,9 @@ export function exportToBeamer(
     doc: OrgDocumentNode,
     options?: Partial<BeamerExportOptions>
 ): string {
+    if (options?.excludeNoteFootnotes !== false) {
+        stripNoteFootnotes(doc);
+    }
     const backend = new BeamerExportBackend();
     return backend.exportDocument(doc, options);
 }

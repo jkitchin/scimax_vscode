@@ -82,6 +82,17 @@ back-links are tracked at the object level.
 Following a =[[name]]= link first searches the current file, then falls back to
 the database to resolve an anchor of that name anywhere in the workspace.
 
+** ⚠️ Dialog Notes
+
+Attach a decision, question, or comment to a passage. A note is an org footnote
+with a =note-= label prefix, collected under a =* Notes :noexport:= section and
+excluded from exports. See [[file:43-notes.org][Dialog Notes]].
+
+| Command ID                  | Description                                              | Default Keybinding |
+|-----------------------------+---------------------------------------------------------+--------------------|
+| [[cmd:scimax.org.addNote]]  | Add a Note/Decision/Question footnote on the selection  | -                  |
+| [[cmd:scimax.notes.refresh]] | Refresh the Notes panel                                | -                  |
+
 ** ✅ DWIM Commands
 CLOSED: [2026-04-12 Sun 19:53]
 

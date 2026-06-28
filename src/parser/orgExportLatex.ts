@@ -58,6 +58,7 @@ import type {
     ExportState,
     ExportOptions,
 } from './orgExport';
+import { stripNoteFootnotes } from './orgNotes';
 
 import {
     createExportState,
@@ -1841,6 +1842,9 @@ export function exportToLatex(
     doc: OrgDocumentNode,
     options?: Partial<LatexExportOptions>
 ): string {
+    if (options?.excludeNoteFootnotes !== false) {
+        stripNoteFootnotes(doc);
+    }
     const backend = new LatexExportBackend();
     return backend.exportDocument(doc, options);
 }
