@@ -79,6 +79,7 @@ import {
     parseOptionsKeyword,
     shouldRenderAsLiteral,
 } from './orgExport';
+import { stripNoteFootnotes } from './orgNotes';
 
 import { CitationProcessor, CSLStyleName } from '../references/citationProcessor';
 import { parseCitationsFromLine, getNormalizedStyle } from '../references/citationParser';
@@ -1492,6 +1493,9 @@ export function exportToHtml(
     doc: OrgDocumentNode,
     options?: Partial<HtmlExportOptions>
 ): string {
+    if (options?.excludeNoteFootnotes !== false) {
+        stripNoteFootnotes(doc);
+    }
     const backend = new HtmlExportBackend();
     return backend.exportDocument(doc, options);
 }

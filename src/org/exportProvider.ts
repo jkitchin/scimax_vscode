@@ -281,6 +281,13 @@ function extractMetadata(doc: OrgDocumentNode): Partial<ExportOptions> {
         options.excludeTags.push('noexport');
     }
 
+    // Dialog notes ([fn:note-*]) are meta, not content: excluded from export by default.
+    if (options.excludeNoteFootnotes === undefined) {
+        options.excludeNoteFootnotes = vscode.workspace
+            .getConfiguration()
+            .get<boolean>('scimax.org.notes.excludeFromExport', true);
+    }
+
     return options;
 }
 

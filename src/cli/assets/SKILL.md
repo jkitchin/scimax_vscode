@@ -1,6 +1,6 @@
 ---
 name: scimax
-version: "0.7.0"
+version: "0.8.0"
 description: |
   Searches org-mode notes, displays agenda and TODOs, exports org files to
   HTML/PDF/LaTeX, validates citations, opens journal entries, maintains the
@@ -16,10 +16,11 @@ description: |
   "what should I focus on", "follow up", "prep for", "triage",
   "org-mode", "org syntax", "how do I cite", "citation", "org-ref", "source block",
   "header argument", "org table", "org link", "org timestamp", "org property",
-  "anchor", "radio target", "back-link", "backlink", "granular addressing", "orphan link"
+  "anchor", "radio target", "back-link", "backlink", "granular addressing", "orphan link",
+  "dialog note", "decision note", "add note", "footnote"
 allowed-tools: ["Bash(scimax*)", "Bash(code --goto*)", "Read", "Glob", "Grep", "Write"]
 ---
-<!-- scimax-skill v0.7.0 -->
+<!-- scimax-skill v0.8.0 -->
 
 # Scimax Skill
 

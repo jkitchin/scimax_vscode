@@ -106,6 +106,9 @@ export interface ExportOptions {
     /** Tags to select for export */
     selectTags?: string[];
 
+    /** Exclude dialog-note footnotes ([fn:note-*]) from output (default true) */
+    excludeNoteFootnotes?: boolean;
+
     /** Custom macro definitions */
     macros?: Record<string, string | ((...args: string[]) => string)>;
 

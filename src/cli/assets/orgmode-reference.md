@@ -139,6 +139,30 @@ Orphan diagnostics: when `scimax.org.diagnostics.orphanLinks` is enabled
 resolves to no anchor, heading, or text. The anchor index is rebuilt on save and
 can be regenerated with `scimax db sync`.
 
+### Dialog Notes (Decisions, Questions, Comments)
+
+Attach a decision, question, or comment to a passage. A note is an ordinary org
+footnote whose label starts with `note-`; the bodies are collected under a
+`* Notes :noexport:` section, so notes are excluded from exports while genuine
+footnotes are not.
+
+```org
+We use an embedded database[fn:note-why-db] for portability.
+
+* Notes                                                          :noexport:
+[fn:note-why-db] Decision · author · 2026-06-28 · open
+  Chose embedded over client/server to keep zero-config setup.
+```
+
+- Add one with **Scimax: Add Note** (`scimax.org.addNote`): select the passage,
+  pick Note/Decision/Question, type the body. It inserts `[fn:note-<slug>]` and
+  appends the definition under `* Notes`.
+- Because notes are footnotes, hover, reference/definition jump, and the
+  `undefined-footnote-reference` / `unreferenced-footnote-definition` lint
+  (orphan detection) all work automatically.
+- The **Notes** panel lists notes grouped by heading. Settings:
+  `scimax.org.notes.excludeFromExport`, `.labelPrefix`, `.author`.
+
 ---
 
 ## Lists

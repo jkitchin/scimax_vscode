@@ -46,7 +46,13 @@ describe('granular addressing (integration)', () => {
 
     afterAll(async () => {
         await db.close?.();
-        fs.rmSync(dir, { recursive: true, force: true });
+        try {
+            fs.rmSync(dir, { recursive: true, force: true });
+        } catch {
+            // On Windows the SQLite file can stay locked briefly after close,
+            // making unlink fail with EBUSY. The OS temp dir is reclaimed later,
+            // so treat teardown cleanup as best-effort.
+        }
     });
 
     it('resolves a dedicated target to its file and line', async () => {

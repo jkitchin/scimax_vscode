@@ -1,0 +1,103 @@
+#+TITLE: Dialog Notes (Decisions, Questions, Comments)
+#+AUTHOR: Scimax VS Code Team
+#+DATE: 2026-06-28
+#+STARTUP: overview
+#+OPTIONS: toc:2 num:t H:4
+#+TODO: ⚠️ 👀 | ✅
+
+* ⚠️ Overview
+
+/Dialog notes/ let you attach a decision, question, or comment to a specific
+passage, so the reasoning behind your work lives next to the work itself instead
+of in a lost chat thread. They are designed to be discoverable rather than
+memorized: you see where context exists, and read it on demand.
+
+A note is nothing exotic: it is an ordinary org *footnote* whose label starts
+with a prefix (default =note-=). The reference =[fn:note-why-db]= marks the
+passage; the body is a footnote definition collected under a =* Notes= section.
+Because notes are real footnotes, they reuse all of org's footnote machinery
+(reference/definition jump, hover, and the lint that detects a footnote whose
+passage or body was deleted). The one thing that makes them special is that they
+are *excluded from export*: notes are meta, not document content.
+
+* ⚠️ What a note looks like
+
+In the file, everything is plain text in one document:
+
+#+BEGIN_SRC org
+* Storage layer
+We store everything in an embedded database[fn:note-why-db] to avoid a
+server dependency.
+
+* Notes                                                          :noexport:
+[fn:note-why-db] Decision · jkitchin · 2026-06-28 · open
+  Chose embedded over client/server to keep zero-config setup.
+  - reply (alice): revisit if we need multi-writer.
+#+END_SRC
+
+- The inline =[fn:note-why-db]= marker is the anchor; it travels with the
+  passage when you move it and orphans (a lint warning) if the passage is deleted.
+- The =* Notes= section is tagged =:noexport:= and collects the bodies, like a
+  =* Footnotes= section.
+- The first body line is a light convention, =Type · author · date · state=,
+  parsed for display. Everything after is freeform (including replies).
+
+* ⚠️ In the editor
+
+| Affordance        | Behavior                                                        |
+|-------------------+-----------------------------------------------------------------|
+| Gutter bubble     | Lines with a note reference show a bubble in the gutter         |
+| Hover             | Hover the =[fn:note-...]= marker to read the note body          |
+| Jump              | Jump between the reference and its definition like any footnote |
+| Notes panel       | The *Notes* view lists notes grouped by heading; click to jump  |
+
+The marker stays visible (it is ordinary footnote syntax), so notes read
+naturally in plain text and in any other org editor.
+
+* ⚠️ Adding a note
+
+1. Select the passage the note is about.
+2. Run *Scimax: Add Note (Decision/Question) on Selection*
+   (=scimax.org.addNote=), from the editor right-click menu or the Command
+   Palette.
+3. Pick a type: Note, Decision, or Question.
+4. Type the body.
+
+scimax inserts =[fn:note-<slug>]= after the selection (the slug is derived from
+the passage and disambiguated automatically) and appends the definition under
+=* Notes=, creating that =:noexport:= section if it does not exist. The author is
+your =scimax.org.notes.author= setting, or your OS username.
+
+* ⚠️ Notes and export
+
+By default notes never appear in exported documents. When you export to HTML,
+PDF (LaTeX/Beamer), DOCX, or a notebook, every =[fn:note-...]= reference and its
+definition is stripped before rendering, while your genuine footnotes export
+normally. Set =scimax.org.notes.excludeFromExport= to =false= if you want notes
+included in output.
+
+* ⚠️ Orphan detection (free, via footnote lint)
+
+Because notes are footnotes, the existing org-lint checkers already cover them:
+
+- =undefined-footnote-reference= flags =[fn:note-x]= when its definition was deleted.
+- =unreferenced-footnote-definition= flags a note body whose passage was deleted.
+
+So a note whose target disappeared is surfaced automatically, with no separate
+machinery.
+
+* ⚠️ Settings
+
+| Setting                              | Type    | Default  | Description                                  |
+|--------------------------------------+---------+----------+----------------------------------------------|
+| scimax.org.notes.excludeFromExport   | boolean | true     | Strip notes from exported documents          |
+| scimax.org.notes.labelPrefix         | string  | "note-"  | Footnote label prefix that marks a note      |
+| scimax.org.notes.author              | string  | ""       | Author recorded on new notes (OS user if "") |
+
+* ⚠️ Related Topics
+
+- [[file:05-links.org][Links]] - footnotes and link syntax
+- [[file:42-granular-addressing.org][Granular Addressing]] - anchors and back-links
+- [[file:10-export.org][Export]] - export backends and options
+- [[file:25-commands.org][Commands]] - full command reference
+- [[file:26-configuration.org][Configuration]] - all settings
