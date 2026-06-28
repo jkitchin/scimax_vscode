@@ -128,11 +128,15 @@ indexed in the scimax database, so `[[name]]` resolves across files.
 | Radio target     | `<<<name>>>`   | A named term, concept, decision   |
 | Named element    | `#+NAME: name` | A block, table, figure, equation  |
 
-In-editor commands (Command Palette, not the CLI):
+In-editor (not the CLI):
 - **Scimax: Link to Here** (`scimax.org.linkToHere`) inserts a readable
   `<<anchor>>` at point and copies `[[anchor]]` to the clipboard.
-- **Scimax: Show Back-links to Anchor** (`scimax.org.showBacklinks`) lists the
-  links that point at the anchor on the current line (object-level back-links).
+- **Back-links** use VS Code's native references: put the cursor on an anchor or
+  heading and press **Shift+F12** (Find All References) to see the links that
+  point at it; a "← N references" CodeLens on anchored/heading lines opens the
+  same peek. Headings resolve by CUSTOM_ID, ID, or title. The command
+  **Scimax: Show Back-links to Anchor** (`scimax.org.showBacklinks`) is a
+  Command Palette alternative that lists anchor back-links in a quick picker.
 
 Orphan diagnostics: when `scimax.org.diagnostics.orphanLinks` is enabled
 (default), scimax warns on an internal `[[name]]`/`[[*Heading]]` link that
@@ -143,8 +147,10 @@ can be regenerated with `scimax db sync`.
 
 Attach a decision, question, or comment to a passage. A note is an ordinary org
 footnote whose label starts with `note-`; the bodies are collected under a
-`* Notes :noexport:` section, so notes are excluded from exports while genuine
-footnotes are not.
+`* Notes :noexport:` section. Only footnotes with that prefix are excluded from
+export; ordinary footnotes like `[fn:1]` or `[fn:methods]` are untouched and
+export normally. The prefix is the sole discriminator and is configurable via
+`scimax.org.notes.labelPrefix`.
 
 ```org
 We use an embedded database[fn:note-why-db] for portability.

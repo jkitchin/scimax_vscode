@@ -5,7 +5,7 @@
 #+OPTIONS: toc:2 num:t H:4
 #+TODO: ⚠️ 👀 | ✅
 
-* ⚠️ Overview
+* Overview
 
 /Dialog notes/ let you attach a decision, question, or comment to a specific
 passage, so the reasoning behind your work lives next to the work itself instead
@@ -21,7 +21,23 @@ Because notes are real footnotes, they reuse all of org's footnote machinery
 passage or body was deleted). The one thing that makes them special is that they
 are *excluded from export*: notes are meta, not document content.
 
-* ⚠️ What a note looks like
+*Important subtlety:* the /prefix is the only thing/ that distinguishes a note
+from an ordinary footnote. A footnote is treated as a note (and excluded from
+export) *only* when its label starts with the prefix. Your normal footnotes are
+never affected:
+
+| Footnote                  | Is it a note? | Exported? |
+|---------------------------+---------------+-----------|
+| =[fn:1]=                  | no            | yes       |
+| =[fn:methods]=            | no            | yes       |
+| =[fn:note-why-db]=        | yes           | no        |
+
+In other words, this feature does *not* change how footnotes work in general; it
+only adds special treatment for the small, opt-in set of footnotes you mark with
+the prefix. The prefix is configurable with =scimax.org.notes.labelPrefix= (set
+it to, say, =kb-= and =[fn:kb-...]= becomes the note namespace instead).
+
+* What a note looks like
 
 In the file, everything is plain text in one document:
 
@@ -43,7 +59,7 @@ server dependency.
 - The first body line is a light convention, =Type · author · date · state=,
   parsed for display. Everything after is freeform (including replies).
 
-* ⚠️ In the editor
+* In the editor
 
 | Affordance        | Behavior                                                        |
 |-------------------+-----------------------------------------------------------------|
@@ -55,7 +71,7 @@ server dependency.
 The marker stays visible (it is ordinary footnote syntax), so notes read
 naturally in plain text and in any other org editor.
 
-* ⚠️ Adding a note
+* Adding a note
 
 1. Select the passage the note is about.
 2. Run *Scimax: Add Note (Decision/Question) on Selection*
@@ -69,15 +85,17 @@ the passage and disambiguated automatically) and appends the definition under
 =* Notes=, creating that =:noexport:= section if it does not exist. The author is
 your =scimax.org.notes.author= setting, or your OS username.
 
-* ⚠️ Notes and export
+* Notes and export
 
 By default notes never appear in exported documents. When you export to HTML,
-PDF (LaTeX/Beamer), DOCX, or a notebook, every =[fn:note-...]= reference and its
-definition is stripped before rendering, while your genuine footnotes export
-normally. Set =scimax.org.notes.excludeFromExport= to =false= if you want notes
-included in output.
+PDF (LaTeX/Beamer), DOCX, or a notebook, *only* footnotes whose label starts with
+the notes prefix (=[fn:note-...]=) are stripped before rendering. Every other
+footnote, such as =[fn:1]= or =[fn:methods]=, is left completely untouched and
+exports as a normal footnote. The exclusion is purely a label-prefix opt-in, not
+a blanket change to footnote export. Set =scimax.org.notes.excludeFromExport= to
+=false= if you want notes included in output too.
 
-* ⚠️ Orphan detection (free, via footnote lint)
+* Orphan detection (free, via footnote lint)
 
 Because notes are footnotes, the existing org-lint checkers already cover them:
 
@@ -87,7 +105,7 @@ Because notes are footnotes, the existing org-lint checkers already cover them:
 So a note whose target disappeared is surfaced automatically, with no separate
 machinery.
 
-* ⚠️ Settings
+* Settings
 
 | Setting                              | Type    | Default  | Description                                  |
 |--------------------------------------+---------+----------+----------------------------------------------|
@@ -95,7 +113,7 @@ machinery.
 | scimax.org.notes.labelPrefix         | string  | "note-"  | Footnote label prefix that marks a note      |
 | scimax.org.notes.author              | string  | ""       | Author recorded on new notes (OS user if "") |
 
-* ⚠️ Related Topics
+* Related Topics
 
 - [[file:05-links.org][Links]] - footnotes and link syntax
 - [[file:42-granular-addressing.org][Granular Addressing]] - anchors and back-links

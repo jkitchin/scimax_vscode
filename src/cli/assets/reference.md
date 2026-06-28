@@ -73,6 +73,24 @@ scimax export paper.org --format html --output ~/public/  # Custom output direct
 
 ---
 
+## Tangle
+
+Extract source blocks to the files named in their `:tangle` header argument
+(literate programming).
+
+```bash
+scimax tangle setup.org                      # Tangle all blocks with a :tangle target
+scimax tangle setup.org --only init,config   # Only blocks named init or config (#+NAME:)
+scimax tangle setup.org --no-noweb           # Do not expand <<noweb>> references
+scimax tangle setup.org --json               # Machine-readable summary of what was written
+```
+
+**Guidance:**
+- Only blocks with a `:tangle <filename>` header are written; `:tangle no` is skipped.
+- `<<block-name>>` noweb references are expanded by default; use `--no-noweb` to keep them literal.
+
+---
+
 ## Citations
 
 Manage and validate bibliography citations in org files.

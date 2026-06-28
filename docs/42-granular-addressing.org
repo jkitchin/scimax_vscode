@@ -26,9 +26,9 @@ the text is the source of truth, and the scimax database is a derived index that
 is rebuilt whenever a file is saved. For a live example in this very page, see
 [[dedicated-targets-demo][the dedicated-target demo]] below.
 
-* ⚠️ Anchors
+* Anchors
 
-** ⚠️ Dedicated targets
+** Dedicated targets
 
 A dedicated target marks a specific point. Place =<<name>>= anywhere in the text
 and link to it with =[[name]]=:
@@ -50,7 +50,7 @@ carries a live dedicated target <<dedicated-targets-demo>> that the Overview
 links to. Put the cursor on the target and press =Shift+F12= to see the
 back-link from the Overview.
 
-** ⚠️ Radio targets
+** Radio targets
 
 A radio target turns /every/ occurrence of a phrase into a link to one
 definition, with no explicit =[[...]]= syntax:
@@ -65,7 +65,7 @@ Use radio targets for /named things/ (defined terms, decisions, glossary
 entries). Because they auto-link every literal occurrence, reserve them for
 distinctive phrases, not common words.
 
-** ⚠️ Named elements
+** Named elements
 
 =#+NAME:= gives a stable name to the element that follows (a source block,
 table, figure, equation):
@@ -79,7 +79,7 @@ table, figure, equation):
 Refer to it with [[results-table]].
 #+END_SRC
 
-** ⚠️ When to use which
+** When to use which
 
 | Construct          | Syntax           | Linked by        | Best for                          |
 |--------------------+------------------+------------------+-----------------------------------|
@@ -87,7 +87,7 @@ Refer to it with [[results-table]].
 | Radio target       | =<<<name>>>=     | any occurrence   | A named term, decision, concept   |
 | Named element      | =#+NAME: name=   | =[[name]]=       | A block, table, figure, equation  |
 
-* ⚠️ How addressing survives editing
+* How addressing survives editing
 
 This is the core property that makes anchors useful in living documents.
 
@@ -102,16 +102,16 @@ This is the core property that makes anchors useful in living documents.
 You get this for free because the database is rebuilt from the file on every
 save. There is nothing to keep in sync by hand.
 
-* ⚠️ Commands
+* Commands
 
-| Command                       | Title                                    | What it does                                                        |
-|-------------------------------+------------------------------------------+---------------------------------------------------------------------|
-| =scimax.org.linkToHere=       | Scimax: Link to Here                     | Insert a readable =<<anchor>>= at point and copy =[[anchor]]= to the clipboard |
-| =scimax.org.showBacklinks=    | Scimax: Show Back-links to Anchor        | List the links that point at the anchor on the current line          |
+| Command                    | Title                             | What it does                                                                   |
+|----------------------------+-----------------------------------+--------------------------------------------------------------------------------|
+| =scimax.org.linkToHere=    | Scimax: Link to Here              | Insert a readable =<<anchor>>= at point and copy =[[anchor]]= to the clipboard |
+| =scimax.org.showBacklinks= | Scimax: Show Back-links to Anchor | List the links that point at the anchor on the current line                    |
 
 Both are available from the Command Palette (=C-S-P=, search "Scimax").
 
-** ⚠️ Link to Here
+** Link to Here
 
 Place the cursor where you want an addressable point and run *Link to Here*. It:
 
@@ -122,7 +122,7 @@ Place the cursor where you want an addressable point and run *Link to Here*. It:
 4. Inserts =<<name>>= at the cursor and copies =[[name]]= to the clipboard, ready
    to paste wherever you want the reference.
 
-** ⚠️ Back-links (Find All References)
+** Back-links (Find All References)
 
 Back-links are surfaced through VS Code's native /references/ machinery, so there
 is no extra panel to manage. Put the cursor on an anchor (=<<name>>=,
@@ -144,14 +144,14 @@ index, which refreshes on save. For whole-file relationship views, see the
 The command =scimax.org.showBacklinks= remains as a Command Palette alternative
 that lists anchor back-links in a quick picker.
 
-** ⚠️ Following links across files
+** Following links across files
 
 Following a =[[name]]= link first searches the current file. If the anchor is
 not in the current file, scimax consults the database and jumps to a matching
 anchor anywhere in the workspace. This is what makes the =[[name]]= link copied
 by *Link to Here* work even when the anchor lives in a different file.
 
-* ⚠️ The anchor index
+* The anchor index
 
 Anchors are stored in the scimax database (the same database used for search and
 the link graph), in an =anchors= table that records the anchor text, its kind
@@ -167,7 +167,7 @@ heading that contains it. The index is:
 Anchors inside =#+BEGIN_SRC=, =#+BEGIN_EXAMPLE=, and similar blocks are ignored,
 so =<<...>>= in code is not treated as an anchor.
 
-* ⚠️ Orphan link diagnostics
+* Orphan link diagnostics
 
 When the setting =scimax.org.diagnostics.orphanLinks= is enabled (the default),
 scimax warns when an internal link resolves to nothing. A link is flagged only
@@ -196,7 +196,7 @@ To turn the warnings off, set in your settings:
 }
 #+END_SRC
 
-* ⚠️ Worked example
+* Worked example
 
 #+BEGIN_SRC org
 # decisions.org
@@ -215,7 +215,7 @@ The reasoning for the storage choice is at [[why-sqlite]].
 - If you delete the =<<why-sqlite>>= anchor and save, the link in =review.org=
   is flagged as an orphan.
 
-* ⚠️ Limitations
+* Limitations
 
 - *Point, not region*: an anchor addresses the point where it sits. To address a
   paragraph you place an anchor in it; arbitrary elements are not addressable
@@ -226,7 +226,7 @@ The reasoning for the storage choice is at [[why-sqlite]].
 - *Cross-file fragments*: =[[file.org::name]]= links are followed but are not
   yet covered by orphan diagnostics.
 
-* ⚠️ Related Topics
+* Related Topics
 
 - [[file:05-links.org][Links]] - all link types and link following
 - [[file:39-link-graph.org][Link Graph]] - file-level relationship visualization
