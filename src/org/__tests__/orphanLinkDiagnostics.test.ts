@@ -65,6 +65,11 @@ describe('computeOrphanLinks', () => {
         expect(await computeOrphanLinks(text, never)).toEqual([]);
     });
 
+    it('resolves [[Title]] / [[*Title]] to a heading with a custom TODO keyword', async () => {
+        const text = '#+TODO: ⚠️ 👀 | ✅\n* ⚠️ Overview\nSee [[Overview]] and [[*Overview]].';
+        expect(await computeOrphanLinks(text, never)).toEqual([]);
+    });
+
     it('ignores external, file, custom-id, id, and cross-file links', async () => {
         const text = [
             'See [[https://example.com]].',

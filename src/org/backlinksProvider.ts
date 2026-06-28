@@ -15,6 +15,7 @@
 import * as vscode from 'vscode';
 import { getDatabase } from '../database/lazyDb';
 import { extractAnchors } from '../parser/orgAnchors';
+import { getTodoStatesFromText, extractHeadingTitle } from './todoStates';
 
 type Target =
     | { kind: 'anchor'; text: string }
@@ -31,13 +32,11 @@ function isOrg(doc: vscode.TextDocument): boolean {
     return doc.languageId === 'org' || doc.fileName.endsWith('.org');
 }
 
-function stripTags(title: string): string {
-    return title.replace(/\s+:[\w@#%:]+:\s*$/, '').trim();
-}
-
 /** Read a heading's title, CUSTOM_ID, and ID from its line and property drawer. */
-function readHeadingTarget(lines: string[], headingLine: number): Target {
-    const title = stripTags((lines[headingLine].match(/^\*+\s+(.*)$/) || [, ''])[1] || '');
+function readHeadingTarget(lines: string[], headingLine: number, todoStates: Set<string>): Target {
+    // Title with the TODO keyword stripped, so [[Title]] resolves against
+    // headings that carry a custom/emoji keyword (e.g. "* ⚠️ Overview").
+    const title = extractHeadingTitle(lines[headingLine], todoStates);
     let customId: string | undefined;
     let id: string | undefined;
     for (let i = headingLine + 1; i < Math.min(headingLine + 30, lines.length); i++) {
@@ -61,9 +60,11 @@ function resolveTargetAt(document: vscode.TextDocument, position: vscode.Positio
     if (target) return { kind: 'anchor', text: target[1].trim() };
     if (name) return { kind: 'anchor', text: name[1].trim() };
 
-    const lines = document.getText().split('\n');
+    const fullText = document.getText();
+    const lines = fullText.split('\n');
+    const todoStates = getTodoStatesFromText(fullText);
     for (let i = position.line; i >= 0; i--) {
-        if (/^\*+\s+/.test(lines[i])) return readHeadingTarget(lines, i);
+        if (/^\*+\s+/.test(lines[i])) return readHeadingTarget(lines, i, todoStates);
     }
     return undefined;
 }
@@ -116,6 +117,7 @@ class BacklinksCodeLensProvider implements vscode.CodeLensProvider {
         if (!isOrg(document)) return [];
         const text = document.getText();
         const lines = text.split('\n');
+        const todoStates = getTodoStatesFromText(text);
         const lenses: BacklinkLens[] = [];
 
         // One candidate per anchor.
@@ -128,7 +130,7 @@ class BacklinksCodeLensProvider implements vscode.CodeLensProvider {
         for (let i = 0; i < lines.length; i++) {
             if (/^\*+\s+/.test(lines[i])) {
                 const range = new vscode.Range(i, 0, i, 0);
-                lenses.push(new BacklinkLens(range, readHeadingTarget(lines, i), document.uri, new vscode.Position(i, 0)));
+                lenses.push(new BacklinkLens(range, readHeadingTarget(lines, i, todoStates), document.uri, new vscode.Position(i, 0)));
             }
         }
         return lenses;

@@ -1,6 +1,6 @@
 {
-  "buildDate": "2026-06-28T20:00:54.526Z",
-  "count": 3427,
+  "buildDate": "2026-06-28T20:11:17.310Z",
+  "count": 3428,
   "entries": [
     {
       "heading": "Scimax VS Code",
@@ -98480,7 +98480,7 @@
       "heading": "Anchors",
       "level": 1,
       "file": "42-granular-addressing.org",
-      "line": 28,
+      "line": 29,
       "content": "",
       "path": [],
       "commands": [],
@@ -98493,8 +98493,8 @@
       "heading": "Dedicated targets",
       "level": 2,
       "file": "42-granular-addressing.org",
-      "line": 30,
-      "content": "A dedicated target marks a specific point. Place =<<name>>= anywhere in the text and link to it with =[[name]]=: #+BEGIN_SRC org We chose SQLite for portability <<why-sqlite>> and zero-config embedding. Later, in another paragraph or file: See the rationale at [[why-sqlite]]. #+END_SRC The anchor name is human-readable (Engelbart's requirement that addresses be interpretable by people). Use a descriptive slug rather than a cryptic code.",
+      "line": 31,
+      "content": "A dedicated target marks a specific point. Place =<<name>>= anywhere in the text and link to it with =[[name]]=: #+NAME: dedicated-target-example #+BEGIN_SRC org We chose SQLite for portability <<why-sqlite>> and zero-config embedding. Later, in another paragraph or file: See the rationale at [[why-sqlite]]. #+END_SRC The anchor name is human-readable (Engelbart's requirement that addresses be interpretable by people). Use a descriptive slug rather than a cryptic code. This page dogfoods the fea",
       "path": [
         "Anchors"
       ],
@@ -98512,6 +98512,7 @@
         "anywhere",
         "text",
         "link",
+        "dedicated-target-example",
         "beginsrc",
         "org",
         "chose",
@@ -98519,15 +98520,14 @@
         "portability",
         "why-sqlite",
         "zero-config",
-        "embedding",
-        "later"
+        "embedding"
       ]
     },
     {
       "heading": "Radio targets",
       "level": 2,
       "file": "42-granular-addressing.org",
-      "line": 45,
+      "line": 53,
       "content": "A radio target turns /every/ occurrence of a phrase into a link to one definition, with no explicit =[[...]]= syntax: #+BEGIN_SRC org A <<<dynamic knowledge repository>>> is a continuously integrated knowledge base. Elsewhere, any mention of dynamic knowledge repository becomes a live link. #+END_SRC Use radio targets for /named things/ (defined terms, decisions, glossary entries). Because they auto-link every literal occurrence, reserve them for distinctive phrases, not common words.",
       "path": [
         "Anchors"
@@ -98561,7 +98561,7 @@
       "heading": "Named elements",
       "level": 2,
       "file": "42-granular-addressing.org",
-      "line": 60,
+      "line": 68,
       "content": "=#+NAME:= gives a stable name to the element that follows (a source block, table, figure, equation): #+BEGIN_SRC org #+NAME: results-table | x | y | |---+---| | 1 | 2 | Refer to it with [[results-table]]. #+END_SRC",
       "path": [
         "Anchors"
@@ -98593,7 +98593,7 @@
       "heading": "When to use which",
       "level": 2,
       "file": "42-granular-addressing.org",
-      "line": 74,
+      "line": 82,
       "content": "| Construct          | Syntax           | Linked by        | Best for                          | |--------------------+------------------+------------------+-----------------------------------| | Dedicated target   | =<<name>>=       | =[[name]]=       | An arbitrary location (a passage) | | Radio target       | =<<<name>>>=     | any occurrence   | A named term, decision, concept   | | Named element      | =#+NAME: name=   | =[[name]]=       | A block, table, figure, equation  |",
       "path": [
         "Anchors"
@@ -98627,7 +98627,7 @@
       "heading": "How addressing survives editing",
       "level": 1,
       "file": "42-granular-addressing.org",
-      "line": 82,
+      "line": 90,
       "content": "This is the core property that makes anchors useful in living documents. - *Move a paragraph* (within a section, to another section, or to another file): the =<<anchor>>= moves with the text, so the link still resolves. - *Delete a paragraph*: the anchor goes with it. The link does not silently point at the wrong place; it becomes a detectable /orphan/ (see [[*Orphan link diagnostics][Orphan link diagnostics]]). - *Rename or heavily rewrite*: if you change the anchor text, links to the old name ",
       "path": [],
       "commands": [],
@@ -98659,7 +98659,7 @@
       "heading": "Commands",
       "level": 1,
       "file": "42-granular-addressing.org",
-      "line": 97,
+      "line": 105,
       "content": "| Command                       | Title                                    | What it does                                                        | |-------------------------------+------------------------------------------+---------------------------------------------------------------------| | =scimax.org.linkToHere=       | Scimax: Link to Here                     | Insert a readable =<<anchor>>= at point and copy =[[anchor]]= to the clipboard | | =scimax.org.showBacklinks=    | Scimax: Show B",
       "path": [],
       "commands": [
@@ -98688,7 +98688,7 @@
       "heading": "Link to Here",
       "level": 2,
       "file": "42-granular-addressing.org",
-      "line": 106,
+      "line": 114,
       "content": "Place the cursor where you want an addressable point and run *Link to Here*. It: 1. Proposes a human-readable anchor name derived from the nearest heading and the words on the current line (for example =design-notes-why-sqlite=). 2. Checks the workspace index and disambiguates the name if it already exists. 3. Lets you edit the proposed name. 4. Inserts =<<name>>= at the cursor and copies =[[name]]= to the clipboard, ready to paste wherever you want the reference.",
       "path": [
         "Commands"
@@ -98722,7 +98722,7 @@
       "heading": "Back-links (Find All References)",
       "level": 2,
       "file": "42-granular-addressing.org",
-      "line": 117,
+      "line": 125,
       "content": "Back-links are surfaced through VS Code's native /references/ machinery, so there is no extra panel to manage. Put the cursor on an anchor (=<<name>>=, =<<<name>>>=, =#+NAME: name=) or anywhere under a heading, and: - Press *Shift+F12* (or right-click, /Find All References/ or /Peek References/) to see every link that points at that object, in the inline peek and the References view. Anchors resolve by name; headings resolve by their =CUSTOM_ID=, =ID=, or title. - A *← N references* CodeLens app",
       "path": [
         "Commands"
@@ -98758,7 +98758,7 @@
       "heading": "Following links across files",
       "level": 2,
       "file": "42-granular-addressing.org",
-      "line": 139,
+      "line": 147,
       "content": "Following a =[[name]]= link first searches the current file. If the anchor is not in the current file, scimax consults the database and jumps to a matching anchor anywhere in the workspace. This is what makes the =[[name]]= link copied by *Link to Here* work even when the anchor lives in a different file.",
       "path": [
         "Commands"
@@ -98792,7 +98792,7 @@
       "heading": "The anchor index",
       "level": 1,
       "file": "42-granular-addressing.org",
-      "line": 146,
+      "line": 154,
       "content": "Anchors are stored in the scimax database (the same database used for search and the link graph), in an =anchors= table that records the anchor text, its kind (=target=, =radio=, or =name=), its file, line, character offset, and the heading that contains it. The index is: - *Derived, not authoritative*: the org file is the truth; the index is rebuilt on save and can be regenerated at any time with =scimax db sync=. - *Cross-file*: anchor names resolve across the whole indexed workspace. - *Colli",
       "path": [],
       "commands": [],
@@ -98824,7 +98824,7 @@
       "heading": "Orphan link diagnostics",
       "level": 1,
       "file": "42-granular-addressing.org",
-      "line": 162,
+      "line": 170,
       "content": "When the setting =scimax.org.diagnostics.orphanLinks= is enabled (the default), scimax warns when an internal link resolves to nothing. A link is flagged only when it is confidently unresolvable, so valid links are never marked: - =[[name]]= is flagged when there is no =<<name>>= / =<<<name>>>= / =#+NAME: name= anchor, no heading with that text, no matching =CUSTOM_ID=, the name does not appear as ordinary text in the file, and no anchor of that name exists elsewhere in the workspace. - =[[*Head",
       "path": [],
       "commands": [
@@ -98858,7 +98858,7 @@
       "heading": "Worked example",
       "level": 1,
       "file": "42-granular-addressing.org",
-      "line": 191,
+      "line": 199,
       "content": "#+BEGIN_SRC org # decisions.org",
       "path": [],
       "commands": [],
@@ -98875,7 +98875,7 @@
       "heading": "Architecture decisions",
       "level": 1,
       "file": "42-granular-addressing.org",
-      "line": 195,
+      "line": 203,
       "content": "We chose an embedded database <<why-sqlite>> to avoid a server dependency. # review.org (another file)",
       "path": [],
       "commands": [],
@@ -98898,7 +98898,7 @@
       "heading": "Review notes",
       "level": 1,
       "file": "42-granular-addressing.org",
-      "line": 199,
+      "line": 207,
       "content": "The reasoning for the storage choice is at [[why-sqlite]]. #+END_SRC - Following =[[why-sqlite]]= in =review.org= jumps to =decisions.org= (cross-file resolution via the index). - Running *Show Back-links* on the =<<why-sqlite>>= line in =decisions.org= lists the link in =review.org=. - If you delete the =<<why-sqlite>>= anchor and save, the link in =review.org= is flagged as an orphan.",
       "path": [],
       "commands": [],
@@ -98930,7 +98930,7 @@
       "heading": "Limitations",
       "level": 1,
       "file": "42-granular-addressing.org",
-      "line": 210,
+      "line": 218,
       "content": "- *Point, not region*: an anchor addresses the point where it sits. To address a paragraph you place an anchor in it; arbitrary elements are not addressable until anchored (\"intrinsic on demand\" rather than \"intrinsic always\"). - *Uniqueness*: anchor names should be unique within their resolution scope. *Link to Here* disambiguates automatically, but a hand-written duplicate name resolves to the first match. - *Cross-file fragments*: =[[file.org::name]]= links are followed but are not yet covere",
       "path": [],
       "commands": [],
@@ -98962,7 +98962,7 @@
       "heading": "Related Topics",
       "level": 1,
       "file": "42-granular-addressing.org",
-      "line": 221,
+      "line": 229,
       "content": "- [[file:05-links.org][Links]] - all link types and link following - [[file:39-link-graph.org][Link Graph]] - file-level relationship visualization - [[file:18-database-search.org][Database and Search]] - the index that powers anchor resolution - [[file:25-commands.org][Commands]] - full command reference - [[file:26-configuration.org][Configuration]] - the =orphanLinks= and other settings - [[file:02-document-structure.org][Document Structure]] - headings, CUSTOM_ID, and IDs",
       "path": [],
       "commands": [],
@@ -98995,7 +98995,7 @@
       "level": 1,
       "file": "43-notes.org",
       "line": 8,
-      "content": "/Dialog notes/ let you attach a decision, question, or comment to a specific passage, so the reasoning behind your work lives next to the work itself instead of in a lost chat thread. They are designed to be discoverable rather than memorized: you see where context exists, and read it on demand. A note is nothing exotic: it is an ordinary org *footnote* whose label starts with a prefix (default =note-=). The reference =[fn:note-why-db]= marks the passage; the body is a footnote definition collec",
+      "content": "/Dialog notes/ let you attach a decision, question, or comment to a specific passage, so the reasoning behind your work lives next to the work itself instead of in a lost chat thread.[fn:note-docs-dogfood] They are designed to be discoverable rather than memorized: you see where context exists, and read it on demand. A note is nothing exotic: it is an ordinary org *footnote* whose label starts with a prefix (default =note-=). The reference =[fn:note-why-db]= marks the passage; the body is a foot",
       "path": [],
       "commands": [],
       "keybindings": [],
@@ -99026,7 +99026,7 @@
       "heading": "What a note looks like",
       "level": 1,
       "file": "43-notes.org",
-      "line": 23,
+      "line": 24,
       "content": "In the file, everything is plain text in one document: #+BEGIN_SRC org",
       "path": [],
       "commands": [],
@@ -99048,7 +99048,7 @@
       "heading": "Storage layer",
       "level": 1,
       "file": "43-notes.org",
-      "line": 28,
+      "line": 29,
       "content": "We store everything in an embedded database[fn:note-why-db] to avoid a server dependency.",
       "path": [],
       "commands": [],
@@ -99070,7 +99070,7 @@
       "heading": "Notes                                                          :noexport:",
       "level": 1,
       "file": "43-notes.org",
-      "line": 32,
+      "line": 33,
       "content": "[fn:note-why-db] Decision · jkitchin · 2026-06-28 · open Chose embedded over client/server to keep zero-config setup. - reply (alice): revisit if we need multi-writer. #+END_SRC - The inline =[fn:note-why-db]= marker is the anchor; it travels with the passage when you move it and orphans (a lint warning) if the passage is deleted. - The =* Notes= section is tagged =:noexport:= and collects the bodies, like a =* Footnotes= section. - The first body line is a light convention, =Type · author · dat",
       "path": [],
       "commands": [],
@@ -99102,7 +99102,7 @@
       "heading": "In the editor",
       "level": 1,
       "file": "43-notes.org",
-      "line": 45,
+      "line": 46,
       "content": "| Affordance        | Behavior                                                        | |-------------------+-----------------------------------------------------------------| | Gutter bubble     | Lines with a note reference show a bubble in the gutter         | | Hover             | Hover the =[fn:note-...]= marker to read the note body          | | Jump              | Jump between the reference and its definition like any footnote | | Notes panel       | The *Notes* view lists notes grouped b",
       "path": [],
       "commands": [],
@@ -99134,7 +99134,7 @@
       "heading": "Adding a note",
       "level": 1,
       "file": "43-notes.org",
-      "line": 57,
+      "line": 58,
       "content": "1. Select the passage the note is about. 2. Run *Scimax: Add Note (Decision/Question) on Selection* (=scimax.org.addNote=), from the editor right-click menu or the Command Palette. 3. Pick a type: Note, Decision, or Question. 4. Type the body. scimax inserts =[fn:note-<slug>]= after the selection (the slug is derived from the passage and disambiguated automatically) and appends the definition under =* Notes=, creating that =:noexport:= section if it does not exist. The author is your =scimax.org",
       "path": [],
       "commands": [
@@ -99169,7 +99169,7 @@
       "heading": "Notes and export",
       "level": 1,
       "file": "43-notes.org",
-      "line": 71,
+      "line": 72,
       "content": "By default notes never appear in exported documents. When you export to HTML, PDF (LaTeX/Beamer), DOCX, or a notebook, every =[fn:note-...]= reference and its definition is stripped before rendering, while your genuine footnotes export normally. Set =scimax.org.notes.excludeFromExport= to =false= if you want notes included in output.",
       "path": [],
       "commands": [
@@ -99203,7 +99203,7 @@
       "heading": "Orphan detection (free, via footnote lint)",
       "level": 1,
       "file": "43-notes.org",
-      "line": 79,
+      "line": 80,
       "content": "Because notes are footnotes, the existing org-lint checkers already cover them: - =undefined-footnote-reference= flags =[fn:note-x]= when its definition was deleted. - =unreferenced-footnote-definition= flags a note body whose passage was deleted. So a note whose target disappeared is surfaced automatically, with no separate machinery.",
       "path": [],
       "commands": [],
@@ -99235,7 +99235,7 @@
       "heading": "Settings",
       "level": 1,
       "file": "43-notes.org",
-      "line": 89,
+      "line": 90,
       "content": "| Setting                              | Type    | Default  | Description                                  | |--------------------------------------+---------+----------+----------------------------------------------| | scimax.org.notes.excludeFromExport   | boolean | true     | Strip notes from exported documents          | | scimax.org.notes.labelPrefix         | string  | \"note-\"  | Footnote label prefix that marks a note      | | scimax.org.notes.author              | string  | \"\"       | Au",
       "path": [],
       "commands": [
@@ -99270,7 +99270,7 @@
       "heading": "Related Topics",
       "level": 1,
       "file": "43-notes.org",
-      "line": 97,
+      "line": 98,
       "content": "- [[file:05-links.org][Links]] - footnotes and link syntax - [[file:42-granular-addressing.org][Granular Addressing]] - anchors and back-links - [[file:10-export.org][Export]] - export backends and options - [[file:25-commands.org][Commands]] - full command reference - [[file:26-configuration.org][Configuration]] - all settings",
       "path": [],
       "commands": [],
@@ -99296,6 +99296,38 @@
         "commands",
         "full",
         "command"
+      ]
+    },
+    {
+      "heading": "Notes                                                            :noexport:",
+      "level": 1,
+      "file": "43-notes.org",
+      "line": 106,
+      "content": "[fn:note-docs-dogfood] Note · scimax · 2026-06-28 · open This page dogfoods the feature: the marker in the Overview is a live dialog note. It is excluded from the exported docs (notes are meta), so readers of the published page do not see it, but editors of this .org file get the gutter bubble, hover, and the lint that flags it if the passage is deleted.",
+      "path": [],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "notes",
+        "noexport",
+        "fnnote-docs-dogfood",
+        "note",
+        "scimax",
+        "2026-06-28",
+        "open",
+        "page",
+        "dogfoods",
+        "feature",
+        "marker",
+        "overview",
+        "live",
+        "dialog",
+        "excluded",
+        "exported",
+        "docs",
+        "meta",
+        "readers",
+        "published"
       ]
     },
     {
