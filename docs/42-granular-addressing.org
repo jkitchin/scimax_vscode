@@ -23,7 +23,8 @@ Because an anchor lives in the document text, it travels with its content when
 you move a paragraph and disappears with it when you delete one. There are no
 hidden identifiers, no UUIDs scattered through your prose, and no sidecar files:
 the text is the source of truth, and the scimax database is a derived index that
-is rebuilt whenever a file is saved.
+is rebuilt whenever a file is saved. For a live example in this very page, see
+[[dedicated-targets-demo][the dedicated-target demo]] below.
 
 * ⚠️ Anchors
 
@@ -32,6 +33,7 @@ is rebuilt whenever a file is saved.
 A dedicated target marks a specific point. Place =<<name>>= anywhere in the text
 and link to it with =[[name]]=:
 
+#+NAME: dedicated-target-example
 #+BEGIN_SRC org
 We chose SQLite for portability <<why-sqlite>> and zero-config embedding.
 
@@ -41,6 +43,12 @@ See the rationale at [[why-sqlite]].
 
 The anchor name is human-readable (Engelbart's requirement that addresses be
 interpretable by people). Use a descriptive slug rather than a cryptic code.
+
+This page dogfoods the feature: the code block above is named, so
+[[dedicated-target-example][this link]] jumps to it, and the sentence here
+carries a live dedicated target <<dedicated-targets-demo>> that the Overview
+links to. Put the cursor on the target and press =Shift+F12= to see the
+back-link from the Overview.
 
 ** ⚠️ Radio targets
 
@@ -114,17 +122,27 @@ Place the cursor where you want an addressable point and run *Link to Here*. It:
 4. Inserts =<<name>>= at the cursor and copies =[[name]]= to the clipboard, ready
    to paste wherever you want the reference.
 
-** ⚠️ Show Back-links
+** ⚠️ Back-links (Find All References)
 
-Put the cursor on a line that contains an anchor (=<<name>>=, =<<<name>>>=, or
-=#+NAME: name=) and run *Show Back-links*. scimax queries the database for every
-link that points at that anchor (in any file) and shows them in a picker; choose
-one to jump to the linking location. If the cursor is not on an anchor, you are
-prompted for a name.
+Back-links are surfaced through VS Code's native /references/ machinery, so there
+is no extra panel to manage. Put the cursor on an anchor (=<<name>>=,
+=<<<name>>>=, =#+NAME: name=) or anywhere under a heading, and:
 
-This is /object-level/ back-linking: it resolves links to the specific anchor
-they target, not merely file-to-file. For whole-file relationship views, see the
+- Press *Shift+F12* (or right-click, /Find All References/ or /Peek References/)
+  to see every link that points at that object, in the inline peek and the
+  References view. Anchors resolve by name; headings resolve by their
+  =CUSTOM_ID=, =ID=, or title.
+- A *← N references* CodeLens appears above anchored lines and headings that have
+  back-links; click it to open the same peek. Lines with no back-links show no
+  lens.
+
+This is /object-level/ back-linking: it resolves links to the specific anchor or
+heading they target, not merely file-to-file. Back-links come from the database
+index, which refreshes on save. For whole-file relationship views, see the
 [[file:39-link-graph.org][Link Graph]].
+
+The command =scimax.org.showBacklinks= remains as a Command Palette alternative
+that lists anchor back-links in a quick picker.
 
 ** ⚠️ Following links across files
 

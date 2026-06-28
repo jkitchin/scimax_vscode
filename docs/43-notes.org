@@ -9,8 +9,9 @@
 
 /Dialog notes/ let you attach a decision, question, or comment to a specific
 passage, so the reasoning behind your work lives next to the work itself instead
-of in a lost chat thread. They are designed to be discoverable rather than
-memorized: you see where context exists, and read it on demand.
+of in a lost chat thread.[fn:note-docs-dogfood] They are designed to be
+discoverable rather than memorized: you see where context exists, and read it on
+demand.
 
 A note is nothing exotic: it is an ordinary org *footnote* whose label starts
 with a prefix (default =note-=). The reference =[fn:note-why-db]= marks the
@@ -101,3 +102,11 @@ machinery.
 - [[file:10-export.org][Export]] - export backends and options
 - [[file:25-commands.org][Commands]] - full command reference
 - [[file:26-configuration.org][Configuration]] - all settings
+
+* Notes                                                            :noexport:
+
+[fn:note-docs-dogfood] Note · scimax · 2026-06-28 · open
+  This page dogfoods the feature: the marker in the Overview is a live dialog
+  note. It is excluded from the exported docs (notes are meta), so readers of the
+  published page do not see it, but editors of this .org file get the gutter
+  bubble, hover, and the lint that flags it if the passage is deleted.
