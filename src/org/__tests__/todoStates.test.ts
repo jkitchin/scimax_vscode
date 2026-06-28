@@ -9,6 +9,8 @@ import {
     parseTodoKeywords,
     DEFAULT_TODO_WORKFLOW,
     DEFAULT_TODO_STATES,
+    getTodoStatesFromText,
+    extractHeadingTitle,
     type TodoWorkflow
 } from '../todoStates';
 
@@ -206,6 +208,44 @@ describe('TODO State Cycling', () => {
 
             const allStates = ['', ...customWorkflow.allStates];
             expect(allStates).toEqual(['', 'DRAFT', 'REVIEW', 'PUBLISHED']);
+        });
+    });
+
+    describe('extractHeadingTitle', () => {
+        const defaults = getTodoStatesFromText('');
+        const emoji = getTodoStatesFromText('#+TODO: ⚠️ 👀 | ✅');
+
+        it('returns a plain title unchanged', () => {
+            expect(extractHeadingTitle('* Overview', defaults)).toBe('Overview');
+        });
+
+        it('strips a default TODO keyword', () => {
+            expect(extractHeadingTitle('** TODO Write tests', defaults)).toBe('Write tests');
+        });
+
+        it('strips a custom emoji TODO keyword', () => {
+            expect(extractHeadingTitle('* ⚠️ Overview', emoji)).toBe('Overview');
+        });
+
+        it('does not strip a leading word that is not a TODO keyword', () => {
+            expect(extractHeadingTitle('* Overview of TODO items', defaults)).toBe('Overview of TODO items');
+        });
+
+        it('strips trailing tags and a priority cookie', () => {
+            expect(extractHeadingTitle('* TODO [#A] Ship it :work:urgent:', defaults)).toBe('Ship it');
+        });
+
+        it('returns empty for a non-heading line', () => {
+            expect(extractHeadingTitle('Just a paragraph', defaults)).toBe('');
+        });
+    });
+
+    describe('getTodoStatesFromText', () => {
+        it('includes defaults plus parsed custom keywords', () => {
+            const states = getTodoStatesFromText('#+TODO: ⚠️ 👀 | ✅');
+            expect(states.has('⚠️')).toBe(true);
+            expect(states.has('✅')).toBe(true);
+            expect(states.has('TODO')).toBe(true); // defaults retained
         });
     });
 });

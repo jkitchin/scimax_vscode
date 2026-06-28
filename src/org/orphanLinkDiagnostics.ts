@@ -17,6 +17,7 @@
 import * as vscode from 'vscode';
 import { extractAnchors, normalizeAnchorText } from '../parser/orgAnchors';
 import { getDatabase } from '../database/lazyDb';
+import { getTodoStatesFromText, extractHeadingTitle } from './todoStates';
 
 const SETTING_KEY = 'scimax.org.diagnostics.orphanLinks';
 
@@ -51,6 +52,7 @@ export async function computeOrphanLinks(
     resolveAnchorInDb: (name: string) => Promise<boolean>
 ): Promise<OrphanLink[]> {
     const lines = text.split('\n');
+    const todoStates = getTodoStatesFromText(text);
 
     // Build the set of in-document resolution targets.
     const anchorSet = new Set(extractAnchors(text).map(a => normalizeAnchorText(a.text)));
@@ -58,8 +60,11 @@ export async function computeOrphanLinks(
     const customIds = new Set<string>();
     const ids = new Set<string>();
     for (const line of lines) {
-        const h = line.match(/^\*+\s+(.*)$/);
-        if (h) headingTitles.add(normalizeHeadingTitle(h[1]));
+        if (/^\*+\s+/.test(line)) {
+            // Title with the TODO keyword (e.g. a custom/emoji keyword) stripped,
+            // so [[Title]] resolves against headings like "* ⚠️ Overview".
+            headingTitles.add(normalizeHeadingTitle(extractHeadingTitle(line, todoStates)));
+        }
         const cid = line.match(/^[ \t]*:CUSTOM_ID:\s*(\S+)/i);
         if (cid) customIds.add(cid[1].toLowerCase());
         const id = line.match(/^[ \t]*:ID:\s*(\S+)/i);

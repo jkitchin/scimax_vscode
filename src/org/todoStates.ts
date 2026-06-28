@@ -161,6 +161,45 @@ export function getAllTodoStatesForDocument(document: vscode.TextDocument): Set<
 }
 
 /**
+ * Set of all TODO states for raw document text (parsed #+TODO keywords plus
+ * defaults). Pure variant of getAllTodoStatesForDocument for code that works on
+ * text rather than a TextDocument.
+ */
+export function getTodoStatesFromText(content: string): Set<string> {
+    const states = new Set<string>(DEFAULT_TODO_STATES);
+    const workflow = parseTodoKeywords(content);
+    if (workflow) {
+        for (const state of workflow.allStates) states.add(state);
+    }
+    return states;
+}
+
+/**
+ * Extract the clean title from a headline line, stripping the leading stars,
+ * an optional TODO keyword (including custom/emoji keywords), an optional
+ * COMMENT marker and priority cookie, and trailing tags. This is the title that
+ * a fuzzy link [[Title]] resolves against.
+ */
+export function extractHeadingTitle(headlineLine: string, todoStates: Set<string>): string {
+    const m = headlineLine.match(/^\*+\s+(.*)$/);
+    if (!m) return '';
+    let rest = m[1].trim();
+    // Trailing tags (:a:b:)
+    rest = rest.replace(/\s+:[\w@#%:]+:\s*$/, '').trim();
+    // Leading COMMENT keyword
+    rest = rest.replace(/^COMMENT\s+/, '');
+    // Leading TODO keyword (exact token match against the document's states)
+    const sp = rest.indexOf(' ');
+    const firstToken = sp === -1 ? rest : rest.slice(0, sp);
+    if (todoStates.has(firstToken)) {
+        rest = sp === -1 ? '' : rest.slice(sp + 1).trim();
+    }
+    // Leading priority cookie [#A]
+    rest = rest.replace(/^\[#[A-Za-z0-9]\]\s*/, '').trim();
+    return rest;
+}
+
+/**
  * Check if a state is a "done" state for the given document
  */
 export function isDoneState(state: string, document: vscode.TextDocument): boolean {

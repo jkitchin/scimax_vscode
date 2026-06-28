@@ -62,6 +62,7 @@ import { registerCaptureCommands } from './org/captureProvider';
 import { OrgLintProvider, registerOrgLintCommands } from './org/orgLintProvider';
 import { registerOrphanLinkDiagnostics } from './org/orphanLinkDiagnostics';
 import { registerNotesProvider } from './org/notesProvider';
+import { registerBacklinksProvider } from './org/backlinksProvider';
 // Jupyter commands imported dynamically to handle zeromq errors gracefully
 // import { registerJupyterCommands } from './jupyter/commands';
 import { ProjectileManager, Project } from './projectile/projectileManager';
@@ -624,6 +625,9 @@ export async function activate(context: vscode.ExtensionContext) {
 
     // Dialog notes: capture, gutter decoration, and the Notes panel.
     registerNotesProvider(context);
+
+    // Object-level back-links via Find All References + a "N references" CodeLens.
+    registerBacklinksProvider(context);
 
     // Track cursor position to set context for keybinding differentiation
     // This enables different keybindings when cursor is in a table vs on a heading

@@ -1144,6 +1144,56 @@ export class ScimaxDbCore {
         }));
     }
 
+    /**
+     * Object-level back-links to a heading: links that target it by CUSTOM_ID
+     * ([[#id]]), ID ([[id:uuid]]), or fuzzy title ([[Title]] / [[*Title]]).
+     * Matching is by the raw (unresolved) link target, so a same-named heading
+     * elsewhere can appear (the documented uniqueness limitation for v1).
+     */
+    public async getHeadingBacklinks(
+        target: { title?: string; customId?: string; id?: string }
+    ): Promise<Array<{ file_path: string; line_number: number; description: string | null; heading_title: string | null }>> {
+        if (!this.db) return [];
+        const clauses: string[] = [];
+        const args: string[] = [];
+        // CUSTOM_ID links ([[#id]]) are stored as internal links whose raw_target
+        // keeps the leading '#'.
+        if (target.customId) {
+            const c = target.customId.trim().toLowerCase();
+            clauses.push(`(l.link_type IN ('internal', 'fuzzy') AND lower(trim(l.raw_target)) = ?)`);
+            args.push('#' + c);
+        }
+        // ID links ([[id:uuid]]) are stored with link_type 'id' and the bare uuid.
+        if (target.id) {
+            const i = target.id.trim().toLowerCase();
+            clauses.push(`(l.link_type = 'id' AND lower(trim(l.raw_target)) = ?)`);
+            args.push(i);
+        }
+        // Fuzzy title links ([[Title]] / [[*Title]]) are internal links whose
+        // raw_target is the title (optionally prefixed with '*').
+        if (target.title) {
+            const t = target.title.trim().toLowerCase();
+            clauses.push(`(l.link_type IN ('internal', 'fuzzy') AND lower(trim(l.raw_target)) IN (?, ?))`);
+            args.push(t, '*' + t);
+        }
+        if (clauses.length === 0) return [];
+
+        const result = await this.db.execute({
+            sql: `SELECT l.file_path, l.line_number, l.description, h.title AS heading_title
+                  FROM links l
+                  LEFT JOIN headings h ON l.heading_id = h.id
+                  WHERE ${clauses.join(' OR ')}
+                  ORDER BY l.file_path, l.line_number`,
+            args
+        });
+        return result.rows.map(r => ({
+            file_path: r.file_path as string,
+            line_number: r.line_number as number,
+            description: (r.description as string) ?? null,
+            heading_title: (r.heading_title as string) ?? null
+        }));
+    }
+
     private async indexLinks(
         fileId: number,
         filePath: string,
