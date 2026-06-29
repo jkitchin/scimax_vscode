@@ -1349,38 +1349,12 @@
           }
         },
         {
-          "comment": "Multi-line verbatim: org allows emphasis to span a line break. Fallback after the single-line rule above. End is bounded by a blank line.",
-          "name": "markup.raw.verbatim.org",
-          "contentName": "markup.raw.verbatim.content.org",
-          "begin": "(?:^|(?<=[\\s\\-({'\"]))(=)(?=[^=\\s])",
-          "end": "(?<=[^=\\s])(=)(?=[\\s.,;:!?)\\]}'\"\\-]|$)|^\\s*$",
-          "beginCaptures": {
-            "1": { "name": "punctuation.definition.verbatim.begin.org" }
-          },
-          "endCaptures": {
-            "1": { "name": "punctuation.definition.verbatim.end.org" }
-          }
-        },
-        {
           "name": "markup.inline.raw.org",
           "match": "(?:^|(?<=[\\s\\-({'\"]))(~)([^~\\s\\n](?:[^~\\n]*[^~\\s\\n])?)(~)(?=[\\s.,;:!?)\\]}'\"\\-]|$)",
           "captures": {
             "1": { "name": "punctuation.definition.raw.begin.org" },
             "2": { "name": "markup.inline.raw.content.org" },
             "3": { "name": "punctuation.definition.raw.end.org" }
-          }
-        },
-        {
-          "comment": "Multi-line inline code: org allows emphasis to span a line break. Fallback after the single-line rule above. End is bounded by a blank line.",
-          "name": "markup.inline.raw.org",
-          "contentName": "markup.inline.raw.content.org",
-          "begin": "(?:^|(?<=[\\s\\-({'\"]))(~)(?=[^~\\s])",
-          "end": "(?<=[^~\\s])(~)(?=[\\s.,;:!?)\\]}'\"\\-]|$)|^\\s*$",
-          "beginCaptures": {
-            "1": { "name": "punctuation.definition.raw.begin.org" }
-          },
-          "endCaptures": {
-            "1": { "name": "punctuation.definition.raw.end.org" }
           }
         },
         {
