@@ -5,9 +5,11 @@
  *   - ReferenceProvider: cursor on an anchor or heading + "Find All References"
  *     (Shift+F12) shows the links that point at it in the peek / References view.
  *   - CodeLensProvider: a "← N references" lens on anchored/heading lines that
- *     opens the same peek on click. Counts are computed lazily in
- *     resolveCodeLens, so only visible lenses query the database and zero-count
- *     lenses are hidden.
+ *     opens the same peek on click. Counts are resolved in provideCodeLenses so
+ *     only targets with at least one back-link get a lens. (Resolving lazily in
+ *     resolveCodeLens does not work here: a lens returned without a command does
+ *     not disappear — VS Code renders it as the placeholder "no commands".)
+ *     Results are memoized per document version to avoid re-querying on scroll.
  *
  * Back-links come from the database index, which refreshes on save, so results
  * reflect the last saved state.
@@ -102,54 +104,80 @@ class BacklinksReferenceProvider implements vscode.ReferenceProvider {
 // CodeLens provider ("← N references")
 // ---------------------------------------------------------------------------
 
-class BacklinkLens extends vscode.CodeLens {
-    constructor(range: vscode.Range, readonly target: Target, readonly uri: vscode.Uri, readonly anchorPos: vscode.Position) {
-        super(range);
-    }
+interface LensCandidate {
+    range: vscode.Range;
+    target: Target;
+    anchorPos: vscode.Position;
 }
 
 class BacklinksCodeLensProvider implements vscode.CodeLensProvider {
     private readonly _onDidChange = new vscode.EventEmitter<void>();
     readonly onDidChangeCodeLenses = this._onDidChange.event;
-    refresh(): void { this._onDidChange.fire(); }
+    private readonly cache = new Map<string, { version: number; lenses: vscode.CodeLens[] }>();
 
-    provideCodeLenses(document: vscode.TextDocument): vscode.CodeLens[] {
+    refresh(): void {
+        // Back-link counts can change without the document text changing (e.g. a
+        // link added in another file, picked up on save/reindex), so drop the
+        // memoized results before asking VS Code to re-query.
+        this.cache.clear();
+        this._onDidChange.fire();
+    }
+
+    async provideCodeLenses(document: vscode.TextDocument): Promise<vscode.CodeLens[]> {
         if (!isOrg(document)) return [];
+
+        const key = document.uri.toString();
+        const cached = this.cache.get(key);
+        if (cached && cached.version === document.version) return cached.lenses;
+
         const text = document.getText();
         const lines = text.split('\n');
         const todoStates = getTodoStatesFromText(text);
-        const lenses: BacklinkLens[] = [];
 
+        const candidates: LensCandidate[] = [];
         // One candidate per anchor.
         for (const a of extractAnchors(text)) {
-            const range = new vscode.Range(a.lineNumber - 1, 0, a.lineNumber - 1, 0);
-            lenses.push(new BacklinkLens(range, { kind: 'anchor', text: a.text }, document.uri,
-                new vscode.Position(a.lineNumber - 1, a.column)));
+            candidates.push({
+                range: new vscode.Range(a.lineNumber - 1, 0, a.lineNumber - 1, 0),
+                target: { kind: 'anchor', text: a.text },
+                anchorPos: new vscode.Position(a.lineNumber - 1, a.column),
+            });
         }
         // One candidate per heading.
         for (let i = 0; i < lines.length; i++) {
             if (/^\*+\s+/.test(lines[i])) {
-                const range = new vscode.Range(i, 0, i, 0);
-                lenses.push(new BacklinkLens(range, readHeadingTarget(lines, i, todoStates), document.uri, new vscode.Position(i, 0)));
+                candidates.push({
+                    range: new vscode.Range(i, 0, i, 0),
+                    target: readHeadingTarget(lines, i, todoStates),
+                    anchorPos: new vscode.Position(i, 0),
+                });
             }
         }
-        return lenses;
-    }
 
-    async resolveCodeLens(codeLens: vscode.CodeLens): Promise<vscode.CodeLens> {
-        const lens = codeLens as BacklinkLens;
-        const rows = await queryBacklinks(lens.target);
-        if (rows.length === 0) {
-            // No command -> the lens is not shown.
-            return lens;
-        }
-        const locations = toLocations(rows);
-        lens.command = {
-            title: `← ${rows.length} reference${rows.length === 1 ? '' : 's'}`,
-            command: 'editor.action.showReferences',
-            arguments: [lens.uri, lens.anchorPos, locations],
+        // Resolve counts up front and emit a lens only when there is at least
+        // one back-link. A lens left without a command would render as VS Code's
+        // "no commands" placeholder rather than disappearing. Identical targets
+        // share a single query.
+        const countCache = new Map<string, Promise<BacklinkRow[]>>();
+        const queryOnce = (target: Target): Promise<BacklinkRow[]> => {
+            const tk = JSON.stringify(target);
+            let p = countCache.get(tk);
+            if (!p) { p = queryBacklinks(target).catch(() => []); countCache.set(tk, p); }
+            return p;
         };
-        return lens;
+
+        const lenses = (await Promise.all(candidates.map(async (c): Promise<vscode.CodeLens | undefined> => {
+            const rows = await queryOnce(c.target);
+            if (rows.length === 0) return undefined;
+            return new vscode.CodeLens(c.range, {
+                title: `← ${rows.length} reference${rows.length === 1 ? '' : 's'}`,
+                command: 'editor.action.showReferences',
+                arguments: [document.uri, c.anchorPos, toLocations(rows)],
+            });
+        }))).filter((l): l is vscode.CodeLens => l !== undefined);
+
+        this.cache.set(key, { version: document.version, lenses });
+        return lenses;
     }
 }
 
