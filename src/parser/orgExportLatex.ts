@@ -79,6 +79,8 @@ import { exportHookRegistry } from '../adapters/exportHooksAdapter';
 import { parseObjects } from './orgObjects';
 import { getEntity } from './orgEntities';
 import { LATEX_UNICODE_DECLARATIONS } from '../utils/nonAsciiMap';
+import { sanitizeLatexLabel, escapeLatexUrl, findUnmappedNonAscii } from '../utils/escapeUtils';
+import { parserLogger } from '../utils/logger';
 
 // =============================================================================
 // Helpers
@@ -495,6 +497,22 @@ export class LatexExportBackend implements ExportBackend {
             options: opts,
         });
 
+        // Warn about characters that survive into the output untranslated and
+        // undeclared: these render only on Unicode-aware engines and error under
+        // a stock pdflatex run, so surface them rather than failing silently.
+        const unmapped = findUnmappedNonAscii(output);
+        if (unmapped.length > 0) {
+            const shown = unmapped.slice(0, 20)
+                .map(c => `${c} (U+${c.codePointAt(0)!.toString(16).toUpperCase().padStart(4, '0')})`)
+                .join(', ');
+            const more = unmapped.length > 20 ? `, … (+${unmapped.length - 20} more)` : '';
+            parserLogger.warn(
+                `LaTeX export contains ${unmapped.length} Unicode character(s) with no ` +
+                `LaTeX mapping: ${shown}${more}. These need a Unicode-aware engine ` +
+                `(lualatex/xelatex) or will fail under pdflatex.`
+            );
+        }
+
         return output;
     }
 
@@ -839,11 +857,11 @@ export class LatexExportBackend implements ExportBackend {
                 const captionLatex = exportObjects(captionObjects, this, state);
 
                 // Add #+name: as label inside caption
-                const nameLabel = block.affiliated.name ? `\\label{${block.affiliated.name}}` : '';
+                const nameLabel = block.affiliated.name ? `\\label{${sanitizeLatexLabel(block.affiliated.name)}}` : '';
                 result += `\\caption{${nameLabel}${captionLatex}}\n`;
             } else if (block.affiliated?.name) {
                 // Just name, no caption
-                result += `\\label{${block.affiliated.name}}\n`;
+                result += `\\label{${sanitizeLatexLabel(block.affiliated.name)}}\n`;
             }
 
             result += '\\end{listing}';
@@ -971,7 +989,9 @@ export class LatexExportBackend implements ExportBackend {
             const captionObjects = parseObjects(caption);
             captionLatex = exportObjects(captionObjects, this, state);
         }
-        const labelName = table.affiliated?.name;
+        // Sanitized so the emitted \label matches the \ref a fuzzy link produces
+        // for the same #+NAME (both run through sanitizeLatexLabel).
+        const labelName = table.affiliated?.name ? sanitizeLatexLabel(table.affiliated.name) : undefined;
 
         // Check for affiliated keywords
         let wrapper = '';
@@ -1290,18 +1310,20 @@ export class LatexExportBackend implements ExportBackend {
         switch (linkType) {
             case 'http':
             case 'https':
-                const url = escapeString(rawLink || path, 'latex');
+                // \url is fully verbatim (raw URL); \href needs only %/#/\ escaped
+                // — general LaTeX escaping would corrupt _ & ~ in the target.
+                const rawUrl = rawLink || path;
                 if (link.children) {
-                    return `\\href{${url}}{${description}}`;
+                    return `\\href{${escapeLatexUrl(rawUrl)}}{${description}}`;
                 }
-                return `\\url{${url}}`;
+                return `\\url{${rawUrl}}`;
 
             case 'file':
                 // Check if it's an image
                 if (/\.(png|jpg|jpeg|gif|pdf|eps|svg)$/i.test(path)) {
                     return this.exportImage(path, link, state);
                 }
-                return `\\href{file:${escapeString(path, 'latex')}}{${description}}`;
+                return `\\href{file:${escapeLatexUrl(path)}}{${description}}`;
 
             case 'id':
             case 'internal':
@@ -1332,11 +1354,15 @@ export class LatexExportBackend implements ExportBackend {
                 // points its text at the label. Checked before the headline
                 // fallback so the generated org-… id is never used for these.
                 if (state.namedElements?.has(path)) {
+                    // Sanitize to match the \label emitted for the element, so
+                    // names with %, spaces, parens, … resolve and don't inject a
+                    // comment into \ref.
+                    const namedKey = sanitizeLatexLabel(path);
                     if (link.children) {
                         const namedDesc = exportObjects(link.children, this, state);
-                        return `\\hyperref[${path}]{${namedDesc}}`;
+                        return `\\hyperref[${namedKey}]{${namedDesc}}`;
                     }
-                    return `\\ref{${path}}`;
+                    return `\\ref{${namedKey}}`;
                 }
                 // Use path as description if no explicit description
                 const fuzzyDesc = link.children
@@ -1478,7 +1504,10 @@ export class LatexExportBackend implements ExportBackend {
 
         let latex = `\\begin{figure}[${placement}]\n`;
         latex += '\\centering\n';
-        latex += `\\includegraphics${graphicsOptsStr}{${escapeString(path, 'latex')}}\n`;
+        // A file path is not LaTeX text: escaping it (e.g. _ -> \_) changes the
+        // filename and breaks the include. graphicx reads the path literally;
+        // modern LaTeX handles spaces and extra dots in braces.
+        latex += `\\includegraphics${graphicsOptsStr}{${path}}\n`;
 
         if (caption) {
             // Parse caption text for inline objects (citations, links, markup, etc.)
@@ -1487,7 +1516,7 @@ export class LatexExportBackend implements ExportBackend {
             latex += `\\caption{${captionLatex}}\n`;
         }
         if (label) {
-            latex += `\\label{${escapeString(label, 'latex')}}\n`;
+            latex += `\\label{${sanitizeLatexLabel(label)}}\n`;
         }
 
         latex += '\\end{figure}';
@@ -1512,8 +1541,15 @@ export class LatexExportBackend implements ExportBackend {
     }
 
     private exportLatexFragment(fragment: LatexFragmentObject, state: ExportState): string {
-        // Already valid LaTeX
-        return fragment.properties.value;
+        const value = fragment.properties.value;
+        // Convert TeX-primitive display math $$...$$ to the LaTeX form \[...\],
+        // which amsmath prefers (better spacing, error checking). Inline $...$
+        // and existing \[...\] / \(...\) pass through unchanged.
+        const display = value.match(/^\$\$([\s\S]*)\$\$$/);
+        if (display) {
+            return `\\[${display[1]}\\]`;
+        }
+        return value;
     }
 
     private exportSubscript(obj: SubscriptObject, state: ExportState): string {

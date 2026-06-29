@@ -1124,6 +1124,64 @@ describe('LaTeX Export', () => {
             expect(backend.exportObject(link, state)).toBe('\\hyperref[tab:foo]{the table}');
         });
 
+        it('sanitizes a named-element ref so special chars match the label', () => {
+            // A raw % in \ref would comment out the line; the ref must be
+            // sanitized identically to the element's \label so they resolve.
+            const state = createExportState();
+            state.namedElements.set('fig:a_b%c', 'figure');
+            const link: LinkObject = {
+                type: 'link',
+                range: createRange(0, 12),
+                postBlank: 0,
+                properties: { linkType: 'fuzzy', path: 'fig:a_b%c', format: 'bracket', rawLink: 'fig:a_b%c' },
+            };
+            expect(backend.exportObject(link, state)).toBe('\\ref{fig:a_b-c}');
+        });
+
+        it('does not over-escape URLs in href', () => {
+            const state = createExportState();
+            const link: LinkObject = {
+                type: 'link',
+                range: createRange(0, 40),
+                postBlank: 0,
+                properties: {
+                    linkType: 'https',
+                    path: 'https://x.com/a_b?c=1&d=2#f',
+                    format: 'bracket',
+                    rawLink: 'https://x.com/a_b?c=1&d=2#f',
+                },
+                children: [createPlainText('link')],
+            };
+            // _ and & stay literal; only # is escaped.
+            expect(backend.exportObject(link, state)).toBe('\\href{https://x.com/a_b?c=1&d=2\\#f}{link}');
+        });
+
+        it('does not LaTeX-escape image file paths', () => {
+            // Escaping _ -> \_ in a path points \includegraphics at a file that
+            // does not exist. The path must be emitted literally.
+            const state = createExportState();
+            const link: LinkObject = {
+                type: 'link',
+                range: createRange(0, 20),
+                postBlank: 0,
+                properties: { linkType: 'file', path: 'figs/a_b.png', format: 'bracket', rawLink: 'figs/a_b.png' },
+            };
+            const result = backend.exportObject(link, state);
+            expect(result).toContain('{figs/a_b.png}');
+            expect(result).not.toContain('a\\_b');
+        });
+
+        it('converts $$...$$ display math to \\[...\\]', () => {
+            const state = createExportState();
+            const frag: LatexFragmentObject = {
+                type: 'latex-fragment',
+                range: createRange(0, 10),
+                postBlank: 0,
+                properties: { value: '$$x^2$$', fragmentType: 'display-math' },
+            };
+            expect(backend.exportObject(frag, state)).toBe('\\[x^2\\]');
+        });
+
         it('exports entities as LaTeX', () => {
             const state = createExportState();
             const entity: EntityObject = {
