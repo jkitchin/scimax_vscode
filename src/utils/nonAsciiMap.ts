@@ -271,6 +271,15 @@ export const NON_ASCII_MAP: Record<string, NonAsciiReplacement> = {
     '⇒': { ascii: '=>', latex: '$\\Rightarrow$', html: '&rArr;' },
     '⇐': { ascii: '<=', latex: '$\\Leftarrow$', html: '&lArr;' },
     '⇔': { ascii: '<=>', latex: '$\\Leftrightarrow$', html: '&hArr;' },
+    '↦': { ascii: '|->', latex: '$\\mapsto$', html: '&#8614;' },
+
+    // Blackboard-bold letterlike symbols (common in formal-math / Lean prose)
+    'ℝ': { ascii: 'R', latex: '$\\mathbb{R}$', html: '&#8477;' },
+    'ℕ': { ascii: 'N', latex: '$\\mathbb{N}$', html: '&#8469;' },
+    'ℤ': { ascii: 'Z', latex: '$\\mathbb{Z}$', html: '&#8484;' },
+    'ℚ': { ascii: 'Q', latex: '$\\mathbb{Q}$', html: '&#8474;' },
+    'ℂ': { ascii: 'C', latex: '$\\mathbb{C}$', html: '&#8450;' },
+    'ℙ': { ascii: 'P', latex: '$\\mathbb{P}$', html: '&#8473;' },
 
     // Currency
     '€': { ascii: 'EUR', latex: '\\texteuro{}', html: '&euro;' },
@@ -319,4 +328,51 @@ export const NON_ASCII_MAP: Record<string, NonAsciiReplacement> = {
     '\u2009': { ascii: ' ', latex: '\\,', html: '&thinsp;' }, // Thin space
     '\u2003': { ascii: '  ', latex: '\\quad{}', html: '&emsp;' }, // Em space
     '\u2002': { ascii: ' ', latex: '\\enspace{}', html: '&ensp;' }, // En space
+};
+
+/**
+ * Unicode characters that appear verbatim in code/source blocks (e.g. Lean,
+ * Agda, Haskell) and therefore CANNOT be translated to LaTeX macros the way
+ * body text is \u2014 verbatim content must be emitted byte-for-byte.
+ *
+ * For these the LaTeX backend instead emits `\DeclareUnicodeCharacter{<hex>}{...}`
+ * declarations in the preamble, so `inputenc`'s utf8 layer knows how to typeset
+ * each glyph under pdflatex (the engine used by the auto-generated preamble).
+ * The value is the math-mode body, wrapped in `\ensuremath{...}` at emit time so
+ * it works both in ordinary text and inside `minted`/verbatim listings.
+ *
+ * Only symbols that pdflatex+T1 does NOT already handle are listed; plain
+ * accented Latin letters are covered by inputenc/fontenc and must not be
+ * redeclared here.
+ */
+export const LATEX_UNICODE_DECLARATIONS: Record<string, string> = {
+    // Blackboard-bold letterlike (Lean type universes, number fields)
+    '\u211d': '\\mathbb{R}', '\u2115': '\\mathbb{N}', '\u2124': '\\mathbb{Z}',
+    '\u211a': '\\mathbb{Q}', '\u2102': '\\mathbb{C}', '\u2119': '\\mathbb{P}',
+    // Arrows / maps / composition
+    '\u2192': '\\rightarrow', '\u2190': '\\leftarrow', '\u2194': '\\leftrightarrow',
+    '\u21d2': '\\Rightarrow', '\u21d0': '\\Leftarrow', '\u21d4': '\\Leftrightarrow',
+    '\u21a6': '\\mapsto', '\u2218': '\\circ',
+    // Relations
+    '\u2260': '\\neq', '\u2264': '\\leq', '\u2265': '\\geq', '\u2248': '\\approx',
+    '\u2261': '\\equiv', '\u223c': '\\sim', '\u2245': '\\cong', '\u226a': '\\ll', '\u226b': '\\gg',
+    // Big operators / analysis
+    '\u2211': '\\sum', '\u220f': '\\prod', '\u222b': '\\int', '\u2202': '\\partial',
+    '\u2207': '\\nabla', '\u221a': '\\surd', '\u221e': '\\infty', '\u00b7': '\\cdot', '\u00d7': '\\times',
+    // Set theory
+    '\u2208': '\\in', '\u2209': '\\notin', '\u220b': '\\ni', '\u2286': '\\subseteq', '\u2282': '\\subset',
+    '\u2287': '\\supseteq', '\u2283': '\\supset', '\u222a': '\\cup', '\u2229': '\\cap', '\u2205': '\\emptyset',
+    // Logic / quantifiers
+    '\u2227': '\\land', '\u2228': '\\lor', '\u00ac': '\\neg', '\u2200': '\\forall', '\u2203': '\\exists',
+    // Anonymous-constructor / pairing brackets (Lean \u27e8 \u27e9)
+    '\u27e8': '\\langle', '\u27e9': '\\rangle',
+    // Greek lowercase (frequent as Lean identifiers)
+    '\u03b1': '\\alpha', '\u03b2': '\\beta', '\u03b3': '\\gamma', '\u03b4': '\\delta',
+    '\u03b5': '\\varepsilon', '\u03b6': '\\zeta', '\u03b7': '\\eta', '\u03b8': '\\theta',
+    '\u03b9': '\\iota', '\u03ba': '\\kappa', '\u03bb': '\\lambda', '\u03bc': '\\mu', '\u03bd': '\\nu',
+    '\u03be': '\\xi', '\u03c0': '\\pi', '\u03c1': '\\rho', '\u03c3': '\\sigma', '\u03c4': '\\tau',
+    '\u03c5': '\\upsilon', '\u03c6': '\\varphi', '\u03c7': '\\chi', '\u03c8': '\\psi', '\u03c9': '\\omega',
+    // Greek uppercase (only those distinct from Latin glyphs)
+    '\u0393': '\\Gamma', '\u0394': '\\Delta', '\u0398': '\\Theta', '\u039b': '\\Lambda',
+    '\u039e': '\\Xi', '\u03a0': '\\Pi', '\u03a3': '\\Sigma', '\u03a6': '\\Phi', '\u03a8': '\\Psi', '\u03a9': '\\Omega',
 };

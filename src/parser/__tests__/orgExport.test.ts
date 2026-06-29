@@ -18,6 +18,7 @@ import { parseOrg } from '../orgParserUnified';
 import type { BibEntry } from '../../references/bibtexParser';
 import {
     createExportState,
+    collectTargets,
     escapeString,
     generateId,
     timestampToIso,
@@ -188,6 +189,36 @@ describe('Export Utilities', () => {
         it('expands built-in date macro', () => {
             const result = expandMacro('date', [], BUILTIN_MACROS);
             expect(result).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+        });
+    });
+
+    describe('collectTargets', () => {
+        it('records #+NAME:-labeled elements in namedElements', () => {
+            const state = createExportState();
+            const doc: OrgDocumentNode = {
+                type: 'org-data',
+                properties: {},
+                keywords: {},
+                keywordLists: {},
+                children: [],
+                section: {
+                    type: 'section',
+                    range: createRange(0, 50),
+                    postBlank: 0,
+                    children: [
+                        {
+                            type: 'table',
+                            range: createRange(0, 50),
+                            postBlank: 0,
+                            properties: { tableType: 'org' },
+                            affiliated: { name: 'tab:foo' },
+                            children: [],
+                        } as any,
+                    ],
+                },
+            } as OrgDocumentNode;
+            collectTargets(doc, state);
+            expect(state.namedElements.get('tab:foo')).toBe('table');
         });
     });
 
@@ -1055,6 +1086,44 @@ describe('LaTeX Export', () => {
             expect(backend.exportObject(link, state)).toBe('\\url{https://example.com}');
         });
 
+        it('resolves a fuzzy link to a named element as a numbered \\ref', () => {
+            // Regression: [[tab:foo]] pointing at a #+NAME:-labeled table used to
+            // fall back to a generated headline id (org-tab-foo), producing a dead
+            // link whose visible text was the raw label. It must become \ref{tab:foo}.
+            const state = createExportState();
+            state.namedElements.set('tab:foo', 'table');
+            const link: LinkObject = {
+                type: 'link',
+                range: createRange(0, 12),
+                postBlank: 0,
+                properties: {
+                    linkType: 'fuzzy',
+                    path: 'tab:foo',
+                    format: 'bracket',
+                    rawLink: 'tab:foo',
+                },
+            };
+            expect(backend.exportObject(link, state)).toBe('\\ref{tab:foo}');
+        });
+
+        it('resolves a described fuzzy link to a named element via hyperref', () => {
+            const state = createExportState();
+            state.namedElements.set('tab:foo', 'table');
+            const link: LinkObject = {
+                type: 'link',
+                range: createRange(0, 20),
+                postBlank: 0,
+                properties: {
+                    linkType: 'fuzzy',
+                    path: 'tab:foo',
+                    format: 'bracket',
+                    rawLink: 'tab:foo',
+                },
+                children: [createPlainText('the table')],
+            };
+            expect(backend.exportObject(link, state)).toBe('\\hyperref[tab:foo]{the table}');
+        });
+
         it('exports entities as LaTeX', () => {
             const state = createExportState();
             const entity: EntityObject = {
@@ -1260,6 +1329,65 @@ describe('LaTeX Export', () => {
             expect(result).toContain('1 & 2');
             expect(result).toContain('\\bottomrule');
         });
+
+        it('emits a captioned longtable that can break across pages', () => {
+            // Regression: a captioned table with :environment longtable used to be
+            // wrapped in a \begin{table} float, which pins it to one page and
+            // breaks pagination. A longtable must stand alone and carry its own
+            // repeat-header scaffolding (\endfirsthead/\endhead/\endfoot).
+            const state = createExportState({ booktabs: true } as any);
+            const table: TableElement = {
+                type: 'table',
+                range: createRange(0, 100),
+                postBlank: 0,
+                properties: { tableType: 'org' },
+                affiliated: {
+                    caption: 'A long table',
+                    name: 'tab:long',
+                    attr: { latex: { environment: 'longtable', align: 'l l' } },
+                } as any,
+                children: [
+                    {
+                        type: 'table-row',
+                        range: createRange(0, 20),
+                        postBlank: 0,
+                        properties: { rowType: 'standard' },
+                        children: [
+                            { type: 'table-cell', range: createRange(0, 5), postBlank: 0, properties: { value: 'H1' } },
+                            { type: 'table-cell', range: createRange(5, 10), postBlank: 0, properties: { value: 'H2' } },
+                        ] as TableCellObject[],
+                    } as TableRowElement,
+                    {
+                        type: 'table-row',
+                        range: createRange(20, 25),
+                        postBlank: 0,
+                        properties: { rowType: 'rule' },
+                        children: [],
+                    } as TableRowElement,
+                    {
+                        type: 'table-row',
+                        range: createRange(25, 50),
+                        postBlank: 0,
+                        properties: { rowType: 'standard' },
+                        children: [
+                            { type: 'table-cell', range: createRange(25, 30), postBlank: 0, properties: { value: 'a' } },
+                            { type: 'table-cell', range: createRange(30, 35), postBlank: 0, properties: { value: 'b' } },
+                        ] as TableCellObject[],
+                    } as TableRowElement,
+                ],
+            };
+            const result = backend.exportElement(table, state);
+            expect(result).toContain('\\begin{longtable}{l l}');
+            expect(result).toContain('\\endfirsthead');
+            expect(result).toContain('\\endhead');
+            expect(result).toContain('\\endlastfoot');
+            expect(result).toContain('\\caption{A long table}');
+            expect(result).toContain('\\label{tab:long}');
+            // Header row appears in both the first-page and repeated heads.
+            expect(result.match(/H1 & H2/g)?.length).toBe(2);
+            // The longtable must NOT be nested inside a table float.
+            expect(result).not.toContain('\\begin{table}');
+        });
     });
 
     describe('List Export', () => {
@@ -1349,6 +1477,27 @@ describe('LaTeX Export', () => {
             expect(result).toContain('\\maketitle');
             expect(result).toContain('Hello, world!');
             expect(result).toContain('\\end{document}');
+        });
+
+        it('declares Unicode that survives verbatim into source blocks', () => {
+            // Lean/Agda code blocks keep their Unicode literally (code is not
+            // translated to LaTeX macros), so the preamble must teach inputenc
+            // how to typeset those glyphs under pdflatex. Only glyphs actually
+            // present are declared.
+            const doc = parseOrg(
+                [
+                    '#+BEGIN_SRC text',
+                    'theorem t {r : (Fin n → ℝ) → ℝ} : ∑ i, x i = 1',
+                    '#+END_SRC',
+                    '',
+                ].join('\n')
+            );
+            const result = exportToLatex(doc, { title: 'T', author: 'A' });
+            expect(result).toContain('\\DeclareUnicodeCharacter{211D}{\\ensuremath{\\mathbb{R}}}');
+            expect(result).toContain('\\DeclareUnicodeCharacter{2192}{\\ensuremath{\\rightarrow}}');
+            expect(result).toContain('\\DeclareUnicodeCharacter{2211}{\\ensuremath{\\sum}}');
+            // A glyph that does not appear must not be declared.
+            expect(result).not.toContain('\\DeclareUnicodeCharacter{2200}'); // ∀
         });
 
         it('exports subscripts and superscripts in title', () => {

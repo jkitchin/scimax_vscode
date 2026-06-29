@@ -78,10 +78,29 @@ import { blockExportRegistry } from '../adapters/blockExportAdapter';
 import { exportHookRegistry } from '../adapters/exportHooksAdapter';
 import { parseObjects } from './orgObjects';
 import { getEntity } from './orgEntities';
+import { LATEX_UNICODE_DECLARATIONS } from '../utils/nonAsciiMap';
 
 // =============================================================================
 // Helpers
 // =============================================================================
+
+/**
+ * Build \DeclareUnicodeCharacter lines for any glyphs in LATEX_UNICODE_DECLARATIONS
+ * that actually occur in the document body. These cover Unicode that survives
+ * verbatim into the output (e.g. Lean/Agda source blocks), which inputenc+utf8
+ * cannot otherwise typeset under pdflatex. Only present glyphs are declared, so
+ * the preamble stays minimal for documents that don't use them.
+ */
+function buildUnicodeDeclarations(body: string): string[] {
+    const lines: string[] = [];
+    for (const [ch, mathBody] of Object.entries(LATEX_UNICODE_DECLARATIONS)) {
+        if (body.includes(ch)) {
+            const hex = ch.codePointAt(0)!.toString(16).toUpperCase().padStart(4, '0');
+            lines.push(`\\DeclareUnicodeCharacter{${hex}}{\\ensuremath{${mathBody}}}`);
+        }
+    }
+    return lines;
+}
 
 /**
  * Normalize org-ref citation keys for LaTeX output.
@@ -915,39 +934,9 @@ export class LatexExportBackend implements ExportBackend {
         const colCount = firstDataRow?.children.length || 1;
         const colSpec = 'l'.repeat(colCount);
 
-        // Check for affiliated keywords
-        let wrapper = '';
-        let endWrapper = '';
-
-        if (table.affiliated?.caption || table.affiliated?.name) {
-            wrapper = '\\begin{table}[' + (opts.floatPlacement || 'htbp') + ']\n\\centering\n';
-            endWrapper = '';
-
-            if (table.affiliated.caption) {
-                const caption = Array.isArray(table.affiliated.caption)
-                    ? table.affiliated.caption[1]
-                    : table.affiliated.caption;
-                // Parse caption for inline objects (citations, links, markup, etc.)
-                const captionObjects = parseObjects(caption);
-                const captionLatex = exportObjects(captionObjects, this, state);
-                endWrapper += `\\caption{${captionLatex}}\n`;
-            }
-
-            if (table.affiliated.name) {
-                endWrapper += `\\label{${table.affiliated.name}}\n`;
-            }
-
-            endWrapper += '\\end{table}\n';
-        } else {
-            // No caption/name: not a float. Wrap in a center environment like
-            // org-mode's LaTeX exporter does, which centers the table and adds
-            // vertical space before and after it (otherwise the tabular sits
-            // flush against the surrounding paragraphs).
-            wrapper = '\\begin{center}\n';
-            endWrapper = '\\end{center}\n';
-        }
-
-        // Apply ATTR_LATEX options
+        // Apply ATTR_LATEX options (parsed up front so the environment can drive
+        // the float-wrapper decision below — longtable is page-breaking and must
+        // NOT be nested inside a table float).
         let actualColSpec = colSpec;
         let width = '';
         let environment = 'tabular';
@@ -969,56 +958,144 @@ export class LatexExportBackend implements ExportBackend {
             }
         }
 
+        const isLongtable = environment === 'longtable';
+
+        // Resolve caption/label once; both the float path and the longtable path
+        // need them, but they place them differently.
+        let captionLatex = '';
+        if (table.affiliated?.caption) {
+            const caption = Array.isArray(table.affiliated.caption)
+                ? table.affiliated.caption[1]
+                : table.affiliated.caption;
+            // Parse caption for inline objects (citations, links, markup, etc.)
+            const captionObjects = parseObjects(caption);
+            captionLatex = exportObjects(captionObjects, this, state);
+        }
+        const labelName = table.affiliated?.name;
+
+        // Check for affiliated keywords
+        let wrapper = '';
+        let endWrapper = '';
+
+        if (isLongtable) {
+            // longtable is its own page-breaking float: it manages caption,
+            // label, and cross-page header repetition internally. Wrapping it in
+            // a table float would pin it to a single page and break pagination.
+            wrapper = '';
+            endWrapper = '';
+        } else if (table.affiliated?.caption || table.affiliated?.name) {
+            wrapper = '\\begin{table}[' + (opts.floatPlacement || 'htbp') + ']\n\\centering\n';
+            endWrapper = '';
+
+            if (captionLatex) {
+                endWrapper += `\\caption{${captionLatex}}\n`;
+            }
+
+            if (labelName) {
+                endWrapper += `\\label{${labelName}}\n`;
+            }
+
+            endWrapper += '\\end{table}\n';
+        } else {
+            // No caption/name: not a float. Wrap in a center environment like
+            // org-mode's LaTeX exporter does, which centers the table and adds
+            // vertical space before and after it (otherwise the tabular sits
+            // flush against the surrounding paragraphs).
+            wrapper = '\\begin{center}\n';
+            endWrapper = '\\end{center}\n';
+        }
+
         // Booktabs rules (\toprule, \midrule, \bottomrule) are incompatible with
         // vertical lines (|) in column specs — they produce gaps at intersections.
         // Fall back to \hline when the column spec contains vertical separators.
         const hasVerticalLines = actualColSpec.includes('|');
         const useBooktabs = opts.booktabs && !hasVerticalLines;
 
-        // Build table environment opening
-        // tabularx uses: \begin{tabularx}{width}{colspec}
-        // tabular uses:  \begin{tabular}{colspec}
-        let tabular = '';
-        if (environment === 'tabularx' && width) {
-            tabular = `\\begin{tabularx}{${width}}{${actualColSpec}}\n`;
-        } else {
-            tabular = `\\begin{${environment}}{${actualColSpec}}\n`;
-        }
+        const topRule = useBooktabs ? '\\toprule\n' : '\\hline\n';
+        const midRule = useBooktabs ? '\\midrule\n' : '\\hline\n';
+        const bottomRule = useBooktabs ? '\\bottomrule\n' : '\\hline\n';
 
-        if (useBooktabs) {
-            tabular += '\\toprule\n';
-        } else {
-            tabular += '\\hline\n';
-        }
-
-        let inHeader = true;
-
-        for (const row of table.children) {
-            if (row.properties.rowType === 'rule') {
-                if (useBooktabs) {
-                    tabular += inHeader ? '\\midrule\n' : '\\midrule\n';
-                } else {
-                    tabular += '\\hline\n';
-                }
-                inHeader = false;
-                continue;
-            }
-
+        const renderRow = (row: typeof table.children[number]): string => {
             const cells = row.children.map(cell => {
                 if (cell.children) {
                     return exportObjects(cell.children, this, state);
                 }
                 return escapeString(cell.properties.value, 'latex');
             });
+            return cells.join(' & ') + ' \\\\\n';
+        };
 
-            tabular += cells.join(' & ') + ' \\\\\n';
+        let tabular = '';
+
+        if (isLongtable) {
+            // longtable manages its own page breaking and header repetition.
+            // Split the rows into a header block (everything before the first
+            // rule) and the body, then emit the \endfirsthead / \endhead /
+            // \endfoot / \endlastfoot scaffolding so the header repeats on every
+            // page and the table breaks cleanly across pages.
+            const firstRuleIdx = table.children.findIndex(r => r.properties.rowType === 'rule');
+            const headerRows = firstRuleIdx > 0
+                ? table.children.slice(0, firstRuleIdx).filter(r => r.properties.rowType === 'standard')
+                : [];
+            const bodyStart = firstRuleIdx >= 0 ? firstRuleIdx + 1 : 0;
+            const bodyRows = table.children
+                .slice(bodyStart)
+                .filter(r => r.properties.rowType === 'standard');
+
+            const headerLatex = headerRows.map(renderRow).join('');
+
+            tabular = `\\begin{longtable}{${actualColSpec}}\n`;
+
+            // Caption and label live inside the longtable, on the first line,
+            // terminated by \\ so they participate in page breaking.
+            if (captionLatex) {
+                tabular += `\\caption{${captionLatex}}`;
+                if (labelName) {
+                    tabular += `\\label{${labelName}}`;
+                }
+                tabular += '\\\\\n';
+            } else if (labelName) {
+                tabular += `\\label{${labelName}}\\\\\n`;
+            }
+
+            // First-page head.
+            tabular += topRule + headerLatex + midRule + '\\endfirsthead\n';
+            // Subsequent-page head.
+            tabular += `\\multicolumn{${colCount}}{l}{\\textit{(Continued from previous page)}}\\\\\n`;
+            tabular += topRule + headerLatex + midRule + '\\endhead\n';
+            // Foot on every page but the last.
+            tabular += midRule;
+            tabular += `\\multicolumn{${colCount}}{r}{\\textit{(Continued on next page)}}\\\\\n`;
+            tabular += '\\endfoot\n';
+            // Foot on the last page.
+            tabular += bottomRule + '\\endlastfoot\n';
+
+            tabular += bodyRows.map(renderRow).join('');
+            tabular += '\\end{longtable}\n';
+
+            return wrapper + tabular + endWrapper;
         }
 
-        if (useBooktabs) {
-            tabular += '\\bottomrule\n';
+        // Build table environment opening
+        // tabularx uses: \begin{tabularx}{width}{colspec}
+        // tabular uses:  \begin{tabular}{colspec}
+        if (environment === 'tabularx' && width) {
+            tabular = `\\begin{tabularx}{${width}}{${actualColSpec}}\n`;
         } else {
-            tabular += '\\hline\n';
+            tabular = `\\begin{${environment}}{${actualColSpec}}\n`;
         }
+
+        tabular += topRule;
+
+        for (const row of table.children) {
+            if (row.properties.rowType === 'rule') {
+                tabular += midRule;
+                continue;
+            }
+            tabular += renderRow(row);
+        }
+
+        tabular += bottomRule;
 
         tabular += `\\end{${environment}}\n`;
 
@@ -1248,7 +1325,19 @@ export class LatexExportBackend implements ExportBackend {
                 return `\\hyperref[${customId}]{${description}}`;
 
             case 'fuzzy':
-                // Fuzzy link - could be to a target, headline, or other element
+                // Fuzzy link - could be to a target, headline, or named element.
+                // A #+NAME:-labeled element (table/figure/equation) is emitted
+                // with \label{<name>}, so resolve to that raw name: a bare link
+                // becomes a numbered \ref (e.g. "Table 1") and a described link
+                // points its text at the label. Checked before the headline
+                // fallback so the generated org-… id is never used for these.
+                if (state.namedElements?.has(path)) {
+                    if (link.children) {
+                        const namedDesc = exportObjects(link.children, this, state);
+                        return `\\hyperref[${path}]{${namedDesc}}`;
+                    }
+                    return `\\ref{${path}}`;
+                }
                 // Use path as description if no explicit description
                 const fuzzyDesc = link.children
                     ? exportObjects(link.children, this, state)
@@ -1636,6 +1725,14 @@ export class LatexExportBackend implements ExportBackend {
             // raw UTF-8 (e.g. characters outside NON_ASCII_MAP) under pdflatex.
             parts.push('\\usepackage[utf8]{inputenc}');
             parts.push('\\usepackage[T1]{fontenc}');
+            // Teach inputenc how to typeset any Unicode that reaches the output
+            // verbatim (e.g. Lean/Agda source blocks), which the body-text
+            // NON_ASCII_MAP translation cannot touch. amsmath/amssymb (loaded
+            // below) provide the \mathbb and operator macros these expand to.
+            const unicodeDecls = buildUnicodeDeclarations(content);
+            if (unicodeDecls.length > 0) {
+                parts.push(...unicodeDecls);
+            }
             if (!preambleStr.includes('geometry')) {
                 parts.push('\\usepackage[margin=1in]{geometry}');
             }

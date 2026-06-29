@@ -500,6 +500,44 @@ The theorem statement.
             const verbatim = objects.find(o => o.type === 'verbatim');
             expect(verbatim).toBeDefined();
         });
+
+        it('parses bold that wraps a verbatim span', () => {
+            // Regression: `*=Euler.lean=*` (bold of a code identifier) must stay
+            // bold-of-verbatim. The verbatim-priority cleanup used to strip the
+            // surrounding bold, leaking literal asterisks into the output.
+            const objects = parseObjectsFast('*=Euler.lean=*');
+            expect(objects).toHaveLength(1);
+            const bold = objects[0] as any;
+            expect(bold.type).toBe('bold');
+            expect(bold.children).toHaveLength(1);
+            expect(bold.children[0].type).toBe('verbatim');
+            expect(bold.children[0].properties.value).toBe('Euler.lean');
+        });
+
+        it('parses bold-wrapped verbatim surrounded by spaces', () => {
+            const objects = parseObjectsFast('a *=code=* b');
+            const bold = objects.find(o => o.type === 'bold') as any;
+            expect(bold).toBeDefined();
+            expect(bold.children[0].type).toBe('verbatim');
+            // No stray asterisks leaked as plain text.
+            const stray = objects.filter(
+                o => o.type === 'plain-text' && (o as any).properties?.value?.includes('*')
+            );
+            expect(stray).toHaveLength(0);
+        });
+
+        it('does not read chained verbatim spans as emphasis', () => {
+            // Regression guard for the verbatim-priority rule: the interior
+            // slashes here are flanked by `=`, so the spurious italic must be
+            // dropped — `=foo=/=bar=/=baz=` is three verbatim spans with literal
+            // slashes between them, not an italic `/=bar=/`.
+            const objects = parseObjectsFast('=foo=/=bar=/=baz=');
+            expect(objects.some(o => o.type === 'italic')).toBe(false);
+            const verbatims = objects
+                .filter(o => o.type === 'verbatim')
+                .map((o: any) => o.properties.value);
+            expect(verbatims).toEqual(['foo', 'bar', 'baz']);
+        });
     });
 
     describe('Complex Documents', () => {

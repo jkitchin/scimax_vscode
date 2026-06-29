@@ -421,6 +421,13 @@ export interface ExportState {
     tocEntries: TocEntry[];
     /** Custom IDs from headlines */
     customIds: Map<string, string>;
+    /**
+     * Elements declared with #+NAME: (tables, figures, equations, …), mapping
+     * the name to the element type. Such elements are labeled with their raw
+     * name (e.g. \label{tab:foo}), so a fuzzy cross-reference [[tab:foo]]
+     * resolves here to a numbered \ref rather than a generated headline id.
+     */
+    namedElements: Map<string, string>;
     /** Section numbering state */
     sectionNumbers: number[];
     /** Options for the export */
@@ -453,6 +460,7 @@ export function createExportState(options: Partial<ExportOptions> = {}): ExportS
         radioTargets: new Map(),
         tocEntries: [],
         customIds: new Map(),
+        namedElements: new Map(),
         sectionNumbers: [],
         options: { ...DEFAULT_EXPORT_OPTIONS, ...options },
     };
@@ -615,6 +623,27 @@ export function collectTargets(doc: OrgDocumentNode, state: ExportState): void {
         // Process children
         headline.children.forEach((child) => processHeadline(child));
     };
+
+    // Record #+NAME:-labeled elements anywhere in the tree (tables, figures,
+    // equations, …) so fuzzy cross-references to them resolve to the raw name
+    // that is emitted as \label{}, instead of a generated headline-style id.
+    const recordNamedElements = (node: any) => {
+        if (!node || typeof node !== 'object') return;
+        const name = node.affiliated?.name;
+        if (typeof name === 'string' && name) {
+            state.namedElements.set(name, node.type);
+        }
+        if (Array.isArray(node.children)) {
+            node.children.forEach(recordNamedElements);
+        }
+        if (node.section) {
+            recordNamedElements(node.section);
+        }
+    };
+    if (doc.section) {
+        recordNamedElements(doc.section);
+    }
+    doc.children.forEach(recordNamedElements);
 
     // Process document section first (before headlines)
     if (doc.section) {

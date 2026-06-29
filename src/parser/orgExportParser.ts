@@ -729,18 +729,31 @@ export function parseObjectsFast(text: string): OrgObject[] {
     }
 
     // Verbatim/code spans take priority over emphasis (bold, italic,
-    // underline, strike-through) when an emphasis match strictly contains
-    // a verbatim/code match. This prevents `=foo=/=bar=/=baz=` from being
-    // misread as `=foo=` followed by italic `/=bar=/` followed by `=baz=`.
+    // underline, strike-through) when an emphasis match strictly contains a
+    // verbatim/code match AND that emphasis is only an artifact of the
+    // permissive marker-neighbor PRE/POST rules — i.e. it is wedged between
+    // other emphasis markers. This prevents `=foo=/=bar=/=baz=` from being
+    // misread as `=foo=` + italic `/=bar=/` + `=baz=` (the spurious italic's
+    // outer `/` are flanked by `=`), while preserving genuine emphasis that
+    // wraps a verbatim span, e.g. `*=Euler.lean=*` (bold of a code identifier),
+    // whose outer markers sit at real boundaries (start/end, whitespace, …).
     const codeRanges = allMatches
         .filter(m => m.object.type === 'verbatim' || m.object.type === 'code')
         .map(m => ({ start: m.start, end: m.end }));
     if (codeRanges.length > 0) {
         const isEmphasis = (t: string) =>
             t === 'italic' || t === 'bold' || t === 'underline' || t === 'strike-through';
+        // The emphasis-marker characters the permissive PRE/POST admit as
+        // neighbors. An emphasis flanked by one of these was matched only
+        // because of that permissiveness and is the spurious case to drop.
+        const MARKER_CHARS = new Set(['*', '/', '_', '+', '=', '~']);
         for (let i = allMatches.length - 1; i >= 0; i--) {
             const m = allMatches[i];
             if (!isEmphasis(m.object.type)) continue;
+            const before = m.start > 0 ? text[m.start - 1] : '';
+            const after = m.end < text.length ? text[m.end] : '';
+            const wedgedBetweenMarkers = MARKER_CHARS.has(before) || MARKER_CHARS.has(after);
+            if (!wedgedBetweenMarkers) continue;
             for (const r of codeRanges) {
                 if (m.start < r.start && m.end > r.end) {
                     allMatches.splice(i, 1);
