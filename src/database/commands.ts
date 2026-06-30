@@ -1047,15 +1047,18 @@ export function registerDbCommands(
                 return;
             }
 
-            const quickPick = vscode.window.createQuickPick<vscode.QuickPickItem & { file: { path: string; indexed_at: number } }>();
-            quickPick.placeholder = `${files.length} indexed files (use buttons for actions)`;
+            const quickPick = vscode.window.createQuickPick<vscode.QuickPickItem & { file: { path: string; mtime: number } }>();
+            quickPick.placeholder = `${files.length} indexed files (most recently edited first)`;
             quickPick.matchOnDetail = true;
 
+            // Sort by mtime (filesystem modification time) so the most recently
+            // edited files surface first, rather than by indexed_at (when scimax
+            // last scanned them).
             quickPick.items = files
-                .sort((a, b) => b.indexed_at - a.indexed_at)
+                .sort((a, b) => b.mtime - a.mtime)
                 .map(file => ({
                     label: `$(file) ${path.basename(file.path)}`,
-                    description: new Date(file.indexed_at).toLocaleDateString(),
+                    description: new Date(file.mtime).toLocaleString(),
                     detail: file.path,
                     buttons: [removeButton, ignoreButton],
                     file
