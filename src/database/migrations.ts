@@ -31,6 +31,8 @@ export interface Migration {
  * - v2: Add projects table and project_id foreign key
  * - v3: Add db_metadata table for storing configuration like embedding dimensions
  * - v4: Add heading_id to links table for contextual filtering and graph queries
+ * - v5: Add anchors table for granular addressing and raw_target on links
+ * - v6: Add dependencies edge table for TODO task dependencies (org-depend style)
  */
 export const migrations: Migration[] = [
     {
@@ -204,6 +206,29 @@ export const migrations: Migration[] = [
             // matched back to anchors; existing `target` stays path-resolved.
             `ALTER TABLE links ADD COLUMN raw_target TEXT`,
             `CREATE INDEX IF NOT EXISTS idx_links_raw_target ON links(raw_target)`
+        ]
+    },
+    {
+        version: 6,
+        description: 'Add dependencies edge table for TODO task dependencies (org-depend style)',
+        up: [
+            // One row per :DEPENDS: edge. from_id is the depending heading's :ID:;
+            // to_id is the id it depends on (the blocker). This is the normalized
+            // reverse-index that powers cross-file blocking, triggering, the tree
+            // view, and cycle detection. Both directions are queried frequently.
+            `CREATE TABLE IF NOT EXISTS dependencies (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                file_id INTEGER NOT NULL,
+                file_path TEXT NOT NULL,
+                from_heading_id INTEGER REFERENCES headings(id) ON DELETE SET NULL,
+                from_id TEXT NOT NULL,
+                to_id TEXT NOT NULL,
+                line_number INTEGER NOT NULL,
+                FOREIGN KEY (file_id) REFERENCES files(id) ON DELETE CASCADE
+            )`,
+            `CREATE INDEX IF NOT EXISTS idx_dependencies_to ON dependencies(to_id)`,
+            `CREATE INDEX IF NOT EXISTS idx_dependencies_from ON dependencies(from_id)`,
+            `CREATE INDEX IF NOT EXISTS idx_dependencies_file ON dependencies(file_id)`
         ]
     }
 ];

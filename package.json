@@ -132,6 +132,11 @@
           "icon": "$(comment-discussion)"
         },
         {
+          "id": "scimaxDependencies",
+          "name": "Dependencies",
+          "icon": "$(type-hierarchy)"
+        },
+        {
           "id": "scimax.journal.calendar",
           "type": "webview",
           "name": "Journal Calendar",
@@ -2113,6 +2118,18 @@
       {
         "command": "scimax.org.addIdToHeading",
         "title": "Scimax: Add ID to Heading"
+      },
+      {
+        "command": "scimax.org.addDependency",
+        "title": "Scimax: Add Dependency (depends on...)"
+      },
+      {
+        "command": "scimax.org.gotoBlocker",
+        "title": "Scimax: Go to Blocking Dependency"
+      },
+      {
+        "command": "scimax.org.showDependencies",
+        "title": "Scimax: Show Task Dependencies"
       },
       {
         "command": "scimax.org.linkToHere",
@@ -5553,6 +5570,31 @@
           "minimum": 20,
           "maximum": 200,
           "description": "Column at which to wrap text when filling paragraphs (Alt+Q). Similar to Emacs fill-column."
+        },
+        "scimax.org.depend.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable TODO task dependencies (org-depend style). A task with a :DEPENDS: property cannot be marked DONE until its dependencies are DONE, and completing a task can unblock/promote tasks that depend on it."
+        },
+        "scimax.org.depend.readyState": {
+          "type": "string",
+          "default": "NEXT",
+          "description": "TODO keyword a dependent task is promoted to once all of its dependencies are satisfied (only applied when the keyword exists in that file's workflow). Set empty to disable promotion."
+        },
+        "scimax.org.depend.autoPromote": {
+          "type": "boolean",
+          "default": true,
+          "description": "When a task becomes unblocked, automatically advance it to scimax.org.depend.readyState. When false, the user is only notified."
+        },
+        "scimax.org.depend.showIndicators": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show an inline CodeLens on TODO headings indicating whether they are blocked (🔒) or ready (▶) based on their dependencies."
+        },
+        "scimax.org.depend.hideBlockedInAgenda": {
+          "type": "boolean",
+          "default": false,
+          "description": "Hide tasks that are blocked by unfinished dependencies from agenda views, so the agenda shows only actionable items."
         },
         "scimax.highlighting.headingBackgroundBars": {
           "type": "boolean",

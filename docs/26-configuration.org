@@ -94,6 +94,22 @@ CLOSED: [2026-01-24 Sat 17:41]
 | scimax.org.notes.excludeFromExport | boolean              | true     | Strip dialog notes from exports   |
 | scimax.org.notes.labelPrefix       | string               | "note-"  | Footnote label prefix for notes   |
 | scimax.org.notes.author            | string               | ""       | Author recorded on new notes      |
+| scimax.org.depend.enabled              | boolean | true  | Enable TODO task dependencies         |
+| scimax.org.depend.readyState           | string  | NEXT  | State to promote unblocked tasks to   |
+| scimax.org.depend.autoPromote          | boolean | true  | Promote on unblock (else notify only) |
+| scimax.org.depend.showIndicators       | boolean | true  | Blocked/ready CodeLens on TODO tasks  |
+| scimax.org.depend.hideBlockedInAgenda  | boolean | false | Hide blocked tasks from agenda        |
+
+** ⚠️ Task Dependencies
+
+When =scimax.org.depend.enabled= (the default), a TODO task with a =:DEPENDS:=
+property cannot be marked DONE until the tasks it depends on are DONE, and
+completing a task surfaces (and, when =autoPromote= is on, advances to
+=readyState=) any task it unblocks. A parent marked =:ORDERED: t= forces its
+children to be completed in order. Blocked/ready indicators
+(=showIndicators=), the *Dependencies* tree view, the agenda filter
+(=hideBlockedInAgenda=), and dangling/cycle diagnostics surface the dependency
+graph. See [[file:03.5-task-dependencies.org][Task Dependencies]] for the full guide.
 
 ** ⚠️ Orphan Link Diagnostics
 

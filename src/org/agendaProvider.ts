@@ -27,6 +27,7 @@ import {
 import { minimatch } from 'minimatch';
 import { getDatabase } from '../database/lazyDb';
 import type { ScimaxDb, AgendaItem as DbAgendaItem } from '../database/scimaxDb';
+import { isHeadingBlocked } from './dependencies';
 import { format, addDays, startOfDay, isSameDay, differenceInDays, parse } from 'date-fns';
 
 // =============================================================================
@@ -330,12 +331,25 @@ export class AgendaManager {
                 requireTodoState: this.config.requireTodoState,
             });
 
+            // Optionally hide tasks blocked by unfinished dependencies so the
+            // agenda shows only actionable ("next") items.
+            const dependConfig = vscode.workspace.getConfiguration('scimax.org.depend');
+            const hideBlocked = dependConfig.get<boolean>('enabled', true)
+                && dependConfig.get<boolean>('hideBlockedInAgenda', false);
+
             // Convert database items to AgendaItem format, filtering excluded files
             const items: AgendaItem[] = [];
             for (const dbItem of dbItems) {
                 // Check if file is excluded
                 if (this.isFileExcluded(dbItem.heading.file_path)) {
                     continue;
+                }
+                if (hideBlocked) {
+                    try {
+                        if (await isHeadingBlocked(dbItem.heading)) continue;
+                    } catch {
+                        // On resolution error, keep the item (fail open).
+                    }
                 }
                 const agendaItem = this.convertDbItemToAgendaItem(dbItem, startDate);
                 if (agendaItem) {

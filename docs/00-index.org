@@ -47,8 +47,9 @@ Track tasks with TODO states, priorities, deadlines, and scheduling.
 - Priorities [#A], [#B], [#C]
 - Checkbox lists with progress tracking [2/5]
 - Deadline and scheduled timestamps with warnings
+- Cross-file task dependencies (blocking, triggering, ORDERED subtasks)
 
-See [[file:03-todo-items.org][TODO Items]] for details.
+See [[file:03-todo-items.org][TODO Items]] and [[file:03.5-task-dependencies.org][Task Dependencies]] for details.
 
 *** Tables
 
@@ -444,6 +445,7 @@ Quick reference to find specific features across documentation.
 | Speed commands        | [[file:23-speed-commands.org][Speed Commands]]               | [[file:24-keybindings.org][Keybindings]], [[file:21-navigation.org][Navigation]]                                           |
 | Tables                | [[file:04-tables.org][Tables]]                               | [[file:10-export.org][Export]]                                                                                             |
 | Tags                  | [[file:02-document-structure.org][Document Structure]]       | [[file:13-agenda.org][Agenda]], [[file:03-todo-items.org][TODO Items]]                                                     |
+| Task dependencies     | [[file:03.5-task-dependencies.org][Task Dependencies]]        | [[file:03-todo-items.org][TODO Items]], [[file:13-agenda.org][Agenda]], [[file:42-granular-addressing.org][Granular Addressing]]                          |
 | Templates             | [[file:35-templates.org][Document Templates]]                 | [[file:15-capture.org][Capture]], [[file:14-journal.org][Journal]], [[file:26-configuration.org][Configuration]]              |
 | Terminal navigation   | [[file:30-cli.org][Command Line Interface]]                 | Open CLI-output file paths from the integrated terminal                                                                    |
 | TODO states           | [[file:03-todo-items.org][TODO Items]]                       | [[file:13-agenda.org][Agenda]], [[file:26-configuration.org][Configuration]]                                               |

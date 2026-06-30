@@ -133,6 +133,17 @@ CLOSED: [2026-01-17 Sat 12:24]
 | [[cmd:scimax.org.cycleTodo]]  | Cycle TODO State        | C-c C-t            |
 | [[cmd:scimax.org.showTodos]]  | Show TODOs in Document  | -                  |
 
+** ⚠️ Task Dependencies
+
+Express dependencies between TODO tasks (org-depend style). See
+[[file:03.5-task-dependencies.org][Task Dependencies]] for the full guide.
+
+| Command ID                            | Description                  | Default Keybinding |
+|---------------------------------------+------------------------------+--------------------|
+| [[cmd:scimax.org.addDependency]]      | Add Dependency (depends on…) | -                  |
+| [[cmd:scimax.org.gotoBlocker]]        | Go to Blocking Dependency    | -                  |
+| [[cmd:scimax.org.showDependencies]]   | Show Task Dependencies       | -                  |
+
 ** ✅ Checkboxes
 CLOSED: [2026-01-17 Sat 12:24]
 

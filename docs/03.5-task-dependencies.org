@@ -1,0 +1,134 @@
+#+TITLE: Task Dependencies
+#+TODO: ⚠️ 👀 | ✅
+
+* ⚠️ Task Dependencies
+
+Scimax supports dependencies between TODO tasks, inspired by Emacs
+=org-depend= but simplified to a single declared edge. Because Scimax has
+granular ID linking, dependencies work *across files* — a task in one file can
+depend on a task in another.
+
+You declare what a task /depends on/, and two behaviors follow automatically:
+
+- *Blocking* — a task cannot be marked DONE until every task it depends on is
+  DONE.
+- *Triggering* — when a task becomes DONE, any task that depended on it and is
+  now fully unblocked is surfaced (and optionally promoted to a "ready" state).
+
+** ⚠️ Declaring a dependency
+
+A dependency is one =:DEPENDS:= property holding whitespace-separated =id:=
+links to the tasks that must be completed first:
+
+#+begin_src org
+,* TODO Run analysis
+  :PROPERTIES:
+  :ID: analysis-9b2
+  :END:
+
+,* TODO Write paper
+  :PROPERTIES:
+  :ID: paper-7f3a
+  :DEPENDS: id:analysis-9b2 id:figures-4c1
+  :END:
+#+end_src
+
+Here "Write paper" depends on both "Run analysis" and the task with id
+=figures-4c1=. It cannot be completed until both are DONE.
+
+The easiest way to add one is the *Add Dependency* command
+([[cmd:scimax.org.addDependency]]): place the cursor on a task, run the command,
+and pick the task it should depend on. Scimax ensures both tasks have an
+=:ID:= (generating one if needed) and appends the =id:= to =:DEPENDS:=.
+
+** ⚠️ Blocking
+
+When you try to cycle a task to a DONE state (=C-c C-t=) while it still has an
+unsatisfied dependency, the change is *refused* and you are told which task is
+blocking it, with an option to jump straight to it. Use
+[[cmd:scimax.org.gotoBlocker]] at any time to jump to the first unfinished
+dependency.
+
+A missing dependency (an =id:= that resolves to no heading) also blocks, and is
+flagged as a diagnostic — see [[*Diagnostics]].
+
+** ⚠️ Triggering ("what's next")
+
+When you complete a task, Scimax looks up everything that depends on it. For
+each dependent whose dependencies are now /all/ satisfied, it:
+
+- notifies you that the task is ready (with an *Open* button), and
+- optionally promotes it to a "ready" state (default =NEXT=) so it surfaces as
+  the next actionable item.
+
+Only the direct dependents are advanced — there is no recursive cascade.
+
+This reverse lookup is backed by the database index, so it works across files
+and reflects the last saved state.
+
+** ⚠️ Sequential subtasks with =:ORDERED:=
+
+For the common "do these steps in order" case you don't need ids at all. Mark a
+parent task =:ORDERED: t= and its direct children must be completed
+top-to-bottom — a child cannot be marked DONE while an earlier sibling is still
+active:
+
+#+begin_src org
+,* TODO Build release
+  :PROPERTIES:
+  :ORDERED: t
+  :END:
+,** TODO Compile
+,** TODO Test
+,** TODO Package
+#+end_src
+
+** ⚠️ Surfacing project status
+
+- *Inline indicator* — active TODO headings with dependencies get a CodeLens
+  showing 🔒 =blocked by N= or ▶ =ready=. Clicking a blocked lens jumps to the
+  blocker. Toggle with =scimax.org.depend.showIndicators=.
+- *Dependency tree view* — the *Dependencies* view (Scimax activity bar, or
+  [[cmd:scimax.org.showDependencies]]) shows, for the task at the cursor, a
+  "Depends on →" branch and a "Blocks →" branch, each entry badged with its
+  TODO state and click-to-navigate.
+- *Agenda filter* — set =scimax.org.depend.hideBlockedInAgenda= to hide blocked
+  tasks from [[file:13-agenda.org][agenda]] views so only actionable items show.
+
+** ⚠️ Diagnostics
+
+Two problems are flagged as warnings in the editor:
+
+- *Dangling dependency* — a =:DEPENDS:= id that matches no heading (the target
+  was deleted or its id changed).
+- *Dependency cycle* — tasks that depend on each other in a loop
+  (=A → B → … → A=) and can therefore never all be satisfied.
+
+** ⚠️ Configuration
+
+| Setting                                  | Default | Description                                              |
+|------------------------------------------+---------+----------------------------------------------------------|
+| =scimax.org.depend.enabled=              | =true=  | Master switch for the whole feature.                     |
+| =scimax.org.depend.readyState=           | =NEXT=  | State a dependent is promoted to once unblocked.         |
+| =scimax.org.depend.autoPromote=          | =true=  | Promote on unblock; when false, only notify.             |
+| =scimax.org.depend.showIndicators=       | =true=  | Show the blocked/ready CodeLens.                         |
+| =scimax.org.depend.hideBlockedInAgenda=  | =false= | Hide blocked tasks from agenda views.                    |
+
+See [[file:26-configuration.org][Configuration]] for the full settings reference.
+
+** ⚠️ Notes and limitations
+
+- Dependency resolution is database-backed and reflects the last *saved* state,
+  so save files to pick up cross-file changes.
+- A task needs an =:ID:= to be /triggered/ (something depends on it). The *Add
+  Dependency* command assigns ids automatically.
+- Compared to Emacs =org-depend=, the =chain-find-next= sorting DSL and
+  =:TRIGGER:=/=:BLOCKER:= property authoring are intentionally not supported.
+
+** ⚠️ Related Topics
+
+- [[file:03-todo-items.org][TODO Items and Task Management]] — TODO states and cycling
+- [[file:13-agenda.org][Agenda Views]] — viewing and filtering tasks
+- [[file:05-links.org][Hyperlinks]] and [[file:42-granular-addressing.org][Granular Addressing]] — the id linking dependencies build on
+- [[file:25-commands.org][Command Reference]] — all commands
+- [[file:26-configuration.org][Configuration]] — all settings

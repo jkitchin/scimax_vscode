@@ -63,6 +63,9 @@ import { OrgLintProvider, registerOrgLintCommands } from './org/orgLintProvider'
 import { registerOrphanLinkDiagnostics } from './org/orphanLinkDiagnostics';
 import { registerNotesProvider } from './org/notesProvider';
 import { registerBacklinksProvider } from './org/backlinksProvider';
+import { registerDependencyCommands } from './org/dependencyCommands';
+import { registerDependencyProviders } from './org/dependencyProviders';
+import { registerDependencyDiagnostics } from './org/dependencyDiagnostics';
 // Jupyter commands imported dynamically to handle zeromq errors gracefully
 // import { registerJupyterCommands } from './jupyter/commands';
 import { ProjectileManager, Project } from './projectile/projectileManager';
@@ -628,6 +631,12 @@ export async function activate(context: vscode.ExtensionContext) {
 
     // Object-level back-links via Find All References + a "N references" CodeLens.
     registerBacklinksProvider(context);
+
+    // TODO task dependencies (org-depend style): authoring commands, the
+    // blocked/ready CodeLens, and the dependency tree view.
+    registerDependencyCommands(context);
+    registerDependencyProviders(context);
+    registerDependencyDiagnostics(context);
 
     // Track cursor position to set context for keybinding differentiation
     // This enables different keybindings when cursor is in a table vs on a heading

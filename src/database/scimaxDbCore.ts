@@ -23,6 +23,7 @@ import {
 import {
     UnifiedParserAdapter,
     LegacyDocument,
+    LegacyHeading,
 } from '../parser/orgParserAdapter';
 import { extractAnchors, normalizeAnchorText } from '../parser/orgAnchors';
 // Migration data - inlined here to avoid importing migrations.ts which pulls in vscode via logger.
@@ -175,11 +176,62 @@ const coreMigrations: CoreMigration[] = [
             `ALTER TABLE links ADD COLUMN raw_target TEXT`,
             `CREATE INDEX IF NOT EXISTS idx_links_raw_target ON links(raw_target)`
         ]
+    },
+    {
+        version: 6,
+        description: 'Add dependencies edge table for TODO task dependencies (org-depend style)',
+        up: [
+            `CREATE TABLE IF NOT EXISTS dependencies (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                file_id INTEGER NOT NULL,
+                file_path TEXT NOT NULL,
+                from_heading_id INTEGER REFERENCES headings(id) ON DELETE SET NULL,
+                from_id TEXT NOT NULL,
+                to_id TEXT NOT NULL,
+                line_number INTEGER NOT NULL,
+                FOREIGN KEY (file_id) REFERENCES files(id) ON DELETE CASCADE
+            )`,
+            `CREATE INDEX IF NOT EXISTS idx_dependencies_to ON dependencies(to_id)`,
+            `CREATE INDEX IF NOT EXISTS idx_dependencies_from ON dependencies(from_id)`,
+            `CREATE INDEX IF NOT EXISTS idx_dependencies_file ON dependencies(file_id)`
+        ]
     }
 ];
 
 function coreGetLatestVersion(): number {
     return coreMigrations.length > 0 ? coreMigrations[coreMigrations.length - 1].version : 0;
+}
+
+/**
+ * Read a heading property case-insensitively. Property drawer keys are stored
+ * as written (e.g. `:ID:` vs `:id:`), so dependency code must not assume case.
+ */
+export function getPropCaseInsensitive(
+    props: Record<string, string>,
+    key: string
+): string | undefined {
+    const direct = props[key];
+    if (direct !== undefined) return direct;
+    const lower = key.toLowerCase();
+    for (const k of Object.keys(props)) {
+        if (k.toLowerCase() === lower) return props[k];
+    }
+    return undefined;
+}
+
+/**
+ * Parse a `:DEPENDS:` property value into normalized target ids. Accepts
+ * whitespace- or comma-separated entries and strips a leading `id:` prefix so
+ * that `id:abc` and `abc` resolve to the same heading id.
+ */
+export function parseDependsIds(value: string): string[] {
+    if (!value) return [];
+    return value
+        .split(/[\s,]+/)
+        .map(s => s.trim())
+        .filter(Boolean)
+        .map(s => s.replace(/^id:/i, ''))
+        .filter(Boolean);
 }
 
 // ============================================================
@@ -213,6 +265,20 @@ export interface HeadingRecord {
     deadline: string | null;
     closed: string | null;
     cell_index: number | null;
+}
+
+/**
+ * A single TODO dependency edge: heading `from_id` depends on (is blocked by)
+ * heading `to_id`. `from_heading_id` links back to the depending heading row.
+ */
+export interface DependencyRecord {
+    id: number;
+    file_id: number;
+    file_path: string;
+    from_heading_id: number | null;
+    from_id: string;
+    to_id: string;
+    line_number: number;
 }
 
 export interface SourceBlockRecord {
@@ -861,6 +927,7 @@ export class ScimaxDbCore {
                         { sql: 'DELETE FROM source_blocks WHERE file_path = ?', args: [filePath] },
                         { sql: 'DELETE FROM links WHERE file_path = ?', args: [filePath] },
                         { sql: 'DELETE FROM anchors WHERE file_path = ?', args: [filePath] },
+                        { sql: 'DELETE FROM dependencies WHERE file_path = ?', args: [filePath] },
                         { sql: 'DELETE FROM hashtags WHERE file_path = ?', args: [filePath] },
                         { sql: 'DELETE FROM chunks WHERE file_path = ?', args: [filePath] },
                         { sql: 'DELETE FROM fts_content WHERE file_path = ?', args: [filePath] },
@@ -1014,6 +1081,54 @@ export class ScimaxDbCore {
         }
 
         await this.indexAnchors(fileId, filePath, content, linePositions);
+        await this.indexDependencies(fileId, filePath, flatHeadings);
+    }
+
+    /**
+     * Index TODO task dependencies (org-depend style). Each heading's
+     * `:DEPENDS:` property holds whitespace-separated id links; we store one
+     * normalized edge per dependency so blocking, triggering, the tree view,
+     * and cycle detection can query the graph in both directions.
+     */
+    private async indexDependencies(
+        fileId: number,
+        filePath: string,
+        flatHeadings: LegacyHeading[]
+    ): Promise<void> {
+        if (!this.db) return;
+
+        // Map heading line -> heading row id (reuse the anchors lookup pattern).
+        const headingsResult = await this.db.execute({
+            sql: 'SELECT id, line_number FROM headings WHERE file_path = ? ORDER BY line_number',
+            args: [filePath]
+        });
+        const lineToId = new Map<number, number>();
+        for (const row of headingsResult.rows) {
+            lineToId.set(row.line_number as number, row.id as number);
+        }
+
+        const statements: { sql: string; args: (string | number | null)[] }[] = [];
+        for (const heading of flatHeadings) {
+            const props = heading.properties || {};
+            const dependsRaw = getPropCaseInsensitive(props, 'DEPENDS');
+            if (!dependsRaw) continue;
+            const fromId = getPropCaseInsensitive(props, 'ID') || '';
+            const headingId = lineToId.get(heading.lineNumber) ?? null;
+            for (const toId of parseDependsIds(dependsRaw)) {
+                statements.push({
+                    sql: `INSERT INTO dependencies
+                          (file_id, file_path, from_heading_id, from_id, to_id, line_number)
+                          VALUES (?, ?, ?, ?, ?, ?)`,
+                    args: [fileId, filePath, headingId, fromId, toId, heading.lineNumber]
+                });
+            }
+        }
+
+        if (statements.length === 0) return;
+        const BATCH_SIZE = 50;
+        for (let i = 0; i < statements.length; i += BATCH_SIZE) {
+            await this.db.batch(statements.slice(i, i + BATCH_SIZE));
+        }
     }
 
     /**
@@ -1441,6 +1556,7 @@ export class ScimaxDbCore {
                     { sql: 'DELETE FROM source_blocks WHERE file_path LIKE ?', args: [pattern] },
                     { sql: 'DELETE FROM links WHERE file_path LIKE ?', args: [pattern] },
                     { sql: 'DELETE FROM anchors WHERE file_path LIKE ?', args: [pattern] },
+                    { sql: 'DELETE FROM dependencies WHERE file_path LIKE ?', args: [pattern] },
                     { sql: 'DELETE FROM hashtags WHERE file_path LIKE ?', args: [pattern] },
                     { sql: 'DELETE FROM chunks WHERE file_path LIKE ?', args: [pattern] },
                     { sql: 'DELETE FROM fts_content WHERE file_path LIKE ?', args: [pattern] },
@@ -1461,6 +1577,7 @@ export class ScimaxDbCore {
                     { sql: 'DELETE FROM source_blocks WHERE file_path = ?', args: [filePath] },
                     { sql: 'DELETE FROM links WHERE file_path = ?', args: [filePath] },
                     { sql: 'DELETE FROM anchors WHERE file_path = ?', args: [filePath] },
+                    { sql: 'DELETE FROM dependencies WHERE file_path = ?', args: [filePath] },
                     { sql: 'DELETE FROM hashtags WHERE file_path = ?', args: [filePath] },
                     { sql: 'DELETE FROM chunks WHERE file_path = ?', args: [filePath] },
                     { sql: 'DELETE FROM fts_content WHERE file_path = ?', args: [filePath] },
@@ -1745,6 +1862,58 @@ export class ScimaxDbCore {
             : [`%"${propertyName}"%`, ...scope.args];
         const result = await this.db.execute({ sql, args });
         return result.rows as unknown as HeadingRecord[];
+    }
+
+    /**
+     * Resolve a heading by its `:ID:` property. IDs live inside the
+     * `properties` JSON blob; the value-anchored LIKE pattern is correct here
+     * because a heading has exactly one ID. Returns the first match (IDs are
+     * expected to be unique across the workspace).
+     */
+    public async getHeadingById(id: string): Promise<HeadingRecord | null> {
+        if (!this.db || !id) return null;
+        const scope = this.getScopeClause();
+        // ID stored as either "ID" (uppercase, the org convention) or "id".
+        const sql = `SELECT * FROM headings
+                     WHERE (properties LIKE ? OR properties LIKE ?)${scope.sql}
+                     ORDER BY file_path, line_number LIMIT 1`;
+        const args: any[] = [`%"ID":"${id}"%`, `%"id":"${id}"%`, ...scope.args];
+        const result = await this.db.execute({ sql, args });
+        return (result.rows[0] as unknown as HeadingRecord) ?? null;
+    }
+
+    /**
+     * Edges pointing AT this id — i.e. headings that depend on (are blocked by)
+     * the heading with this id. Powers the trigger ("what's next") logic and the
+     * "blocks →" side of the dependency tree.
+     */
+    public async getDependents(toId: string): Promise<DependencyRecord[]> {
+        if (!this.db || !toId) return [];
+        const scope = this.getScopeClause();
+        const sql = `SELECT * FROM dependencies WHERE to_id = ?${scope.sql}`;
+        const result = await this.db.execute({ sql, args: [toId, ...scope.args] });
+        return result.rows as unknown as DependencyRecord[];
+    }
+
+    /**
+     * Edges originating FROM this id — i.e. the ids this heading depends on.
+     * Powers the "depends on →" side of the dependency tree and cycle detection.
+     */
+    public async getDependencies(fromId: string): Promise<DependencyRecord[]> {
+        if (!this.db || !fromId) return [];
+        const scope = this.getScopeClause();
+        const sql = `SELECT * FROM dependencies WHERE from_id = ?${scope.sql}`;
+        const result = await this.db.execute({ sql, args: [fromId, ...scope.args] });
+        return result.rows as unknown as DependencyRecord[];
+    }
+
+    /** All dependency edges in scope (used for workspace-wide cycle detection). */
+    public async getAllDependencies(): Promise<DependencyRecord[]> {
+        if (!this.db) return [];
+        const scope = this.getScopeClause();
+        const sql = `SELECT * FROM dependencies WHERE 1=1${scope.sql}`;
+        const result = await this.db.execute({ sql, args: [...scope.args] });
+        return result.rows as unknown as DependencyRecord[];
     }
 
     public async searchSourceBlocks(language?: string, query?: string): Promise<SourceBlockRecord[]> {
