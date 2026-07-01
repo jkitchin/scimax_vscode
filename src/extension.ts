@@ -66,6 +66,9 @@ import { registerBacklinksProvider } from './org/backlinksProvider';
 import { registerDependencyCommands } from './org/dependencyCommands';
 import { registerDependencyProviders } from './org/dependencyProviders';
 import { registerDependencyDiagnostics } from './org/dependencyDiagnostics';
+import { registerPeopleProviders } from './org/people';
+import { registerProjectCommands } from './org/projectCommands';
+import { registerTaskGraph } from './org/taskGraphProvider';
 // Jupyter commands imported dynamically to handle zeromq errors gracefully
 // import { registerJupyterCommands } from './jupyter/commands';
 import { ProjectileManager, Project } from './projectile/projectileManager';
@@ -637,6 +640,15 @@ export async function activate(context: vscode.ExtensionContext) {
     registerDependencyCommands(context);
     registerDependencyProviders(context);
     registerDependencyDiagnostics(context);
+
+    // People database: :ASSIGNEE: completion/hover from :person: headings + capture.
+    registerPeopleProviders(context);
+
+    // Project-management dynamic blocks (task table, Gantt) insert commands.
+    registerProjectCommands(context);
+
+    // Task dependency graph webview.
+    registerTaskGraph(context);
 
     // Track cursor position to set context for keybinding differentiation
     // This enables different keybindings when cursor is in a table vs on a heading

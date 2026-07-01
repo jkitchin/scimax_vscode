@@ -16,6 +16,12 @@ import type {
     DynamicBlockElement
 } from './orgElementTypes';
 import { generateClockTable, type ClockTableConfig } from './orgClocking';
+import {
+    extractProjectTasks,
+    isTaskBlocked,
+    effortToDays,
+    type ProjectTask,
+} from './projectTasks';
 
 // =============================================================================
 // Types
@@ -44,6 +50,36 @@ interface DynamicBlockResult {
     success: boolean;
     content: string;
     error?: string;
+}
+
+interface ProjectTableParams {
+    /** Comma-separated columns: task,todo,priority,assignee,scheduled,deadline,effort,blocked,deps */
+    columns?: string;
+    /** Scope a subtree by heading :ID: (whole file when omitted). */
+    id?: string;
+    /** Maximum heading level to include. */
+    maxlevel?: number;
+    /** Only include tasks with these tags (e.g. "+urgent"). */
+    match?: string;
+    /** Group rows by 'assignee' or 'state'. */
+    groupBy?: 'assignee' | 'state';
+    /** Include headings without a TODO keyword (default: only TODO tasks). */
+    includeNonTodo?: boolean;
+}
+
+interface GanttParams {
+    /** Chart title. */
+    title?: string;
+    /** Scope a subtree by heading :ID: (whole file when omitted). */
+    id?: string;
+    /** Maximum heading level to include. */
+    maxlevel?: number;
+    /** Only include tasks with these tags (e.g. "+urgent"). */
+    match?: string;
+    /** Section grouping: 'assignee', 'parent', or 'none'. */
+    sections?: 'assignee' | 'parent' | 'none';
+    /** Mark priority [#A] tasks as crit. */
+    critPriority?: string;
 }
 
 /**
@@ -140,6 +176,32 @@ function parseClockTableParams(argsString: string | undefined): ClockTableConfig
         formula: args.formula,
         showFile: args.fileskip0 !== 't' && scope === 'agenda', // Show file column for agenda scope
         span,
+    };
+}
+
+function parseProjectTableParams(argsString: string | undefined): ProjectTableParams {
+    const args = parseBlockArgs(argsString);
+    const groupBy = args.groupby === 'assignee' || args.groupby === 'state' ? args.groupby : undefined;
+    return {
+        columns: args.columns,
+        id: args.id,
+        maxlevel: args.maxlevel ? parseInt(args.maxlevel, 10) : undefined,
+        match: args.match,
+        groupBy: groupBy as ProjectTableParams['groupBy'],
+        includeNonTodo: args.include_non_todo === 't' || args.include_non_todo === 'yes',
+    };
+}
+
+function parseGanttParams(argsString: string | undefined): GanttParams {
+    const args = parseBlockArgs(argsString);
+    const sections = ['assignee', 'parent', 'none'].includes(args.sections) ? args.sections : undefined;
+    return {
+        title: args.title,
+        id: args.id,
+        maxlevel: args.maxlevel ? parseInt(args.maxlevel, 10) : undefined,
+        match: args.match,
+        sections: sections as GanttParams['sections'],
+        critPriority: args.crit_priority || 'A',
     };
 }
 
@@ -395,6 +457,255 @@ function generateOrgTable(rows: string[][], hlines?: number): string {
 }
 
 // =============================================================================
+// Project Table / Gantt Execution
+// =============================================================================
+
+/** Select headlines for a project block: whole file, or a subtree by :ID:. */
+function selectProjectHeadlines(
+    doc: OrgDocumentNode,
+    id: string | undefined,
+    maxlevel: number | undefined,
+    match: string | undefined
+): HeadlineElement[] {
+    let headlines: HeadlineElement[];
+    if (id) {
+        const roots = org.filterHeadlines(doc, h => h.propertiesDrawer?.ID === id);
+        if (roots.length === 1) {
+            const parent = roots[0];
+            headlines = [parent, ...org.filterHeadlines(doc, h =>
+                h.properties.level > parent.properties.level &&
+                (h.position?.start.line ?? 0) > (parent.position?.start.line ?? 0)
+            )];
+        } else {
+            headlines = org.getAllHeadlines(doc);
+        }
+    } else {
+        headlines = org.getAllHeadlines(doc);
+    }
+    if (maxlevel) headlines = headlines.filter(h => h.properties.level <= maxlevel);
+    if (match) {
+        const tags = match.split(/[+&]/).map(t => t.replace(/^[+-]/, '').trim()).filter(Boolean);
+        headlines = headlines.filter(h => tags.every(t => h.properties.tags.includes(t)));
+    }
+    return headlines;
+}
+
+function fmtDate(d?: Date): string {
+    if (!d) return '';
+    const p = (n: number) => String(n).padStart(2, '0');
+    return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
+}
+
+function fmtEffort(minutes?: number): string {
+    if (!minutes) return '';
+    const h = Math.floor(minutes / 60);
+    const m = minutes % 60;
+    if (h && m) return `${h}h${m}m`;
+    if (h) return `${h}h`;
+    return `${m}m`;
+}
+
+const PROJECT_TABLE_DEFAULT_COLUMNS = 'task,todo,priority,assignee,deadline,effort,blocked';
+
+export function executeProjectTable(
+    doc: OrgDocumentNode,
+    params: ProjectTableParams,
+    _documentPath?: string,
+    _agendaDocuments?: AgendaDocument[]
+): DynamicBlockResult {
+    try {
+        const headlines = selectProjectHeadlines(doc, params.id, params.maxlevel, params.match);
+        const tasks = extractProjectTasks(doc, headlines, { todoOnly: !params.includeNonTodo });
+        const byId = new Map<string, ProjectTask>();
+        for (const t of tasks) if (t.id) byId.set(t.id, t);
+
+        let cols = (params.columns || PROJECT_TABLE_DEFAULT_COLUMNS)
+            .split(',').map(c => c.trim().toLowerCase()).filter(Boolean);
+        // Avoid a redundant assignee column when already grouping by assignee.
+        if (params.groupBy === 'assignee') cols = cols.filter(c => c !== 'assignee');
+        const headerFor: Record<string, string> = {
+            task: 'Task', todo: 'State', priority: 'Pri', assignee: 'Who',
+            scheduled: 'Scheduled', deadline: 'Deadline', effort: 'Effort',
+            blocked: 'Blocked', deps: 'Deps',
+        };
+
+        const cellFor = (t: ProjectTask, col: string): string => {
+            switch (col) {
+                case 'task': return '  '.repeat(Math.max(0, t.level - 1)) + t.title;
+                case 'todo': return t.todo || '';
+                case 'priority': return t.priority ? `[#${t.priority}]` : '';
+                case 'assignee': return t.assignees.join(', ');
+                case 'scheduled': return fmtDate(t.scheduled);
+                case 'deadline': return fmtDate(t.deadline);
+                case 'effort': return fmtEffort(t.effortMinutes);
+                case 'blocked': return !t.isDone && isTaskBlocked(t, byId) ? '🔒' : '';
+                case 'deps': return t.dependsIds.length ? String(t.dependsIds.length) : '';
+                default: return '';
+            }
+        };
+
+        // Optional grouping: a leading group column, sorted by group.
+        let ordered = tasks;
+        const groupKey = (t: ProjectTask): string =>
+            params.groupBy === 'assignee'
+                ? (t.assignees[0] || 'Unassigned')
+                : (t.todo || 'No state');
+        if (params.groupBy) {
+            ordered = [...tasks].sort((a, b) => groupKey(a).localeCompare(groupKey(b)));
+        }
+
+        const rows: string[][] = [];
+        const header = cols.map(c => headerFor[c] || c);
+        if (params.groupBy) header.unshift(params.groupBy === 'assignee' ? 'Who' : 'Group');
+        rows.push(header);
+
+        let lastGroup: string | undefined;
+        for (const t of ordered) {
+            const row = cols.map(c => cellFor(t, c));
+            if (params.groupBy) {
+                const g = groupKey(t);
+                row.unshift(g === lastGroup ? '' : g);
+                lastGroup = g;
+            }
+            rows.push(row);
+        }
+
+        if (rows.length === 1) {
+            return { success: true, content: '| (no matching tasks) |' };
+        }
+        return { success: true, content: generateOrgTable(rows, 1) };
+    } catch (error) {
+        return { success: false, content: '', error: error instanceof Error ? error.message : String(error) };
+    }
+}
+
+/** Topologically order tasks so in-scope dependencies precede dependents. */
+function topoSortTasks(tasks: ProjectTask[]): ProjectTask[] {
+    const byId = new Map<string, ProjectTask>();
+    for (const t of tasks) if (t.id) byId.set(t.id, t);
+    const visited = new Set<ProjectTask>();
+    const result: ProjectTask[] = [];
+    const visit = (t: ProjectTask, stack: Set<ProjectTask>): void => {
+        if (visited.has(t) || stack.has(t)) return; // skip cycles defensively
+        stack.add(t);
+        for (const depId of t.dependsIds) {
+            const dep = byId.get(depId);
+            if (dep && dep !== t) visit(dep, stack);
+        }
+        stack.delete(t);
+        visited.add(t);
+        result.push(t);
+    };
+    for (const t of tasks) visit(t, new Set());
+    return result;
+}
+
+export function executeGantt(
+    doc: OrgDocumentNode,
+    params: GanttParams,
+    _documentPath?: string,
+    _agendaDocuments?: AgendaDocument[]
+): DynamicBlockResult {
+    try {
+        const headlines = selectProjectHeadlines(doc, params.id, params.maxlevel, params.match);
+        const tasks = topoSortTasks(extractProjectTasks(doc, headlines, { todoOnly: true }));
+        if (tasks.length === 0) {
+            return { success: true, content: '#+begin_src mermaid\ngantt\n  title (no tasks)\n#+end_src' };
+        }
+
+        const inScope = new Set(tasks.map(t => t.id).filter(Boolean) as string[]);
+        const ganttIdOf = new Map<string, string>();
+        for (const t of tasks) if (t.id) ganttIdOf.set(t.id, t.ganttId);
+
+        // Project start: earliest scheduled date, else today.
+        const today = new Date();
+        let projectStart = today;
+        for (const t of tasks) if (t.scheduled && t.scheduled < projectStart) projectStart = t.scheduled;
+
+        const sanitize = (s: string) => s.replace(/[:#\n]/g, ' ').trim() || 'task';
+
+        // Parent-section lookup uses the FULL heading list (parents are often
+        // non-task headings like the project root, absent from `tasks`).
+        const orderedHeadlines = [...headlines].sort(
+            (a, b) => (a.position?.start.line ?? 0) - (b.position?.start.line ?? 0)
+        );
+        const parentTitleForLine = (line: number, level: number): string => {
+            let best = '';
+            for (const h of orderedHeadlines) {
+                const hLine = (h.position?.start.line ?? 0) + 1;
+                if (hLine >= line) break;
+                if (h.properties.level < level) best = sanitize(h.properties.rawValue || '');
+            }
+            return best;
+        };
+
+        // Section assignment.
+        const sectionMode = params.sections || 'assignee';
+        const sectionOf = (t: ProjectTask): string => {
+            if (sectionMode === 'none') return '';
+            if (sectionMode === 'assignee') return t.assignees[0] || 'Unassigned';
+            return parentTitleForLine(t.line, t.level) || 'Tasks';
+        };
+
+        const lines: string[] = ['gantt', '  dateFormat  YYYY-MM-DD'];
+        if (params.title) lines.push(`  title  ${sanitize(params.title)}`);
+        lines.push('  axisFormat  %m-%d');
+
+        let currentSection: string | undefined;
+        // Group tasks by section while preserving topo order.
+        const emitTask = (t: ProjectTask): void => {
+            const status: string[] = [];
+            if (t.isDone) status.push('done');
+            else if (t.scheduled && t.scheduled <= today) status.push('active');
+            if (params.critPriority && t.priority === params.critPriority) status.push('crit');
+
+            const scopedDeps = t.dependsIds.filter(d => inScope.has(d)).map(d => ganttIdOf.get(d)!);
+            const days = effortToDays(t.effortMinutes);
+
+            // Determine start spec.
+            let startSpec: string;
+            if (t.scheduled) startSpec = fmtDate(t.scheduled);
+            else if (scopedDeps.length > 0) startSpec = `after ${scopedDeps.join(' ')}`;
+            else if (t.deadline && days) {
+                const s = new Date(t.deadline);
+                s.setDate(s.getDate() - days);
+                startSpec = fmtDate(s);
+            } else startSpec = fmtDate(projectStart);
+
+            // Determine duration / end spec.
+            let durSpec: string;
+            const isMilestone = !days && !t.scheduled && !!t.deadline;
+            if (isMilestone) {
+                status.push('milestone');
+                durSpec = '0d';
+                startSpec = fmtDate(t.deadline);
+            } else if (days) durSpec = `${days}d`;
+            else if (t.scheduled && t.deadline) durSpec = fmtDate(t.deadline);
+            else durSpec = '1d';
+
+            const parts = [...status, t.ganttId, startSpec, durSpec];
+            lines.push(`  ${sanitize(t.title)} :${parts.join(', ')}`);
+        };
+
+        // Emit in section order but keep dependencies satisfied: iterate topo
+        // order, switching section headers as needed.
+        for (const t of tasks) {
+            const section = sectionOf(t);
+            if (sectionMode !== 'none' && section !== currentSection) {
+                lines.push(`  section ${section}`);
+                currentSection = section;
+            }
+            emitTask(t);
+        }
+
+        const mermaid = lines.join('\n');
+        return { success: true, content: `#+begin_src mermaid\n${mermaid}\n#+end_src` };
+    } catch (error) {
+        return { success: false, content: '', error: error instanceof Error ? error.message : String(error) };
+    }
+}
+
+// =============================================================================
 // Clocktable Execution
 // =============================================================================
 
@@ -479,6 +790,13 @@ export function executeDynamicBlock(
         case 'clocktable':
             const clockParams = parseClockTableParams(argsString);
             return executeClockTable(doc, clockParams, documentPath, agendaDocuments);
+
+        case 'project-table':
+        case 'tasktable':
+            return executeProjectTable(doc, parseProjectTableParams(argsString), documentPath, agendaDocuments);
+
+        case 'gantt':
+            return executeGantt(doc, parseGanttParams(argsString), documentPath, agendaDocuments);
 
         default:
             return {

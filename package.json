@@ -2132,6 +2132,22 @@
         "title": "Scimax: Show Task Dependencies"
       },
       {
+        "command": "scimax.org.insertProjectTable",
+        "title": "Scimax: Insert Project Task Table"
+      },
+      {
+        "command": "scimax.org.insertGantt",
+        "title": "Scimax: Insert Gantt Chart"
+      },
+      {
+        "command": "scimax.org.showTaskGraph",
+        "title": "Scimax: Show Task Dependency Graph"
+      },
+      {
+        "command": "scimax.org.newPerson",
+        "title": "Scimax: New Person"
+      },
+      {
         "command": "scimax.org.linkToHere",
         "title": "Scimax: Link to Here (insert anchor, copy link)"
       },
@@ -5595,6 +5611,11 @@
           "type": "boolean",
           "default": false,
           "description": "Hide tasks that are blocked by unfinished dependencies from agenda views, so the agenda shows only actionable items."
+        },
+        "scimax.org.peopleFile": {
+          "type": "string",
+          "default": "",
+          "description": "File where 'New Person' appends :person: headings. If empty, uses {scimax.directory}/people.org. People are recognized anywhere by the :person: tag; this only controls where new ones are captured."
         },
         "scimax.highlighting.headingBackgroundBars": {
           "type": "boolean",
