@@ -1,6 +1,6 @@
 ---
 name: scimax
-version: "0.10.0"
+version: "0.8.0"
 description: |
   Searches org-mode notes, displays agenda and TODOs, exports org files to
   HTML/PDF/LaTeX, validates citations, opens journal entries, maintains the
@@ -27,7 +27,7 @@ description: |
   "resource", "pick entity", "insert email", "insert address", "entity selector"
 allowed-tools: ["Bash(scimax*)", "Bash(code --goto*)", "Read", "Glob", "Grep", "Write"]
 ---
-<!-- scimax-skill v0.10.0 -->
+<!-- scimax-skill v0.8.0 -->
 
 # Scimax Skill
 
