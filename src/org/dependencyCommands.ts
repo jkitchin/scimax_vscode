@@ -7,7 +7,7 @@
  */
 import * as vscode from 'vscode';
 import { getDatabase } from '../database/lazyDb';
-import { getTodoWorkflowForDocument } from './todoStates';
+import { getTodoWorkflowForDocument, getTodoStatesFromText, extractHeadingTitle } from './todoStates';
 import {
     findEnclosingHeadingLine,
     readHeadingProperty,
@@ -117,19 +117,40 @@ async function addDependencyCommand(): Promise<void> {
         return;
     }
 
-    const headings = await db.searchHeadings('', { limit: 1000 });
-    const currentId = readHeadingProperty(document, headingLine, 'ID')?.replace(/^id:/i, '');
-    const items = headings
-        .filter(h => !(h.file_path === document.uri.fsPath && h.line_number - 1 === headingLine))
+    interface Candidate { file_path: string; line_number: number; title: string; }
+    interface PickItem extends vscode.QuickPickItem { heading: Candidate; }
+
+    // Current-file headings come from the LIVE buffer so they're always offered
+    // (even before the file is saved/indexed) and never stale.
+    const thisFile = document.uri.fsPath;
+    const todoStates = getTodoStatesFromText(document.getText());
+    const liveItems: PickItem[] = [];
+    for (let i = 0; i < document.lineCount; i++) {
+        if (i === headingLine) continue; // don't depend on self
+        const text = document.lineAt(i).text;
+        if (!/^\*+\s+/.test(text)) continue;
+        liveItems.push({
+            label: extractHeadingTitle(text, todoStates) || text.replace(/^\*+\s+/, ''),
+            description: '(this file)',
+            detail: `${vscode.workspace.asRelativePath(thisFile)}:${i + 1}`,
+            heading: { file_path: thisFile, line_number: i + 1, title: extractHeadingTitle(text, todoStates) },
+        });
+    }
+
+    // Other files come from the DB index.
+    const dbHeadings = await db.searchHeadings('', { limit: 1000 });
+    const dbItems: PickItem[] = dbHeadings
+        .filter(h => h.file_path !== thisFile)
         .map(h => ({
             label: h.title,
             description: h.todo_state ? `[${h.todo_state}]` : '',
             detail: `${vscode.workspace.asRelativePath(h.file_path)}:${h.line_number}`,
-            heading: h,
+            heading: { file_path: h.file_path, line_number: h.line_number, title: h.title },
         }));
 
+    const items = [...liveItems, ...dbItems];
     if (items.length === 0) {
-        vscode.window.showWarningMessage('No indexed headings found. Save your org files first.');
+        vscode.window.showWarningMessage('No headings found to depend on.');
         return;
     }
 
@@ -158,7 +179,6 @@ async function addDependencyCommand(): Promise<void> {
 
     await ensureHeadingId(document, freshHeadingLine); // give the dependent an id too (needed for triggers)
     await appendDependency(document, findEnclosingHeadingLine(document, editor.selection.active.line), targetId);
-    void currentId;
     vscode.window.showInformationMessage(`Added dependency on "${picked.heading.title}".`);
 }
 
