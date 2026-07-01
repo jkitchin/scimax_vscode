@@ -1,0 +1,29 @@
+#+TITLE: People
+
+# People are just headings tagged :person:. The :NICK: is the handle used in
+# a task's :ASSIGNEE:. Type in an :ASSIGNEE: line to see autocomplete, or hover
+# a handle to see contact info. Add more with the "Scimax: New Person" command.
+
+* Maria Santos                                                       :person:
+  :PROPERTIES:
+  :ID: person-maria
+  :EMAIL: msantos@example.edu
+  :NICK: maria
+  :ROLE: PI
+  :END:
+
+* Liam O'Brien                                                       :person:
+  :PROPERTIES:
+  :ID: person-liam
+  :EMAIL: liam@example.edu
+  :NICK: liam
+  :ROLE: PhD student
+  :END:
+
+* Priya Nair                                                         :person:
+  :PROPERTIES:
+  :ID: person-priya
+  :EMAIL: priya@example.edu
+  :NICK: priya
+  :ROLE: Postdoc
+  :END:

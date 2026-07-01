@@ -1,0 +1,221 @@
+#+TITLE: Perovskite Photocatalyst Screening
+#+TODO: TODO NEXT WAIT | DONE CANCELLED
+
+# A small example project for Scimax project management.
+#
+# Try these:
+#   - Put the cursor in a #+BEGIN: block below and press C-c C-c to regenerate it.
+#   - Run "Scimax: Show Task Dependency Graph" to see the graph.
+#   - Try to mark "Draft manuscript" DONE (C-c C-t) — it's blocked by its deps.
+#   - Hover an :ASSIGNEE: handle, or type in one to get autocomplete.
+#   - Mark "Synthesize perovskite samples" DONE and watch its dependents unblock.
+
+* Perovskite Photocatalyst Screening
+  :PROPERTIES:
+  :ID: proj-perovskite
+  :ASSIGNEE: maria
+  :END:
+
+** Experiments
+
+*** DONE Design sample matrix
+    CLOSED: [2026-07-02 Thu]
+    :PROPERTIES:
+    :ID: design
+    :EFFORT: 2d
+    :ASSIGNEE: maria
+    :END:
+
+*** NEXT Synthesize perovskite samples
+    SCHEDULED: <2026-07-06 Mon>
+    :PROPERTIES:
+    :ID: synth
+    :EFFORT: 5d
+    :ASSIGNEE: liam
+    :DEPENDS: id:design
+    :END:
+
+*** TODO XRD characterization
+    :PROPERTIES:
+    :ID: xrd
+    :EFFORT: 2d
+    :ASSIGNEE: liam
+    :DEPENDS: id:synth
+    :END:
+
+*** TODO UV-Vis spectroscopy
+    :PROPERTIES:
+    :ID: uvvis
+    :EFFORT: 2d
+    :ASSIGNEE: priya
+    :DEPENDS: id:synth
+    :END:
+
+*** Photocatalytic activity protocol                                  :@priya:
+    :PROPERTIES:
+    :ID: activity
+    :ORDERED: t
+    :END:
+    Steps must be done in order (:ORDERED:), starting after synthesis.
+**** TODO Calibrate reactor
+     :PROPERTIES:
+     :ID: calibrate
+     :EFFORT: 1d
+     :DEPENDS: id:synth
+     :END:
+**** TODO Run activity measurements
+     :PROPERTIES:
+     :ID: runact
+     :EFFORT: 4d
+     :END:
+**** TODO Quantify products
+     :PROPERTIES:
+     :ID: quantify
+     :EFFORT: 2d
+     :END:
+
+** Analysis
+
+*** TODO DFT bandgap calculations
+    SCHEDULED: <2026-07-06 Mon>
+    :PROPERTIES:
+    :ID: dft
+    :EFFORT: 6d
+    :ASSIGNEE: priya
+    :END:
+
+*** TODO Process characterization data
+    :PROPERTIES:
+    :ID: process
+    :EFFORT: 3d
+    :ASSIGNEE: priya
+    :DEPENDS: id:xrd id:uvvis
+    :END:
+
+*** TODO Build structure–activity model
+    :PROPERTIES:
+    :ID: model
+    :EFFORT: 4d
+    :ASSIGNEE: maria
+    :DEPENDS: id:process id:dft id:quantify
+    :END:
+
+** Writing
+
+*** TODO [#A] Draft manuscript
+    :PROPERTIES:
+    :ID: draft
+    :EFFORT: 6d
+    :ASSIGNEE: maria
+    :DEPENDS: id:model
+    :END:
+
+*** TODO Prepare figures
+    :PROPERTIES:
+    :ID: figures
+    :EFFORT: 3d
+    :ASSIGNEE: liam
+    :DEPENDS: id:model
+    :END:
+
+*** TODO Internal review
+    :PROPERTIES:
+    :ID: review
+    :EFFORT: 2d
+    :ASSIGNEE: priya
+    :DEPENDS: id:draft id:figures
+    :END:
+
+*** TODO Revise manuscript
+    :PROPERTIES:
+    :ID: revise
+    :EFFORT: 3d
+    :ASSIGNEE: maria
+    :DEPENDS: id:review
+    :END:
+
+** Submission
+
+*** TODO Format for journal
+    :PROPERTIES:
+    :ID: format
+    :EFFORT: 1d
+    :ASSIGNEE: priya
+    :DEPENDS: id:revise
+    :END:
+
+*** TODO Submit to journal
+    DEADLINE: <2026-09-15 Tue>
+    :PROPERTIES:
+    :ID: submit
+    :ASSIGNEE: maria
+    :DEPENDS: id:format
+    :END:
+
+*** WAIT Respond to reviewers
+    :PROPERTIES:
+    :ID: respond
+    :EFFORT: 5d
+    :ASSIGNEE: maria
+    :DEPENDS: id:submit
+    :END:
+
+* Views
+:PROPERTIES:
+:UNNUMBERED: notoc
+:END:
+
+Put the cursor inside a block and press =C-c C-c= to (re)generate it.
+
+#+BEGIN: project-table :columns task,todo,priority,assignee,deadline,effort,blocked
+| Task                               | State | Pri  | Who   | Deadline   | Effort | Blocked |
+|------------------------------------+-------+------+-------+------------+--------+---------|
+|     Design sample matrix           | DONE  |      | maria |            | 16h    |         |
+|     Synthesize perovskite samples  | NEXT  |      | liam  |            | 40h    |         |
+|     XRD characterization           | TODO  |      | liam  |            | 16h    | 🔒      |
+|     UV-Vis spectroscopy            | TODO  |      | priya |            | 16h    | 🔒      |
+|       Calibrate reactor            | TODO  |      | priya |            | 8h     | 🔒      |
+|       Run activity measurements    | TODO  |      | priya |            | 32h    | 🔒      |
+|       Quantify products            | TODO  |      | priya |            | 16h    | 🔒      |
+|     DFT bandgap calculations       | TODO  |      | priya |            | 48h    |         |
+|     Process characterization data  | TODO  |      | priya |            | 24h    | 🔒      |
+|     Build structure–activity model | TODO  |      | maria |            | 32h    | 🔒      |
+|     Draft manuscript               | TODO  | [#A] | maria |            | 48h    | 🔒      |
+|     Prepare figures                | TODO  |      | liam  |            | 24h    | 🔒      |
+|     Internal review                | TODO  |      | priya |            | 16h    | 🔒      |
+|     Revise manuscript              | TODO  |      | maria |            | 24h    | 🔒      |
+|     Format for journal             | TODO  |      | priya |            | 8h     | 🔒      |
+|     Submit to journal              | TODO  |      | maria | 2026-09-15 |        | 🔒      |
+|     Respond to reviewers           | WAIT  |      | maria |            | 40h    | 🔒      |
+#+END:
+
+#+BEGIN: gantt :title "Perovskite Photocatalyst Screening" :sections parent
+#+begin_src mermaid
+gantt
+  dateFormat  YYYY-MM-DD
+  title  Perovskite Photocatalyst Screening
+  axisFormat  %m-%d
+  section Experiments
+  Design sample matrix :done, design, 2026-06-30, 2d
+  Synthesize perovskite samples :synth, 2026-07-06, 5d
+  XRD characterization :xrd, after synth, 2d
+  UV-Vis spectroscopy :uvvis, after synth, 2d
+  section Photocatalytic activity protocol
+  Calibrate reactor :calibrate, after synth, 1d
+  Run activity measurements :runact, after calibrate, 4d
+  Quantify products :quantify, after runact, 2d
+  section Analysis
+  DFT bandgap calculations :dft, 2026-07-06, 6d
+  Process characterization data :process, after xrd uvvis, 3d
+  Build structure–activity model :model, after process dft quantify, 4d
+  section Writing
+  Draft manuscript :crit, draft, after model, 6d
+  Prepare figures :figures, after model, 3d
+  Internal review :review, after draft figures, 2d
+  Revise manuscript :revise, after review, 3d
+  section Submission
+  Format for journal :format, after revise, 1d
+  Submit to journal :milestone, submit, 2026-09-15, 0d
+  Respond to reviewers :respond, after submit, 5d
+#+end_src
+#+END:

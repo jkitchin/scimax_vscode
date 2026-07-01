@@ -1,0 +1,51 @@
+#+TITLE: Example: Project Management
+
+A small, self-contained science project demonstrating Scimax's project-management
+features: task dependencies, a task table, a Gantt chart, a dependency graph, and
+a people database. Open [[file:project.org]] and try the steps below.
+
+Full documentation: [[file:../../docs/03.6-project-management.org][Project Management]] and [[file:../../docs/03.5-task-dependencies.org][Task Dependencies]].
+
+* Files
+
+- [[file:people.org]] — three people (=:person:= headings with email/nick/role).
+- [[file:project.org]] — the project: experiments → analysis → writing → submission,
+  with dependencies, assignees, schedules, and effort. It ends with a task-table
+  and a Gantt =#+BEGIN:= block (already generated).
+
+* Things to try
+
+1. *Regenerate a view.* Put the cursor inside either =#+BEGIN:= block in
+   project.org and press =C-c C-c=. The table / Gantt rebuild from the current
+   task state.
+
+2. *Render the Gantt.* Put the cursor in the =#+begin_src mermaid= block and press
+   =C-c C-c= to render it to an image (requires Mermaid).
+
+3. *See the dependency graph.* Run =Scimax: Show Task Dependency Graph= — tasks are
+   colored blue (ready), red (blocked), or green (done); arrows point to
+   dependencies. Click a node to jump to the task.
+
+4. *Blocking.* Move the cursor onto =Draft manuscript= and press =C-c C-t= to try
+   to mark it DONE. It refuses — it is blocked by upstream work — and offers to
+   jump to the blocker.
+
+5. *Triggering.* Mark =Synthesize perovskite samples= DONE (=C-c C-t= until DONE).
+   Its dependents (=XRD=, =UV-Vis=, =Calibrate reactor=) become unblocked and are
+   promoted toward =NEXT=; regenerate the table to see the 🔒 clear.
+
+6. *ORDERED steps.* Under "Photocatalytic activity protocol" (=:ORDERED: t=), the
+   steps must be completed in order — you cannot finish "Run activity
+   measurements" before "Calibrate reactor".
+
+7. *People.* In any task, edit the =:ASSIGNEE:= line and start typing — completion
+   suggests people from people.org. Hover an assignee handle to see their email.
+   Add a new teammate with =Scimax: New Person=.
+
+* Notes
+
+- The task table and Gantt read this single file; keep a project's tasks together.
+- Cross-file dependencies (a task here depending on a task in another file) still
+  drive blocking and appear in the dependency graph.
+- To index these files for the graph and people completion, run =Scimax: Sync
+  Files= (or open the folder as a workspace) so the database picks them up.
