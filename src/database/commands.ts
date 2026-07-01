@@ -1050,6 +1050,10 @@ export function registerDbCommands(
             const quickPick = vscode.window.createQuickPick<vscode.QuickPickItem & { file: { path: string; mtime: number } }>();
             quickPick.placeholder = `${files.length} indexed files (most recently edited first)`;
             quickPick.matchOnDetail = true;
+            // Preserve the mtime order while the user narrows the list; without
+            // this VS Code re-sorts filtered results by match score. (sortByLabel
+            // exists at runtime but predates this project's @types/vscode.)
+            (quickPick as unknown as { sortByLabel: boolean }).sortByLabel = false;
 
             // Sort by mtime (filesystem modification time) so the most recently
             // edited files surface first, rather than by indexed_at (when scimax
