@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
 import { isInTable, moveRowUp, moveRowDown, moveColumnLeft, moveColumnRight } from './tableProvider';
 import { updateStatisticsCookies, updateClosedTimestamp } from './scimaxOrg';
+import { guardCompletion, runDependencyTriggers } from './dependencyGuard';
 import {
     advanceDateByRepeater,
     getDayOfWeek,
@@ -280,9 +281,17 @@ async function cycleTodoState(forward: boolean): Promise<boolean> {
         ? '*'.repeat(headingInfo.level)
         : '#'.repeat(headingInfo.level);
 
+    const isDoneState = newState ? doneStates.has(newState) : false;
+
+    // org-depend blocking: refuse to complete a task whose dependencies (or an
+    // earlier ORDERED sibling) are unfinished. Same guard as scimax.org.cycleTodo
+    // so shift-left/right can't sneak a task past its dependencies.
+    if (isOrg && await guardCompletion(document, position.line, doneStates, wasDone, isDoneState)) {
+        return true; // handled: change refused
+    }
+
     // Check for repeating task when transitioning to a done state
     let repeaterInfo: ReturnType<typeof findRepeaterTimestamp> = null;
-    const isDoneState = newState ? doneStates.has(newState) : false;
     if (isOrg && isDoneState) {
         repeaterInfo = findRepeaterTimestamp(document, position.line);
     }
@@ -379,6 +388,12 @@ async function cycleTodoState(forward: boolean): Promise<boolean> {
     // Update statistics cookies in parent headings (org-mode only)
     if (isOrg) {
         await updateStatisticsCookies(editor, position.line, headingInfo.level);
+    }
+
+    // Fire dependency triggers when this completion unblocks other tasks
+    // (skip repeaters, which reset to an active state rather than completing).
+    if (isOrg && isDoneState && !wasDone && !repeaterInfo) {
+        await runDependencyTriggers(document, position.line);
     }
 
     return true;

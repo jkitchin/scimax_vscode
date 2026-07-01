@@ -8,6 +8,7 @@
 import * as vscode from 'vscode';
 import { getDatabase } from '../database/lazyDb';
 import { getTodoWorkflowForDocument, getTodoStatesFromText, extractHeadingTitle } from './todoStates';
+import { slugify } from '../parser/projectTasks';
 import {
     findEnclosingHeadingLine,
     readHeadingProperty,
@@ -21,15 +22,31 @@ function isOrg(doc: vscode.TextDocument): boolean {
     return doc.languageId === 'org' || doc.fileName.endsWith('.org');
 }
 
-function generateUUID(): string {
-    if (typeof crypto !== 'undefined' && (crypto as any).randomUUID) {
-        return (crypto as any).randomUUID();
-    }
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
-        const r = Math.random() * 16 | 0;
-        const v = c === 'x' ? r : (r & 0x3 | 0x8);
-        return v.toString(16);
-    });
+function escapeRegExp(s: string): string {
+    return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+/**
+ * A readable, workspace-unique id derived from a heading title, e.g.
+ * "Run analysis" -> "run-analysis" (then "-2", "-3", … on collision). Uniqueness
+ * is checked against the DB index and the current document (for unsaved siblings).
+ */
+async function uniqueSlugId(base: string, document: vscode.TextDocument): Promise<string> {
+    const slug = base || 'item';
+    const db = await getDatabase();
+    const docText = document.getText();
+    const taken = async (cand: string): Promise<boolean> => {
+        const re = new RegExp(`^\\s*:ID:\\s*(?:id:)?${escapeRegExp(cand)}\\s*$`, 'im');
+        if (re.test(docText)) return true;
+        if (db) {
+            try { if (await db.getHeadingById(cand)) return true; } catch { /* ignore */ }
+        }
+        return false;
+    };
+    let cand = slug;
+    let i = 1;
+    while (await taken(cand)) { i += 1; cand = `${slug}-${i}`; }
+    return cand;
 }
 
 /**
@@ -52,21 +69,24 @@ export function findDrawer(document: vscode.TextDocument, headingLine: number, p
     return { start, end, existingLine };
 }
 
-/** Return the heading's `:ID:`, writing a fresh UUID if it has none. */
+/** Return the heading's `:ID:`, minting a readable, unique slug id if it has none. */
 export async function ensureHeadingId(document: vscode.TextDocument, headingLine: number): Promise<string | undefined> {
     const existing = readHeadingProperty(document, headingLine, 'ID');
     if (existing) return existing.replace(/^id:/i, '');
 
-    const uuid = generateUUID();
+    const todoStates = getTodoStatesFromText(document.getText());
+    const title = extractHeadingTitle(document.lineAt(headingLine).text, todoStates);
+    const id = await uniqueSlugId(slugify(title), document);
+
     const drawer = findDrawer(document, headingLine, 'ID');
     const edit = new vscode.WorkspaceEdit();
     if (drawer.start !== -1 && drawer.end !== -1) {
-        edit.insert(document.uri, new vscode.Position(drawer.end, 0), `:ID: ${uuid}\n`);
+        edit.insert(document.uri, new vscode.Position(drawer.end, 0), `:ID: ${id}\n`);
     } else {
-        edit.insert(document.uri, new vscode.Position(headingLine + 1, 0), `:PROPERTIES:\n:ID: ${uuid}\n:END:\n`);
+        edit.insert(document.uri, new vscode.Position(headingLine + 1, 0), `:PROPERTIES:\n:ID: ${id}\n:END:\n`);
     }
     const ok = await vscode.workspace.applyEdit(edit);
-    return ok ? uuid : undefined;
+    return ok ? id : undefined;
 }
 
 /** Add `targetId` to the heading's `:DEPENDS:` list (creating the drawer/property as needed). */
