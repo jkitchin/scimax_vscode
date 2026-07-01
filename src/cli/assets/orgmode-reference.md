@@ -257,6 +257,96 @@ CLOCK: [2026-03-23 Mon 09:00]--[2026-03-23 Mon 10:30] =>  1:30
 
 ---
 
+## Task Dependencies and Project Management
+
+Scimax turns org TODO tasks into a project view. Everything is driven off
+heading metadata: `SCHEDULED`/`DEADLINE`, `EFFORT`, priority, and the properties
+below.
+
+### Dependencies (`:DEPENDS:`)
+
+A task declares what it depends on with one `:DEPENDS:` property holding
+whitespace-separated `id:` links:
+
+```org
+* TODO Write paper
+  :PROPERTIES:
+  :ID: paper
+  :DEPENDS: id:analysis id:figures
+  :END:
+```
+
+- **Blocking**: the task cannot be marked DONE until every dependency is DONE
+  (trying anyway is refused, with a jump-to-blocker action).
+- **Triggering**: completing a task notifies and promotes (to `NEXT` by default)
+  any task it unblocks. This works across files (the deps are indexed).
+- Add one with **Scimax: Add Dependency** (picks a target, assigns IDs); jump to
+  a blocker with **Scimax: Go to Blocking Dependency**; view the graph with
+  **Scimax: Show Task Dependency Graph**.
+- Diagnostics flag dangling `:DEPENDS:` ids and dependency cycles.
+
+### Sequential subtasks (`:ORDERED:`)
+
+A parent marked `:ORDERED: t` forces its children to be completed top-to-bottom
+(no ids needed):
+
+```org
+* TODO Build release
+  :PROPERTIES:
+  :ORDERED: t
+  :END:
+** TODO Compile
+** TODO Test
+** TODO Package
+```
+
+### People and assignees
+
+A **person** is any heading tagged `:person:` with contact properties:
+
+```org
+* John Kitchin                            :person:
+  :PROPERTIES:
+  :ID: person-jrk
+  :EMAIL: jkitchin@andrew.cmu.edu
+  :NICK: jrk
+  :ROLE: PI
+  :END:
+```
+
+Assign a task via `:ASSIGNEE:` (one or more handles; a `:NICK:` or name slug).
+It is inherited by a subtree, and `@name` tags also count as assignees. Editing
+an `:ASSIGNEE:` value autocompletes from known people; hovering a handle shows
+their email. Add people with **Scimax: New Person** (→ `scimax.org.peopleFile`,
+default `{scimax.directory}/people.org`).
+
+### Project dynamic blocks
+
+Insert with **Scimax: Insert Project Task Table** / **Insert Gantt Chart**, then
+regenerate in place with `C-c C-c`:
+
+```org
+#+BEGIN: project-table :columns task,todo,priority,assignee,deadline,effort,blocked :groupby assignee
+#+END:
+
+#+BEGIN: gantt :title "My Project" :sections assignee
+#+END:
+```
+
+- `project-table` columns: `task, todo, priority, assignee, scheduled, deadline,
+  effort, blocked, deps`. Params: `:id <heading-ID>` (subtree scope), `:maxlevel`,
+  `:match +tag`, `:groupby assignee|state`, `:include_non_todo t`.
+- `gantt` emits a Mermaid `gantt` block (render with `C-c C-c`): `SCHEDULED`→start,
+  `:DEPENDS:`/`:ORDERED:`→`after`, `EFFORT`→duration, DONE→`done`, `[#A]`→`crit`,
+  deadline-only→milestone. Params: `:title`, `:id`, `:maxlevel`, `:sections
+  assignee|parent|none`, `:crit_priority`.
+- Multi-word parameter values must be quoted: `:title "My Project"`.
+
+Both blocks read a single file (or a subtree via `:id`) — keep a project's tasks
+together; cross-file dependencies still drive blocking and the dependency graph.
+
+---
+
 ## Source Blocks
 
 ```org
