@@ -101,8 +101,10 @@ function parseBlockArgs(argsString: string | undefined): Record<string, string> 
     if (!argsString) return {};
 
     const args: Record<string, string> = {};
-    // Match :key value pairs
-    const regex = /:(\w+)\s+([^\s:]+|"[^"]*")/g;
+    // Match :key value pairs. Try the quoted form FIRST so multi-word values
+    // like :title "My Project" are captured whole (the unquoted alternative
+    // would otherwise grab just `"My`).
+    const regex = /:(\w+)\s+("[^"]*"|[^\s:]+)/g;
     let match;
 
     while ((match = regex.exec(argsString)) !== null) {

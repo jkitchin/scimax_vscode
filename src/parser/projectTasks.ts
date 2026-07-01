@@ -12,7 +12,7 @@
  * synchronous dynamic-block generators.
  */
 import type { OrgDocumentNode, HeadlineElement } from './orgElementTypes';
-import { getInheritedProperty } from './orgModify';
+import { getHeadlinePath } from './orgModify';
 import { parseEffort } from './orgClocking';
 
 /** Done states recognized regardless of a file's #+TODO: line. */
@@ -77,22 +77,32 @@ function drawerProp(headline: HeadlineElement, key: string): string | undefined 
     return undefined;
 }
 
-/** Assignee handles for a headline: :ASSIGNEE: (own+inherited) plus @tags. */
-export function getAssignees(doc: OrgDocumentNode, headline: HeadlineElement): string[] {
-    const handles = new Set<string>();
-    const own = drawerProp(headline, ASSIGNEE_PROPERTY);
-    for (const h of splitList(own)) handles.add(h);
-    // Inherited from an ancestor subtree assigned to someone.
-    if (handles.size === 0) {
-        const inherited = getInheritedProperty(doc, headline, ASSIGNEE_PROPERTY)
-            ?? getInheritedProperty(doc, headline, ASSIGNEE_PROPERTY.toLowerCase());
-        for (const h of splitList(inherited)) handles.add(h);
-    }
-    // @name tags are also assignees.
+/** Assignees declared directly on a headline: :ASSIGNEE: value plus @name tags. */
+function ownAssignees(headline: HeadlineElement): string[] {
+    const handles: string[] = [];
+    for (const h of splitList(drawerProp(headline, ASSIGNEE_PROPERTY))) handles.push(h);
     for (const tag of headline.properties.tags || []) {
-        if (tag.startsWith('@') && tag.length > 1) handles.add(tag.slice(1));
+        if (tag.startsWith('@') && tag.length > 1) handles.push(tag.slice(1));
     }
-    return [...handles];
+    return handles;
+}
+
+/**
+ * Assignee handles for a headline, with nearest-wins inheritance: the closest
+ * ancestor (or the heading itself) that declares an assignee — via :ASSIGNEE:
+ * or an @name tag — supplies the assignees. This matches org tag-inheritance
+ * semantics, so tagging a subtree :@wei: assigns all its children to wei.
+ */
+export function getAssignees(doc: OrgDocumentNode, headline: HeadlineElement): string[] {
+    const own = ownAssignees(headline);
+    if (own.length) return [...new Set(own)];
+    // Walk ancestors from nearest to root (getHeadlinePath is root→leaf).
+    const path = getHeadlinePath(doc, headline);
+    for (let i = path.length - 2; i >= 0; i--) {
+        const inherited = ownAssignees(path[i]);
+        if (inherited.length) return [...new Set(inherited)];
+    }
+    return [];
 }
 
 export interface ExtractOptions {
@@ -119,6 +129,7 @@ export function extractProjectTasks(
         : DEFAULT_DONE_STATES;
 
     const tasks: ProjectTask[] = [];
+    const taskHeadline: HeadlineElement[] = [];
     const usedGanttIds = new Set<string>();
     let counter = 0;
 
@@ -153,8 +164,47 @@ export function extractProjectTasks(
             line: (h.position?.start.line ?? 0) + 1,
             ganttId,
         });
+        taskHeadline.push(h);
     }
+
+    injectOrderedDependencies(doc, tasks, taskHeadline);
     return tasks;
+}
+
+/**
+ * Under a parent marked :ORDERED: t, each child implicitly depends on its
+ * previous sibling. Inject those edges so ordered subtasks chain in the gantt
+ * and show as blocked until the prior step is done — mirroring how ORDERED
+ * blocks completion.
+ */
+function injectOrderedDependencies(
+    doc: OrgDocumentNode,
+    tasks: ProjectTask[],
+    taskHeadline: HeadlineElement[]
+): void {
+    // Last task id seen at a given (parentLine, level), to chain siblings.
+    const lastSiblingId = new Map<string, string>();
+    for (let i = 0; i < tasks.length; i++) {
+        const h = taskHeadline[i];
+        const path = getHeadlinePath(doc, h);
+        const parent = path.length >= 2 ? path[path.length - 2] : undefined;
+        if (!parent) continue;
+        const ordered = drawerProp(parent, ORDERED_PROPERTY);
+        if (!isOrderedTruthy(ordered)) continue;
+        const key = `${parent.position?.start.line ?? -1}:${tasks[i].level}`;
+        const prev = lastSiblingId.get(key);
+        if (prev && !tasks[i].dependsIds.includes(prev)) {
+            tasks[i].dependsIds.push(prev);
+        }
+        if (tasks[i].id) lastSiblingId.set(key, tasks[i].id!);
+    }
+}
+
+const ORDERED_PROPERTY = 'ORDERED';
+function isOrderedTruthy(value: string | undefined): boolean {
+    if (!value) return false;
+    const v = value.trim().toLowerCase();
+    return v === 't' || v === 'true' || v === 'yes' || v === 'on';
 }
 
 /** True if `task` has an in-scope dependency that is not yet done. */

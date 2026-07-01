@@ -80,6 +80,47 @@ describe('project-table dynamic block', () => {
     });
 });
 
+const ORDERED_DOC = `* Experimental work                         :@wei:
+:PROPERTIES:
+:ID: expt
+:ORDERED: t
+:END:
+** TODO Synthesize sample
+:PROPERTIES:
+:ID: synth
+:EFFORT: 2d
+:END:
+** TODO Run measurement
+:PROPERTIES:
+:ID: measure
+:EFFORT: 4h
+:END:
+`;
+
+describe('inherited @tag assignees and ORDERED chaining', () => {
+    it('inherits a subtree @tag as the assignee of its children', () => {
+        const doc = parseOrg(ORDERED_DOC);
+        const res = executeDynamicBlock('project-table', ':columns task,assignee', doc, 'x.org');
+        const rows = res.content.split('\n').filter(l => l.includes('Synthesize') || l.includes('measurement') || l.includes('Run measurement'));
+        expect(res.content).toContain('wei');
+        // Both subtasks should show wei.
+        expect(res.content.match(/wei/g)?.length).toBeGreaterThanOrEqual(2);
+    });
+
+    it('marks a later ORDERED sibling blocked until the earlier one is done', () => {
+        const doc = parseOrg(ORDERED_DOC);
+        const res = executeDynamicBlock('project-table', ':columns task,blocked', doc, 'x.org');
+        const measureRow = res.content.split('\n').find(l => l.includes('Run measurement'));
+        expect(measureRow).toContain('🔒');
+    });
+
+    it('chains ORDERED siblings with "after" in the gantt', () => {
+        const doc = parseOrg(ORDERED_DOC);
+        const res = executeDynamicBlock('gantt', ':sections none', doc, 'x.org');
+        expect(res.content).toMatch(/Run measurement :.*after synth/);
+    });
+});
+
 describe('gantt dynamic block', () => {
     it('emits a mermaid gantt with dependencies and effort durations', () => {
         const doc = parseOrg(DOC);
