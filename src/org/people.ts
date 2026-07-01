@@ -45,8 +45,22 @@ function isOrg(doc: vscode.TextDocument): boolean {
 /** A line like `  :ASSIGNEE: jrk ana` (the value portion, up to the cursor). */
 const ASSIGNEE_LINE_RE = /^(\s*:ASSIGNEE:\s*)(.*)$/i;
 
-/** Query all indexed :person: headings and map them to Person records. */
+// Short-lived cache so a burst of completions/hovers doesn't re-query the DB on
+// every keystroke. Invalidated on save (see registerPeopleProviders).
+let peopleCache: Person[] | null = null;
+let peopleCacheAt = 0;
+const PEOPLE_CACHE_TTL_MS = 5000;
+
+/** Drop the cached people list (call when :person: headings may have changed). */
+export function invalidatePeopleCache(): void {
+    peopleCache = null;
+}
+
+/** Query all indexed :person: headings and map them to Person records (cached). */
 export async function getPeople(): Promise<Person[]> {
+    if (peopleCache && Date.now() - peopleCacheAt < PEOPLE_CACHE_TTL_MS) {
+        return peopleCache;
+    }
     const db = await getDatabase();
     if (!db) return [];
     const rows = await db.searchHeadings('', { tag: PERSON_TAG, limit: 2000 });
@@ -66,6 +80,8 @@ export async function getPeople(): Promise<Person[]> {
             lineNumber: h.line_number,
         });
     }
+    peopleCache = people;
+    peopleCacheAt = Date.now();
     return people;
 }
 
@@ -209,9 +225,13 @@ async function newPersonCommand(): Promise<void> {
 export function registerPeopleProviders(context: vscode.ExtensionContext): void {
     const selector: vscode.DocumentSelector = [{ language: 'org' }, { pattern: '**/*.org' }];
     context.subscriptions.push(
-        vscode.languages.registerCompletionItemProvider(selector, new AssigneeCompletionProvider(), ' ', ':'),
+        // No trigger characters: VS Code already invokes the provider as word
+        // characters are typed. Registering ' '/':' as triggers would fire the
+        // whole completion pipeline on every space/colon in an org file (a big
+        // per-keystroke cost); the provider gates itself to :ASSIGNEE: lines.
+        vscode.languages.registerCompletionItemProvider(selector, new AssigneeCompletionProvider()),
         vscode.languages.registerHoverProvider(selector, new AssigneeHoverProvider()),
-        vscode.commands.registerCommand('scimax.org.newPerson', newPersonCommand)
+        vscode.commands.registerCommand('scimax.org.newPerson', newPersonCommand),
+        vscode.workspace.onDidSaveTextDocument(doc => { if (isOrg(doc)) invalidatePeopleCache(); })
     );
-    void isOrg; // reserved for future gating
 }

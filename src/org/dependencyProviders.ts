@@ -109,8 +109,18 @@ class DependencyTreeProvider implements vscode.TreeDataProvider<Node> {
     private readonly _onDidChange = new vscode.EventEmitter<void>();
     readonly onDidChangeTreeData = this._onDidChange.event;
     private roots: Node[] = [];
+    private visible = false;
+
+    /** Track panel visibility so we never do DB work while it's hidden. */
+    setVisible(v: boolean): void {
+        this.visible = v;
+        if (v) this.refresh();
+    }
 
     refresh(): void {
+        // The tree queries the DB on rebuild; skip entirely when not shown so
+        // cursor movement / edits don't pay for a panel nobody is looking at.
+        if (!this.visible) return;
         void this.rebuild().then(() => this._onDidChange.fire());
     }
 
@@ -226,21 +236,28 @@ export function registerDependencyProviders(context: vscode.ExtensionContext): v
 
     const codeLens = new DependencyCodeLensProvider();
     const tree = new DependencyTreeProvider();
+    const treeView = vscode.window.createTreeView('scimaxDependencies', { treeDataProvider: tree });
+    tree.setVisible(treeView.visible);
+
+    // Debounce cursor-driven tree refreshes; it's a no-op when the panel is
+    // hidden, and coalesced to one query when it is shown.
+    let selTimer: NodeJS.Timeout | undefined;
 
     context.subscriptions.push(
+        treeView,
         vscode.languages.registerCodeLensProvider(selector, codeLens),
-        vscode.window.registerTreeDataProvider('scimaxDependencies', tree),
+        treeView.onDidChangeVisibility(e => tree.setVisible(e.visible)),
         vscode.workspace.onDidSaveTextDocument(doc => {
             if (isOrg(doc)) { codeLens.refresh(); tree.refresh(); }
         }),
         vscode.window.onDidChangeActiveTextEditor(() => { codeLens.refresh(); tree.refresh(); }),
         vscode.window.onDidChangeTextEditorSelection(e => {
-            if (isOrg(e.textEditor.document)) tree.refresh();
+            if (!isOrg(e.textEditor.document)) return;
+            if (selTimer) clearTimeout(selTimer);
+            selTimer = setTimeout(() => tree.refresh(), 300);
         }),
         vscode.workspace.onDidChangeConfiguration(e => {
             if (e.affectsConfiguration('scimax.org.depend')) codeLens.refresh();
         })
     );
-
-    tree.refresh();
 }
