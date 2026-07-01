@@ -99,6 +99,7 @@ CLOSED: [2026-01-24 Sat 17:41]
 | scimax.org.depend.autoPromote          | boolean | true  | Promote on unblock (else notify only) |
 | scimax.org.depend.showIndicators       | boolean | true  | Blocked/ready CodeLens on TODO tasks  |
 | scimax.org.depend.hideBlockedInAgenda  | boolean | false | Hide blocked tasks from agenda        |
+| scimax.org.entities                    | array   | []    | Entity types for the Pick Entity selector |
 
 ** ⚠️ Task Dependencies
 
@@ -110,6 +111,24 @@ children to be completed in order. Blocked/ready indicators
 (=showIndicators=), the *Dependencies* tree view, the agenda filter
 (=hideBlockedInAgenda=), and dangling/cycle diagnostics surface the dependency
 graph. See [[file:03.5-task-dependencies.org][Task Dependencies]] for the full guide.
+
+** ⚠️ Entity Selector (Contacts, Locations, …)
+
+=scimax.org.entities= defines named entity types for the *Scimax: Pick Entity*
+selector — fuzzy-pick a tagged/propertied heading and act on it (insert link,
+insert/copy a field, mailto, maps, open URL). Built-in *Contacts* (=:person:=)
+and *Locations* (=:location:=) are always available; entries here are merged in.
+Adding a type needs no code:
+
+#+begin_src json
+"scimax.org.entities": [
+  { "name": "Reagents", "tag": "reagent", "display": "CAS", "url": "SUPPLIER_URL" }
+]
+#+end_src
+
+Fields: =name= (required), =tag=/=property=/=value= (selection), =display=
+(shown in the picker), =email=/=address=/=url= (properties powering the
+mailto/maps/open-link actions). See [[file:03.7-contacts-and-locations.org][Contacts, Locations & Entity Selector]].
 
 ** ⚠️ Orphan Link Diagnostics
 

@@ -9,6 +9,7 @@ Full documentation: [[file:../../docs/03.6-project-management.org][Project Manag
 * Files
 
 - [[file:people.org]] — three people (=:person:= headings with email/nick/role).
+- [[file:locations.org]] — a few places (=:location:= headings with addresses).
 - [[file:project.org]] — the project: experiments → analysis → writing → submission,
   with dependencies, assignees, schedules, and effort. It ends with a task-table
   and a Gantt =#+BEGIN:= block (already generated).
@@ -41,6 +42,11 @@ Full documentation: [[file:../../docs/03.6-project-management.org][Project Manag
 7. *People.* In any task, edit the =:ASSIGNEE:= line and start typing — completion
    suggests people from people.org. Hover an assignee handle to see their email.
    Add a new teammate with =Scimax: New Person=.
+
+8. *Entity selector.* Run =Scimax: Pick Entity= → *Contacts* or *Locations* →
+   pick one → *Insert link*, *Copy field* (email/address), *Email*, or *Open in
+   Maps*. Entity types are configurable (=scimax.org.entities=) — add your own
+   (reagents, resources, …) with no code.
 
 * Notes
 

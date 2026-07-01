@@ -156,6 +156,15 @@ Task tables, Gantt charts, a dependency graph, and a people database. See
 | [[cmd:scimax.org.showTaskGraph]]       | Show Task Dependency Graph | -                  |
 | [[cmd:scimax.org.newPerson]]           | New Person                 | -                  |
 
+** ⚠️ Contacts & Entities
+
+Fuzzy-pick a tagged/propertied heading (contact, location, reagent, …) and act
+on it. See [[file:03.7-contacts-and-locations.org][Contacts, Locations & Entity Selector]].
+
+| Command ID                       | Description                          | Default Keybinding |
+|----------------------------------+--------------------------------------+--------------------|
+| [[cmd:scimax.org.pickEntity]]    | Pick Entity (Contact/Location/…)     | -                  |
+
 ** ✅ Checkboxes
 CLOSED: [2026-01-17 Sat 12:24]
 

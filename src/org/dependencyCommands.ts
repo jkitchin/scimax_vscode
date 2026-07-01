@@ -36,7 +36,7 @@ function generateUUID(): string {
  * Locate the `:PROPERTIES:`/`:END:` span (and any existing line for `property`)
  * directly under a heading. Line numbers are 0-based; -1 means "not present".
  */
-function findDrawer(document: vscode.TextDocument, headingLine: number, property: string): {
+export function findDrawer(document: vscode.TextDocument, headingLine: number, property: string): {
     start: number; end: number; existingLine: number;
 } {
     let start = -1, end = -1, existingLine = -1;
@@ -53,7 +53,7 @@ function findDrawer(document: vscode.TextDocument, headingLine: number, property
 }
 
 /** Return the heading's `:ID:`, writing a fresh UUID if it has none. */
-async function ensureHeadingId(document: vscode.TextDocument, headingLine: number): Promise<string | undefined> {
+export async function ensureHeadingId(document: vscode.TextDocument, headingLine: number): Promise<string | undefined> {
     const existing = readHeadingProperty(document, headingLine, 'ID');
     if (existing) return existing.replace(/^id:/i, '');
 

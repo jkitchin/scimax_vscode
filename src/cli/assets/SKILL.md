@@ -1,14 +1,15 @@
 ---
 name: scimax
-version: "0.9.0"
+version: "0.10.0"
 description: |
   Searches org-mode notes, displays agenda and TODOs, exports org files to
   HTML/PDF/LaTeX, validates citations, opens journal entries, maintains the
   org file index, and publishes org projects via the scimax CLI. Also the
   reference for org-mode syntax and scimax editor features (links, anchors,
-  back-links, source blocks, tables, citations, task dependencies, and project
-  management: task tables, Gantt charts, people/assignees). Use when the user
-  works with org-mode notes, asks about org syntax, or runs scimax CLI tasks.
+  back-links, source blocks, tables, citations, task dependencies, project
+  management (task tables, Gantt charts, people/assignees), and the entity
+  selector for contacts/locations). Use when the user works with org-mode
+  notes, asks about org syntax, or runs scimax CLI tasks.
   Triggers: "find notes about", "search my notes", "what's on my agenda",
   "show my todos", "what's overdue", "export this file", "check my citations",
   "rebuild my index", "how many notes", "publish my docs", "index my org files",
@@ -21,10 +22,12 @@ description: |
   "dialog note", "decision note", "add note", "footnote",
   "task dependency", "depends on", "blocked task", "blocker", "ordered subtasks",
   "gantt", "gantt chart", "project table", "task table", "project management",
-  "assign task", "assignee", "who's working on", "add a person", "new person"
+  "assign task", "assignee", "who's working on", "add a person", "new person",
+  "contact", "contacts", "contact manager", "location", "address", "reagent",
+  "resource", "pick entity", "insert email", "insert address", "entity selector"
 allowed-tools: ["Bash(scimax*)", "Bash(code --goto*)", "Read", "Glob", "Grep", "Write"]
 ---
-<!-- scimax-skill v0.9.0 -->
+<!-- scimax-skill v0.10.0 -->
 
 # Scimax Skill
 
@@ -34,7 +37,7 @@ You are an executive assistant and expert for the **scimax-vscode** extension. Y
 
 1. **Read learnings** — Use the Read tool to check `~/.claude/skills/scimax/learnings.md` for user-specific corrections before answering. Apply any relevant learnings.
 2. **Read reference** — For detailed command syntax, use the Read tool to load `~/.claude/skills/scimax/reference.md`.
-3. **Read org-mode reference** — When helping with org-mode syntax, citations, source blocks, document structure, links, granular addressing (anchors, radio targets, `#+NAME`, back-links, orphan diagnostics), task dependencies (`:DEPENDS:`, `:ORDERED:`, blocking/triggering), or project management (`project-table`/`gantt` dynamic blocks, `:person:`/`:ASSIGNEE:`), use the Read tool to load `~/.claude/skills/scimax/orgmode-reference.md`.
+3. **Read org-mode reference** — When helping with org-mode syntax, citations, source blocks, document structure, links, granular addressing (anchors, radio targets, `#+NAME`, back-links, orphan diagnostics), task dependencies (`:DEPENDS:`, `:ORDERED:`, blocking/triggering), project management (`project-table`/`gantt` dynamic blocks, `:person:`/`:ASSIGNEE:`), or entities (contacts/locations/reagents via `:person:`/`:location:` tags and the Pick Entity selector), use the Read tool to load `~/.claude/skills/scimax/orgmode-reference.md`.
 
 ## Quick Reference
 

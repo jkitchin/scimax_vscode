@@ -2148,6 +2148,10 @@
         "title": "Scimax: New Person"
       },
       {
+        "command": "scimax.org.pickEntity",
+        "title": "Scimax: Pick Entity (Contact/Location/…)"
+      },
+      {
         "command": "scimax.org.linkToHere",
         "title": "Scimax: Link to Here (insert anchor, copy link)"
       },
@@ -5616,6 +5620,25 @@
           "type": "string",
           "default": "",
           "description": "File where 'New Person' appends :person: headings. If empty, uses {scimax.directory}/people.org. People are recognized anywhere by the :person: tag; this only controls where new ones are captured."
+        },
+        "scimax.org.entities": {
+          "type": "array",
+          "default": [],
+          "markdownDescription": "Entity types for the 'Scimax: Pick Entity' selector — fuzzy-pick a tagged/propertied heading (contact, location, reagent, resource, …) and act on it (insert link, insert/copy a field, mailto, maps, open URL). Built-in **Contacts** (`:person:`) and **Locations** (`:location:`) are always available; entries here are merged in (override by name). Each entry: `{ \"name\": string, \"tag\"?: string, \"property\"?: string, \"value\"?: string, \"display\"?: string, \"email\"?: string, \"address\"?: string, \"url\"?: string }`. `tag`/`property` select the headings; `display` is the property shown in the picker; `email`/`address`/`url` name the properties powering the mailto/maps/open-link actions. Example: `{ \"name\": \"Reagents\", \"tag\": \"reagent\", \"display\": \"CAS\", \"url\": \"SUPPLIER_URL\" }`.",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": { "type": "string" },
+              "tag": { "type": "string" },
+              "property": { "type": "string" },
+              "value": { "type": "string" },
+              "display": { "type": "string" },
+              "email": { "type": "string" },
+              "address": { "type": "string" },
+              "url": { "type": "string" }
+            },
+            "required": ["name"]
+          }
         },
         "scimax.highlighting.headingBackgroundBars": {
           "type": "boolean",

@@ -69,6 +69,7 @@ import { registerDependencyDiagnostics } from './org/dependencyDiagnostics';
 import { registerPeopleProviders } from './org/people';
 import { registerProjectCommands } from './org/projectCommands';
 import { registerTaskGraph } from './org/taskGraphProvider';
+import { registerEntitySelector } from './org/entitySelector';
 // Jupyter commands imported dynamically to handle zeromq errors gracefully
 // import { registerJupyterCommands } from './jupyter/commands';
 import { ProjectileManager, Project } from './projectile/projectileManager';
@@ -649,6 +650,10 @@ export async function activate(context: vscode.ExtensionContext) {
 
     // Task dependency graph webview.
     registerTaskGraph(context);
+
+    // Entity selector: fuzzy-pick a tagged/propertied heading (contacts,
+    // locations, reagents…) and act on it (insert link/field, mailto, maps).
+    registerEntitySelector(context);
 
     // Track cursor position to set context for keybinding differentiation
     // This enables different keybindings when cursor is in a table vs on a heading

@@ -1,0 +1,25 @@
+#+TITLE: Locations
+
+# Locations are headings tagged :location: with an :ADDRESS: property.
+# Run "Scimax: Pick Entity" -> Locations to pick one and Insert link, Copy
+# address, or Open in Maps. Contacts (people.org, :person:) work the same way.
+# (People/locations are just tagged headings — you can define your own entity
+#  types, e.g. reagents, via the scimax.org.entities setting.)
+
+* Chemistry Building, Lab 3B                                        :location:
+  :PROPERTIES:
+  :ID: loc-lab-3b
+  :ADDRESS: 4400 Fifth Ave, Pittsburgh, PA 15213
+  :END:
+
+* Central Instrumentation Facility                                 :location:
+  :PROPERTIES:
+  :ID: loc-cif
+  :ADDRESS: 5000 Forbes Ave, Pittsburgh, PA 15213
+  :END:
+
+* Off-site Storage                                                 :location:
+  :PROPERTIES:
+  :ID: loc-storage
+  :ADDRESS: 100 Warehouse Rd, Pittsburgh, PA 15201
+  :END:

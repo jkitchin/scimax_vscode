@@ -1,0 +1,89 @@
+#+TITLE: Contacts, Locations & Entity Selector
+#+TODO: ⚠️ 👀 | ✅
+
+* ⚠️ Entity Selector (Contacts, Locations, …)
+
+Use org headings as a lightweight database of people, places, and things — a
+contact manager, a locations list, a reagent/resource catalog — and fuzzy-pick
+one to act on it. An "entity" is just a heading identified by a *tag* (or a
+*property*), with details in its property drawer:
+
+#+begin_src org
+,* Ana Ramirez                                   :person:
+  :PROPERTIES:
+  :ID: person-ana
+  :EMAIL: ana@example.edu
+  :NICK: ana
+  :END:
+
+,* Lab B                                         :location:
+  :PROPERTIES:
+  :ID: loc-b
+  :ADDRESS: 123 Science Dr, Pittsburgh PA
+  :END:
+#+end_src
+
+** ⚠️ Picking and acting
+
+Run [[cmd:scimax.org.pickEntity]] (*Scimax: Pick Entity*):
+
+1. Choose an entity type — the configured types plus ad-hoc *By tag…* / *By
+   property…* (so you can select on any tag/property with no setup).
+2. Fuzzy-pick a heading (matches on title, the shown field, and file:line).
+3. Choose an action:
+   - *Insert link* — inserts =[[id:…][Title]]= at the cursor (assigns an =:ID:=
+     to the target if it lacks one).
+   - *Copy link* — the same link to the clipboard.
+   - *Insert field… / Copy field…* — pick any of the heading's properties
+     (email, address, phone, CAS, …) and insert/copy its value.
+   - *Email* — opens =mailto:= (when the entity has an email property).
+   - *Open in Maps* — opens the address in Google Maps (when it has an address).
+   - *Open link* — opens a URL property in the browser (when configured).
+   - *Go to heading* — jump to it.
+
+Contacts (=:person:=) and Locations (=:location:=) work out of the box; the
+=:person:= headings are the same ones used for [[file:03.6-project-management.org][task assignees]].
+
+Requires the files to be indexed — run *Scimax: Sync Files* (or open the folder
+as a workspace) so entities are searchable.
+
+** ⚠️ Defining your own entity type
+
+Entity types are pure configuration — add a new kind (Reagents, Resources,
+Equipment, Samples…) with no code by appending to =scimax.org.entities= in
+=settings.json=:
+
+#+begin_src json
+"scimax.org.entities": [
+  { "name": "Reagents",  "tag": "reagent",  "display": "CAS", "url": "SUPPLIER_URL" },
+  { "name": "Resources", "tag": "resource", "display": "KIND", "url": "URL" }
+]
+#+end_src
+
+Then any =:reagent:= heading is selectable. The *Insert/Copy field* chooser lists
+*all* of a heading's properties, so arbitrary schemas (CAS, CATALOG#, HAZARD,
+LOCATION…) just work.
+
+Each entry's fields:
+
+| Field       | Meaning                                                            |
+|-------------+-------------------------------------------------------------------|
+| =name=      | Label shown in the type picker (required).                        |
+| =tag=       | Select headings carrying this tag.                                |
+| =property=  | Select headings that have this property…                          |
+| =value=     | …optionally equal to this value.                                  |
+| =display=   | Property whose value is shown on the picker line.                 |
+| =email=     | Property holding an email → *Email* (mailto) action (default EMAIL). |
+| =address=   | Property holding an address → *Open in Maps* (default ADDRESS).   |
+| =url=       | Property holding a URL → *Open link* action.                      |
+
+Built-in Contacts/Locations are always available; your entries are merged in
+(and override a built-in with the same name).
+
+** ⚠️ Related Topics
+
+- [[file:03.6-project-management.org][Project Management]] — assignees reuse the same =:person:= headings
+- [[file:03-todo-items.org][TODO Items]] — tags and properties on headings
+- [[file:42-granular-addressing.org][Granular Addressing]] — the =id:= links this inserts
+- [[file:18-database-search.org][Database & Search]] — the index these selectors query (also =scimax.db.searchByTag=)
+- [[file:25-commands.org][Command Reference]] · [[file:26-configuration.org][Configuration]]

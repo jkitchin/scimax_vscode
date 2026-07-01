@@ -347,6 +347,44 @@ together; cross-file dependencies still drive blocking and the dependency graph.
 
 ---
 
+## Entities (Contacts, Locations, …)
+
+Use tagged headings as a contact manager / locations list / resource catalog. An
+"entity" is a heading identified by a tag (or property) with details in its
+drawer:
+
+```org
+* Ana Ramirez                 :person:
+  :PROPERTIES:
+  :ID: person-ana
+  :EMAIL: ana@example.edu
+  :END:
+* Lab B                       :location:
+  :PROPERTIES:
+  :ADDRESS: 123 Science Dr
+  :END:
+```
+
+**Scimax: Pick Entity** (`scimax.org.pickEntity`) fuzzy-picks such a heading, then
+acts on it: insert an `[[id:…][Title]]` link, insert/copy a field value
+(email/address/…), Email (mailto), Open in Maps, Open link (URL), or jump. It
+offers configured types plus ad-hoc "By tag…/By property…".
+
+Entity types are pure configuration in `scimax.org.entities` — no code needed to
+add a kind. Contacts (`:person:`) and Locations (`:location:`) ship as defaults:
+
+```jsonc
+"scimax.org.entities": [
+  { "name": "Reagents", "tag": "reagent", "display": "CAS", "url": "SUPPLIER_URL" }
+]
+```
+
+Fields: `name`, `tag`/`property`/`value` (selection), `display` (shown in the
+picker), `email`/`address`/`url` (properties that enable the mailto/maps/open-link
+actions). Requires the files to be indexed (`scimax db sync`).
+
+---
+
 ## Source Blocks
 
 ```org
