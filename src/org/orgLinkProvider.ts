@@ -1087,7 +1087,7 @@ export function registerOrgLinkCommands(context: vscode.ExtensionContext): void 
                 if (hm) { headingText = hm[1].replace(/\s+:[^:]+:\s*$/, ''); break; }
             }
             const lineWords = doc.lineAt(pos.line).text.trim().split(/\s+/).slice(0, 4).join(' ');
-            let base = slugifyAnchor(headingText, lineWords);
+            const base = slugifyAnchor(headingText, lineWords);
 
             // Disambiguate against existing anchors of the same text.
             let slug = base;

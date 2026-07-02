@@ -22,6 +22,7 @@
 import * as vscode from 'vscode';
 import * as fs from 'fs';
 import * as path from 'path';
+import * as os from 'os';
 import { getDatabase } from '../database/lazyDb';
 import { getPropCaseInsensitive } from '../database/scimaxDbCore';
 import { slugify } from '../parser/projectTasks';
@@ -167,15 +168,12 @@ class AssigneeHoverProvider implements vscode.HoverProvider {
 // ---------------------------------------------------------------------------
 
 function getScimaxDir(): string {
-    // Lightweight local resolution to avoid a hard import cycle risk.
     const dir = vscode.workspace.getConfiguration('scimax').get<string>('directory') || '';
-    const os = require('os');
     return dir ? dir.replace(/^~(?=$|\/)/, os.homedir()) : path.join(os.homedir(), 'scimax');
 }
 
 function resolvePeopleSetting(): string {
     const file = vscode.workspace.getConfiguration('scimax.org').get<string>('peopleFile') || '';
-    const os = require('os');
     if (file) return file.replace(/^~(?=$|\/)/, os.homedir());
     return path.join(getScimaxDir(), 'people.org');
 }

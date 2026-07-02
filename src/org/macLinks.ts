@@ -72,7 +72,7 @@ function requireDarwin(): boolean {
 }
 
 function escapeDescription(s: string): string {
-    return s.replace(/[\[\]]/g, '');
+    return s.replace(/[[\]]/g, '');
 }
 
 /**
