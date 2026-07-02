@@ -191,7 +191,11 @@ export class ScimaxDb extends ScimaxDbCore {
                 this.indexQueue.clear();
                 for (const filePath of files) {
                     try {
-                        await this.indexFile(filePath);
+                        // Queue embeddings for the background worker instead of
+                        // generating them synchronously here — otherwise every
+                        // save (e.g. after cycling a TODO state) blocks on
+                        // embedding the whole file, freezing the editor.
+                        await this.indexFile(filePath, { queueEmbeddings: true });
                         this._onDidIndexFile.fire(filePath);
                     } catch (error) {
                         log.error('Failed to index file', error as Error, { path: filePath });

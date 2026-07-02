@@ -55,10 +55,21 @@ class DependencyCodeLensProvider implements vscode.CodeLensProvider {
         const cached = this.cache.get(key);
         if (cached && cached.version === document.version) return cached.lenses;
 
+        const fullText = document.getText();
         const workflow = getTodoWorkflowForDocument(document);
         const activeStates = new Set(workflow.activeStates);
         const doneStates = new Set(workflow.doneStates);
         const stateRe = /^\*+\s+(\S+)/;
+        // Cheap document-level gates: skip the expensive per-heading work
+        // entirely when the file has no dependency/ordered markup at all.
+        // getOrderedBlocker re-reads the whole document, so calling it per
+        // heading is O(headings × lines) — avoid it unless :ORDERED: exists.
+        const hasDepends = /^\s*:DEPENDS:/im.test(fullText);
+        const hasOrdered = /^\s*:ORDERED:/im.test(fullText);
+        if (!hasDepends && !hasOrdered) {
+            this.cache.set(key, { version: document.version, lenses: [] });
+            return [];
+        }
 
         const lenses: vscode.CodeLens[] = [];
         for (let i = 0; i < document.lineCount; i++) {
@@ -66,8 +77,8 @@ class DependencyCodeLensProvider implements vscode.CodeLensProvider {
             const m = text.match(stateRe);
             if (!m || !activeStates.has(m[1])) continue;
 
-            const dependsIds = getDependsAt(document, i);
-            const orderedBlocker = getOrderedBlocker(document, i, doneStates);
+            const dependsIds = hasDepends ? getDependsAt(document, i) : [];
+            const orderedBlocker = hasOrdered ? getOrderedBlocker(document, i, doneStates) : null;
             if (dependsIds.length === 0 && !orderedBlocker) continue;
 
             const range = new vscode.Range(i, 0, i, 0);

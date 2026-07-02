@@ -1969,8 +1969,9 @@ export async function cycleTodoState(): Promise<void> {
     await updateStatisticsCookies(editor, position.line, stars.length);
 
     // Fire dependency triggers: surface/promote tasks this completion unblocks.
+    // Fire-and-forget so the (DB-backed) reverse lookup never delays cycling.
     if (isNowDone && !wasDone) {
-        await runDependencyTriggers(document, position.line);
+        void runDependencyTriggers(document, position.line);
     }
 }
 

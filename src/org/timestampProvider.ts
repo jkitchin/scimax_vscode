@@ -392,8 +392,9 @@ async function cycleTodoState(forward: boolean): Promise<boolean> {
 
     // Fire dependency triggers when this completion unblocks other tasks
     // (skip repeaters, which reset to an active state rather than completing).
+    // Fire-and-forget so the DB-backed reverse lookup never delays cycling.
     if (isOrg && isDoneState && !wasDone && !repeaterInfo) {
-        await runDependencyTriggers(document, position.line);
+        void runDependencyTriggers(document, position.line);
     }
 
     return true;
