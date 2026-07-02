@@ -7,6 +7,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.6.0] - 2026-07-02
+
+### Added
+
+- **TODO task dependencies (simplified org-depend)** - A task declares what it depends on with a single `:DEPENDS:` property of `id:` links. Completing a task is **blocked** until every dependency is DONE (with a jump-to-blocker action), and completing a task **triggers** any dependent that becomes unblocked (notify + optional promote to a ready state). `:ORDERED: t` forces child tasks to be completed top-to-bottom. Cross-file, backed by a new `dependencies` index. Surfaced via a blocked/ready CodeLens, a **Dependencies** tree view, and dangling/cycle diagnostics. New commands `scimax.org.addDependency`, `scimax.org.gotoBlocker`, `scimax.org.showDependencies`, and settings `scimax.org.depend.enabled|readyState|autoPromote|showIndicators|hideBlockedInAgenda`. Documented in [`docs/03.5-task-dependencies.org`](docs/03.5-task-dependencies.org).
+- **Project management** - `#+BEGIN: project-table` and `#+BEGIN: gantt` dynamic blocks build a task table and a Mermaid Gantt chart from `SCHEDULED`/`DEADLINE`/`EFFORT`/priority/`:DEPENDS:`/`:ASSIGNEE:` (dependency `after`-chaining, effort durations, milestones, per-assignee/parent swimlanes). People are `:person:` headings: `:ASSIGNEE:` autocompletes from them (with hover), and **New Person** captures one. A **task dependency graph** webview colors tasks ready/blocked/done. New commands `scimax.org.insertProjectTable`, `insertGantt`, `showTaskGraph`, `newPerson`, and setting `scimax.org.peopleFile`. Example project under [`examples/project-management/`](examples/project-management/). Documented in [`docs/03.6-project-management.org`](docs/03.6-project-management.org).
+- **Entity selector (org as a contact/location manager)** - `scimax.org.pickEntity` fuzzy-picks a heading by tag or property and acts on it: insert an `[[id:…][Title]]` link, insert/copy a field (email, address, …), Email (mailto), Open in Maps, Open link (URL), or jump. Entity types are pure configuration (`scimax.org.entities`) — add Contacts, Locations, Reagents, Resources with no code; Contacts (`:person:`) and Locations (`:location:`) ship as defaults. An ad-hoc "By tag…/By property…" path selects any tag/property with zero setup. Documented in [`docs/03.7-contacts-and-locations.org`](docs/03.7-contacts-and-locations.org).
+- **Granular addressing** - Anchors (`<<target>>`, `<<<radio>>>`, `#+NAME`) are indexed as addressable, cross-file link targets; object-level **back-links** surface via Find All References and a "← N references" CodeLens; orphan-link diagnostics flag internal links whose target was deleted (#46).
+- **Dialog notes** - Capture decisions, questions, and comments as footnotes that are excluded from exports by default (#45).
+- **CLI `tangle`** for extracting source blocks, plus multi-line emphasis, Lean syntax highlighting, and Tab-to-fold on source blocks.
+- **Emacs-style `C-l`** recenter-top-bottom command, an **"Open in New Window"** editor command, and macOS commands to insert the current **Finder selection** or **Chrome tab** as an org link.
+
+### Changed
+
+- **Browse Indexed Files** lists files most-recently-edited first and preserves that order while you narrow the list.
+- Custom exporters honor **`#+EXPORT_FILE_NAME`**.
+
+### Fixed
+
+- **Editor responsiveness in org files** - Removed a per-keystroke completion cost (the assignee provider no longer registers space/colon as global trigger characters) and per-cursor-move database work (the dependency tree view rebuilds only when visible and debounced). People lookups are cached.
+- **Add Dependency** now offers the current file's headings from the live buffer (not only the saved index), so unsaved/just-edited headings appear.
+- **LaTeX export hardening** - Adversarial-input hardening plus fixes for longtable pagination, Unicode in code blocks, cross-references, inline math split across lines, table cells containing pipes inside math, and links/captions/tables/emphasis/blocks; non-ASCII characters are translated to LaTeX.
+- Back-links CodeLens no longer renders a "no commands" placeholder on zero-reference headings; `~`/`=` inline markers no longer run past their span in highlighting; interior slashes are allowed in italic emphasis; the find-file path-traversal check is hardened; macOS Screen Recording permission errors from screenshot capture are surfaced.
+
+### Security
+
+- **handlebars 4.7.8 → 4.7.9** - Clears the critical prototype-pollution / AST-type-confusion advisories affecting the custom-export template engine.
+
 ## [0.5.1] - 2026-05-10
 
 ### Added
