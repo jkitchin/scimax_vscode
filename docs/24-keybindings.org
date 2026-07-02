@@ -147,6 +147,7 @@ org-mode, markdown, and LaTeX files with consistent behavior.
 | C-c @         | Mark (select) subtree          |
 | C-c C-x t     | Insert inline task             |
 | C-c C-x i     | Add ID to heading              |
+| C-c x p       | Set property (fuzzy-match name/value) |
 | C-c C-w       | Refile subtree to target       |
 | C-c M-w       | Copy subtree to refile target  |
 

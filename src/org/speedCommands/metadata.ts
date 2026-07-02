@@ -7,6 +7,94 @@
 import * as vscode from 'vscode';
 import { getHeadingLevel } from './context';
 import { extractTags, formatTags, removeTagsFromLine } from './utils';
+import { getDatabase } from '../../database/lazyDb';
+import { getPropCaseInsensitive } from '../../database/scimaxDbCore';
+
+/** Property names offered even when not yet used anywhere. */
+const COMMON_PROPERTIES = [
+    'ID', 'CUSTOM_ID', 'CATEGORY', 'EFFORT', 'ASSIGNEE', 'DEPENDS', 'ORDERED',
+    'CREATED', 'COLUMNS', 'LOGGING', 'EXPORT_FILE_NAME', 'NICK', 'EMAIL', 'ROLE',
+    'ADDRESS', 'PHONE', 'URL',
+];
+
+function escapeRegExp(s: string): string {
+    return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+/**
+ * Fuzzy-pick from `items` while also allowing a brand-new value: as the user
+ * types something not in the list, a "<value> (new)" entry appears at the top.
+ * Returns the picked/typed string, or undefined if cancelled.
+ */
+function pickOrCreate(items: string[], placeHolder: string): Promise<string | undefined> {
+    return new Promise(resolve => {
+        const qp = vscode.window.createQuickPick();
+        qp.placeholder = placeHolder;
+        qp.matchOnDescription = true;
+        const base = items.map(label => ({ label }));
+        qp.items = base;
+        let done = false;
+        qp.onDidChangeValue(v => {
+            const val = v.trim();
+            qp.items = val && !items.some(i => i.toLowerCase() === val.toLowerCase())
+                ? [{ label: val, description: 'new' }, ...base]
+                : base;
+        });
+        qp.onDidAccept(() => {
+            const sel = qp.selectedItems[0];
+            const value = (sel ? sel.label : qp.value).trim();
+            done = true;
+            qp.hide();
+            resolve(value || undefined);
+        });
+        qp.onDidHide(() => { if (!done) resolve(undefined); qp.dispose(); });
+        qp.show();
+    });
+}
+
+/** Property names already used in this file, plus common defaults and (best-effort) the index. */
+async function collectPropertyNames(document: vscode.TextDocument): Promise<string[]> {
+    const names = new Set<string>(COMMON_PROPERTIES);
+    const re = /^\s*:([A-Za-z][A-Za-z0-9_-]*):\s/gm;
+    const skip = new Set(['PROPERTIES', 'END', 'LOGBOOK', 'CLOCK', 'RESULTS']);
+    let m: RegExpExecArray | null;
+    const text = document.getText();
+    while ((m = re.exec(text)) !== null) {
+        if (!skip.has(m[1].toUpperCase())) names.add(m[1]);
+    }
+    try {
+        const db = await getDatabase();
+        if (db) {
+            const rows = await db.searchHeadings('', { limit: 2000 });
+            for (const h of rows) {
+                try { for (const k of Object.keys(JSON.parse(h.properties || '{}'))) names.add(k); } catch { /* ignore */ }
+            }
+        }
+    } catch { /* index optional */ }
+    return [...names].sort((a, b) => a.localeCompare(b));
+}
+
+/** Existing values for `name` in this file, plus (best-effort) across the index. */
+async function collectPropertyValues(document: vscode.TextDocument, name: string): Promise<string[]> {
+    const values = new Set<string>();
+    const re = new RegExp(`^\\s*:${escapeRegExp(name)}:\\s*(.+?)\\s*$`, 'gim');
+    let m: RegExpExecArray | null;
+    const text = document.getText();
+    while ((m = re.exec(text)) !== null) values.add(m[1]);
+    try {
+        const db = await getDatabase();
+        if (db) {
+            const rows = await db.searchByProperty(name);
+            for (const h of rows) {
+                try {
+                    const v = getPropCaseInsensitive(JSON.parse(h.properties || '{}'), name);
+                    if (v) values.add(v);
+                } catch { /* ignore */ }
+            }
+        }
+    } catch { /* index optional */ }
+    return [...values].sort((a, b) => a.localeCompare(b));
+}
 
 /**
  * Set tags on the current heading
@@ -189,41 +277,34 @@ export async function setProperty(): Promise<void> {
     if (!editor) return;
 
     const document = editor.document;
-    const position = editor.selection.active;
 
-    // Find the heading
-    const headingLine = position.line;
-    if (getHeadingLevel(document, headingLine) === 0) {
-        vscode.window.showInformationMessage('Not on a heading');
+    // Find the enclosing heading (works from anywhere in the entry, not only
+    // when the cursor sits on the heading line).
+    let headingLine = -1;
+    for (let i = editor.selection.active.line; i >= 0; i--) {
+        if (getHeadingLevel(document, i) > 0) { headingLine = i; break; }
+    }
+    if (headingLine < 0) {
+        vscode.window.showInformationMessage('Not under a heading');
         return;
     }
 
-    // Common properties
-    const commonProps = ['ID', 'CUSTOM_ID', 'Effort', 'CATEGORY', 'LOGGING', 'COLUMNS'];
-
-    const propertyName = await vscode.window.showInputBox({
-        prompt: 'Property name',
-        placeHolder: 'Enter property name (e.g., ID, CATEGORY)',
-        validateInput: (value) => {
-            if (!value) return null;
-            if (!/^[A-Za-z][A-Za-z0-9_-]*$/.test(value)) {
-                return 'Property name must start with a letter and contain only letters, numbers, underscores, and hyphens';
-            }
-            return null;
-        }
-    });
-
+    // Property name — fuzzy pick from existing properties, or type a new one.
+    const names = await collectPropertyNames(document);
+    const propertyName = await pickOrCreate(names, 'Property name (fuzzy-match existing, or type a new one)');
     if (!propertyName) return;
+    if (!/^[A-Za-z][A-Za-z0-9_-]*$/.test(propertyName)) {
+        vscode.window.showErrorMessage('Property name must start with a letter and contain only letters, numbers, _ or -.');
+        return;
+    }
 
-    const propertyValue = await vscode.window.showInputBox({
-        prompt: `Value for ${propertyName}`,
-        placeHolder: 'Enter property value'
-    });
-
+    // Value — offer existing values for this property, or type a new one.
+    const values = await collectPropertyValues(document, propertyName);
+    const propertyValue = await pickOrCreate(values, `Value for :${propertyName}: (pick existing or type a new one)`);
     if (propertyValue === undefined) return;
 
     await setPropertyValue(editor, headingLine, propertyName, propertyValue);
-    vscode.window.showInformationMessage(`Set ${propertyName}: ${propertyValue}`);
+    vscode.window.showInformationMessage(`Set :${propertyName}: ${propertyValue}`);
 }
 
 /**

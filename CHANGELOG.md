@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Dialog notes** - Capture decisions, questions, and comments as footnotes that are excluded from exports by default (#45).
 - **CLI `tangle`** for extracting source blocks, plus multi-line emphasis, Lean syntax highlighting, and Tab-to-fold on source blocks.
 - **Emacs-style `C-l`** recenter-top-bottom command, an **"Open in New Window"** editor command, and macOS commands to insert the current **Finder selection** or **Chrome tab** as an org link.
+- **Set Property with fuzzy completion** - The Set Property command (speed key `P`, now also bound to `C-c x p`) fuzzy-matches existing property names and values — gathered from the current file and the index — while still allowing new ones, and works from anywhere in an entry (not only on the heading line).
 
 ### Changed
 

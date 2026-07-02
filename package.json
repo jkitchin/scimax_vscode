@@ -4712,6 +4712,12 @@
         "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled"
       },
       {
+        "command": "scimax.speed.setProperty",
+        "key": "ctrl+c x p",
+        "mac": "ctrl+c x p",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/"
+      },
+      {
         "command": "scimax.speed.clockIn",
         "key": "shift+i",
         "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled"

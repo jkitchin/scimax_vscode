@@ -263,7 +263,7 @@ Add tags, properties, and effort estimates to headings.
 |-----+--------------+------------------------------------------------|
 | :   | Set tags     | Add or modify tags (colon-separated)           |
 | e   | Set effort   | Set estimated effort/duration for task         |
-| P   | Set property | Set a custom property in the properties drawer |
+| P   | Set property | Set a property; fuzzy-matches existing property names and values, and allows new ones (also bound to =C-c x p=) |
 
 *** ✅ Tags
 CLOSED: [2026-01-15 Thu 14:48]
