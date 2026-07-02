@@ -1,7 +1,8 @@
 #+TITLE: Task Dependencies
 #+TODO: ⚠️ 👀 | ✅
 
-* ⚠️ Task Dependencies
+* ✅ Task Dependencies
+CLOSED: [2026-07-02 Thu 08:06]
 
 Scimax supports dependencies between TODO tasks, inspired by Emacs
 =org-depend= but simplified to a single declared edge. Because Scimax has
@@ -15,7 +16,8 @@ You declare what a task /depends on/, and two behaviors follow automatically:
 - *Triggering* — when a task becomes DONE, any task that depended on it and is
   now fully unblocked is surfaced (and optionally promoted to a "ready" state).
 
-** ⚠️ Declaring a dependency
+** ✅ Declaring a dependency
+CLOSED: [2026-07-02 Thu 08:06]
 
 A dependency is one =:DEPENDS:= property holding whitespace-separated =id:=
 links to the tasks that must be completed first:
@@ -41,7 +43,8 @@ The easiest way to add one is the *Add Dependency* command
 and pick the task it should depend on. Scimax ensures both tasks have an
 =:ID:= (generating one if needed) and appends the =id:= to =:DEPENDS:=.
 
-** ⚠️ Blocking
+** ✅ Blocking
+CLOSED: [2026-07-02 Thu 08:06]
 
 When you try to cycle a task to a DONE state (=C-c C-t=) while it still has an
 unsatisfied dependency, the change is *refused* and you are told which task is
@@ -52,7 +55,8 @@ dependency.
 A missing dependency (an =id:= that resolves to no heading) also blocks, and is
 flagged as a diagnostic — see [[*Diagnostics]].
 
-** ⚠️ Triggering ("what's next")
+** ✅ Triggering ("what's next")
+CLOSED: [2026-07-02 Thu 08:06]
 
 When you complete a task, Scimax looks up everything that depends on it. For
 each dependent whose dependencies are now /all/ satisfied, it:
@@ -66,7 +70,8 @@ Only the direct dependents are advanced — there is no recursive cascade.
 This reverse lookup is backed by the database index, so it works across files
 and reflects the last saved state.
 
-** ⚠️ Sequential subtasks with =:ORDERED:=
+** ✅ Sequential subtasks with =:ORDERED:=
+CLOSED: [2026-07-02 Thu 08:06]
 
 For the common "do these steps in order" case you don't need ids at all. Mark a
 parent task =:ORDERED: t= and its direct children must be completed
@@ -83,7 +88,8 @@ active:
 ,** TODO Package
 #+end_src
 
-** ⚠️ Surfacing project status
+** ✅ Surfacing project status
+CLOSED: [2026-07-02 Thu 08:06]
 
 - *Inline indicator* — active TODO headings with dependencies get a CodeLens
   showing 🔒 =blocked by N= or ▶ =ready=. Clicking a blocked lens jumps to the
@@ -95,7 +101,8 @@ active:
 - *Agenda filter* — set =scimax.org.depend.hideBlockedInAgenda= to hide blocked
   tasks from [[file:13-agenda.org][agenda]] views so only actionable items show.
 
-** ⚠️ Diagnostics
+** ✅ Diagnostics
+CLOSED: [2026-07-02 Thu 08:06]
 
 Two problems are flagged as warnings in the editor:
 
@@ -104,7 +111,8 @@ Two problems are flagged as warnings in the editor:
 - *Dependency cycle* — tasks that depend on each other in a loop
   (=A → B → … → A=) and can therefore never all be satisfied.
 
-** ⚠️ Configuration
+** ✅ Configuration
+CLOSED: [2026-07-02 Thu 08:06]
 
 | Setting                                  | Default | Description                                              |
 |------------------------------------------+---------+----------------------------------------------------------|
@@ -116,7 +124,8 @@ Two problems are flagged as warnings in the editor:
 
 See [[file:26-configuration.org][Configuration]] for the full settings reference.
 
-** ⚠️ Notes and limitations
+** ✅ Notes and limitations
+CLOSED: [2026-07-02 Thu 08:06]
 
 - Dependency resolution is database-backed and reflects the last *saved* state,
   so save files to pick up cross-file changes.
@@ -125,7 +134,8 @@ See [[file:26-configuration.org][Configuration]] for the full settings reference
 - Compared to Emacs =org-depend=, the =chain-find-next= sorting DSL and
   =:TRIGGER:=/=:BLOCKER:= property authoring are intentionally not supported.
 
-** ⚠️ Related Topics
+** ✅ Related Topics
+CLOSED: [2026-07-02 Thu 08:07]
 
 - [[file:03.6-project-management.org][Project Management]] — task tables, Gantt charts, people, and the dependency graph
 - [[file:03-todo-items.org][TODO Items and Task Management]] — TODO states and cycling

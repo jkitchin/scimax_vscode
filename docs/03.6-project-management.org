@@ -1,7 +1,8 @@
 #+TITLE: Project Management
 #+TODO: ⚠️ 👀 | ✅
 
-* ⚠️ Project Management
+* ✅ Project Management
+CLOSED: [2026-07-02 Thu 08:07]
 
 Building on [[file:03.5-task-dependencies.org][task dependencies]], Scimax turns a set of org TODO tasks into
 a small project-management view: a **task table**, a **Gantt chart**, a
@@ -9,7 +10,8 @@ a small project-management view: a **task table**, a **Gantt chart**, a
 Everything is driven off metadata you already put on headings —
 =SCHEDULED=/=DEADLINE=, =EFFORT=, priority, =:DEPENDS:=, and =:ASSIGNEE:=.
 
-** ⚠️ The data a task carries
+** ✅ The data a task carries
+CLOSED: [2026-07-02 Thu 08:07]
 
 #+begin_src org
 ,* Project X
@@ -42,7 +44,8 @@ Everything is driven off metadata you already put on headings —
 - =:ASSIGNEE:= holds one or more handles; it is *inherited* from ancestor
   subtrees, and =@name= tags count as assignees too.
 
-** ⚠️ Task table
+** ✅ Task table
+CLOSED: [2026-07-02 Thu 08:07]
 
 Insert a table with [[cmd:scimax.org.insertProjectTable]], or write the dynamic
 block yourself and refresh it with =C-c C-c=:
@@ -65,7 +68,8 @@ Parameters:
 
 The =blocked= column shows 🔒 when a same-file dependency is not yet done.
 
-** ⚠️ Gantt chart
+** ✅ Gantt chart
+CLOSED: [2026-07-02 Thu 08:07]
 
 Insert with [[cmd:scimax.org.insertGantt]] (or write the block and =C-c C-c=):
 
@@ -87,7 +91,8 @@ language). Mapping:
 Parameters: =:title=, =:id=, =:maxlevel=, =:match=, =:sections= (=assignee=,
 =parent=, or =none=), =:crit_priority= (default =A=).
 
-** ⚠️ Dependency graph
+** ✅ Dependency graph
+CLOSED: [2026-07-02 Thu 08:07]
 
 [[cmd:scimax.org.showTaskGraph]] opens an interactive graph (nodes = tasks,
 arrows = "depends on"), colored by status:
@@ -97,7 +102,8 @@ arrows = "depends on"), colored by status:
 It is seeded from the active file's tasks and expands over the dependency edges
 to show the connected component. Click a node to jump to that task.
 
-** ⚠️ People and assignments
+** ✅ People and assignments
+CLOSED: [2026-07-02 Thu 08:07]
 
 A *person* is any heading tagged =:person:=, with contact properties:
 
@@ -122,7 +128,8 @@ A *person* is any heading tagged =:person:=, with contact properties:
 Assignees feed the table's =assignee= column, the Gantt's per-person swimlanes
 (=:sections assignee=), and grouping (=:groupby assignee=).
 
-** ⚠️ Configuration
+** ✅ Configuration
+CLOSED: [2026-07-02 Thu 08:07]
 
 | Setting                    | Default | Description                                   |
 |----------------------------+---------+-----------------------------------------------|
@@ -131,7 +138,8 @@ Assignees feed the table's =assignee= column, the Gantt's per-person swimlanes
 Task-dependency settings (blocking, promotion, indicators) are documented in
 [[file:03.5-task-dependencies.org][Task Dependencies]].
 
-** ⚠️ Notes and limitations
+** ✅ Notes and limitations
+CLOSED: [2026-07-02 Thu 08:07]
 
 - The table and Gantt are computed from a *single file* (or a subtree via
   =:id=), so keep a project's tasks together. Cross-file dependencies still
@@ -141,7 +149,8 @@ Task-dependency settings (blocking, promotion, indicators) are documented in
 - Rendering the Gantt to an image uses the existing Mermaid source-block support
   (=C-c C-c=).
 
-** ⚠️ Related Topics
+** ✅ Related Topics
+CLOSED: [2026-07-02 Thu 08:07]
 
 - [[file:03.5-task-dependencies.org][Task Dependencies]] — the dependency layer this builds on
 - [[file:03-todo-items.org][TODO Items]] — TODO states, priorities, effort

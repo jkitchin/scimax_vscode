@@ -64,7 +64,8 @@ CLOSED: [2026-01-17 Sat 12:24]
 | [[cmd:scimax.org.markSubtree]]      | Mark (Select) Subtree  | m (speed)          |
 | [[cmd:scimax.org.addIdToHeading]]   | Add ID to Heading      | -                  |
 
-** ⚠️ Granular Addressing (Anchors)
+** ✅ Granular Addressing (Anchors)
+CLOSED: [2026-07-02 Thu 08:03]
 
 These commands implement /granular addressing/: pointing a link at a location
 finer than a heading. An anchor is a native org target (=<<name>>=), radio
@@ -82,7 +83,8 @@ back-links are tracked at the object level.
 Following a =[[name]]= link first searches the current file, then falls back to
 the database to resolve an anchor of that name anywhere in the workspace.
 
-** ⚠️ Dialog Notes
+** ✅ Dialog Notes
+CLOSED: [2026-07-02 Thu 08:03]
 
 Attach a decision, question, or comment to a passage. A note is an org footnote
 with a =note-= label prefix, collected under a =* Notes :noexport:= section and
@@ -133,7 +135,8 @@ CLOSED: [2026-01-17 Sat 12:24]
 | [[cmd:scimax.org.cycleTodo]]  | Cycle TODO State        | C-c C-t            |
 | [[cmd:scimax.org.showTodos]]  | Show TODOs in Document  | -                  |
 
-** ⚠️ Task Dependencies
+** ✅ Task Dependencies
+CLOSED: [2026-07-02 Thu 08:03]
 
 Express dependencies between TODO tasks (org-depend style). See
 [[file:03.5-task-dependencies.org][Task Dependencies]] for the full guide.
@@ -144,7 +147,8 @@ Express dependencies between TODO tasks (org-depend style). See
 | [[cmd:scimax.org.gotoBlocker]]        | Go to Blocking Dependency    | -                  |
 | [[cmd:scimax.org.showDependencies]]   | Show Task Dependencies       | -                  |
 
-** ⚠️ Project Management
+** ✅ Project Management
+CLOSED: [2026-07-02 Thu 08:03]
 
 Task tables, Gantt charts, a dependency graph, and a people database. See
 [[file:03.6-project-management.org][Project Management]] for the full guide.
@@ -156,7 +160,8 @@ Task tables, Gantt charts, a dependency graph, and a people database. See
 | [[cmd:scimax.org.showTaskGraph]]       | Show Task Dependency Graph | -                  |
 | [[cmd:scimax.org.newPerson]]           | New Person                 | -                  |
 
-** ⚠️ Contacts & Entities
+** ✅ Contacts & Entities
+CLOSED: [2026-07-02 Thu 08:03]
 
 Fuzzy-pick a tagged/propertied heading (contact, location, reagent, …) and act
 on it. See [[file:03.7-contacts-and-locations.org][Contacts, Locations & Entity Selector]].

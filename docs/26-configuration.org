@@ -78,8 +78,7 @@ This email is used for services that offer better access to identified users. Cu
 
 You can also configure this via the command =scimax.ref.configureOpenAlex= which provides a quick pick menu for setting both your email and optional API key.
 
-* ✅ Org-mode Settings
-CLOSED: [2026-01-24 Sat 17:40]
+* Org-mode Settings
 
 Settings for org-mode document behavior including TODO states, progress logging, and more.
 
@@ -101,7 +100,7 @@ CLOSED: [2026-01-24 Sat 17:41]
 | scimax.org.depend.hideBlockedInAgenda  | boolean | false | Hide blocked tasks from agenda        |
 | scimax.org.entities                    | array   | []    | Entity types for the Pick Entity selector |
 
-** ⚠️ Task Dependencies
+** 👀 Task Dependencies
 
 When =scimax.org.depend.enabled= (the default), a TODO task with a =:DEPENDS:=
 property cannot be marked DONE until the tasks it depends on are DONE, and
@@ -112,7 +111,8 @@ children to be completed in order. Blocked/ready indicators
 (=hideBlockedInAgenda=), and dangling/cycle diagnostics surface the dependency
 graph. See [[file:03.5-task-dependencies.org][Task Dependencies]] for the full guide.
 
-** ⚠️ Entity Selector (Contacts, Locations, …)
+** ✅ Entity Selector (Contacts, Locations, …)
+CLOSED: [2026-07-02 Thu 08:05]
 
 =scimax.org.entities= defines named entity types for the *Scimax: Pick Entity*
 selector — fuzzy-pick a tagged/propertied heading and act on it (insert link,
@@ -130,7 +130,8 @@ Fields: =name= (required), =tag=/=property=/=value= (selection), =display=
 (shown in the picker), =email=/=address=/=url= (properties powering the
 mailto/maps/open-link actions). See [[file:03.7-contacts-and-locations.org][Contacts, Locations & Entity Selector]].
 
-** ⚠️ Orphan Link Diagnostics
+** ✅ Orphan Link Diagnostics
+CLOSED: [2026-07-02 Thu 08:05]
 
 When =scimax.org.diagnostics.orphanLinks= is enabled (the default), scimax
 warns when an internal link (=[[name]]= or =[[*Heading]]=) resolves to nothing:
@@ -783,7 +784,8 @@ style/variant → command mapping table.
 }
 #+end_src
 
-** ⚠️ Beamer Export Settings
+** ✅ Beamer Export Settings
+CLOSED: [2026-07-02 Thu 08:04]
 
 See [[file:41-export-beamer.org][Beamer Export]] for the full feature reference.
 
@@ -1150,7 +1152,8 @@ Configure the Hydra menu system for quick command access.
 }
 #+end_src
 
-* ⚠️ Highlighting Settings
+* ✅ Highlighting Settings
+CLOSED: [2026-07-02 Thu 08:04]
 
 Configure the visual decoration of org headings and source blocks.
 

@@ -1,7 +1,8 @@
 #+TITLE: Contacts, Locations & Entity Selector
 #+TODO: ⚠️ 👀 | ✅
 
-* ⚠️ Entity Selector (Contacts, Locations, …)
+* ✅ Entity Selector (Contacts, Locations, …)
+CLOSED: [2026-07-02 Thu 08:08]
 
 Use org headings as a lightweight database of people, places, and things — a
 contact manager, a locations list, a reagent/resource catalog — and fuzzy-pick
@@ -23,7 +24,8 @@ one to act on it. An "entity" is just a heading identified by a *tag* (or a
   :END:
 #+end_src
 
-** ⚠️ Picking and acting
+** ✅ Picking and acting
+CLOSED: [2026-07-02 Thu 08:08]
 
 Run [[cmd:scimax.org.pickEntity]] (*Scimax: Pick Entity*):
 
@@ -47,7 +49,8 @@ Contacts (=:person:=) and Locations (=:location:=) work out of the box; the
 Requires the files to be indexed — run *Scimax: Sync Files* (or open the folder
 as a workspace) so entities are searchable.
 
-** ⚠️ Defining your own entity type
+** ✅ Defining your own entity type
+CLOSED: [2026-07-02 Thu 08:08]
 
 Entity types are pure configuration — add a new kind (Reagents, Resources,
 Equipment, Samples…) with no code by appending to =scimax.org.entities= in
@@ -80,7 +83,8 @@ Each entry's fields:
 Built-in Contacts/Locations are always available; your entries are merged in
 (and override a built-in with the same name).
 
-** ⚠️ Related Topics
+** ✅ Related Topics
+CLOSED: [2026-07-02 Thu 08:08]
 
 - [[file:03.6-project-management.org][Project Management]] — assignees reuse the same =:person:= headings
 - [[file:03-todo-items.org][TODO Items]] — tags and properties on headings
