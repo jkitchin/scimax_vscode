@@ -1283,11 +1283,11 @@
           }
         },
         {
-          "comment": "Multi-line bold: org allows emphasis to span a line break. Fallback after the single-line rule above; the single-line match wins when the span fits on one line. End is bounded by a blank line so an unclosed marker cannot run past the paragraph.",
+          "comment": "Multi-line bold: org allows emphasis to span one line break (org-emphasis-regexp-components). Fallback after the single-line rule above; the single-line match wins when the span fits on one line. The end also matches at the start of any line that has no closer, so an unclosed marker leaks at most to the end of its own line instead of running away.",
           "name": "markup.bold.org",
           "contentName": "markup.bold.content.org",
           "begin": "(?:^|(?<=[\\s\\-({'\"]))(\\*)(?=[^*\\s])",
-          "end": "(?<=[^*\\s])(\\*)(?=[\\s.,;:!?)\\]}'\"\\-]|$)|^\\s*$",
+          "end": "(?<=[^*\\s])(\\*)(?=[\\s.,;:!?)\\]}'\"\\-]|$)|^(?!.*[^*\\s]\\*(?=[\\s.,;:!?)\\]}'\"\\-]|$))",
           "beginCaptures": {
             "1": { "name": "punctuation.definition.bold.begin.org" }
           },
@@ -1305,11 +1305,11 @@
           }
         },
         {
-          "comment": "Multi-line italic: org allows emphasis to span a line break. Fallback after the single-line rule above. The close still rejects a slash followed by an alphanumeric so interior slashes (e.g. A/C) are not closers. End is bounded by a blank line.",
+          "comment": "Multi-line italic: org allows emphasis to span one line break. Fallback after the single-line rule above. The close still rejects a slash followed by an alphanumeric so interior slashes (e.g. A/C) are not closers. The end also matches at the start of any line that has no closer, so an unclosed opener (e.g. a path like /usr/local) leaks at most to the end of its own line.",
           "name": "markup.italic.org",
           "contentName": "markup.italic.content.org",
           "begin": "(?:^|(?<=[\\s\\-({'\"]))(\\/)(?=[^\\/\\s])",
-          "end": "(?<=[^\\/\\s])(\\/)(?![A-Za-z0-9])(?=[\\s.,;:!?)\\]}'\"\\-]|$)|^\\s*$",
+          "end": "(?<=[^\\/\\s])(\\/)(?![A-Za-z0-9])(?=[\\s.,;:!?)\\]}'\"\\-]|$)|^(?!.*[^\\/\\s]\\/(?![A-Za-z0-9])(?=[\\s.,;:!?)\\]}'\"\\-]|$))",
           "beginCaptures": {
             "1": { "name": "punctuation.definition.italic.begin.org" }
           },
@@ -1327,11 +1327,11 @@
           }
         },
         {
-          "comment": "Multi-line underline: org allows emphasis to span a line break. Fallback after the single-line rule above. End is bounded by a blank line.",
+          "comment": "Multi-line underline: org allows emphasis to span one line break. Fallback after the single-line rule above. The end also matches at the start of any line that has no closer, so an unclosed opener (e.g. _internal in prose) leaks at most to the end of its own line.",
           "name": "markup.underline.org",
           "contentName": "markup.underline.content.org",
           "begin": "(?:^|(?<=[\\s\\-({'\"]))(_)(?=[^_\\s])",
-          "end": "(?<=[^_\\s])(_)(?![A-Za-z])(?=[\\s.,;:!?)\\]}'\"\\-]|$)|^\\s*$",
+          "end": "(?<=[^_\\s])(_)(?![A-Za-z])(?=[\\s.,;:!?)\\]}'\"\\-]|$)|^(?!.*[^_\\s]_(?![A-Za-z])(?=[\\s.,;:!?)\\]}'\"\\-]|$))",
           "beginCaptures": {
             "1": { "name": "punctuation.definition.underline.begin.org" }
           },
@@ -1367,11 +1367,11 @@
           }
         },
         {
-          "comment": "Multi-line strike-through: org allows emphasis to span a line break. Fallback after the single-line rule above. End is bounded by a blank line.",
+          "comment": "Multi-line strike-through: org allows emphasis to span one line break. Fallback after the single-line rule above. The opener rejects a digit, '-', '/', or '.' after the + so signed numbers like (+0.56) and plus-minus notation like (+-1) or (+/-0.5) never open a span; a strike leading with those characters that also wraps across lines loses highlighting, which is the better trade. The end also matches at the start of any line that has no closer, so an unclosed opener leaks at most to the end of its own line.",
           "name": "markup.strikethrough.org",
           "contentName": "markup.strikethrough.content.org",
-          "begin": "(?:^|(?<=[\\s\\-({'\"]))(\\+)(?=[^+\\s\\\\])",
-          "end": "(?<=[^+\\s\\\\])(\\+)(?![A-Za-z0-9])(?=[\\s.,;:!?)\\]}'\"\\-]|$)|^\\s*$",
+          "begin": "(?:^|(?<=[\\s\\-({'\"]))(\\+)(?=[^+\\s\\\\0-9\\/\\-.])",
+          "end": "(?<=[^+\\s\\\\])(\\+)(?![A-Za-z0-9])(?=[\\s.,;:!?)\\]}'\"\\-]|$)|^(?!.*[^+\\s\\\\]\\+(?![A-Za-z0-9])(?=[\\s.,;:!?)\\]}'\"\\-]|$))",
           "beginCaptures": {
             "1": { "name": "punctuation.definition.strikethrough.begin.org" }
           },

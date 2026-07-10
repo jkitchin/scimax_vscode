@@ -81,6 +81,95 @@ describe('org TextMate grammar', () => {
         });
     });
 
+    describe('multi-line emphasis cannot run away past one line break', () => {
+        it('does not strike a paragraph after a signed number like (+0.56, damping)', async () => {
+            // From a real document: "+0.56" is a sign, not a strikethrough
+            // opener. Previously the multi-line rule opened here and struck
+            // every following line until a blank line.
+            const tokens = await tokenizeOrg(
+                'bounds are [-5, 0], which clip the required factor (+0.56, damping)\n' +
+                'to zero, reducing the iteration to direct substitution, which\n' +
+                'diverges into complex pressures. Setting =accel_max = 0.9= fixed it.'
+            );
+            expect(hasScopeFor(tokens, '0.56', /markup\.strikethrough/)).toBe(false);
+            expect(hasScopeFor(tokens, 'to zero', /markup\.strikethrough/)).toBe(false);
+            expect(hasScopeFor(tokens, 'diverges', /markup\.strikethrough/)).toBe(false);
+        });
+
+        it('does not strike plus-minus notation like (+-1).', async () => {
+            // "+-1" is plus-minus notation, not a strikethrough opener. The
+            // unclosed + used to strike the rest of its line ("-1).").
+            const tokens = await tokenizeOrg(
+                'the count can be off by one (+-1).\n' +
+                'and the next line stays plain'
+            );
+            expect(hasScopeFor(tokens, '-1', /markup\.strikethrough/)).toBe(false);
+            expect(hasScopeFor(tokens, 'next line', /markup\.strikethrough/)).toBe(false);
+        });
+
+        it('does not strike a (+/-0.5) tolerance', async () => {
+            const tokens = await tokenizeOrg('a tolerance of (+/-0.5) on the reading\nsecond line plain');
+            expect(hasScopeFor(tokens, '0.5', /markup\.strikethrough/)).toBe(false);
+            expect(hasScopeFor(tokens, 'on the reading', /markup\.strikethrough/)).toBe(false);
+        });
+
+        it('still strikes a closed same-line +-1+ span', async () => {
+            // Emacs fontifies a properly closed span even when the content
+            // leads with a sign; only the multi-line fallback is restricted.
+            const tokens = await tokenizeOrg('inline +-1+ stays struck');
+            expect(hasScopeFor(tokens, '-1', /markup\.strikethrough/)).toBe(true);
+        });
+
+        it('stops an unclosed +strike opener at the first line break', async () => {
+            const tokens = await tokenizeOrg(
+                'a stray +opener with no closer at all\n' +
+                'second line must stay plain\n' +
+                'third line also plain'
+            );
+            for (const lineNo of [1, 2]) {
+                const lineTokens = tokens.filter(t => t.line === lineNo);
+                expect(lineTokens.every(t => !t.scopes.some(s => /markup\.strikethrough/.test(s)))).toBe(true);
+            }
+        });
+
+        it('still strikes a +phrase+ closed on the next line (hard-wrapped prose)', async () => {
+            const tokens = await tokenizeOrg('this is +struck text that\nwraps here+ then plain again');
+            expect(hasScopeFor(tokens, 'struck text that', /markup\.strikethrough/)).toBe(true);
+            expect(hasScopeFor(tokens, 'wraps here', /markup\.strikethrough/)).toBe(true);
+            expect(hasScopeFor(tokens, 'then plain again', /markup\.strikethrough/)).toBe(false);
+        });
+
+        it('stops an unclosed italic opener like /usr/local at the first line break', async () => {
+            const tokens = await tokenizeOrg(
+                'the binaries live in /usr/local on most systems\n' +
+                'and the second line stays plain'
+            );
+            const secondLine = tokens.filter(t => t.line === 1);
+            expect(secondLine.every(t => !t.scopes.some(s => /markup\.italic/.test(s)))).toBe(true);
+        });
+
+        it('stops an unclosed _underline opener at the first line break', async () => {
+            const tokens = await tokenizeOrg(
+                'an identifier like _internal with no closer\n' +
+                'next line stays plain'
+            );
+            const secondLine = tokens.filter(t => t.line === 1);
+            expect(secondLine.every(t => !t.scopes.some(s => /markup\.underline/.test(s)))).toBe(true);
+        });
+
+        it('stops an unclosed *bold opener at the first line break', async () => {
+            const tokens = await tokenizeOrg(
+                'a stray *asterisk with no closer\n' +
+                'next line stays plain\n' +
+                'and the one after that'
+            );
+            for (const lineNo of [1, 2]) {
+                const lineTokens = tokens.filter(t => t.line === lineNo);
+                expect(lineTokens.every(t => !t.scopes.some(s => /markup\.bold/.test(s)))).toBe(true);
+            }
+        });
+    });
+
     it('sanity: a closed multi-line bold reports only bold markup scopes', async () => {
         const tokens = await tokenizeOrg('this is *bold* text');
         expect(markupScopesFor(tokens, 'bold')).toContain('markup.bold.content.org');
