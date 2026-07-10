@@ -142,7 +142,6 @@ export class OrgLinkProvider implements vscode.DocumentLinkProvider {
             const endPos = document.positionAt(match.index + match[0].length);
             const range = new vscode.Range(startPos, endPos);
 
-            const citeCommand = match[1];
             const citePath = match[2];
 
             // Extract keys for tooltip / link target.
