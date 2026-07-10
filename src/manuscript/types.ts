@@ -128,6 +128,36 @@ export interface BblResult {
 }
 
 /**
+ * How the flatten command should treat compilation before flattening, derived
+ * from the `scimax.manuscript.autoCompile` setting. `'prompt'` means ask the
+ * user interactively; the other values map straight onto FlattenOptions.compile.
+ */
+export type CompileDecision = boolean | 'if-needed' | 'prompt';
+
+/**
+ * Resolve the compile behavior from the autoCompile setting and whether the
+ * .bbl is currently stale. Pure so it can be unit-tested without VS Code.
+ *
+ * - `always`   -> compile unconditionally (true)
+ * - `never`    -> never compile (false)
+ * - `if-needed`-> compile only when stale, no prompt
+ * - `ask`(def) -> prompt when stale, otherwise fall through to if-needed
+ */
+export function resolveCompileOption(autoCompile: string, needsCompile: boolean): CompileDecision {
+  switch (autoCompile) {
+    case 'always':
+      return true;
+    case 'never':
+      return false;
+    case 'if-needed':
+      return 'if-needed';
+    case 'ask':
+    default:
+      return needsCompile ? 'prompt' : 'if-needed';
+  }
+}
+
+/**
  * Options for flattening a manuscript
  */
 export interface FlattenOptions {

@@ -6,7 +6,7 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 import { flattenManuscript, previewFlatten } from './manuscriptManager';
 import { checkIfCompilationNeeded } from './latexCompiler';
-import { FlattenOptions } from './types';
+import { FlattenOptions, resolveCompileOption } from './types';
 
 /**
  * Get the active .tex file or prompt user to select one
@@ -47,19 +47,15 @@ async function flattenManuscriptCommand(): Promise<void> {
 
   // Check if compilation is needed
   const needsCompile = await checkIfCompilationNeeded(texFile);
-  let compileOption: boolean | 'if-needed' = 'if-needed';
 
   const autoCompile = vscode.workspace
     .getConfiguration('scimax.manuscript')
     .get<string>('autoCompile', 'ask');
 
-  if (autoCompile === 'always') {
-    compileOption = true;
-  } else if (autoCompile === 'never') {
-    compileOption = false;
-  } else if (autoCompile === 'if-needed') {
-    compileOption = 'if-needed';
-  } else if (needsCompile) {
+  const decision = resolveCompileOption(autoCompile, needsCompile);
+
+  let compileOption: boolean | 'if-needed';
+  if (decision === 'prompt') {
     const choice = await vscode.window.showQuickPick(
       [
         {
@@ -87,6 +83,8 @@ async function flattenManuscriptCommand(): Promise<void> {
     }
 
     compileOption = choice.value === 'compile';
+  } else {
+    compileOption = decision;
   }
 
   // Show progress
