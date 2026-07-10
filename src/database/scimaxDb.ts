@@ -115,6 +115,7 @@ export class ScimaxDb extends ScimaxDbCore {
         // Apply VS Code config before core init
         this.setIgnorePatterns(this.loadIgnorePatterns());
         this.setResilienceConfig(this.loadResilienceConfig());
+        this.setSizeLimits(this.loadSizeLimits());
 
         // Run core initialization
         await super.initialize();
@@ -146,6 +147,15 @@ export class ScimaxDb extends ScimaxDbCore {
         return {
             queryTimeoutMs: config.get<number>('queryTimeoutMs', 30000),
             maxRetryAttempts: config.get<number>('maxRetryAttempts', 3)
+        };
+    }
+
+    private loadSizeLimits(): { maxFileSizeMB: number; maxParseSizeKB: number; maxFileLines: number } {
+        const config = vscode.workspace.getConfiguration('scimax.db');
+        return {
+            maxFileSizeMB: config.get<number>('maxFileSizeMB', 10),
+            maxParseSizeKB: config.get<number>('maxParseSizeKB', 500),
+            maxFileLines: config.get<number>('maxFileLines', 5000)
         };
     }
 

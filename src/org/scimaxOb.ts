@@ -1132,7 +1132,7 @@ export async function clearResults(): Promise<void> {
  * Clear all results in the buffer
  */
 export async function clearAllResults(): Promise<void> {
-    await vscode.commands.executeCommand('scimax.babel.clearResults');
+    await vscode.commands.executeCommand('scimax.org.clearAllResults');
 }
 
 /**

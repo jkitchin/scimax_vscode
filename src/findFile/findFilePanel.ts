@@ -261,7 +261,7 @@ export class FindFilePanel {
             case 'openDired':
                 this.dispose();
                 const dirPath = entry.isDirectory ? entry.path : path.dirname(entry.path);
-                await vscode.commands.executeCommand('scimax.dired', dirPath);
+                await vscode.commands.executeCommand('scimax.dired.open', dirPath);
                 break;
 
             case 'delete':

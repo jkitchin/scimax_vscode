@@ -694,6 +694,12 @@ export class ScimaxDbCore {
         if (config.maxRetryAttempts !== undefined) this.maxRetryAttempts = config.maxRetryAttempts;
     }
 
+    public setSizeLimits(limits: { maxFileSizeMB?: number; maxParseSizeKB?: number; maxFileLines?: number }): void {
+        if (limits.maxFileSizeMB !== undefined) this.options.maxFileSizeMB = limits.maxFileSizeMB;
+        if (limits.maxParseSizeKB !== undefined) this.options.maxParseSizeKB = limits.maxParseSizeKB;
+        if (limits.maxFileLines !== undefined) this.options.maxFileLines = limits.maxFileLines;
+    }
+
     /**
      * Get the underlying database client
      */

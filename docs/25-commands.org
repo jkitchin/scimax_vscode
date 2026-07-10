@@ -251,7 +251,7 @@ CLOSED: [2026-01-17 Sat 12:26]
 * ✅ Source Blocks
 CLOSED: [2026-01-17 Sat 12:26]
 
-** ✅ Basic Babel Operations
+** 👀 Basic Babel Operations
 CLOSED: [2026-01-17 Sat 12:26]
 
 | Command ID                          | Description                 | Default Keybinding |
@@ -259,9 +259,6 @@ CLOSED: [2026-01-17 Sat 12:26]
 | [[cmd:scimax.org.executeBlock]]     | Execute Code Block          | C-RET              |
 |                                     |                             | C-c C-c (in src)   |
 | [[cmd:scimax.org.executeAllBlocks]] | Execute All Code Blocks     | -                  |
-| [[cmd:scimax.org.insertBlock]]      | Insert Code Block           | -                  |
-| [[cmd:scimax.org.nextBlock]]        | Go to Next Code Block       | -                  |
-| [[cmd:scimax.org.prevBlock]]        | Go to Previous Code Block   | -                  |
 | [[cmd:scimax.org.clearResults]]     | Clear Block Results         | -                  |
 | [[cmd:scimax.org.clearAllResults]]  | Clear All Results           | -                  |
 | [[cmd:scimax.org.showBabelOutput]]  | Show Babel Output           | -                  |

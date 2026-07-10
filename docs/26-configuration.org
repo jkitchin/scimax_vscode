@@ -322,6 +322,7 @@ Configure the full-text search database and semantic search capabilities.
 | scimax.db.include           | array   | [ ]                       | Additional directories/files           |
 | scimax.db.exclude           | array   | See below                 | Patterns/paths to exclude              |
 | scimax.db.autoIndex         | boolean | false                     | Auto-index workspace on activation     |
+| scimax.db.dirsPerSession    | number  | 5                         | Directories scanned per background indexing session |
 | scimax.db.checkStaleOnActivation | boolean | true                 | Prompt to refresh on activation if indexed files changed on disk |
 | scimax.db.embeddingProvider | string  | "ollama"                  | Embedding provider for semantic search |
 | scimax.db.ollamaUrl         | string  | "http://localhost:11434"  | Ollama API URL                         |
@@ -397,6 +398,19 @@ Configure the full-text search database and semantic search capabilities.
 #+begin_src json
 {
   "scimax.db.autoIndex": true
+}
+#+end_src
+
+*** ⚠️ scimax.db.dirsPerSession
+
+- *Type*: number
+- *Default*: `5'
+- *Description*: Number of configured directories to scan per background indexing session. Progress is saved in extension state, so remaining directories are picked up in later sessions. Lower this if activation feels slow with many indexed directories.
+
+*Example*:
+#+begin_src json
+{
+  "scimax.db.dirsPerSession": 3
 }
 #+end_src
 
@@ -1507,14 +1521,17 @@ Configure inline image thumbnails in org-mode files.
 
 Configure the org-capture system for quick note-taking.
 
-** Settings Overview
+** 👀 Settings Overview
 
-| Setting                       | Type    | Default           | Description             |
-|-------------------------------+---------+-------------------+-------------------------|
-| scimax.capture.templates      | array   | [ ]               | Capture templates       |
-| scimax.capture.defaultFile    | string  | "~/org/notes.org" | Default capture file    |
-| scimax.capture.datetreeFormat | string  | "day"             | Datetree granularity    |
-| scimax.capture.autoSave       | boolean | true              | Auto-save after capture |
+| Setting                          | Type    | Default | Description                                  |
+|----------------------------------+---------+---------+----------------------------------------------|
+| scimax.capture.templates         | array   | [ ]     | Capture templates                            |
+| scimax.capture.defaultFile       | string  | ""      | Default capture file                         |
+| scimax.capture.defaultDirectory  | string  | ""      | Base directory for relative template paths   |
+| scimax.capture.showPreview       | boolean | true    | Show preview before inserting a capture      |
+| scimax.capture.openAfterCapture  | boolean | true    | Open the target file after capture           |
+| scimax.capture.datetreeFormat    | string  | "day"   | Deprecated: has no effect                    |
+| scimax.capture.autoSave          | boolean | true    | Deprecated: has no effect                    |
 
 ** Detailed Configuration
 
@@ -1570,10 +1587,10 @@ Configure the org-capture system for quick note-taking.
 }
 #+end_src
 
-*** scimax.capture.defaultFile
+*** 👀 scimax.capture.defaultFile
 
 - *Type*: string
-- *Default*: `"~/org/notes.org"'
+- *Default*: `""' (falls back to `{scimax.directory}/notes.org')
 - *Description*: Default file for captures when no target file is specified in template
 
 *Example*:
@@ -1583,35 +1600,38 @@ Configure the org-capture system for quick note-taking.
 }
 #+end_src
 
-*** scimax.capture.datetreeFormat
+*** ⚠️ scimax.capture.defaultDirectory
 
-- *Type*: string (enum)
-- *Default*: `"day"'
-- *Options*: `"day"', `"week"', `"month"'
-- *Description*: Granularity of datetree entries
-  - `day': Year > Month > Day
-  - `week': Year > Week number
-  - `month': Year > Month
+- *Type*: string
+- *Default*: `""'
+- *Description*: Base directory for resolving relative capture template file paths (supports `~'). If empty, relative paths resolve against the default capture file's directory.
 
 *Example*:
 #+begin_src json
 {
-  "scimax.capture.datetreeFormat": "week"
+  "scimax.capture.defaultDirectory": "~/org"
 }
 #+end_src
 
-*** scimax.capture.autoSave
+*** ⚠️ scimax.capture.showPreview
 
 - *Type*: boolean
 - *Default*: `true'
-- *Description*: Automatically save the file after capture
+- *Description*: Show a preview of the expanded template before inserting the capture.
 
-*Example*:
-#+begin_src json
-{
-  "scimax.capture.autoSave": true
-}
-#+end_src
+*** ⚠️ scimax.capture.openAfterCapture
+
+- *Type*: boolean
+- *Default*: `true'
+- *Description*: Open the target file and move the cursor to the insertion point after a capture.
+
+*** 👀 scimax.capture.datetreeFormat
+
+- *Deprecated*: this setting has no effect. Datetree captures always use year > month > day granularity.
+
+*** 👀 scimax.capture.autoSave
+
+- *Deprecated*: this setting has no effect. Captures are always written directly to disk.
 
 * Common Configurations
 
@@ -1836,8 +1856,6 @@ For personal knowledge management and note-taking:
       "template": "* TODO %^{Task}\n  SCHEDULED: %t\n  %?"
     }
   ],
-  "scimax.capture.datetreeFormat": "day",
-  "scimax.capture.autoSave": true,
 
   // Hydra menu settings
   "scimax.hydra.showKeyHints": true,

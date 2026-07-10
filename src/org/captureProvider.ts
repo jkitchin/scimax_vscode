@@ -98,8 +98,9 @@ function resolveFilePath(filePath: string, defaultDir: string): string {
         return getDefaultCaptureFile();
     }
 
-    // Use shared path resolution utility
-    return sharedResolveFilePath(filePath, defaultDir || getDefaultCaptureFile());
+    // Use shared path resolution utility; relative paths fall back to the
+    // directory containing the default capture file
+    return sharedResolveFilePath(filePath, defaultDir || path.dirname(getDefaultCaptureFile()));
 }
 
 // =============================================================================

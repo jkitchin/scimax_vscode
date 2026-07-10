@@ -268,7 +268,10 @@ export async function activate(context: vscode.ExtensionContext) {
         vscode.window.registerWebviewViewProvider(
             JournalCalendarProvider.viewType,
             calendarProvider
-        )
+        ),
+        vscode.commands.registerCommand('scimax.journal.refresh', () => {
+            calendarProvider.refresh();
+        })
     );
 
     // Register Journal Commands

@@ -271,7 +271,7 @@ export function formatCitation(keys: string[], languageId: string): string {
 
     if (languageId === 'latex') {
         // LaTeX format: \cite{key1,key2}
-        const style = config.get<string>('latexCiteStyle') || 'cite';
+        const style = config.get<string>('defaultCiteStyle') || 'cite';
         return `\\${style}{${keys.join(',')}}`;
     } else if (languageId === 'markdown') {
         // Pandoc markdown format: [@key1; @key2]

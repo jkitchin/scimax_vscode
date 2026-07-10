@@ -49,7 +49,17 @@ async function flattenManuscriptCommand(): Promise<void> {
   const needsCompile = await checkIfCompilationNeeded(texFile);
   let compileOption: boolean | 'if-needed' = 'if-needed';
 
-  if (needsCompile) {
+  const autoCompile = vscode.workspace
+    .getConfiguration('scimax.manuscript')
+    .get<string>('autoCompile', 'ask');
+
+  if (autoCompile === 'always') {
+    compileOption = true;
+  } else if (autoCompile === 'never') {
+    compileOption = false;
+  } else if (autoCompile === 'if-needed') {
+    compileOption = 'if-needed';
+  } else if (needsCompile) {
     const choice = await vscode.window.showQuickPick(
       [
         {

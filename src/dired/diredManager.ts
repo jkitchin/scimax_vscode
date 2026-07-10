@@ -117,14 +117,18 @@ export class DiredManager {
             process.env.HOME ||
             '/';
 
+        const config = vscode.workspace.getConfiguration('scimax.dired');
+        const defaultSort = config.get<SortField>('defaultSort', 'name');
+        const showHidden = config.get<boolean>('showHidden', false);
+
         this.state = {
             currentDirectory: startDir,
             entries: [],
             selectedIndex: 0,
             wdiredMode: false,
             pendingRenames: new Map(),
-            sort: { field: 'name', direction: 'asc' },
-            showHidden: false,
+            sort: { field: defaultSort, direction: 'asc' },
+            showHidden,
             filterPattern: ''
         };
     }

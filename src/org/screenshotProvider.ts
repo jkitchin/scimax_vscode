@@ -430,9 +430,9 @@ export async function insertScreenshot(): Promise<void> {
         log.info(`Screenshot saved to ${outputPath}`);
 
         // Trigger image preview refresh if available
-        vscode.commands.executeCommand('scimax.org.refreshInlineImages').then(
+        vscode.commands.executeCommand('scimax.imageOverlays.refresh', { silent: true }).then(
             () => {},
-            () => {} // Command might not exist, ignore
+            () => {} // Overlays may be disabled, ignore
         );
 
     } catch (error) {
@@ -528,9 +528,9 @@ export async function insertOcrScreenshot(): Promise<void> {
         log.info(`OCR screenshot saved to ${outputPath}`);
 
         // Trigger image preview refresh if available
-        vscode.commands.executeCommand('scimax.org.refreshInlineImages').then(
+        vscode.commands.executeCommand('scimax.imageOverlays.refresh', { silent: true }).then(
             () => {},
-            () => {} // Command might not exist, ignore
+            () => {} // Overlays may be disabled, ignore
         );
 
     } catch (error) {

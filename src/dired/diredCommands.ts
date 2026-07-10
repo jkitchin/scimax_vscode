@@ -10,18 +10,21 @@ import { DiredPanel } from './diredPanel';
 export function registerDiredCommands(context: vscode.ExtensionContext): void {
     // Open dired - prompts for directory or uses workspace
     context.subscriptions.push(
-        vscode.commands.registerCommand('scimax.dired.open', async () => {
-            // Show directory picker
-            const result = await vscode.window.showOpenDialog({
-                canSelectFolders: true,
-                canSelectFiles: false,
-                canSelectMany: false,
-                openLabel: 'Open in Dired',
-                title: 'Select directory to browse'
-            });
+        vscode.commands.registerCommand('scimax.dired.open', async (initialDirectory?: string) => {
+            // Use the provided directory, or show a directory picker
+            let directory = initialDirectory;
+            if (!directory) {
+                const result = await vscode.window.showOpenDialog({
+                    canSelectFolders: true,
+                    canSelectFiles: false,
+                    canSelectMany: false,
+                    openLabel: 'Open in Dired',
+                    title: 'Select directory to browse'
+                });
 
-            const directory = result?.[0]?.fsPath ||
-                vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
+                directory = result?.[0]?.fsPath ||
+                    vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
+            }
 
             if (directory) {
                 DiredPanel.createOrShow(context.extensionUri, directory);

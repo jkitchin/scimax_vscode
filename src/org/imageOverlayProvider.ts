@@ -1078,9 +1078,11 @@ export function registerImageOverlayCommands(context: vscode.ExtensionContext): 
             manager.toggleCurrentFile();
         }),
 
-        vscode.commands.registerCommand('scimax.imageOverlays.refresh', () => {
+        vscode.commands.registerCommand('scimax.imageOverlays.refresh', (opts?: { silent?: boolean }) => {
             manager.refreshAllEditors();
-            vscode.window.showInformationMessage('Image overlays refreshed');
+            if (!opts?.silent) {
+                vscode.window.showInformationMessage('Image overlays refreshed');
+            }
         }),
 
         vscode.commands.registerCommand('scimax.imageOverlays.clearCache', () => {

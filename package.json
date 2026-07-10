@@ -957,18 +957,6 @@
         "title": "Scimax: Execute All Code Blocks"
       },
       {
-        "command": "scimax.org.insertBlock",
-        "title": "Scimax: Insert Code Block"
-      },
-      {
-        "command": "scimax.org.nextBlock",
-        "title": "Scimax: Go to Next Code Block"
-      },
-      {
-        "command": "scimax.org.prevBlock",
-        "title": "Scimax: Go to Previous Code Block"
-      },
-      {
         "command": "scimax.org.clearResults",
         "title": "Scimax: Clear Block Results"
       },
@@ -5840,6 +5828,11 @@
           "default": false,
           "description": "Automatically index workspace files on activation. Disable for large workspaces to prevent memory issues."
         },
+        "scimax.db.dirsPerSession": {
+          "type": "number",
+          "default": 5,
+          "description": "Number of configured directories to scan per background indexing session. Progress is saved, so remaining directories are picked up in later sessions."
+        },
         "scimax.db.autoCheckStale": {
           "type": "boolean",
           "default": false,
@@ -6635,6 +6628,11 @@
           "default": "",
           "description": "Default file for captures when no target file is specified. If empty, uses {scimax.directory}/notes.org"
         },
+        "scimax.capture.defaultDirectory": {
+          "type": "string",
+          "default": "",
+          "description": "Base directory for resolving relative capture template file paths (supports ~ for home directory). If empty, relative paths resolve against the default capture file's directory"
+        },
         "scimax.capture.datetreeFormat": {
           "type": "string",
           "enum": [
@@ -6643,12 +6641,24 @@
             "month"
           ],
           "default": "day",
-          "description": "Granularity of datetree entries"
+          "description": "Granularity of datetree entries",
+          "deprecationMessage": "Not implemented: datetree captures always use year/month/day granularity. This setting has no effect."
         },
         "scimax.capture.autoSave": {
           "type": "boolean",
           "default": true,
-          "description": "Automatically save the file after capture"
+          "description": "Automatically save the file after capture",
+          "deprecationMessage": "Not implemented: captures are always written directly to disk. This setting has no effect."
+        },
+        "scimax.capture.showPreview": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show a preview of the expanded template before inserting the capture"
+        },
+        "scimax.capture.openAfterCapture": {
+          "type": "boolean",
+          "default": true,
+          "description": "Open the target file after a capture is inserted"
         },
         "scimax.org.lint.disabledCheckers": {
           "type": "array",
