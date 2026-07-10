@@ -399,12 +399,16 @@ function runBenchmark(
         fn();
     }
 
-    // Actual measurements
+    // Actual measurements. CPU time, not wall clock: when the full suite runs
+    // test files in parallel the workers oversubscribe the CPU and wall time
+    // inflates several-fold, flaking the baseline checks. CPU time per parse is
+    // stable under load, and matches the baselines (calibrated in isolated runs
+    // where wall time and CPU time coincide).
     for (let i = 0; i < iterations; i++) {
-        const start = performance.now();
+        const start = process.cpuUsage();
         fn();
-        const end = performance.now();
-        times.push(end - start);
+        const delta = process.cpuUsage(start);
+        times.push((delta.user + delta.system) / 1000);
     }
 
     const totalMs = times.reduce((a, b) => a + b, 0);

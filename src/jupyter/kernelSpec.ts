@@ -189,6 +189,19 @@ export async function findKernelSpec(name: string): Promise<KernelSpec | null> {
 }
 
 /**
+ * True if the spec's interpreter still exists. Kernelspecs commonly outlive
+ * their virtualenv (the venv is deleted, the kernel.json stays registered);
+ * launching one spawns nothing and the connection waits forever. Only absolute
+ * paths can be checked cheaply; bare commands ("python3") resolve via PATH and
+ * are assumed present.
+ */
+function kernelBinaryExists(spec: KernelSpec): boolean {
+    const cmd = spec.argv[0];
+    if (!cmd || !path.isAbsolute(cmd)) return true;
+    return fs.existsSync(cmd);
+}
+
+/**
  * Find kernel specs by language
  */
 export async function findKernelSpecsByLanguage(language: string): Promise<KernelSpec[]> {
@@ -200,6 +213,10 @@ export async function findKernelSpecsByLanguage(language: string): Promise<Kerne
     for (const spec of specs.values()) {
         const specLang = spec.language.toLowerCase();
         if (specLang === normalizedLang || specLang.includes(normalizedLang)) {
+            if (!kernelBinaryExists(spec)) {
+                console.warn(`Skipping kernel '${spec.name}': interpreter not found: ${spec.argv[0]}`);
+                continue;
+            }
             matches.push(spec);
         }
     }
@@ -270,8 +287,9 @@ export async function findKernelForLanguage(language: string): Promise<KernelSpe
     if (mappedNames) {
         const specs = await discoverKernelSpecsViaJupyter();
         for (const name of mappedNames) {
-            if (specs.has(name)) {
-                return specs.get(name)!;
+            const candidate = specs.get(name);
+            if (candidate && kernelBinaryExists(candidate)) {
+                return candidate;
             }
         }
     }

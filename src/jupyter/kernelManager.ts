@@ -234,6 +234,12 @@ export class KernelManager extends EventEmitter {
         kernelProcess.on('exit', (code, signal) => {
             kernel.state = 'dead';
             kernel.process = null;
+            // Reject any in-flight requests instead of letting them wait
+            // forever on a socket nobody will ever answer.
+            if (kernel.zmqConnection) {
+                kernel.zmqConnection.disconnect().catch(() => { /* already closed */ });
+                kernel.zmqConnection = null;
+            }
             this.emit('kernelStateChanged', kernelId, 'dead');
             this.emit('kernelStopped', kernelId);
         });
@@ -286,24 +292,36 @@ export class KernelManager extends EventEmitter {
     private async waitForKernelReady(kernel: ManagedKernel, timeout: number = 30000): Promise<void> {
         const startTime = Date.now();
 
+        // 'dead' also covers a failed spawn (e.g. the spec's interpreter was
+        // deleted): that only fires the process 'error' event, never 'exit',
+        // so exitCode stays null.
+        const isDead = (): boolean =>
+            !kernel.process || kernel.process.exitCode !== null || kernel.state === 'dead';
+
         // Wait for connection file to be populated and kernel to start
         while (Date.now() - startTime < timeout) {
-            // Check if process is still alive
-            if (!kernel.process || kernel.process.exitCode !== null) {
+            if (isDead()) {
                 throw new Error('Kernel process died during startup');
             }
 
             // Try to read connection file to verify ports
+            let hasPorts = false;
             try {
                 const content = fs.readFileSync(kernel.connectionFile, 'utf-8');
                 const conn = JSON.parse(content);
-                if (conn.shell_port && conn.iopub_port) {
-                    // Give kernel a moment to bind to ports
-                    await new Promise(resolve => setTimeout(resolve, 500));
-                    return;
-                }
+                hasPorts = Boolean(conn.shell_port && conn.iopub_port);
             } catch {
                 // File not ready yet
+            }
+
+            if (hasPorts) {
+                // Give kernel a moment to bind to ports, then re-check: the
+                // spawn 'error'/'exit' events often arrive during this settle.
+                await new Promise(resolve => setTimeout(resolve, 500));
+                if (isDead()) {
+                    throw new Error('Kernel process died during startup');
+                }
+                return;
             }
 
             await new Promise(resolve => setTimeout(resolve, 100));

@@ -7,6 +7,12 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import * as path from 'path';
 import * as os from 'os';
 
+// Most tests here shell out to the `jupyter` CLI, which takes a couple of
+// seconds on a real install and can exceed the default 5s test timeout when
+// the full suite runs files in parallel. Give the whole file headroom; the
+// kernel integration test sets its own longer timeout.
+vi.setConfig({ testTimeout: 15000 });
+
 // =============================================================================
 // Kernel Spec Discovery Tests (no zeromq required)
 // =============================================================================
@@ -171,11 +177,12 @@ describe('ZeroMQ Module Loading', () => {
         console.log('Home directory:', os.homedir());
         console.log('Temp directory:', os.tmpdir());
 
-        // Check for Jupyter
+        // Check for Jupyter. `jupyter --version` imports every core package and
+        // can take >5s on a real install, so give it (and the test) headroom.
         // eslint-disable-next-line @typescript-eslint/no-var-requires
         const { execSync } = require('child_process');
         try {
-            const jupyterVersion = execSync('jupyter --version', { encoding: 'utf-8', timeout: 5000 });
+            const jupyterVersion = execSync('jupyter --version', { encoding: 'utf-8', timeout: 10000 });
             console.log('\nJupyter version:');
             console.log(jupyterVersion.trim().split('\n').map((l: string) => '  ' + l).join('\n'));
         } catch {
