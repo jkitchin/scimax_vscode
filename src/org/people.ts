@@ -25,7 +25,9 @@ import * as path from 'path';
 import * as os from 'os';
 import { getDatabase } from '../database/lazyDb';
 import { getPropCaseInsensitive } from '../database/scimaxDbCore';
-import { slugify } from '../parser/projectTasks';
+import { slugify, ASSIGNEE_PROPERTY } from '../parser/projectTasks';
+import { getHeadingLevel } from './speedCommands/context';
+import { setPropertyValue } from './speedCommands/metadata';
 
 export const PERSON_TAG = 'person';
 
@@ -217,6 +219,89 @@ async function newPersonCommand(): Promise<void> {
 }
 
 // ---------------------------------------------------------------------------
+// Assign task
+// ---------------------------------------------------------------------------
+
+/** Handles already on this heading: the :ASSIGNEE: value plus any @tag on the headline. */
+function currentAssignees(document: vscode.TextDocument, headingLine: number): Set<string> {
+    const handles = new Set<string>();
+    // @tags on the headline itself.
+    const tagMatch = document.lineAt(headingLine).text.match(/:([\w@#%:]+):\s*$/);
+    if (tagMatch) {
+        for (const tag of tagMatch[1].split(':')) {
+            if (tag.startsWith('@') && tag.length > 1) handles.add(tag.slice(1).toLowerCase());
+        }
+    }
+    // :ASSIGNEE: value in the entry's PROPERTIES drawer (stop at the next heading).
+    for (let i = headingLine + 1; i < document.lineCount; i++) {
+        if (getHeadingLevel(document, i) > 0) break;
+        const m = document.lineAt(i).text.match(ASSIGNEE_LINE_RE);
+        if (m) {
+            for (const h of m[2].split(/[\s,]+/)) if (h) handles.add(h.toLowerCase());
+            break;
+        }
+    }
+    return handles;
+}
+
+/**
+ * Assign the current task to one or more people: pick from the indexed :person:
+ * headings (fuzzy match on handle, name, role, or email), then set the heading's
+ * :ASSIGNEE: property to the chosen handles.
+ */
+async function assignTaskCommand(): Promise<void> {
+    const editor = vscode.window.activeTextEditor;
+    if (!editor) return;
+    const document = editor.document;
+    if (!isOrg(document)) {
+        vscode.window.showInformationMessage('Assign task: not an org file.');
+        return;
+    }
+
+    // Find the enclosing heading (works from anywhere in the entry).
+    let headingLine = -1;
+    for (let i = editor.selection.active.line; i >= 0; i--) {
+        if (getHeadingLevel(document, i) > 0) { headingLine = i; break; }
+    }
+    if (headingLine < 0) {
+        vscode.window.showInformationMessage('Assign task: not under a heading.');
+        return;
+    }
+
+    const people = await getPeople();
+    if (people.length === 0) {
+        const choice = await vscode.window.showInformationMessage(
+            'No :person: headings are indexed. Create one first?', 'New Person');
+        if (choice === 'New Person') await newPersonCommand();
+        return;
+    }
+
+    const current = currentAssignees(document, headingLine);
+    const items = people
+        .slice()
+        .sort((a, b) => a.name.localeCompare(b.name))
+        .map(p => ({
+            label: p.handle,
+            description: p.name + (p.role ? ` · ${p.role}` : ''),
+            detail: p.email,
+            picked: current.has(p.handle.toLowerCase()),
+        }));
+
+    const picked = await vscode.window.showQuickPick(items, {
+        canPickMany: true,
+        matchOnDescription: true,
+        matchOnDetail: true,
+        placeHolder: 'Assign to… (fuzzy-match handle, name, role, or email; pick one or more)',
+    });
+    if (!picked) return; // cancelled
+
+    const handles = picked.map(i => i.label).join(' ');
+    await setPropertyValue(editor, headingLine, ASSIGNEE_PROPERTY, handles);
+    vscode.window.showInformationMessage(
+        handles ? `Assigned to ${handles}.` : 'Cleared assignee.');
+}
+
+// ---------------------------------------------------------------------------
 // Registration
 // ---------------------------------------------------------------------------
 
@@ -230,6 +315,7 @@ export function registerPeopleProviders(context: vscode.ExtensionContext): void 
         vscode.languages.registerCompletionItemProvider(selector, new AssigneeCompletionProvider()),
         vscode.languages.registerHoverProvider(selector, new AssigneeHoverProvider()),
         vscode.commands.registerCommand('scimax.org.newPerson', newPersonCommand),
+        vscode.commands.registerCommand('scimax.org.assignTask', assignTaskCommand),
         vscode.workspace.onDidSaveTextDocument(doc => { if (isOrg(doc)) invalidatePeopleCache(); })
     );
 }

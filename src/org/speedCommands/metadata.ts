@@ -310,14 +310,12 @@ export async function setProperty(): Promise<void> {
 /**
  * Set a property value in the properties drawer
  */
-async function setPropertyValue(
+export async function setPropertyValue(
     editor: vscode.TextEditor,
     headingLine: number,
     propertyName: string,
     value: string
 ): Promise<void> {
-    const document = editor.document;
-
     // Ensure properties drawer exists
     const drawer = await ensurePropertiesDrawer(editor, headingLine);
 

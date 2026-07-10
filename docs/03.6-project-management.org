@@ -102,7 +102,7 @@ arrows = "depends on"), colored by status:
 It is seeded from the active file's tasks and expands over the dependency edges
 to show the connected component. Click a node to jump to that task.
 
-** ✅ People and assignments
+** 👀 People and assignments
 CLOSED: [2026-07-02 Thu 08:07]
 
 A *person* is any heading tagged =:person:=, with contact properties:
@@ -117,6 +117,11 @@ A *person* is any heading tagged =:person:=, with contact properties:
   :END:
 #+end_src
 
+- **Assign**: [[cmd:scimax.org.assignTask]] (*Scimax: Assign Task to Person*) lists
+  the indexed =:person:= headings, fuzzy-matches on handle/name/role/email as you
+  type, and sets the current task's =:ASSIGNEE:= property to the picked handle(s).
+  Run it from anywhere inside the entry; pick more than one for a shared task.
+  Existing assignees are pre-selected, and clearing the selection unassigns.
 - **Autocomplete**: while editing an =:ASSIGNEE:= value, completion suggests
   known people (name + email) and inserts their handle (=:NICK:=, or a slug of
   the name).

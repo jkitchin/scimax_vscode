@@ -147,7 +147,7 @@ Express dependencies between TODO tasks (org-depend style). See
 | [[cmd:scimax.org.gotoBlocker]]        | Go to Blocking Dependency    | -                  |
 | [[cmd:scimax.org.showDependencies]]   | Show Task Dependencies       | -                  |
 
-** ✅ Project Management
+** 👀 Project Management
 CLOSED: [2026-07-02 Thu 08:03]
 
 Task tables, Gantt charts, a dependency graph, and a people database. See
@@ -159,6 +159,7 @@ Task tables, Gantt charts, a dependency graph, and a people database. See
 | [[cmd:scimax.org.insertGantt]]         | Insert Gantt Chart         | -                  |
 | [[cmd:scimax.org.showTaskGraph]]       | Show Task Dependency Graph | -                  |
 | [[cmd:scimax.org.newPerson]]           | New Person                 | -                  |
+| [[cmd:scimax.org.assignTask]]          | Assign Task to Person      | -                  |
 
 ** ✅ Contacts & Entities
 CLOSED: [2026-07-02 Thu 08:03]
