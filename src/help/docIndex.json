@@ -1,6 +1,6 @@
 {
-  "buildDate": "2026-07-10T02:17:29.128Z",
-  "count": 3460,
+  "buildDate": "2026-07-10T03:54:45.774Z",
+  "count": 3459,
   "entries": [
     {
       "heading": "Scimax VS Code",
@@ -82517,7 +82517,7 @@
       "heading": "Detailed Configuration",
       "level": 2,
       "file": "26-configuration.org",
-      "line": 1536,
+      "line": 1535,
       "content": "",
       "path": [
         "Capture Settings"
@@ -82533,7 +82533,7 @@
       "heading": "scimax.capture.templates",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 1538,
+      "line": 1537,
       "content": "- *Type*: array of objects - *Default*: `[ ]' - *Description*: Capture templates for quick note-taking. Each template has: - `key': Single character shortcut - `name': Template name - `type': entry, item, or table-line - `file': Target file - `headline': Optional target headline - `datetree': Boolean, use datetree structure - `template': Template text with placeholders *Template placeholders*: - `%^{prompt}': Prompt for input - `%t': Current timestamp - `%T': Current timestamp with time - `%i': ",
       "path": [
         "Capture Settings",
@@ -82570,7 +82570,7 @@
       "heading": "scimax.capture.defaultFile",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 1590,
+      "line": 1589,
       "content": "- *Type*: string - *Default*: `\"\"' (falls back to `{scimax.directory}/notes.org') - *Description*: Default file for captures when no target file is specified in template *Example*: #+begin_src json { \"scimax.capture.defaultFile\": \"~/Documents/inbox.org\" } #+end_src",
       "path": [
         "Capture Settings",
@@ -82604,7 +82604,7 @@
       "heading": "scimax.capture.defaultDirectory",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 1603,
+      "line": 1602,
       "content": "- *Type*: string - *Default*: `\"\"' - *Description*: Base directory for resolving relative capture template file paths (supports `~'). If empty, relative paths resolve against the default capture file's directory. *Example*: #+begin_src json { \"scimax.capture.defaultDirectory\": \"~/org\" } #+end_src",
       "path": [
         "Capture Settings",
@@ -82641,7 +82641,7 @@
       "heading": "scimax.capture.showPreview",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 1616,
+      "line": 1615,
       "content": "- *Type*: boolean - *Default*: `true' - *Description*: Show a preview of the expanded template before inserting the capture.",
       "path": [
         "Capture Settings",
@@ -82670,7 +82670,7 @@
       "heading": "scimax.capture.openAfterCapture",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 1622,
+      "line": 1621,
       "content": "- *Type*: boolean - *Default*: `true' - *Description*: Open the target file and move the cursor to the insertion point after a capture.",
       "path": [
         "Capture Settings",
@@ -82700,8 +82700,8 @@
       "heading": "scimax.capture.datetreeFormat",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 1628,
-      "content": "- *Deprecated*: this setting has no effect. Datetree captures always use year > month > day granularity.",
+      "line": 1627,
+      "content": "- *Type*: string (enum) - *Default*: `\"day\"' - *Options*: `\"day\"', `\"week\"', `\"month\"' - *Description*: Granularity for =file+datetree= capture targets — controls the heading tree that captures are filed under. Missing headings are created automatically. - `day': =* 2024= > =** 2024-04 April= > =*** 2024-04-15 Monday= (entry at level 4) - `week': =* 2024= > =** 2024-W16= (ISO week; entry at level 3) - `month': =* 2024= > =** 2024-04 April= (entry at level 3) Week mode uses the ISO week-numbering",
       "path": [
         "Capture Settings",
         "Detailed Configuration"
@@ -82711,48 +82711,33 @@
       ],
       "keybindings": [],
       "keywords": [
-        "deprecated",
-        "setting",
-        "effect",
-        "datetree",
-        "captures",
-        "always",
-        "year",
-        "month",
+        "type",
+        "string",
+        "enum",
+        "default",
         "day",
-        "granularity"
-      ]
-    },
-    {
-      "heading": "scimax.capture.autoSave",
-      "level": 3,
-      "file": "26-configuration.org",
-      "line": 1632,
-      "content": "- *Deprecated*: this setting has no effect. Captures are always written directly to disk.",
-      "path": [
-        "Capture Settings",
-        "Detailed Configuration"
-      ],
-      "commands": [
-        "scimax.capture.autoSave"
-      ],
-      "keybindings": [],
-      "keywords": [
-        "deprecated",
-        "setting",
-        "effect",
+        "options",
+        "week",
+        "month",
+        "description",
+        "granularity",
+        "filedatetree",
+        "capture",
+        "targets",
+        "controls",
+        "heading",
+        "tree",
         "captures",
-        "always",
-        "written",
-        "directly",
-        "disk"
+        "filed",
+        "under",
+        "missing"
       ]
     },
     {
       "heading": "Common Configurations",
       "level": 1,
       "file": "26-configuration.org",
-      "line": 1636,
+      "line": 1649,
       "content": "This section provides complete `settings.json' examples for different use cases.",
       "path": [],
       "commands": [],
@@ -82773,7 +82758,7 @@
       "heading": "Academic Writing Setup",
       "level": 2,
       "file": "26-configuration.org",
-      "line": 1640,
+      "line": 1653,
       "content": "Perfect for researchers, graduate students, and academic writers: #+begin_src json { // Journal for daily research log \"scimax.journal.directory\": \"~/research/journal\", \"scimax.journal.format\": \"org\", \"scimax.journal.autoTimestamp\": true, // References and bibliography \"scimax.ref.bibliographyFiles\": [ \"~/research/bibliography/main.bib\", \"~/research/bibliography/conferences.bib\" ], \"scimax.ref.pdfDirectory\": \"~/research/papers\", \"scimax.ref.notesDirectory\": \"~/research/notes\", \"scimax.ref.defaul",
       "path": [
         "Common Configurations"
@@ -82815,7 +82800,7 @@
       "heading": "Software Development Setup",
       "level": 2,
       "file": "26-configuration.org",
-      "line": 1707,
+      "line": 1720,
       "content": "Optimized for software developers and programmers: #+begin_src json { // Journal for development log \"scimax.journal.directory\": \"~/devlog\", \"scimax.journal.format\": \"markdown\", \"scimax.journal.template\": \"daily-standup\", // Code execution \"scimax.literate.pythonPath\": \"~/.pyenv/shims/python\", \"scimax.literate.jupyterPath\": \"~/.pyenv/shims/jupyter\", // Database - index project documentation \"scimax.db.include\": [ \"~/projects\", \"~/docs\" ], \"scimax.db.exclude\": [ \"**/node_modules/**\",",
       "path": [
         "Common Configurations"
@@ -82857,7 +82842,7 @@
       "heading": "Personal Notes & PKM Setup",
       "level": 2,
       "file": "26-configuration.org",
-      "line": 1777,
+      "line": 1790,
       "content": "For personal knowledge management and note-taking: #+begin_src json { // Journal \"scimax.journal.directory\": \"~/notes/journal\", \"scimax.journal.format\": \"org\", \"scimax.journal.weekStartsOn\": \"monday\", \"scimax.journal.autoTimestamp\": true, // Database with semantic search \"scimax.db.include\": [ \"~/notes\", \"~/books\", \"~/articles\" ], \"scimax.db.exclude\": [ \"**/archive/**\", \"**/temp/**\" ], \"scimax.db.autoIndex\": true, \"scimax.db.embeddingProvider\": \"ollama\", \"scimax.db.ollamaModel\": \"nomic-embed-tex",
       "path": [
         "Common Configurations"
@@ -82901,7 +82886,7 @@
       "heading": "Minimal Configuration",
       "level": 2,
       "file": "26-configuration.org",
-      "line": 1866,
+      "line": 1879,
       "content": "Bare-bones setup with just the essentials: #+begin_src json { \"scimax.journal.directory\": \"~/journal\", \"scimax.db.autoIndex\": false, \"scimax.agenda.include\": [\"~/notes\"] } #+end_src",
       "path": [
         "Common Configurations"
@@ -82930,7 +82915,7 @@
       "heading": "Troubleshooting",
       "level": 1,
       "file": "26-configuration.org",
-      "line": 1878,
+      "line": 1891,
       "content": "",
       "path": [],
       "commands": [],
@@ -82943,7 +82928,7 @@
       "heading": "Database Performance",
       "level": 2,
       "file": "26-configuration.org",
-      "line": 1880,
+      "line": 1893,
       "content": "If database indexing is slow or uses too much memory: #+begin_src json { \"scimax.db.autoIndex\": false, \"scimax.db.exclude\": [ \"**/node_modules/**\", \"**/.git/**\", \"**/dist/**\", \"**/build/**\", \"**/*.min.js\", \"**/archive/**\" ] } #+end_src Then manually trigger indexing with `C-S-P' → \"Scimax: Sync Files\"",
       "path": [
         "Troubleshooting"
@@ -82982,7 +82967,7 @@
       "heading": "Jupyter Kernels Not Found",
       "level": 2,
       "file": "26-configuration.org",
-      "line": 1900,
+      "line": 1913,
       "content": "Ensure Jupyter is in your PATH or specify the full path: #+begin_src json { \"scimax.literate.jupyterPath\": \"/usr/local/bin/jupyter\" } #+end_src Check available kernels with `C-S-P' → \"Scimax: Show Available Jupyter Kernels\"",
       "path": [
         "Troubleshooting"
@@ -83016,7 +83001,7 @@
       "heading": "LaTeX Preview Not Working",
       "level": 2,
       "file": "26-configuration.org",
-      "line": 1912,
+      "line": 1925,
       "content": "Ensure you have a LaTeX distribution installed (TeX Live, MiKTeX, etc.), then: #+begin_src json { \"scimax.latexPreview.enabled\": true, \"scimax.latexPreview.cacheEnabled\": false } #+end_src",
       "path": [
         "Troubleshooting"
@@ -83048,7 +83033,7 @@
       "heading": "Semantic Search Not Working",
       "level": 2,
       "file": "26-configuration.org",
-      "line": 1923,
+      "line": 1936,
       "content": "Ensure the Ollama server is running and the embedding model is pulled: #+begin_src bash curl http://localhost:11434/api/version #+end_src",
       "path": [
         "Troubleshooting"
@@ -83077,7 +83062,7 @@
       "heading": "Related Documentation",
       "level": 1,
       "file": "26-configuration.org",
-      "line": 1930,
+      "line": 1943,
       "content": "- [[file:01-getting-started.org][Getting Started Guide]] - [[file:07-source-blocks.org][Source Blocks Documentation]] - [[file:10-export.org][Export Documentation]] - [[file:24-keybindings.org][Keybindings Reference]]",
       "path": [],
       "commands": [],
@@ -83103,7 +83088,7 @@
       "heading": "Navigation",
       "level": 1,
       "file": "26-configuration.org",
-      "line": 1937,
+      "line": 1950,
       "content": "- Previous: [[file:25-commands.org][Commands]] - Index: [[file:00-index.org][Documentation Index]] - Next: [[file:27-org-api.org][Org API]]",
       "path": [],
       "commands": [],

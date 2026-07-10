@@ -70,6 +70,12 @@ export interface CaptureLocation {
     column?: number;
     /** Level of headline to create */
     level?: number;
+    /**
+     * Scaffold text to insert before the captured content (e.g. the missing
+     * year/month/day headings of a datetree). Inserted verbatim ahead of the
+     * entry at `line`.
+     */
+    prefix?: string;
 }
 
 /**
@@ -657,15 +663,34 @@ export async function capture(
     return finalContent;
 }
 
-/**
- * Generate datetree path for a date
- */
-export function generateDatetreePath(date: Date): string[] {
-    const year = format(date, 'yyyy');
-    const month = format(date, 'yyyy-MM MMMM');
-    const day = format(date, 'yyyy-MM-dd EEEE');
+/** Granularity of a datetree (scimax.capture.datetreeFormat). */
+export type DatetreeFormat = 'day' | 'week' | 'month';
 
-    return [year, month, day];
+/**
+ * Generate the ordered heading path for a datetree entry at the given date and
+ * granularity. Each element is one heading level (top level first):
+ *
+ * - `day`   -> [`2024`, `2024-04 April`, `2024-04-15 Monday`]  (3 levels)
+ * - `week`  -> [`2024`, `2024-W16`]                            (2 levels, ISO week)
+ * - `month` -> [`2024`, `2024-04 April`]                       (2 levels)
+ *
+ * Week mode uses the ISO week-numbering year (`RRRR`) so entries near a
+ * year boundary group under the correct ISO year.
+ */
+export function generateDatetreePath(date: Date, treeFormat: DatetreeFormat = 'day'): string[] {
+    switch (treeFormat) {
+        case 'month':
+            return [format(date, 'yyyy'), format(date, 'yyyy-MM MMMM')];
+        case 'week':
+            return [format(date, 'RRRR'), format(date, "RRRR-'W'II")];
+        case 'day':
+        default:
+            return [
+                format(date, 'yyyy'),
+                format(date, 'yyyy-MM MMMM'),
+                format(date, 'yyyy-MM-dd EEEE'),
+            ];
+    }
 }
 
 // =============================================================================

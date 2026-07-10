@@ -1530,8 +1530,7 @@ Configure the org-capture system for quick note-taking.
 | scimax.capture.defaultDirectory  | string  | ""      | Base directory for relative template paths   |
 | scimax.capture.showPreview       | boolean | true    | Show preview before inserting a capture      |
 | scimax.capture.openAfterCapture  | boolean | true    | Open the target file after capture           |
-| scimax.capture.datetreeFormat    | string  | "day"   | Deprecated: has no effect                    |
-| scimax.capture.autoSave          | boolean | true    | Deprecated: has no effect                    |
+| scimax.capture.datetreeFormat    | string  | "day"   | Datetree granularity: day / week / month     |
 
 ** Detailed Configuration
 
@@ -1627,11 +1626,25 @@ Configure the org-capture system for quick note-taking.
 
 *** 👀 scimax.capture.datetreeFormat
 
-- *Deprecated*: this setting has no effect. Datetree captures always use year > month > day granularity.
+- *Type*: string (enum)
+- *Default*: `"day"'
+- *Options*: `"day"', `"week"', `"month"'
+- *Description*: Granularity for =file+datetree= capture targets — controls the
+  heading tree that captures are filed under. Missing headings are created
+  automatically.
+  - `day': =* 2024= > =** 2024-04 April= > =*** 2024-04-15 Monday= (entry at level 4)
+  - `week': =* 2024= > =** 2024-W16= (ISO week; entry at level 3)
+  - `month': =* 2024= > =** 2024-04 April= (entry at level 3)
 
-*** 👀 scimax.capture.autoSave
+  Week mode uses the ISO week-numbering year, so a date in early January that
+  belongs to the previous ISO year is filed under that year.
 
-- *Deprecated*: this setting has no effect. Captures are always written directly to disk.
+*Example*:
+#+begin_src json
+{
+  "scimax.capture.datetreeFormat": "week"
+}
+#+end_src
 
 * Common Configurations
 

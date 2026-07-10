@@ -273,25 +273,33 @@ inverse of #47 and arguably worse because there is no error at all.
   and unit-test all 8 combinations. Currently the mapping is inline in the
   command; the extraction makes it testable without vscode mocks.
 
-### D4. `scimax.capture.datetreeFormat` and `scimax.capture.autoSave` — never implemented
+### D4. `scimax.capture.datetreeFormat` and `scimax.capture.autoSave` — never implemented — RESOLVED
 
-- **Verify the issue:** `generateDatetreePath` (`src/parser/orgCapture.ts:663`)
-  hardcodes year/month/day; nothing reads `datetreeFormat`. `insertCapture`
-  (`src/org/captureProvider.ts:451`) writes straight to disk with `fs`, so
-  "auto save" is meaningless; nothing reads `autoSave`.
-- **Applied fix (deliberate judgment call):** marked both with
-  `deprecationMessage` ("Not implemented … has no effect") rather than
-  implementing, and updated `docs/26-configuration.org` (sections marked
-  `👀`; removed them from the example config). **Follow-up decision for the
-  maintainer:** if week/month datetrees are wanted, implementing them means
-  changing both `generateDatetreePath` and the 3-level matching regexes in
-  `resolveDatetreeTarget` (`captureProvider.ts:243`) — a real feature, not a
-  bug fix. If implemented, drop the deprecation and add datetree-shape tests
-  for each granularity.
-- **Validate:** Settings UI shows both greyed with the deprecation note.
-- **Regression tests:** none needed while deprecated; the Category F test
-  should whitelist deprecated settings from the "registered but never read"
-  check (they intentionally have no reader).
+- **Verify the issue:** `generateDatetreePath` (`src/parser/orgCapture.ts`)
+  hardcoded year/month/day; nothing read `datetreeFormat`. `insertCapture`
+  (`src/org/captureProvider.ts`) writes straight to disk with `fs`, so
+  "auto save" is meaningless; nothing read `autoSave`. Separately,
+  `resolveDatetreeTarget` computed the missing date headings but discarded
+  them (`CaptureLocation` had nowhere to carry a scaffold), so a datetree
+  capture into a file without the date headings produced an orphaned entry.
+- **Resolution (D4 decision: implement datetree, remove autoSave):**
+  - `generateDatetreePath(date, treeFormat)` now branches: `day` (3 levels),
+    `week` (2 levels, ISO week-numbering year), `month` (2 levels).
+  - `resolveDatetreeTarget(filePath, date, treeFormat)` is generic over path
+    depth, finds the deepest existing prefix, and returns the missing levels
+    as `CaptureLocation.prefix` (new field); `insertCapture` prepends it — so
+    the date tree is actually created. Entry level derives from the path depth.
+  - `scimax.capture.datetreeFormat` is un-deprecated and wired through
+    `resolveTarget` from `loadConfig()`.
+  - `scimax.capture.autoSave` is removed entirely (moot under the
+    write-to-disk model).
+- **Validate:** `docs/26-configuration.org` documents the three granularities;
+  `npm run test` green.
+- **Regression tests (added):** `generateDatetreePath` (all 3 formats + ISO
+  week year boundary) in `src/parser/__tests__/generateDatetreePath.test.ts`;
+  `resolveDatetreeTarget` scaffold/nesting/no-duplication across day/week/month
+  in `src/org/__tests__/resolveDatetreeTarget.test.ts`. The manifest test's
+  rule 4 now sees `datetreeFormat` as read (no deprecation needed).
 
 ### D5. `scimax.ref.autoDownloadPdf` — dead config field removed
 
@@ -443,6 +451,7 @@ mutation-checked where practical (revert the fix → test fails).
 | D2 | Hardened `defaultSort` against the `SortField` enum (invalid → `name`); config-seeding tests. | `src/dired/diredManager.ts`, `src/dired/__tests__/diredConfig.test.ts` |
 | D3 | Extracted pure `resolveCompileOption()` into `manuscript/types`; all-combination tests. | `src/manuscript/types.ts`, `src/manuscript/commands.ts`, `src/manuscript/__tests__/resolveCompileOption.test.ts` |
 | B2 | Journal `refresh()` no-webview guard + re-render tests. | `src/journal/__tests__/calendarRefresh.test.ts` |
+| D4 | Implemented datetree granularity (day/week/month) + scaffold-emission fix; removed `autoSave`. Tests for `generateDatetreePath` and `resolveDatetreeTarget`. | `src/parser/orgCapture.ts`, `src/org/captureProvider.ts`, `src/parser/__tests__/generateDatetreePath.test.ts`, `src/org/__tests__/resolveDatetreeTarget.test.ts` |
 
 **Still open (needs a human / real editor):**
 
@@ -451,11 +460,11 @@ mutation-checked where practical (revert the fix → test fails).
   static half (command/setting existence) automatically, so manual validation
   is mostly about confirming runtime behavior (does the dired directory open,
   does the screenshot refresh fire, etc.).
-- **Item 6 — D4 product decision.** `scimax.capture.datetreeFormat` /
-  `autoSave` remain deprecated (not implemented). Implementing week/month
-  datetree granularity is a feature, not a bug fix. The legacy
-  `scimax.agenda.*` indexing keys already carry `deprecationMessage`
-  (confirmed), so no change needed there.
+- **Item 6 — D4 product decision: RESOLVED.** `scimax.capture.datetreeFormat`
+  is implemented (day/week/month, with the scaffold-emission fix);
+  `scimax.capture.autoSave` was removed. The legacy `scimax.agenda.*` indexing
+  keys already carry `deprecationMessage` (confirmed), so no change needed
+  there.
 - **A1/A3/A4** have no dedicated behavioral test (thin `executeCommand`
   wrappers); they are covered structurally by the Category F rule 1 test,
   which fails if any of those targets becomes unregistered again.

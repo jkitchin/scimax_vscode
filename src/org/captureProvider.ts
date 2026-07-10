@@ -17,6 +17,7 @@ import {
     createCaptureContext,
     capture,
     generateDatetreePath,
+    DatetreeFormat,
 } from '../parser/orgCapture';
 import { parseOrg } from '../parser/orgParserUnified';
 import type { HeadlineElement, OrgDocumentNode } from '../parser/orgElementTypes';
@@ -35,6 +36,8 @@ interface CaptureConfig {
     showPreview: boolean;
     /** Whether to open file after capture */
     openAfterCapture: boolean;
+    /** Granularity for file+datetree targets */
+    datetreeFormat: DatetreeFormat;
 }
 
 interface CaptureTemplateConfig {
@@ -59,6 +62,7 @@ function loadConfig(): CaptureConfig {
         templates: config.get<CaptureTemplateConfig[]>('templates', []),
         showPreview: config.get<boolean>('showPreview', true),
         openAfterCapture: config.get<boolean>('openAfterCapture', true),
+        datetreeFormat: config.get<DatetreeFormat>('datetreeFormat', 'day'),
     };
 }
 
@@ -147,7 +151,7 @@ async function resolveTarget(
             return resolveHeadlineTarget(filePath, target.headline || '', target.prepend);
 
         case 'file+datetree':
-            return resolveDatetreeTarget(filePath, context.date);
+            return resolveDatetreeTarget(filePath, context.date, loadConfig().datetreeFormat);
 
         default:
             return {
@@ -240,84 +244,74 @@ function resolveHeadlineTarget(
 /**
  * Resolve datetree target
  */
-function resolveDatetreeTarget(filePath: string, date: Date): CaptureLocation {
-    const content = fs.readFileSync(filePath, 'utf-8');
+export function resolveDatetreeTarget(
+    filePath: string,
+    date: Date,
+    treeFormat: DatetreeFormat = 'day'
+): CaptureLocation {
+    const content = fs.existsSync(filePath) ? fs.readFileSync(filePath, 'utf-8') : '';
     const lines = content.split('\n');
 
-    const [yearHeading, monthHeading, dayHeading] = generateDatetreePath(date);
+    // Ordered heading path for this granularity (day = 3 levels, week/month = 2).
+    const pathHeadings = generateDatetreePath(date, treeFormat);
+    const keys = pathHeadings.map(h => h.split(/\s+/)[0]);
+    const depth = pathHeadings.length;
+    const entryLevel = depth + 1; // captured entry sits one level below the deepest date heading
 
-    let yearLine = -1;
-    let monthLine = -1;
-    let dayLine = -1;
+    // foundLine[i] = line of the level-(i+1) heading matching keys[i], nested
+    // under already-found ancestors; -1 until located.
+    const foundLine = new Array<number>(depth).fill(-1);
 
-    // Find or track where to insert year/month/day
     for (let i = 0; i < lines.length; i++) {
-        const line = lines[i];
-
-        // Check for year
-        if (line.match(new RegExp(`^\\* ${yearHeading.split(' ')[0]}\\b`))) {
-            yearLine = i;
-            monthLine = -1; // Reset month search
-            dayLine = -1;
+        const m = lines[i].match(/^(\*+)\s+(.*)$/);
+        if (!m) continue;
+        const level = m[1].length - 1; // 0-indexed datetree level
+        if (level < 0 || level >= depth) continue;
+        // Require correct nesting: every ancestor level must already be found.
+        let ancestorsFound = true;
+        for (let a = 0; a < level; a++) {
+            if (foundLine[a] < 0) { ancestorsFound = false; break; }
         }
-
-        // Check for month (within year)
-        if (yearLine >= 0 && line.match(/^\*\* \d{4}-\d{2}/)) {
-            if (line.includes(monthHeading.split(' ')[0])) {
-                monthLine = i;
-                dayLine = -1;
-            }
-        }
-
-        // Check for day (within month)
-        if (monthLine >= 0 && line.match(/^\*\*\* \d{4}-\d{2}-\d{2}/)) {
-            if (line.includes(dayHeading.split(' ')[0])) {
-                dayLine = i;
-            }
+        if (!ancestorsFound) continue;
+        if (m[2].split(/\s+/)[0] === keys[level]) {
+            foundLine[level] = i;
+            for (let d = level + 1; d < depth; d++) foundLine[d] = -1; // reset descendants
         }
     }
 
-    // Build missing datetree structure
-    let insertPos = lines.length;
-    let insertContent = '';
+    // Deepest contiguous prefix of the path that already exists.
+    let deepest = -1;
+    for (let i = 0; i < depth; i++) {
+        if (foundLine[i] >= 0) deepest = i;
+        else break;
+    }
 
-    if (yearLine < 0) {
-        insertContent = `* ${yearHeading}\n** ${monthHeading}\n*** ${dayHeading}\n`;
+    // Whole path present: append inside the deepest date section, no scaffold.
+    if (deepest === depth - 1) {
         return {
             file: filePath,
-            line: insertPos,
-            level: 4,
+            line: findSectionEnd(lines, foundLine[depth - 1], depth),
+            level: entryLevel,
+            prefix: '',
         };
     }
 
-    if (monthLine < 0) {
-        // Find end of year section
-        insertPos = findSectionEnd(lines, yearLine, 1);
-        insertContent = `** ${monthHeading}\n*** ${dayHeading}\n`;
-        return {
-            file: filePath,
-            line: insertPos,
-            level: 4,
-        };
-    }
+    // Otherwise scaffold the missing levels (deepest+1 .. depth-1) at their
+    // correct star depths, inserted before the captured entry.
+    const scaffold = pathHeadings
+        .slice(deepest + 1)
+        .map((heading, idx) => '*'.repeat(deepest + 2 + idx) + ' ' + heading)
+        .join('\n') + '\n';
 
-    if (dayLine < 0) {
-        // Find end of month section
-        insertPos = findSectionEnd(lines, monthLine, 2);
-        insertContent = `*** ${dayHeading}\n`;
-        return {
-            file: filePath,
-            line: insertPos,
-            level: 4,
-        };
-    }
+    const insertPos = deepest < 0
+        ? lines.length // nothing matched: append at end of file
+        : findSectionEnd(lines, foundLine[deepest], deepest + 1);
 
-    // Day exists - find end of day section
-    insertPos = findSectionEnd(lines, dayLine, 3);
     return {
         file: filePath,
         line: insertPos,
-        level: 4,
+        level: entryLevel,
+        prefix: scaffold,
     };
 }
 
@@ -469,8 +463,10 @@ async function insertCapture(location: CaptureLocation, content: string): Promis
         adjustedContent += '\n';
     }
 
-    // Insert content
-    lines.splice(location.line, 0, adjustedContent);
+    // Insert content, prefixed with any scaffold (e.g. missing datetree
+    // headings). The scaffold is already at correct star depths, so only the
+    // captured content is level-adjusted above.
+    lines.splice(location.line, 0, (location.prefix ?? '') + adjustedContent);
 
     // Write back
     fs.writeFileSync(location.file, lines.join('\n'));

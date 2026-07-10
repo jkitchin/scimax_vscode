@@ -6641,14 +6641,7 @@
             "month"
           ],
           "default": "day",
-          "description": "Granularity of datetree entries",
-          "deprecationMessage": "Not implemented: datetree captures always use year/month/day granularity. This setting has no effect."
-        },
-        "scimax.capture.autoSave": {
-          "type": "boolean",
-          "default": true,
-          "description": "Automatically save the file after capture",
-          "deprecationMessage": "Not implemented: captures are always written directly to disk. This setting has no effect."
+          "description": "Granularity for file+datetree capture targets: day (year/month/day), week (year/ISO-week), or month (year/month)."
         },
         "scimax.capture.showPreview": {
           "type": "boolean",
