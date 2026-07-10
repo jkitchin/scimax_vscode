@@ -797,7 +797,14 @@ export class ScimaxDbCore {
                     await new Promise(r => setTimeout(r, 0));
                 }
             } catch (error: any) {
-                if (error?.code !== 'EACCES' && error?.code !== 'ENOENT') {
+                if (error?.code === 'ENOTDIR') {
+                    // Entry is a single file (e.g. added to scimax.db.include
+                    // via "Add file to agenda"), not a directory.
+                    const ext = path.extname(dir).toLowerCase();
+                    if ((ext === '.org' || ext === '.md') && !this.shouldIgnore(dir)) {
+                        yield dir;
+                    }
+                } else if (error?.code !== 'EACCES' && error?.code !== 'ENOENT') {
                     console.error(`[ScimaxDbCore] Error walking directory ${dir}:`, error?.message);
                 }
             }

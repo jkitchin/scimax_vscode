@@ -996,6 +996,7 @@ function warnDeprecatedAgendaSettings(): void {
     if (inspect('includeWorkspace', true)) deprecated.push('scimax.agenda.includeWorkspace');
     if (inspect('includeProjects', true)) deprecated.push('scimax.agenda.includeProjects');
     if (inspect('include', [])) deprecated.push('scimax.agenda.include');
+    if (inspect('files', [])) deprecated.push('scimax.agenda.files');
     if (inspect('maxFiles', 0)) deprecated.push('scimax.agenda.maxFiles');
 
     if (deprecated.length === 0) return;
@@ -1556,7 +1557,9 @@ ${reportLines.join('\n')}
             }
         }),
 
-        // Configure agenda files
+        // Configure agenda files. The agenda is a view over the database, so
+        // adding files/directories means adding them to the db index
+        // (scimax.db.include) and syncing.
         vscode.commands.registerCommand('scimax.agenda.configure', async () => {
             const options = [
                 { label: '$(folder) Add directory to agenda', value: 'addDir' },
@@ -1570,6 +1573,19 @@ ${reportLines.join('\n')}
 
             if (!selected) return;
 
+            const addToIndex = async (uris: vscode.Uri[]) => {
+                const config = vscode.workspace.getConfiguration('scimax.db');
+                const current = config.get<string[]>('include', []);
+                const newPaths = uris.map(uri => uri.fsPath).filter(p => !current.includes(p));
+                if (newPaths.length > 0) {
+                    await config.update('include', [...current, ...newPaths], vscode.ConfigurationTarget.Global);
+                }
+                vscode.window.showInformationMessage(
+                    `Added ${newPaths.length} path(s) to scimax.db.include. Indexing...`
+                );
+                await vscode.commands.executeCommand('scimax.db.refresh');
+            };
+
             switch (selected.value) {
                 case 'addDir': {
                     const uris = await vscode.window.showOpenDialog({
@@ -1580,11 +1596,7 @@ ${reportLines.join('\n')}
                     });
 
                     if (uris && uris.length > 0) {
-                        const config = vscode.workspace.getConfiguration('scimax.agenda');
-                        const current = config.get<string[]>('files', []);
-                        const newPaths = uris.map(uri => uri.fsPath);
-                        await config.update('files', [...current, ...newPaths], vscode.ConfigurationTarget.Global);
-                        vscode.window.showInformationMessage(`Added ${uris.length} directories to agenda`);
+                        await addToIndex(uris);
                     }
                     break;
                 }
@@ -1598,16 +1610,12 @@ ${reportLines.join('\n')}
                     });
 
                     if (uris && uris.length > 0) {
-                        const config = vscode.workspace.getConfiguration('scimax.agenda');
-                        const current = config.get<string[]>('files', []);
-                        const newPaths = uris.map(uri => uri.fsPath);
-                        await config.update('files', [...current, ...newPaths], vscode.ConfigurationTarget.Global);
-                        vscode.window.showInformationMessage(`Added ${uris.length} files to agenda`);
+                        await addToIndex(uris);
                     }
                     break;
                 }
                 case 'settings':
-                    vscode.commands.executeCommand('workbench.action.openSettings', 'scimax.agenda');
+                    vscode.commands.executeCommand('workbench.action.openSettings', 'scimax.db');
                     break;
             }
         })

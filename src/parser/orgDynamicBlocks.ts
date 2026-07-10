@@ -865,24 +865,42 @@ export function findDynamicBlockAtCursor(
 }
 
 /**
- * Load and parse agenda files from configuration
+ * Load and parse agenda documents. The agenda is a view over the database,
+ * so "agenda scope" means every indexed org file (see scimax.db.include and
+ * related scimax.db.* settings).
  */
+const MAX_AGENDA_SCOPE_FILES = 500;
+
 async function loadAgendaDocuments(): Promise<AgendaDocument[]> {
-    const config = vscode.workspace.getConfiguration('scimax.agenda');
-    const agendaPatterns = config.get<string[]>('files', []);
     const agendaDocs: AgendaDocument[] = [];
 
-    for (const pattern of agendaPatterns) {
-        // Handle glob patterns
-        const files = await vscode.workspace.findFiles(pattern, '**/node_modules/**', 100);
-        for (const file of files) {
-            try {
-                const content = await fs.promises.readFile(file.fsPath, 'utf-8');
-                const doc = parseOrg(content, { filePath: file.fsPath });
-                agendaDocs.push({ filePath: file.fsPath, doc });
-            } catch {
-                // Skip files that can't be read or parsed
-            }
+    // Dynamic import so tests and the CLI can use the pure generators in this
+    // module without resolving the database/vscode dependency chain.
+    let orgPaths: string[] = [];
+    try {
+        const { getDatabase } = await import('../database/lazyDb');
+        const db = await getDatabase();
+        if (!db) return agendaDocs;
+        const files = await db.getFiles();
+        orgPaths = files.filter(f => f.file_type === 'org').map(f => f.path);
+    } catch {
+        return agendaDocs;
+    }
+
+    if (orgPaths.length > MAX_AGENDA_SCOPE_FILES) {
+        vscode.window.showWarningMessage(
+            `Agenda scope limited to ${MAX_AGENDA_SCOPE_FILES} of ${orgPaths.length} indexed org files.`
+        );
+        orgPaths = orgPaths.slice(0, MAX_AGENDA_SCOPE_FILES);
+    }
+
+    for (const filePath of orgPaths) {
+        try {
+            const content = await fs.promises.readFile(filePath, 'utf-8');
+            const doc = parseOrg(content, { filePath });
+            agendaDocs.push({ filePath, doc });
+        } catch {
+            // Skip files that can't be read or parsed
         }
     }
 
@@ -930,7 +948,8 @@ export async function updateDynamicBlockAtCursor(): Promise<void> {
         agendaDocuments = await loadAgendaDocuments();
         if (agendaDocuments.length === 0) {
             vscode.window.showWarningMessage(
-                'No agenda files found. Check scimax.agenda settings (includeJournal, includeWorkspace, include).'
+                'No indexed org files found for agenda scope. Add directories with ' +
+                '"Scimax: Configure Agenda Files" (scimax.db.include), then run "Scimax: Refresh Database".'
             );
         }
     }

@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **Configure Agenda Files no longer errors** (#47) - `Scimax: Configure Agenda Files` wrote to `scimax.agenda.files`, a setting that was unregistered when the agenda became a database view, so every add failed with "not a registered configuration". The command now appends the selected directories/files to `scimax.db.include` (the setting that actually drives the agenda) and triggers an incremental database refresh so items appear immediately. Single-file entries in `scimax.db.include` are now indexed too (previously only directories worked). Dynamic blocks with agenda scope (`clocktable :scope agenda`, `columnview :id agenda`) read the indexed file list from the database instead of the dead setting, and a leftover `scimax.agenda.files` value in settings.json now triggers the deprecated-settings toast pointing at `scimax.db.include`.
+
 ## [0.6.0] - 2026-07-02
 
 ### Added

@@ -587,7 +587,7 @@ CLOSED: [2026-01-17 Sat 13:26]
 
 Configure agenda behavior through VS Code settings.
 
-** ✅ Agenda Sources
+** 👀 Agenda Sources
 CLOSED: [2026-05-03 Sun 08:00]
 
 The agenda is a *view over the Scimax database* — anything indexed in
@@ -615,6 +615,11 @@ Add ad-hoc directories (e.g. a Dropbox-shared notes folder) via
 
 After changing indexing settings, run =Scimax: Refresh Database
 (incremental)= ([[cmd:scimax.db.refresh]]) to pick up new files.
+
+The =Scimax: Configure Agenda Files= command
+([[cmd:scimax.agenda.configure]]) is a shortcut for both steps: choose
+=Add directory to agenda= or =Add file to agenda=, and the selected
+paths are appended to =scimax.db.include= and indexed immediately.
 
 The legacy =scimax.agenda.includeJournal/includeWorkspace/includeProjects/include=
 settings are deprecated and have no effect — the agenda no longer scans
@@ -1119,17 +1124,18 @@ Week view shows balanced schedule:
 * ✅ Troubleshooting
 CLOSED: [2026-01-18 Sun 11:50]
 
-** ✅ Agenda Shows No Items
+** 👀 Agenda Shows No Items
 CLOSED: [2026-01-18 Sun 12:50]
 
 *Issue*: Agenda view is empty or shows fewer items than expected.
 
 *Solutions*:
 
-1. *Check agenda files configuration*:
+1. *Check indexed files*:
    #+BEGIN_SRC text
    Command: scimax.agenda.configure
-   Ensure your org files are included
+   Add your org directories; they are stored in scimax.db.include
+   and indexed automatically
    #+END_SRC
 
 2. *Verify TODO keywords*:
