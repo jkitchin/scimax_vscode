@@ -118,7 +118,11 @@ export class DiredManager {
             '/';
 
         const config = vscode.workspace.getConfiguration('scimax.dired');
-        const defaultSort = config.get<SortField>('defaultSort', 'name');
+        // Validate against the enum: a stale/typo'd settings.json value (e.g.
+        // "date") must not corrupt the sort state — fall back to 'name'.
+        const validSortFields: SortField[] = ['name', 'size', 'mtime', 'extension'];
+        const configuredSort = config.get<SortField>('defaultSort', 'name');
+        const defaultSort: SortField = validSortFields.includes(configuredSort) ? configuredSort : 'name';
         const showHidden = config.get<boolean>('showHidden', false);
 
         this.state = {
