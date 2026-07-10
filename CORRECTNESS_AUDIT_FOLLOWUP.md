@@ -422,3 +422,40 @@ the checklist for that pass.
 5. D2 invalid-enum hardening, B2 no-webview guard review.
 6. Decide D4 (implement datetree granularity vs. keep deprecated) and whether
    to add `deprecationMessage` to the legacy `scimax.agenda.*` keys.
+
+---
+
+## Completion status (regression-test pass)
+
+Items 1, 2, 3, 5 above and the associated hardening are **done** — added as
+checked-in tests plus small refactors to make the fixes testable. Verified
+green (`npm run test`: 2941 passed; the only failures remain the 41
+Pandoc-dependent `orgExportDocx.test.ts` cases). Each new test was
+mutation-checked where practical (revert the fix → test fails).
+
+| Item | What was added | File(s) |
+|---|---|---|
+| F | Manifest-consistency test enforcing all 5 rules (commands invoked/declared/registered, settings read/registered/deprecated, when-clause contexts). Mutation-verified each rule. | `src/__tests__/manifestConsistency.test.ts` |
+| D1 | Size-limit indexing tests (over/under maxFileSizeMB, maxParseSizeKB, maxFileLines) via `setSizeLimits` + `getHeadingById`; package.json↔CLI default parity. | `src/database/__tests__/sizeLimits.integration.test.ts` |
+| A2 | Extracted `extractCiteKeysFromPath()` into `citationParser` (dedup of scimaxOrg + orgLinkProvider copies); v2/v3 + edge-case tests. | `src/references/citationParser.ts`, `src/references/__tests__/extractCiteKeysFromPath.test.ts` |
+| E2 | Exported `captureProvider.resolveFilePath`; tests pin the dirname fallback (mutation-verified). | `src/org/captureProvider.ts`, `src/org/__tests__/captureResolveFilePath.test.ts` |
+| E1 | `formatCitation` tests across latex/markdown/org-v2/v3, pinning `defaultCiteStyle`. | `src/zotero/__tests__/formatCitation.test.ts` |
+| D2 | Hardened `defaultSort` against the `SortField` enum (invalid → `name`); config-seeding tests. | `src/dired/diredManager.ts`, `src/dired/__tests__/diredConfig.test.ts` |
+| D3 | Extracted pure `resolveCompileOption()` into `manuscript/types`; all-combination tests. | `src/manuscript/types.ts`, `src/manuscript/commands.ts`, `src/manuscript/__tests__/resolveCompileOption.test.ts` |
+| B2 | Journal `refresh()` no-webview guard + re-render tests. | `src/journal/__tests__/calendarRefresh.test.ts` |
+
+**Still open (needs a human / real editor):**
+
+- **Item 4 — manual VSIX validation.** Not runnable headless; the per-issue
+  "Validate" steps remain the checklist. The manifest test now catches the
+  static half (command/setting existence) automatically, so manual validation
+  is mostly about confirming runtime behavior (does the dired directory open,
+  does the screenshot refresh fire, etc.).
+- **Item 6 — D4 product decision.** `scimax.capture.datetreeFormat` /
+  `autoSave` remain deprecated (not implemented). Implementing week/month
+  datetree granularity is a feature, not a bug fix. The legacy
+  `scimax.agenda.*` indexing keys already carry `deprecationMessage`
+  (confirmed), so no change needed there.
+- **A1/A3/A4** have no dedicated behavioral test (thin `executeCommand`
+  wrappers); they are covered structurally by the Category F rule 1 test,
+  which fails if any of those targets becomes unregistered again.
