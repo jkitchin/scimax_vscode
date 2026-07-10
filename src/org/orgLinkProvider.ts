@@ -3,6 +3,7 @@ import * as path from 'path';
 import * as fs from 'fs';
 import { getDatabase } from '../database/lazyDb';
 import { slugifyAnchor } from '../parser/orgAnchors';
+import { extractCiteKeysFromPath } from '../references/citationParser';
 
 // Excalidraw file extensions
 const EXCALIDRAW_EXTENSIONS = ['.excalidraw', '.excalidraw.json', '.excalidraw.svg', '.excalidraw.png'];
@@ -144,16 +145,8 @@ export class OrgLinkProvider implements vscode.DocumentLinkProvider {
             const citeCommand = match[1];
             const citePath = match[2];
 
-            // Extract keys for tooltip
-            let keys: string[];
-            if (citePath.includes('&')) {
-                // v3 format: extract keys that follow &
-                const keyMatches = citePath.match(/&([\w:-]+)/g) || [];
-                keys = keyMatches.map(k => k.slice(1));
-            } else {
-                // v2 format: comma-separated
-                keys = citePath.split(',').map(k => k.trim());
-            }
+            // Extract keys for tooltip / link target.
+            const keys = extractCiteKeysFromPath(citePath);
 
             const link = new vscode.DocumentLink(range);
             link.target = vscode.Uri.parse(

@@ -557,6 +557,26 @@ export function extractCitationKeys(line: string): string[] {
 }
 
 /**
+ * Extract citation keys from a link *path* — the substring after the
+ * `cite:`/`citep:`/`citet:` prefix of an org link (e.g. `&k1;&k2` or
+ * `k1,k2`). Handles both org-ref v3 (`&`-prefixed, `;`-separated, with
+ * optional pre/post notes) and v2 (comma-separated) forms.
+ *
+ * Used by link-following (jump to bib entry) and the document-link provider
+ * (tooltip + target), which must agree on the key set.
+ */
+export function extractCiteKeysFromPath(citePath: string): string[] {
+    if (!citePath) return [];
+    if (citePath.includes('&')) {
+        // v3: keys are the &-prefixed tokens; ignore any pre/post note text.
+        const keyMatches = citePath.match(/&([\w:-]+)/g) || [];
+        return keyMatches.map(k => k.slice(1)).filter(k => k);
+    }
+    // v2: comma-separated bare keys.
+    return citePath.split(',').map(k => k.trim()).filter(k => k);
+}
+
+/**
  * Check if a string looks like it contains any citation
  */
 export function containsCitation(text: string): boolean {

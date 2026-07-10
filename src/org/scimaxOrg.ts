@@ -38,6 +38,7 @@ import {
     removeClosed,
 } from './planningLine';
 import { pushMark } from '../mark/markRing';
+import { extractCiteKeysFromPath } from '../references/citationParser';
 
 // Re-export planning line utilities for external use
 export { findPlanningLine, buildPlanningLine, removeClosed };
@@ -3207,15 +3208,7 @@ export async function openLinkAtPoint(): Promise<void> {
     } else if (url.startsWith('cite:') || url.startsWith('citep:') || url.startsWith('citet:')) {
         // Citation link - jump to the entry in the bib file
         const citePath = url.slice(url.indexOf(':') + 1);
-        let keys: string[];
-        if (citePath.includes('&')) {
-            // org-ref v3 format: keys follow &
-            const keyMatches = citePath.match(/&([\w:-]+)/g) || [];
-            keys = keyMatches.map(k => k.slice(1));
-        } else {
-            // v2 format: comma-separated
-            keys = citePath.split(',').map(k => k.trim()).filter(k => k);
-        }
+        const keys = extractCiteKeysFromPath(citePath);
         if (keys.length > 0) {
             await vscode.commands.executeCommand('scimax.ref.gotoCitation', { key: keys[0], keys });
         }

@@ -92,7 +92,7 @@ function loadUserTemplates(): void {
  * Resolve file path with default directory
  * Uses shared utilities for consistent path resolution across Scimax
  */
-function resolveFilePath(filePath: string, defaultDir: string): string {
+export function resolveFilePath(filePath: string, defaultDir: string): string {
     // If no file path provided, use the default capture file
     if (!filePath) {
         return getDefaultCaptureFile();
