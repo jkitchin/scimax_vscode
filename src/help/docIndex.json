@@ -1,5 +1,5 @@
 {
-  "buildDate": "2026-07-10T10:18:35.841Z",
+  "buildDate": "2026-07-11T14:00:08.003Z",
   "count": 3459,
   "entries": [
     {
@@ -9007,7 +9007,7 @@
       "level": 2,
       "file": "03.6-project-management.org",
       "line": 105,
-      "content": "CLOSED: [2026-07-02 Thu 08:07] A *person* is any heading tagged =:person:=, with contact properties: #+begin_src org ,* John Kitchin                              :person: :PROPERTIES: :ID: person-jrk :EMAIL: jkitchin@andrew.cmu.edu :NICK: jrk :ROLE: PI :END: #+end_src - **Assign**: [[cmd:scimax.org.assignTask]] (*Scimax: Assign Task to Person*) lists the indexed =:person:= headings, fuzzy-matches on handle/name/role/email as you type, and sets the current task's =:ASSIGNEE:= property to the pick",
+      "content": "CLOSED: [2026-07-11 Sat 09:05] A *person* is any heading tagged =:person:=, with contact properties: #+begin_src org ,* John Kitchin                              :person: :PROPERTIES: :ID: person-jrk :EMAIL: jkitchin@andrew.cmu.edu :NICK: jrk :ROLE: PI :END: #+end_src - **Assign**: [[cmd:scimax.org.assignTask]] (*Scimax: Assign Task to Person*) lists the indexed =:person:= headings, fuzzy-matches on handle/name/role/email as you type, and sets the current task's =:ASSIGNEE:= property to the pick",
       "path": [
         "Project Management"
       ],
@@ -9019,9 +9019,9 @@
         "people",
         "assignments",
         "closed",
-        "2026-07-02",
-        "thu",
-        "0807",
+        "2026-07-11",
+        "sat",
+        "0905",
         "person",
         "any",
         "heading",
@@ -39034,7 +39034,7 @@
       "level": 2,
       "file": "13-agenda.org",
       "line": 590,
-      "content": "CLOSED: [2026-05-03 Sun 08:00] The agenda is a *view over the Scimax database* — anything indexed in the database is agenda-eligible. Configure indexing scope via =scimax.db.*= (see [[file:18-database-search.org][Database & Search]]): | Setting                    | Default | Description                  | |----------------------------+---------+------------------------------| | scimax.db.includeJournal   | true    | Index journal directory      | | scimax.db.includeWorkspace | true    | Index wo",
+      "content": "The agenda is a *view over the Scimax database* — anything indexed in the database is agenda-eligible. Configure indexing scope via =scimax.db.*= (see [[file:18-database-search.org][Database & Search]]): | Setting                    | Default | Description                  | |----------------------------+---------+------------------------------| | scimax.db.includeJournal   | true    | Index journal directory      | | scimax.db.includeWorkspace | true    | Index workspace folders      | | scimax",
       "path": [
         "Agenda Configuration"
       ],
@@ -39047,10 +39047,6 @@
       "keywords": [
         "agenda",
         "sources",
-        "closed",
-        "2026-05-03",
-        "sun",
-        "0800",
         "view",
         "over",
         "scimax",
@@ -39064,14 +39060,18 @@
         "via",
         "file18-database-searchorg",
         "search",
-        "setting"
+        "setting",
+        "default",
+        "description",
+        "-------------------------------------------------------------------",
+        "true"
       ]
     },
     {
       "heading": "Exclude Patterns",
       "level": 2,
       "file": "13-agenda.org",
-      "line": 629,
+      "line": 628,
       "content": "CLOSED: [2026-05-03 Sun 08:00] There are two distinct exclude lists. Pick the one that matches your intent: | Setting               | Effect                                                          | |-----------------------+-----------------------------------------------------------------| | =scimax.db.exclude=     | Don't index. The file is invisible to search and agenda.        | | =scimax.agenda.exclude= | Index normally, but hide from agenda. Search still finds it.    | Use =scimax.db.exclu",
       "path": [
         "Agenda Configuration"
@@ -39109,7 +39109,7 @@
       "heading": "Default Time Span",
       "level": 2,
       "file": "13-agenda.org",
-      "line": 665,
+      "line": 664,
       "content": "CLOSED: [2026-01-17 Sat 13:25] Set the default number of days for agenda views: | Setting                   | Default | Description            | |---------------------------+---------+------------------------| | scimax.agenda.defaultSpan | 7       | Days to show in agenda | #+BEGIN_SRC json { \"scimax.agenda.defaultSpan\": 14 } #+END_SRC",
       "path": [
         "Agenda Configuration"
@@ -39144,7 +39144,7 @@
       "heading": "Show Done Items",
       "level": 2,
       "file": "13-agenda.org",
-      "line": 680,
+      "line": 679,
       "content": "CLOSED: [2026-01-17 Sat 13:25] Include or exclude completed items: | Setting                | Default | Description               | |------------------------+---------+---------------------------| | scimax.agenda.showDone | false   | Show DONE items in agenda | #+BEGIN_SRC json { \"scimax.agenda.showDone\": true } #+END_SRC",
       "path": [
         "Agenda Configuration"
@@ -39180,7 +39180,7 @@
       "heading": "Show Habits",
       "level": 2,
       "file": "13-agenda.org",
-      "line": 695,
+      "line": 694,
       "content": "CLOSED: [2026-01-17 Sat 13:26] Control display of recurring habit tasks: | Setting                  | Default | Description                | |--------------------------+---------+----------------------------| | scimax.agenda.showHabits | true    | Show habit items in agenda |",
       "path": [
         "Agenda Configuration"
@@ -39214,7 +39214,7 @@
       "heading": "States",
       "level": 2,
       "file": "13-agenda.org",
-      "line": 704,
+      "line": 703,
       "content": "CLOSED: [2026-01-17 Sat 13:26] Define which TODO keywords to include: | Setting                          | Default               | |----------------------------------+-----------------------| | scimax.agenda.todoStates         | [TODO, NEXT, WAITING] | | scimax.agenda.doneStates         | [DONE, CANCELLED]     | #+BEGIN_SRC json { \"scimax.agenda.todoStates\": [ \"TODO\", \"NEXT\", \"IN-PROGRESS\", \"WAITING\", \"REVIEW\" ], \"scimax.agenda.doneStates\": [ \"DONE\", \"CANCELLED\", \"REJECTED\" ]",
       "path": [
         "Agenda Configuration"
@@ -39251,7 +39251,7 @@
       "heading": "Database Integration",
       "level": 1,
       "file": "13-agenda.org",
-      "line": 731,
+      "line": 730,
       "content": "CLOSED: [2026-01-17 Sat 12:32] The database-backed agenda provides additional capabilities.",
       "path": [],
       "commands": [],
@@ -39274,7 +39274,7 @@
       "heading": "Database Agenda Features",
       "level": 2,
       "file": "13-agenda.org",
-      "line": 736,
+      "line": 735,
       "content": "CLOSED: [2026-01-17 Sat 12:32] The database agenda (scimax.db.agenda) offers: 1. *Fast queries* - Indexed data for instant results 2. *Complex filtering* - Search by property, tag, etc. 3. *Semantic search* - Find items by meaning 4. *Hybrid views* - Combine agenda with search",
       "path": [
         "Database Integration"
@@ -39310,7 +39310,7 @@
       "heading": "Indexing for Agenda",
       "level": 2,
       "file": "13-agenda.org",
-      "line": 746,
+      "line": 745,
       "content": "CLOSED: [2026-05-03 Sun 08:00] Before using the agenda, index your files: | Command                   | Description                                | |---------------------------+--------------------------------------------| | [[cmd:scimax.db.refresh]] | Refresh database incrementally (mtime)     | | [[cmd:scimax.db.rebuild]] | Rebuild database from scratch              | For day-to-day use across machines (e.g. Dropbox sync), run =Refresh= on activation when prompted, or any time you want the ag",
       "path": [
         "Database Integration"
@@ -39347,7 +39347,7 @@
       "heading": "Database Agenda Commands",
       "level": 2,
       "file": "13-agenda.org",
-      "line": 760,
+      "line": 759,
       "content": "CLOSED: [2026-01-17 Sat 12:33] | Command               | Description             | |-----------------------+-------------------------| | scimax.db.agenda      | Time-based agenda view  | | scimax.db.deadlines   | Upcoming deadlines      | | scimax.db.showTodos   | All TODO items          | | scimax.db.searchByTag | Items with specific tag |",
       "path": [
         "Database Integration"
@@ -39384,7 +39384,7 @@
       "heading": "Search Scope",
       "level": 2,
       "file": "13-agenda.org",
-      "line": 770,
+      "line": 769,
       "content": "CLOSED: [2026-01-17 Sat 12:34] Limit agenda queries to specific directories: | Command                    | Description      | |----------------------------+------------------| | [[cmd:scimax.db.setScope]] | Set search scope | Options: - *All files* - Search entire database - *Current directory* - Only files in current directory",
       "path": [
         "Database Integration"
@@ -39420,7 +39420,7 @@
       "heading": "Agenda Item Data",
       "level": 2,
       "file": "13-agenda.org",
-      "line": 784,
+      "line": 783,
       "content": "CLOSED: [2026-01-17 Sat 12:34] Database agenda items include: #+BEGIN_SRC typescript interface AgendaItem { type: 'deadline' | 'scheduled' | 'todo'; heading: HeadingRecord; date?: string; days_until?: number; overdue?: boolean; } #+END_SRC Properties: - type - Item category - heading - Full heading info (title, tags, priority, etc.) - date - Scheduled/deadline date - days_until - Days until/past date (negative = overdue) - overdue - Boolean flag for past deadlines",
       "path": [
         "Database Integration"
@@ -39454,7 +39454,7 @@
       "heading": "Querying Agenda",
       "level": 2,
       "file": "13-agenda.org",
-      "line": 806,
+      "line": 805,
       "content": "CLOSED: [2026-01-17 Sat 12:34] Programmatic access to agenda data: #+BEGIN_SRC typescript // Get agenda items const items = await db.getAgenda({ before: '+2w',           // Next 2 weeks includeUnscheduled: true // Include TODOs without dates }); // Filter deadlines const deadlines = items.filter(item => item.type === 'deadline'); // Find overdue const overdue = items.filter(item => item.overdue); #+END_SRC See [[file:18-database-search.org][Database Search]] for more on database queries.",
       "path": [
         "Database Integration"
@@ -39488,7 +39488,7 @@
       "heading": "Agenda Workflows",
       "level": 1,
       "file": "13-agenda.org",
-      "line": 827,
+      "line": 826,
       "content": "CLOSED: [2026-01-17 Sat 12:34] Practical approaches to using the agenda effectively.",
       "path": [],
       "commands": [],
@@ -39509,7 +39509,7 @@
       "heading": "Morning Planning",
       "level": 2,
       "file": "13-agenda.org",
-      "line": 832,
+      "line": 831,
       "content": "CLOSED: [2026-01-17 Sat 12:34] Start your day with the day agenda: 1. Run [[cmd:scimax.agenda.day]] 2. Review today's items 3. Mark priorities 4. Identify blockers 5. Clock in to first task",
       "path": [
         "Agenda Workflows"
@@ -39545,7 +39545,7 @@
       "heading": "Weekly Review",
       "level": 2,
       "file": "13-agenda.org",
-      "line": 843,
+      "line": 842,
       "content": "CLOSED: [2026-01-17 Sat 12:34] Every week: 1. Run [[cmd:scimax.agenda.week]] 2. Check for overdue items 3. Reschedule as needed 4. Add new scheduled items 5. Review WAITING tasks",
       "path": [
         "Agenda Workflows"
@@ -39580,7 +39580,7 @@
       "heading": "Deadline Management",
       "level": 2,
       "file": "13-agenda.org",
-      "line": 854,
+      "line": 853,
       "content": "CLOSED: [2026-01-17 Sat 12:35] Stay on top of deadlines: 1. Run [[cmd:scimax.agenda.deadlines]] or [[cmd:scimax.db.deadlines]] 2. Note items due soon 3. Start working on items with warnings 4. Address overdue items immediately 5. Update estimates for late items",
       "path": [
         "Agenda Workflows"
@@ -39617,7 +39617,7 @@
       "heading": "Context-Based Work",
       "level": 2,
       "file": "13-agenda.org",
-      "line": 865,
+      "line": 864,
       "content": "CLOSED: [2026-01-17 Sat 12:35] Use tags to filter by context: #+BEGIN_SRC text ; At office Command: scimax.agenda.filterByTag → Select: \"office\" Work on office-only tasks ; Have phone available → Select: \"phone\" Make all phone calls ; At computer → Select: \"computer\" Handle computer-required tasks #+END_SRC",
       "path": [
         "Agenda Workflows"
@@ -39653,7 +39653,7 @@
       "heading": "Project Review",
       "level": 2,
       "file": "13-agenda.org",
-      "line": 885,
+      "line": 884,
       "content": "CLOSED: [2026-01-16 Fri 21:06] Review project status: 1. Filter agenda by project tag 2. Check all project items 3. Identify NEXT action 4. Update completed items 5. Add new tasks as needed",
       "path": [
         "Agenda Workflows"
@@ -39687,7 +39687,7 @@
       "heading": "Priority Triage",
       "level": 2,
       "file": "13-agenda.org",
-      "line": 896,
+      "line": 895,
       "content": "CLOSED: [2026-01-16 Fri 21:06] Focus on high-priority items: 1. Filter or group by priority 2. Work through all [#A] items 3. Move to [#B] items 4. Reschedule [#C] if needed",
       "path": [
         "Agenda Workflows"
@@ -39717,7 +39717,7 @@
       "heading": "Agenda Best Practices",
       "level": 1,
       "file": "13-agenda.org",
-      "line": 906,
+      "line": 905,
       "content": "CLOSED: [2026-01-16 Fri 21:06]",
       "path": [],
       "commands": [],
@@ -39736,7 +39736,7 @@
       "heading": "Keep Agenda Files Organized",
       "level": 2,
       "file": "13-agenda.org",
-      "line": 909,
+      "line": 908,
       "content": "CLOSED: [2026-01-16 Fri 21:06] Structure agenda files logically: #+BEGIN_SRC text ~/org/ ├── work.org          ; Work tasks ├── personal.org      ; Personal tasks ├── projects/         ; Project-specific files │   ├── project-a.org │   └── project-b.org └── archive/          ; Archived (excluded) #+END_SRC Configure agenda to scan ~/org/ and exclude archive/.",
       "path": [
         "Agenda Best Practices"
@@ -39770,7 +39770,7 @@
       "heading": "Use Meaningful Categories",
       "level": 2,
       "file": "13-agenda.org",
-      "line": 926,
+      "line": 925,
       "content": "CLOSED: [2026-01-16 Fri 21:06] Set CATEGORY properties for better grouping: #+BEGIN_SRC org #+CATEGORY: Work",
       "path": [
         "Agenda Best Practices"
@@ -39798,7 +39798,7 @@
       "heading": "TODO Project tasks",
       "level": 1,
       "file": "13-agenda.org",
-      "line": 934,
+      "line": 933,
       "content": ":PROPERTIES: :CATEGORY: ProjectA :END: #+END_SRC",
       "path": [],
       "commands": [],
@@ -39818,7 +39818,7 @@
       "heading": "Schedule Realistically",
       "level": 2,
       "file": "13-agenda.org",
-      "line": 940,
+      "line": 939,
       "content": "CLOSED: [2026-01-16 Fri 21:05] Don't over-schedule: #+BEGIN_SRC org ; Bad - too many items",
       "path": [
         "TODO Project tasks"
@@ -39845,7 +39845,7 @@
       "heading": "TODO 20 tasks scheduled for Monday",
       "level": 1,
       "file": "13-agenda.org",
-      "line": 947,
+      "line": 946,
       "content": "; Good - realistic daily load",
       "path": [],
       "commands": [],
@@ -39865,7 +39865,7 @@
       "heading": "TODO 3-5 priority tasks per day",
       "level": 1,
       "file": "13-agenda.org",
-      "line": 950,
+      "line": 949,
       "content": "#+END_SRC",
       "path": [],
       "commands": [],
@@ -39884,7 +39884,7 @@
       "heading": "Use Deadlines Sparingly",
       "level": 2,
       "file": "13-agenda.org",
-      "line": 953,
+      "line": 952,
       "content": "CLOSED: [2026-01-16 Fri 21:05] Only use deadlines for true hard deadlines: #+BEGIN_SRC org ; Good - actual deadline",
       "path": [
         "TODO 3-5 priority tasks per day"
@@ -39911,7 +39911,7 @@
       "heading": "TODO Submit tax return",
       "level": 1,
       "file": "13-agenda.org",
-      "line": 960,
+      "line": 959,
       "content": "DEADLINE: <2026-04-15 Tue> ; Bad - arbitrary deadline",
       "path": [],
       "commands": [],
@@ -39932,7 +39932,7 @@
       "heading": "TODO Read interesting article",
       "level": 1,
       "file": "13-agenda.org",
-      "line": 964,
+      "line": 963,
       "content": "DEADLINE: <2026-01-20 Mon> ; Use SCHEDULED instead #+END_SRC",
       "path": [],
       "commands": [],
@@ -39954,7 +39954,7 @@
       "heading": "Regular Cleanup",
       "level": 2,
       "file": "13-agenda.org",
-      "line": 969,
+      "line": 968,
       "content": "CLOSED: [2026-01-16 Fri 21:05] Weekly maintenance: - Archive completed items - Cancel obsolete tasks - Update dates on delayed items - Remove duplicate entries",
       "path": [
         "TODO Read interesting article"
@@ -39988,7 +39988,7 @@
       "heading": "Leverage Repeaters",
       "level": 2,
       "file": "13-agenda.org",
-      "line": 978,
+      "line": 977,
       "content": "CLOSED: [2026-01-16 Fri 21:05] Use repeaters for recurring items: #+BEGIN_SRC org ; Meetings",
       "path": [
         "TODO Read interesting article"
@@ -40013,7 +40013,7 @@
       "heading": "TODO Weekly standup",
       "level": 1,
       "file": "13-agenda.org",
-      "line": 985,
+      "line": 984,
       "content": "SCHEDULED: <2026-01-15 Wed 09:00 +1w> ; Habits",
       "path": [],
       "commands": [],
@@ -40033,7 +40033,7 @@
       "heading": "TODO Morning exercise",
       "level": 1,
       "file": "13-agenda.org",
-      "line": 989,
+      "line": 988,
       "content": "SCHEDULED: <2026-01-15 Wed ++1d> ; Maintenance",
       "path": [],
       "commands": [],
@@ -40052,7 +40052,7 @@
       "heading": "TODO Backup files",
       "level": 1,
       "file": "13-agenda.org",
-      "line": 993,
+      "line": 992,
       "content": "SCHEDULED: <2026-01-15 Wed .+7d> #+END_SRC",
       "path": [],
       "commands": [],
@@ -40070,7 +40070,7 @@
       "heading": "Balance Time Spans",
       "level": 2,
       "file": "13-agenda.org",
-      "line": 997,
+      "line": 996,
       "content": "CLOSED: [2026-01-16 Fri 21:05] Use different views for different purposes: | View      | Purpose                          | Frequency      | |-----------|----------------------------------|----------------| | Day       | Immediate planning               | Every morning  | | Week      | Short-term planning              | Daily review   | | Fortnight | Medium-term awareness            | Weekly review  | | Month     | Long-term planning               | Monthly review |",
       "path": [
         "TODO Backup files"
@@ -40104,7 +40104,7 @@
       "heading": "Practical Examples",
       "level": 1,
       "file": "13-agenda.org",
-      "line": 1009,
+      "line": 1008,
       "content": "CLOSED: [2026-01-16 Fri 21:05]",
       "path": [],
       "commands": [],
@@ -40122,7 +40122,7 @@
       "heading": "Example: Software Developer",
       "level": 2,
       "file": "13-agenda.org",
-      "line": 1012,
+      "line": 1011,
       "content": "CLOSED: [2026-01-16 Fri 21:05] #+BEGIN_SRC org ; work.org",
       "path": [
         "Practical Examples"
@@ -40146,7 +40146,7 @@
       "heading": "TODO [#A] Fix production bug                              :urgent:bug:",
       "level": 1,
       "file": "13-agenda.org",
-      "line": 1018,
+      "line": 1017,
       "content": "DEADLINE: <2026-01-15 Wed> Critical database connection issue.",
       "path": [],
       "commands": [],
@@ -40170,7 +40170,7 @@
       "heading": "TODO [#A] Code review for PR #234                         :review:",
       "level": 1,
       "file": "13-agenda.org",
-      "line": 1022,
+      "line": 1021,
       "content": "SCHEDULED: <2026-01-15 Wed 10:00> Review authentication changes.",
       "path": [],
       "commands": [],
@@ -40192,7 +40192,7 @@
       "heading": "TODO [#B] Implement user settings page                    :feature:",
       "level": 1,
       "file": "13-agenda.org",
-      "line": 1026,
+      "line": 1025,
       "content": "SCHEDULED: <2026-01-16 Thu> DEADLINE: <2026-01-20 Mon> :PROPERTIES: :EFFORT: 6:00 :END:",
       "path": [],
       "commands": [],
@@ -40220,7 +40220,7 @@
       "heading": "TODO Weekly team standup                                  :meeting:",
       "level": 1,
       "file": "13-agenda.org",
-      "line": 1033,
+      "line": 1032,
       "content": "SCHEDULED: <2026-01-15 Wed 09:00 +1w>",
       "path": [],
       "commands": [],
@@ -40241,7 +40241,7 @@
       "heading": "TODO Sprint planning                                      :meeting:",
       "level": 1,
       "file": "13-agenda.org",
-      "line": 1036,
+      "line": 1035,
       "content": "SCHEDULED: <2026-01-22 Wed 14:00 +2w> #+END_SRC Agenda shows: - Today: Bug fix (overdue!), code review at 10am, standup at 9am - Tomorrow: Start user settings - Next Monday: Settings deadline",
       "path": [],
       "commands": [],
@@ -40273,7 +40273,7 @@
       "heading": "Example: Project Manager",
       "level": 2,
       "file": "13-agenda.org",
-      "line": 1045,
+      "line": 1044,
       "content": "CLOSED: [2026-01-16 Fri 21:05] #+BEGIN_SRC org ; projects.org #+CATEGORY: Projects",
       "path": [
         "TODO Sprint planning                                      :meeting:"
@@ -40299,7 +40299,7 @@
       "heading": "TODO [#A] Submit Q1 budget                                :finance:admin:",
       "level": 1,
       "file": "13-agenda.org",
-      "line": 1053,
+      "line": 1052,
       "content": "DEADLINE: <2026-01-31 Fri -7d> :PROPERTIES: :EFFORT: 4:00 :END:",
       "path": [],
       "commands": [],
@@ -40323,7 +40323,7 @@
       "heading": "WAITING Client approval on timeline                       :client:blocked:",
       "level": 1,
       "file": "13-agenda.org",
-      "line": 1059,
+      "line": 1058,
       "content": "SCHEDULED: <2026-01-10 Fri> Sent proposal on Jan 10, follow up if no response.",
       "path": [],
       "commands": [],
@@ -40348,7 +40348,7 @@
       "heading": "TODO [#B] Update project roadmap                          :planning:",
       "level": 1,
       "file": "13-agenda.org",
-      "line": 1063,
+      "line": 1062,
       "content": "SCHEDULED: <2026-01-16 Thu> Quarterly roadmap review and updates.",
       "path": [],
       "commands": [],
@@ -40371,7 +40371,7 @@
       "heading": "TODO Monthly status meeting                               :meeting:",
       "level": 1,
       "file": "13-agenda.org",
-      "line": 1067,
+      "line": 1066,
       "content": "SCHEDULED: <2026-01-30 Thu 15:00 +1m> With stakeholders.",
       "path": [],
       "commands": [],
@@ -40392,7 +40392,7 @@
       "heading": "TODO Weekly team check-in                                 :meeting:",
       "level": 1,
       "file": "13-agenda.org",
-      "line": 1071,
+      "line": 1070,
       "content": "SCHEDULED: <2026-01-17 Fri 10:00 +1w> #+END_SRC Agenda grouped by priority shows: - Priority A: Budget (due in 7 days with warning) - WAITING: Client approval (needs follow-up) - Priority B: Roadmap update",
       "path": [],
       "commands": [],
@@ -40424,7 +40424,7 @@
       "heading": "Example: Academic/Researcher",
       "level": 2,
       "file": "13-agenda.org",
-      "line": 1080,
+      "line": 1079,
       "content": "CLOSED: [2026-01-16 Fri 21:05] #+BEGIN_SRC org ; research.org #+CATEGORY: Research",
       "path": [
         "TODO Weekly team check-in                                 :meeting:"
@@ -40449,7 +40449,7 @@
       "heading": "TODO [#A] Submit conference paper                         :paper:deadline:",
       "level": 1,
       "file": "13-agenda.org",
-      "line": 1088,
+      "line": 1087,
       "content": "DEADLINE: <2026-02-15 Sun -14d> ICML submission deadline. :PROPERTIES: :EFFORT: 40:00 :END:",
       "path": [],
       "commands": [],
@@ -40476,7 +40476,7 @@
       "heading": "TODO Literature review                                    :reading:",
       "level": 1,
       "file": "13-agenda.org",
-      "line": 1095,
+      "line": 1094,
       "content": "SCHEDULED: <2026-01-16 Thu> :PROPERTIES: :EFFORT: 3:00 :END: Read papers on attention mechanisms.",
       "path": [],
       "commands": [],
@@ -40503,7 +40503,7 @@
       "heading": "TODO Weekly advisor meeting                               :meeting:",
       "level": 1,
       "file": "13-agenda.org",
-      "line": 1102,
+      "line": 1101,
       "content": "SCHEDULED: <2026-01-17 Fri 14:00 +1w> Prepare update slides.",
       "path": [],
       "commands": [],
@@ -40526,7 +40526,7 @@
       "heading": "TODO Run experiments                                      :lab:computer:",
       "level": 1,
       "file": "13-agenda.org",
-      "line": 1106,
+      "line": 1105,
       "content": "SCHEDULED: <2026-01-18 Sat> :PROPERTIES: :EFFORT: 8:00 :END: Training runs for new model.",
       "path": [],
       "commands": [],
@@ -40553,7 +40553,7 @@
       "heading": "TODO Grade assignments                                    :teaching:",
       "level": 1,
       "file": "13-agenda.org",
-      "line": 1113,
+      "line": 1112,
       "content": "DEADLINE: <2026-01-20 Mon> CS101 homework submissions. #+END_SRC Week view shows balanced schedule: - Ongoing: Paper writing (big effort) - Daily: Literature review, experiments - Weekly: Advisor meeting - Deadline: Grading due Monday",
       "path": [],
       "commands": [],
@@ -40585,7 +40585,7 @@
       "heading": "Troubleshooting",
       "level": 1,
       "file": "13-agenda.org",
-      "line": 1124,
+      "line": 1123,
       "content": "CLOSED: [2026-01-18 Sun 11:50]",
       "path": [],
       "commands": [],
@@ -40602,8 +40602,8 @@
       "heading": "Agenda Shows No Items",
       "level": 2,
       "file": "13-agenda.org",
-      "line": 1127,
-      "content": "CLOSED: [2026-01-18 Sun 12:50] *Issue*: Agenda view is empty or shows fewer items than expected. *Solutions*: 1. *Check indexed files*: #+BEGIN_SRC text Command: scimax.agenda.configure Add your org directories; they are stored in scimax.db.include and indexed automatically #+END_SRC 2. *Verify TODO keywords*: - Check headlines have TODO, SCHEDULED, or DEADLINE - Ensure correct keyword spelling 3. *Check time range*: - Day view only shows today's items - Try week or month view for more items",
+      "line": 1126,
+      "content": "CLOSED: [2026-07-11 Sat 09:14] *Issue*: Agenda view is empty or shows fewer items than expected. *Solutions*: 1. *Check indexed files*: #+BEGIN_SRC text Command: scimax.agenda.configure Add your org directories; they are stored in scimax.db.include and indexed automatically #+END_SRC 2. *Verify TODO keywords*: - Check headlines have TODO, SCHEDULED, or DEADLINE - Ensure correct keyword spelling 3. *Check time range*: - Day view only shows today's items - Try week or month view for more items",
       "path": [
         "Troubleshooting"
       ],
@@ -40617,9 +40617,9 @@
         "shows",
         "items",
         "closed",
-        "2026-01-18",
-        "sun",
-        "1250",
+        "2026-07-11",
+        "sat",
+        "0914",
         "issue",
         "view",
         "empty",
@@ -40639,7 +40639,7 @@
       "heading": "Items Not Updating",
       "level": 2,
       "file": "13-agenda.org",
-      "line": 1158,
+      "line": 1157,
       "content": "CLOSED: [2026-01-18 Sun 12:50] *Issue*: Changed items don't appear or update in agenda. *Solutions*: 1. *Refresh agenda*: #+BEGIN_SRC text Command: scimax.agenda.refresh #+END_SRC 2. *Sync database*: #+BEGIN_SRC text Command: scimax.db.reindex #+END_SRC 3. *Check file watcher*: - Extension should auto-detect changes - Manual refresh if needed 4. *Save file*: - Ensure file is saved (C-s) - Agenda reads from disk",
       "path": [
         "Troubleshooting"
@@ -40678,7 +40678,7 @@
       "heading": "Tree View Not Showing",
       "level": 2,
       "file": "13-agenda.org",
-      "line": 1183,
+      "line": 1182,
       "content": "CLOSED: [2026-01-18 Sun 12:50] *Issue*: Agenda tree view not visible in sidebar. *Solutions*: 1. *Check view visibility*: - View → Open View → Scimax: Agenda 2. *Refresh view*: #+BEGIN_SRC text Command: scimax.agenda.refresh #+END_SRC 3. *Check for errors*: - View extension logs - Check for parsing errors in org files",
       "path": [
         "Troubleshooting"
@@ -40714,7 +40714,7 @@
       "heading": "Slow Performance",
       "level": 2,
       "file": "13-agenda.org",
-      "line": 1202,
+      "line": 1201,
       "content": "CLOSED: [2026-01-18 Sun 12:50] *Issue*: Agenda is slow to load or refresh. *Solutions*: 1. *Use database agenda*: - scimax.db.agenda is faster for large collections - Index files once, query quickly 2. *Limit agenda files*: - Don't include entire filesystem - Use specific directories 3. *Exclude large directories*: #+BEGIN_SRC json { \"scimax.agenda.exclude\": [ \"**/node_modules/**\", \"**/vendor/**\", \"**/build/**\" ] } #+END_SRC 4. *Optimize file sizes*: - Archive old DONE items",
       "path": [
         "Troubleshooting"
@@ -40751,7 +40751,7 @@
       "heading": "Date Display Issues",
       "level": 2,
       "file": "13-agenda.org",
-      "line": 1232,
+      "line": 1231,
       "content": "CLOSED: [2026-01-18 Sun 12:50] *Issue*: Dates show incorrectly or items appear on wrong days. *Solutions*: 1. *Check timestamp format*: #+BEGIN_SRC org ; Correct SCHEDULED: <2026-01-15 Wed> ; Incorrect SCHEDULED: <01/15/2026> #+END_SRC 2. *Verify day of week*: - Day must match date - Use S-<right> to recalculate 3. *Check repeaters*: #+BEGIN_SRC org ; Ensure repeater syntax is correct SCHEDULED: <2026-01-15 Wed +1w> #+END_SRC",
       "path": [
         "Troubleshooting"
@@ -40785,7 +40785,7 @@
       "heading": "Quick Reference",
       "level": 1,
       "file": "13-agenda.org",
-      "line": 1258,
+      "line": 1257,
       "content": "CLOSED: [2026-01-18 Sun 12:46]",
       "path": [],
       "commands": [],
@@ -40803,7 +40803,7 @@
       "heading": "Main Agenda Commands",
       "level": 2,
       "file": "13-agenda.org",
-      "line": 1261,
+      "line": 1260,
       "content": "CLOSED: [2026-01-18 Sun 12:47] | Command                           | Description            | |-----------------------------------+------------------------| | [[cmd:scimax.agenda.menu]]        | Show agenda menu       | | [[cmd:scimax.agenda.day]]         | Today's agenda         | | [[cmd:scimax.agenda.week]]        | 7-day agenda           | | [[cmd:scimax.agenda.fortnight]]   | 14-day agenda          | | [[cmd:scimax.agenda.month]]       | 30-day agenda          | | [[cmd:scimax.agenda.todoLi",
       "path": [
         "Quick Reference"
@@ -40841,7 +40841,7 @@
       "heading": "Database Agenda Commands",
       "level": 2,
       "file": "13-agenda.org",
-      "line": 1278,
+      "line": 1277,
       "content": "CLOSED: [2026-01-18 Sun 12:55] | Command                       | Description            | |-------------------------------+------------------------| | [[cmd:scimax.db.agenda]]      | Database agenda view   | | [[cmd:scimax.db.deadlines]]   | Database deadline view | | [[cmd:scimax.db.showTodos]]   | Database TODO list     | | [[cmd:scimax.db.searchByTag]] | Database tag search    | | [[cmd:scimax.db.setScope]]    | Set search scope       | | [[cmd:scimax.db.refresh]]     | Refresh database (incr",
       "path": [
         "Quick Reference"
@@ -40882,7 +40882,7 @@
       "heading": "Tree View Commands",
       "level": 2,
       "file": "13-agenda.org",
-      "line": 1291,
+      "line": 1290,
       "content": "CLOSED: [2026-01-18 Sun 12:49] | Command                             | Description                    | |-------------------------------------|--------------------------------| | [[cmd:scimax.agenda.showAgenda]]           | Show agenda in tree view       | | [[cmd:scimax.agenda.showTodos]]            | Show TODOs in tree view        | | [[cmd:scimax.agenda.groupByDate]]          | Group by date                  | | [[cmd:scimax.agenda.groupByCategory]]      | Group by category              | | [",
       "path": [
         "Quick Reference"
@@ -40919,7 +40919,7 @@
       "heading": "Configuration Settings",
       "level": 2,
       "file": "13-agenda.org",
-      "line": 1303,
+      "line": 1302,
       "content": "CLOSED: [2026-05-03 Sun 08:00] Indexing scope (what's available to the agenda) lives under =scimax.db.*=. The agenda's own settings are display-only: | Setting                   | Default      | Description                  | |---------------------------+--------------+------------------------------| | scimax.agenda.exclude     | node_modules | Hide from view (still index) | | scimax.agenda.defaultSpan | 7            | Default days to show         | | scimax.agenda.showDone    | false        | S",
       "path": [
         "Quick Reference"
@@ -40958,7 +40958,7 @@
       "heading": "Agenda Item Properties",
       "level": 2,
       "file": "13-agenda.org",
-      "line": 1328,
+      "line": 1327,
       "content": "CLOSED: [2026-01-18 Sun 12:49] | Property  | Description                       | |-----------+-----------------------------------| | title     | Headline text                     | | todoState | TODO keyword (TODO, NEXT, etc.)   | | priority  | Priority (A, B, C)                | | tags      | Tag list                          | | scheduled | Scheduled date                    | | deadline  | Deadline date                     | | time      | Time of day                       | | daysUntil | Days ",
       "path": [
         "Quick Reference"
@@ -40992,7 +40992,7 @@
       "heading": "Item Type Icons",
       "level": 2,
       "file": "13-agenda.org",
-      "line": 1346,
+      "line": 1345,
       "content": "CLOSED: [2026-01-18 Sun 12:49] | Icon | Type                | Description                        | |------|---------------------|------------------------------------| | ⚠    | Overdue deadline    | Past due date, needs attention     | | 🔔   | Deadline            | Has deadline, not overdue          | | 📅   | Scheduled           | Has SCHEDULED timestamp            | | ⚪   | TODO                | Regular TODO item                  | | ✓    | DONE                | Completed item                 ",
       "path": [
         "Quick Reference"
@@ -41026,7 +41026,7 @@
       "heading": "Quick Workflow",
       "level": 2,
       "file": "13-agenda.org",
-      "line": 1360,
+      "line": 1359,
       "content": "CLOSED: [2026-01-18 Sun 12:50] 1. *Morning*: [[cmd:scimax.agenda.day]] - See today's tasks 2. *Planning*: [[cmd:scimax.agenda.week]] - Plan upcoming work 3. *Triage*: [[cmd:scimax.agenda.deadlines]] - Handle urgent items 4. *Context work*: [[cmd:scimax.agenda.filterByTag]] - Focus by context 5. *Review*: [[cmd:scimax.agenda.todoList]] - Review all TODOs",
       "path": [
         "Quick Reference"
@@ -41066,7 +41066,7 @@
       "heading": "Related Topics",
       "level": 1,
       "file": "13-agenda.org",
-      "line": 1369,
+      "line": 1368,
       "content": "CLOSED: [2026-01-18 Sun 11:49] - [[file:03-todo-items.org][TODO Items]] - Creating and managing TODO items - [[file:06-timestamps.org][Timestamps]] - Date formats, scheduling, deadlines, repeaters - [[file:02-document-structure.org][Document Structure]] - Organizing headlines and content - [[file:18-database-search.org][Database Search]] - Advanced search and filtering - [[file:26-configuration.org][Configuration]] - Extension settings - [[file:01-getting-started.org][Getting Started]] - Basic u",
       "path": [],
       "commands": [],
@@ -41098,7 +41098,7 @@
       "heading": "Navigation",
       "level": 1,
       "file": "13-agenda.org",
-      "line": 1379,
+      "line": 1378,
       "content": "- Previous: [[file:12-image-overlays.org][Image Overlays]] - Index: [[file:00-index.org][Documentation Index]] - Next: [[file:14-journal.org][Journal]]",
       "path": [],
       "commands": [],
@@ -73817,24 +73817,20 @@
       "level": 1,
       "file": "25-commands.org",
       "line": 127,
-      "content": "CLOSED: [2026-01-17 Sat 12:24]",
+      "content": "",
       "path": [],
       "commands": [],
       "keybindings": [],
       "keywords": [
         "todo",
-        "tasks",
-        "closed",
-        "2026-01-17",
-        "sat",
-        "1224"
+        "tasks"
       ]
     },
     {
       "heading": "TODO Keywords",
       "level": 2,
       "file": "25-commands.org",
-      "line": 130,
+      "line": 129,
       "content": "CLOSED: [2026-01-17 Sat 12:24] | Command ID                    | Description             | Default Keybinding | |-------------------------------+-------------------------+--------------------| | [[cmd:scimax.org.cycleTodo]]  | Cycle TODO State        | C-c C-t            | | [[cmd:scimax.org.showTodos]]  | Show TODOs in Document  | -                  |",
       "path": [
         "TODO and Tasks"
@@ -73872,7 +73868,7 @@
       "heading": "Task Dependencies",
       "level": 2,
       "file": "25-commands.org",
-      "line": 138,
+      "line": 137,
       "content": "CLOSED: [2026-07-02 Thu 08:03] Express dependencies between TODO tasks (org-depend style). See [[file:03.5-task-dependencies.org][Task Dependencies]] for the full guide. | Command ID                            | Description                  | Default Keybinding | |---------------------------------------+------------------------------+--------------------| | [[cmd:scimax.org.addDependency]]      | Add Dependency (depends on…) | -                  | | [[cmd:scimax.org.gotoBlocker]]        | Go to ",
       "path": [
         "TODO and Tasks"
@@ -73909,8 +73905,8 @@
       "heading": "Project Management",
       "level": 2,
       "file": "25-commands.org",
-      "line": 150,
-      "content": "CLOSED: [2026-07-02 Thu 08:03] Task tables, Gantt charts, a dependency graph, and a people database. See [[file:03.6-project-management.org][Project Management]] for the full guide. | Command ID                             | Description                | Default Keybinding | |----------------------------------------+----------------------------+--------------------| | [[cmd:scimax.org.insertProjectTable]]  | Insert Project Task Table  | -                  | | [[cmd:scimax.org.insertGantt]]       ",
+      "line": 149,
+      "content": "CLOSED: [2026-07-11 Sat 09:59] Task tables, Gantt charts, a dependency graph, and a people database. See [[file:03.6-project-management.org][Project Management]] for the full guide. | Command ID                             | Description                | Default Keybinding | |----------------------------------------+----------------------------+--------------------| | [[cmd:scimax.org.insertProjectTable]]  | Insert Project Task Table  | -                  | | [[cmd:scimax.org.insertGantt]]       ",
       "path": [
         "TODO and Tasks"
       ],
@@ -73923,9 +73919,9 @@
         "project",
         "management",
         "closed",
-        "2026-07-02",
-        "thu",
-        "0803",
+        "2026-07-11",
+        "sat",
+        "0959",
         "task",
         "tables",
         "gantt",
@@ -73946,7 +73942,7 @@
       "heading": "Contacts & Entities",
       "level": 2,
       "file": "25-commands.org",
-      "line": 164,
+      "line": 163,
       "content": "CLOSED: [2026-07-02 Thu 08:03] Fuzzy-pick a tagged/propertied heading (contact, location, reagent, …) and act on it. See [[file:03.7-contacts-and-locations.org][Contacts, Locations & Entity Selector]]. | Command ID                       | Description                          | Default Keybinding | |----------------------------------+--------------------------------------+--------------------| | [[cmd:scimax.org.pickEntity]]    | Pick Entity (Contact/Location/…)     | -                  |",
       "path": [
         "TODO and Tasks"
@@ -73982,7 +73978,7 @@
       "heading": "Checkboxes",
       "level": 2,
       "file": "25-commands.org",
-      "line": 174,
+      "line": 173,
       "content": "CLOSED: [2026-01-17 Sat 12:24] | Command ID                        | Description       | Default Keybinding | |-----------------------------------+-------------------+--------------------| | [[cmd:scimax.org.toggleCheckbox]] | Toggle Checkbox   | -                  | | [[cmd:scimax.org.insertCheckbox]] | Insert Checkbox   | -                  |",
       "path": [
         "TODO and Tasks"
@@ -74013,7 +74009,7 @@
       "heading": "Markdown Tasks",
       "level": 2,
       "file": "25-commands.org",
-      "line": 182,
+      "line": 181,
       "content": "CLOSED: [2026-01-17 Sat 12:24] | Command ID                                | Description           | Default Keybinding | |-------------------------------------------+-----------------------+--------------------| | [[cmd:scimax.markdown.toggleCheckbox]]    | Toggle Checkbox       | C-c C-c            | | [[cmd:scimax.markdown.insertTask]]        | Insert Task           | -                  | | [[cmd:scimax.markdown.insertDueDate]]     | Insert Due Date       | C-c C-d            | | [[cmd:scimax",
       "path": [
         "TODO and Tasks"
@@ -74054,7 +74050,7 @@
       "heading": "Tables",
       "level": 1,
       "file": "25-commands.org",
-      "line": 197,
+      "line": 196,
       "content": "CLOSED: [2026-01-17 Sat 12:25]",
       "path": [],
       "commands": [],
@@ -74071,7 +74067,7 @@
       "heading": "Basic Table Operations",
       "level": 2,
       "file": "25-commands.org",
-      "line": 200,
+      "line": 199,
       "content": "CLOSED: [2026-01-17 Sat 12:25] | Command ID                          | Description              | Default Keybinding     | |-------------------------------------+--------------------------+------------------------| | [[cmd:scimax.table.create]]         | Create Table             | C-c \\vert              | | [[cmd:scimax.table.align]]          | Align Table              | -                      | | [[cmd:scimax.table.nextCell]]       | Next Table Cell          | -                      | | [[cmd:s",
       "path": [
         "Tables"
@@ -74111,7 +74107,7 @@
       "heading": "Row and Column Operations",
       "level": 2,
       "file": "25-commands.org",
-      "line": 211,
+      "line": 210,
       "content": "CLOSED: [2026-01-17 Sat 12:25] | Command ID                           | Description               | Default Keybinding   | |--------------------------------------+---------------------------+----------------------| | [[cmd:scimax.table.insertRowBelow]]   | Insert Table Row Below    | M-S-down             | | [[cmd:scimax.table.insertRowAbove]]   | Insert Table Row Above    | M-S-up               | | [[cmd:scimax.table.deleteRow]]        | Delete Table Row          | M-S-BACKSPACE        | | [[cm",
       "path": [
         "Tables"
@@ -74153,7 +74149,7 @@
       "heading": "Advanced Table Operations",
       "level": 2,
       "file": "25-commands.org",
-      "line": 227,
+      "line": 226,
       "content": "CLOSED: [2026-01-17 Sat 12:25] | Command ID                       | Description                 | Default Keybinding | |----------------------------------+-----------------------------+--------------------| | [[cmd:scimax.table.gotoNamed]]   | Go to Named Table           | -                  | | [[cmd:scimax.table.export]]      | Export Table                | -                  | | [[cmd:scimax.table.import]]      | Import Table from Clipboard | -                  | | [[cmd:scimax.table.importFi",
       "path": [
         "Tables"
@@ -74189,7 +74185,7 @@
       "heading": "Table Formulas",
       "level": 2,
       "file": "25-commands.org",
-      "line": 240,
+      "line": 239,
       "content": "CLOSED: [2026-01-17 Sat 12:26] | Command ID                             | Description                | Default Keybinding | |----------------------------------------+----------------------------+--------------------| | [[cmd:scimax.table.recalculate]]       | Recalculate Table Formulas | C-c C-c (tblfm)    | |                                        |                            | C-c * (org)        | | [[cmd:scimax.table.insertColumnFormula]]| Insert Column Formula       | -                  | | ",
       "path": [
         "Tables"
@@ -74228,7 +74224,7 @@
       "heading": "Source Blocks",
       "level": 1,
       "file": "25-commands.org",
-      "line": 252,
+      "line": 251,
       "content": "CLOSED: [2026-01-17 Sat 12:26]",
       "path": [],
       "commands": [],
@@ -74246,8 +74242,8 @@
       "heading": "Basic Babel Operations",
       "level": 2,
       "file": "25-commands.org",
-      "line": 255,
-      "content": "CLOSED: [2026-01-17 Sat 12:26] | Command ID                          | Description                 | Default Keybinding | |-------------------------------------+-----------------------------+--------------------| | [[cmd:scimax.org.executeBlock]]     | Execute Code Block          | C-RET              | |                                     |                             | C-c C-c (in src)   | | [[cmd:scimax.org.executeAllBlocks]] | Execute All Code Blocks     | -                  | | [[cmd:scimax",
+      "line": 254,
+      "content": "CLOSED: [2026-07-11 Sat 09:59] | Command ID                              | Description                        | Default Keybinding | |-----------------------------------------+------------------------------------+--------------------| | [[cmd:scimax.org.executeBlock]]         | Execute Code Block                 | C-RET              | |                                         |                                    | C-c C-c (in src)   | | [[cmd:scimax.org.executeAllBlocks]]     | Execute All Code ",
       "path": [
         "Source Blocks"
       ],
@@ -74264,29 +74260,28 @@
         "babel",
         "operations",
         "closed",
-        "2026-01-17",
+        "2026-07-11",
         "sat",
-        "1226",
+        "0959",
         "command",
         "description",
         "default",
         "keybinding",
-        "--------------------------------------------------------------------------------------",
+        "-------------------------------------------------------------------------------------------------",
         "cmd",
         "execute",
         "code",
         "block",
         "c-ret",
         "c-c",
-        "src",
-        "blocks"
+        "src"
       ]
     },
     {
       "heading": "Advanced Babel Operations (scimax-ob)",
       "level": 2,
       "file": "25-commands.org",
-      "line": 270,
+      "line": 269,
       "content": "CLOSED: [2026-01-17 Sat 12:26] | Command ID                            | Description                     | Default Keybinding | |---------------------------------------+---------------------------------+--------------------| | [[cmd:scimax.ob.insertBlockAbove]]    | Insert Block Above              | -                  | | [[cmd:scimax.ob.insertBlockBelow]]    | Insert Block Below              | C-c C-,            | | [[cmd:scimax.ob.insertBlockBelowSame]]| Insert Block Below (Same Lang)  | -    ",
       "path": [
         "Source Blocks"
@@ -74326,7 +74321,7 @@
       "heading": "Extended Babel Features",
       "level": 2,
       "file": "25-commands.org",
-      "line": 299,
+      "line": 298,
       "content": "CLOSED: [2026-01-17 Sat 12:27] | Command ID                       | Description                      | Default Keybinding | |----------------------------------+----------------------------------+--------------------| | [[cmd:scimax.babel.tangle]]      | Tangle Source Blocks             | C-c C-v t          | | [[cmd:scimax.babel.executeToPoint]]| Execute Blocks to Point          | C-c C-v p          | | [[cmd:scimax.babel.executeInline]]| Execute Inline Source at Cursor  | C-c C-v i          | |",
       "path": [
         "Source Blocks"
@@ -74366,7 +74361,7 @@
       "heading": "Export",
       "level": 1,
       "file": "25-commands.org",
-      "line": 317,
+      "line": 316,
       "content": "CLOSED: [2026-01-17 Sat 12:27]",
       "path": [],
       "commands": [],
@@ -74383,7 +74378,7 @@
       "heading": "Export Dispatcher",
       "level": 2,
       "file": "25-commands.org",
-      "line": 320,
+      "line": 319,
       "content": "CLOSED: [2026-01-17 Sat 12:27] | Command ID                         | Description           | Default Keybinding | |------------------------------------+-----------------------+--------------------| | [[cmd:scimax.org.export]]          | Export Org Document   | -                  | | [[cmd:scimax.org.exportDispatcher]]| Export Dispatcher     | -                  | | [[cmd:scimax.org.exportMenu]]      | Export Menu (C-c C-e) | C-c C-e            | | [[cmd:scimax.org.previewHtml]]     | Preview HT",
       "path": [
         "Export"
@@ -74422,7 +74417,7 @@
       "heading": "HTML Export",
       "level": 2,
       "file": "25-commands.org",
-      "line": 330,
+      "line": 329,
       "content": "CLOSED: [2026-01-17 Sat 12:27] | Command ID                       | Description            | Default Keybinding | |----------------------------------+------------------------+--------------------| | [[cmd:scimax.org.exportHtml]]    | Export to HTML         | C-c C-e h h        | | [[cmd:scimax.org.exportHtmlOpen]]| Export to HTML and Open| C-c C-e h o        |",
       "path": [
         "Export"
@@ -74456,8 +74451,8 @@
       "heading": "LaTeX/PDF Export",
       "level": 2,
       "file": "25-commands.org",
-      "line": 338,
-      "content": "CLOSED: [2026-01-17 Sat 12:27] | Command ID                         | Description                  | Default Keybinding | |------------------------------------+------------------------------+--------------------| | [[cmd:scimax.org.exportLatex]]     | Export to LaTeX              | C-c C-e l l        | | [[cmd:scimax.org.exportPdf]]       | Export to PDF                | C-c C-e l p        | | [[cmd:scimax.org.exportLatexOpen]] | Export to PDF and Open       | C-c C-e l o        | | [[cmd:scimax",
+      "line": 337,
+      "content": "CLOSED: [2026-01-17 Sat 12:27] | Command ID                          | Description                   | Default Keybinding | |-------------------------------------+-------------------------------+--------------------| | [[cmd:scimax.org.exportLatex]]      | Export to LaTeX               | C-c C-e l l        | | [[cmd:scimax.org.exportPdf]]        | Export to PDF                 | C-c C-e l p        | | [[cmd:scimax.org.exportLatexOpen]]  | Export to PDF and Open        | C-c C-e l o        | | [[",
       "path": [
         "Export"
       ],
@@ -74480,21 +74475,20 @@
         "description",
         "default",
         "keybinding",
-        "--------------------------------------------------------------------------------------",
+        "----------------------------------------------------------------------------------------",
         "cmd",
         "latex",
         "c-c",
         "c-e",
         "pdf",
-        "open",
-        "cmdscimax"
+        "open"
       ]
     },
     {
       "heading": "Other Export Formats",
       "level": 2,
       "file": "25-commands.org",
-      "line": 352,
+      "line": 351,
       "content": "CLOSED: [2026-01-17 Sat 12:27] | Command ID                        | Description         | Default Keybinding | |-----------------------------------+---------------------+--------------------| | [[cmd:scimax.org.exportMarkdown]] | Export to Markdown  | C-c C-e m m        |",
       "path": [
         "Export"
@@ -74527,7 +74521,7 @@
       "heading": "Markdown File Export",
       "level": 2,
       "file": "25-commands.org",
-      "line": 359,
+      "line": 358,
       "content": "CLOSED: [2026-04-12 Sun 19:49] Export markdown (=.md=) files to other formats via Pandoc. Complements the org-to-markdown export above — these commands operate on markdown source files. | Command ID                             | Description                       | Default Keybinding | |----------------------------------------+-----------------------------------+--------------------| | [[cmd:scimax.markdown.exportMenu]]     | Markdown Export Menu              | -                  | | [[cmd:scimax",
       "path": [
         "Export"
@@ -74563,7 +74557,7 @@
       "heading": "Jupyter Notebook Export",
       "level": 2,
       "file": "25-commands.org",
-      "line": 378,
+      "line": 377,
       "content": "CLOSED: [2026-01-25 Sun 20:43] Export org documents to Jupyter notebook (.ipynb) format. | Command ID                                | Description                 | Default Keybinding | |-------------------------------------------+-----------------------------+--------------------| | [[cmd:scimax.org.exportIpynb]]            | Export to Jupyter Notebook  | -                  | | [[cmd:scimax.org.exportIpynbOpen]]        | Export to Notebook and Open | -                  | | [[cmd:scimax.org.expo",
       "path": [
         "Export"
@@ -74599,7 +74593,7 @@
       "heading": "Clipboard Export",
       "level": 2,
       "file": "25-commands.org",
-      "line": 389,
+      "line": 388,
       "content": "CLOSED: [2026-01-25 Sun 20:43] Copy document content to clipboard in various formats for pasting into other applications. | Command ID                             | Description                        | Default Keybinding | |----------------------------------------+------------------------------------+--------------------| | [[cmd:scimax.org.clipboardHtmlRich]]   | Copy as Rich HTML (for Word, etc.) | -                  | | [[cmd:scimax.org.clipboardHtmlSource]] | Copy as HTML Source             ",
       "path": [
         "Export"
@@ -74636,7 +74630,7 @@
       "heading": "Custom Exporters",
       "level": 2,
       "file": "25-commands.org",
-      "line": 401,
+      "line": 400,
       "content": "CLOSED: [2026-01-24 Sat 17:42] User-defined export backends using JavaScript/TypeScript. See [[file:10-export.org::*Custom Exporters][Custom Exporters documentation]]. | Command ID                                  | Description                      | Default Keybinding | |---------------------------------------------+----------------------------------+--------------------| | [[cmd:scimax.export.custom]]                | Export with Custom Exporter      | -                  | | [[cmd:scimax.expor",
       "path": [
         "Export"
@@ -74672,7 +74666,7 @@
       "heading": "Links",
       "level": 1,
       "file": "25-commands.org",
-      "line": 413,
+      "line": 412,
       "content": "CLOSED: [2026-01-17 Sat 12:27] | Command ID                       | Description                            | Default Keybinding      | |----------------------------------+----------------------------------------+-------------------------| | [[cmd:scimax.org.insertLink]]    | Insert Link                            | C-c C-l                 | | [[cmd:scimax.org.openLink]]      | Open Link at Point                     | C-c C-o / RET (on link) | | [[cmd:scimax.org.storeLink]]     | Store Link (for ",
       "path": [],
       "commands": [
@@ -74711,7 +74705,7 @@
       "heading": "Timestamps",
       "level": 1,
       "file": "25-commands.org",
-      "line": 426,
+      "line": 425,
       "content": "CLOSED: [2026-01-17 Sat 12:27] | Command ID                             | Description                      | Default Keybinding | |----------------------------------------+----------------------------------+--------------------| | [[cmd:scimax.org.insertTimestamp]]     | Insert Timestamp                 | C-c .              | | [[cmd:scimax.org.insertActiveTimestamp]]| Insert Active Timestamp          | -                  | | [[cmd:scimax.org.insertInactiveTimestamp]]| Insert Inactive Timestamp ",
       "path": [],
       "commands": [
@@ -74745,7 +74739,7 @@
       "heading": "Clocking",
       "level": 2,
       "file": "25-commands.org",
-      "line": 440,
+      "line": 439,
       "content": "CLOSED: [2026-01-18 Sun 09:58] Time tracking commands for measuring effort on tasks. | Command ID                     | Description           | Default Keybinding | |--------------------------------+-----------------------+--------------------| | [[cmd:scimax.speed.clockIn]]        | Clock In                   | I (speed cmd) | | [[cmd:scimax.speed.clockOut]]       | Clock Out                  | O (speed cmd) | | [[cmd:scimax.org.clockReport]]      | Generate Clock Report      | -             | ",
       "path": [
         "Timestamps"
@@ -74783,7 +74777,7 @@
       "heading": "Agenda",
       "level": 1,
       "file": "25-commands.org",
-      "line": 457,
+      "line": 456,
       "content": "CLOSED: [2026-01-17 Sat 12:28]",
       "path": [],
       "commands": [],
@@ -74800,7 +74794,7 @@
       "heading": "Agenda Views",
       "level": 2,
       "file": "25-commands.org",
-      "line": 460,
+      "line": 459,
       "content": "CLOSED: [2026-01-17 Sat 12:28] | Command ID                       | Description             | Default Keybinding | |----------------------------------+-------------------------+--------------------| | [[cmd:scimax.db.agenda]]         | Show Agenda             | -                  | | [[cmd:scimax.db.showTodos]]      | Show TODO Items         | -                  | | [[cmd:scimax.db.deadlines]]      | Show Upcoming Deadlines | -                  | | [[cmd:scimax.agenda.currentFile]]| Agenda for C",
       "path": [
         "Agenda"
@@ -74836,7 +74830,7 @@
       "heading": "Advanced Agenda",
       "level": 2,
       "file": "25-commands.org",
-      "line": 470,
+      "line": 469,
       "content": "CLOSED: [2026-01-17 Sat 12:51] | Command ID                            | Description              | Default Keybinding | |---------------------------------------+--------------------------+--------------------| | [[cmd:scimax.agenda.menu]]            | Open Agenda Menu         | -                  | | [[cmd:scimax.agenda.day]]             | Day Agenda               | -                  | | [[cmd:scimax.agenda.week]]            | Week Agenda              | -                  | | [[cmd:scimax.agen",
       "path": [
         "Agenda"
@@ -74871,7 +74865,7 @@
       "heading": "Journal",
       "level": 1,
       "file": "25-commands.org",
-      "line": 500,
+      "line": 499,
       "content": "CLOSED: [2026-01-17 Sat 12:51]",
       "path": [],
       "commands": [],
@@ -74888,7 +74882,7 @@
       "heading": "Basic Journal Operations",
       "level": 2,
       "file": "25-commands.org",
-      "line": 503,
+      "line": 502,
       "content": "CLOSED: [2026-01-17 Sat 12:51] | Command ID                      | Description            | Default Keybinding | |---------------------------------+------------------------+--------------------| | [[cmd:scimax.journal.today]]    | Open Today's Journal   | C-S-j              | | [[cmd:scimax.journal.new]]      | New Journal Entry      | -                  | | [[cmd:scimax.journal.prev]]     | Previous Journal Entry | M-[ (in journal)   | | [[cmd:scimax.journal.next]]     | Next Journal Entry     ",
       "path": [
         "Journal"
@@ -74929,7 +74923,7 @@
       "heading": "Journal Utilities",
       "level": 2,
       "file": "25-commands.org",
-      "line": 516,
+      "line": 515,
       "content": "| Command ID                             | Description             | Default Keybinding | |----------------------------------------+-------------------------+--------------------| | [[cmd:scimax.journal.refresh]]         | Refresh Journal View    | -                  | | [[cmd:scimax.journal.openDirectory]]   | Open Journal Directory  | -                  | | [[cmd:scimax.journal.insertTimestamp]] | Insert Timestamp        | -                  | | [[cmd:scimax.journal.quickLog]]        | Quick L",
       "path": [
         "Journal"
@@ -74963,7 +74957,7 @@
       "heading": "Database and Search",
       "level": 1,
       "file": "25-commands.org",
-      "line": 527,
+      "line": 526,
       "content": "CLOSED: [2026-01-17 Sat 12:45]",
       "path": [],
       "commands": [],
@@ -74981,7 +74975,7 @@
       "heading": "Basic Database Operations",
       "level": 2,
       "file": "25-commands.org",
-      "line": 530,
+      "line": 529,
       "content": "CLOSED: [2026-01-17 Sat 12:45] | Command ID                       | Description                     | Default Keybinding | |----------------------------------+---------------------------------+--------------------| | [[cmd:scimax.db.refresh]]        | Refresh Database (incremental)  | -                  | | [[cmd:scimax.db.reindex]]        | Sync Files                      | -                  | | [[cmd:scimax.db.rebuild]]        | Rebuild Database (from scratch) | -                  | | [[cmd:s",
       "path": [
         "Database and Search"
@@ -75018,7 +75012,7 @@
       "heading": "Advanced Search",
       "level": 2,
       "file": "25-commands.org",
-      "line": 544,
+      "line": 543,
       "content": "CLOSED: [2026-01-17 Sat 12:45] | Command ID                       | Description                  | Default Keybinding | |----------------------------------+------------------------------+--------------------| | [[cmd:scimax.db.searchBlocks]]   | Search Code Blocks           | -                  | | [[cmd:scimax.db.searchHashtags]] | Search by Hashtag            | -                  | | [[cmd:scimax.db.searchByTag]]    | Search by Tag                | -                  | | [[cmd:scimax.db.search",
       "path": [
         "Database and Search"
@@ -75053,7 +75047,7 @@
       "heading": "Semantic Search (AI)",
       "level": 2,
       "file": "25-commands.org",
-      "line": 555,
+      "line": 554,
       "content": "CLOSED: [2026-01-17 Sat 12:45] | Command ID                            | Description                   | Default Keybinding | |---------------------------------------+-------------------------------+--------------------| | [[cmd:scimax.db.searchSemantic]]      | Semantic Search (AI)          | -                  | | [[cmd:scimax.db.searchHybrid]]        | Hybrid Search (Keywords + AI) | -                  | | [[cmd:scimax.db.configureEmbeddings]] | Configure Embedding Service   | -              ",
       "path": [
         "Database and Search"
@@ -75088,7 +75082,7 @@
       "heading": "Database Maintenance",
       "level": 2,
       "file": "25-commands.org",
-      "line": 564,
+      "line": 563,
       "content": "CLOSED: [2026-01-17 Sat 12:46] | Command ID                    | Description           | Default Keybinding | |-------------------------------+-----------------------+--------------------| | [[cmd:scimax.db.optimize]]    | Optimize Database     | -                  | | [[cmd:scimax.db.clear]]       | Clear Database        | -                  | | [[cmd:scimax.db.stats]]       | Show Database Stats   | -                  | | [[cmd:scimax.db.rebuild]]     | Rebuild Database      | -               ",
       "path": [
         "Database and Search"
@@ -75124,7 +75118,7 @@
       "heading": "Link Graph Visualization",
       "level": 2,
       "file": "25-commands.org",
-      "line": 585,
+      "line": 584,
       "content": "CLOSED: [2026-04-12 Sun 19:49] Commands for visualizing file connections through links. | Command ID                           | Description                     | Default Keybinding | |--------------------------------------+---------------------------------+--------------------| | [[cmd:scimax.showLinkGraph]]         | Show Link Graph for Current File| C-c S-g            | | [[cmd:scimax.showLinkGraphForFile]]  | Show Link Graph for File        | -                  | | [[cmd:scimax.showLinkStats",
       "path": [
         "Database and Search"
@@ -75164,7 +75158,7 @@
       "heading": "Troubleshooting and Diagnostics",
       "level": 2,
       "file": "25-commands.org",
-      "line": 596,
+      "line": 595,
       "content": "CLOSED: [2026-01-22 Thu 20:56] Commands for debugging issues and reporting problems. | Command ID                    | Description                | Default Keybinding | |-------------------------------+----------------------------+--------------------| | [[cmd:scimax.showErrorLog]]    | Show Error Log             | -                  | | [[cmd:scimax.clearErrors]]     | Clear Error Log            | -                  | | [[cmd:scimax.showDiagnostics]] | Show Diagnostic Report     | -            ",
       "path": [
         "Database and Search"
@@ -75202,7 +75196,7 @@
       "heading": "References (org-ref)",
       "level": 1,
       "file": "25-commands.org",
-      "line": 613,
+      "line": 612,
       "content": "CLOSED: [2026-01-17 Sat 12:46]",
       "path": [],
       "commands": [],
@@ -75220,7 +75214,7 @@
       "heading": "Citation Management",
       "level": 2,
       "file": "25-commands.org",
-      "line": 616,
+      "line": 615,
       "content": "CLOSED: [2026-01-17 Sat 12:46] | Command ID                             | Description                 | Default Keybinding   | |----------------------------------------+-----------------------------+----------------------| | [[cmd:scimax.ref.insertCitation]]      | Insert Citation             | C-c ] (org/md/latex) | | [[cmd:scimax.zotero.insertCitation]]   | Insert Citation from Zotero | C-c z (org/md/latex) | | [[cmd:scimax.ref.insertRef]]           | Insert Reference Link       | C-u C-c ]   ",
       "path": [
         "References (org-ref)"
@@ -75260,7 +75254,7 @@
       "heading": "Citation Editing",
       "level": 2,
       "file": "25-commands.org",
-      "line": 628,
+      "line": 627,
       "content": "CLOSED: [2026-01-17 Sat 12:46] | Command ID                                     | Description                   | Default Keybinding    | |------------------------------------------------+-------------------------------+-----------------------| | [[cmd:scimax.ref.transposeCitationLeft]]       | Transpose Citation Left       | S-LEFT (on citation)  | | [[cmd:scimax.ref.transposeCitationRight]]      | Transpose Citation Right      | S-RIGHT (on citation) | | [[cmd:scimax.ref.sortCitations]]       ",
       "path": [
         "References (org-ref)"
@@ -75295,7 +75289,7 @@
       "heading": "Bibliography Management",
       "level": 2,
       "file": "25-commands.org",
-      "line": 640,
+      "line": 639,
       "content": "CLOSED: [2026-01-17 Sat 12:46] | Command ID                             | Description                    | Default Keybinding | |----------------------------------------+--------------------------------+--------------------| | [[cmd:scimax.ref.openBibliography]]    | Open Bibliography              | -                  | | [[cmd:scimax.ref.fetchFromDOI]]        | Fetch BibTeX from DOI          | -                  | | [[cmd:scimax.ref.searchReferences]]    | Search References              | -    ",
       "path": [
         "References (org-ref)"
@@ -75331,7 +75325,7 @@
       "heading": "OpenAlex Integration",
       "level": 2,
       "file": "25-commands.org",
-      "line": 652,
+      "line": 651,
       "content": "CLOSED: [2026-01-17 Sat 12:46] | Command ID                          | Description                   | Default Keybinding | |-------------------------------------+-------------------------------+--------------------| | [[cmd:scimax.ref.showCitingWorks]]  | Show Citing Works (OpenAlex)  | -                  | | [[cmd:scimax.ref.showRelatedWorks]] | Show Related Works (OpenAlex) | -                  | | [[cmd:scimax.ref.searchOpenAlex]]   | Search OpenAlex               | -                  | | [[",
       "path": [
         "References (org-ref)"
@@ -75366,7 +75360,7 @@
       "heading": "BibTeX Speed Commands",
       "level": 2,
       "file": "25-commands.org",
-      "line": 663,
+      "line": 662,
       "content": "CLOSED: [2026-01-21 Wed 08:03] :PROPERTIES: :CUSTOM_ID: bibtex-speed-commands :END: Speed commands for BibTeX files, active at column 0 of @entry lines.",
       "path": [
         "References (org-ref)"
@@ -75395,7 +75389,7 @@
       "heading": "Navigation",
       "level": 3,
       "file": "25-commands.org",
-      "line": 671,
+      "line": 670,
       "content": "CLOSED: [2026-01-21 Wed 08:03] | Command ID                         | Description      | Speed Key | |------------------------------------+------------------+-----------| | [[cmd:scimax.bibtex.nextEntry]]    | Next Entry       | n         | | [[cmd:scimax.bibtex.previousEntry]]| Previous Entry   | p         | | [[cmd:scimax.bibtex.jumpToEntry]]  | Jump to Entry    | j         |",
       "path": [
         "References (org-ref)",
@@ -75429,7 +75423,7 @@
       "heading": "Formatting",
       "level": 3,
       "file": "25-commands.org",
-      "line": 680,
+      "line": 679,
       "content": "CLOSED: [2026-01-21 Wed 08:03] | Command ID                          | Description         | Speed Key   | |-------------------------------------+---------------------+-------------| | [[cmd:scimax.bibtex.sortFields]]    | Sort Fields         | s           | | [[cmd:scimax.bibtex.downcaseEntry]] | Downcase Entry      | d           | | [[cmd:scimax.bibtex.titleCase]]     | Title Case Title    | t           | | [[cmd:scimax.bibtex.sentenceCase]]  | Sentence Case Title | S           | | [[cmd:scima",
       "path": [
         "References (org-ref)",
@@ -75468,7 +75462,7 @@
       "heading": "Access",
       "level": 3,
       "file": "25-commands.org",
-      "line": 695,
+      "line": 694,
       "content": "CLOSED: [2026-01-21 Wed 11:31] | Command ID                          | Description            | Speed Key | |-------------------------------------+------------------------+-----------| | [[cmd:scimax.bibtex.openPdf]]       | Open PDF               | o         | | [[cmd:scimax.bibtex.openUrl]]       | Open URL/DOI           | u         | | [[cmd:scimax.bibtex.openNotes]]     | Open Notes             | N         | | [[cmd:scimax.bibtex.googleScholar]] | Google Scholar         | g         | | [[cmd",
       "path": [
         "References (org-ref)",
@@ -75505,7 +75499,7 @@
       "heading": "OpenAlex Integration",
       "level": 3,
       "file": "25-commands.org",
-      "line": 707,
+      "line": 706,
       "content": "CLOSED: [2026-01-21 Wed 11:31] | Command ID                             | Description           | Speed Key | |----------------------------------------+-----------------------+-----------| | [[cmd:scimax.bibtex.showCitingWorks]]  | Show Citing Works     | C         | | [[cmd:scimax.bibtex.showRelatedWorks]] | Show Related Works    | R         | | [[cmd:scimax.bibtex.showReferences]]   | Show References       | r         |",
       "path": [
         "References (org-ref)",
@@ -75541,7 +75535,7 @@
       "heading": "Actions",
       "level": 3,
       "file": "25-commands.org",
-      "line": 716,
+      "line": 715,
       "content": "CLOSED: [2026-01-21 Wed 11:31] | Command ID                         | Description          | Speed Key | |------------------------------------+----------------------+-----------| | [[cmd:scimax.bibtex.copyKey]]      | Copy Citation Key    | y         | | [[cmd:scimax.bibtex.copyBibtex]]   | Copy BibTeX Entry    | b         | | [[cmd:scimax.bibtex.killEntry]]    | Delete Entry         | k         | | [[cmd:scimax.bibtex.generateKey]]  | Generate Citation Key| K         | | [[cmd:scimax.bibtex.upd",
       "path": [
         "References (org-ref)",
@@ -75579,7 +75573,7 @@
       "heading": "File-Wide Commands",
       "level": 3,
       "file": "25-commands.org",
-      "line": 728,
+      "line": 727,
       "content": "CLOSED: [2026-01-21 Wed 11:31] These commands operate on the entire file. They appear as code lens buttons at the top of .bib files. | Command ID                              | Description          | Code Lens   | |-----------------------------------------+----------------------+-------------| | [[cmd:scimax.bibtex.validateFile]]      | Validate File        | ✓ Validate | | [[cmd:scimax.bibtex.showStatistics]]    | Show File Statistics | N entries   | | [[cmd:scimax.bibtex.sortEntries]]       | ",
       "path": [
         "References (org-ref)",
@@ -75618,7 +75612,7 @@
       "heading": "Journal Abbreviations",
       "level": 3,
       "file": "25-commands.org",
-      "line": 740,
+      "line": 739,
       "content": "CLOSED: [2026-01-21 Wed 11:32] Commands for managing journal name abbreviations in BibTeX entries. | Command ID                                      | Description                          | Default Keybinding | |-------------------------------------------------+--------------------------------------+--------------------| | [[cmd:scimax.bibtex.toggleJournalAbbreviation]] | Toggle Journal Abbreviation          | -                  | | [[cmd:scimax.bibtex.abbreviateAllJournals]]     | Abbreviate Al",
       "path": [
         "References (org-ref)",
@@ -75656,7 +75650,7 @@
       "heading": "Notebook",
       "level": 1,
       "file": "25-commands.org",
-      "line": 756,
+      "line": 755,
       "content": "CLOSED: [2026-01-17 Sat 12:46] | Command ID                              | Description                   | Default Keybinding | |-----------------------------------------+-------------------------------+--------------------| | [[cmd:scimax.notebook.new]]             | New Notebook                  | -                  | | [[cmd:scimax.notebook.open]]            | Open Notebook                 | -                  | | [[cmd:scimax.notebook.openMasterFile]]  | Open Notebook Master File     | -    ",
       "path": [],
       "commands": [
@@ -75686,7 +75680,7 @@
       "heading": "Navigation",
       "level": 1,
       "file": "25-commands.org",
-      "line": 774,
+      "line": 773,
       "content": "CLOSED: [2026-01-17 Sat 12:47]",
       "path": [],
       "commands": [],
@@ -75703,7 +75697,7 @@
       "heading": "Fuzzy Search (Swiper)",
       "level": 2,
       "file": "25-commands.org",
-      "line": 777,
+      "line": 776,
       "content": "CLOSED: [2026-04-12 Sun 19:53] | Command ID                             | Description                      | Default Keybinding | |----------------------------------------+----------------------------------+--------------------| | [[cmd:scimax.fuzzySearch]]             | Fuzzy Search (Current File)      | C-c s              | | [[cmd:scimax.fuzzySearchOpenFiles]]    | Fuzzy Search (Open Files)        | C-c S-s            | | [[cmd:scimax.fuzzySearchOutline]]      | Fuzzy Search (Outline)        ",
       "path": [
         "Navigation"
@@ -75741,7 +75735,7 @@
       "heading": "Jump (Avy)",
       "level": 2,
       "file": "25-commands.org",
-      "line": 787,
+      "line": 786,
       "content": "CLOSED: [2026-01-17 Sat 12:47] | Command ID                      | Description                  | Default Keybinding | |---------------------------------+------------------------------+--------------------| | [[cmd:scimax.jump.gotoChar]]    | Jump to Character            | C-c j c            | | [[cmd:scimax.jump.gotoChar2]]   | Jump to 2-Character Sequence | C-c j j            | | [[cmd:scimax.jump.gotoWord]]    | Jump to Word                 | C-c j w            | | [[cmd:scimax.jump.gotoLine]",
       "path": [
         "Navigation"
@@ -75779,8 +75773,8 @@
       "heading": "Recenter",
       "level": 2,
       "file": "25-commands.org",
-      "line": 801,
-      "content": "| Command ID                       | Description         | Default Keybinding | |----------------------------------+---------------------+--------------------| | [[cmd:scimax.recenterTopBottom]] | Recenter Top Bottom | C-l                | Emacs-style =recenter-top-bottom=. Pressing =C-l= repeatedly while the cursor stays put cycles the cursor line through three scroll positions: center on the first press, top on the second, bottom on the third, then back to center. Moving the cursor or switchin",
+      "line": 800,
+      "content": "CLOSED: [2026-07-11 Sat 09:59] | Command ID                       | Description         | Default Keybinding | |----------------------------------+---------------------+--------------------| | [[cmd:scimax.recenterTopBottom]] | Recenter Top Bottom | C-l                | Emacs-style =recenter-top-bottom=. Pressing =C-l= repeatedly while the cursor stays put cycles the cursor line through three scroll positions: center on the first press, top on the second, bottom on the third, then back to center",
       "path": [
         "Navigation"
       ],
@@ -75792,6 +75786,10 @@
       ],
       "keywords": [
         "recenter",
+        "closed",
+        "2026-07-11",
+        "sat",
+        "0959",
         "command",
         "description",
         "default",
@@ -75806,11 +75804,7 @@
         "pressing",
         "repeatedly",
         "while",
-        "cursor",
-        "stays",
-        "put",
-        "cycles",
-        "line"
+        "cursor"
       ]
     },
     {
@@ -78241,7 +78235,7 @@
       "level": 1,
       "file": "25-commands.org",
       "line": 1593,
-      "content": "CLOSED: [2026-01-21 Wed 13:21] :PROPERTIES: :CUSTOM_ID: utilities :END: Miscellaneous utility commands. | Command ID                          | Description                           | Default Keybinding | |-------------------------------------+---------------------------------------+--------------------| | [[cmd:scimax.findFile]]             | Find File                             | C-x C-f            | | [[cmd:scimax.findFileHome]]         | Find File in Home Directory           | -            ",
+      "content": "CLOSED: [2026-01-21 Wed 13:21] :PROPERTIES: :CUSTOM_ID: utilities :END: Miscellaneous utility commands. | Command ID                         | Description                           | Default Keybinding | |------------------------------------+---------------------------------------+--------------------| | [[cmd:scimax.findFile]]            | Find File                             | C-x C-f            | | [[cmd:scimax.findFileHome]]        | Find File in Home Directory           | -                ",
       "path": [],
       "commands": [
         "scimax.findFile",
@@ -78266,7 +78260,7 @@
         "description",
         "default",
         "keybinding",
-        "------------------------------------------------------------------------------------------------",
+        "-----------------------------------------------------------------------------------------------",
         "cmd",
         "find",
         "c-x",
@@ -78725,7 +78719,7 @@
       "level": 2,
       "file": "26-configuration.org",
       "line": 103,
-      "content": "When =scimax.org.depend.enabled= (the default), a TODO task with a =:DEPENDS:= property cannot be marked DONE until the tasks it depends on are DONE, and completing a task surfaces (and, when =autoPromote= is on, advances to =readyState=) any task it unblocks. A parent marked =:ORDERED: t= forces its children to be completed in order. Blocked/ready indicators (=showIndicators=), the *Dependencies* tree view, the agenda filter (=hideBlockedInAgenda=), and dangling/cycle diagnostics surface the de",
+      "content": "CLOSED: [2026-07-11 Sat 09:06] When =scimax.org.depend.enabled= (the default), a TODO task with a =:DEPENDS:= property cannot be marked DONE until the tasks it depends on are DONE, and completing a task surfaces (and, when =autoPromote= is on, advances to =readyState=) any task it unblocks. A parent marked =:ORDERED: t= forces its children to be completed in order. Blocked/ready indicators (=showIndicators=), the *Dependencies* tree view, the agenda filter (=hideBlockedInAgenda=), and dangling/c",
       "path": [
         "Org-mode Settings"
       ],
@@ -78736,6 +78730,10 @@
       "keywords": [
         "task",
         "dependencies",
+        "closed",
+        "2026-07-11",
+        "sat",
+        "0906",
         "default",
         "todo",
         "depends",
@@ -78749,18 +78747,14 @@
         "surfaces",
         "autopromote",
         "advances",
-        "readystate",
-        "any",
-        "unblocks",
-        "parent",
-        "ordered"
+        "readystate"
       ]
     },
     {
       "heading": "Entity Selector (Contacts, Locations, …)",
       "level": 2,
       "file": "26-configuration.org",
-      "line": 114,
+      "line": 115,
       "content": "CLOSED: [2026-07-02 Thu 08:05] =scimax.org.entities= defines named entity types for the *Scimax: Pick Entity* selector — fuzzy-pick a tagged/propertied heading and act on it (insert link, insert/copy a field, mailto, maps, open URL). Built-in *Contacts* (=:person:=) and *Locations* (=:location:=) are always available; entries here are merged in. Adding a type needs no code: #+begin_src json \"scimax.org.entities\": [ { \"name\": \"Reagents\", \"tag\": \"reagent\", \"display\": \"CAS\", \"url\": \"SUPPLIER_URL\" }",
       "path": [
         "Org-mode Settings"
@@ -78796,7 +78790,7 @@
       "heading": "Orphan Link Diagnostics",
       "level": 2,
       "file": "26-configuration.org",
-      "line": 133,
+      "line": 134,
       "content": "CLOSED: [2026-07-02 Thu 08:05] When =scimax.org.diagnostics.orphanLinks= is enabled (the default), scimax warns when an internal link (=[[name]]= or =[[*Heading]]=) resolves to nothing: no =<<target>>= / =<<<radio target>>>= / =#+NAME= anchor, no heading, and no matching text. This catches the case where an anchor was deleted but a link to it remains. Resolution mirrors what following the link actually does (in-file anchors/headings/text first, then a workspace-wide anchor lookup in the database",
       "path": [
         "Org-mode Settings"
@@ -78832,7 +78826,7 @@
       "heading": "Detailed Configuration",
       "level": 2,
       "file": "26-configuration.org",
-      "line": 146,
+      "line": 147,
       "content": "CLOSED: [2026-01-24 Sat 17:41]",
       "path": [
         "Org-mode Settings"
@@ -78852,7 +78846,7 @@
       "heading": "scimax.org.logRepeat",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 149,
+      "line": 150,
       "content": "CLOSED: [2026-01-24 Sat 17:41] - *Type*: string - *Values*: =\"false\"=, =\"time\"=, =\"note\"= - *Default*: =\"false\"= - *Description*: Controls logging when repeating tasks cycle back to TODO When a repeating task (one with a repeater like =+1w= in its DEADLINE or SCHEDULED timestamp) is marked done, it cycles back to TODO. This setting controls whether to log that completion. | Value     | Behavior                                | |-----------+-----------------------------------------| | =\"false\"= |",
       "path": [
         "Org-mode Settings",
@@ -78889,7 +78883,7 @@
       "heading": "scimax.org.logIntoDrawer",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 177,
+      "line": 178,
       "content": "CLOSED: [2026-01-24 Sat 17:41] - *Type*: boolean or string - *Default*: =false= - *Description*: Where to log state changes | Value           | Behavior                              | |-----------------+---------------------------------------| | =false=         | Log in body text after properties     | | =true=          | Log into =:LOGBOOK:= drawer           | | =\"CUSTOMNAME\"=  | Log into custom-named drawer          | *Example*: #+begin_src json { \"scimax.org.logIntoDrawer\": true } #+end_src *",
       "path": [
         "Org-mode Settings",
@@ -78926,7 +78920,7 @@
       "heading": "Journal Settings",
       "level": 1,
       "file": "26-configuration.org",
-      "line": 199,
+      "line": 200,
       "content": "CLOSED: [2026-01-17 Sat 17:36] Configure the journal system for daily note-taking and logging.",
       "path": [],
       "commands": [],
@@ -78949,7 +78943,7 @@
       "heading": "Settings Overview",
       "level": 2,
       "file": "26-configuration.org",
-      "line": 204,
+      "line": 205,
       "content": "CLOSED: [2026-01-17 Sat 17:36] | Setting                      | Type    | Default      | Description                          | |------------------------------+---------+--------------+--------------------------------------| | scimax.journal.directory     | string  | \"\"           | Directory for journal files          | | scimax.journal.format        | string  | \"org\"        | File format (org or markdown)        | | scimax.journal.template      | string  | \"default\"    | Template name for new e",
       "path": [
         "Journal Settings"
@@ -78987,7 +78981,7 @@
       "heading": "Detailed Configuration",
       "level": 2,
       "file": "26-configuration.org",
-      "line": 216,
+      "line": 217,
       "content": "CLOSED: [2026-01-17 Sat 17:36]",
       "path": [
         "Journal Settings"
@@ -79007,7 +79001,7 @@
       "heading": "scimax.journal.directory",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 219,
+      "line": 220,
       "content": "CLOSED: [2026-01-17 Sat 17:36] - *Type*: string - *Default*: `\"\"' (uses `~/scimax-journal') - *Description*: Directory where journal files are stored *Example*: #+begin_src json { \"scimax.journal.directory\": \"~/Documents/journal\" } #+end_src",
       "path": [
         "Journal Settings",
@@ -79042,7 +79036,7 @@
       "heading": "scimax.journal.format",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 233,
+      "line": 234,
       "content": "CLOSED: [2026-01-17 Sat 17:37] - *Type*: string (enum) - *Default*: `\"org\"' - *Options*: `\"org\"', `\"markdown\"' - *Description*: File format for journal entries *Example*: #+begin_src json { \"scimax.journal.format\": \"markdown\" } #+end_src",
       "path": [
         "Journal Settings",
@@ -79078,7 +79072,7 @@
       "heading": "scimax.journal.template",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 248,
+      "line": 249,
       "content": "CLOSED: [2026-01-17 Sat 17:37] - *Type*: string - *Default*: `\"default\"' - *Description*: Template name for new journal entries. Create custom templates in your journal directory. *Example*: #+begin_src json { \"scimax.journal.template\": \"daily-standup\" } #+end_src",
       "path": [
         "Journal Settings",
@@ -79115,7 +79109,7 @@
       "heading": "scimax.journal.dateFormat",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 262,
+      "line": 263,
       "content": "CLOSED: [2026-01-17 Sat 17:37] - *Type*: string - *Default*: `\"YYYY-MM-DD\"' - *Description*: Date format for journal file names using date-fns tokens *Common formats*: - `YYYY-MM-DD' → 2026-01-14 - `YYYY/MM/DD' → 2026/01/14 - `YYYYMMDD' → 20260114 *Example*: #+begin_src json { \"scimax.journal.dateFormat\": \"YYYY/MM/DD\" } #+end_src",
       "path": [
         "Journal Settings",
@@ -79154,7 +79148,7 @@
       "heading": "scimax.journal.autoTimestamp",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 281,
+      "line": 282,
       "content": "CLOSED: [2026-01-17 Sat 17:37] - *Type*: boolean - *Default*: `true' - *Description*: Automatically insert timestamps when creating log entries *Example*: #+begin_src json { \"scimax.journal.autoTimestamp\": false } #+end_src",
       "path": [
         "Journal Settings",
@@ -79191,7 +79185,7 @@
       "heading": "scimax.journal.weekStartsOn",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 295,
+      "line": 296,
       "content": "CLOSED: [2026-01-17 Sat 17:37] - *Type*: string (enum) - *Default*: `\"monday\"' - *Options*: `\"monday\"', `\"sunday\"' - *Description*: First day of the week in calendar view *Example*: #+begin_src json { \"scimax.journal.weekStartsOn\": \"sunday\" } #+end_src",
       "path": [
         "Journal Settings",
@@ -79228,7 +79222,7 @@
       "heading": "Database & Search Settings",
       "level": 1,
       "file": "26-configuration.org",
-      "line": 310,
+      "line": 311,
       "content": "CLOSED: [2026-01-17 Sat 17:37] Configure the full-text search database and semantic search capabilities.",
       "path": [],
       "commands": [],
@@ -79251,7 +79245,7 @@
       "heading": "Settings Overview",
       "level": 2,
       "file": "26-configuration.org",
-      "line": 315,
+      "line": 316,
       "content": "| Setting                     | Type    | Default                   | Description                            | |-----------------------------+---------+---------------------------+----------------------------------------| | scimax.db.includeJournal    | boolean | true                      | Include journal directory              | | scimax.db.includeWorkspace  | boolean | true                      | Include workspace folders              | | scimax.db.includeProjects   | boolean | true          ",
       "path": [
         "Database & Search Settings"
@@ -79283,7 +79277,7 @@
       "heading": "Detailed Configuration",
       "level": 2,
       "file": "26-configuration.org",
-      "line": 334,
+      "line": 335,
       "content": "",
       "path": [
         "Database & Search Settings"
@@ -79299,7 +79293,7 @@
       "heading": "scimax.db.includeJournal",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 336,
+      "line": 337,
       "content": "- *Type*: boolean - *Default*: =true= - *Description*: Include the journal directory in database indexing",
       "path": [
         "Database & Search Settings",
@@ -79326,7 +79320,7 @@
       "heading": "scimax.db.includeWorkspace",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 342,
+      "line": 343,
       "content": "- *Type*: boolean - *Default*: =true= - *Description*: Include workspace folders in database indexing",
       "path": [
         "Database & Search Settings",
@@ -79353,7 +79347,7 @@
       "heading": "scimax.db.includeProjects",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 348,
+      "line": 349,
       "content": "- *Type*: boolean - *Default*: =true= - *Description*: Include all scimax projects in database indexing",
       "path": [
         "Database & Search Settings",
@@ -79380,7 +79374,7 @@
       "heading": "scimax.db.include",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 354,
+      "line": 355,
       "content": "- *Type*: array of strings - *Default*: =[ ]= - *Description*: Additional directories or files to index (supports ~ for home directory) *Example*: #+begin_src json { \"scimax.db.include\": [ \"~/Documents/notes\", \"~/research\", \"~/teaching/courses\" ] } #+end_src",
       "path": [
         "Database & Search Settings",
@@ -79415,7 +79409,7 @@
       "heading": "scimax.db.exclude",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 371,
+      "line": 372,
       "content": "- *Type*: array of strings - *Default*: =[\"**/node_modules/**\", \"**/.git/**\", \"**/dist/**\", \"**/build/**\"]= - *Description*: Patterns or paths to exclude from indexing (globs and absolute paths) *Example*: #+begin_src json { \"scimax.db.exclude\": [ \"**/node_modules/**\", \"**/.git/**\", \"**/dist/**\", \"**/build/**\", \"**/archive/**\", \"~/notes/scratch.org\" ] } #+end_src",
       "path": [
         "Database & Search Settings",
@@ -79452,7 +79446,7 @@
       "heading": "scimax.db.autoIndex",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 391,
+      "line": 392,
       "content": "- *Type*: boolean - *Default*: `false' - *Description*: Automatically index workspace files on activation. *Warning*: Disable for large workspaces to prevent memory issues. *Example*: #+begin_src json { \"scimax.db.autoIndex\": true } #+end_src",
       "path": [
         "Database & Search Settings",
@@ -79489,7 +79483,7 @@
       "heading": "scimax.db.dirsPerSession",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 404,
+      "line": 405,
       "content": "- *Type*: number - *Default*: `5' - *Description*: Number of configured directories to scan per background indexing session. Progress is saved in extension state, so remaining directories are picked up in later sessions. Lower this if activation feels slow with many indexed directories. *Example*: #+begin_src json { \"scimax.db.dirsPerSession\": 3 } #+end_src",
       "path": [
         "Database & Search Settings",
@@ -79526,7 +79520,7 @@
       "heading": "scimax.db.checkStaleOnActivation",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 417,
+      "line": 418,
       "content": "CLOSED: [2026-05-03 Sun 07:59] - *Type*: boolean - *Default*: `true' - *Description*: On activation, check whether any indexed files have changed on disk and show a one-time prompt offering to run *Refresh*. Useful for catching changes synced from another machine (e.g. Dropbox) while VS Code was closed. Skipped if `scimax.db.autoCheckStale' is on (which auto-refreshes in the background instead). *Example* (disable the prompt): #+begin_src json { \"scimax.db.checkStaleOnActivation\": false } #+end_",
       "path": [
         "Database & Search Settings",
@@ -79564,7 +79558,7 @@
       "heading": "scimax.db.embeddingProvider",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 435,
+      "line": 436,
       "content": "- *Type*: string (enum) - *Default*: `\"ollama\"' - *Options*: `\"none\"', `\"ollama\"' - *Description*: Embedding provider for semantic/AI-powered search - `none': No semantic search (text-only) - `ollama': Use local Ollama server (recommended) *Example*: #+begin_src json { \"scimax.db.embeddingProvider\": \"ollama\" } #+end_src",
       "path": [
         "Database & Search Settings",
@@ -79601,7 +79595,7 @@
       "heading": "scimax.db.ollamaUrl",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 451,
+      "line": 452,
       "content": "- *Type*: string - *Default*: `\"http://localhost:11434\"' - *Description*: Ollama API URL for embeddings *Example*: #+begin_src json { \"scimax.db.embeddingProvider\": \"ollama\", \"scimax.db.ollamaUrl\": \"http://localhost:11434\" } #+end_src",
       "path": [
         "Database & Search Settings",
@@ -79632,7 +79626,7 @@
       "heading": "scimax.db.ollamaModel",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 465,
+      "line": 466,
       "content": "- *Type*: string - *Default*: `\"nomic-embed-text\"' - *Description*: Ollama model name for embeddings. Must be installed in Ollama. *Example*: #+begin_src json { \"scimax.db.embeddingProvider\": \"ollama\", \"scimax.db.ollamaModel\": \"nomic-embed-text\" } #+end_src",
       "path": [
         "Database & Search Settings",
@@ -79665,7 +79659,7 @@
       "heading": "scimax.db.queryTimeoutMs",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 479,
+      "line": 480,
       "content": "CLOSED: [2026-01-22 Thu 21:23] - *Type*: number - *Default*: =30000= (30 seconds) - *Range*: 5000 - 300000 - *Description*: Maximum time in milliseconds for database queries. Prevents hung operations. Increase this value if you have a very large database or slow disk: *Example*: #+begin_src json { \"scimax.db.queryTimeoutMs\": 60000 } #+end_src",
       "path": [
         "Database & Search Settings",
@@ -79702,7 +79696,7 @@
       "heading": "scimax.db.maxRetryAttempts",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 496,
+      "line": 497,
       "content": "CLOSED: [2026-01-22 Thu 21:23] - *Type*: number - *Default*: =3= - *Range*: 1 - 10 - *Description*: Maximum retry attempts for transient database failures (e.g., database locked, I/O errors). Uses exponential backoff between retries. *Example*: #+begin_src json { \"scimax.db.maxRetryAttempts\": 5 } #+end_src",
       "path": [
         "Database & Search Settings",
@@ -79739,7 +79733,7 @@
       "heading": "scimax.db.maxFileSizeMB",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 513,
+      "line": 514,
       "content": "CLOSED: [2026-01-22 Thu 21:24] - *Type*: number - *Default*: =10= - *Range*: 1 - 100 - *Description*: Maximum file size in MB to index. Files larger than this are skipped. Useful when working with external repositories or collaborator files that may contain large generated files: *Example*: #+begin_src json { \"scimax.db.maxFileSizeMB\": 20 } #+end_src",
       "path": [
         "Database & Search Settings",
@@ -79776,7 +79770,7 @@
       "heading": "Logging Settings",
       "level": 1,
       "file": "26-configuration.org",
-      "line": 530,
+      "line": 531,
       "content": "CLOSED: [2026-01-22 Thu 21:23] Configure logging and diagnostics.",
       "path": [],
       "commands": [],
@@ -79796,7 +79790,7 @@
       "heading": "Settings Overview",
       "level": 2,
       "file": "26-configuration.org",
-      "line": 535,
+      "line": 536,
       "content": "| Setting              | Type   | Default | Description                          | |----------------------+--------+---------+--------------------------------------| | scimax.logLevel      | string | \"info\"  | Log level for Scimax output          | | scimax.logMaxSizeKB  | number | 1024    | Max log file size before rotation    | | scimax.logBackupCount| number | 3       | Number of backup log files to keep   |",
       "path": [
         "Logging Settings"
@@ -79834,7 +79828,7 @@
       "heading": "Detailed Configuration",
       "level": 2,
       "file": "26-configuration.org",
-      "line": 543,
+      "line": 544,
       "content": "",
       "path": [
         "Logging Settings"
@@ -79850,7 +79844,7 @@
       "heading": "scimax.logLevel",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 545,
+      "line": 546,
       "content": "- *Type*: string - *Default*: =\"info\"= - *Enum*: =\"debug\"=, =\"info\"=, =\"warn\"=, =\"error\"= - *Description*: Controls the verbosity of logging to the Scimax output channel. | Level   | Shows                                         | |---------+-----------------------------------------------| | debug   | All messages including detailed debug info    | | info    | Normal operation messages                     | | warn    | Warnings and errors only                      | | error   | Errors only      ",
       "path": [
         "Logging Settings",
@@ -79887,7 +79881,7 @@
       "heading": "scimax.logMaxSizeKB",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 561,
+      "line": 562,
       "content": "- *Type*: number - *Default*: =1024= (1MB) - *Min/Max*: 100 - 10240 - *Description*: Maximum size of each log file in KB before rotation. Logs are written to the extension's storage directory.",
       "path": [
         "Logging Settings",
@@ -79923,7 +79917,7 @@
       "heading": "scimax.logBackupCount",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 568,
+      "line": 569,
       "content": "- *Type*: number - *Default*: =3= - *Min/Max*: 1 - 10 - *Description*: Number of rotated log backup files to keep (=scimax.log.1=, =scimax.log.2=, etc.). Oldest backup is deleted when limit is reached.",
       "path": [
         "Logging Settings",
@@ -79956,7 +79950,7 @@
       "heading": "Opening Log Files",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 575,
+      "line": 576,
       "content": "Use the command =Scimax: Open Log File Directory= to open the directory containing log files for debugging. *Example*: #+begin_src json { \"scimax.logLevel\": \"debug\", \"scimax.logMaxSizeKB\": 2048, \"scimax.logBackupCount\": 5 } #+end_src",
       "path": [
         "Logging Settings",
@@ -79989,7 +79983,7 @@
       "heading": "Code Execution Settings",
       "level": 1,
       "file": "26-configuration.org",
-      "line": 588,
+      "line": 589,
       "content": "Configure Python and Jupyter paths for source block execution.",
       "path": [],
       "commands": [],
@@ -80010,7 +80004,7 @@
       "heading": "Settings Overview",
       "level": 2,
       "file": "26-configuration.org",
-      "line": 592,
+      "line": 593,
       "content": "| Setting                      | Type   | Default | Description                        | |------------------------------+--------+---------+------------------------------------| | scimax.literate.pythonPath | string | \"\"    | Path to Python executable          | | scimax.literate.jupyterPath | string | \"\"    | Path to Jupyter executable         |",
       "path": [
         "Code Execution Settings"
@@ -80039,7 +80033,7 @@
       "heading": "Detailed Configuration",
       "level": 2,
       "file": "26-configuration.org",
-      "line": 599,
+      "line": 600,
       "content": "",
       "path": [
         "Code Execution Settings"
@@ -80055,7 +80049,7 @@
       "heading": "scimax.literate.pythonPath",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 601,
+      "line": 602,
       "content": "- *Type*: string - *Default*: `\"\"' (uses system Python) - *Description*: Path to Python executable for code block execution *Example*: #+begin_src json { \"scimax.literate.pythonPath\": \"/usr/local/bin/python3\" } #+end_src Or with virtual environment: #+begin_src json { \"scimax.literate.pythonPath\": \"~/projects/myproject/.venv/bin/python\" } #+end_src",
       "path": [
         "Code Execution Settings",
@@ -80092,7 +80086,7 @@
       "heading": "scimax.literate.jupyterPath",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 621,
+      "line": 622,
       "content": "- *Type*: string - *Default*: `\"\"' (uses system Jupyter) - *Description*: Path to Jupyter executable *Example*: #+begin_src json { \"scimax.literate.jupyterPath\": \"~/anaconda3/bin/jupyter\" } #+end_src",
       "path": [
         "Code Execution Settings",
@@ -80123,7 +80117,7 @@
       "heading": "Reference/Citation Settings",
       "level": 1,
       "file": "26-configuration.org",
-      "line": 634,
+      "line": 635,
       "content": "Configure bibliography management and citation styles.",
       "path": [],
       "commands": [],
@@ -80142,7 +80136,7 @@
       "heading": "Settings Overview",
       "level": 2,
       "file": "26-configuration.org",
-      "line": 638,
+      "line": 639,
       "content": "| Setting                      | Type   | Default | Description                   | |------------------------------+--------+---------+-------------------------------| | scimax.ref.bibliographyFiles | array  | [ ]     | Paths to BibTeX files         | | scimax.ref.pdfDirectory      | string | \"\"      | Directory with PDF files      | | scimax.ref.notesDirectory    | string | \"\"      | Directory for reference notes | | scimax.ref.defaultCiteStyle  | string | \"cite\"  | Default citation style      ",
       "path": [
         "Reference/Citation Settings"
@@ -80179,7 +80173,7 @@
       "heading": "Detailed Configuration",
       "level": 2,
       "file": "26-configuration.org",
-      "line": 647,
+      "line": 648,
       "content": "",
       "path": [
         "Reference/Citation Settings"
@@ -80195,7 +80189,7 @@
       "heading": "scimax.ref.bibliographyFiles",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 649,
+      "line": 650,
       "content": "- *Type*: array of strings - *Default*: `[ ]' - *Description*: Paths to BibTeX bibliography files *Example*: #+begin_src json { \"scimax.ref.bibliographyFiles\": [ \"~/Documents/bibliography/main.bib\", \"~/research/papers.bib\" ] } #+end_src",
       "path": [
         "Reference/Citation Settings",
@@ -80226,7 +80220,7 @@
       "heading": "scimax.ref.pdfDirectory",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 665,
+      "line": 666,
       "content": "- *Type*: string - *Default*: `\"\"' - *Description*: Directory containing PDF files for references *Example*: #+begin_src json { \"scimax.ref.pdfDirectory\": \"~/Documents/papers\" } #+end_src",
       "path": [
         "Reference/Citation Settings",
@@ -80256,7 +80250,7 @@
       "heading": "scimax.ref.notesDirectory",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 678,
+      "line": 679,
       "content": "- *Type*: string - *Default*: `\"\"' - *Description*: Directory for reference notes and annotations *Example*: #+begin_src json { \"scimax.ref.notesDirectory\": \"~/Documents/notes/references\" } #+end_src",
       "path": [
         "Reference/Citation Settings",
@@ -80286,7 +80280,7 @@
       "heading": "scimax.ref.defaultCiteStyle",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 691,
+      "line": 692,
       "content": "- *Type*: string (enum) - *Default*: `\"cite\"' - *Options*: `\"cite\"', `\"citet\"', `\"citep\"', `\"citeauthor\"', `\"citeyear\"' - *Description*: Default citation style for insertions - `cite': Generic citation - `citet': Textual citation (Author (Year)) - `citep': Parenthetical citation ((Author, Year)) - `citeauthor': Author only - `citeyear': Year only *Example*: #+begin_src json { \"scimax.ref.defaultCiteStyle\": \"citep\" } #+end_src",
       "path": [
         "Reference/Citation Settings",
@@ -80323,7 +80317,7 @@
       "heading": "Export Settings",
       "level": 1,
       "file": "26-configuration.org",
-      "line": 710,
+      "line": 711,
       "content": "Configure LaTeX and PDF export options.",
       "path": [],
       "commands": [],
@@ -80341,7 +80335,7 @@
       "heading": "LaTeX Export Settings",
       "level": 2,
       "file": "26-configuration.org",
-      "line": 714,
+      "line": 715,
       "content": "| Setting                             | Type   | Default           | Description                      | |-------------------------------------+--------+-------------------+----------------------------------| | scimax.export.latex.customHeader    | string | \"\"                | Custom LaTeX preamble            | | scimax.export.latex.documentClass   | string | \"article\"         | Default document class           | | scimax.export.latex.classOptions    | string | \"12pt,letterpaper\"| Default class o",
       "path": [
         "Export Settings"
@@ -80374,7 +80368,7 @@
       "heading": "scimax.export.latex.customHeader",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 724,
+      "line": 725,
       "content": "- *Type*: string - *Default*: `\"\"' - *Description*: Custom LaTeX header (preamble) that replaces the auto-generated one. Should include `\\documentclass' through all `\\usepackage' commands. *Example*: #+begin_src json { \"scimax.export.latex.customHeader\": \"\\\\documentclass[11pt]{article}\\n\\\\usepackage[utf8]{inputenc}\\n\\\\usepackage{graphicx}\\n\\\\usepackage{amsmath}\\n\\\\usepackage[margin1in]{geometry}\" } #+end_src",
       "path": [
         "Export Settings",
@@ -80411,7 +80405,7 @@
       "heading": "scimax.export.latex.documentClass",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 737,
+      "line": 738,
       "content": "- *Type*: string - *Default*: `\"article\"' - *Description*: Default LaTeX document class. Can be overridden by =#+LATEX_CLASS:= in the document. *Example*: #+begin_src json { \"scimax.export.latex.documentClass\": \"report\" } #+end_src",
       "path": [
         "Export Settings",
@@ -80443,7 +80437,7 @@
       "heading": "scimax.export.latex.classOptions",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 750,
+      "line": 751,
       "content": "- *Type*: string - *Default*: `\"12pt,letterpaper\"' - *Description*: Default LaTeX class options. Can be overridden by =#+LATEX_CLASS_OPTIONS:= in the document. *Example*: #+begin_src json { \"scimax.export.latex.classOptions\": \"11pt,a4paper,twoside\" } #+end_src",
       "path": [
         "Export Settings",
@@ -80476,7 +80470,7 @@
       "heading": "scimax.export.latex.defaultPreamble",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 763,
+      "line": 764,
       "content": "- *Type*: string - *Default*: Standard academic packages (inputenc, graphicx, amsmath, etc.) - *Description*: Default LaTeX preamble packages. Can be extended by =#+LATEX_HEADER:= in the document. *Example*: #+begin_src json { \"scimax.export.latex.defaultPreamble\": \"\\\\usepackage[utf8]{inputenc}\\n\\\\usepackage{graphicx}\\n\\\\usepackage{amsmath}\" } #+end_src",
       "path": [
         "Export Settings",
@@ -80513,7 +80507,7 @@
       "heading": "scimax.export.latex.citeBackend",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 776,
+      "line": 777,
       "content": "CLOSED: [2026-05-03 Sun 07:59] - *Type*: string (enum) - *Default*: `\"bibtex\"' - *Options*: `\"bibtex\"', `\"biblatex\"' - *Description*: Backend used when translating org-cite citations (=[cite/STYLE/VARIANTS:@key]=) into LaTeX. - =bibtex= (default): emits =natbib= commands -- =\\citep=, =\\citet=, =\\citealp=, =\\Citet=, etc. Use with the standard bibtex/natbib stack. - =biblatex=: emits biblatex commands -- =\\autocite=, =\\textcite=, =\\Autocite=, =\\fullcite=, etc. Requires =\\usepackage{biblatex}= and",
       "path": [
         "Export Settings",
@@ -80550,7 +80544,7 @@
       "heading": "Beamer Export Settings",
       "level": 2,
       "file": "26-configuration.org",
-      "line": 801,
+      "line": 802,
       "content": "CLOSED: [2026-07-02 Thu 08:04] See [[file:41-export-beamer.org][Beamer Export]] for the full feature reference. | Setting                              | Type    | Default        | Description                                                  | |--------------------------------------+---------+----------------+--------------------------------------------------------------| | scimax.export.beamer.theme           | string  | \"\"             | Default Beamer theme (e.g. \"Madrid\")                      ",
       "path": [
         "Export Settings"
@@ -80585,7 +80579,7 @@
       "heading": "PDF Export Settings",
       "level": 2,
       "file": "26-configuration.org",
-      "line": 819,
+      "line": 820,
       "content": "| Setting                         | Type    | Default           | Description                      | |---------------------------------+---------+-------------------+----------------------------------| | scimax.export.pdf.compiler      | string  | \"latexmk-lualatex\"| LaTeX compiler for PDF           | | scimax.export.pdf.bibtexCommand | string  | \"bibtex\"          | Bibliography processor           | | scimax.export.pdf.shellEscape   | string  | \"restricted\"      | Shell escape mode             ",
       "path": [
         "Export Settings"
@@ -80622,7 +80616,7 @@
       "heading": "scimax.export.pdf.compiler",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 830,
+      "line": 831,
       "content": "- *Type*: string (enum) - *Default*: `\"latexmk-lualatex\"' - *Options*: `\"latexmk-lualatex\"', `\"latexmk-pdflatex\"', `\"latexmk-xelatex\"', `\"lualatex\"', `\"pdflatex\"', `\"xelatex\"' - *Description*: LaTeX compiler to use for PDF generation - =latexmk-*=: Uses latexmk which automatically handles multiple passes for references and bibliography (recommended) - Direct compilers: Manual handling of bibliography passes *Example*: #+begin_src json { \"scimax.export.pdf.compiler\": \"latexmk-xelatex\" } #+end_src",
       "path": [
         "Export Settings",
@@ -80659,7 +80653,7 @@
       "heading": "scimax.export.pdf.bibtexCommand",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 846,
+      "line": 847,
       "content": "- *Type*: string (enum) - *Default*: `\"bibtex\"' - *Options*: `\"biber\"', `\"bibtex\"' - *Description*: Bibliography processor (only used when not using latexmk) - =bibtex=: Traditional, works with .bst styles - =biber=: Modern, required for biblatex *Example*: #+begin_src json { \"scimax.export.pdf.bibtexCommand\": \"biber\" } #+end_src",
       "path": [
         "Export Settings",
@@ -80696,7 +80690,7 @@
       "heading": "scimax.export.pdf.shellEscape",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 862,
+      "line": 863,
       "content": "- *Type*: string (enum) - *Default*: `\"restricted\"' - *Options*: `\"restricted\"', `\"full\"', `\"disabled\"' - *Description*: Shell escape mode for LaTeX compilation - =restricted=: Allows minted/pygments but blocks dangerous commands (safe default) - =full=: Allows all shell commands (security risk, but needed for some packages) - =disabled=: No shell escape *Example*: #+begin_src json { \"scimax.export.pdf.shellEscape\": \"full\" } #+end_src",
       "path": [
         "Export Settings",
@@ -80733,7 +80727,7 @@
       "heading": "scimax.export.pdf.extraArgs",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 879,
+      "line": 880,
       "content": "- *Type*: string - *Default*: `\"\"' - *Description*: Extra arguments to pass to the LaTeX compiler *Example*: #+begin_src json { \"scimax.export.pdf.extraArgs\": \"-synctex=1\" } #+end_src",
       "path": [
         "Export Settings",
@@ -80764,7 +80758,7 @@
       "heading": "scimax.export.pdf.openLogOnError",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 892,
+      "line": 893,
       "content": "- *Type*: boolean - *Default*: `true' - *Description*: Automatically open the log file when PDF compilation fails",
       "path": [
         "Export Settings",
@@ -80792,7 +80786,7 @@
       "heading": "scimax.export.pdf.cleanAuxFiles",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 898,
+      "line": 899,
       "content": "- *Type*: boolean - *Default*: `true' - *Description*: Clean up auxiliary files (.aux, .bbl, .blg, etc.) after successful compilation",
       "path": [
         "Export Settings",
@@ -80823,7 +80817,7 @@
       "heading": "LaTeX Preview Settings",
       "level": 1,
       "file": "26-configuration.org",
-      "line": 904,
+      "line": 905,
       "content": "Configure inline LaTeX equation previews.",
       "path": [],
       "commands": [],
@@ -80842,7 +80836,7 @@
       "heading": "Settings Overview",
       "level": 2,
       "file": "26-configuration.org",
-      "line": 908,
+      "line": 909,
       "content": "| Setting                           | Type    | Default | Description                      | |-----------------------------------+---------+---------+----------------------------------| | scimax.latexPreview.enabled       | boolean | true    | Enable LaTeX preview on hover    | | scimax.latexPreview.cacheEnabled  | boolean | true    | Cache rendered equations         | | scimax.latexPreview.darkModeAware | boolean | true    | Adjust rendering for dark themes |",
       "path": [
         "LaTeX Preview Settings"
@@ -80880,7 +80874,7 @@
       "heading": "Detailed Configuration",
       "level": 2,
       "file": "26-configuration.org",
-      "line": 916,
+      "line": 917,
       "content": "",
       "path": [
         "LaTeX Preview Settings"
@@ -80896,7 +80890,7 @@
       "heading": "scimax.latexPreview.enabled",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 918,
+      "line": 919,
       "content": "- *Type*: boolean - *Default*: `true' - *Description*: Enable LaTeX equation preview on hover *Example*: #+begin_src json { \"scimax.latexPreview.enabled\": true } #+end_src",
       "path": [
         "LaTeX Preview Settings",
@@ -80927,7 +80921,7 @@
       "heading": "scimax.latexPreview.cacheEnabled",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 931,
+      "line": 932,
       "content": "- *Type*: boolean - *Default*: `true' - *Description*: Cache rendered equations for faster hover responses *Example*: #+begin_src json { \"scimax.latexPreview.cacheEnabled\": true } #+end_src",
       "path": [
         "LaTeX Preview Settings",
@@ -80959,7 +80953,7 @@
       "heading": "scimax.latexPreview.darkModeAware",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 944,
+      "line": 945,
       "content": "- *Type*: boolean - *Default*: `true' - *Description*: Automatically adjust equation rendering for dark/light themes *Example*: #+begin_src json { \"scimax.latexPreview.darkModeAware\": true } #+end_src",
       "path": [
         "LaTeX Preview Settings",
@@ -80991,7 +80985,7 @@
       "heading": "LaTeX Live Preview Settings",
       "level": 1,
       "file": "26-configuration.org",
-      "line": 957,
+      "line": 958,
       "content": "Configure automatic PDF building and live preview.",
       "path": [],
       "commands": [],
@@ -81011,7 +81005,7 @@
       "heading": "Settings Overview",
       "level": 2,
       "file": "26-configuration.org",
-      "line": 961,
+      "line": 962,
       "content": "| Setting                             | Type    | Default    | Description                    | |-------------------------------------+---------+------------+--------------------------------| | scimax.latexLivePreview.buildOnSave | boolean | true       | Auto-rebuild PDF on save       | | scimax.latexLivePreview.buildOnIdle | boolean | false      | Auto-rebuild after idle period | | scimax.latexLivePreview.idleDelay   | number  | 2000       | Idle delay in milliseconds     | | scimax.latexLivePr",
       "path": [
         "LaTeX Live Preview Settings"
@@ -81050,7 +81044,7 @@
       "heading": "Detailed Configuration",
       "level": 2,
       "file": "26-configuration.org",
-      "line": 971,
+      "line": 972,
       "content": "",
       "path": [
         "LaTeX Live Preview Settings"
@@ -81066,7 +81060,7 @@
       "heading": "scimax.latexLivePreview.buildOnSave",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 973,
+      "line": 974,
       "content": "- *Type*: boolean - *Default*: `true' - *Description*: Automatically rebuild PDF when the org file is saved *Example*: #+begin_src json { \"scimax.latexLivePreview.buildOnSave\": true } #+end_src",
       "path": [
         "LaTeX Live Preview Settings",
@@ -81097,7 +81091,7 @@
       "heading": "scimax.latexLivePreview.buildOnIdle",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 986,
+      "line": 987,
       "content": "- *Type*: boolean - *Default*: `false' - *Description*: Automatically rebuild PDF after idle period (no typing) *Example*: #+begin_src json { \"scimax.latexLivePreview.buildOnIdle\": true, \"scimax.latexLivePreview.idleDelay\": 3000 } #+end_src",
       "path": [
         "LaTeX Live Preview Settings",
@@ -81133,7 +81127,7 @@
       "heading": "scimax.latexLivePreview.idleDelay",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 1000,
+      "line": 1001,
       "content": "- *Type*: number - *Default*: `2000' - *Description*: Delay in milliseconds before idle build triggers *Example*: #+begin_src json { \"scimax.latexLivePreview.buildOnIdle\": true, \"scimax.latexLivePreview.idleDelay\": 5000 } #+end_src",
       "path": [
         "LaTeX Live Preview Settings",
@@ -81168,7 +81162,7 @@
       "heading": "scimax.latexLivePreview.compiler",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 1014,
+      "line": 1015,
       "content": "- *Type*: string (enum) - *Default*: `\"pdflatex\"' - *Options*: `\"pdflatex\"', `\"xelatex\"', `\"lualatex\"' - *Description*: LaTeX compiler to use - `pdflatex': Standard, fast - `xelatex': Better Unicode and font support - `lualatex': Modern, Lua scripting support *Example*: #+begin_src json { \"scimax.latexLivePreview.compiler\": \"xelatex\" } #+end_src",
       "path": [
         "LaTeX Live Preview Settings",
@@ -81205,7 +81199,7 @@
       "heading": "scimax.latexLivePreview.useLatexmk",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 1031,
+      "line": 1032,
       "content": "- *Type*: boolean - *Default*: `true' - *Description*: Use latexmk for smart incremental builds (recommended). Automatically handles multiple passes for references, bibliography, etc. *Example*: #+begin_src json { \"scimax.latexLivePreview.useLatexmk\": true } #+end_src",
       "path": [
         "LaTeX Live Preview Settings",
@@ -81242,7 +81236,7 @@
       "heading": "Notebook Settings",
       "level": 1,
       "file": "26-configuration.org",
-      "line": 1044,
+      "line": 1045,
       "content": "Configure the project-based notebook system.",
       "path": [],
       "commands": [],
@@ -81259,7 +81253,7 @@
       "heading": "Settings Overview",
       "level": 2,
       "file": "26-configuration.org",
-      "line": 1048,
+      "line": 1049,
       "content": "| Setting                         | Type    | Default    | Description              | |---------------------------------+---------+------------+--------------------------| | scimax.notebook.directory       | string  | \"\"         | Default parent directory | | scimax.notebook.defaultTemplate | string  | \"research\" | Default template         | | scimax.notebook.autoDetect      | boolean | true       | Auto-detect projects     |",
       "path": [
         "Notebook Settings"
@@ -81293,7 +81287,7 @@
       "heading": "Detailed Configuration",
       "level": 2,
       "file": "26-configuration.org",
-      "line": 1056,
+      "line": 1057,
       "content": "",
       "path": [
         "Notebook Settings"
@@ -81309,7 +81303,7 @@
       "heading": "scimax.notebook.directory",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 1058,
+      "line": 1059,
       "content": "- *Type*: string - *Default*: `\"\"' - *Description*: Default parent directory for new notebooks *Example*: #+begin_src json { \"scimax.notebook.directory\": \"~/projects\" } #+end_src",
       "path": [
         "Notebook Settings",
@@ -81339,7 +81333,7 @@
       "heading": "scimax.notebook.defaultTemplate",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 1071,
+      "line": 1072,
       "content": "- *Type*: string (enum) - *Default*: `\"research\"' - *Options*: `\"empty\"', `\"research\"', `\"software\"', `\"notes\"' - *Description*: Default template for new notebooks - `empty': Minimal structure - `research': Research project layout - `software': Software development layout - `notes': Note-taking layout *Example*: #+begin_src json { \"scimax.notebook.defaultTemplate\": \"software\" } #+end_src",
       "path": [
         "Notebook Settings",
@@ -81376,7 +81370,7 @@
       "heading": "scimax.notebook.autoDetect",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 1089,
+      "line": 1090,
       "content": "- *Type*: boolean - *Default*: `true' - *Description*: Automatically detect and track projects in workspace *Example*: #+begin_src json { \"scimax.notebook.autoDetect\": false } #+end_src",
       "path": [
         "Notebook Settings",
@@ -81408,7 +81402,7 @@
       "heading": "Hydra Menu Settings",
       "level": 1,
       "file": "26-configuration.org",
-      "line": 1102,
+      "line": 1103,
       "content": "Configure the Hydra menu system for quick command access.",
       "path": [],
       "commands": [],
@@ -81428,7 +81422,7 @@
       "heading": "Settings Overview",
       "level": 2,
       "file": "26-configuration.org",
-      "line": 1106,
+      "line": 1107,
       "content": "| Setting                         | Type    | Default | Description                     | |---------------------------------+---------+---------+---------------------------------| | scimax.hydra.showKeyHints       | boolean | true    | Show keyboard shortcuts inline  | | scimax.hydra.singleKeySelection | boolean | true    | Single keypress selection       | | scimax.hydra.dimNonMatching     | boolean | true    | Dim non-matching items          | | scimax.hydra.sortByKey          | boolean | fals",
       "path": [
         "Hydra Menu Settings"
@@ -81467,7 +81461,7 @@
       "heading": "Detailed Configuration",
       "level": 2,
       "file": "26-configuration.org",
-      "line": 1115,
+      "line": 1116,
       "content": "",
       "path": [
         "Hydra Menu Settings"
@@ -81483,7 +81477,7 @@
       "heading": "scimax.hydra.showKeyHints",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 1117,
+      "line": 1118,
       "content": "- *Type*: boolean - *Default*: `true' - *Description*: Show keyboard shortcuts inline with menu items *Example*: #+begin_src json { \"scimax.hydra.showKeyHints\": true } #+end_src",
       "path": [
         "Hydra Menu Settings",
@@ -81515,7 +81509,7 @@
       "heading": "scimax.hydra.singleKeySelection",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 1130,
+      "line": 1131,
       "content": "- *Type*: boolean - *Default*: `true' - *Description*: Select menu items with a single keypress (no Enter needed) *Example*: #+begin_src json { \"scimax.hydra.singleKeySelection\": true } #+end_src",
       "path": [
         "Hydra Menu Settings",
@@ -81548,7 +81542,7 @@
       "heading": "scimax.hydra.dimNonMatching",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 1143,
+      "line": 1144,
       "content": "- *Type*: boolean - *Default*: `true' - *Description*: Dim menu items that don't match the current filter *Example*: #+begin_src json { \"scimax.hydra.dimNonMatching\": true } #+end_src",
       "path": [
         "Hydra Menu Settings",
@@ -81581,7 +81575,7 @@
       "heading": "scimax.hydra.sortByKey",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 1156,
+      "line": 1157,
       "content": "- *Type*: boolean - *Default*: `false' - *Description*: Sort menu items by their keyboard shortcut instead of logical grouping *Example*: #+begin_src json { \"scimax.hydra.sortByKey\": false } #+end_src",
       "path": [
         "Hydra Menu Settings",
@@ -81615,7 +81609,7 @@
       "heading": "Highlighting Settings",
       "level": 1,
       "file": "26-configuration.org",
-      "line": 1169,
+      "line": 1170,
       "content": "CLOSED: [2026-07-02 Thu 08:04] Configure the visual decoration of org headings and source blocks.",
       "path": [],
       "commands": [],
@@ -81640,7 +81634,7 @@
       "heading": "Settings Overview",
       "level": 2,
       "file": "26-configuration.org",
-      "line": 1174,
+      "line": 1175,
       "content": "| Setting                                   | Type    | Default | Description                                                | |-------------------------------------------+---------+---------+------------------------------------------------------------| | scimax.highlighting.headingBackgroundBars | boolean | true    | Tinted whole-line background behind each org heading       |",
       "path": [
         "Highlighting Settings"
@@ -81671,7 +81665,7 @@
       "heading": "Detailed Configuration",
       "level": 2,
       "file": "26-configuration.org",
-      "line": 1180,
+      "line": 1181,
       "content": "",
       "path": [
         "Highlighting Settings"
@@ -81687,7 +81681,7 @@
       "heading": "scimax.highlighting.headingBackgroundBars",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 1182,
+      "line": 1183,
       "content": "- *Type*: boolean - *Default*: =true= - *Description*: Show a tinted whole-line background behind each org heading, fading at deeper levels. The bar color for each level is configured via the workbench color customizations =scimax.heading1Background= ... =scimax.heading6Background=. Override them in =settings.json= under =workbench.colorCustomizations= to match your theme: #+begin_src json { \"scimax.highlighting.headingBackgroundBars\": true, \"workbench.colorCustomizations\": { \"scimax.heading1Bac",
       "path": [
         "Highlighting Settings",
@@ -81727,7 +81721,7 @@
       "heading": "Speed Commands Settings",
       "level": 1,
       "file": "26-configuration.org",
-      "line": 1212,
+      "line": 1213,
       "content": "Configure org-mode style speed commands.",
       "path": [],
       "commands": [],
@@ -81745,7 +81739,7 @@
       "heading": "Settings Overview",
       "level": 2,
       "file": "26-configuration.org",
-      "line": 1216,
+      "line": 1217,
       "content": "| Setting                      | Type    | Default | Description                            | |------------------------------+---------+---------+----------------------------------------| | scimax.speedCommands.enabled | boolean | true    | Enable speed commands at heading start |",
       "path": [
         "Speed Commands Settings"
@@ -81775,7 +81769,7 @@
       "heading": "Detailed Configuration",
       "level": 2,
       "file": "26-configuration.org",
-      "line": 1222,
+      "line": 1223,
       "content": "",
       "path": [
         "Speed Commands Settings"
@@ -81791,7 +81785,7 @@
       "heading": "scimax.speedCommands.enabled",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 1224,
+      "line": 1225,
       "content": "- *Type*: boolean - *Default*: `true' - *Description*: Enable org-mode speed commands (single-key shortcuts at beginning of headings) When enabled, you can use single-key shortcuts (like `n', `p', `u') when the cursor is at the beginning of a heading line. *Example*: #+begin_src json { \"scimax.speedCommands.enabled\": true } #+end_src",
       "path": [
         "Speed Commands Settings",
@@ -81828,7 +81822,7 @@
       "heading": "Agenda Settings",
       "level": 1,
       "file": "26-configuration.org",
-      "line": 1239,
+      "line": 1240,
       "content": "Configure the agenda view and TODO tracking.",
       "path": [],
       "commands": [],
@@ -81846,7 +81840,7 @@
       "heading": "Settings Overview",
       "level": 2,
       "file": "26-configuration.org",
-      "line": 1243,
+      "line": 1244,
       "content": "The agenda is now a *view over the Scimax database*. Indexing scope (what files exist in the database, and therefore what's eligible for the agenda) is controlled by =scimax.db.*= settings. The =scimax.agenda.*= settings below are display-only. | Setting                   | Type    | Default                     | Description                  | |---------------------------+---------+-----------------------------+------------------------------| | scimax.agenda.exclude     | array   | See below    ",
       "path": [
         "Agenda Settings"
@@ -81884,7 +81878,7 @@
       "heading": "Detailed Configuration",
       "level": 2,
       "file": "26-configuration.org",
-      "line": 1275,
+      "line": 1276,
       "content": "",
       "path": [
         "Agenda Settings"
@@ -81900,7 +81894,7 @@
       "heading": "scimax.agenda.exclude",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 1277,
+      "line": 1278,
       "content": "- *Type*: array of strings - *Default*: =[\"**/node_modules/**\", \"**/.git/**\", \"**/archive/**\"]= - *Description*: Patterns or paths to *hide* from the agenda view. Files matching these stay in the database (search still finds them); they just don't show up in day/week/month views. Supports both glob patterns (containing =*=) and absolute paths. To *not index* a file at all, use =scimax.db.exclude= instead. *Example*: #+begin_src json { \"scimax.agenda.exclude\": [ \"**/node_modules/**\", \"**/.git/**\"",
       "path": [
         "Agenda Settings",
@@ -81938,7 +81932,7 @@
       "heading": "scimax.agenda.defaultSpan",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 1300,
+      "line": 1301,
       "content": "- *Type*: number - *Default*: `7' - *Description*: Default number of days to show in agenda view *Example*: #+begin_src json { \"scimax.agenda.defaultSpan\": 14 } #+end_src",
       "path": [
         "Agenda Settings",
@@ -81967,7 +81961,7 @@
       "heading": "scimax.agenda.showDone",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 1313,
+      "line": 1314,
       "content": "- *Type*: boolean - *Default*: `false' - *Description*: Show completed (DONE) items in agenda view *Example*: #+begin_src json { \"scimax.agenda.showDone\": true } #+end_src",
       "path": [
         "Agenda Settings",
@@ -82000,7 +81994,7 @@
       "heading": "scimax.agenda.showHabits",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 1326,
+      "line": 1327,
       "content": "- *Type*: boolean - *Default*: `true' - *Description*: Show items tagged with `:HABIT:' *Example*: #+begin_src json { \"scimax.agenda.showHabits\": false } #+end_src",
       "path": [
         "Agenda Settings",
@@ -82031,7 +82025,7 @@
       "heading": "scimax.agenda.todoStates",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 1339,
+      "line": 1340,
       "content": "- *Type*: array of strings - *Default*: `[\"TODO\", \"NEXT\", \"WAITING\"]' - *Description*: Active TODO states to show in TODO list *Example*: #+begin_src json { \"scimax.agenda.todoStates\": [ \"TODO\", \"NEXT\", \"IN-PROGRESS\", \"WAITING\", \"SOMEDAY\" ] } #+end_src",
       "path": [
         "Agenda Settings",
@@ -82066,7 +82060,7 @@
       "heading": "scimax.agenda.doneStates",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 1358,
+      "line": 1359,
       "content": "- *Type*: array of strings - *Default*: `[\"DONE\", \"CANCELLED\"]' - *Description*: Completed TODO states *Example*: #+begin_src json { \"scimax.agenda.doneStates\": [ \"DONE\", \"CANCELLED\", \"DEFERRED\", \"ARCHIVED\" ] } #+end_src",
       "path": [
         "Agenda Settings",
@@ -82099,7 +82093,7 @@
       "heading": "Image Overlay Settings",
       "level": 1,
       "file": "26-configuration.org",
-      "line": 1376,
+      "line": 1377,
       "content": "Configure inline image thumbnails in org-mode files.",
       "path": [],
       "commands": [],
@@ -82118,7 +82112,7 @@
       "heading": "Settings Overview",
       "level": 2,
       "file": "26-configuration.org",
-      "line": 1380,
+      "line": 1381,
       "content": "| Setting                                      | Type    | Default  | Description                        | |----------------------------------------------+---------+----------+------------------------------------| | scimax.imageOverlays.enabled                 | boolean | true     | Enable inline image thumbnails     | | scimax.imageOverlays.maxWidth                | number  | 96       | Maximum thumbnail width in pixels  | | scimax.imageOverlays.maxHeight               | number  | 96       | Ma",
       "path": [
         "Image Overlay Settings"
@@ -82154,7 +82148,7 @@
       "heading": "Detailed Configuration",
       "level": 2,
       "file": "26-configuration.org",
-      "line": 1394,
+      "line": 1395,
       "content": "",
       "path": [
         "Image Overlay Settings"
@@ -82170,7 +82164,7 @@
       "heading": "scimax.imageOverlays.enabled",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 1396,
+      "line": 1397,
       "content": "- *Type*: boolean - *Default*: `true' - *Description*: Enable inline image thumbnails in org-mode files *Example*: #+begin_src json { \"scimax.imageOverlays.enabled\": true } #+end_src",
       "path": [
         "Image Overlay Settings",
@@ -82201,7 +82195,7 @@
       "heading": "scimax.imageOverlays.maxWidth",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 1409,
+      "line": 1410,
       "content": "- *Type*: number - *Default*: `96' - *Description*: Maximum width in pixels for thumbnail icons *Example*: #+begin_src json { \"scimax.imageOverlays.maxWidth\": 128 } #+end_src",
       "path": [
         "Image Overlay Settings",
@@ -82232,7 +82226,7 @@
       "heading": "scimax.imageOverlays.maxHeight",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 1422,
+      "line": 1423,
       "content": "- *Type*: number - *Default*: `96' - *Description*: Maximum height in pixels for thumbnail icons *Example*: #+begin_src json { \"scimax.imageOverlays.maxHeight\": 128 } #+end_src",
       "path": [
         "Image Overlay Settings",
@@ -82263,7 +82257,7 @@
       "heading": "scimax.imageOverlays.renderMode",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 1435,
+      "line": 1436,
       "content": "- *Type*: string (enum) - *Default*: `\"gutter\"' - *Options*: `\"gutter\"', `\"after\"', `\"both\"' - *Description*: Where to display image thumbnails - `gutter': In the line margin (gutter) - `after': Inline emoji after the link - `both': Both locations *Example*: #+begin_src json { \"scimax.imageOverlays.renderMode\": \"both\" } #+end_src",
       "path": [
         "Image Overlay Settings",
@@ -82300,7 +82294,7 @@
       "heading": "scimax.imageOverlays.onlyWhenCursorNotInLink",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 1452,
+      "line": 1453,
       "content": "- *Type*: boolean - *Default*: `true' - *Description*: Hide overlay when cursor is inside the image link (prevents interference with editing) *Example*: #+begin_src json { \"scimax.imageOverlays.onlyWhenCursorNotInLink\": true } #+end_src",
       "path": [
         "Image Overlay Settings",
@@ -82335,7 +82329,7 @@
       "heading": "scimax.imageOverlays.excludePatterns",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 1465,
+      "line": 1466,
       "content": "- *Type*: array of strings - *Default*: `[ ]' - *Description*: Regex patterns for image paths to exclude from overlays *Example*: #+begin_src json { \"scimax.imageOverlays.excludePatterns\": [ \".*\\\\.ico$\", \".*thumbnail.*\" ] } #+end_src",
       "path": [
         "Image Overlay Settings",
@@ -82369,7 +82363,7 @@
       "heading": "scimax.imageOverlays.maxOverlaysPerDocument",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 1481,
+      "line": 1482,
       "content": "- *Type*: number - *Default*: `200' - *Description*: Maximum number of image overlays to display per document (prevents performance issues) *Example*: #+begin_src json { \"scimax.imageOverlays.maxOverlaysPerDocument\": 500 } #+end_src",
       "path": [
         "Image Overlay Settings",
@@ -82405,7 +82399,7 @@
       "heading": "scimax.imageOverlays.showDimensions",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 1494,
+      "line": 1495,
       "content": "- *Type*: boolean - *Default*: `true' - *Description*: Show image dimensions in the after-content decoration *Example*: #+begin_src json { \"scimax.imageOverlays.showDimensions\": false } #+end_src",
       "path": [
         "Image Overlay Settings",
@@ -82437,7 +82431,7 @@
       "heading": "scimax.imageOverlays.cacheEnabled",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 1507,
+      "line": 1508,
       "content": "- *Type*: boolean - *Default*: `true' - *Description*: Cache generated thumbnails for faster loading *Example*: #+begin_src json { \"scimax.imageOverlays.cacheEnabled\": true } #+end_src",
       "path": [
         "Image Overlay Settings",
@@ -82468,7 +82462,7 @@
       "heading": "Capture Settings",
       "level": 1,
       "file": "26-configuration.org",
-      "line": 1520,
+      "line": 1521,
       "content": "Configure the org-capture system for quick note-taking.",
       "path": [],
       "commands": [],
@@ -82487,7 +82481,7 @@
       "heading": "Settings Overview",
       "level": 2,
       "file": "26-configuration.org",
-      "line": 1524,
+      "line": 1525,
       "content": "| Setting                          | Type    | Default | Description                                  | |----------------------------------+---------+---------+----------------------------------------------| | scimax.capture.templates         | array   | [ ]     | Capture templates                            | | scimax.capture.defaultFile       | string  | \"\"      | Default capture file                         | | scimax.capture.defaultDirectory  | string  | \"\"      | Base directory for relative",
       "path": [
         "Capture Settings"
@@ -82519,7 +82513,7 @@
       "heading": "Detailed Configuration",
       "level": 2,
       "file": "26-configuration.org",
-      "line": 1535,
+      "line": 1536,
       "content": "",
       "path": [
         "Capture Settings"
@@ -82535,7 +82529,7 @@
       "heading": "scimax.capture.templates",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 1537,
+      "line": 1538,
       "content": "- *Type*: array of objects - *Default*: `[ ]' - *Description*: Capture templates for quick note-taking. Each template has: - `key': Single character shortcut - `name': Template name - `type': entry, item, or table-line - `file': Target file - `headline': Optional target headline - `datetree': Boolean, use datetree structure - `template': Template text with placeholders *Template placeholders*: - `%^{prompt}': Prompt for input - `%t': Current timestamp - `%T': Current timestamp with time - `%i': ",
       "path": [
         "Capture Settings",
@@ -82572,7 +82566,7 @@
       "heading": "scimax.capture.defaultFile",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 1589,
+      "line": 1590,
       "content": "- *Type*: string - *Default*: `\"\"' (falls back to `{scimax.directory}/notes.org') - *Description*: Default file for captures when no target file is specified in template *Example*: #+begin_src json { \"scimax.capture.defaultFile\": \"~/Documents/inbox.org\" } #+end_src",
       "path": [
         "Capture Settings",
@@ -82606,7 +82600,7 @@
       "heading": "scimax.capture.defaultDirectory",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 1602,
+      "line": 1603,
       "content": "- *Type*: string - *Default*: `\"\"' - *Description*: Base directory for resolving relative capture template file paths (supports `~'). If empty, relative paths resolve against the default capture file's directory. *Example*: #+begin_src json { \"scimax.capture.defaultDirectory\": \"~/org\" } #+end_src",
       "path": [
         "Capture Settings",
@@ -82643,7 +82637,7 @@
       "heading": "scimax.capture.showPreview",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 1615,
+      "line": 1616,
       "content": "- *Type*: boolean - *Default*: `true' - *Description*: Show a preview of the expanded template before inserting the capture.",
       "path": [
         "Capture Settings",
@@ -82672,7 +82666,7 @@
       "heading": "scimax.capture.openAfterCapture",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 1621,
+      "line": 1622,
       "content": "- *Type*: boolean - *Default*: `true' - *Description*: Open the target file and move the cursor to the insertion point after a capture.",
       "path": [
         "Capture Settings",
@@ -82702,7 +82696,7 @@
       "heading": "scimax.capture.datetreeFormat",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 1627,
+      "line": 1628,
       "content": "- *Type*: string (enum) - *Default*: `\"day\"' - *Options*: `\"day\"', `\"week\"', `\"month\"' - *Description*: Granularity for =file+datetree= capture targets — controls the heading tree that captures are filed under. Missing headings are created automatically. - `day': =* 2024= > =** 2024-04 April= > =*** 2024-04-15 Monday= (entry at level 4) - `week': =* 2024= > =** 2024-W16= (ISO week; entry at level 3) - `month': =* 2024= > =** 2024-04 April= (entry at level 3) Week mode uses the ISO week-numbering",
       "path": [
         "Capture Settings",
@@ -82739,7 +82733,7 @@
       "heading": "Common Configurations",
       "level": 1,
       "file": "26-configuration.org",
-      "line": 1649,
+      "line": 1650,
       "content": "This section provides complete `settings.json' examples for different use cases.",
       "path": [],
       "commands": [],
@@ -82760,7 +82754,7 @@
       "heading": "Academic Writing Setup",
       "level": 2,
       "file": "26-configuration.org",
-      "line": 1653,
+      "line": 1654,
       "content": "Perfect for researchers, graduate students, and academic writers: #+begin_src json { // Journal for daily research log \"scimax.journal.directory\": \"~/research/journal\", \"scimax.journal.format\": \"org\", \"scimax.journal.autoTimestamp\": true, // References and bibliography \"scimax.ref.bibliographyFiles\": [ \"~/research/bibliography/main.bib\", \"~/research/bibliography/conferences.bib\" ], \"scimax.ref.pdfDirectory\": \"~/research/papers\", \"scimax.ref.notesDirectory\": \"~/research/notes\", \"scimax.ref.defaul",
       "path": [
         "Common Configurations"
@@ -82802,7 +82796,7 @@
       "heading": "Software Development Setup",
       "level": 2,
       "file": "26-configuration.org",
-      "line": 1720,
+      "line": 1721,
       "content": "Optimized for software developers and programmers: #+begin_src json { // Journal for development log \"scimax.journal.directory\": \"~/devlog\", \"scimax.journal.format\": \"markdown\", \"scimax.journal.template\": \"daily-standup\", // Code execution \"scimax.literate.pythonPath\": \"~/.pyenv/shims/python\", \"scimax.literate.jupyterPath\": \"~/.pyenv/shims/jupyter\", // Database - index project documentation \"scimax.db.include\": [ \"~/projects\", \"~/docs\" ], \"scimax.db.exclude\": [ \"**/node_modules/**\",",
       "path": [
         "Common Configurations"
@@ -82844,7 +82838,7 @@
       "heading": "Personal Notes & PKM Setup",
       "level": 2,
       "file": "26-configuration.org",
-      "line": 1790,
+      "line": 1791,
       "content": "For personal knowledge management and note-taking: #+begin_src json { // Journal \"scimax.journal.directory\": \"~/notes/journal\", \"scimax.journal.format\": \"org\", \"scimax.journal.weekStartsOn\": \"monday\", \"scimax.journal.autoTimestamp\": true, // Database with semantic search \"scimax.db.include\": [ \"~/notes\", \"~/books\", \"~/articles\" ], \"scimax.db.exclude\": [ \"**/archive/**\", \"**/temp/**\" ], \"scimax.db.autoIndex\": true, \"scimax.db.embeddingProvider\": \"ollama\", \"scimax.db.ollamaModel\": \"nomic-embed-tex",
       "path": [
         "Common Configurations"
@@ -82888,7 +82882,7 @@
       "heading": "Minimal Configuration",
       "level": 2,
       "file": "26-configuration.org",
-      "line": 1879,
+      "line": 1880,
       "content": "Bare-bones setup with just the essentials: #+begin_src json { \"scimax.journal.directory\": \"~/journal\", \"scimax.db.autoIndex\": false, \"scimax.agenda.include\": [\"~/notes\"] } #+end_src",
       "path": [
         "Common Configurations"
@@ -82917,7 +82911,7 @@
       "heading": "Troubleshooting",
       "level": 1,
       "file": "26-configuration.org",
-      "line": 1891,
+      "line": 1892,
       "content": "",
       "path": [],
       "commands": [],
@@ -82930,7 +82924,7 @@
       "heading": "Database Performance",
       "level": 2,
       "file": "26-configuration.org",
-      "line": 1893,
+      "line": 1894,
       "content": "If database indexing is slow or uses too much memory: #+begin_src json { \"scimax.db.autoIndex\": false, \"scimax.db.exclude\": [ \"**/node_modules/**\", \"**/.git/**\", \"**/dist/**\", \"**/build/**\", \"**/*.min.js\", \"**/archive/**\" ] } #+end_src Then manually trigger indexing with `C-S-P' → \"Scimax: Sync Files\"",
       "path": [
         "Troubleshooting"
@@ -82969,7 +82963,7 @@
       "heading": "Jupyter Kernels Not Found",
       "level": 2,
       "file": "26-configuration.org",
-      "line": 1913,
+      "line": 1914,
       "content": "Ensure Jupyter is in your PATH or specify the full path: #+begin_src json { \"scimax.literate.jupyterPath\": \"/usr/local/bin/jupyter\" } #+end_src Check available kernels with `C-S-P' → \"Scimax: Show Available Jupyter Kernels\"",
       "path": [
         "Troubleshooting"
@@ -83003,7 +82997,7 @@
       "heading": "LaTeX Preview Not Working",
       "level": 2,
       "file": "26-configuration.org",
-      "line": 1925,
+      "line": 1926,
       "content": "Ensure you have a LaTeX distribution installed (TeX Live, MiKTeX, etc.), then: #+begin_src json { \"scimax.latexPreview.enabled\": true, \"scimax.latexPreview.cacheEnabled\": false } #+end_src",
       "path": [
         "Troubleshooting"
@@ -83035,7 +83029,7 @@
       "heading": "Semantic Search Not Working",
       "level": 2,
       "file": "26-configuration.org",
-      "line": 1936,
+      "line": 1937,
       "content": "Ensure the Ollama server is running and the embedding model is pulled: #+begin_src bash curl http://localhost:11434/api/version #+end_src",
       "path": [
         "Troubleshooting"
@@ -83064,7 +83058,7 @@
       "heading": "Related Documentation",
       "level": 1,
       "file": "26-configuration.org",
-      "line": 1943,
+      "line": 1944,
       "content": "- [[file:01-getting-started.org][Getting Started Guide]] - [[file:07-source-blocks.org][Source Blocks Documentation]] - [[file:10-export.org][Export Documentation]] - [[file:24-keybindings.org][Keybindings Reference]]",
       "path": [],
       "commands": [],
@@ -83090,7 +83084,7 @@
       "heading": "Navigation",
       "level": 1,
       "file": "26-configuration.org",
-      "line": 1950,
+      "line": 1951,
       "content": "- Previous: [[file:25-commands.org][Commands]] - Index: [[file:00-index.org][Documentation Index]] - Next: [[file:27-org-api.org][Org API]]",
       "path": [],
       "commands": [],
@@ -87400,7 +87394,7 @@
       "level": 2,
       "file": "30-cli.org",
       "line": 189,
-      "content": "Extract source blocks to their =:tangle= target files (org-babel tangling). Each block with a =:tangle <filename>= header argument is written to that file, with multiple blocks targeting the same file concatenated in document order. Blocks with =:tangle no= (or no =:tangle= header) are skipped. Noweb references (=<<name>>=) are expanded by default for blocks marked =:noweb yes= or =:noweb tangle=. #+begin_src bash # Tangle all blocks in a file to their :tangle targets scimax tangle setup.org # O",
+      "content": "CLOSED: [2026-07-11 Sat 09:08] Extract source blocks to their =:tangle= target files (org-babel tangling). Each block with a =:tangle <filename>= header argument is written to that file, with multiple blocks targeting the same file concatenated in document order. Blocks with =:tangle no= (or no =:tangle= header) are skipped. Noweb references (=<<name>>=) are expanded by default for blocks marked =:noweb yes= or =:noweb tangle=. #+begin_src bash # Tangle all blocks in a file to their :tangle targ",
       "path": [
         "Commands"
       ],
@@ -87408,6 +87402,10 @@
       "keybindings": [],
       "keywords": [
         "tangle",
+        "closed",
+        "2026-07-11",
+        "sat",
+        "0908",
         "extract",
         "source",
         "blocks",
@@ -87422,18 +87420,14 @@
         "multiple",
         "targeting",
         "concatenated",
-        "document",
-        "order",
-        "skipped",
-        "noweb",
-        "references"
+        "document"
       ]
     },
     {
       "heading": "Citations",
       "level": 2,
       "file": "30-cli.org",
-      "line": 209,
+      "line": 210,
       "content": "Citation-related operations.",
       "path": [
         "Commands"
@@ -87450,7 +87444,7 @@
       "heading": "Extract Citations",
       "level": 3,
       "file": "30-cli.org",
-      "line": 213,
+      "line": 214,
       "content": "List all citation keys used in a document: #+begin_src bash scimax cite extract paper.org # JSON output scimax cite extract paper.org --format json #+end_src Output: #+begin_example Found 12 citation(s) with 8 unique key(s): doe-2020 jones-2021 smith-2019 ... #+end_example",
       "path": [
         "Commands",
@@ -87485,7 +87479,7 @@
       "heading": "Check Citations",
       "level": 3,
       "file": "30-cli.org",
-      "line": 234,
+      "line": 235,
       "content": "Validate citations against a bibliography file: #+begin_src bash scimax cite check paper.org --bib references.bib #+end_src Output: #+begin_example Citation Check: paper.org Citations found: 12 Bibliography entries: 15 MISSING (2 cited but not in .bib): - nonexistent-2020 - typo-key UNUSED (5 in .bib but not cited): - old-reference-2010 - unused-entry ... #+end_example This is useful in CI pipelines to catch citation errors before publishing.",
       "path": [
         "Commands",
@@ -87520,7 +87514,7 @@
       "heading": "Convert Citation Syntax",
       "level": 3,
       "file": "30-cli.org",
-      "line": 261,
+      "line": 262,
       "content": "Convert between org-ref v2, v3, and org-cite syntax: #+begin_src bash # Convert v2 to v3 scimax cite convert paper.org --from v2 --to v3 # Convert to org-cite scimax cite convert paper.org --from v3 --to org-cite # Modify file in place scimax cite convert paper.org --from v2 --to v3 --inplace # Output to new file scimax cite convert paper.org --from v2 --to v3 --output paper-v3.org #+end_src",
       "path": [
         "Commands",
@@ -87555,7 +87549,7 @@
       "heading": "List Bibliography",
       "level": 3,
       "file": "30-cli.org",
-      "line": 279,
+      "line": 280,
       "content": "List entries in a BibTeX file: #+begin_src bash scimax cite list references.bib # JSON output scimax cite list references.bib --format json #+end_src",
       "path": [
         "Commands",
@@ -87583,7 +87577,7 @@
       "heading": "Journal",
       "level": 2,
       "file": "30-cli.org",
-      "line": 290,
+      "line": 291,
       "content": "Open or create journal entries from the terminal. #+begin_src bash # Open today's journal (creates if needed) scimax journal # Open a specific date scimax journal tomorrow scimax journal yesterday scimax journal friday scimax journal --date \"next monday\" scimax journal --date 2026-03-15 scimax journal --date +2d scimax journal --date -1w # JSON output (for scripting) scimax journal --json #+end_src The journal directory is configured via =scimax.journal.directory= in VS Code settings. New entrie",
       "path": [
         "Commands"
@@ -87619,7 +87613,7 @@
       "heading": "Project",
       "level": 2,
       "file": "30-cli.org",
-      "line": 315,
+      "line": 316,
       "content": "Fuzzy-select and open a known project in VS Code. #+begin_src bash # Interactive fuzzy selection (uses fzf if available) scimax project # Pre-filter with a query scimax project scimax # List all known projects scimax project --list # Add a new project (creates directory if needed, opens in VS Code) scimax project --add ~/projects/new-project # JSON output scimax project --json #+end_src Projects are pulled fresh from the scimax database each time. The extension registers projects automatically w",
       "path": [
         "Commands"
@@ -87653,7 +87647,7 @@
       "heading": "Database",
       "level": 2,
       "file": "30-cli.org",
-      "line": 340,
+      "line": 341,
       "content": "Database maintenance operations.",
       "path": [
         "Commands"
@@ -87670,7 +87664,7 @@
       "heading": "Statistics",
       "level": 3,
       "file": "30-cli.org",
-      "line": 344,
+      "line": 345,
       "content": "Show database statistics: #+begin_src bash scimax db stats #+end_src Output: #+begin_example === Database Statistics === Database: /home/user/.config/Code/User/globalStorage/jkitchin.scimax-vscode/scimax-db.sqlite Root: /home/user/project Files indexed: 42 Headings: 1,234 TODO items: 89 Has embeddings: No #+end_example",
       "path": [
         "Commands",
@@ -87705,7 +87699,7 @@
       "heading": "Check Integrity",
       "level": 3,
       "file": "30-cli.org",
-      "line": 365,
+      "line": 366,
       "content": "Check for missing or stale files: #+begin_src bash scimax db check #+end_src Output: #+begin_example Checking database integrity... MISSING: old-file.org MISSING: deleted-folder/notes.org Total files in database: 42 Missing files: 2 Run =scimax db sync= to bring the index up to date. #+end_example",
       "path": [
         "Commands",
@@ -87740,8 +87734,8 @@
       "heading": "Sync",
       "level": 3,
       "file": "30-cli.org",
-      "line": 386,
-      "content": "Bring the database into agreement with the configured scan roots and the filesystem in one pass: pick up new files, refresh changed files (mtime-based), refresh in-scope files that are stale, and prune entries for files that no longer exist. Scan roots are unioned from: 1. =scimax.db.include= (VS Code settings) 2. =scimax.journal.directory= 3. =scimax.agenda.include= 4. NotebookManager projects (every project you have opened in VS Code, persisted in =notebooks.json=) Files in the database that d",
+      "line": 387,
+      "content": "CLOSED: [2026-07-11 Sat 09:08] Bring the database into agreement with the configured scan roots and the filesystem in one pass: pick up new files, refresh changed files (mtime-based), refresh in-scope files that are stale, and prune entries for files that no longer exist. Scan roots are unioned from: 1. =scimax.db.include= (VS Code settings) 2. =scimax.journal.directory= 3. =scimax.agenda.include= 4. NotebookManager projects (every project you have opened in VS Code, persisted in =notebooks.json",
       "path": [
         "Commands",
         "Database"
@@ -87754,6 +87748,10 @@
       "keybindings": [],
       "keywords": [
         "sync",
+        "closed",
+        "2026-07-11",
+        "sat",
+        "0908",
         "bring",
         "database",
         "into",
@@ -87768,19 +87766,15 @@
         "new",
         "refresh",
         "changed",
-        "mtime-based",
-        "in-scope",
-        "stale",
-        "prune",
-        "entries"
+        "mtime-based"
       ]
     },
     {
       "heading": "Clear",
       "level": 3,
       "file": "30-cli.org",
-      "line": 435,
-      "content": "Wipe the database. Use this before a full re-sync, after a schema change, or when troubleshooting suspected corruption. Requires confirmation. #+begin_src bash # Interactive confirmation scimax db clear # Skip the prompt scimax db clear --yes # Typical reset workflow scimax db clear --yes && scimax db sync #+end_src Output: #+begin_example Database: ~/Library/Application Support/Code/User/globalStorage/jkitchin.scimax-vscode/scimax-db.sqlite This will delete 1853 file(s), 12044 heading(s), 3201 ",
+      "line": 437,
+      "content": "CLOSED: [2026-07-11 Sat 09:08] Wipe the database. Use this before a full re-sync, after a schema change, or when troubleshooting suspected corruption. Requires confirmation. #+begin_src bash # Interactive confirmation scimax db clear # Skip the prompt scimax db clear --yes # Typical reset workflow scimax db clear --yes && scimax db sync #+end_src Output: #+begin_example Database: ~/Library/Application Support/Code/User/globalStorage/jkitchin.scimax-vscode/scimax-db.sqlite This will delete 1853 f",
       "path": [
         "Commands",
         "Database"
@@ -87789,6 +87783,10 @@
       "keybindings": [],
       "keywords": [
         "clear",
+        "closed",
+        "2026-07-11",
+        "sat",
+        "0908",
         "wipe",
         "database",
         "before",
@@ -87803,18 +87801,14 @@
         "requires",
         "confirmation",
         "beginsrc",
-        "bash",
-        "interactive",
-        "scimax",
-        "skip",
-        "prompt"
+        "bash"
       ]
     },
     {
       "heading": "Scan Directory",
       "level": 3,
       "file": "30-cli.org",
-      "line": 459,
+      "line": 462,
       "content": "CLOSED: [2026-01-22 Thu 20:57] Scan a specific directory and add its files to the database. This is a simplified command that takes the directory as a direct argument, making it ideal for cron jobs and scripts. #+begin_src bash # Scan a specific directory scimax db scan /path/to/org-files # Scan multiple directories (run sequentially) scimax db scan ~/work/org-files scimax db scan ~/personal/notes #+end_src Output: #+begin_example Scanning directory: /path/to/org-files Database path: /home/user/",
       "path": [
         "Commands",
@@ -87849,7 +87843,7 @@
       "heading": "Cron Job Examples",
       "level": 4,
       "file": "30-cli.org",
-      "line": 488,
+      "line": 491,
       "content": "Schedule automatic database updates: #+begin_src bash # Edit crontab crontab -e # Scan every hour 0 * * * * cd /path/to/project && scimax db scan ~/org-files # Scan daily at 6am 0 6 * * * cd /path/to/project && scimax db scan ~/org-files >> /var/log/scimax-scan.log 2>&1 # Scan multiple directories every 30 minutes */30 * * * * cd /path/to/project && scimax db scan ~/work/notes && scimax db scan ~/personal/org #+end_src",
       "path": [
         "Commands",
@@ -87885,7 +87879,7 @@
       "heading": "Command Comparison",
       "level": 4,
       "file": "30-cli.org",
-      "line": 506,
+      "line": 509,
       "content": "| Command                | Use Case                                                  | |------------------------+-----------------------------------------------------------| | =scimax db sync=       | Daily driver: discover, refresh, and prune in one pass    | | =scimax db clear=      | Wipe the database (followed by =sync= for a full rebuild) | | =scimax db scan <dir>= | Ad-hoc scan of a single directory                         | | =scimax db check=      | Read-only integrity report (no changes",
       "path": [
         "Commands",
@@ -87921,7 +87915,7 @@
       "heading": "Scripting Examples",
       "level": 1,
       "file": "30-cli.org",
-      "line": 521,
+      "line": 524,
       "content": "",
       "path": [],
       "commands": [],
@@ -87935,7 +87929,7 @@
       "heading": "Export All Org Files to HTML",
       "level": 2,
       "file": "30-cli.org",
-      "line": 523,
+      "line": 526,
       "content": "#+begin_src bash #!/bin/bash for f in docs/*.org; do scimax export \"$f\" --format html --output \"build/$(basename \"$f\" .org).html\" done #+end_src",
       "path": [
         "Scripting Examples"
@@ -87963,7 +87957,7 @@
       "heading": "Check Citations in CI",
       "level": 2,
       "file": "30-cli.org",
-      "line": 532,
+      "line": 535,
       "content": "#+begin_src yaml # .github/workflows/check-citations.yml name: Check Citations on: [push, pull_request] jobs: check: runs-on: ubuntu-latest steps: - uses: actions/checkout@v3 - uses: actions/setup-node@v3 with: node-version: '18' - run: npm ci - run: npm run compile - run: node out/cli/index.js cite check paper.org --bib refs.bib #+end_src",
       "path": [
         "Scripting Examples"
@@ -87997,7 +87991,7 @@
       "heading": "Daily Agenda Email",
       "level": 2,
       "file": "30-cli.org",
-      "line": 551,
+      "line": 554,
       "content": "#+begin_src bash #!/bin/bash # Send daily agenda via email scimax agenda today | mail -s \"Today's Agenda\" user@example.com #+end_src",
       "path": [
         "Scripting Examples"
@@ -88024,7 +88018,7 @@
       "heading": "Find Files with Specific Tags",
       "level": 2,
       "file": "30-cli.org",
-      "line": 559,
+      "line": 562,
       "content": "#+begin_src bash # Using search (if tag is in heading) scimax search \":research:\" --limit 50 #+end_src",
       "path": [
         "Scripting Examples"
@@ -88050,7 +88044,7 @@
       "heading": "Limitations",
       "level": 1,
       "file": "30-cli.org",
-      "line": 566,
+      "line": 569,
       "content": "The CLI has some limitations compared to the VS Code extension: 1. *Semantic Search*: Requires embeddings which need the embedding service configured in VS Code. 2. *Live Updates*: The CLI reads a snapshot of the database. Changes made to org files won't be reflected until you run =scimax db sync= or VS Code re-indexes them. 3. *Interactive Features*: No support for interactive features like completion or live preview. 4. *FTS Index*: =scimax db sync= populates the main tables but doesn't rebuil",
       "path": [],
       "commands": [],
@@ -88082,7 +88076,7 @@
       "heading": "Related Topics",
       "level": 1,
       "file": "30-cli.org",
-      "line": 578,
+      "line": 581,
       "content": "- [[file:18-database-search.org][Database & Search]] - How the database indexing works - [[file:10-export.org][Export]] - Export options and configuration - [[file:19-references.org][References & Citations]] - Citation syntax and bibliography management - [[file:13-agenda.org][Agenda]] - Agenda views in VS Code",
       "path": [],
       "commands": [],

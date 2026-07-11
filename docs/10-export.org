@@ -39,7 +39,7 @@ CLOSED: [2026-01-16 Fri 20:55]
 - `[l p]' PDF file - Export to PDF via LaTeX compilation
 - `[l o]' PDF and open - Export to PDF and open with system viewer
 
-*** ⚠️ Beamer Exports
+*** Beamer Exports
 - `[s b]' Beamer (LaTeX) - Export to Beamer .tex file
 - `[s p]' Beamer PDF - Compile Beamer to PDF
 - `[s o]' Beamer PDF and open - Compile and open with system viewer
@@ -227,7 +227,7 @@ B & 0.97 & 15.6 \\
 \end{table}
 #+END_SRC
 
-*** 👀 Wide tables fit the margins automatically
+*** Wide tables fit the margins automatically
 
 Plain ~tabular~ columns (=l=, =c=, =r=) do not wrap or shrink, so a table with
 long cell content would otherwise run past the right page margin. By default the

@@ -100,7 +100,8 @@ CLOSED: [2026-01-24 Sat 17:41]
 | scimax.org.depend.hideBlockedInAgenda  | boolean | false | Hide blocked tasks from agenda        |
 | scimax.org.entities                    | array   | []    | Entity types for the Pick Entity selector |
 
-** 👀 Task Dependencies
+** ✅ Task Dependencies
+CLOSED: [2026-07-11 Sat 09:06]
 
 When =scimax.org.depend.enabled= (the default), a TODO task with a =:DEPENDS:=
 property cannot be marked DONE until the tasks it depends on are DONE, and
@@ -401,7 +402,7 @@ Configure the full-text search database and semantic search capabilities.
 }
 #+end_src
 
-*** ⚠️ scimax.db.dirsPerSession
+*** scimax.db.dirsPerSession
 
 - *Type*: number
 - *Default*: `5'
@@ -1179,7 +1180,7 @@ Configure the visual decoration of org headings and source blocks.
 
 ** Detailed Configuration
 
-*** ⚠️ scimax.highlighting.headingBackgroundBars
+*** scimax.highlighting.headingBackgroundBars
 
 - *Type*: boolean
 - *Default*: =true=
@@ -1521,7 +1522,7 @@ Configure inline image thumbnails in org-mode files.
 
 Configure the org-capture system for quick note-taking.
 
-** 👀 Settings Overview
+** Settings Overview
 
 | Setting                          | Type    | Default | Description                                  |
 |----------------------------------+---------+---------+----------------------------------------------|
@@ -1586,7 +1587,7 @@ Configure the org-capture system for quick note-taking.
 }
 #+end_src
 
-*** 👀 scimax.capture.defaultFile
+*** ✅ scimax.capture.defaultFile
 
 - *Type*: string
 - *Default*: `""' (falls back to `{scimax.directory}/notes.org')
@@ -1599,7 +1600,7 @@ Configure the org-capture system for quick note-taking.
 }
 #+end_src
 
-*** ⚠️ scimax.capture.defaultDirectory
+*** ✅ scimax.capture.defaultDirectory
 
 - *Type*: string
 - *Default*: `""'
@@ -1612,19 +1613,19 @@ Configure the org-capture system for quick note-taking.
 }
 #+end_src
 
-*** ⚠️ scimax.capture.showPreview
+*** ✅ scimax.capture.showPreview
 
 - *Type*: boolean
 - *Default*: `true'
 - *Description*: Show a preview of the expanded template before inserting the capture.
 
-*** ⚠️ scimax.capture.openAfterCapture
+*** ✅ scimax.capture.openAfterCapture
 
 - *Type*: boolean
 - *Default*: `true'
 - *Description*: Open the target file and move the cursor to the insertion point after a capture.
 
-*** 👀 scimax.capture.datetreeFormat
+*** ✅ scimax.capture.datetreeFormat
 
 - *Type*: string (enum)
 - *Default*: `"day"'

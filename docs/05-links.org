@@ -614,7 +614,7 @@ CLOSED: [2026-01-15 Thu 19:53]
 | scimax.org.insertChromeLink   | Insert link from front Chrome tab (macOS)  |
 | scimax.ref.insertCitation     | Insert citation link                       |
 
-** ⚠️ macOS Quick Links
+** macOS Quick Links
 
 Two commands pull link targets from other macOS apps via AppleScript and
 insert them at the cursor as org-mode links.
@@ -649,7 +649,7 @@ CLOSED: [2026-01-15 Thu 19:53]
 | Target               | [[target-name]]              |
 | Notebook link        | [[nb:project::file::target]] |
 
-* 👀 Related Topics
+* Related Topics
 
 - [[file:42-granular-addressing.org][Granular Addressing]] - Anchors, cross-file resolution, back-links, and orphan diagnostics
 - [[file:19-references.org][References]] - Citation links and bibliography

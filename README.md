@@ -898,13 +898,13 @@ This package almost achieves feature parity with Emacs Scimax. If there are feat
 
 | Metric              | Count    |
 |---------------------|----------|
-| TypeScript files    | 350      |
-| Lines of TypeScript | ~186,500 |
-| Test files          | 85       |
-| Unit tests          | 2937     |
+| TypeScript files    | 360      |
+| Lines of TypeScript | ~188,000 |
+| Test files          | 95       |
+| Unit tests          | 3004     |
 | Documentation files | 53       |
-| Commands            | 1006     |
-| Keybindings         | 425      |
+| Commands            | 1005     |
+| Keybindings         | 426      |
 
 ### Supported Languages (Babel Execution)
 

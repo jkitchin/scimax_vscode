@@ -195,7 +195,10 @@ export function registerBacklinksProvider(context: vscode.ExtensionContext): voi
     const codeLens = new BacklinksCodeLensProvider();
     context.subscriptions.push(
         vscode.languages.registerCodeLensProvider(selector, codeLens),
-        vscode.workspace.onDidSaveTextDocument(doc => { if (isOrg(doc)) codeLens.refresh(); }),
-        vscode.window.onDidChangeActiveTextEditor(() => codeLens.refresh())
+        // Back-link counts only move when the index moves, and the index moves
+        // on save — so save is the invalidation point. Refreshing on editor
+        // activation would re-run one DB query per heading on every tab
+        // switch for nothing.
+        vscode.workspace.onDidSaveTextDocument(doc => { if (isOrg(doc)) codeLens.refresh(); })
     );
 }

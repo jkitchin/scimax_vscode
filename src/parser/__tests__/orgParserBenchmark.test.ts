@@ -392,8 +392,6 @@ function runBenchmark(
     fn: () => void,
     iterations: number = 10
 ): BenchmarkResult {
-    const times: number[] = [];
-
     // Warmup
     for (let i = 0; i < 3; i++) {
         fn();
@@ -404,22 +402,43 @@ function runBenchmark(
     // inflates several-fold, flaking the baseline checks. CPU time per parse is
     // stable under load, and matches the baselines (calibrated in isolated runs
     // where wall time and CPU time coincide).
-    for (let i = 0; i < iterations; i++) {
-        const start = process.cpuUsage();
+    //
+    // process.cpuUsage() is quantized to the scheduler tick on some platforms
+    // (~15.6ms on Windows), so a per-call delta for a sub-millisecond parse
+    // reads as 0. Instead, accumulate CPU time across executions until the
+    // total is far above the tick (keeping quantization error under a few
+    // percent of the 1.25x regression threshold), then average. Per-call
+    // min/max use wall clock — they are display/warning-only.
+    const MIN_TOTAL_CPU_MS = 200;
+    const MAX_EXECUTIONS = 10_000;
+    const wallTimes: number[] = [];
+    let executions = 0;
+    let totalMs = 0;
+    const startCpu = process.cpuUsage();
+    while (executions < iterations || totalMs < MIN_TOTAL_CPU_MS) {
+        if (executions >= MAX_EXECUTIONS) break;
+        const wallStart = performance.now();
         fn();
-        const delta = process.cpuUsage(start);
-        times.push((delta.user + delta.system) / 1000);
+        wallTimes.push(performance.now() - wallStart);
+        executions++;
+        const delta = process.cpuUsage(startCpu);
+        totalMs = (delta.user + delta.system) / 1000;
     }
 
-    const totalMs = times.reduce((a, b) => a + b, 0);
-    const avgMs = totalMs / iterations;
-    const minMs = Math.min(...times);
-    const maxMs = Math.max(...times);
+    // If the CPU clock never advanced (pathologically fast fn on a coarse
+    // timer), fall back to wall clock so avgMs is never 0.
+    if (totalMs === 0) {
+        totalMs = wallTimes.reduce((a, b) => a + b, 0);
+    }
+
+    const avgMs = totalMs / executions;
+    const minMs = Math.min(...wallTimes);
+    const maxMs = Math.max(...wallTimes);
     const opsPerSec = 1000 / avgMs;
 
     return {
         name,
-        iterations,
+        iterations: executions,
         totalMs,
         avgMs,
         minMs,

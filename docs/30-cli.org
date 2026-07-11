@@ -186,7 +186,8 @@ scimax export paper.org --format html --bib refs.bib --csl ieee
 
 The export command automatically looks for bibliography files in the same directory (=refs.bib=, =references.bib=, or =<filename>.bib=).
 
-** 👀 Tangle
+** ✅ Tangle
+CLOSED: [2026-07-11 Sat 09:08]
 
 Extract source blocks to their =:tangle= target files (org-babel tangling). Each block with a =:tangle <filename>= header argument is written to that file, with multiple blocks targeting the same file concatenated in document order. Blocks with =:tangle no= (or no =:tangle= header) are skipped. Noweb references (=<<name>>=) are expanded by default for blocks marked =:noweb yes= or =:noweb tangle=.
 
@@ -383,7 +384,8 @@ Missing files: 2
 Run =scimax db sync= to bring the index up to date.
 #+end_example
 
-*** ⚠️ Sync
+*** ✅ Sync
+CLOSED: [2026-07-11 Sat 09:08]
 
 Bring the database into agreement with the configured scan roots and the filesystem in one pass: pick up new files, refresh changed files (mtime-based), refresh in-scope files that are stale, and prune entries for files that no longer exist.
 
@@ -432,7 +434,8 @@ The summary uses these markers:
 | =-=    | File removed from the database (no longer on disk)      |
 | =     | Unchanged                                                |
 
-*** ⚠️ Clear
+*** ✅ Clear
+CLOSED: [2026-07-11 Sat 09:08]
 
 Wipe the database. Use this before a full re-sync, after a schema change, or when troubleshooting suspected corruption. Requires confirmation.
 
@@ -503,7 +506,7 @@ crontab -e
 */30 * * * * cd /path/to/project && scimax db scan ~/work/notes && scimax db scan ~/personal/org
 #+end_src
 
-**** ⚠️ Command Comparison
+**** Command Comparison
 
 | Command                | Use Case                                                  |
 |------------------------+-----------------------------------------------------------|

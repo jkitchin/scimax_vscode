@@ -36,9 +36,18 @@ export function registerDependencyDiagnostics(context: vscode.ExtensionContext):
     const collection = vscode.languages.createDiagnosticCollection('scimax.dependencies');
     context.subscriptions.push(collection);
 
-    async function refresh(doc: vscode.TextDocument): Promise<void> {
+    // Version of each document at its last completed scan. Editor activation
+    // fires on every tab switch; skip the rescan (including the workspace-wide
+    // cycle detection) when the text hasn't changed. Saves and config changes
+    // force one because the database may have changed underneath us.
+    const lastScanned = new Map<string, number>();
+
+    async function refresh(doc: vscode.TextDocument, force = false): Promise<void> {
         if (!isOrg(doc)) return;
         if (!dependEnabled()) { collection.delete(doc.uri); return; }
+        const key = doc.uri.toString();
+        const version = doc.version;
+        if (!force && lastScanned.get(key) === version) return;
 
         const db = await getDatabase();
         if (!db) { collection.delete(doc.uri); return; }
@@ -106,6 +115,7 @@ export function registerDependencyDiagnostics(context: vscode.ExtensionContext):
         }
 
         collection.set(doc.uri, diagnostics);
+        lastScanned.set(key, version);
     }
 
     const timers = new Map<string, NodeJS.Timeout>();
@@ -117,16 +127,20 @@ export function registerDependencyDiagnostics(context: vscode.ExtensionContext):
     }
 
     context.subscriptions.push(
-        vscode.window.onDidChangeActiveTextEditor(editor => { if (editor) void refresh(editor.document); }),
+        // Debounced, so rapid tab cycling coalesces into one (usually skipped) scan.
+        vscode.window.onDidChangeActiveTextEditor(editor => { if (editor) scheduleRefresh(editor.document); }),
         vscode.workspace.onDidChangeTextDocument(e => {
             if (vscode.window.activeTextEditor?.document === e.document) scheduleRefresh(e.document);
         }),
         vscode.workspace.onDidOpenTextDocument(doc => void refresh(doc)),
-        vscode.workspace.onDidSaveTextDocument(doc => void refresh(doc)),
-        vscode.workspace.onDidCloseTextDocument(doc => collection.delete(doc.uri)),
+        vscode.workspace.onDidSaveTextDocument(doc => void refresh(doc, true)),
+        vscode.workspace.onDidCloseTextDocument(doc => {
+            collection.delete(doc.uri);
+            lastScanned.delete(doc.uri.toString());
+        }),
         vscode.workspace.onDidChangeConfiguration(e => {
             if (e.affectsConfiguration('scimax.org.depend')) {
-                for (const editor of vscode.window.visibleTextEditors) void refresh(editor.document);
+                for (const editor of vscode.window.visibleTextEditors) void refresh(editor.document, true);
             }
         })
     );
