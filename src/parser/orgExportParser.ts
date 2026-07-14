@@ -57,8 +57,12 @@ import { normalizeLineEndings } from '../utils/escapeUtils';
 // Using simpler patterns without lookbehind/lookahead to prevent catastrophic backtracking
 const LINK_PATTERN = /\[\[([^\]]+)\](?:\[([^\]]+)\])?\]/g;
 // Citation pattern: cite:key1,key2 (v2) or cite:&key1;&key2 (v3)
-// Matches word chars, &, ;, ,, :, - but not trailing punctuation (,;)
-const CITATION_PATTERN = /(cite[pt]?|citenum|citeauthor|citeyear|Citep|Citet|citealp|citealt):([\w&;,:-]*[\w&:-])/g;
+// Matches word chars, &, ;, ,, :, - internally, but the key may NOT end in
+// punctuation: the final char class excludes , ; and : so a trailing separator
+// or a colon introducing an equation/list (`cite:key:`) is left as text rather
+// than absorbed into the key (which would export \cite{key:} and be dropped by
+// BibTeX). Internal colons are still allowed via the middle class. See #52.
+const CITATION_PATTERN = /(cite[pt]?|citenum|citeauthor|citeyear|Citep|Citet|citealp|citealt):([\w&;,:-]*[\w&-])/g;
 const REF_PATTERN = /(ref|eqref|pageref|nameref|autoref|cref|Cref|label):([a-zA-Z0-9_:-]+)/g;
 const DOI_PATTERN = /doi:(10\.\d{4,9}\/[^\s<>[\](){}]+)/g;
 const BIBLIOGRAPHY_PATTERN = /bibliography:([^\s<>[\](){}]+)/g;

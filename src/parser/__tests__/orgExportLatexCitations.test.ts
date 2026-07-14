@@ -31,6 +31,25 @@ describe('LaTeX Export - Citations and References', () => {
             expect(latex).toContain('\\cite{key1,key2,key3}');
         });
 
+        it('does not absorb a trailing colon into the key (#52)', () => {
+            // A colon introducing an equation right after a citation must not
+            // become part of the key (\cite{key:} is dropped by BibTeX).
+            const content = '* Test\nSee cite:girgis-1991-reactivities:';
+            const doc = parseOrgFast(content);
+            const latex = exportToLatex(doc, {});
+            expect(latex).toContain('\\cite{girgis-1991-reactivities}');
+            expect(latex).not.toContain('girgis-1991-reactivities:}');
+            // The literal colon survives as ordinary text after the citation.
+            expect(latex).toContain('\\cite{girgis-1991-reactivities}:');
+        });
+
+        it('preserves colons inside a key (only strips a trailing one)', () => {
+            const content = '* Test\ncite:smith:2020:intro and text';
+            const doc = parseOrgFast(content);
+            const latex = exportToLatex(doc, {});
+            expect(latex).toContain('\\cite{smith:2020:intro}');
+        });
+
         it('exports citep: to \\citep{}', () => {
             const content = '* Test\nResults citep:author-2019 show...';
             const doc = parseOrgFast(content);

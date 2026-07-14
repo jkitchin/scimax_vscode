@@ -141,7 +141,9 @@ function parseOrgRefCitations(
 
             // Clean up: remove trailing punctuation and standalone "and", "or" connectors at the end
             v3Content = v3Content.replace(/\s+(and|or)\s*$/i, '');
-            v3Content = v3Content.replace(/[.!?]+$/, '');  // Keep ; and , as they might be part of citation
+            // Keep ; and , as they might be part of citation; strip a trailing
+            // ":" though (colon introducing an equation/list, not a key char; #52).
+            v3Content = v3Content.replace(/[.!?:]+$/, '');
             v3Content = v3Content.trim();
 
             if (v3Content) {
@@ -165,9 +167,12 @@ function parseOrgRefCitations(
             content = v2Match[1];
 
             // Strip trailing sentence punctuation that's not part of the citation.
-            // BibTeX keys can contain "." internally, but a trailing "." (or ",;!?")
-            // is almost always sentence punctuation, not part of the key.
-            content = content.replace(/[.,;!?]+$/, '');
+            // BibTeX keys can contain "." and ":" internally, but a trailing one
+            // (or ",;:!?") is almost always sentence punctuation, not part of the
+            // key. A trailing ":" is a common case (a colon introducing an
+            // equation or list right after a citation) that otherwise produces
+            // \cite{key:}, which BibTeX drops silently. See issue #52.
+            content = content.replace(/[.,;:!?]+$/, '');
 
             end = contentStart + content.length;
 

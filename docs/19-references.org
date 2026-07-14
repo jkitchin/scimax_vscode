@@ -132,6 +132,21 @@ cite:kitchin-2015-examp-effec,kitchin-2025-beyon-fourt          # Version 2
 cite:&kitchin-2015-examp-effec;&kitchin-2025-beyon-fourt        # Version 3
 
 
+** 👀 Trailing punctuation after a cite: link
+CLOSED: [2026-07-14 Tue]
+
+Sentence punctuation immediately after an old-style =cite:= link is *not* absorbed
+into the key. A colon is the common trap: writing
+
+: ...as shown in cite:girgis-1991-reactivities:
+
+exports =\cite{girgis-1991-reactivities}:= (the colon is left as text), not
+=\cite{girgis-1991-reactivities:}= (which BibTeX cannot resolve, so the citation
+would render as =?= and be silently dropped from the bibliography). Internal
+colons in a key (e.g. =cite:smith:2020=) are preserved -- only a *trailing* colon
+is treated as punctuation. Run =scimax cite check <file.org>= to catch any key
+that is cited but not present in the =.bib=.
+
 ** Citation Formats by File Type
 
 Citations adapt to your document format:

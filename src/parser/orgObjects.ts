@@ -929,17 +929,32 @@ function tryParseCitationLink(text: string, pos: number, prevChar: string, baseO
     if (!match) return null;
 
     const command = match[1];
-    const path = match[2];
+    let path = match[2];
+    let consumed = match[0].length;
+
+    // Don't absorb a trailing colon into the key: `cite:key:` is a citation
+    // followed by a literal colon (e.g. introducing an equation or list), not a
+    // key literally named `key:`. Colons are never org-ref key separators (v2
+    // uses ",", v3 uses ";"), so a trailing colon is always punctuation. Leaving
+    // it in the key exports \cite{key:}, which BibTeX drops silently. Shrink the
+    // consumed range so the colon is re-parsed as ordinary text. See issue #52.
+    const trailingColons = /:+$/.exec(path);
+    if (trailingColons) {
+        path = path.slice(0, -trailingColons[0].length);
+        consumed -= trailingColons[0].length;
+    }
+    // Nothing but colons after the command: not a real citation.
+    if (!path) return null;
 
     return {
         type: 'link',
-        range: { start: pos + baseOffset, end: pos + match[0].length + baseOffset },
+        range: { start: pos + baseOffset, end: pos + consumed + baseOffset },
         postBlank: 0,
         properties: {
             linkType: command.toLowerCase(),
             path,
             format: 'plain',
-            rawLink: match[0],
+            rawLink: match[0].slice(0, consumed),
         },
         children: undefined,
     };
