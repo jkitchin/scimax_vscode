@@ -261,6 +261,24 @@ function mapOrgCiteToLatex(
     }
 }
 
+/**
+ * Escape a value for use inside \texttt{} and insert \allowbreak{} after common
+ * identifier separators (`.` `/` `:` `-` `_`), so long inline code such as a
+ * fully qualified dotted path (=difflow.flowsheet.Flowsheet.solve()=) can wrap
+ * across lines instead of overflowing the right margin. \texttt does not
+ * hyphenate, so without these break hints LaTeX emits overfull \hbox warnings
+ * and the code runs off the page edge. See issue #53.
+ */
+function breakableInlineCode(value: string): string {
+    return escapeString(value, 'latex')
+        // Escaped underscore is "\_"; allow a break right after it.
+        .replace(/\\_/g, '\\_\\allowbreak{}')
+        // Separators that survive escaping unchanged. \allowbreak{} contains
+        // none of these characters, so a single pass is safe. (- is last in the
+        // class so it is a literal hyphen, not a range.)
+        .replace(/([./:-])/g, '$1\\allowbreak{}');
+}
+
 // =============================================================================
 // LaTeX Export Options
 // =============================================================================
@@ -1291,12 +1309,13 @@ export class LatexExportBackend implements ExportBackend {
     }
 
     private exportCommand(obj: CommandObject, state: ExportState): string {
-        // Emacs-style command markup `command' - export as \texttt{}
-        return `\\texttt{${escapeString(obj.properties.value, 'latex')}}`;
+        // Emacs-style command markup `command' - export as breakable \texttt{}
+        return `\\texttt{${breakableInlineCode(obj.properties.value)}}`;
     }
 
     private exportVerbatim(obj: VerbatimObject, state: ExportState): string {
-        return `\\texttt{${escapeString(obj.properties.value, 'latex')}}`;
+        // Breakable so long dotted identifiers wrap instead of overflowing (#53).
+        return `\\texttt{${breakableInlineCode(obj.properties.value)}}`;
     }
 
     private exportLink(link: LinkObject, state: ExportState): string {
@@ -1611,8 +1630,8 @@ export class LatexExportBackend implements ExportBackend {
     }
 
     private exportInlineSrcBlock(obj: InlineSrcBlockObject, state: ExportState): string {
-        const value = obj.properties.value;
-        return `\\texttt{${escapeString(value, 'latex')}}`;
+        // Breakable so long inline source wraps instead of overflowing (#53).
+        return `\\texttt{${breakableInlineCode(obj.properties.value)}}`;
     }
 
     private exportInlineBabelCall(obj: InlineBabelCallObject, state: ExportState): string {

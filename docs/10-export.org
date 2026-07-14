@@ -251,6 +251,18 @@ emit a bare ~tabular~. If a scaled table's text becomes too small, prefer a
 ~tabularx~ table with wrapping ~X~ columns, which keeps the font size and wraps
 long cells instead.
 
+*** ⚠️ Long inline code wraps at separators
+CLOSED: [2026-07-14 Tue]
+
+Inline verbatim (==code==), Emacs command markup (=`command'=), and inline source
+(=src_python{...}=) export to =\texttt{}=, which does not hyphenate. A long dotted
+identifier such as ==difflow.flowsheet.Flowsheet.solve()== would otherwise be one
+unbreakable box that overflows the right margin (an =Overfull \hbox=). The
+exporter inserts =\allowbreak= after identifier separators (=.= =/= =:= =-= =_=) so
+these wrap naturally across lines. Word-internal characters are not broken, so a
+single very long token with no separators can still overrun; add a natural
+separator or use a display source block for such cases.
+
 *** Cross-References
 
 Use `#+NAME:' for labeled elements and link to them:

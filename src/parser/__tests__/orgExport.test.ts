@@ -1052,6 +1052,33 @@ describe('LaTeX Export', () => {
             expect(result).not.toContain('\\verb|');
         });
 
+        it('exports verbatim as breakable texttt so long paths wrap (#53)', () => {
+            const state = createExportState();
+            const verbatim = {
+                type: 'verbatim' as const,
+                range: createRange(0, 10),
+                postBlank: 0,
+                properties: { value: 'difflow.flowsheet.Flowsheet.solve()' },
+            };
+            const result = backend.exportObject(verbatim as never, state);
+            // Wrapped in \texttt with \allowbreak break hints after each dot.
+            expect(result).toBe(
+                '\\texttt{difflow.\\allowbreak{}flowsheet.\\allowbreak{}Flowsheet.\\allowbreak{}solve()}'
+            );
+        });
+
+        it('adds break hints after an escaped underscore in verbatim (#53)', () => {
+            const state = createExportState();
+            const verbatim = {
+                type: 'verbatim' as const,
+                range: createRange(0, 10),
+                postBlank: 0,
+                properties: { value: 'a_b.c' },
+            };
+            const result = backend.exportObject(verbatim as never, state);
+            expect(result).toBe('\\texttt{a\\_\\allowbreak{}b.\\allowbreak{}c}');
+        });
+
         it('exports hyperlinks', () => {
             const state = createExportState();
             const link: LinkObject = {
