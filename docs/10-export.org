@@ -342,6 +342,35 @@ When =scimax export --format pdf= fails, it does not fail silently:
 - With =--json=, the failure object includes =latex_error=, =tex_line=, =log_file=,
   and =removed_partial_pdf=.
 
+*** ⚠️ The generated .tex is disposable
+CLOSED: [2026-07-14 Tue]
+
+The *org file is the source of truth*; the =report.tex= produced during PDF export
+is a *disposable build artifact*. Every =scimax export --format pdf= run
+regenerates =report.tex= from =report.org=, overwriting any manual edits to the
+=.tex=. (The converted =*.svg.pdf= files from SVG figures are disposable in the
+same way.)
+
+Practical consequences:
+
+- *Do not hand-edit =report.tex= expecting the change to survive.* Fix the problem
+  in the =.org= source and re-export. With in-pipeline SVG→PDF conversion (see
+  /SVG Images/ above) and clear failure reporting (see /Error Handling/ above),
+  the two common reasons to reach for a =.tex= patch are already handled inside
+  the export.
+- Some LaTeX setups also define a =latexmk= custom dependency that rebuilds
+  =.tex= from =.org=; where that exists, running =latexmk= on the =.tex= regenerates
+  it too, so a =.tex=-level patch is doubly futile.
+- If you truly need a one-off from an edited =.tex= (e.g. to test a fix for an
+  export bug), compile it *directly* with the LaTeX engine and do **not** re-run
+  =scimax export= (which would regenerate it):
+  #+BEGIN_SRC bash
+  lualatex -interaction=nonstopmode report.tex
+  bibtex report
+  lualatex -interaction=nonstopmode report.tex
+  lualatex -interaction=nonstopmode report.tex
+  #+END_SRC
+
 *** Build on Save
 
 Enable automatic PDF building in settings:
