@@ -719,13 +719,25 @@ async function exportPdf(
     const pdfConfig = loadPdfConfig();
 
     // First generate LaTeX
-    const latexContent = await exportLatex(content, options, false);
+    let latexContent = await exportLatex(content, options, false);
 
     // Write to temp file
     const tempDir = path.dirname(outputPath);
     const baseName = path.basename(outputPath, '.pdf');
     const texPath = path.join(tempDir, `${baseName}.tex`);
     const logPath = path.join(tempDir, `${baseName}.log`);
+
+    // Pre-convert any SVG images to PDF; LaTeX cannot embed SVG directly (#49).
+    try {
+        const { convertSvgIncludesToPdf } = await import('../parser/svgToPdf');
+        const svg = convertSvgIncludesToPdf(latexContent, tempDir);
+        latexContent = svg.latex;
+        for (const f of svg.failed) {
+            console.warn(`[scimax export] could not convert SVG ${f.svg}: ${f.reason}`);
+        }
+    } catch (err) {
+        console.warn('[scimax export] SVG->PDF conversion step failed:', err);
+    }
 
     await fs.promises.writeFile(texPath, latexContent, 'utf-8');
 

@@ -367,11 +367,27 @@ async function compilePdf(
     json: boolean = false
 ): Promise<string> {
     const { execSync } = await import('child_process');
+    const { convertSvgIncludesToPdf } = await import('../../parser/svgToPdf');
 
     const dir = path.dirname(inputPath);
     const basename = path.basename(inputPath, '.org');
     const texPath = path.join(dir, `${basename}.tex`);
     const pdfPath = outputPath || path.join(dir, `${basename}.pdf`);
+
+    // Route progress to stderr in JSON mode
+    const log = (msg: string) => json ? process.stderr.write(msg + '\n') : console.log(msg);
+
+    // LaTeX cannot embed SVG directly; pre-convert referenced SVGs to PDF and
+    // rewrite the \includegraphics paths (issue #49). Paths resolve relative to
+    // the org file's directory, which is also the compile working directory.
+    const svg = convertSvgIncludesToPdf(latex, dir);
+    latex = svg.latex;
+    if (svg.converted.length > 0) {
+        log(`Converted ${svg.converted.length} SVG image(s) to PDF using ${svg.converter}.`);
+    }
+    for (const f of svg.failed) {
+        log(`Warning: could not convert SVG ${f.svg}: ${f.reason}`);
+    }
 
     // Write LaTeX file
     fs.writeFileSync(texPath, latex);
@@ -384,9 +400,6 @@ async function compilePdf(
     // Parse compiler setting
     const compiler = exportSettings.pdf.compiler;
     const extraArgs = exportSettings.pdf.extraArgs ? exportSettings.pdf.extraArgs.split(' ').filter(a => a) : [];
-
-    // Route progress to stderr in JSON mode
-    const log = (msg: string) => json ? process.stderr.write(msg + '\n') : console.log(msg);
 
     log(`Using compiler: ${compiler}`);
 

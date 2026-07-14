@@ -291,6 +291,30 @@ PDF export requires:
 - LaTeX distribution (TeX Live, MiKTeX, or MacTeX)
 - `latexmk' utility (included with most distributions)
 
+*** 👀 SVG Images
+CLOSED: [2026-07-14 Tue]
+
+LaTeX engines (pdflatex/lualatex/xelatex) cannot embed =.svg= files directly,
+so a figure like =[[file:diagram.svg]]= would otherwise abort the build with
+/"Unknown graphics extension: .svg"/.
+
+Scimax handles this automatically: during PDF export each referenced SVG is
+converted to PDF next to the original (=diagram.svg= → =diagram.svg.pdf=) and the
+=\includegraphics= path is rewritten to the converted file. No =-shell-escape= is
+required. The first available converter is used, tried in this order:
+
+1. =rsvg-convert= (from librsvg -- fastest, recommended)
+2. =cairosvg= (a Python package)
+3. =inkscape= (version 1.x)
+
+Install at least one to get SVG support (e.g. =brew install librsvg= for
+=rsvg-convert=). If none is installed, or a specific SVG cannot be converted, the
+export prints a warning naming the file and continues; the =.svg= include is left
+untouched (so LaTeX will still error on that figure). The generated
+=diagram.svg.pdf= is a derived build artifact and is safe to delete.
+
+/HTML export renders SVG natively and needs no conversion./
+
 *** Error Handling
 
 If PDF compilation fails:
