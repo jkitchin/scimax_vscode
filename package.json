@@ -6663,7 +6663,7 @@
             "type": "string"
           },
           "default": [],
-          "description": "List of org-lint checker IDs to disable. Available checkers: duplicate-custom-id, duplicate-name, missing-language-in-src-block, invalid-block, incomplete-drawer, broken-link, undefined-footnote-reference, unreferenced-footnote-definition, timestamp-syntax, clock-issues, orphaned-affiliated-keywords, wrong-header-argument, planning-inactive, heading-level-skip"
+          "description": "List of org-lint checker IDs to disable. Available checkers: duplicate-custom-id, duplicate-name, missing-language-in-src-block, invalid-block, incomplete-drawer, broken-link, undefined-footnote-reference, unreferenced-footnote-definition, timestamp-syntax, clock-issues, orphaned-affiliated-keywords, wrong-header-argument, planning-inactive, heading-level-skip, literal-dollar"
         },
         "scimax.org.diagnostics.orphanLinks": {
           "type": "boolean",

@@ -263,6 +263,30 @@ these wrap naturally across lines. Word-internal characters are not broken, so a
 single very long token with no separators can still overrun; add a natural
 separator or use a display source block for such cases.
 
+*** ⚠️ Literal dollar signs in prose
+CLOSED: [2026-07-14 Tue]
+
+A =$= in text starts inline LaTeX *math mode* on PDF/LaTeX export. A single stray
+=$=, or a pair around currency (=$50,000 ... $273,000=), is silently typeset as
+math, dropping the =$= signs and running the words together in italics.
+
+*Important:* the usual escape =\$= does **not** work in this org→LaTeX pipeline.
+Org turns the leading backslash into =\textbackslash{}=, so =\$50,000= exports as
+=\textbackslash{}\$50,000= (a visible stray backslash), and in Emacs org it can
+even fail to compile with =! Missing $ inserted=.
+
+Forms that *do* work:
+
+- *Reword* to drop the sign: =50,000 USD= or =USD 50,000=.
+- *Inline verbatim*: ==$50,000== exports as =\texttt{\$50,000}= (monospace, but
+  correct).
+- *Raw LaTeX snippet* for the sign only: ~@@latex:\$@@50,000~ emits a literal
+  =\$= just in the LaTeX backend.
+
+The =literal-dollar= lint flags likely offenders: comma-grouped currency amounts
+(=$50,000=) and any line with an odd number of unescaped =$= (which opens math
+mode). Dollar signs inside verbatim/code spans and source blocks are ignored.
+
 *** Cross-References
 
 Use `#+NAME:' for labeled elements and link to them:

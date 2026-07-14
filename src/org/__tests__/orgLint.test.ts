@@ -172,6 +172,42 @@ print("hello")
         });
     });
 
+    describe('literal-dollar (#54)', () => {
+        it('flags currency amounts that would be parsed as math', () => {
+            const content = 'Purchased equipment cost ~$50,000, total capital investment ~$273,000.\n';
+            const issues = lintOrgDocument(content);
+            const dollar = issues.filter(i => i.code === 'literal-dollar');
+            expect(dollar.length).toBe(2);
+            expect(dollar[0].message).toContain('$50,000');
+        });
+
+        it('flags an odd (single stray) unescaped dollar sign', () => {
+            const content = 'The price went up by $ a lot yesterday.\n';
+            const issues = lintOrgDocument(content);
+            const dollar = issues.filter(i => i.code === 'literal-dollar');
+            expect(dollar.length).toBe(1);
+            expect(dollar[0].message).toContain('Odd number');
+        });
+
+        it('does not flag genuine inline math', () => {
+            const content = 'The relation $a + b = c$ holds and $x^2$ is positive.\n';
+            const issues = lintOrgDocument(content);
+            expect(issues.filter(i => i.code === 'literal-dollar').length).toBe(0);
+        });
+
+        it('does not flag currency wrapped in verbatim', () => {
+            const content = 'The cost was =$50,000= last year.\n';
+            const issues = lintOrgDocument(content);
+            expect(issues.filter(i => i.code === 'literal-dollar').length).toBe(0);
+        });
+
+        it('does not flag dollar signs inside source blocks', () => {
+            const content = '#+BEGIN_SRC sh\necho "cost is $50,000"\n#+END_SRC\n';
+            const issues = lintOrgDocument(content);
+            expect(issues.filter(i => i.code === 'literal-dollar').length).toBe(0);
+        });
+    });
+
     // =============================================================================
     // Invalid Block Tests
     // =============================================================================

@@ -832,6 +832,84 @@ const headingLevelSkip: OrgLintChecker = {
     }
 };
 
+/**
+ * Flag unescaped literal "$" in prose. On PDF/LaTeX export a "$" opens inline
+ * math mode, so currency ("$50,000") or an odd stray "$" is silently mangled
+ * into math. Note that "\$" does NOT fix this in the org->LaTeX pipeline (org
+ * turns the leading backslash into \textbackslash{}); the working forms are
+ * verbatim (=$50,000=) or rewording ("50,000 USD"). See issue #54.
+ */
+const literalDollar: OrgLintChecker = {
+    id: 'literal-dollar',
+    name: 'Literal Dollar Sign',
+    description: 'Flags unescaped "$" in prose that PDF/LaTeX export treats as math mode',
+    check(doc: OrgDocumentNode, text: string, lines: string[]): LintIssue[] {
+        const issues: LintIssue[] = [];
+        let inBlock = false;
+
+        for (let i = 0; i < lines.length; i++) {
+            const line = lines[i];
+
+            // Inside src/example/export blocks a "$" is literal, not math.
+            if (/^\s*#\+begin_(src|example|export)\b/i.test(line)) { inBlock = true; continue; }
+            if (/^\s*#\+end_(src|example|export)\b/i.test(line)) { inBlock = false; continue; }
+            if (inBlock) continue;
+            // Skip keyword/directive/comment lines.
+            if (/^\s*#\+/.test(line) || /^\s*#\s/.test(line)) continue;
+
+            // Neutralize spans where a "$" is already literal: inline verbatim
+            // (=...=) / code (~...~) and an escaped \$. Replace with same-length
+            // spaces so reported columns stay accurate.
+            // Border-aware verbatim/code patterns (closing delimiter must be
+            // preceded by a non-space) so an "approximately" tilde like "~$50"
+            // is not mistaken for a ~...~ span and over-scrubbed.
+            const blank = (m: string) => ' '.repeat(m.length);
+            let scrubbed = line
+                .replace(/=([^\s=](?:[^=]*[^\s=])?)=/g, blank)
+                .replace(/~([^\s~](?:[^~]*[^\s~])?)~/g, blank)
+                .replace(/\\\$/g, '  ');
+
+            // (a) Comma-grouped currency amounts ($50,000). This form is
+            // unambiguous money, never intended as math, so flagging it is safe.
+            const currency = /\$\d{1,3}(?:,\d{3})+/g;
+            let m: RegExpExecArray | null;
+            const flagged: Array<[number, number]> = [];
+            while ((m = currency.exec(scrubbed)) !== null) {
+                const amount = m[0];
+                issues.push({
+                    range: lineRange(i, m.index, m.index + amount.length),
+                    message: `Unescaped "$" before a number (${amount}) is parsed as inline LaTeX math on PDF export and mangled. Use verbatim =${amount}= or reword (e.g. "${amount.slice(1)} USD"). Note: \\$ does not work in this pipeline.`,
+                    severity: vscode.DiagnosticSeverity.Warning,
+                    code: 'literal-dollar',
+                });
+                flagged.push([m.index, m.index + amount.length]);
+            }
+            // Remove the currency matches so they don't also trip the parity check.
+            for (const [s, e] of flagged) {
+                scrubbed = scrubbed.slice(0, s) + ' '.repeat(e - s) + scrubbed.slice(e);
+            }
+
+            // (b) An odd number of remaining unescaped "$" opens math mode across
+            // the rest of the paragraph.
+            const positions: number[] = [];
+            for (let c = 0; c < scrubbed.length; c++) {
+                if (scrubbed[c] === '$') positions.push(c);
+            }
+            if (positions.length % 2 === 1) {
+                const idx = positions[0];
+                issues.push({
+                    range: lineRange(i, idx, idx + 1),
+                    message: 'Odd number of unescaped "$" will start inline math mode on PDF/LaTeX export. Reword or wrap a literal dollar sign in verbatim (=$=).',
+                    severity: vscode.DiagnosticSeverity.Warning,
+                    code: 'literal-dollar',
+                });
+            }
+        }
+
+        return issues;
+    }
+};
+
 // =============================================================================
 // Checker Registry
 // =============================================================================
@@ -853,6 +931,7 @@ export const ALL_CHECKERS: OrgLintChecker[] = [
     wrongHeaderArgument,
     planningInactive,
     headingLevelSkip,
+    literalDollar,
 ];
 
 // =============================================================================
