@@ -315,7 +315,7 @@ untouched (so LaTeX will still error on that figure). The generated
 
 /HTML export renders SVG natively and needs no conversion./
 
-*** Error Handling
+*** 👀 Error Handling
 
 If PDF compilation fails:
 1. The extension offers to open the `.log' file
@@ -324,6 +324,23 @@ If PDF compilation fails:
    - Missing packages → Install via your TeX distribution
    - Syntax errors → Check LaTeX syntax in export
    - Image paths → Ensure images exist and paths are correct
+
+**** 👀 CLI failure reporting
+CLOSED: [2026-07-14 Tue]
+
+When =scimax export --format pdf= fails, it does not fail silently:
+
+- The *first LaTeX error* (message plus the =.tex= line it points at) is printed,
+  e.g. =LaTeX error: Unknown graphics extension: .svg. (report.tex:95)=, along
+  with the path to the full =.log=. Add =--show-log= (aliases =--verbose=, =-v=) to
+  also print the tail of the log.
+- The *incomplete PDF is removed* on failure. A fatal LaTeX error can still leave
+  behind a =report.pdf= that looks complete but is broken (a classic case: LaTeX
+  aborts before BibTeX runs, so every citation is unresolved). Removing it means
+  a failed build can't be mistaken for a good export. Any pre-existing
+  =--output= target is left untouched, since a failed run never writes to it.
+- With =--json=, the failure object includes =latex_error=, =tex_line=, =log_file=,
+  and =removed_partial_pdf=.
 
 *** Build on Save
 

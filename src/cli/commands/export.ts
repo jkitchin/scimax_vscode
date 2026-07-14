@@ -12,6 +12,7 @@ import { exportToLatex } from '../../parser/orgExportLatex';
 import { exportToBeamer, BeamerExportOptions } from '../../parser/orgExportBeamer';
 import { parseBibTeX } from '../../references/bibtexParser';
 import { loadSettings, expandPath, ExportSettings, RefSettings } from '../settings';
+import { extractFirstLatexError } from './latexLog';
 import {
     initializeExporterRegistry,
     executeCustomExport,
@@ -75,6 +76,8 @@ export async function exportCommand(config: CliConfig, args: ParsedArgs): Promis
     const format = (typeof args.flags.format === 'string' ? args.flags.format : 'html').toLowerCase();
     const outputPath = typeof args.flags.output === 'string' ? args.flags.output : undefined;
     const exporterId = typeof args.flags.exporter === 'string' ? args.flags.exporter : undefined;
+    // On a failed PDF compile, --show-log / --verbose / -v tails the LaTeX log.
+    const verbose = args.flags['show-log'] === true || args.flags.verbose === true || args.flags.v === true;
 
     // Handle --list-exporters (can be invoked without input file)
     if (args.flags['list-exporters']) {
@@ -120,7 +123,7 @@ export async function exportCommand(config: CliConfig, args: ParsedArgs): Promis
 
     // Custom exporter path (bypasses normal format switch)
     if (exporterId) {
-        await runCustomExporter(exporterId, content, inputPath, outputPath, settings.export, json);
+        await runCustomExporter(exporterId, content, inputPath, outputPath, settings.export, json, verbose);
         return;
     }
 
@@ -177,7 +180,7 @@ export async function exportCommand(config: CliConfig, args: ParsedArgs): Promis
                 citeBackend: settings.export.latex.citeBackend === 'biblatex' ? 'biblatex' : 'bibtex',
             });
             defaultExt = '.pdf';
-            output = await compilePdf(latex, inputPath, outputPath, settings.export, json);
+            output = await compilePdf(latex, inputPath, outputPath, settings.export, json, verbose);
             if (output === '__PDF_WRITTEN__') {
                 if (json) {
                     const pdfOut = outputPath || inputPath.replace(/\.org$/i, '.pdf');
@@ -197,7 +200,7 @@ export async function exportCommand(config: CliConfig, args: ParsedArgs): Promis
         case 'beamer-pdf': {
             const beamerTex = exportToBeamer(doc, buildBeamerOptions(settings.export));
             defaultExt = '.pdf';
-            output = await compilePdf(beamerTex, inputPath, outputPath, settings.export, json);
+            output = await compilePdf(beamerTex, inputPath, outputPath, settings.export, json, verbose);
             if (output === '__PDF_WRITTEN__') {
                 if (json) {
                     const pdfOut = outputPath || inputPath.replace(/\.org$/i, '.pdf');
@@ -272,7 +275,8 @@ async function runCustomExporter(
     inputPath: string,
     outputPath: string | undefined,
     exportSettings: ExportSettings,
-    json: boolean
+    json: boolean,
+    verbose: boolean = false
 ): Promise<void> {
     const log = (msg: string) => json ? process.stderr.write(msg + '\n') : console.log(msg);
 
@@ -325,7 +329,7 @@ async function runCustomExporter(
 
     if (exporter.outputFormat === 'pdf') {
         log(`Using exporter: ${exporter.name} (${exporter.id})`);
-        const result = await compilePdf(rendered, inputPath, outputPath, exportSettings, json);
+        const result = await compilePdf(rendered, inputPath, outputPath, exportSettings, json, verbose);
         if (result === '__PDF_WRITTEN__' && json) {
             const pdfOut = outputPath || inputPath.replace(/\.org$/i, '.pdf');
             console.log(JSON.stringify({
@@ -364,7 +368,8 @@ async function compilePdf(
     inputPath: string,
     outputPath: string | undefined,
     exportSettings: ExportSettings,
-    json: boolean = false
+    json: boolean = false,
+    verbose: boolean = false
 ): Promise<string> {
     const { execSync } = await import('child_process');
     const { convertSvgIncludesToPdf } = await import('../../parser/svgToPdf');
@@ -446,11 +451,66 @@ async function compilePdf(
             });
         }
     } catch (error) {
+        // Surface the real LaTeX error and avoid leaving a misleading partial
+        // PDF that looks like a successful export (issue #50).
+        const logPath = path.join(dir, `${basename}.log`);
+        let logContent = '';
+        try {
+            logContent = fs.readFileSync(logPath, 'utf-8');
+        } catch {
+            // No log file; fall back to the compiler's captured output.
+            const e = error as { stdout?: Buffer | string; stderr?: Buffer | string };
+            logContent = `${e.stdout?.toString() ?? ''}\n${e.stderr?.toString() ?? ''}`;
+        }
+        const firstError = extractFirstLatexError(logContent);
+
+        // Remove the partial/broken PDF (latexmk may still emit one on a fatal
+        // error, with e.g. every citation unresolved). Only the freshly
+        // generated file next to the .tex is touched; a prior --output PDF is
+        // left in place because we never moved into it on this failed run.
+        const partialPdf = path.join(dir, `${basename}.pdf`);
+        let removedPartial = false;
+        if (fs.existsSync(partialPdf)) {
+            try {
+                fs.unlinkSync(partialPdf);
+                removedPartial = true;
+            } catch {
+                // Ignore removal errors
+            }
+        }
+
         if (json) {
-            console.log(JSON.stringify({ success: false, error: `PDF compilation failed with ${compiler}`, tex_file: texPath }));
+            console.log(JSON.stringify({
+                success: false,
+                error: `PDF compilation failed with ${compiler}`,
+                latex_error: firstError?.message,
+                tex_line: firstError?.texLine,
+                tex_file: texPath,
+                log_file: fs.existsSync(logPath) ? logPath : undefined,
+                removed_partial_pdf: removedPartial,
+            }));
         } else {
             console.error(`PDF compilation failed with ${compiler}.`);
+            if (firstError) {
+                const loc = firstError.texLine ? ` (${path.basename(texPath)}:${firstError.texLine})` : '';
+                console.error(`LaTeX error: ${firstError.message}${loc}`);
+            } else {
+                console.error('No "!" error line found in the log; the failure may be in the compiler invocation.');
+            }
             console.error('LaTeX file saved to:', texPath);
+            if (fs.existsSync(logPath)) {
+                console.error('Full log:', logPath);
+                if (!verbose) {
+                    console.error('(re-run with --show-log to print the log tail)');
+                }
+            }
+            if (removedPartial) {
+                console.error('Removed the incomplete PDF so it is not mistaken for a good export.');
+            }
+            if (verbose && logContent.trim()) {
+                console.error('\n--- log tail ---');
+                console.error(logContent.split(/\r?\n/).slice(-40).join('\n'));
+            }
         }
         process.exit(1);
     }

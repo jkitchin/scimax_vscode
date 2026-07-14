@@ -168,6 +168,9 @@ scimax export paper.org --format latex
 # Export to PDF (requires pdflatex/latexmk)
 scimax export paper.org --format pdf
 
+# Export to PDF, printing the LaTeX log tail if compilation fails
+scimax export paper.org --format pdf --show-log
+
 # Export to Beamer slides (.tex)
 scimax export slides.org --format beamer
 
@@ -185,6 +188,11 @@ scimax export paper.org --format html --bib refs.bib --csl ieee
 #+end_src
 
 The export command automatically looks for bibliography files in the same directory (=refs.bib=, =references.bib=, or =<filename>.bib=).
+
+When a PDF compile fails, the CLI prints the first LaTeX error and its =.tex=
+line, points to the full =.log=, and deletes the incomplete PDF so a broken build
+is not mistaken for a good one. Use =--show-log= (or =--verbose= / =-v=) to also
+print the tail of the log. See [[file:10-export.org][Export]] for details.
 
 ** ✅ Tangle
 CLOSED: [2026-07-11 Sat 09:08]
