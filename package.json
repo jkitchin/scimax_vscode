@@ -3522,6 +3522,12 @@
         "when": "!terminalFocus"
       },
       {
+        "command": "scimax.agenda.openBuffer",
+        "key": "ctrl+c a v",
+        "mac": "ctrl+c a v",
+        "when": "!terminalFocus"
+      },
+      {
         "command": "scimax.agenda.week",
         "key": "ctrl+c a w",
         "mac": "ctrl+c a w",

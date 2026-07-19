@@ -1620,6 +1620,7 @@ ${reportLines.join('\n')}
         // Agenda menu
         vscode.commands.registerCommand('scimax.agenda.menu', async () => {
             const options = [
+                { label: '$(window) Agenda Buffer', description: 'Persistent, refreshable agenda in an editor tab', command: 'scimax.agenda.openBuffer' },
                 { label: '$(calendar) Day Agenda', description: 'Today\'s agenda', command: 'scimax.agenda.day' },
                 { label: '$(calendar) Week Agenda', description: '7-day view', command: 'scimax.agenda.week' },
                 { label: '$(calendar) Fortnight', description: '14-day view', command: 'scimax.agenda.fortnight' },

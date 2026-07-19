@@ -530,8 +530,8 @@ The agenda buffer is a persistent, refreshable agenda in a full editor tab —
 the closest analogue to Emacs =org-agenda-mode=. Unlike the quick pick, it
 stays open; unlike the tree view, it gets the whole editor.
 
-Open it with =Scimax: Open Agenda Buffer= ([[cmd:scimax.agenda.openBuffer]]),
-then choose a span (day, week, fortnight, or month):
+Open it with =C-c a v= ([[cmd:scimax.agenda.openBuffer]]), or from the agenda menu
+(=C-c a a=), then choose a span (day, week, fortnight, or month):
 
 #+BEGIN_EXAMPLE
 Agenda for Jun 3 - Jun 9, 2024

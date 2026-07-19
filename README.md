@@ -904,7 +904,7 @@ This package almost achieves feature parity with Emacs Scimax. If there are feat
 | Unit tests          | 3042     |
 | Documentation files | 53       |
 | Commands            | 1025     |
-| Keybindings         | 433      |
+| Keybindings         | 434      |
 
 ### Supported Languages (Babel Execution)
 
