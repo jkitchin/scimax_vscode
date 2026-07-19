@@ -19,6 +19,13 @@ import {
 } from '../parser/orgAgenda';
 import type { HeadlineElement } from '../parser/orgElementTypes';
 import {
+    AgendaDocumentProvider,
+    AGENDA_SCHEME,
+    revealAgendaItem,
+    runOnSourceHeading,
+} from './agendaDocumentProvider';
+import { parseHeadingTags } from './agendaTags';
+import {
     collectAllClockEntries,
     generateTimeReport,
     formatTimeReport,
@@ -401,8 +408,7 @@ export class AgendaManager {
             }
         }
 
-        // Parse tags from comma-separated string
-        const tags = heading.tags ? heading.tags.split(',').map(t => t.trim()).filter(t => t) : [];
+        const tags = parseHeadingTags(heading.tags);
 
         // Determine agenda type
         const agendaType: AgendaItem['agendaType'] = dbItem.type === 'deadline' ? 'deadline' :
@@ -1038,6 +1044,84 @@ export function registerAgendaCommands(context: vscode.ExtensionContext): void {
             if (e.visible && !initialized) {
                 initialized = true;
                 treeProvider.refresh();
+            }
+        })
+    );
+
+    // Agenda buffer: a persistent, refreshable agenda in an editor tab.
+    const docProvider = new AgendaDocumentProvider(manager);
+    context.subscriptions.push(
+        vscode.workspace.registerTextDocumentContentProvider(AGENDA_SCHEME, docProvider),
+        vscode.languages.registerDocumentLinkProvider({ scheme: AGENDA_SCHEME }, docProvider),
+        { dispose: () => docProvider.dispose() },
+        // Keep open buffers in step with the db, exactly as the tree view is.
+        manager.onDidRefresh(() => docProvider.refreshAll())
+    );
+
+    /** Resolve the agenda buffer the user is acting on, if any. */
+    const activeBuffer = (): vscode.Uri | undefined => {
+        const uri = vscode.window.activeTextEditor?.document.uri;
+        return uri && docProvider.owns(uri) ? uri : undefined;
+    };
+
+    context.subscriptions.push(
+        vscode.commands.registerCommand('scimax.agenda.openBuffer', async () => {
+            const spans: Array<vscode.QuickPickItem & { days: number; type: AgendaViewConfig['type'] }> = [
+                { label: 'Week', description: '7 days', days: 7, type: 'week' },
+                { label: 'Day', description: 'Today', days: 1, type: 'day' },
+                { label: 'Fortnight', description: '14 days', days: 14, type: 'fortnight' },
+                { label: 'Month', description: '30 days', days: 30, type: 'month' },
+            ];
+            const picked = await vscode.window.showQuickPick(spans, {
+                placeHolder: 'Agenda span',
+            });
+            if (!picked) return;
+            await docProvider.open('Agenda', { type: picked.type, days: picked.days }, picked.days);
+        }),
+
+        vscode.commands.registerCommand('scimax.agenda.buffer.goto', async () => {
+            const editor = vscode.window.activeTextEditor;
+            const uri = activeBuffer();
+            if (!editor || !uri) return;
+            const item = docProvider.itemAtLine(uri, editor.selection.active.line);
+            if (item) {
+                await revealAgendaItem(item);
+            }
+        }),
+
+        vscode.commands.registerCommand('scimax.agenda.buffer.refresh', async () => {
+            const uri = activeBuffer();
+            if (!uri) return;
+            await manager.refresh();
+            docProvider.refresh(uri);
+        }),
+
+        vscode.commands.registerCommand('scimax.agenda.buffer.next', () => {
+            const uri = activeBuffer();
+            if (uri) docProvider.page(uri, 1);
+        }),
+
+        vscode.commands.registerCommand('scimax.agenda.buffer.previous', () => {
+            const uri = activeBuffer();
+            if (uri) docProvider.page(uri, -1);
+        }),
+
+        vscode.commands.registerCommand('scimax.agenda.buffer.today', () => {
+            const uri = activeBuffer();
+            if (uri) docProvider.resetToToday(uri);
+        }),
+
+        vscode.commands.registerCommand('scimax.agenda.buffer.cycleTodo', async () => {
+            const editor = vscode.window.activeTextEditor;
+            const uri = activeBuffer();
+            if (!editor || !uri) return;
+            const item = docProvider.itemAtLine(uri, editor.selection.active.line);
+            if (!item) return;
+
+            const changed = await runOnSourceHeading(item, 'scimax.org.cycleTodo', uri);
+            if (changed) {
+                await manager.refresh();
+                docProvider.refresh(uri);
             }
         })
     );

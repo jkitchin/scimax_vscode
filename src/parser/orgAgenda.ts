@@ -833,10 +833,25 @@ export function formatAgendaItem(item: AgendaItem): string {
 }
 
 /**
- * Format agenda view as text
+ * Rendered agenda buffer: the text plus a map back to the items it came from.
+ *
+ * The line map is what makes an agenda buffer navigable — once the view is
+ * flattened to text the item identity is otherwise lost, so there is no way to
+ * jump from a line to its source heading.
  */
-export function formatAgendaView(view: AgendaView): string {
+export interface RenderedAgenda {
+    /** The rendered buffer text */
+    text: string;
+    /** 0-based line number -> the item rendered on that line */
+    lineMap: Map<number, AgendaItem>;
+}
+
+/**
+ * Render an agenda view as a buffer, recording which line each item lands on.
+ */
+export function renderAgendaBuffer(view: AgendaView): RenderedAgenda {
     const lines: string[] = [];
+    const lineMap = new Map<number, AgendaItem>();
 
     // Header
     lines.push(`Agenda for ${format(view.dateRange.start, 'MMM d')} - ${format(view.dateRange.end, 'MMM d, yyyy')}`);
@@ -851,6 +866,8 @@ export function formatAgendaView(view: AgendaView): string {
         lines.push('-'.repeat(group.label.length));
 
         for (const item of group.items) {
+            // Record before pushing: lines.length is the index this item takes.
+            lineMap.set(lines.length, item);
             lines.push('  ' + formatAgendaItem(item));
         }
 
@@ -860,7 +877,14 @@ export function formatAgendaView(view: AgendaView): string {
     // Footer
     lines.push(`Total: ${view.totalItems} items`);
 
-    return lines.join('\n');
+    return { text: lines.join('\n'), lineMap };
+}
+
+/**
+ * Format agenda view as text
+ */
+export function formatAgendaView(view: AgendaView): string {
+    return renderAgendaBuffer(view).text;
 }
 
 // =============================================================================

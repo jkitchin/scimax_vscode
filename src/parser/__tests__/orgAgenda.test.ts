@@ -8,6 +8,7 @@ import {
     generateTodoList,
     formatAgendaItem,
     formatAgendaView,
+    renderAgendaBuffer,
     formatDateLabel,
     timestampToDate,
     type AgendaItem,
@@ -1164,6 +1165,73 @@ describe('orgAgenda', () => {
             const formatted = formatAgendaView(view);
             // Should contain the date header for June 3
             expect(formatted).toMatch(/Monday, June 3, 2024/);
+        });
+    });
+
+    describe('renderAgendaBuffer', () => {
+        it('produces the same text as formatAgendaView', () => {
+            const scheduled = createTimestamp(2024, 6, 3, 10, 0);
+            const headline = createHeadline({
+                title: 'Team meeting',
+                todoKeyword: 'TODO',
+                lineNumber: 1,
+                planning: createPlanning({ scheduled }),
+            });
+
+            const files = createFilesMap([headline]);
+            const view = generateAgendaView([headline], files, {
+                startDate: new Date(2024, 5, 1),
+                days: 7,
+            });
+
+            expect(renderAgendaBuffer(view).text).toBe(formatAgendaView(view));
+        });
+
+        it('maps each rendered line back to its item', () => {
+            const headlines = [
+                createHeadline({
+                    title: 'First task',
+                    todoKeyword: 'TODO',
+                    lineNumber: 10,
+                    planning: createPlanning({ scheduled: createTimestamp(2024, 6, 3, 10, 0) }),
+                }),
+                createHeadline({
+                    title: 'Second task',
+                    todoKeyword: 'TODO',
+                    lineNumber: 20,
+                    planning: createPlanning({ scheduled: createTimestamp(2024, 6, 4, 10, 0) }),
+                }),
+            ];
+
+            const files = createFilesMap(headlines);
+            const view = generateAgendaView(headlines, files, {
+                startDate: new Date(2024, 5, 1),
+                days: 7,
+            });
+
+            const { text, lineMap } = renderAgendaBuffer(view);
+            const lines = text.split('\n');
+
+            expect(lineMap.size).toBe(2);
+
+            // Every mapped line must actually render that item's title. This is
+            // the invariant that makes jump-to-item correct.
+            for (const [lineNumber, item] of lineMap) {
+                expect(lines[lineNumber]).toContain(item.title);
+            }
+
+            const titles = [...lineMap.values()].map(i => i.title);
+            expect(titles).toContain('First task');
+            expect(titles).toContain('Second task');
+        });
+
+        it('maps no lines for an empty view', () => {
+            const view = generateAgendaView([], new Map(), {
+                startDate: new Date(2024, 5, 1),
+                days: 7,
+            });
+
+            expect(renderAgendaBuffer(view).lineMap.size).toBe(0);
         });
     });
 

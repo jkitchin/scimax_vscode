@@ -347,6 +347,24 @@ CLOSED: [2026-01-24 Sat 17:38]
 | C-c d t | Show TODOs           |
 | C-c d a | Show agenda          |
 
+** ⚠️ Agenda Buffer
+
+Single keys, active only inside an agenda buffer (see [[file:13-agenda.org][Agenda]]).
+The buffer is read-only, so these keys are never ambiguous with typing.
+
+| Key | Action                       |
+|-----+------------------------------|
+| RET | Jump to the item's source    |
+| t   | Cycle the item's TODO state  |
+| g   | Refresh                      |
+| f   | Forward one period           |
+| b   | Back one period              |
+| .   | Return to the current period |
+| q   | Close the buffer             |
+
+Items are also links: Ctrl+click (Cmd+click on macOS) opens the source
+heading. Right-click any line for a context menu with the same actions.
+
 ** ✅ Templates
 CLOSED: [2026-01-24 Sat 17:38]
 

@@ -495,6 +495,13 @@ CLOSED: [2026-01-17 Sat 12:51]
 | [[cmd:scimax.agenda.ignoreFileFromItem]]| Ignore File from Agenda Item | -            |
 | [[cmd:scimax.agenda.ignoreFileFromTab]] | Ignore File from Editor Tab  | -            |
 | [[cmd:scimax.agenda.unignoreFile]]    | Unignore File in Agenda  | -                  |
+| [[cmd:scimax.agenda.openBuffer]]      | Open Agenda Buffer       | -                  |
+| [[cmd:scimax.agenda.buffer.goto]]     | Agenda Buffer - Go to Item   | RET (in buffer) |
+| [[cmd:scimax.agenda.buffer.refresh]]  | Agenda Buffer - Refresh      | g (in buffer)   |
+| [[cmd:scimax.agenda.buffer.next]]     | Agenda Buffer - Next Period  | f (in buffer)   |
+| [[cmd:scimax.agenda.buffer.previous]] | Agenda Buffer - Prev Period  | b (in buffer)   |
+| [[cmd:scimax.agenda.buffer.today]]    | Agenda Buffer - Back to Today | . (in buffer)  |
+| [[cmd:scimax.agenda.buffer.cycleTodo]]| Agenda Buffer - Cycle TODO State | t (in buffer) |
 
 * ✅ Journal
 CLOSED: [2026-01-17 Sat 12:51]

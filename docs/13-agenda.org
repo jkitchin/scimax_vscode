@@ -524,6 +524,67 @@ AGENDA
    └─ ⚪ TODO Update documentation
 #+END_EXAMPLE
 
+** ⚠️ Agenda Buffer
+
+The agenda buffer is a persistent, refreshable agenda in a full editor tab —
+the closest analogue to Emacs =org-agenda-mode=. Unlike the quick pick, it
+stays open; unlike the tree view, it gets the whole editor.
+
+Open it with =Scimax: Open Agenda Buffer= ([[cmd:scimax.agenda.openBuffer]]),
+then choose a span (day, week, fortnight, or month):
+
+#+BEGIN_EXAMPLE
+Agenda for Jun 3 - Jun 9, 2024
+======================================================================
+
+Monday, June 3, 2024
+--------------------
+  10:00 TODO Team standup :work:
+  Deadline: TODO [#A] Submit report :work:
+
+Tuesday, June 4, 2024
+---------------------
+  14:00 TODO Planning meeting
+
+Total: 3 items
+#+END_EXAMPLE
+
+The buffer is read-only, so it can never be edited by accident and never
+prompts to save.
+
+*** ⚠️ Agenda Buffer Keys
+
+These keys are active only inside an agenda buffer:
+
+| Key   | Command                              | Action                       |
+|-------+--------------------------------------+------------------------------|
+| =RET= | [[cmd:scimax.agenda.buffer.goto]]        | Jump to the item's source    |
+| =t=   | [[cmd:scimax.agenda.buffer.cycleTodo]]   | Cycle the item's TODO state  |
+| =g=   | [[cmd:scimax.agenda.buffer.refresh]]     | Re-query the database        |
+| =f=   | [[cmd:scimax.agenda.buffer.next]]        | Forward one period           |
+| =b=   | [[cmd:scimax.agenda.buffer.previous]]    | Back one period              |
+| =.=   | [[cmd:scimax.agenda.buffer.today]]       | Return to the current period |
+| =q=   | -                                    | Close the buffer             |
+
+Paging with =f= and =b= updates the buffer *in place* rather than opening a
+new tab, so you can walk forward through weeks without accumulating editors.
+
+*** ⚠️ Mouse Interaction
+
+Every item line is a link. Ctrl+click (Cmd+click on macOS) opens the source
+heading — VS Code reserves plain click for cursor placement, so a modifier is
+required. Right-click gives a context menu with the same actions as the keys
+above.
+
+Cycling a TODO state briefly switches to the source file to make the edit, then
+returns to the agenda and refreshes it. This is deliberate: it reuses the real
+[[cmd:scimax.org.cycleTodo]] command, so repeating tasks advance their timestamps,
+CLOSED timestamps are written, and org-depend blocking still applies — none of
+which would hold if the agenda edited the file directly.
+
+The buffer also refreshes itself whenever the database is reindexed, so it
+never shows a stale snapshot. Press =g= to force a refresh.
+
 ** ✅ Opening Items
 CLOSED: [2026-01-18 Sun 12:53]
 

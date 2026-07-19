@@ -2633,6 +2633,34 @@
         "icon": "$(refresh)"
       },
       {
+        "command": "scimax.agenda.openBuffer",
+        "title": "Scimax: Open Agenda Buffer"
+      },
+      {
+        "command": "scimax.agenda.buffer.goto",
+        "title": "Scimax: Agenda Buffer - Go to Item"
+      },
+      {
+        "command": "scimax.agenda.buffer.refresh",
+        "title": "Scimax: Agenda Buffer - Refresh"
+      },
+      {
+        "command": "scimax.agenda.buffer.next",
+        "title": "Scimax: Agenda Buffer - Next Period"
+      },
+      {
+        "command": "scimax.agenda.buffer.previous",
+        "title": "Scimax: Agenda Buffer - Previous Period"
+      },
+      {
+        "command": "scimax.agenda.buffer.today",
+        "title": "Scimax: Agenda Buffer - Back to Today"
+      },
+      {
+        "command": "scimax.agenda.buffer.cycleTodo",
+        "title": "Scimax: Agenda Buffer - Cycle TODO State"
+      },
+      {
         "command": "scimax.agenda.toggleVerbose",
         "title": "Scimax: Toggle Agenda Verbose Logging"
       },
@@ -4413,7 +4441,7 @@
         "command": "scimax.org.dwimReturn",
         "key": "enter",
         "mac": "enter",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && !suggestWidgetVisible && !editorHasSelection && !inSnippetMode"
+        "when": "editorTextFocus && resourceScheme != org-agenda && editorLangId =~ /org|markdown/ && !suggestWidgetVisible && !editorHasSelection && !inSnippetMode"
       },
       {
         "command": "scimax.insertNewline",
@@ -5572,6 +5600,48 @@
         "key": "escape",
         "mac": "escape",
         "when": "editorTextFocus && scimax.rectangleMarkMode"
+      },
+      {
+        "command": "scimax.agenda.buffer.goto",
+        "key": "enter",
+        "mac": "enter",
+        "when": "resourceScheme == org-agenda && editorTextFocus"
+      },
+      {
+        "command": "scimax.agenda.buffer.refresh",
+        "key": "g",
+        "mac": "g",
+        "when": "resourceScheme == org-agenda && editorTextFocus"
+      },
+      {
+        "command": "scimax.agenda.buffer.next",
+        "key": "f",
+        "mac": "f",
+        "when": "resourceScheme == org-agenda && editorTextFocus"
+      },
+      {
+        "command": "scimax.agenda.buffer.previous",
+        "key": "b",
+        "mac": "b",
+        "when": "resourceScheme == org-agenda && editorTextFocus"
+      },
+      {
+        "command": "scimax.agenda.buffer.today",
+        "key": ".",
+        "mac": ".",
+        "when": "resourceScheme == org-agenda && editorTextFocus"
+      },
+      {
+        "command": "workbench.action.closeActiveEditor",
+        "key": "q",
+        "mac": "q",
+        "when": "resourceScheme == org-agenda && editorTextFocus"
+      },
+      {
+        "command": "scimax.agenda.buffer.cycleTodo",
+        "key": "t",
+        "mac": "t",
+        "when": "resourceScheme == org-agenda && editorTextFocus"
       }
     ],
     "configuration": {
@@ -5626,16 +5696,34 @@
           "items": {
             "type": "object",
             "properties": {
-              "name": { "type": "string" },
-              "tag": { "type": "string" },
-              "property": { "type": "string" },
-              "value": { "type": "string" },
-              "display": { "type": "string" },
-              "email": { "type": "string" },
-              "address": { "type": "string" },
-              "url": { "type": "string" }
+              "name": {
+                "type": "string"
+              },
+              "tag": {
+                "type": "string"
+              },
+              "property": {
+                "type": "string"
+              },
+              "value": {
+                "type": "string"
+              },
+              "display": {
+                "type": "string"
+              },
+              "email": {
+                "type": "string"
+              },
+              "address": {
+                "type": "string"
+              },
+              "url": {
+                "type": "string"
+              }
             },
-            "required": ["name"]
+            "required": [
+              "name"
+            ]
           }
         },
         "scimax.highlighting.headingBackgroundBars": {
@@ -6779,6 +6867,36 @@
           "command": "scimax.latex.jumpToPdf",
           "when": "editorLangId == latex",
           "group": "scimax"
+        },
+        {
+          "command": "scimax.agenda.buffer.goto",
+          "when": "resourceScheme == org-agenda",
+          "group": "agendaBuffer@1"
+        },
+        {
+          "command": "scimax.agenda.buffer.cycleTodo",
+          "when": "resourceScheme == org-agenda",
+          "group": "agendaBuffer@2"
+        },
+        {
+          "command": "scimax.agenda.buffer.refresh",
+          "when": "resourceScheme == org-agenda",
+          "group": "agendaBuffer@3"
+        },
+        {
+          "command": "scimax.agenda.buffer.previous",
+          "when": "resourceScheme == org-agenda",
+          "group": "agendaBufferNav@1"
+        },
+        {
+          "command": "scimax.agenda.buffer.next",
+          "when": "resourceScheme == org-agenda",
+          "group": "agendaBufferNav@2"
+        },
+        {
+          "command": "scimax.agenda.buffer.today",
+          "when": "resourceScheme == org-agenda",
+          "group": "agendaBufferNav@3"
         }
       ],
       "commandPalette": [
