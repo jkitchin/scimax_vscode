@@ -39,6 +39,8 @@ import {
 import { LaTeXSemanticTokenProvider, legend as semanticTokenLegend } from './latexSemanticTokenProvider';
 import { openPdfInPanel, PdfViewerPanel } from './pdfViewerPanel';
 import { runSyncTeXForward, isSyncTeXAvailable, getSyncTeXFilePath } from './synctexUtils';
+import { resolveProfileForDocument, runProfile, readBuildKeywords } from './buildProfileService';
+import { BuildProfile } from './buildProfiles';
 
 /**
  * Register all LaTeX-related commands
@@ -320,6 +322,97 @@ let lastCompileErrors: LaTeXError[] = [];
 let currentErrorIndex = 0;
 
 /**
+ * Compile a .tex file with a build profile instead of the single compiler
+ * setting, reporting errors the same way the plain compile path does.
+ */
+async function compileWithProfile(
+    profile: BuildProfile,
+    filePath: string,
+    outputChannel: vscode.OutputChannel
+): Promise<void> {
+    const dir = path.dirname(filePath);
+    const fileName = path.basename(filePath);
+    const pdfPath = path.join(dir, `${path.basename(filePath, '.tex')}.pdf`);
+    const pdfBefore = fs.existsSync(pdfPath) ? fs.statSync(pdfPath).mtimeMs : 0;
+
+    await vscode.window.withProgress({
+        location: vscode.ProgressLocation.Notification,
+        title: `Compiling ${fileName} (${profile.name})...`,
+        cancellable: true,
+    }, async (progress, token) => {
+        const controller = new AbortController();
+        token.onCancellationRequested(() => controller.abort());
+
+        let output = '';
+        const result = await runProfile(
+            profile,
+            filePath,
+            undefined,
+            progress,
+            { signal: controller.signal, onOutput: (chunk) => { output += chunk; } }
+        );
+
+        lastCompileErrors = parseLatexErrors(output, dir);
+        currentErrorIndex = 0;
+
+        if (token.isCancellationRequested) {
+            vscode.window.showWarningMessage(`Compilation cancelled: ${fileName}`);
+            return;
+        }
+
+        // LaTeX exits non-zero on plenty of recoverable problems, so a fresh
+        // PDF is the real success signal.
+        const pdfAfter = fs.existsSync(pdfPath) ? fs.statSync(pdfPath).mtimeMs : 0;
+        const producedPdf = pdfAfter > pdfBefore || (pdfAfter > 0 && pdfBefore === 0);
+
+        outputChannel.clear();
+        outputChannel.appendLine('════════════════════════════════════════════════════════');
+        outputChannel.appendLine(`  LaTeX Compilation: ${fileName}`);
+        outputChannel.appendLine(`  Build profile: ${profile.name}`);
+        for (const step of result.steps) {
+            const status = step.skipped
+                ? `skipped (${step.skipReason})`
+                : step.error ?? `exit ${step.exitCode}`;
+            outputChannel.appendLine(`    ${step.label}: ${status}`);
+        }
+        outputChannel.appendLine('════════════════════════════════════════════════════════');
+        outputChannel.appendLine('');
+        outputChannel.appendLine(formatLatexOutput(output));
+
+        if (producedPdf && lastCompileErrors.length === 0) {
+            vscode.window.showInformationMessage(
+                `LaTeX compilation successful: ${fileName} (${profile.name})`
+            );
+            return;
+        }
+
+        if (lastCompileErrors.length > 0) {
+            const firstError = lastCompileErrors[0];
+            const action = await vscode.window.showErrorMessage(
+                `LaTeX error at line ${firstError.line}: ${firstError.message}`,
+                'Go to Error',
+                'Next Error',
+                'Show Log'
+            );
+            if (action === 'Go to Error' || action === 'Next Error') {
+                vscode.commands.executeCommand('scimax.latex.nextError');
+            } else if (action === 'Show Log') {
+                outputChannel.show(true);
+            }
+            return;
+        }
+
+        const action = await vscode.window.showErrorMessage(
+            `LaTeX build profile "${profile.name}" did not produce a PDF.`,
+            'Show Log'
+        );
+        if (action === 'Show Log') {
+            outputChannel.show(true);
+        }
+    });
+}
+
+/**
  * Format LaTeX log output for better readability with text markers
  */
 function formatLatexOutput(output: string): string {
@@ -454,6 +547,18 @@ export function registerLatexCompileCommands(context: vscode.ExtensionContext): 
             const filePath = editor.document.uri.fsPath;
             const dir = path.dirname(filePath);
             const fileName = path.basename(filePath);
+
+            // A build profile (% !SCIMAX build = ..., a latex-profiles.json
+            // default, or scimax.export.pdf.profile) replaces the single
+            // compiler invocation below.
+            const profile = resolveProfileForDocument(
+                filePath,
+                readBuildKeywords(editor.document.getText())
+            );
+            if (profile) {
+                await compileWithProfile(profile, filePath, outputChannel);
+                return;
+            }
 
             // Get compiler from settings
             const config = vscode.workspace.getConfiguration('scimax.latex');

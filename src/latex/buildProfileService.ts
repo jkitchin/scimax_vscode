@@ -85,6 +85,14 @@ export function resolveProfileForDocument(
     return resolved.profile;
 }
 
+/** Optional extras for a profile run */
+export interface RunProfileExtras {
+    /** Cancels the build (e.g. from a cancellable progress notification) */
+    signal?: AbortSignal;
+    /** Receives each step's captured output, for an output channel */
+    onOutput?: (chunk: string) => void;
+}
+
 /**
  * Run a profile, streaming step progress into the notification and the log.
  */
@@ -92,7 +100,8 @@ export async function runProfile(
     profile: BuildProfile,
     texPath: string,
     outDir?: string,
-    progress?: vscode.Progress<{ message?: string }>
+    progress?: vscode.Progress<{ message?: string }>,
+    options?: RunProfileExtras
 ): Promise<BuildResult> {
     log.info(`Building ${path.basename(texPath)} with profile "${profile.name}"`, {
         source: profile.source,
@@ -102,6 +111,8 @@ export async function runProfile(
     const result = await runBuildProfile(profile, {
         texPath,
         outDir,
+        signal: options?.signal,
+        onOutput: options?.onOutput,
         onProgress: (message) => {
             progress?.report({ message });
             log.debug(message);
@@ -121,7 +132,7 @@ export async function runProfile(
     // A missing executable is the one failure worth surfacing directly: nothing
     // downstream will explain why the PDF never appeared.
     const missing = result.steps.find(s => s.error);
-    if (missing) {
+    if (missing && !options?.signal?.aborted) {
         vscode.window.showErrorMessage(
             `LaTeX build step "${missing.label}" could not run: ${missing.error}`
         );
@@ -170,7 +181,7 @@ async function selectBuildProfile(): Promise<void> {
         { label: '', kind: vscode.QuickPickItemKind.Separator },
         {
             label: '$(circle-slash) none',
-            description: 'Use the scimax.export.pdf.compiler settings',
+            description: 'Use the plain compiler settings',
             profileName: 'none',
         },
         {
@@ -249,7 +260,7 @@ async function createProfilesFile(): Promise<void> {
     const doc = await vscode.workspace.openTextDocument(target);
     await vscode.window.showTextDocument(doc);
     vscode.window.showInformationMessage(
-        'Created .scimax/latex-profiles.json - select a profile with #+LATEX_BUILD:'
+        'Created .scimax/latex-profiles.json - select a profile with "Scimax LaTeX: Select Build Profile"'
     );
 }
 
@@ -268,11 +279,15 @@ async function showActiveProfile(): Promise<void> {
     const profile = resolveProfileForDocument(documentPath, keywords);
 
     if (!profile) {
-        const compiler = vscode.workspace
-            .getConfiguration('scimax.export.pdf')
-            .get<string>('compiler', 'latexmk-lualatex');
+        // .tex files compile with scimax.latex.compiler; org export uses
+        // scimax.export.pdf.compiler
+        const isLatex = editor.document.languageId === 'latex';
+        const setting = isLatex ? 'scimax.latex.compiler' : 'scimax.export.pdf.compiler';
+        const compiler = isLatex
+            ? vscode.workspace.getConfiguration('scimax.latex').get<string>('compiler', 'pdflatex')
+            : vscode.workspace.getConfiguration('scimax.export.pdf').get<string>('compiler', 'latexmk-lualatex');
         vscode.window.showInformationMessage(
-            `No build profile active - compiling with scimax.export.pdf.compiler (${compiler})`
+            `No build profile active - compiling with ${setting} (${compiler})`
         );
         return;
     }

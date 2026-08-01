@@ -626,6 +626,51 @@ describe('runBuildProfile', () => {
         expect(fs.readFileSync(outFile, 'utf-8')).toBe('from-profile,from-step');
     });
 
+    it('runs nothing when the signal is already aborted', async () => {
+        const texPath = path.join(tmpDir, 'paper.tex');
+        fs.writeFileSync(texPath, '');
+        const controller = new AbortController();
+        controller.abort();
+
+        const result = await runBuildProfile(
+            nodeProfile([{
+                command: process.execPath,
+                args: ['-e', `require('fs').writeFileSync('ran.txt', 'x')`],
+            }]),
+            { texPath, signal: controller.signal }
+        );
+
+        expect(result.completed).toBe(false);
+        expect(result.steps).toEqual([]);
+        expect(fs.existsSync(path.join(tmpDir, 'ran.txt'))).toBe(false);
+    });
+
+    it('stops mid-build when the signal aborts', async () => {
+        const texPath = path.join(tmpDir, 'paper.tex');
+        fs.writeFileSync(texPath, '');
+        const controller = new AbortController();
+
+        const pending = runBuildProfile(
+            nodeProfile([
+                { command: process.execPath, args: ['-e', 'setTimeout(() => {}, 5000)'], label: 'slow' },
+                {
+                    command: process.execPath,
+                    args: ['-e', `require('fs').writeFileSync('after.txt', 'x')`],
+                    label: 'after',
+                },
+            ]),
+            { texPath, signal: controller.signal }
+        );
+
+        await new Promise(resolve => setTimeout(resolve, 100));
+        controller.abort();
+        const result = await pending;
+
+        expect(result.completed).toBe(false);
+        expect(result.steps).toHaveLength(1);
+        expect(fs.existsSync(path.join(tmpDir, 'after.txt'))).toBe(false);
+    });
+
     it('reports progress for each step', async () => {
         const texPath = path.join(tmpDir, 'paper.tex');
         fs.writeFileSync(texPath, '');

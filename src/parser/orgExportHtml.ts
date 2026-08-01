@@ -914,11 +914,7 @@ export class HtmlExportBackend implements ExportBackend {
                 href = path;
                 break;
             case 'file':
-                // Convert file links to relative paths
-                // Strip file: prefix if present, convert .org/.md to .html
-                href = path
-                    .replace(/^file:/, '')
-                    .replace(/\.(org|md)$/i, '.html');
+                href = this.exportFileHref(link);
                 break;
             case 'id':
                 // Look up ID in targets
@@ -934,7 +930,11 @@ export class HtmlExportBackend implements ExportBackend {
                 href = `#${generateId(headlineText)}`;
                 break;
             case 'internal':
-                href = `#${generateId(path)}`;
+                // [[other.org::*Heading]] parses as internal (no file: prefix),
+                // but it is really a file link
+                href = /\.(org|md)(::|$)/i.test(path)
+                    ? this.exportFileHref(link)
+                    : `#${generateId(path)}`;
                 break;
             case 'mailto':
                 href = `mailto:${path}`;
@@ -974,6 +974,39 @@ export class HtmlExportBackend implements ExportBackend {
         }
 
         return `<a href="${escapeString(href, 'html')}">${description}</a>`;
+    }
+
+    /**
+     * Build the href for a link to another file.
+     *
+     * Converts .org/.md to .html and turns a search option
+     * (file:doc.org::*Heading) into an anchor - without this the whole
+     * "path::search" string would be treated as a file name and 404.
+     */
+    private exportFileHref(link: LinkObject): string {
+        const { path, searchOption } = link.properties;
+
+        // Most parsers split the search option out, but not all paths arrive
+        // that way (e.g. plain-text links), so handle both.
+        const [filePart, ...searchParts] = path.replace(/^file:/, '').split('::');
+        const search = (searchOption ?? searchParts.join('::')).trim();
+
+        const href = filePart.replace(/\.(org|md)$/i, '.html');
+
+        if (search.startsWith('*')) {
+            // Heading search - same anchor scheme the target file uses
+            return `${href}#${generateId(search.slice(1).trim())}`;
+        }
+        if (search.startsWith('#')) {
+            // Custom ID search
+            return `${href}${search}`;
+        }
+        if (search && !/^\d+$/.test(search)) {
+            // Plain text search - best-effort anchor. A bare number is a line
+            // number, which has no HTML equivalent, so link to the file.
+            return `${href}#${generateId(search)}`;
+        }
+        return href;
     }
 
     /**

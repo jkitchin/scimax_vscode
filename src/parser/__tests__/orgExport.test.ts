@@ -325,6 +325,92 @@ describe('HTML Export', () => {
                 .toBe('<img src="image.png" alt="Alt text" />');
         });
 
+        it('converts org file links to html', () => {
+            const state = createExportState();
+            const link: LinkObject = {
+                type: 'link',
+                range: createRange(0, 30),
+                postBlank: 0,
+                properties: {
+                    linkType: 'file',
+                    path: '10-export.org',
+                    format: 'bracket',
+                },
+                children: [createPlainText('Export')],
+            };
+            expect(backend.exportObject(link, state))
+                .toBe('<a href="10-export.html">Export</a>');
+        });
+
+        it('converts a heading search option into an anchor', () => {
+            const state = createExportState();
+            const link: LinkObject = {
+                type: 'link',
+                range: createRange(0, 40),
+                postBlank: 0,
+                properties: {
+                    linkType: 'file',
+                    path: '10-export.org::*Build Profiles',
+                    format: 'bracket',
+                },
+                children: [createPlainText('Build Profiles')],
+            };
+            expect(backend.exportObject(link, state))
+                .toBe('<a href="10-export.html#org-build-profiles">Build Profiles</a>');
+        });
+
+        it('converts a parsed searchOption into an anchor', () => {
+            const state = createExportState();
+            const link: LinkObject = {
+                type: 'link',
+                range: createRange(0, 40),
+                postBlank: 0,
+                properties: {
+                    linkType: 'file',
+                    path: '10-export.org',
+                    searchOption: '*Build Profiles',
+                    format: 'bracket',
+                },
+                children: [createPlainText('Build Profiles')],
+            };
+            expect(backend.exportObject(link, state))
+                .toBe('<a href="10-export.html#org-build-profiles">Build Profiles</a>');
+        });
+
+        it('treats a bare org path with a search option as a file link', () => {
+            const state = createExportState();
+            const link: LinkObject = {
+                type: 'link',
+                range: createRange(0, 40),
+                postBlank: 0,
+                properties: {
+                    linkType: 'internal',
+                    path: '05-links.org::*File Links',
+                    format: 'bracket',
+                },
+                children: [createPlainText('File Links')],
+            };
+            expect(backend.exportObject(link, state))
+                .toBe('<a href="05-links.html#org-file-links">File Links</a>');
+        });
+
+        it('keeps a custom-id search option as the anchor', () => {
+            const state = createExportState();
+            const link: LinkObject = {
+                type: 'link',
+                range: createRange(0, 40),
+                postBlank: 0,
+                properties: {
+                    linkType: 'file',
+                    path: 'notes.org::#my-id',
+                    format: 'bracket',
+                },
+                children: [createPlainText('Notes')],
+            };
+            expect(backend.exportObject(link, state))
+                .toBe('<a href="notes.html#my-id">Notes</a>');
+        });
+
         it('exports entities as HTML', () => {
             const state = createExportState();
             const entity: EntityObject = {

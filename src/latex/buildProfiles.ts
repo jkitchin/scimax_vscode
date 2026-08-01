@@ -544,6 +544,8 @@ export interface RunProfileOptions extends BuildContext {
     onOutput?: (chunk: string) => void;
     /** Extra environment for every step */
     env?: Record<string, string>;
+    /** Aborts the running step and stops the build (e.g. a cancelled progress) */
+    signal?: AbortSignal;
 }
 
 /**
@@ -563,6 +565,11 @@ export async function runBuildProfile(
     const results: StepResult[] = [];
 
     for (const step of profile.steps) {
+        if (options.signal?.aborted) {
+            options.onProgress?.('Build cancelled');
+            return { profileName: profile.name || 'profile', steps: results, completed: false };
+        }
+
         const args = (step.args || []).map(arg => substituteTokens(arg, context));
         const label = step.label || step.command;
         const cwd = step.cwd ? substituteTokens(step.cwd, context) : defaultCwd;
@@ -583,11 +590,16 @@ export async function runBuildProfile(
             ...step.env,
         };
 
-        const outcome = await runStep(step, args, cwd, env);
+        const outcome = await runStep(step, args, cwd, env, options.signal);
         results.push({ label, command: step.command, args, skipped: false, ...outcome });
 
         if (outcome.stdout) options.onOutput?.(outcome.stdout);
         if (outcome.stderr) options.onOutput?.(outcome.stderr);
+
+        if (options.signal?.aborted) {
+            options.onProgress?.('Build cancelled');
+            return { profileName: profile.name || 'profile', steps: results, completed: false };
+        }
 
         const failed = outcome.error !== undefined || (outcome.exitCode ?? 0) !== 0;
         if (failed && step.continueOnError === false) {
@@ -654,7 +666,8 @@ function runStep(
     step: BuildStep,
     args: string[],
     cwd: string,
-    env: NodeJS.ProcessEnv
+    env: NodeJS.ProcessEnv,
+    signal?: AbortSignal
 ): Promise<Pick<StepResult, 'exitCode' | 'stdout' | 'stderr' | 'error'>> {
     return new Promise((resolve) => {
         // No shell: arguments are passed through verbatim, never re-parsed
@@ -662,6 +675,7 @@ function runStep(
             cwd,
             env,
             timeout: step.timeoutMs ?? 180000,
+            signal,
         });
 
         const stdout: string[] = [];

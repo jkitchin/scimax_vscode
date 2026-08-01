@@ -471,6 +471,8 @@ Compile LaTeX documents and view the generated PDF.
 | scimax.latex.clean              | C-c C-k        | Clean auxiliary files          |
 | scimax.latex.syncTexForward     | C-c g          | SyncTeX forward search         |
 | scimax.latex.wordCount          | -              | Count words (approximate)      |
+| scimax.latex.selectBuildProfile | -              | Choose the build profile       |
+| scimax.latex.showBuildProfile   | -              | Show the active build profile  |
 
 ** ✅ Compilation
 CLOSED: [2026-01-19 Mon 09:31]
@@ -487,6 +489,40 @@ Configure the compiler via =scimax.latex.compiler= setting:
 - =xelatex=
 - =lualatex=
 - =latexmk=
+
+** 👀 Build Profiles for TeX Files
+
+A single compiler run is not enough when the document needs BibTeX or Biber.
+Build profiles define a named sequence of commands (for example
+pdflatex → bibtex → pdflatex → pdflatex), and =scimax.latex.compile= uses one
+automatically when the file names it:
+
+#+BEGIN_SRC latex
+% !SCIMAX build = pdflatex-bibtex
+\documentclass{article}
+#+END_SRC
+
+Pick one interactively with *Scimax LaTeX: Select Build Profile*
+(=scimax.latex.selectBuildProfile=), which inserts that magic comment for you,
+and check the active one with *Scimax LaTeX: Show Build Profile*.
+
+When a profile applies:
+
+- Each step is reported in the progress notification, and the notification's
+  cancel button stops the build.
+- All step output goes to the "LaTeX" output channel, and errors are still
+  parsed for *Go to Error* / *Next Error*.
+- The build is judged successful by whether a PDF was produced, since LaTeX
+  exits non-zero on mere warnings.
+
+Without a profile, compilation falls back to the =scimax.latex.compiler=
+setting described above. Profiles apply to every compile entry point:
+=C-c C-c=, =C-c C-a= (compile and view), and the PDF panel.
+
+Profiles are shared with org export - the same =latex-profiles.json= files and
+=scimax.export.pdf.profiles= setting supply them. See
+[[file:10-export.org::*Build Profiles][Build Profiles]] for the profile file
+format, substitution tokens, step options, and the built-in profiles.
 
 ** ✅ SyncTeX Support
 CLOSED: [2026-01-19 Mon 09:31]
@@ -881,6 +917,7 @@ CLOSED: [2026-01-19 Mon 09:12]
 
 - [[file:11-latex-preview.org][LaTeX Preview]] - Live PDF preview with SyncTeX
 - [[file:10-export.org][Export]] - Export org to LaTeX
+- [[file:10-export.org::*Build Profiles][Build Profiles]] - Profile file format, tokens, and step options
 - [[file:19-references.org][References]] - BibTeX bibliography management
 - [[file:23-speed-commands.org][Speed Commands]] - Org-mode speed commands
 - [[file:24-keybindings.org][Keybindings]] - Complete keybinding reference

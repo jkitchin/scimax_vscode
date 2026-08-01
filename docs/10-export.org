@@ -506,6 +506,15 @@ profiles are always available. Steps are spawned directly with no shell, so
 arguments are never re-parsed - a =;= or =$(...)= inside an argument is passed
 through as text.
 
+**** ⚠️ Compiling .tex files
+
+Profiles are not limited to org export. =scimax.latex.compile= (=C-c C-c= in a
+=.tex= file) uses the profile named by the =% !SCIMAX build= magic comment,
+falling back to =scimax.latex.compiler= when no profile applies. That covers compile and view
+(=C-c C-a=) and the built-in PDF panel as well, since both compile through the
+same command. See
+[[file:33-latex-navigation.org::*Build Profiles for TeX Files][Build Profiles for TeX Files]].
+
 **** ⚠️ CLI
 
 The =scimax export --format pdf= CLI honors the same profiles, resolved from
