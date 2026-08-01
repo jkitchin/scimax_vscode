@@ -817,6 +817,37 @@ See [[file:41-export-beamer.org][Beamer Export]] for the full feature reference.
 | scimax.export.beamer.classOptions    | string  | "presentation" | Comma-separated =\documentclass[...]{beamer}= options        |
 | scimax.export.beamer.defaultPreamble | string  | ""             | Extra preamble appended after theme commands                 |
 
+** ⚠️ Custom Exporter Settings
+
+| Setting                            | Type   | Default | Description                                      |
+|------------------------------------+--------+---------+--------------------------------------------------|
+| scimax.export.customExporterPaths  | array  | []      | Extra directories to search for custom exporters |
+| scimax.export.latexClassExporters  | object | {}      | Map =#+LATEX_CLASS= to a custom exporter id      |
+
+*** ⚠️ scimax.export.latexClassExporters
+
+- *Type*: object (string → string)
+- *Default*: ={}=
+- *Description*: Makes the ordinary LaTeX/PDF exports (=C-c C-e l l=, =l p=,
+  =l o=) use a custom exporter when the document declares a matching
+  =#+LATEX_CLASS=. Keys are class names (matched case-insensitively), values
+  are custom exporter ids.
+
+*Example*:
+#+begin_src json
+{
+  "scimax.export.latexClassExporters": {
+    "cmu-memo": "cmu-memo"
+  }
+}
+#+end_src
+
+A document with =#+LATEX_CLASS: cmu-memo= then exports through the =cmu-memo=
+exporter automatically. Override per file with =#+EXPORTER: <id>=, or disable
+routing for one file with =#+EXPORTER: none=.
+
+See [[file:extension-points.org][Extension Points]] for how to define custom exporters.
+
 ** PDF Export Settings
 
 | Setting                         | Type    | Default           | Description                      |
@@ -827,6 +858,8 @@ See [[file:41-export-beamer.org][Beamer Export]] for the full feature reference.
 | scimax.export.pdf.extraArgs     | string  | ""                | Extra compiler arguments         |
 | scimax.export.pdf.openLogOnError| boolean | true              | Open log on compilation failure  |
 | scimax.export.pdf.cleanAuxFiles | boolean | true              | Clean auxiliary files on success |
+| scimax.export.pdf.profile       | string  | ""                | Build profile to use by default  |
+| scimax.export.pdf.profiles      | object  | {}                | Build profiles defined inline    |
 
 *** scimax.export.pdf.compiler
 
@@ -901,6 +934,52 @@ See [[file:41-export-beamer.org][Beamer Export]] for the full feature reference.
 - *Type*: boolean
 - *Default*: `true'
 - *Description*: Clean up auxiliary files (.aux, .bbl, .blg, etc.) after successful compilation
+
+*** ⚠️ scimax.export.pdf.profile
+
+- *Type*: string
+- *Default*: =""=
+- *Description*: Name of the [[file:10-export.org::*Build Profiles][build profile]] to use when a document does not
+  choose one with =#+LATEX_BUILD:= and no nearby =latex-profiles.json= declares a
+  =default=. Set to =none= to always use =scimax.export.pdf.compiler=.
+
+*Example*:
+#+begin_src json
+{
+  "scimax.export.pdf.profile": "lualatex-biber"
+}
+#+end_src
+
+*** ⚠️ scimax.export.pdf.profiles
+
+- *Type*: object
+- *Default*: ={}=
+- *Description*: Build profiles defined in settings, in the same shape as a
+  =latex-profiles.json= file's =profiles= object. These override the built-in
+  profiles of the same name and are available in every workspace, trusted or
+  not. Project-local =latex-profiles.json= files override these in turn.
+
+*Example*:
+#+begin_src json
+{
+  "scimax.export.pdf.profiles": {
+    "thesis": {
+      "description": "lualatex with biber and a glossary",
+      "steps": [
+        { "command": "lualatex", "args": ["-interaction=nonstopmode", "%f"] },
+        { "command": "biber", "args": ["%b"], "whenFileExists": "%b.bcf" },
+        { "command": "makeglossaries", "args": ["%b"], "whenFileExists": "%b.glo" },
+        { "command": "lualatex", "args": ["-interaction=nonstopmode", "%f"] },
+        { "command": "lualatex", "args": ["-interaction=nonstopmode", "%f"] }
+      ]
+    }
+  }
+}
+#+end_src
+
+=%f= is the file name and =%b= the base name without extension - the form
+=bibtex= and =biber= expect. See [[file:10-export.org::*Build Profiles][Build Profiles]] for the full token and step
+reference.
 
 * LaTeX Preview Settings
 

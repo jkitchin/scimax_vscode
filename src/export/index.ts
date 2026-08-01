@@ -13,6 +13,7 @@ export {
     ExporterManifest,
     CustomExporter,
     TemplateContext,
+    ExporterRoute,
 
     // Registry
     ExporterRegistry,
@@ -25,6 +26,8 @@ export {
     executeCustomExport,
     getDefaultExporterPaths,
     initializeExporterRegistry,
+    resolveCustomExporterRoute,
+    resolveCustomExporterRouteForContent,
 
     // Examples
     EXAMPLE_CMU_MEMO_MANIFEST,
@@ -32,4 +35,11 @@ export {
     EXAMPLE_CMU_DISSERTATION_MANIFEST,
 } from './customExporter';
 
-export { registerCustomExportCommands } from './commands';
+export {
+    registerCustomExportCommands,
+    runCustomExport,
+    tryRouteCustomExport,
+    resolveExporterForContent,
+    getLatexClassExporterMap,
+    CustomExportRunOptions,
+} from './commands';

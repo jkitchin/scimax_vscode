@@ -161,6 +161,52 @@ Location: =~/.scimax/exporters/= or workspace =.scimax/exporters/=
 }
 #+END_SRC
 
+*** Automatic Routing by LaTeX Class
+
+You do not have to remember to run the custom exporter by hand. Map a
+=#+LATEX_CLASS= value to an exporter id and the normal LaTeX/PDF exports
+(=C-c C-e l l=, =l p=, =l o=) use that exporter automatically:
+
+#+BEGIN_SRC json
+{
+  "scimax.export.latexClassExporters": {
+    "cmu-memo": "cmu-memo",
+    "cmu-ms-report": "cmu-ms-report"
+  }
+}
+#+END_SRC
+
+With that setting, a document starting with
+
+#+BEGIN_SRC org
+,#+LATEX_CLASS: cmu-memo
+,#+TO: Selection Committee
+,#+FROM: John Kitchin
+,#+SUBJECT: Recommendation
+#+END_SRC
+
+exports through the =cmu-memo= exporter on =C-c C-e l o=, no custom command
+needed. The class name is matched case-insensitively, and the mapped value may
+be any exporter id (the class and the exporter do not have to share a name).
+
+Per-document overrides use the =#+EXPORTER= keyword:
+
+| Keyword                | Effect                                            |
+|------------------------+---------------------------------------------------|
+| =#+EXPORTER: cmu-memo= | Use this exporter, whatever =#+LATEX_CLASS= says  |
+| =#+EXPORTER: none=     | Force the built-in LaTeX backend for this file    |
+
+Notes:
+
+- Routing applies to =l l= (writes the rendered =.tex=), =l p= (compiles the
+  PDF), and =l o= (compiles and opens the PDF). Body-only export is never
+  routed, since a template needs the full document.
+- The CLI follows the same rules: =scimax export file.org --format pdf= routes
+  through the mapped exporter. =--exporter <id>= still wins over routing.
+- If the mapped exporter is not installed, you get a warning and the built-in
+  LaTeX export runs instead. Run *Scimax: Reload Custom Exporters* after adding
+  a new exporter directory.
+
 *** Template Helpers
 
 | Helper                      | Description                    |

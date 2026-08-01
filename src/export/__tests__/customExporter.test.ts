@@ -32,6 +32,8 @@ import {
     TemplateContext,
     KeywordDefinition,
     ExporterManifest,
+    resolveCustomExporterRoute,
+    resolveCustomExporterRouteForContent,
 } from '../customExporter';
 
 describe('Custom Exporter Template Engine', () => {
@@ -785,5 +787,143 @@ Sincerely,
         expect(result).toContain('Hello Jane Smith');
         expect(result).toContain('This is the letter body.');
         expect(result).toContain('John Doe');
+    });
+});
+
+describe('Exporter Routing (#+LATEX_CLASS -> custom exporter)', () => {
+    const installed = (ids: string[]) => (id: string) => ids.includes(id);
+
+    describe('resolveCustomExporterRoute', () => {
+        it('routes a mapped LATEX_CLASS to its exporter', () => {
+            const route = resolveCustomExporterRoute(
+                { LATEX_CLASS: 'cmu-memo' },
+                { 'cmu-memo': 'cmu-memo' },
+                installed(['cmu-memo'])
+            );
+            expect(route.exporterId).toBe('cmu-memo');
+            expect(route.reason).toBe('latex-class');
+            expect(route.latexClass).toBe('cmu-memo');
+        });
+
+        it('maps a class to a differently named exporter', () => {
+            const route = resolveCustomExporterRoute(
+                { LATEX_CLASS: 'letter' },
+                { letter: 'cmu-memo' },
+                installed(['cmu-memo'])
+            );
+            expect(route.exporterId).toBe('cmu-memo');
+        });
+
+        it('matches the class name case-insensitively', () => {
+            const route = resolveCustomExporterRoute(
+                { LATEX_CLASS: 'CMU-Memo' },
+                { 'cmu-memo': 'cmu-memo' },
+                installed(['cmu-memo'])
+            );
+            expect(route.exporterId).toBe('cmu-memo');
+        });
+
+        it('does not route an unmapped class', () => {
+            const route = resolveCustomExporterRoute(
+                { LATEX_CLASS: 'article' },
+                { 'cmu-memo': 'cmu-memo' },
+                installed(['cmu-memo'])
+            );
+            expect(route.exporterId).toBeUndefined();
+            expect(route.reason).toBe('none');
+        });
+
+        it('does not route when there is no mapping at all', () => {
+            const route = resolveCustomExporterRoute(
+                { LATEX_CLASS: 'cmu-memo' },
+                {},
+                installed(['cmu-memo'])
+            );
+            expect(route.exporterId).toBeUndefined();
+            expect(route.reason).toBe('none');
+        });
+
+        it('reports a mapped exporter that is not installed', () => {
+            const route = resolveCustomExporterRoute(
+                { LATEX_CLASS: 'cmu-memo' },
+                { 'cmu-memo': 'cmu-memo' },
+                installed([])
+            );
+            expect(route.exporterId).toBeUndefined();
+            expect(route.reason).toBe('unknown-exporter');
+            expect(route.requested).toBe('cmu-memo');
+        });
+
+        it('lets #+EXPORTER override the class mapping', () => {
+            const route = resolveCustomExporterRoute(
+                { LATEX_CLASS: 'cmu-memo', EXPORTER: 'cmu-ms-report' },
+                { 'cmu-memo': 'cmu-memo' },
+                installed(['cmu-memo', 'cmu-ms-report'])
+            );
+            expect(route.exporterId).toBe('cmu-ms-report');
+            expect(route.reason).toBe('keyword');
+        });
+
+        it('treats #+EXPORTER: none as an opt-out', () => {
+            const route = resolveCustomExporterRoute(
+                { LATEX_CLASS: 'cmu-memo', EXPORTER: 'none' },
+                { 'cmu-memo': 'cmu-memo' },
+                installed(['cmu-memo'])
+            );
+            expect(route.exporterId).toBeUndefined();
+            expect(route.reason).toBe('opt-out');
+        });
+
+        it('treats an empty or "none" mapping value as an opt-out', () => {
+            expect(
+                resolveCustomExporterRoute({ LATEX_CLASS: 'cmu-memo' }, { 'cmu-memo': '' }, installed(['cmu-memo'])).reason
+            ).toBe('opt-out');
+            expect(
+                resolveCustomExporterRoute({ LATEX_CLASS: 'cmu-memo' }, { 'cmu-memo': 'none' }, installed(['cmu-memo'])).reason
+            ).toBe('opt-out');
+        });
+
+        it('does not route documents without a LATEX_CLASS', () => {
+            const route = resolveCustomExporterRoute({}, { 'cmu-memo': 'cmu-memo' }, installed(['cmu-memo']));
+            expect(route.reason).toBe('none');
+        });
+    });
+
+    describe('resolveCustomExporterRouteForContent', () => {
+        it('reads the keywords out of org content', () => {
+            const content = [
+                '#+LATEX_CLASS: cmu-memo',
+                '#+TO: Selection Committee',
+                '',
+                'Dear committee,',
+            ].join('\n');
+
+            const route = resolveCustomExporterRouteForContent(
+                content,
+                { 'cmu-memo': 'cmu-memo' },
+                installed(['cmu-memo'])
+            );
+            expect(route.exporterId).toBe('cmu-memo');
+            expect(route.reason).toBe('latex-class');
+        });
+
+        it('honors #+EXPORTER: none in content', () => {
+            const content = '#+LATEX_CLASS: cmu-memo\n#+EXPORTER: none\n\nBody\n';
+            const route = resolveCustomExporterRouteForContent(
+                content,
+                { 'cmu-memo': 'cmu-memo' },
+                installed(['cmu-memo'])
+            );
+            expect(route.exporterId).toBeUndefined();
+        });
+
+        it('returns no route for plain content', () => {
+            const route = resolveCustomExporterRouteForContent(
+                '* A heading\n\nSome text.\n',
+                { 'cmu-memo': 'cmu-memo' },
+                installed(['cmu-memo'])
+            );
+            expect(route.reason).toBe('none');
+        });
     });
 });

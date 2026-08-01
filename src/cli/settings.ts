@@ -53,7 +53,13 @@ export interface ExportSettings {
         extraArgs: string;
         shellEscape: string;
         cleanAuxFiles: boolean;
+        /** Named build profile to use when a document does not pick one */
+        profile: string;
+        /** Build profiles defined in settings.json */
+        profiles: Record<string, unknown>;
     };
+    /** Root scimax directory (holds exporters/, latex-profiles.json) */
+    scimaxDirectory: string;
     ipynb: {
         defaultKernel: string;
         embedImages: boolean;
@@ -71,6 +77,8 @@ export interface ExportSettings {
         classOptions: string;
         defaultPreamble: string;
     };
+    /** Map of #+LATEX_CLASS value -> custom exporter id */
+    latexClassExporters: Record<string, string>;
 }
 
 /**
@@ -389,7 +397,13 @@ export function loadSettings(): ScimaxSettings {
                 extraArgs: getSetting<string>(settings, 'scimax.export.pdf.extraArgs', ''),
                 shellEscape: getSetting<string>(settings, 'scimax.export.pdf.shellEscape', 'restricted'),
                 cleanAuxFiles: getSetting<boolean>(settings, 'scimax.export.pdf.cleanAuxFiles', true),
+                profile: getSetting<string>(settings, 'scimax.export.pdf.profile', ''),
+                profiles: getSetting<Record<string, unknown>>(settings, 'scimax.export.pdf.profiles', {}),
             },
+            scimaxDirectory: expandPath(
+                getSetting<string>(settings, 'scimax.directory', '')
+                || path.join(process.env.HOME || process.env.USERPROFILE || '', 'scimax')
+            ),
             ipynb: {
                 defaultKernel: getSetting<string>(settings, 'scimax.export.ipynb.defaultKernel', 'python3'),
                 embedImages: getSetting<boolean>(settings, 'scimax.export.ipynb.embedImages', true),
@@ -407,6 +421,11 @@ export function loadSettings(): ScimaxSettings {
                 classOptions: getSetting<string>(settings, 'scimax.export.beamer.classOptions', ''),
                 defaultPreamble: getSetting<string>(settings, 'scimax.export.beamer.defaultPreamble', ''),
             },
+            latexClassExporters: getSetting<Record<string, string>>(
+                settings,
+                'scimax.export.latexClassExporters',
+                {}
+            ),
         },
         journal: {
             directory: getSetting<string>(settings, 'scimax.journal.directory', ''),

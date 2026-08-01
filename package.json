@@ -1132,6 +1132,19 @@
         "title": "Scimax: Create Example Custom Exporter"
       },
       {
+        "command": "scimax.latex.selectBuildProfile",
+        "title": "Scimax: Select LaTeX Build Profile",
+        "icon": "$(gear)"
+      },
+      {
+        "command": "scimax.latex.showBuildProfile",
+        "title": "Scimax: Show Active LaTeX Build Profile"
+      },
+      {
+        "command": "scimax.latex.createBuildProfilesFile",
+        "title": "Scimax: Create LaTeX Build Profiles File"
+      },
+      {
         "command": "scimax.jupyter.showKernels",
         "title": "Scimax: Show Available Jupyter Kernels",
         "icon": "$(server)"
@@ -6245,6 +6258,16 @@
           "editPresentation": "multilineText",
           "markdownDescription": "Default LaTeX preamble (packages and commands) added after `\\documentclass`. Can be extended by `#+LATEX_HEADER:` lines in the document. Example:\n```latex\n\\usepackage[utf8]{inputenc}\n\\usepackage{graphicx}\n\\usepackage{amsmath}\n```"
         },
+        "scimax.export.pdf.profile": {
+          "type": "string",
+          "default": "",
+          "markdownDescription": "Default LaTeX build profile - a named sequence of commands used instead of `#/scimax.export.pdf.compiler`. Overridden per document by `#+LATEX_BUILD: <name>` and by a `\"default\"` in a `latex-profiles.json` file.\n\nBuilt-in profiles: `pdflatex-bibtex`, `lualatex-biber`, `xelatex-biber`, `latexmk-pdflatex`, `latexmk-lualatex`, `pdflatex-fast`. Leave empty to use the compiler setting."
+        },
+        "scimax.export.pdf.profiles": {
+          "type": "object",
+          "default": {},
+          "markdownDescription": "LaTeX build profiles defined in settings. Each profile is `{\"description\": \"...\", \"steps\": [{\"command\": \"pdflatex\", \"args\": [\"-interaction=nonstopmode\", \"%f\"]}, ...]}`.\n\nTokens in arguments: `%f` file name with extension, `%b` base name (for bibtex/biber), `%p` absolute .tex path, `%d` its directory, `%o` output directory, `%P` output PDF path, `%%` a literal `%`.\n\nProfiles can also live in `latex-profiles.json` next to the document (or in `.scimax/latex-profiles.json`), which take precedence. Project-local files are only loaded in trusted workspaces."
+        },
         "scimax.export.pdf.compiler": {
           "type": "string",
           "enum": [
@@ -6390,6 +6413,14 @@
           },
           "default": [],
           "markdownDescription": "Additional directories to search for custom exporters. Each exporter should be a subdirectory containing a `manifest.json` and template files. Default locations (`~/.scimax/exporters/` and workspace `.scimax/exporters/`) are always searched.\n\nExample: `[\"/path/to/my/exporters\", \"~/custom-exporters\"]`"
+        },
+        "scimax.export.latexClassExporters": {
+          "type": "object",
+          "default": {},
+          "additionalProperties": {
+            "type": "string"
+          },
+          "markdownDescription": "Map a document's `#+LATEX_CLASS` to a custom exporter id, so the normal LaTeX/PDF exports (`C-c C-e l l`, `l p`, `l o`) automatically use that exporter.\n\nExample: `{\"cmu-memo\": \"cmu-memo\", \"cmu-ms-report\": \"cmu-ms-report\"}`\n\nA `#+EXPORTER: <id>` keyword in the document overrides this mapping; `#+EXPORTER: none` forces the built-in LaTeX backend."
         },
         "scimax.latexPreview.enabled": {
           "type": "boolean",

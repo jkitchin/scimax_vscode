@@ -23,6 +23,8 @@ import { exportToIpynb, exportToIpynbParticipant, type IpynbExportOptions } from
 import type { OrgDocumentNode, HeadlineElement } from '../parser/orgElementTypes';
 import { isBodyOnlyMode } from '../hydra/menus/exportMenu';
 import { registerClipboardCommands } from './clipboardExport';
+import { tryRouteCustomExport } from '../export/commands';
+import { resolveProfileForDocument, runProfile, readBuildKeywords } from '../latex/buildProfileService';
 
 /**
  * Execute a command using spawn (no shell, prevents command injection)
@@ -708,6 +710,74 @@ function buildCompileArgs(
 }
 
 /**
+ * Compile a .tex file to PDF.
+ *
+ * When a build profile applies (a `#+LATEX_BUILD:` keyword, a
+ * `latex-profiles.json` default, or `scimax.export.pdf.profile`) its steps run
+ * in order. Otherwise this falls back to the `scimax.export.pdf.compiler`
+ * settings and the classic compile / bibtex / recompile-twice sequence.
+ *
+ * Errors are swallowed on purpose: LaTeX engines exit non-zero for warnings
+ * that still produce a usable PDF, so callers decide success by checking for
+ * the PDF itself.
+ */
+async function runLatexBuild(
+    texPath: string,
+    workDir: string,
+    baseName: string,
+    pdfConfig: PdfCompilerConfig,
+    sourceContent?: string
+): Promise<void> {
+    const profile = resolveProfileForDocument(
+        texPath,
+        sourceContent ? readBuildKeywords(sourceContent) : undefined
+    );
+
+    if (profile) {
+        await runProfile(profile, texPath, workDir);
+        return;
+    }
+
+    const { command, args } = buildCompileArgs(texPath, workDir, pdfConfig);
+
+    try {
+        await spawnAsync(command, args, {
+            cwd: workDir,
+            timeout: 180000, // 3 minutes for complex documents with bibliography
+        });
+    } catch {
+        // Compiler may return non-zero even when the PDF is produced (warnings)
+    }
+
+    // latexmk handles bibliography and reruns itself; direct engines do not
+    if (pdfConfig.compiler.startsWith('latexmk')) {
+        return;
+    }
+
+    const auxPath = path.join(workDir, `${baseName}.aux`);
+    if (!fs.existsSync(auxPath)) {
+        return;
+    }
+
+    const auxContent = await fs.promises.readFile(auxPath, 'utf-8');
+    if (!auxContent.includes('\\citation') && !auxContent.includes('\\bibdata')) {
+        return;
+    }
+
+    try {
+        await spawnAsync(pdfConfig.bibtexCommand, [baseName], {
+            cwd: workDir,
+            timeout: 60000,
+        });
+        // Recompile twice so citations and cross-references settle
+        await spawnAsync(command, args, { cwd: workDir, timeout: 120000 });
+        await spawnAsync(command, args, { cwd: workDir, timeout: 120000 });
+    } catch {
+        // Bibliography processing may fail; continue and check for the PDF
+    }
+}
+
+/**
  * Export to PDF via LaTeX
  * Returns the log file path if there was an error
  */
@@ -741,42 +811,8 @@ async function exportPdf(
 
     await fs.promises.writeFile(texPath, latexContent, 'utf-8');
 
-    // Build and execute the compile command (using spawn for safety - no shell injection)
-    const { command, args } = buildCompileArgs(texPath, tempDir, pdfConfig);
-
-    try {
-        await spawnAsync(command, args, {
-            cwd: tempDir,
-            timeout: 180000, // 3 minutes for complex documents with bibliography
-        });
-    } catch (error) {
-        // Compiler may return non-zero even when PDF is produced (warnings)
-        // We'll check for PDF existence below
-    }
-
-    // For non-latexmk compilers, we may need to run bibtex/biber and recompile
-    if (!pdfConfig.compiler.startsWith('latexmk')) {
-        const auxPath = path.join(tempDir, `${baseName}.aux`);
-        if (fs.existsSync(auxPath)) {
-            // Check if there are citations that need bibliography processing
-            const auxContent = await fs.promises.readFile(auxPath, 'utf-8');
-            if (auxContent.includes('\\citation') || auxContent.includes('\\bibdata')) {
-                try {
-                    // Run bibtex/biber (using spawn for safety)
-                    await spawnAsync(pdfConfig.bibtexCommand, [baseName], {
-                        cwd: tempDir,
-                        timeout: 60000,
-                    });
-                    // Recompile twice for references
-                    const recompile = buildCompileArgs(texPath, tempDir, pdfConfig);
-                    await spawnAsync(recompile.command, recompile.args, { cwd: tempDir, timeout: 120000 });
-                    await spawnAsync(recompile.command, recompile.args, { cwd: tempDir, timeout: 120000 });
-                } catch {
-                    // Bibliography processing may fail, continue anyway
-                }
-            }
-        }
-    }
+    // Compile (build profile if the document has one, else compiler settings)
+    await runLatexBuild(texPath, tempDir, baseName, pdfConfig, content);
 
     // Check if PDF was created
     const pdfCreated = fs.existsSync(outputPath);
@@ -833,30 +869,7 @@ async function exportBeamerPdf(
 
     await fs.promises.writeFile(texPath, latexContent, 'utf-8');
 
-    const { command, args } = buildCompileArgs(texPath, tempDir, pdfConfig);
-
-    try {
-        await spawnAsync(command, args, { cwd: tempDir, timeout: 180000 });
-    } catch {
-        // Compiler may exit non-zero even when PDF is produced
-    }
-
-    if (!pdfConfig.compiler.startsWith('latexmk')) {
-        const auxPath = path.join(tempDir, `${baseName}.aux`);
-        if (fs.existsSync(auxPath)) {
-            const auxContent = await fs.promises.readFile(auxPath, 'utf-8');
-            if (auxContent.includes('\\citation') || auxContent.includes('\\bibdata')) {
-                try {
-                    await spawnAsync(pdfConfig.bibtexCommand, [baseName], { cwd: tempDir, timeout: 60000 });
-                    const recompile = buildCompileArgs(texPath, tempDir, pdfConfig);
-                    await spawnAsync(recompile.command, recompile.args, { cwd: tempDir, timeout: 120000 });
-                    await spawnAsync(recompile.command, recompile.args, { cwd: tempDir, timeout: 120000 });
-                } catch {
-                    // ignore
-                }
-            }
-        }
-    }
+    await runLatexBuild(texPath, tempDir, baseName, pdfConfig, content);
 
     const pdfCreated = fs.existsSync(outputPath);
 
@@ -926,38 +939,8 @@ async function exportPdfWithSync(
 
     await fs.promises.writeFile(texPath, latexContent, 'utf-8');
 
-    // Build and execute the compile command
-    const { command, args } = buildCompileArgs(texPath, tempDir, pdfConfig);
-
-    try {
-        await spawnAsync(command, args, {
-            cwd: tempDir,
-            timeout: 180000,
-        });
-    } catch {
-        // Compiler may return non-zero even when PDF is produced
-    }
-
-    // For non-latexmk compilers, we may need to run bibtex/biber and recompile
-    if (!pdfConfig.compiler.startsWith('latexmk')) {
-        const auxPath = path.join(tempDir, `${baseName}.aux`);
-        if (fs.existsSync(auxPath)) {
-            const auxContent = await fs.promises.readFile(auxPath, 'utf-8');
-            if (auxContent.includes('\\citation') || auxContent.includes('\\bibdata')) {
-                try {
-                    await spawnAsync(pdfConfig.bibtexCommand, [baseName], {
-                        cwd: tempDir,
-                        timeout: 60000,
-                    });
-                    const recompile = buildCompileArgs(texPath, tempDir, pdfConfig);
-                    await spawnAsync(recompile.command, recompile.args, { cwd: tempDir, timeout: 120000 });
-                    await spawnAsync(recompile.command, recompile.args, { cwd: tempDir, timeout: 120000 });
-                } catch {
-                    // Bibliography processing may fail, continue anyway
-                }
-            }
-        }
-    }
+    // Compile (build profile if the document has one, else compiler settings)
+    await runLatexBuild(texPath, tempDir, baseName, pdfConfig, content);
 
     // Check if PDF was created
     const pdfCreated = fs.existsSync(outputPath);
@@ -1479,6 +1462,12 @@ async function quickExportLatex(): Promise<void> {
     const content = preprocessContent(editor.document.getText(), inputDir);
     const bodyOnly = isBodyOnlyMode();
 
+    // A #+EXPORTER: keyword or a #+LATEX_CLASS mapping can route this to a
+    // custom exporter (see scimax.export.latexClassExporters)
+    if (!bodyOnly && await tryRouteCustomExport(content, { texOnly: true, openBehavior: 'none' })) {
+        return;
+    }
+
     // Parse document to extract metadata and export settings
     const doc = parseOrgFast(content);
     const metadata = extractMetadata(doc);
@@ -1514,6 +1503,12 @@ async function quickExportPdf(): Promise<void> {
     const inputName = path.basename(inputPath, '.org');
     const content = preprocessContent(editor.document.getText(), inputDir);
     const compilerDesc = getPdfCompilerDescription();
+
+    // A #+EXPORTER: keyword or a #+LATEX_CLASS mapping can route this to a
+    // custom exporter (see scimax.export.latexClassExporters)
+    if (await tryRouteCustomExport(content, { openBehavior: 'prompt' })) {
+        return;
+    }
 
     // Parse document to extract metadata and export settings
     const doc = parseOrgFast(content);
@@ -1950,6 +1945,12 @@ export function registerExportCommands(context: vscode.ExtensionContext): void {
                 const content = preprocessContent(editor.document.getText(), inputDir);
                 const outputPath = inputPath.replace(/\.org$/, '.pdf');
                 const compilerDesc = getPdfCompilerDescription();
+
+                // A #+EXPORTER: keyword or a #+LATEX_CLASS mapping can route this
+                // to a custom exporter (see scimax.export.latexClassExporters)
+                if (await tryRouteCustomExport(content, { openBehavior: 'open' })) {
+                    return;
+                }
 
                 await vscode.window.withProgress(
                     {
@@ -2418,6 +2419,9 @@ async function exportDispatcher(): Promise<void> {
                 break;
             }
             case 'pdf-file': {
+                if (await tryRouteCustomExport(content, { openBehavior: 'prompt' })) {
+                    break;
+                }
                 const outputFileName = getExportFileName(metadata.exportFileName, inputName, 'pdf');
                 const outputPath = path.join(inputDir, outputFileName);
                 const compilerDesc = getPdfCompilerDescription();
@@ -2437,6 +2441,9 @@ async function exportDispatcher(): Promise<void> {
                 break;
             }
             case 'pdf-open': {
+                if (await tryRouteCustomExport(content, { openBehavior: 'open' })) {
+                    break;
+                }
                 const outputFileName = getExportFileName(metadata.exportFileName, inputName, 'pdf');
                 const outputPath = path.join(inputDir, outputFileName);
                 const compilerDesc = getPdfCompilerDescription();

@@ -196,6 +196,7 @@ const KEYWORD_DESCRIPTIONS: Record<string, string> = {
     'SETUPFILE': 'Include settings from another file',
     'INCLUDE': 'Include content from another file',
     'BIBLIOGRAPHY': 'Path to bibliography file(s)',
+    'EXPORTER': 'Custom exporter to use for LaTeX/PDF export (`none` forces the built-in backend)',
     'LATEX_CLASS': 'LaTeX document class for export',
     'LATEX_CLASS_OPTIONS': 'Options for LaTeX document class',
     'LATEX_HEADER': 'Additional LaTeX header content',

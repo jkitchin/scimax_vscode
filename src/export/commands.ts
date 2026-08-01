@@ -8,13 +8,16 @@ import * as fs from 'fs';
 import { spawn } from 'child_process';
 import {
     ExporterRegistry,
+    ExporterRoute,
     executeCustomExport,
     initializeExporterRegistry,
     getDefaultExporterPaths,
+    resolveCustomExporterRouteForContent,
     EXAMPLE_CMU_MEMO_MANIFEST,
     EXAMPLE_CMU_MEMO_TEMPLATE,
 } from './customExporter';
 import { parseOrgFast } from '../parser/orgExportParser';
+import { resolveProfileForDocument, runProfile, readBuildKeywords } from '../latex/buildProfileService';
 
 /**
  * Determine the base output name (without extension) for a custom export,
@@ -118,13 +121,39 @@ async function showCustomExportPicker(): Promise<void> {
     if (!selected) return;
 
     // Execute the export
-    await executeCustomExportCommand(selected.exporter.id);
+    await runCustomExport(selected.exporter.id);
+}
+
+/**
+ * Options controlling how a custom export is run
+ */
+export interface CustomExportRunOptions {
+    /**
+     * Org content to export. Defaults to the active editor's text.
+     * Callers that preprocess (e.g. resolve `#+INCLUDE`) should pass their text.
+     */
+    content?: string;
+    /**
+     * Stop after writing the rendered template (skip the PDF compile).
+     * Only meaningful for exporters whose `outputFormat` is `pdf`.
+     */
+    texOnly?: boolean;
+    /**
+     * What to do with the result: open it, offer an 'Open' button, or nothing.
+     * Defaults to 'open'.
+     */
+    openBehavior?: 'open' | 'prompt' | 'none';
+    /** Extra context appended to the success message (e.g. why this exporter ran) */
+    note?: string;
 }
 
 /**
  * Execute a custom export by exporter ID
  */
-async function executeCustomExportCommand(exporterId: string): Promise<void> {
+export async function runCustomExport(
+    exporterId: string,
+    options: CustomExportRunOptions = {}
+): Promise<void> {
     const editor = vscode.window.activeTextEditor;
     if (!editor || editor.document.languageId !== 'org') {
         vscode.window.showWarningMessage('No org-mode file open');
@@ -139,10 +168,12 @@ async function executeCustomExportCommand(exporterId: string): Promise<void> {
         return;
     }
 
+    const openBehavior = options.openBehavior ?? 'open';
     const inputPath = editor.document.uri.fsPath;
     const inputDir = path.dirname(inputPath);
     const inputName = path.basename(inputPath, '.org');
-    const content = editor.document.getText();
+    const content = options.content ?? editor.document.getText();
+    const suffix = options.note ? ` ${options.note}` : '';
 
     // Determine output name, honoring #+EXPORT_FILE_NAME if set
     const baseName = getCustomExportBaseName(content, inputName);
@@ -162,21 +193,13 @@ async function executeCustomExportCommand(exporterId: string): Promise<void> {
                 // Write output file
                 await fs.promises.writeFile(outputPath, result, 'utf-8');
 
-                // If PDF output, compile LaTeX and open the PDF
-                if (exporter.outputFormat === 'pdf') {
+                // If PDF output, compile LaTeX (unless the caller only wants .tex)
+                if (exporter.outputFormat === 'pdf' && !options.texOnly) {
                     const pdfPath = outputPath.replace(/\.tex$/, '.pdf');
-                    await compileToPdf(outputPath, pdfPath, inputDir);
-                    await vscode.env.openExternal(vscode.Uri.file(pdfPath));
+                    await compileToPdf(outputPath, pdfPath, inputDir, content);
+                    await handleExportResult(pdfPath, openBehavior, suffix, false);
                 } else {
-                    const action = await vscode.window.showInformationMessage(
-                        `Exported to ${path.basename(outputPath)}`,
-                        'Open'
-                    );
-
-                    if (action === 'Open') {
-                        const doc = await vscode.workspace.openTextDocument(outputPath);
-                        await vscode.window.showTextDocument(doc);
-                    }
+                    await handleExportResult(outputPath, openBehavior, suffix, true);
                 }
             } catch (error) {
                 const message = error instanceof Error ? error.message : String(error);
@@ -184,6 +207,97 @@ async function executeCustomExportCommand(exporterId: string): Promise<void> {
             }
         }
     );
+}
+
+/**
+ * Open / offer to open an exported file, or just report it.
+ *
+ * Text results (.tex, .html, .md) open in an editor; PDFs open externally.
+ */
+async function handleExportResult(
+    outputPath: string,
+    openBehavior: 'open' | 'prompt' | 'none',
+    suffix: string,
+    isTextOutput: boolean
+): Promise<void> {
+    const open = async () => {
+        if (isTextOutput) {
+            const doc = await vscode.workspace.openTextDocument(outputPath);
+            await vscode.window.showTextDocument(doc);
+        } else {
+            await vscode.env.openExternal(vscode.Uri.file(outputPath));
+        }
+    };
+
+    if (openBehavior === 'open') {
+        await open();
+        return;
+    }
+
+    const message = `Exported to ${path.basename(outputPath)}${suffix}`;
+    if (openBehavior === 'none') {
+        vscode.window.showInformationMessage(message);
+        return;
+    }
+
+    const action = await vscode.window.showInformationMessage(message, 'Open');
+    if (action === 'Open') {
+        await open();
+    }
+}
+
+// =============================================================================
+// Automatic Routing
+// =============================================================================
+
+/**
+ * Get the `#+LATEX_CLASS` -> custom exporter mapping from settings
+ */
+export function getLatexClassExporterMap(): Record<string, string> {
+    const config = vscode.workspace.getConfiguration('scimax.export');
+    return config.get<Record<string, string>>('latexClassExporters', {}) || {};
+}
+
+/**
+ * Decide whether a document should be exported with a custom exporter.
+ *
+ * Uses `#+EXPORTER:` if present, otherwise the `scimax.export.latexClassExporters`
+ * mapping applied to `#+LATEX_CLASS`.
+ */
+export function resolveExporterForContent(content: string): ExporterRoute {
+    return resolveCustomExporterRouteForContent(content, getLatexClassExporterMap());
+}
+
+/**
+ * Run the routed custom exporter for `content`, if there is one.
+ *
+ * Returns true when the export was handled by a custom exporter, so callers can
+ * skip their built-in LaTeX/PDF path.
+ */
+export async function tryRouteCustomExport(
+    content: string,
+    options: Omit<CustomExportRunOptions, 'content' | 'note'> = {}
+): Promise<boolean> {
+    const route = resolveExporterForContent(content);
+
+    if (route.reason === 'unknown-exporter') {
+        vscode.window.showWarningMessage(
+            `Custom exporter "${route.requested}" is not installed - using the built-in LaTeX export. ` +
+            `Run "Scimax: Reload Custom Exporters" if you just added it.`
+        );
+        return false;
+    }
+
+    if (!route.exporterId) {
+        return false;
+    }
+
+    const note = route.reason === 'latex-class'
+        ? `(#+LATEX_CLASS: ${route.latexClass})`
+        : '(#+EXPORTER)';
+
+    await runCustomExport(route.exporterId, { ...options, content, note });
+    return true;
 }
 
 /**
@@ -215,8 +329,38 @@ async function cleanupAuxFiles(texPath: string): Promise<void> {
 
 /**
  * Compile LaTeX to PDF using system LaTeX compiler
+ *
+ * When the source document selects a build profile, its command sequence runs
+ * instead of the single-compiler path. `sourceContent` is the org text, which
+ * is where the `#+LATEX_BUILD:` keyword lives.
  */
-async function compileToPdf(texPath: string, pdfPath: string, cwd: string): Promise<void> {
+async function compileToPdf(
+    texPath: string,
+    pdfPath: string,
+    cwd: string,
+    sourceContent?: string
+): Promise<void> {
+    const profile = resolveProfileForDocument(
+        texPath,
+        sourceContent ? readBuildKeywords(sourceContent) : undefined
+    );
+
+    if (profile) {
+        await runProfile(profile, texPath, cwd);
+        if (!fs.existsSync(pdfPath)) {
+            throw new Error(
+                `LaTeX build profile "${profile.name}" did not produce ${path.basename(pdfPath)}`
+            );
+        }
+        const cleanAux = vscode.workspace
+            .getConfiguration('scimax.export.pdf')
+            .get<boolean>('cleanAuxFiles', true);
+        if (cleanAux) {
+            await cleanupAuxFiles(texPath);
+        }
+        return;
+    }
+
     const config = vscode.workspace.getConfiguration('scimax.export.pdf');
     const compiler = config.get<string>('compiler', 'latexmk-lualatex');
     const cleanAuxFiles = config.get<boolean>('cleanAuxFiles', true);
@@ -415,7 +559,7 @@ export function registerCustomExportCommands(context: vscode.ExtensionContext): 
             'scimax.export.customById',
             async (exporterId: string) => {
                 if (exporterId) {
-                    await executeCustomExportCommand(exporterId);
+                    await runCustomExport(exporterId);
                 } else {
                     await showCustomExportPicker();
                 }

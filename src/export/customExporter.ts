@@ -556,6 +556,91 @@ export async function executeCustomExport(
 }
 
 // =============================================================================
+// Automatic Routing (LaTeX class -> custom exporter)
+// =============================================================================
+
+/**
+ * Result of deciding which custom exporter (if any) should handle a document.
+ */
+export interface ExporterRoute {
+    /** Exporter to use, when one was resolved */
+    exporterId?: string;
+    /** How the decision was reached */
+    reason: 'keyword' | 'latex-class' | 'opt-out' | 'unknown-exporter' | 'none';
+    /** Exporter id that was asked for but is not registered */
+    requested?: string;
+    /** The `#+LATEX_CLASS` value that participated in the decision */
+    latexClass?: string;
+}
+
+/** Values that explicitly disable routing to a custom exporter */
+const ROUTE_OPT_OUT = new Set(['none', 'nil', 'default', 'off', 'no']);
+
+/**
+ * Decide which custom exporter should handle a document.
+ *
+ * Resolution order:
+ *   1. `#+EXPORTER: <id>` in the document (use `none` to force the built-in backend)
+ *   2. `#+LATEX_CLASS: <class>` looked up in `classMap` (case-insensitive)
+ *
+ * Returns a route with no `exporterId` when the built-in backend should be used.
+ */
+export function resolveCustomExporterRoute(
+    keywords: Record<string, string> | undefined,
+    classMap: Record<string, string> | undefined,
+    isRegistered: (id: string) => boolean = (id) => ExporterRegistry.getInstance().has(id)
+): ExporterRoute {
+    const explicit = keywords?.EXPORTER?.trim();
+    if (explicit) {
+        if (ROUTE_OPT_OUT.has(explicit.toLowerCase())) {
+            return { reason: 'opt-out', requested: explicit };
+        }
+        return isRegistered(explicit)
+            ? { exporterId: explicit, reason: 'keyword' }
+            : { reason: 'unknown-exporter', requested: explicit };
+    }
+
+    const latexClass = keywords?.LATEX_CLASS?.trim();
+    if (!latexClass || !classMap) {
+        return { reason: 'none' };
+    }
+
+    const matchedKey = Object.keys(classMap).find(
+        key => key.trim().toLowerCase() === latexClass.toLowerCase()
+    );
+    if (matchedKey === undefined) {
+        return { reason: 'none' };
+    }
+
+    const mapped = (classMap[matchedKey] || '').trim();
+    if (!mapped || ROUTE_OPT_OUT.has(mapped.toLowerCase())) {
+        return { reason: 'opt-out', latexClass };
+    }
+
+    return isRegistered(mapped)
+        ? { exporterId: mapped, reason: 'latex-class', latexClass }
+        : { reason: 'unknown-exporter', requested: mapped, latexClass };
+}
+
+/**
+ * Convenience wrapper around {@link resolveCustomExporterRoute} that parses
+ * the document keywords out of raw org content.
+ */
+export function resolveCustomExporterRouteForContent(
+    content: string,
+    classMap: Record<string, string> | undefined,
+    isRegistered?: (id: string) => boolean
+): ExporterRoute {
+    try {
+        const doc = parseOrgFast(content);
+        return resolveCustomExporterRoute(doc.keywords, classMap, isRegistered);
+    } catch {
+        // Unparseable content - fall back to the built-in backend
+        return { reason: 'none' };
+    }
+}
+
+// =============================================================================
 // Discovery Paths
 // =============================================================================
 

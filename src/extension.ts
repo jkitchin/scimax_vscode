@@ -48,6 +48,7 @@ import { registerBabelCommands, registerBabelCodeLens } from './org/babelProvide
 import { registerBabelAdvancedCommands } from './parser/orgBabelAdvanced';
 import { registerExportCommands } from './org/exportProvider';
 import { registerCustomExportCommands } from './export/commands';
+import { registerBuildProfileCommands } from './latex/buildProfileService';
 import { registerScimaxOrgCommands } from './org/scimaxOrg';
 import { registerMacLinkCommands } from './org/macLinks';
 import { registerScreenshotCommands } from './org/screenshotProvider';
@@ -582,6 +583,9 @@ export async function activate(context: vscode.ExtensionContext) {
 
     // Register Custom Export commands (user-defined export templates)
     registerCustomExportCommands(context);
+
+    // Register LaTeX build profile commands (named compile sequences)
+    registerBuildProfileCommands(context);
 
     // Register Markdown Export commands (pandoc-based export for .md files)
     registerMarkdownExportCommands(context);

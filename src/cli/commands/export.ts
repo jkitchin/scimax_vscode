@@ -17,7 +17,14 @@ import {
     initializeExporterRegistry,
     executeCustomExport,
     ExporterRegistry,
+    resolveCustomExporterRouteForContent,
 } from '../../export/customExporter';
+import {
+    loadBuildProfiles,
+    resolveBuildProfile,
+    runBuildProfile,
+    readBuildKeywords,
+} from '../../latex/buildProfiles';
 
 interface CliConfig {
     dbPath: string;
@@ -127,6 +134,25 @@ export async function exportCommand(config: CliConfig, args: ParsedArgs): Promis
         return;
     }
 
+    // Auto-route latex/pdf exports via #+EXPORTER: or the #+LATEX_CLASS mapping
+    // in scimax.export.latexClassExporters (same behavior as C-c C-e in the editor)
+    if (format === 'latex' || format === 'pdf') {
+        await initializeExporterRegistry();
+        const route = resolveCustomExporterRouteForContent(
+            content,
+            settings.export.latexClassExporters
+        );
+        if (route.exporterId) {
+            await runCustomExporter(route.exporterId, content, inputPath, outputPath, settings.export, json, verbose);
+            return;
+        }
+        if (route.reason === 'unknown-exporter') {
+            process.stderr.write(
+                `Warning: custom exporter "${route.requested}" is not installed - using the built-in LaTeX export.\n`
+            );
+        }
+    }
+
     const doc = parseOrgFast(content);
 
     // Look for bibliography file (check settings first, then local files)
@@ -180,7 +206,7 @@ export async function exportCommand(config: CliConfig, args: ParsedArgs): Promis
                 citeBackend: settings.export.latex.citeBackend === 'biblatex' ? 'biblatex' : 'bibtex',
             });
             defaultExt = '.pdf';
-            output = await compilePdf(latex, inputPath, outputPath, settings.export, json, verbose);
+            output = await compilePdf(latex, inputPath, outputPath, settings.export, json, verbose, content);
             if (output === '__PDF_WRITTEN__') {
                 if (json) {
                     const pdfOut = outputPath || inputPath.replace(/\.org$/i, '.pdf');
@@ -200,7 +226,7 @@ export async function exportCommand(config: CliConfig, args: ParsedArgs): Promis
         case 'beamer-pdf': {
             const beamerTex = exportToBeamer(doc, buildBeamerOptions(settings.export));
             defaultExt = '.pdf';
-            output = await compilePdf(beamerTex, inputPath, outputPath, settings.export, json, verbose);
+            output = await compilePdf(beamerTex, inputPath, outputPath, settings.export, json, verbose, content);
             if (output === '__PDF_WRITTEN__') {
                 if (json) {
                     const pdfOut = outputPath || inputPath.replace(/\.org$/i, '.pdf');
@@ -329,7 +355,7 @@ async function runCustomExporter(
 
     if (exporter.outputFormat === 'pdf') {
         log(`Using exporter: ${exporter.name} (${exporter.id})`);
-        const result = await compilePdf(rendered, inputPath, outputPath, exportSettings, json, verbose);
+        const result = await compilePdf(rendered, inputPath, outputPath, exportSettings, json, verbose, content);
         if (result === '__PDF_WRITTEN__' && json) {
             const pdfOut = outputPath || inputPath.replace(/\.org$/i, '.pdf');
             console.log(JSON.stringify({
@@ -369,7 +395,8 @@ async function compilePdf(
     outputPath: string | undefined,
     exportSettings: ExportSettings,
     json: boolean = false,
-    verbose: boolean = false
+    verbose: boolean = false,
+    sourceContent?: string
 ): Promise<string> {
     const { execSync } = await import('child_process');
     const { convertSvgIncludesToPdf } = await import('../../parser/svgToPdf');
@@ -406,10 +433,42 @@ async function compilePdf(
     const compiler = exportSettings.pdf.compiler;
     const extraArgs = exportSettings.pdf.extraArgs ? exportSettings.pdf.extraArgs.split(' ').filter(a => a) : [];
 
-    log(`Using compiler: ${compiler}`);
+    // A build profile (#+LATEX_BUILD:, a latex-profiles.json default, or the
+    // scimax.export.pdf.profile setting) replaces the single-compiler path
+    const loadedProfiles = loadBuildProfiles({
+        startDir: dir,
+        settingsProfiles: exportSettings.pdf.profiles,
+        extraFiles: [path.join(exportSettings.scimaxDirectory, 'latex-profiles.json')],
+    });
+    const resolvedProfile = resolveBuildProfile(
+        loadedProfiles,
+        sourceContent ? readBuildKeywords(sourceContent) : undefined,
+        exportSettings.pdf.profile
+    );
+    if (resolvedProfile.unknown) {
+        log(`Warning: unknown build profile "${resolvedProfile.requested}" - using compiler settings`);
+    }
+
+    log(resolvedProfile.profile
+        ? `Using build profile: ${resolvedProfile.profile.name}`
+        : `Using compiler: ${compiler}`);
 
     try {
-        if (compiler.startsWith('latexmk')) {
+        if (resolvedProfile.profile) {
+            const result = await runBuildProfile(resolvedProfile.profile, {
+                texPath,
+                onProgress: (message) => { if (verbose) log(message); },
+            });
+            const failedToStart = result.steps.find(s => s.error);
+            if (failedToStart) {
+                throw new Error(
+                    `build step "${failedToStart.label}" could not run: ${failedToStart.error}`
+                );
+            }
+            if (!fs.existsSync(path.join(dir, `${basename}.pdf`))) {
+                throw new Error(`build profile "${resolvedProfile.profile.name}" produced no PDF`);
+            }
+        } else if (compiler.startsWith('latexmk')) {
             // Determine engine for latexmk
             let engine = '-pdf';
             if (compiler === 'latexmk-lualatex') {

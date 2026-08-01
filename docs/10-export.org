@@ -39,6 +39,10 @@ CLOSED: [2026-01-16 Fri 20:55]
 - `[l p]' PDF file - Export to PDF via LaTeX compilation
 - `[l o]' PDF and open - Export to PDF and open with system viewer
 
+These three can be routed to a custom exporter based on the document's
+=#+LATEX_CLASS=, so a memo or report class exports correctly without running a
+separate command. See [[*⚠️ Custom Exporters by LaTeX Class][Custom Exporters by LaTeX Class]].
+
 *** Beamer Exports
 - `[s b]' Beamer (LaTeX) - Export to Beamer .tex file
 - `[s p]' Beamer PDF - Compile Beamer to PDF
@@ -140,6 +144,45 @@ The default document class is `article'. You can specify alternatives:
 #+END_SRC
 
 Supported classes: `article', `report', `book', `beamer' (for presentations)
+
+*** ⚠️ Custom Exporters by LaTeX Class
+
+Document classes that need a template (letters, memos, theses) are handled by
+[[file:extension-points.org][custom exporters]]. Map the class to an exporter id once, and the standard
+LaTeX/PDF exports use it automatically:
+
+#+BEGIN_SRC json
+{
+  "scimax.export.latexClassExporters": {
+    "cmu-memo": "cmu-memo"
+  }
+}
+#+END_SRC
+
+Then a file that begins with
+
+#+BEGIN_SRC org
+,#+LATEX_CLASS: cmu-memo
+,#+TO: Selection Committee
+,#+FROM: John Kitchin
+,#+SUBJECT: Recommendation
+#+END_SRC
+
+exports through the =cmu-memo= template on `C-c C-e l o' - no special command
+to remember. Class names match case-insensitively, and the mapped exporter id
+does not have to match the class name.
+
+Per-document control:
+
+| Keyword                | Effect                                           |
+|------------------------+--------------------------------------------------|
+| =#+EXPORTER: cmu-memo= | Use this exporter regardless of =#+LATEX_CLASS=  |
+| =#+EXPORTER: none=     | Force the built-in LaTeX backend for this file   |
+
+Routing applies to `l l' (writes the rendered =.tex=), `l p' (compiles the PDF)
+and `l o' (compiles and opens it), plus =scimax export --format latex|pdf= on
+the command line. Body-only exports are never routed. If the mapped exporter is
+not installed you get a warning and the built-in export runs instead.
 
 *** ✅ Custom Preambles
 CLOSED: [2026-01-16 Fri 20:58]
@@ -326,6 +369,155 @@ CLOSED: [2026-01-17 Sat 09:15]
 PDF export requires:
 - LaTeX distribution (TeX Live, MiKTeX, or MacTeX)
 - `latexmk' utility (included with most distributions)
+
+*** ⚠️ Build Profiles
+
+A single compiler setting cannot express every build. One paper needs
+pdflatex + bibtex, the next needs lualatex + biber, a third needs an extra
+=makeglossaries= pass. A *build profile* is a named sequence of commands that
+replaces the built-in compile logic for a document.
+
+Profiles come from four places, lowest precedence first:
+
+| Source                        | Where                                       |
+|-------------------------------+---------------------------------------------|
+| Built-in                      | always available (see below)                |
+| Settings                      | =scimax.export.pdf.profiles=                |
+| Global file                   | ={scimax.directory}/latex-profiles.json=    |
+| Project files                 | =latex-profiles.json= near the document     |
+
+Project files are found by walking up from the document's directory to the
+workspace root, checking =.scimax/latex-profiles.json= then
+=latex-profiles.json= at each level. A nearer definition wins, so a profile in
+a manuscript folder overrides the same name defined at the repository root.
+
+**** ⚠️ Built-in profiles
+
+| Name               | Sequence                                                   |
+|--------------------+------------------------------------------------------------|
+| =pdflatex-bibtex=  | pdflatex → bibtex → pdflatex → pdflatex                     |
+| =lualatex-biber=   | lualatex → biber → lualatex → lualatex                      |
+| =xelatex-biber=    | xelatex → biber → xelatex → xelatex                         |
+| =latexmk-pdflatex= | latexmk -pdf -bibtex (handles reruns itself)                |
+| =latexmk-lualatex= | latexmk -lualatex -bibtex (handles reruns itself)           |
+| =pdflatex-fast=    | one pdflatex pass (drafts; no bibliography, stale refs)     |
+
+The bibliography step in each is guarded, so a document with no citations
+skips it instead of failing.
+
+**** ⚠️ Choosing a profile
+
+Per file, in the org document:
+
+#+begin_src org
+,#+LATEX_BUILD: lualatex-biber
+#+end_src
+
+In a =.tex= file, use a magic comment in the spirit of =% !TEX program=:
+
+#+begin_src latex
+% !SCIMAX build = lualatex-biber
+#+end_src
+
+Or run =Scimax LaTeX: Select Build Profile= (=scimax.latex.selectBuildProfile=),
+which lists every visible profile and writes the =#+LATEX_BUILD:= line for you.
+
+When a document names no profile, the =default= from the nearest
+=latex-profiles.json= applies, then the =scimax.export.pdf.profile= setting.
+=#+LATEX_BUILD: none= opts out entirely and restores the plain
+=scimax.export.pdf.compiler= path.
+
+**** ⚠️ The profiles file
+
+Run =Scimax LaTeX: Create Build Profiles File=
+(=scimax.latex.createBuildProfilesFile=) to drop a commented example next to
+your document, or write one by hand:
+
+#+begin_src json
+{
+  "default": "pdflatex-bibtex",
+  "profiles": {
+    "thesis": {
+      "description": "lualatex with biber and a glossary",
+      "steps": [
+        { "command": "lualatex", "args": ["-interaction=nonstopmode", "%f"] },
+        { "command": "biber", "args": ["%b"], "whenFileExists": "%b.bcf" },
+        { "command": "makeglossaries", "args": ["%b"], "whenFileExists": "%b.glo" },
+        { "command": "lualatex", "args": ["-interaction=nonstopmode", "%f"] },
+        { "command": "lualatex", "args": ["-interaction=nonstopmode", "%f"] }
+      ]
+    }
+  }
+}
+#+end_src
+
+**** ⚠️ File name tokens
+
+Steps rarely want the same form of the file name. =bibtex= and =biber= take the
+base name with no extension; the engines take the file name; =-output-directory=
+takes a directory. Every string in =args=, =cwd=, and the guard file names is
+expanded with these tokens (for =/papers/2026/thesis.tex=):
+
+| Token | Expands to                          | Example                    |
+|-------+-------------------------------------+----------------------------|
+| =%f=  | file name with extension            | =thesis.tex=               |
+| =%b=  | *base name, no extension*           | =thesis=                   |
+| =%p=  | absolute path to the =.tex= file    | =/papers/2026/thesis.tex=  |
+| =%d=  | directory holding the =.tex= file   | =/papers/2026=             |
+| =%o=  | output directory                    | =/papers/2026=             |
+| =%P=  | the PDF that will be produced       | =/papers/2026/thesis.pdf=  |
+| =%%=  | a literal =%=                       | =%=                        |
+
+=%b= is the one bibliography processors need: =bibtex thesis=, not
+=bibtex thesis.tex=. Unknown tokens are left alone, so a stray =%= is harmless.
+
+**** ⚠️ Step options
+
+| Key               | Meaning                                                          |
+|-------------------+------------------------------------------------------------------|
+| =command=         | executable to run (required)                                     |
+| =args=            | argument array; tokens expanded, never shell-parsed              |
+| =label=           | name shown in progress messages                                  |
+| =cwd=             | working directory (defaults to the =.tex= file's directory)      |
+| =env=             | extra environment variables for this step                        |
+| =timeoutMs=       | per-step timeout (default 180000)                                |
+| =continueOnError= | set =false= to abort the build when this step fails              |
+| =whenFileExists=  | run only if this file exists, e.g. ="%b.bcf"=                     |
+| =whenFileMatches= | run only if a file contains a string/regex                       |
+
+A step written as a bare string is shorthand for ={ "command": "..." }=.
+
+By default a failing step does *not* stop the build - LaTeX exits non-zero on
+warnings routinely - and the export is judged by whether a PDF appeared. Set
+=continueOnError: false= on steps where failure really is fatal.
+
+Guards keep conditional passes out of the way:
+
+#+begin_src json
+{ "command": "bibtex", "args": ["%b"],
+  "whenFileMatches": { "file": "%b.aux", "pattern": "\\\\citation", "regex": true } }
+#+end_src
+
+**** ⚠️ Security
+
+Profiles name executables to run, so project-local =latex-profiles.json= files
+are only honored in a *trusted* workspace. Built-in and settings-defined
+profiles are always available. Steps are spawned directly with no shell, so
+arguments are never re-parsed - a =;= or =$(...)= inside an argument is passed
+through as text.
+
+**** ⚠️ CLI
+
+The =scimax export --format pdf= CLI honors the same profiles, resolved from
+the same files relative to the input document.
+
+**** ⚠️ Commands
+
+| Command                              | Description                          |
+|--------------------------------------+--------------------------------------|
+| =scimax.latex.selectBuildProfile=    | Pick a profile and set =#+LATEX_BUILD:= |
+| =scimax.latex.showBuildProfile=      | Show which profile a document uses   |
+| =scimax.latex.createBuildProfilesFile= | Write an example profiles file     |
 
 *** 👀 SVG Images
 CLOSED: [2026-07-14 Tue]
@@ -2562,6 +2754,8 @@ This documentation covers the complete export system in Scimax VS Code. For addi
 - [[file:19-references.org][References]] - Citations and bibliography in exports
 - [[file:04-tables.org][Tables]] - Table formatting in exports
 - [[file:26-configuration.org][Configuration]] - Export settings and customization
+- [[file:25-commands.org][Commands]] - Build profile and custom exporter commands
+- [[file:36-manuscript.org][Manuscript]] - Multi-file LaTeX manuscripts
 
 * Navigation
 
