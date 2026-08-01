@@ -28,7 +28,9 @@ beforeEach(() => {
 });
 
 afterEach(() => {
-    fs.rmSync(tmpDir, { recursive: true, force: true });
+    // Windows can hold a directory briefly after a killed child exits, and a
+    // leftover temp directory is not what any of these tests assert.
+    fs.rmSync(tmpDir, { recursive: true, force: true, maxRetries: 5, retryDelay: 50 });
 });
 
 /** Write a profiles file, creating parent directories as needed */

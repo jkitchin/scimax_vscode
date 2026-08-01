@@ -680,25 +680,37 @@ function runStep(
 
         const stdout: string[] = [];
         const stderr: string[] = [];
+        let errorMessage: string | undefined;
+        let settled = false;
+        let fallback: NodeJS.Timeout | undefined;
 
         proc.stdout?.on('data', (data: Buffer) => stdout.push(data.toString()));
         proc.stderr?.on('data', (data: Buffer) => stderr.push(data.toString()));
 
-        proc.on('error', (error) => {
+        const settle = (exitCode?: number) => {
+            if (settled) return;
+            settled = true;
+            if (fallback) clearTimeout(fallback);
             resolve({
-                error: error instanceof Error ? error.message : String(error),
+                exitCode,
+                error: errorMessage,
                 stdout: stdout.join(''),
                 stderr: stderr.join(''),
             });
+        };
+
+        proc.on('error', (error) => {
+            errorMessage = error instanceof Error ? error.message : String(error);
+            // Wait for 'close' rather than reporting now: an aborted or timed
+            // out step is killed asynchronously, and a child that is still
+            // alive holds its working directory open (Windows then refuses to
+            // remove build files). The timer is only a safety net for the case
+            // where the process never spawned and 'close' never arrives.
+            fallback = setTimeout(() => settle(), 500);
+            fallback.unref?.();
         });
 
-        proc.on('close', (code) => {
-            resolve({
-                exitCode: code ?? undefined,
-                stdout: stdout.join(''),
-                stderr: stderr.join(''),
-            });
-        });
+        proc.on('close', (code) => settle(code ?? undefined));
     });
 }
 
