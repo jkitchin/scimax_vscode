@@ -300,14 +300,20 @@ org-mode, markdown, and LaTeX files with consistent behavior.
 
 ** Jump (Avy-style)
 
-| Key     | Action                 |
-|---------+------------------------|
-| C-c j c | Jump to character      |
-| C-c j j | Jump to 2 characters   |
-| C-c j w | Jump to word           |
-| C-c j l | Jump to line           |
-| C-c j o | Jump to symbol/outline |
-| C-c j s | Jump to subword        |
+| Key     | Action                          |
+|---------+---------------------------------|
+| C-c j c | Jump to character               |
+| C-c j j | Jump to 2 characters            |
+| C-c j t | Jump to text (pause for labels) |
+| C-c j w | Jump to word                    |
+| C-c j l | Jump to line                    |
+| C-c j o | Jump to symbol/outline          |
+| C-c j s | Jump to subword                 |
+| C-c j h | Jump to heading                 |
+| C-c j ? | List the jump commands          |
+
+While a jump is running, keystrokes go to the jump instead of the buffer:
+Backspace deletes the last character typed and Escape cancels.
 
 ** Recenter
 

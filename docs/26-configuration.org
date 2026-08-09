@@ -1289,6 +1289,71 @@ The matching foreground colors for each heading level are exposed as the
 =orgHeading1= ... =orgHeading6= semantic token types and can be themed via
 =editor.semanticTokenColorCustomizations=.
 
+* ⚠️ Jump Navigation Settings
+
+Configure the avy-style jump commands (=scimax.jump.*=). See
+[[file:21-navigation.org][Navigation]] for how the jump flow works.
+
+** Settings Overview
+
+| Setting                       | Type    | Default                    | Description                                              |
+|-------------------------------+---------+----------------------------+----------------------------------------------------------|
+| scimax.jump.timeoutMs         | integer | 300                        | Pause with no typing before labels are drawn             |
+| scimax.jump.labelChars        | string  | asdfjklghqweruiopzxcvbnmty | Label characters, in order of preference                 |
+| scimax.jump.allVisibleEditors | boolean | true                       | Label targets in every visible editor, not just the active one |
+| scimax.jump.dimBackground     | boolean | false                      | Grey out the text while labels are showing               |
+| scimax.jump.labelBackground   | string  | #d33682                    | Label background color (any CSS color)                   |
+| scimax.jump.labelForeground   | string  | #ffffff                    | Label text color (any CSS color)                         |
+
+** Detailed Configuration
+
+*** scimax.jump.timeoutMs
+
+The equivalent of Emacs =avy-timeout-seconds=. After you stop typing your query
+for this many milliseconds, the labels are drawn over the matches and further
+keystrokes select a label rather than extending the query. Raise it if labels
+appear while you are still typing; set it to 0 to label as soon as the query
+matches anything.
+
+*** scimax.jump.labelChars
+
+The equivalent of Emacs =avy-keys=. Labels are assigned nearest-first from the
+cursor, so the characters at the front of this string land on the closest
+targets. Duplicate characters and whitespace are ignored, and at least two
+distinct characters are required.
+
+*** scimax.jump.allVisibleEditors
+
+When true, jump commands label matches in every visible editor and selecting a
+label in another split focuses that editor first. Set it to false to restrict
+jumping to the active editor.
+
+*** scimax.jump.dimBackground
+
+The equivalent of Emacs =avy-background=. Recolors the visible text to the
+muted line-number color while labels are showing, so the labels stand out. Off
+by default, matching avy.
+
+*** scimax.jump.labelBackground / scimax.jump.labelForeground
+
+Labels are painted directly over the characters they mark, so the background
+color must be opaque. Any CSS color works.
+
+*Example* (a high-contrast pair for a light theme):
+#+begin_src json
+{
+  "scimax.jump.labelBackground": "#b58900",
+  "scimax.jump.labelForeground": "#000000",
+  "scimax.jump.dimBackground": true
+}
+#+end_src
+
+** Related Topics
+
+- [[file:21-navigation.org][Navigation]] - How jump commands work
+- [[file:24-keybindings.org][Keybindings]] - Jump keybindings (=C-c j c=, =C-c j w=, …)
+- [[file:25-commands.org][Commands]] - Full command reference
+
 * Speed Commands Settings
 
 Configure org-mode style speed commands.

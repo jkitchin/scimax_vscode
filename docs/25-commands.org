@@ -801,19 +801,23 @@ CLOSED: [2026-04-12 Sun 19:53]
 | [[cmd:scimax.fuzzySearchOutline]]      | Fuzzy Search (Outline)           | C-c M-s            |
 | [[cmd:scimax.fuzzySearchRecentFiles]]  | Fuzzy Search (Recent org/md)     | C-x b              |
 
-** ✅ Jump (Avy)
-CLOSED: [2026-01-17 Sat 12:47]
+** 👀 Jump (Avy)
 
-| Command ID                      | Description                  | Default Keybinding |
-|---------------------------------+------------------------------+--------------------|
-| [[cmd:scimax.jump.gotoChar]]    | Jump to Character            | C-c j c            |
-| [[cmd:scimax.jump.gotoChar2]]   | Jump to 2-Character Sequence | C-c j j            |
-| [[cmd:scimax.jump.gotoWord]]    | Jump to Word                 | C-c j w            |
-| [[cmd:scimax.jump.gotoLine]]    | Jump to Line                 | C-c j l            |
-| [[cmd:scimax.jump.gotoSymbol]]  | Jump to Symbol               | C-c j o            |
-| [[cmd:scimax.jump.gotoSubword]] | Jump to Subword              | C-c j s            |
-| [[cmd:scimax.jump.copyLine]]    | Jump Copy Line               | -                  |
-| [[cmd:scimax.jump.killLine]]    | Jump Kill Line               | -                  |
+| Command ID                        | Description                  | Default Keybinding    |
+|-----------------------------------+------------------------------+-----------------------|
+| [[cmd:scimax.jump.gotoChar]]      | Jump to Character            | C-c j c               |
+| [[cmd:scimax.jump.gotoChar2]]     | Jump to 2-Character Sequence | C-c j j               |
+| [[cmd:scimax.jump.gotoCharTimer]] | Jump to Text (Timer)         | C-c j t               |
+| [[cmd:scimax.jump.gotoWord]]      | Jump to Word                 | C-c j w               |
+| [[cmd:scimax.jump.gotoLine]]      | Jump to Line                 | C-c j l               |
+| [[cmd:scimax.jump.gotoSymbol]]    | Jump to Symbol               | C-c j o               |
+| [[cmd:scimax.jump.gotoSubword]]   | Jump to Subword              | C-c j s               |
+| [[cmd:scimax.jump.gotoHeading]]   | Jump to Heading              | C-c j h               |
+| [[cmd:scimax.jump.copyLine]]      | Jump Copy Line               | -                     |
+| [[cmd:scimax.jump.killLine]]      | Jump Kill Line               | -                     |
+| [[cmd:scimax.jump.listCommands]]  | Jump Commands (menu)         | C-c j ?               |
+| [[cmd:scimax.jump.cancel]]        | Jump Cancel                  | Escape (in a jump)    |
+| [[cmd:scimax.jump.backspace]]     | Jump Delete Last Character   | Backspace (in a jump) |
 
 ** ✅ Recenter
 CLOSED: [2026-07-11 Sat 09:59]

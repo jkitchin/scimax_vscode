@@ -1837,6 +1837,18 @@
         "title": "Scimax: Jump to 2-Character Sequence"
       },
       {
+        "command": "scimax.jump.gotoCharTimer",
+        "title": "Scimax: Jump to Text (Timer)"
+      },
+      {
+        "command": "scimax.jump.cancel",
+        "title": "Scimax: Jump Cancel"
+      },
+      {
+        "command": "scimax.jump.backspace",
+        "title": "Scimax: Jump Delete Last Character"
+      },
+      {
         "command": "scimax.jump.gotoWord",
         "title": "Scimax: Jump to Word"
       },
@@ -1853,12 +1865,20 @@
         "title": "Scimax: Jump to Subword"
       },
       {
+        "command": "scimax.jump.gotoHeading",
+        "title": "Scimax: Jump to Heading"
+      },
+      {
         "command": "scimax.jump.copyLine",
         "title": "Scimax: Jump Copy Line"
       },
       {
         "command": "scimax.jump.killLine",
         "title": "Scimax: Jump Kill Line"
+      },
+      {
+        "command": "scimax.jump.listCommands",
+        "title": "Scimax: Jump Commands"
       },
       {
         "command": "scimax.mark.push",
@@ -4068,6 +4088,22 @@
         "when": "editorTextFocus && !terminalFocus"
       },
       {
+        "command": "scimax.jump.gotoCharTimer",
+        "key": "ctrl+c j t",
+        "mac": "ctrl+c j t",
+        "when": "editorTextFocus && !terminalFocus"
+      },
+      {
+        "command": "scimax.jump.cancel",
+        "key": "escape",
+        "when": "scimax.jumpActive && editorTextFocus"
+      },
+      {
+        "command": "scimax.jump.backspace",
+        "key": "backspace",
+        "when": "scimax.jumpActive && editorTextFocus"
+      },
+      {
         "command": "scimax.jump.gotoWord",
         "key": "ctrl+c j w",
         "mac": "ctrl+c j w",
@@ -4089,6 +4125,18 @@
         "command": "scimax.jump.gotoSubword",
         "key": "ctrl+c j s",
         "mac": "ctrl+c j s",
+        "when": "editorTextFocus && !terminalFocus"
+      },
+      {
+        "command": "scimax.jump.gotoHeading",
+        "key": "ctrl+c j h",
+        "mac": "ctrl+c j h",
+        "when": "editorTextFocus && !terminalFocus"
+      },
+      {
+        "command": "scimax.jump.listCommands",
+        "key": "ctrl+c j shift+/",
+        "mac": "ctrl+c j shift+/",
         "when": "editorTextFocus && !terminalFocus"
       },
       {
@@ -4573,182 +4621,182 @@
       {
         "command": "scimax.speed.nextSibling",
         "key": "f",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.speed.previousSibling",
         "key": "b",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.org.nextHeading",
         "key": "n",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.org.previousHeading",
         "key": "p",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.org.parentHeading",
         "key": "u",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.org.jumpToHeading",
         "key": "j",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.speed.gotoMenu",
         "key": "g",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.org.cycleGlobalFold",
         "key": "c",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.speed.showChildren",
         "key": "shift+c",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.speed.overview",
         "key": "o",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.heading.moveUp",
         "key": "shift+u",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.heading.moveDown",
         "key": "shift+d",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.heading.demoteSubtree",
         "key": "r",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.heading.promoteSubtree",
         "key": "l",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.heading.demote",
         "key": "shift+r",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.heading.promote",
         "key": "shift+l",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.org.refile",
         "key": "w",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.org.killSubtree",
         "key": "k",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.org.markSubtree",
         "key": "m",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.org.markSubtree",
         "key": "shift+2",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.org.sortEntries",
         "key": "shift+6",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.speed.yankSubtree",
         "key": "y",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.org.cloneSubtree",
         "key": "shift+w",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.org.refile",
         "key": "shift+f",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.org.cycleTodo",
         "key": "t",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.org.shiftTimestampUp",
         "key": ",",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.speed.priorityA",
         "key": "1",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.speed.priorityB",
         "key": "2",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.speed.priorityC",
         "key": "3",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.speed.priorityNone",
         "key": "0",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.speed.schedule",
         "key": "s",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.speed.deadline",
         "key": "d",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.org.insertTimestamp",
         "key": ".",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.speed.setTags",
         "key": "shift+;",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.speed.setEffort",
         "key": "e",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.speed.setProperty",
         "key": "shift+p",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.speed.setProperty",
@@ -4759,47 +4807,47 @@
       {
         "command": "scimax.speed.clockIn",
         "key": "shift+i",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.speed.clockOut",
         "key": "shift+o",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.speed.archiveSubtree",
         "key": "a",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.speed.toggleArchiveTag",
         "key": "shift+a",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.speed.archiveToSibling",
         "key": "shift+4",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.speed.help",
         "key": "shift+/",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.ob.nextBlock",
         "key": "n",
-        "when": "editorTextFocus && editorLangId == 'org' && scimax.atSrcBlockStart && scimax.speedCommandsEnabled"
+        "when": "editorTextFocus && editorLangId == 'org' && scimax.atSrcBlockStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.ob.previousBlock",
         "key": "p",
-        "when": "editorTextFocus && editorLangId == 'org' && scimax.atSrcBlockStart && scimax.speedCommandsEnabled"
+        "when": "editorTextFocus && editorLangId == 'org' && scimax.atSrcBlockStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.ob.jumpToBlock",
         "key": "j",
-        "when": "editorTextFocus && editorLangId == 'org' && scimax.atSrcBlockStart && scimax.speedCommandsEnabled"
+        "when": "editorTextFocus && editorLangId == 'org' && scimax.atSrcBlockStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.speed.toggle",
@@ -4813,7 +4861,7 @@
           "key": "n"
         },
         "key": "n",
-        "when": "editorTextFocus && editorLangId == 'latex' && scimax.atLatexSectionStart && scimax.speedCommandsEnabled"
+        "when": "editorTextFocus && editorLangId == 'latex' && scimax.atLatexSectionStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.latex.speedCommand",
@@ -4821,7 +4869,7 @@
           "key": "p"
         },
         "key": "p",
-        "when": "editorTextFocus && editorLangId == 'latex' && scimax.atLatexSectionStart && scimax.speedCommandsEnabled"
+        "when": "editorTextFocus && editorLangId == 'latex' && scimax.atLatexSectionStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.latex.speedCommand",
@@ -4829,7 +4877,7 @@
           "key": "f"
         },
         "key": "f",
-        "when": "editorTextFocus && editorLangId == 'latex' && scimax.atLatexSectionStart && scimax.speedCommandsEnabled"
+        "when": "editorTextFocus && editorLangId == 'latex' && scimax.atLatexSectionStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.latex.speedCommand",
@@ -4837,7 +4885,7 @@
           "key": "b"
         },
         "key": "b",
-        "when": "editorTextFocus && editorLangId == 'latex' && scimax.atLatexSectionStart && scimax.speedCommandsEnabled"
+        "when": "editorTextFocus && editorLangId == 'latex' && scimax.atLatexSectionStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.latex.speedCommand",
@@ -4845,7 +4893,7 @@
           "key": "u"
         },
         "key": "u",
-        "when": "editorTextFocus && editorLangId == 'latex' && scimax.atLatexSectionStart && scimax.speedCommandsEnabled"
+        "when": "editorTextFocus && editorLangId == 'latex' && scimax.atLatexSectionStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.latex.speedCommand",
@@ -4853,7 +4901,7 @@
           "key": "j"
         },
         "key": "j",
-        "when": "editorTextFocus && editorLangId == 'latex' && scimax.atLatexSectionStart && scimax.speedCommandsEnabled"
+        "when": "editorTextFocus && editorLangId == 'latex' && scimax.atLatexSectionStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.latex.speedCommand",
@@ -4861,7 +4909,7 @@
           "key": "J"
         },
         "key": "shift+j",
-        "when": "editorTextFocus && editorLangId == 'latex' && scimax.atLatexSectionStart && scimax.speedCommandsEnabled"
+        "when": "editorTextFocus && editorLangId == 'latex' && scimax.atLatexSectionStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.latex.speedCommand",
@@ -4869,7 +4917,7 @@
           "key": "g"
         },
         "key": "g",
-        "when": "editorTextFocus && editorLangId == 'latex' && scimax.atLatexSectionStart && scimax.speedCommandsEnabled"
+        "when": "editorTextFocus && editorLangId == 'latex' && scimax.atLatexSectionStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.latex.speedCommand",
@@ -4877,7 +4925,7 @@
           "key": "G"
         },
         "key": "shift+g",
-        "when": "editorTextFocus && editorLangId == 'latex' && scimax.atLatexSectionStart && scimax.speedCommandsEnabled"
+        "when": "editorTextFocus && editorLangId == 'latex' && scimax.atLatexSectionStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.latex.speedCommand",
@@ -4885,7 +4933,7 @@
           "key": "<"
         },
         "key": "shift+,",
-        "when": "editorTextFocus && editorLangId == 'latex' && scimax.atLatexSectionStart && scimax.speedCommandsEnabled"
+        "when": "editorTextFocus && editorLangId == 'latex' && scimax.atLatexSectionStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.latex.speedCommand",
@@ -4893,7 +4941,7 @@
           "key": ">"
         },
         "key": "shift+.",
-        "when": "editorTextFocus && editorLangId == 'latex' && scimax.atLatexSectionStart && scimax.speedCommandsEnabled"
+        "when": "editorTextFocus && editorLangId == 'latex' && scimax.atLatexSectionStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.latex.speedCommand",
@@ -4901,7 +4949,7 @@
           "key": "L"
         },
         "key": "shift+l",
-        "when": "editorTextFocus && editorLangId == 'latex' && scimax.atLatexSectionStart && scimax.speedCommandsEnabled"
+        "when": "editorTextFocus && editorLangId == 'latex' && scimax.atLatexSectionStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.latex.speedCommand",
@@ -4909,7 +4957,7 @@
           "key": "R"
         },
         "key": "shift+r",
-        "when": "editorTextFocus && editorLangId == 'latex' && scimax.atLatexSectionStart && scimax.speedCommandsEnabled"
+        "when": "editorTextFocus && editorLangId == 'latex' && scimax.atLatexSectionStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.latex.speedCommand",
@@ -4917,7 +4965,7 @@
           "key": "U"
         },
         "key": "shift+u",
-        "when": "editorTextFocus && editorLangId == 'latex' && scimax.atLatexSectionStart && scimax.speedCommandsEnabled"
+        "when": "editorTextFocus && editorLangId == 'latex' && scimax.atLatexSectionStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.latex.speedCommand",
@@ -4925,7 +4973,7 @@
           "key": "D"
         },
         "key": "shift+d",
-        "when": "editorTextFocus && editorLangId == 'latex' && scimax.atLatexSectionStart && scimax.speedCommandsEnabled"
+        "when": "editorTextFocus && editorLangId == 'latex' && scimax.atLatexSectionStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.latex.speedCommand",
@@ -4933,7 +4981,7 @@
           "key": "m"
         },
         "key": "m",
-        "when": "editorTextFocus && editorLangId == 'latex' && scimax.atLatexSectionStart && scimax.speedCommandsEnabled"
+        "when": "editorTextFocus && editorLangId == 'latex' && scimax.atLatexSectionStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.latex.speedCommand",
@@ -4941,7 +4989,7 @@
           "key": "k"
         },
         "key": "k",
-        "when": "editorTextFocus && editorLangId == 'latex' && scimax.atLatexSectionStart && scimax.speedCommandsEnabled"
+        "when": "editorTextFocus && editorLangId == 'latex' && scimax.atLatexSectionStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.latex.speedCommand",
@@ -4949,7 +4997,7 @@
           "key": "c"
         },
         "key": "c",
-        "when": "editorTextFocus && editorLangId == 'latex' && scimax.atLatexSectionStart && scimax.speedCommandsEnabled"
+        "when": "editorTextFocus && editorLangId == 'latex' && scimax.atLatexSectionStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.latex.speedCommand",
@@ -4957,7 +5005,7 @@
           "key": "i"
         },
         "key": "i",
-        "when": "editorTextFocus && editorLangId == 'latex' && scimax.atLatexSectionStart && scimax.speedCommandsEnabled"
+        "when": "editorTextFocus && editorLangId == 'latex' && scimax.atLatexSectionStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.latex.speedCommand",
@@ -4965,7 +5013,7 @@
           "key": "I"
         },
         "key": "shift+i",
-        "when": "editorTextFocus && editorLangId == 'latex' && scimax.atLatexSectionStart && scimax.speedCommandsEnabled"
+        "when": "editorTextFocus && editorLangId == 'latex' && scimax.atLatexSectionStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.latex.speedCommand",
@@ -4973,7 +5021,7 @@
           "key": "N"
         },
         "key": "shift+n",
-        "when": "editorTextFocus && editorLangId == 'latex' && scimax.atLatexSectionStart && scimax.speedCommandsEnabled"
+        "when": "editorTextFocus && editorLangId == 'latex' && scimax.atLatexSectionStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.latex.speedCommand",
@@ -4981,7 +5029,7 @@
           "key": "W"
         },
         "key": "shift+w",
-        "when": "editorTextFocus && editorLangId == 'latex' && scimax.atLatexSectionStart && scimax.speedCommandsEnabled"
+        "when": "editorTextFocus && editorLangId == 'latex' && scimax.atLatexSectionStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.latex.speedCommand",
@@ -4997,7 +5045,7 @@
           "key": "?"
         },
         "key": "shift+/",
-        "when": "editorTextFocus && editorLangId == 'latex' && scimax.atLatexSectionStart && scimax.speedCommandsEnabled"
+        "when": "editorTextFocus && editorLangId == 'latex' && scimax.atLatexSectionStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.latex.envSpeedCommand",
@@ -5005,7 +5053,7 @@
           "key": "n"
         },
         "key": "n",
-        "when": "editorTextFocus && editorLangId == 'latex' && scimax.atLatexEnvironmentStart && scimax.speedCommandsEnabled"
+        "when": "editorTextFocus && editorLangId == 'latex' && scimax.atLatexEnvironmentStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.latex.envSpeedCommand",
@@ -5013,7 +5061,7 @@
           "key": "p"
         },
         "key": "p",
-        "when": "editorTextFocus && editorLangId == 'latex' && scimax.atLatexEnvironmentStart && scimax.speedCommandsEnabled"
+        "when": "editorTextFocus && editorLangId == 'latex' && scimax.atLatexEnvironmentStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.latex.envSpeedCommand",
@@ -5021,7 +5069,7 @@
           "key": "j"
         },
         "key": "j",
-        "when": "editorTextFocus && editorLangId == 'latex' && scimax.atLatexEnvironmentStart && scimax.speedCommandsEnabled"
+        "when": "editorTextFocus && editorLangId == 'latex' && scimax.atLatexEnvironmentStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.latex.envSpeedCommand",
@@ -5029,7 +5077,7 @@
           "key": "J"
         },
         "key": "shift+j",
-        "when": "editorTextFocus && editorLangId == 'latex' && scimax.atLatexEnvironmentStart && scimax.speedCommandsEnabled"
+        "when": "editorTextFocus && editorLangId == 'latex' && scimax.atLatexEnvironmentStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.latex.envSpeedCommand",
@@ -5037,7 +5085,7 @@
           "key": "s"
         },
         "key": "s",
-        "when": "editorTextFocus && editorLangId == 'latex' && scimax.atLatexEnvironmentStart && scimax.speedCommandsEnabled"
+        "when": "editorTextFocus && editorLangId == 'latex' && scimax.atLatexEnvironmentStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.latex.envSpeedCommand",
@@ -5045,7 +5093,7 @@
           "key": "c"
         },
         "key": "c",
-        "when": "editorTextFocus && editorLangId == 'latex' && scimax.atLatexEnvironmentStart && scimax.speedCommandsEnabled"
+        "when": "editorTextFocus && editorLangId == 'latex' && scimax.atLatexEnvironmentStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.latex.envSpeedCommand",
@@ -5053,7 +5101,7 @@
           "key": "k"
         },
         "key": "k",
-        "when": "editorTextFocus && editorLangId == 'latex' && scimax.atLatexEnvironmentStart && scimax.speedCommandsEnabled"
+        "when": "editorTextFocus && editorLangId == 'latex' && scimax.atLatexEnvironmentStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.latex.envSpeedCommand",
@@ -5061,7 +5109,7 @@
           "key": "w"
         },
         "key": "w",
-        "when": "editorTextFocus && editorLangId == 'latex' && scimax.atLatexEnvironmentStart && scimax.speedCommandsEnabled"
+        "when": "editorTextFocus && editorLangId == 'latex' && scimax.atLatexEnvironmentStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.latex.envSpeedCommand",
@@ -5069,7 +5117,7 @@
           "key": "u"
         },
         "key": "u",
-        "when": "editorTextFocus && editorLangId == 'latex' && scimax.atLatexEnvironmentStart && scimax.speedCommandsEnabled"
+        "when": "editorTextFocus && editorLangId == 'latex' && scimax.atLatexEnvironmentStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.latex.envSpeedCommand",
@@ -5077,7 +5125,7 @@
           "key": "*"
         },
         "key": "shift+8",
-        "when": "editorTextFocus && editorLangId == 'latex' && scimax.atLatexEnvironmentStart && scimax.speedCommandsEnabled"
+        "when": "editorTextFocus && editorLangId == 'latex' && scimax.atLatexEnvironmentStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.latex.envSpeedCommand",
@@ -5085,7 +5133,7 @@
           "key": "l"
         },
         "key": "l",
-        "when": "editorTextFocus && editorLangId == 'latex' && scimax.atLatexEnvironmentStart && scimax.speedCommandsEnabled"
+        "when": "editorTextFocus && editorLangId == 'latex' && scimax.atLatexEnvironmentStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.latex.envSpeedCommand",
@@ -5093,7 +5141,7 @@
           "key": "C"
         },
         "key": "shift+c",
-        "when": "editorTextFocus && editorLangId == 'latex' && scimax.atLatexEnvironmentStart && scimax.speedCommandsEnabled"
+        "when": "editorTextFocus && editorLangId == 'latex' && scimax.atLatexEnvironmentStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.latex.envSpeedCommand",
@@ -5101,7 +5149,7 @@
           "key": "i"
         },
         "key": "i",
-        "when": "editorTextFocus && editorLangId == 'latex' && scimax.atLatexEnvironmentStart && scimax.speedCommandsEnabled"
+        "when": "editorTextFocus && editorLangId == 'latex' && scimax.atLatexEnvironmentStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.latex.envSpeedCommand",
@@ -5109,47 +5157,47 @@
           "key": "?"
         },
         "key": "shift+/",
-        "when": "editorTextFocus && editorLangId == 'latex' && scimax.atLatexEnvironmentStart && scimax.speedCommandsEnabled"
+        "when": "editorTextFocus && editorLangId == 'latex' && scimax.atLatexEnvironmentStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.bibtex.nextEntry",
         "key": "n",
-        "when": "editorTextFocus && editorLangId == 'bibtex' && scimax.atBibtexEntryStart && scimax.speedCommandsEnabled"
+        "when": "editorTextFocus && editorLangId == 'bibtex' && scimax.atBibtexEntryStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.bibtex.previousEntry",
         "key": "p",
-        "when": "editorTextFocus && editorLangId == 'bibtex' && scimax.atBibtexEntryStart && scimax.speedCommandsEnabled"
+        "when": "editorTextFocus && editorLangId == 'bibtex' && scimax.atBibtexEntryStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.bibtex.jumpToEntry",
         "key": "j",
-        "when": "editorTextFocus && editorLangId == 'bibtex' && scimax.atBibtexEntryStart && scimax.speedCommandsEnabled"
+        "when": "editorTextFocus && editorLangId == 'bibtex' && scimax.atBibtexEntryStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.bibtex.sortFields",
         "key": "s",
-        "when": "editorTextFocus && editorLangId == 'bibtex' && scimax.atBibtexEntryStart && scimax.speedCommandsEnabled"
+        "when": "editorTextFocus && editorLangId == 'bibtex' && scimax.atBibtexEntryStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.bibtex.downcaseEntry",
         "key": "d",
-        "when": "editorTextFocus && editorLangId == 'bibtex' && scimax.atBibtexEntryStart && scimax.speedCommandsEnabled"
+        "when": "editorTextFocus && editorLangId == 'bibtex' && scimax.atBibtexEntryStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.bibtex.titleCase",
         "key": "t",
-        "when": "editorTextFocus && editorLangId == 'bibtex' && scimax.atBibtexEntryStart && scimax.speedCommandsEnabled"
+        "when": "editorTextFocus && editorLangId == 'bibtex' && scimax.atBibtexEntryStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.bibtex.sentenceCase",
         "key": "shift+s",
-        "when": "editorTextFocus && editorLangId == 'bibtex' && scimax.atBibtexEntryStart && scimax.speedCommandsEnabled"
+        "when": "editorTextFocus && editorLangId == 'bibtex' && scimax.atBibtexEntryStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.bibtex.cleanEntry",
         "key": "c",
-        "when": "editorTextFocus && editorLangId == 'bibtex' && scimax.atBibtexEntryStart && scimax.speedCommandsEnabled"
+        "when": "editorTextFocus && editorLangId == 'bibtex' && scimax.atBibtexEntryStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.bibtex.wrapBraces",
@@ -5166,87 +5214,87 @@
       {
         "command": "scimax.bibtex.openPdf",
         "key": "o",
-        "when": "editorTextFocus && editorLangId == 'bibtex' && scimax.atBibtexEntryStart && scimax.speedCommandsEnabled"
+        "when": "editorTextFocus && editorLangId == 'bibtex' && scimax.atBibtexEntryStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.bibtex.openUrl",
         "key": "u",
-        "when": "editorTextFocus && editorLangId == 'bibtex' && scimax.atBibtexEntryStart && scimax.speedCommandsEnabled"
+        "when": "editorTextFocus && editorLangId == 'bibtex' && scimax.atBibtexEntryStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.bibtex.openNotes",
         "key": "shift+n",
-        "when": "editorTextFocus && editorLangId == 'bibtex' && scimax.atBibtexEntryStart && scimax.speedCommandsEnabled"
+        "when": "editorTextFocus && editorLangId == 'bibtex' && scimax.atBibtexEntryStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.bibtex.googleScholar",
         "key": "g",
-        "when": "editorTextFocus && editorLangId == 'bibtex' && scimax.atBibtexEntryStart && scimax.speedCommandsEnabled"
+        "when": "editorTextFocus && editorLangId == 'bibtex' && scimax.atBibtexEntryStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.bibtex.crossref",
         "key": "x",
-        "when": "editorTextFocus && editorLangId == 'bibtex' && scimax.atBibtexEntryStart && scimax.speedCommandsEnabled"
+        "when": "editorTextFocus && editorLangId == 'bibtex' && scimax.atBibtexEntryStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.bibtex.webOfScience",
         "key": "w",
-        "when": "editorTextFocus && editorLangId == 'bibtex' && scimax.atBibtexEntryStart && scimax.speedCommandsEnabled"
+        "when": "editorTextFocus && editorLangId == 'bibtex' && scimax.atBibtexEntryStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.bibtex.showCitingWorks",
         "key": "shift+c",
-        "when": "editorTextFocus && editorLangId == 'bibtex' && scimax.atBibtexEntryStart && scimax.speedCommandsEnabled"
+        "when": "editorTextFocus && editorLangId == 'bibtex' && scimax.atBibtexEntryStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.bibtex.showRelatedWorks",
         "key": "shift+r",
-        "when": "editorTextFocus && editorLangId == 'bibtex' && scimax.atBibtexEntryStart && scimax.speedCommandsEnabled"
+        "when": "editorTextFocus && editorLangId == 'bibtex' && scimax.atBibtexEntryStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.bibtex.showReferences",
         "key": "r",
-        "when": "editorTextFocus && editorLangId == 'bibtex' && scimax.atBibtexEntryStart && scimax.speedCommandsEnabled"
+        "when": "editorTextFocus && editorLangId == 'bibtex' && scimax.atBibtexEntryStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.bibtex.copyKey",
         "key": "y",
-        "when": "editorTextFocus && editorLangId == 'bibtex' && scimax.atBibtexEntryStart && scimax.speedCommandsEnabled"
+        "when": "editorTextFocus && editorLangId == 'bibtex' && scimax.atBibtexEntryStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.bibtex.copyBibtex",
         "key": "b",
-        "when": "editorTextFocus && editorLangId == 'bibtex' && scimax.atBibtexEntryStart && scimax.speedCommandsEnabled"
+        "when": "editorTextFocus && editorLangId == 'bibtex' && scimax.atBibtexEntryStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.bibtex.killEntry",
         "key": "k",
-        "when": "editorTextFocus && editorLangId == 'bibtex' && scimax.atBibtexEntryStart && scimax.speedCommandsEnabled"
+        "when": "editorTextFocus && editorLangId == 'bibtex' && scimax.atBibtexEntryStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.bibtex.generateKey",
         "key": "shift+k",
-        "when": "editorTextFocus && editorLangId == 'bibtex' && scimax.atBibtexEntryStart && scimax.speedCommandsEnabled"
+        "when": "editorTextFocus && editorLangId == 'bibtex' && scimax.atBibtexEntryStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.bibtex.updateFromWeb",
         "key": "shift+u",
-        "when": "editorTextFocus && editorLangId == 'bibtex' && scimax.atBibtexEntryStart && scimax.speedCommandsEnabled"
+        "when": "editorTextFocus && editorLangId == 'bibtex' && scimax.atBibtexEntryStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.bibtex.help",
         "key": "shift+/",
-        "when": "editorTextFocus && editorLangId == 'bibtex' && scimax.atBibtexEntryStart && scimax.speedCommandsEnabled"
+        "when": "editorTextFocus && editorLangId == 'bibtex' && scimax.atBibtexEntryStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.bibtex.toggleJournalAbbreviation",
         "key": "shift+a",
-        "when": "editorTextFocus && editorLangId == 'bibtex' && scimax.atBibtexEntryStart && scimax.speedCommandsEnabled"
+        "when": "editorTextFocus && editorLangId == 'bibtex' && scimax.atBibtexEntryStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.bibtex.stripBraces",
         "key": "shift+b",
-        "when": "editorTextFocus && editorLangId == 'bibtex' && scimax.atBibtexEntryStart && scimax.speedCommandsEnabled"
+        "when": "editorTextFocus && editorLangId == 'bibtex' && scimax.atBibtexEntryStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.org.insertInlineTask",
@@ -5630,37 +5678,37 @@
         "command": "scimax.agenda.buffer.refresh",
         "key": "g",
         "mac": "g",
-        "when": "resourceScheme == org-agenda && editorTextFocus"
+        "when": "resourceScheme == org-agenda && editorTextFocus && !scimax.jumpActive"
       },
       {
         "command": "scimax.agenda.buffer.next",
         "key": "f",
         "mac": "f",
-        "when": "resourceScheme == org-agenda && editorTextFocus"
+        "when": "resourceScheme == org-agenda && editorTextFocus && !scimax.jumpActive"
       },
       {
         "command": "scimax.agenda.buffer.previous",
         "key": "b",
         "mac": "b",
-        "when": "resourceScheme == org-agenda && editorTextFocus"
+        "when": "resourceScheme == org-agenda && editorTextFocus && !scimax.jumpActive"
       },
       {
         "command": "scimax.agenda.buffer.today",
         "key": ".",
         "mac": ".",
-        "when": "resourceScheme == org-agenda && editorTextFocus"
+        "when": "resourceScheme == org-agenda && editorTextFocus && !scimax.jumpActive"
       },
       {
         "command": "workbench.action.closeActiveEditor",
         "key": "q",
         "mac": "q",
-        "when": "resourceScheme == org-agenda && editorTextFocus"
+        "when": "resourceScheme == org-agenda && editorTextFocus && !scimax.jumpActive"
       },
       {
         "command": "scimax.agenda.buffer.cycleTodo",
         "key": "t",
         "mac": "t",
-        "when": "resourceScheme == org-agenda && editorTextFocus"
+        "when": "resourceScheme == org-agenda && editorTextFocus && !scimax.jumpActive"
       }
     ],
     "configuration": {
@@ -5677,6 +5725,38 @@
           "minimum": 20,
           "maximum": 200,
           "description": "Column at which to wrap text when filling paragraphs (Alt+Q). Similar to Emacs fill-column."
+        },
+        "scimax.jump.timeoutMs": {
+          "type": "integer",
+          "default": 300,
+          "minimum": 0,
+          "maximum": 3000,
+          "description": "Milliseconds of no typing before avy-style jump labels are drawn over the matches. Similar to Emacs avy-timeout-seconds."
+        },
+        "scimax.jump.labelChars": {
+          "type": "string",
+          "default": "asdfjklghqweruiopzxcvbnmty",
+          "description": "Characters used for jump labels, in order of preference. The nearest targets get the earliest characters, so put the home row first. Similar to Emacs avy-keys."
+        },
+        "scimax.jump.allVisibleEditors": {
+          "type": "boolean",
+          "default": true,
+          "description": "Label jump targets in every visible editor rather than only the active one, so a jump can cross a split."
+        },
+        "scimax.jump.dimBackground": {
+          "type": "boolean",
+          "default": false,
+          "description": "Grey out the visible text while jump labels are showing, making the labels easier to pick out. Similar to Emacs avy-background."
+        },
+        "scimax.jump.labelBackground": {
+          "type": "string",
+          "default": "#d33682",
+          "description": "Background color of jump labels (any CSS color)."
+        },
+        "scimax.jump.labelForeground": {
+          "type": "string",
+          "default": "#ffffff",
+          "description": "Text color of jump labels (any CSS color)."
         },
         "scimax.org.depend.enabled": {
           "type": "boolean",

@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- **Avy-style jump commands rewritten** - Jump labels are now drawn *on top of* the text at their screen positions instead of being listed in a picker, and keystrokes are read straight from the editor (the extension takes over the `type` command for the duration of a jump), so there is no widget and the cursor never leaves the buffer. Labels are assigned nearest-first, so the closest targets get single-character labels; two-character labels narrow as you type, redrawing only the characters left to press. Every visible editor is labeled by default, so a jump can cross a split. Backspace undoes a keystroke, Escape cancels, and if another extension already owns `type` the session falls back to an input box. New settings `scimax.jump.timeoutMs|labelChars|allVisibleEditors|dimBackground|labelBackground|labelForeground`.
+- **`scimax.jump.gotoWord` and `gotoSubword` now require a starting character** rather than treating it as optional. Labeling every visible word at once buried the text under labels exactly when it needed to be read.
+- **Single-key bindings are suspended during a jump** via a new `scimax.jumpActive` context. A keybinding always beats the `type` dispatch, so the speed commands at headings, source blocks, LaTeX sections and environments, BibTeX entries, and the agenda buffer would otherwise swallow the label character.
+
+### Added
+
+- **`scimax.jump.gotoHeading`** (`C-c j h`) - labels every visible heading, which in a folded buffer is most of the outline. The label covers the leading stars rather than the title, and the cursor lands at column 0 where speed commands are active. Headings are matched per language, so a `#` comment inside an org source block is not mistaken for one.
+- **`scimax.jump.gotoCharTimer`** (`C-c j t`) - the `avy-goto-char-timer` equivalent: type any number of characters, and the labels appear when you pause.
+- **`scimax.jump.listCommands`** (`C-c j ?`) - lists every jump command with its keybinding and description, read from the extension manifest so it cannot drift, and runs the one chosen.
+
 ## [0.6.0] - 2026-07-11
 
 ### Added

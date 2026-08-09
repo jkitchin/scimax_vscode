@@ -75,8 +75,7 @@ Speed commands work in:
 - Org-mode files (`.org')
 - Markdown files (`.md', `.markdown')
 
-* ✅ When Speed Commands are Active
-CLOSED: [2026-01-15 Thu 14:45]
+* 👀 When Speed Commands are Active
 
 Speed commands are only active when *all* of the following conditions are met:
 
@@ -84,6 +83,20 @@ Speed commands are only active when *all* of the following conditions are met:
 2. *Cursor is at column 0* (the very beginning of the line)
 3. *Line is a heading* (starts with `*' for org-mode or `#' for markdown)
 4. *No text is selected* (cursor position only, not a selection)
+5. *No jump is in progress* (see below)
+
+** ⚠️ Speed Commands During a Jump
+
+The avy-style jump commands (see [[file:21-navigation.org][Navigation]]) read
+your keystrokes straight from the editor, so a single-key speed command would
+otherwise swallow the character you meant as a jump label. Every single-key
+binding in the extension is therefore suspended while a jump is running, using
+the =!scimax.jumpActive= context. This covers the speed commands at headings,
+source blocks, LaTeX sections and environments, BibTeX entries, and the agenda
+buffer.
+
+Speed commands come back the moment the jump ends, whether you jumped, pressed
+Escape, or let it time out.
 
 ** ✅ Visual Indicator
 CLOSED: [2026-01-15 Thu 14:45]

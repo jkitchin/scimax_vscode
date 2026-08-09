@@ -253,28 +253,69 @@ Icons indicate heading level:
 - $(symbol-class) $(symbol-class) - Second level
 - $(symbol-method) - Functions/methods
 
-* ✅ Jump Navigation (Avy-Style)
-CLOSED: [2026-01-15 Thu 07:46]
+* 👀 Jump Navigation (Avy-Style)
 
 Jump navigation provides character-based quick jumps to visible text, inspired
 by Emacs Avy. You specify what to jump to (character, word, line), and each
 match is labeled with a hint character. Type the hint to jump instantly.
 
-** ✅ Jump to Character
-CLOSED: [2026-01-15 Thu 07:49]
+** ⚠️ How a Jump Works
+
+There is no prompt or picker: while a jump is running, your keystrokes are read
+straight from the editor, exactly as in Avy. The cursor never leaves the buffer
+and the status bar shows what the jump is waiting for.
+
+Every jump command follows the same two steps. First you say what you are
+looking for, which for most commands is a single keystroke: =C-c j c= takes one
+character, =C-c j j= takes two, =C-c j w= takes the first character of a word,
+and =C-c j l= takes nothing at all. Second, each match is overlaid with a short
+label drawn *on top of the text at its screen position*, and typing the label
+jumps there. Nothing on the line shifts to make room.
+
+If the query matches exactly one place, the jump happens immediately with no
+label to type.
+
+Two-character labels narrow as you type. After the first character, only the
+matching targets stay lit and they redraw showing just the character that
+remains, so you always see exactly what to press next. Backspace undoes the
+last character you typed, and Escape cancels.
+
+Labels are handed out nearest-first from the cursor, so the closest targets get
+the single-character labels and the far ones get pairs. When
+=scimax.jump.allVisibleEditors= is on (the default), every visible editor is
+labeled, so a jump can cross a split.
+
+** ⚠️ Jump to Text (Timer)
+
+| Command                   | Key Binding | Description                       |
+|---------------------------+-------------+-----------------------------------|
+| scimax.jump.gotoCharTimer | C-c j t     | Jump to text of any length        |
+
+This is the =avy-goto-char-timer= equivalent and the most flexible of the jump
+commands. Instead of a fixed number of characters, you type as much of the
+target text as you like and the matches highlight as you go. When you stop
+typing for a moment (300 ms by default, see =scimax.jump.timeoutMs=), the
+labels appear over whatever still matches.
+
+Use it when one or two characters would leave too many candidates on screen.
+Backspacing past the labels returns you to editing the query.
+
+** 👀 Jump to Character
 
 | Command               | Key Binding | Description                  |
 |-----------------------+-------------+------------------------------|
-| scimax.jump.gotoChar  | C-c jc      | Jump to any character        |
-| scimax.jump.gotoChar2 | C-c jj      | Jump to 2-character sequence |
+| scimax.jump.gotoChar  | C-c j c     | Jump to any character        |
+| scimax.jump.gotoChar2 | C-c j j     | Jump to 2-character sequence |
 
-*** ✅ Single Character
-CLOSED: [2026-01-15 Thu 07:49]
+*** 👀 Single Character
 
 1. Invoke scimax.jump.gotoChar
-2. Type a character (e.g., "e")
+2. Type a character, e.g. "e"
 3. All visible occurrences of "e" are labeled: a, s, d, f, etc.
-4. Type the label to jump (e.g., type "s" to jump to the second occurrence)
+4. Type the label to jump, e.g. "s" for the second occurrence
+
+The character goes straight into the jump, not into a prompt, so this is two
+keystrokes plus the chord.
 
 *** ✅ Two Characters
 CLOSED: [2026-01-15 Thu 07:49]
@@ -288,28 +329,49 @@ For more precision, use scimax.jump.gotoChar2:
 
 This reduces the number of matches, making jumps faster.
 
-** ✅ Jump to Word
+** 👀 Jump to Word
 CLOSED: [2026-01-15 Thu 07:51]
 
 | Command              | Key Binding | Description         |
 |----------------------+-------------+---------------------|
-| scimax.jump.gotoWord | C-c jw      | Jump to word starts |
+| scimax.jump.gotoWord | C-c j w     | Jump to word starts |
 
-Jumps to word boundaries. You can optionally filter by starting character:
+Jumps to the start of a word, filtered by its first character:
 
 1. Invoke scimax.jump.gotoWord
-2. Enter a starting character or leave empty for all words
-3. All matching word starts are labeled
+2. Type the character the word starts with, e.g. "f"
+3. Every visible word starting with "f" is labeled (function, for, first, …)
 4. Type the label to jump
 
-Example: Type "f" to see only words starting with "f" (function, for, first, etc.)
+The starting character is required rather than optional. Labeling every word on
+screen at once buries the text under labels, and the first character of the
+word you want is nearly always known.
+
+** ⚠️ Jump to Heading
+
+| Command                 | Key Binding | Description                 |
+|-------------------------+-------------+-----------------------------|
+| scimax.jump.gotoHeading | C-c j h     | Jump to any visible heading |
+
+Labels every visible heading at once, with no character to type first. In a
+folded buffer that is most of the outline, which is where the overlay beats the
+fuzzy picker in =scimax.org.jumpToHeading= (C-c C-j): you can see the whole
+structure and pick from it directly rather than describing what you want.
+
+The label is drawn over the leading stars rather than over the title, so the
+headings stay readable while you choose, and the cursor lands at the start of
+the heading line where the speed commands are active.
+
+Headings are recognized per language, so org files use =*= headings, markdown
+files use =#= headings, and LaTeX files use =\section= and friends. A =#=
+comment inside an org source block is not mistaken for a heading.
 
 ** ✅ Jump to Line
 CLOSED: [2026-01-15 Thu 07:51]
 
 | Command              | Key Binding | Description              |
 |----------------------+-------------+--------------------------|
-| scimax.jump.gotoLine | C-c jl      | Jump to any visible line |
+| scimax.jump.gotoLine | C-c j l     | Jump to any visible line |
 
 Labels every visible line for quick vertical navigation:
 
@@ -324,7 +386,7 @@ CLOSED: [2026-01-16 Fri 20:02]
 
 | Command                | Key Binding | Description                  |
 |------------------------+-------------+------------------------------|
-| scimax.jump.gotoSymbol | C-c jo      | Jump to symbols and headings |
+| scimax.jump.gotoSymbol | C-c j o     | Jump to symbols and headings |
 
 Jumps to structural elements in the visible area:
 
@@ -335,20 +397,27 @@ Jumps to structural elements in the visible area:
 
 Only visible symbols are labeled, making it very fast for navigating code structure.
 
-** ✅ Jump to Subword
-CLOSED: [2026-01-15 Thu 07:53]
+** 👀 Jump to Subword
 
 | Command                 | Key Binding | Description                |
 |-------------------------+-------------+----------------------------|
-| scimax.jump.gotoSubword | C-c jw      | Jump to subword boundaries |
+| scimax.jump.gotoSubword | C-c j s     | Jump to subword boundaries |
 
-Jumps to camelCase and snake_case boundaries:
+Like Jump to Word, but the boundaries inside an identifier count too. Type the
+character the part starts with, in either case: "v" labels the =V= in
+=myVariableName= as well as the =v= in =my_variable_name=. Useful for landing
+inside a long identifier rather than at its start.
 
-- myVariableName - Labels 'm', 'V', 'N'
-- my_variable_name - Labels 'm', 'v', 'n'
-- MY_CONSTANT - Labels 'M', 'C'
+** ⚠️ Listing the Jump Commands
 
-Useful for navigating within identifiers in code.
+| Command                  | Key Binding | Description                |
+|--------------------------+-------------+----------------------------|
+| scimax.jump.listCommands | C-c j ?     | List all the jump commands |
+
+If you cannot remember which letter follows =C-c j=, press =?= instead. A
+picker lists every jump command with its keybinding and a one-line description,
+and choosing one runs it. The keybindings shown are read from the extension
+manifest, so they always reflect what is actually bound.
 
 ** ✅ Jump Actions
 CLOSED: [2026-01-15 Thu 07:53]
@@ -363,15 +432,31 @@ Beyond navigation, jump commands can perform actions:
 These commands use the same labeling system but perform actions instead of
 just moving the cursor.
 
-** ✅ Label Characters
-CLOSED: [2026-01-15 Thu 07:53]
+** 👀 Label Characters
 
 Jump labels use home row keys for efficiency, ordered by ease of typing:
 
 : a s d f j k l g h q w e r u i o p z x c v b n m t y
 
-- Small numbers of matches use single characters
-- Larger numbers of matches use two-character combinations (aa, as, ad, etc.)
+Small numbers of matches use single characters. When there are more matches
+than characters, only as many prefixes as necessary are reserved for
+two-character labels, so most targets still get a single keystroke. Since
+labels are assigned nearest-first, the two-character labels land on the targets
+furthest from the cursor.
+
+** ⚠️ Jump Settings
+
+| Setting                          | Default                    | Description                                     |
+|----------------------------------+----------------------------+-------------------------------------------------|
+| scimax.jump.timeoutMs            | 300                        | Pause before labels appear (avy-timeout-seconds) |
+| scimax.jump.labelChars           | asdfjklghqweruiopzxcvbnmty | Label characters in order of preference (avy-keys) |
+| scimax.jump.allVisibleEditors    | true                       | Label targets in every split, not just the active editor |
+| scimax.jump.dimBackground        | false                      | Grey out the text while labels show (avy-background) |
+| scimax.jump.labelBackground      | #d33682                    | Label background color (any CSS color)          |
+| scimax.jump.labelForeground      | #ffffff                    | Label text color (any CSS color)                |
+
+Raise =scimax.jump.timeoutMs= if the labels appear while you are still typing a
+longer query; lower it toward 0 to get labels immediately.
 
 * ✅ Document Symbol Provider
 CLOSED: [2026-01-15 Thu 07:53]
