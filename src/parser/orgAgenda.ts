@@ -788,7 +788,8 @@ export function formatAgendaItem(item: AgendaItem): string {
             break;
         case 'deadline':
             if (item.overdue) {
-                parts.push(`In ${Math.abs(item.daysUntil!)} d.:`);
+                // Matches Emacs org-agenda-deadline-leaders: "%d d. ago:"
+                parts.push(`${Math.abs(item.daysUntil!)} d. ago:`);
             } else if (item.daysUntil === 0) {
                 parts.push('Deadline:');
             } else {

@@ -263,7 +263,8 @@ describe('orgAgenda', () => {
             };
 
             const formatted = formatAgendaItem(item);
-            expect(formatted).toContain('In 2 d.:');
+            expect(formatted).toContain('2 d. ago:');
+            expect(formatted).not.toContain('In 2 d.:');
         });
 
         it('formats a deadline due today', () => {
