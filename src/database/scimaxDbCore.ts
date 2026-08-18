@@ -496,7 +496,7 @@ async function runCoreMigrations(db: Client): Promise<{ applied: number; current
                 try { await db.execute('SELECT 1 FROM files LIMIT 1'); legacy = 1; } catch { /* empty */ }
             }
             if (legacy > 0) {
-                console.log(`[ScimaxDbCore] Detected legacy schema version ${legacy}`);
+                console.error(`[ScimaxDbCore] Detected legacy schema version ${legacy}`);
                 currentVersion = legacy;
                 for (const m of coreMigrations.filter(m2 => m2.version <= legacy)) {
                     try {
@@ -515,10 +515,10 @@ async function runCoreMigrations(db: Client): Promise<{ applied: number; current
         return { applied: 0, currentVersion };
     }
 
-    console.log(`[ScimaxDbCore] Applying ${pending.length} migration(s) from v${currentVersion}`);
+    console.error(`[ScimaxDbCore] Applying ${pending.length} migration(s) from v${currentVersion}`);
 
     for (const migration of pending) {
-        console.log(`[ScimaxDbCore] Applying migration v${migration.version}: ${migration.description}`);
+        console.error(`[ScimaxDbCore] Applying migration v${migration.version}: ${migration.description}`);
         try {
             for (const sql of migration.up) {
                 try {
@@ -535,7 +535,7 @@ async function runCoreMigrations(db: Client): Promise<{ applied: number; current
                 args: [migration.version, Date.now(), migration.description]
             });
             currentVersion = migration.version;
-            console.log(`[ScimaxDbCore] Migration v${migration.version} complete`);
+            console.error(`[ScimaxDbCore] Migration v${migration.version} complete`);
         } catch (e) {
             console.error(`[ScimaxDbCore] Migration v${migration.version} failed:`, e);
             throw new Error(`Migration v${migration.version} failed: ${e}`);
@@ -601,7 +601,7 @@ export class ScimaxDbCore {
 
         await this.createSchema();
 
-        console.log('[ScimaxDbCore] Initialized');
+        console.error('[ScimaxDbCore] Initialized');
     }
 
     private async createSchema(): Promise<void> {
@@ -609,7 +609,7 @@ export class ScimaxDbCore {
 
         const result = await runCoreMigrations(this.db);
         if (result.applied > 0) {
-            console.log(`[ScimaxDbCore] Applied ${result.applied} migration(s), now at v${result.currentVersion}`);
+            console.error(`[ScimaxDbCore] Applied ${result.applied} migration(s), now at v${result.currentVersion}`);
         }
 
         // Create chunks table with dynamic embedding dimensions
@@ -638,11 +638,11 @@ export class ScimaxDbCore {
                 ON chunks(libsql_vector_idx(embedding, 'metric=cosine'))
             `);
             this.vectorSearchSupported = true;
-            console.log('[ScimaxDbCore] Vector search is supported');
+            console.error('[ScimaxDbCore] Vector search is supported');
         } catch (e: any) {
             this.vectorSearchSupported = false;
             this.vectorSearchError = e?.message || 'Vector search not available';
-            console.log('[ScimaxDbCore] Vector search not available - using FTS5 only');
+            console.error('[ScimaxDbCore] Vector search not available - using FTS5 only');
         }
     }
 
@@ -884,7 +884,7 @@ export class ScimaxDbCore {
         if (!this.db) return;
 
         try {
-            console.debug(`[ScimaxDbCore] INDEX_START ${filePath}`);
+            console.error(`[ScimaxDbCore] INDEX_START ${filePath}`);
 
             const stats = await fs.promises.stat(filePath);
 
@@ -1004,7 +1004,7 @@ export class ScimaxDbCore {
             });
 
             contentForDb = null;
-            console.debug(`[ScimaxDbCore] INDEX_COMPLETE ${filePath}`);
+            console.error(`[ScimaxDbCore] INDEX_COMPLETE ${filePath}`);
 
         } catch (error) {
             console.error(`[ScimaxDbCore] Failed to index file: ${filePath}`, error);

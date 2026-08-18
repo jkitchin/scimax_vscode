@@ -83,6 +83,22 @@ function filterAgendaItems(items: AgendaItem[], settings: AgendaSettings): Agend
     });
 }
 
+/**
+ * Restrict items to a [today, today + days) window.
+ *
+ * `getAgenda()` bounds results only from above, so it returns every item ever
+ * scheduled up to the cutoff — years of past entries. The VS Code agenda drops
+ * those when it buckets items by date; the CLI has to do it explicitly or a
+ * "today" view reports thousands of stale items.
+ */
+function windowAgendaItems(items: AgendaItem[], days: number): AgendaItem[] {
+    return items.filter(item => {
+        // An item with no resolvable date can't be placed in a day window.
+        if (item.days_until === undefined || item.days_until === null) return false;
+        return item.days_until >= 0 && item.days_until < days;
+    });
+}
+
 async function showTodayAgenda(db: ScimaxDbCore, settings: AgendaSettings, json: boolean): Promise<void> {
     const items = await db.getAgenda({
         before: addDaysToToday(1),
@@ -90,7 +106,7 @@ async function showTodayAgenda(db: ScimaxDbCore, settings: AgendaSettings, json:
         doneStates: settings.doneStates,
     });
 
-    const filtered = filterAgendaItems(items, settings);
+    const filtered = windowAgendaItems(filterAgendaItems(items, settings), 1);
 
     if (json) {
         console.log(JSON.stringify({
@@ -127,7 +143,7 @@ async function showWeekAgenda(db: ScimaxDbCore, settings: AgendaSettings, json: 
         doneStates: settings.doneStates,
     });
 
-    const filtered = filterAgendaItems(items, settings);
+    const filtered = windowAgendaItems(filterAgendaItems(items, settings), settings.defaultSpan);
 
     if (json) {
         console.log(JSON.stringify({
@@ -175,14 +191,24 @@ async function showWeekAgenda(db: ScimaxDbCore, settings: AgendaSettings, json: 
 async function showTodos(db: ScimaxDbCore, flags: Record<string, string | boolean>, settings: AgendaSettings, json: boolean): Promise<void> {
     const state = typeof flags.state === 'string' ? flags.state : undefined;
 
-    const headings = await db.searchHeadings('', { limit: 500 });
+    const limit = typeof flags.limit === 'string' ? parseInt(flags.limit, 10) || 500 : 500;
 
-    const todos = headings.filter((h: HeadingRecord) => {
-        if (!h.todo_state) return false;
-        if (state) return h.todo_state === state; // --state flag: show exactly that state
-        if (settings.doneStates.includes(h.todo_state)) return settings.showDone; // done states
-        return settings.todoStates.includes(h.todo_state); // only configured active states
-    });
+    // Filter by TODO state in SQL, one query per state. Filtering in JS after a
+    // bounded fetch silently returns nothing on large databases, where an
+    // arbitrary slice of headings may contain no TODO items at all.
+    const states = state
+        ? [state] // --state flag: show exactly that state
+        : [...settings.todoStates, ...(settings.showDone ? settings.doneStates : [])];
+
+    const perState = await Promise.all(
+        states.map(s => db.searchHeadings('', { todoState: s, limit }))
+    );
+
+    const todos: HeadingRecord[] = perState.flat().sort((a, b) =>
+        a.file_path === b.file_path
+            ? a.line_number - b.line_number
+            : a.file_path.localeCompare(b.file_path)
+    );
 
     if (json) {
         console.log(JSON.stringify({
