@@ -550,6 +550,46 @@ Database cleared.
 Run "scimax db sync" to repopulate.
 #+end_example
 
+*** ⚠️ Prune Excluded Files
+
+Remove database entries that the current exclude rules would reject.
+
+=scimax db sync= deliberately keeps an entry whose file still exists on disk,
+even when that file is outside the configured scan roots — otherwise files added
+by other means would vanish on every sync. The consequence is that tightening
+=scimax.db.exclude=, or upgrading to a version that adds a new built-in
+exclusion, leaves the old rows in place. =prune= is what clears them.
+
+#+begin_src bash
+# See what would go, grouped by the pattern that caught it
+scimax db prune --dry-run
+
+# Remove them
+scimax db prune
+
+# Machine-readable
+scimax db prune --json
+#+end_src
+
+Output:
+#+begin_example
+Database: ~/Library/Application Support/Code/User/globalStorage/jkitchin.scimax-vscode/scimax-db.sqlite
+Exclude patterns: 22
+Indexed files: 58713
+Matching exclude rules: 26570
+Mode: dry-run (no changes will be written)
+
+    23872  **/node_modules/**
+     2574  **/Code/User/History/**
+      120  **/build/**
+        4  **/Code/User/globalStorage/**
+
+Would remove 26570 file(s). Re-run without --dry-run to apply.
+#+end_example
+
+Always run =--dry-run= first and read the per-pattern breakdown. A pattern that
+catches far more than you expected is usually a pattern that is too broad.
+
 *** ✅ Scan Directory
 CLOSED: [2026-01-22 Thu 20:57]
 
@@ -579,23 +619,123 @@ Found 15 org file(s) to index.
 Indexed: 15 file(s)
 #+end_example
 
-**** Cron Job Examples
+**** ⚠️ Scheduling Automatic Syncs
 
-Schedule automatic database updates:
+Prefer =db sync= over =db scan= for scheduled runs: it covers every configured
+scan root at once, refreshes changed files, and prunes entries whose files are
+gone. =db scan= only adds one directory.
+
+***** macOS (launchd)
+
+On a laptop, use =launchd= rather than =cron=. If the machine is asleep at the
+scheduled time, launchd runs the job at the next wake; cron simply misses it.
+
+A wrapper script keeps the log timestamped, bounded, and free of overlapping
+runs. Save it as =~/.local/bin/scimax-db-sync.sh= and =chmod +x= it:
 
 #+begin_src bash
-# Edit crontab
+#!/bin/bash
+set -uo pipefail
+
+# launchd starts jobs with a bare environment, so spell out the PATH.
+export PATH="/opt/homebrew/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+
+LOG_DIR="$HOME/Library/Logs/scimax"
+LOG="$LOG_DIR/db-sync.log"
+LOCK="$LOG_DIR/db-sync.lock"
+MAX_LOG_BYTES=$((5 * 1024 * 1024))
+
+mkdir -p "$LOG_DIR"
+
+if [ -f "$LOG" ] && [ "$(stat -f%z "$LOG")" -gt "$MAX_LOG_BYTES" ]; then
+    mv -f "$LOG" "$LOG.1"
+fi
+
+# mkdir is atomic: a run that overlaps the previous one backs off rather than
+# competing for the database write lock.
+if ! mkdir "$LOCK" 2>/dev/null; then
+    echo "[$(date '+%Y-%m-%d %H:%M:%S')] skipped: a sync is already running" >> "$LOG"
+    exit 0
+fi
+trap 'rmdir "$LOCK" 2>/dev/null' EXIT
+
+{
+    echo "=== $(date '+%Y-%m-%d %H:%M:%S %Z') — scimax db sync ==="
+    START=$(date +%s)
+    scimax db sync
+    STATUS=$?
+    echo "--- exit $STATUS after $(( $(date +%s) - START ))s"
+    echo
+} >> "$LOG" 2>&1
+#+end_src
+
+Then =~/Library/LaunchAgents/com.USER.scimax-db-sync.plist=, here scheduled for
+06:00 and 17:00:
+
+#+begin_src xml
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>com.USER.scimax-db-sync</string>
+
+  <key>ProgramArguments</key>
+  <array>
+    <string>/bin/bash</string>
+    <string>/Users/USER/.local/bin/scimax-db-sync.sh</string>
+  </array>
+
+  <key>StartCalendarInterval</key>
+  <array>
+    <dict><key>Hour</key><integer>6</integer><key>Minute</key><integer>0</integer></dict>
+    <dict><key>Hour</key><integer>17</integer><key>Minute</key><integer>0</integer></dict>
+  </array>
+
+  <key>StandardOutPath</key>
+  <string>/Users/USER/Library/Logs/scimax/launchd.out</string>
+  <key>StandardErrorPath</key>
+  <string>/Users/USER/Library/Logs/scimax/launchd.err</string>
+
+  <key>RunAtLoad</key>
+  <false/>
+
+  <key>ProcessType</key>
+  <string>Background</string>
+</dict>
+</plist>
+#+end_src
+
+Load it, then prove it works instead of waiting until tomorrow:
+
+#+begin_src bash
+plutil -lint ~/Library/LaunchAgents/com.USER.scimax-db-sync.plist
+launchctl bootstrap gui/$UID ~/Library/LaunchAgents/com.USER.scimax-db-sync.plist
+
+launchctl kickstart -p gui/$UID/com.USER.scimax-db-sync   # run it now
+launchctl print gui/$UID/com.USER.scimax-db-sync | grep -E 'state|runs|last exit'
+tail -f ~/Library/Logs/scimax/db-sync.log
+#+end_src
+
+To change the schedule, edit the plist, then =launchctl bootout= and
+=bootstrap= again — launchd caches the loaded copy.
+
+#+begin_src bash
+launchctl bootout gui/$UID/com.USER.scimax-db-sync
+launchctl bootstrap gui/$UID ~/Library/LaunchAgents/com.USER.scimax-db-sync.plist
+#+end_src
+
+***** Linux (cron)
+
+#+begin_src bash
 crontab -e
 
-# Scan every hour
-0 * * * * cd /path/to/project && scimax db scan ~/org-files
-
-# Scan daily at 6am
-0 6 * * * cd /path/to/project && scimax db scan ~/org-files >> /var/log/scimax-scan.log 2>&1
-
-# Scan multiple directories every 30 minutes
-*/30 * * * * cd /path/to/project && scimax db scan ~/work/notes && scimax db scan ~/personal/org
+# 6am and 5pm daily
+0 6,17 * * * /usr/local/bin/scimax db sync >> ~/.local/state/scimax/db-sync.log 2>&1
 #+end_src
+
+Use an absolute path to the binary: cron's =PATH= is minimal and will not find a
+=scimax= installed via =npm link=.
 
 **** Command Comparison
 
@@ -605,10 +745,13 @@ crontab -e
 | =scimax db clear=      | Wipe the database (followed by =sync= for a full rebuild) |
 | =scimax db scan <dir>= | Ad-hoc scan of a single directory                         |
 | =scimax db check=      | Read-only integrity report (no changes)                   |
+| =scimax db prune=      | Drop entries the exclude rules now reject                 |
 
 - Use *sync* for routine maintenance, including the morning's first pass.
 - Use *scan* for one-off directories outside the configured scan roots.
 - Use *clear* + *sync* only when you genuinely need to start over.
+- Use *prune* after changing =scimax.db.exclude=, or after an upgrade that adds
+  a built-in exclusion.
 
 The =rebuild= and =reindex= subcommands have been removed. Use =sync= (or =clear= + =sync=) instead.
 

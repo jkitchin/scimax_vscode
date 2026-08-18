@@ -321,7 +321,7 @@ Configure the full-text search database and semantic search capabilities.
 | scimax.db.includeWorkspace  | boolean | true                      | Include workspace folders              |
 | scimax.db.includeProjects   | boolean | true                      | Include scimax projects                |
 | scimax.db.include           | array   | [ ]                       | Additional directories/files           |
-| scimax.db.exclude           | array   | See below                 | Patterns/paths to exclude              |
+| scimax.db.exclude           | array   | =[]=                      | Extra patterns/paths to exclude        |
 | scimax.db.autoIndex         | boolean | false                     | Auto-index workspace on activation     |
 | scimax.db.dirsPerSession    | number  | 5                         | Directories scanned per background indexing session |
 | scimax.db.checkStaleOnActivation | boolean | true                 | Prompt to refresh on activation if indexed files changed on disk |
@@ -369,20 +369,21 @@ Configure the full-text search database and semantic search capabilities.
 }
 #+end_src
 
-*** scimax.db.exclude
+*** 👀 scimax.db.exclude
 
 - *Type*: array of strings
-- *Default*: =["**/node_modules/**", "**/.git/**", "**/dist/**", "**/build/**"]=
-- *Description*: Patterns or paths to exclude from indexing (globs and absolute paths)
+- *Default*: =[]=
+- *Description*: /Additional/ patterns or paths to exclude from indexing (globs
+  and absolute paths). They are added to a built-in baseline that always
+  applies — =node_modules=, VCS directories, build output, and editor state such
+  as VS Code's local history. See
+  [[file:18-database-search.org::*Ignore Patterns][Ignore Patterns]] for the
+  full list and for why the baseline cannot be overridden.
 
 *Example*:
 #+begin_src json
 {
   "scimax.db.exclude": [
-    "**/node_modules/**",
-    "**/.git/**",
-    "**/dist/**",
-    "**/build/**",
     "**/archive/**",
     "~/notes/scratch.org"
   ]

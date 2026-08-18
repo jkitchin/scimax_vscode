@@ -14,7 +14,8 @@ import {
     expandPath,
     findOrgFiles,
     getDirectoriesToScan,
-    getVSCodeSettingsPath
+    getVSCodeSettingsPath,
+    shouldExclude
 } from '../settings';
 
 interface CliConfig {
@@ -54,6 +55,9 @@ export async function dbCommand(config: CliConfig, args: ParsedArgs): Promise<vo
         case 'ignore':
             await ignoreFile(config, args);
             break;
+        case 'prune':
+            await pruneExcluded(config, args);
+            break;
         case 'rebuild':
         case 'reindex':
             console.error(`'scimax db ${subcommand}' has been removed.`);
@@ -73,6 +77,8 @@ USAGE:
     scimax db check                Check for stale/missing entries
     scimax db remove <file|glob>   Remove file(s) from the database
     scimax db ignore <file|glob>   Remove file(s) from DB and add to exclude list
+    scimax db prune                Remove already-indexed files that the current
+                                   exclude rules would now reject
 
 OPTIONS:
     --dry-run          Compute and print the sync plan without changing the DB
@@ -620,6 +626,80 @@ function addToSettingsExclude(pattern: string): string[] {
     }
 
     return exclude;
+}
+
+/**
+ * Drop entries the exclude rules would reject today.
+ *
+ * `sync` deliberately keeps a file that is out of scan scope but still on disk,
+ * so tightening the exclude list — or picking up a new baseline pattern after an
+ * upgrade — leaves the old rows behind. This is the command that clears them.
+ */
+async function pruneExcluded(config: CliConfig, args: ParsedArgs): Promise<void> {
+    const dryRun = !!args.flags['dry-run'];
+    const json = args.flags.json === true;
+    const settings = loadSettings();
+    const patterns = settings.db.exclude;
+
+    const db = await createCliDatabase(config.dbPath);
+    try {
+        const files = await db.getFiles();
+        const doomed = files
+            .map(f => f.path)
+            .filter(p => shouldExclude(p, patterns));
+
+        if (!json) {
+            console.log(`Database: ${config.dbPath}`);
+            console.log(`Exclude patterns: ${patterns.length}`);
+            console.log(`Indexed files: ${files.length}`);
+            console.log(`Matching exclude rules: ${doomed.length}`);
+            if (dryRun) console.log('Mode: dry-run (no changes will be written)');
+            console.log();
+        }
+
+        // Group by the pattern that caught them, so the user can see what a
+        // large number is actually made of before it disappears.
+        const byPattern = new Map<string, number>();
+        for (const p of doomed) {
+            const hit = patterns.find(pat => shouldExclude(p, [pat])) || '(unknown)';
+            byPattern.set(hit, (byPattern.get(hit) || 0) + 1);
+        }
+
+        if (!json && doomed.length > 0) {
+            for (const [pattern, count] of [...byPattern.entries()].sort((a, b) => b[1] - a[1])) {
+                console.log(`  ${String(count).padStart(7)}  ${pattern}`);
+            }
+            console.log();
+        }
+
+        let removed = 0;
+        if (!dryRun) {
+            removed = await db.removeFiles(doomed, done => {
+                if (!json) process.stdout.write(`  removed ${done}/${doomed.length}\r`);
+            });
+            if (!json && removed > 0) process.stdout.write('\n');
+        }
+
+        if (json) {
+            console.log(JSON.stringify({
+                success: true,
+                dry_run: dryRun,
+                indexed: files.length,
+                matched: doomed.length,
+                removed,
+                by_pattern: Object.fromEntries(byPattern)
+            }));
+        } else if (dryRun) {
+            console.log(`Would remove ${doomed.length} file(s). Re-run without --dry-run to apply.`);
+        } else if (removed === 0) {
+            console.log('Nothing to prune.');
+        } else {
+            console.log(`Removed ${removed} file(s) from the database.`);
+            console.log("Run 'scimax db stats' to see the new totals.");
+        }
+    } finally {
+        await db.close();
+    }
 }
 
 async function ignoreFile(config: CliConfig, args: ParsedArgs): Promise<void> {

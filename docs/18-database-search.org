@@ -93,18 +93,46 @@ The database automatically watches for file changes:
 - Deleted files are removed from the index
 - Changes are queued and processed sequentially
 
-** ✅ Ignore Patterns
+** 👀 Ignore Patterns
 CLOSED: [2026-01-17 Sat 11:46]
 
-By default, the following patterns are ignored:
+Some paths are *always* ignored. This baseline cannot be turned off, because
+indexing these directories produces duplicates of real notes rather than notes:
 
-- `**/node_modules/**'
-- `**/.git/**'
-- `**/dist/**'
-- `**/build/**'
-- `**/.ipynb_checkpoints/**'
+| Pattern group      | Patterns                                                       |
+|--------------------+----------------------------------------------------------------|
+| Dependencies       | =**/node_modules/**=                                           |
+| Version control    | =**/.git/**=, =**/.hg/**=, =**/.svn/**=                        |
+| Build output       | =**/dist/**=, =**/build/**=, =**/__pycache__/**=               |
+| Notebook checkouts | =**/.ipynb_checkpoints/**=                                     |
+| System             | =**/.Trash/**=, =**/Library/Caches/**=                         |
+| Editor state       | =**/Code/User/History/**=, =**/Code/User/globalStorage/**=,    |
+|                    | =**/Code/User/workspaceStorage/**=, =**/Code/agent-host/**=,   |
+|                    | the same paths for Code - Insiders, VSCodium and Cursor, and   |
+|                    | =**/.vscode/extensions/**=                                     |
 
-Configure additional patterns in settings: =scimax.db.exclude=
+Editor state matters most. VS Code's *Local History* keeps a timestamped copy of
+every edit under the original file extension, so a single =project.org= edited
+200 times becomes 200 more =.org= files in the index — each with its own stale
+copy of your TODOs, deadlines and scheduled items, all of which then appear in
+the agenda.
+
+=scimax.db.exclude= *adds* to this baseline; it does not replace it. That is
+deliberate: a VS Code settings array overrides the contributed default outright,
+so without a hard floor, adding one personal exclude pattern would silently
+re-enable indexing of =node_modules= and editor history.
+
+If entries that the current rules would reject are already in the database —
+after an upgrade that adds a baseline pattern, or after you tighten
+=scimax.db.exclude= — clear them with:
+
+#+BEGIN_SRC sh
+scimax db prune --dry-run   # show what would go, grouped by pattern
+scimax db prune             # remove them
+#+END_SRC
+
+=scimax db sync= will not do this for you: it keeps a database entry whose file
+still exists on disk, so that files added by other means are not lost.
 
 [[cmd:workbench.action.openSettings2]]
 
@@ -1141,18 +1169,18 @@ Additional directories or files to index (supports ~ for home directory).
 }
 #+END_SRC
 
-*** =scimax.db.exclude=
+*** 👀 =scimax.db.exclude=
 Type: =string[]=
-Default: =["**/node_modules/**", "**/.git/**", "**/dist/**", "**/build/**"]=
+Default: =[]=
 
-Patterns or paths to exclude from indexing (globs and absolute paths).
+*Additional* patterns or paths to exclude from indexing (globs and absolute
+paths). These are added to the always-on baseline described under
+[[*Ignore Patterns][Ignore Patterns]] — you do not need to repeat
+=**/node_modules/**= and friends here.
 
 #+BEGIN_SRC json
 {
   "scimax.db.exclude": [
-    "**/node_modules/**",
-    "**/.git/**",
-    "**/dist/**",
     "**/temp/**",
     "**/*.backup.org",
     "~/notes/scratch.org"

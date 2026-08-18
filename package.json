@@ -6006,13 +6006,8 @@
           "items": {
             "type": "string"
           },
-          "default": [
-            "**/node_modules/**",
-            "**/.git/**",
-            "**/dist/**",
-            "**/build/**"
-          ],
-          "description": "Patterns or paths to exclude from indexing (globs like **/archive/** and absolute paths)"
+          "default": [],
+          "description": "Additional patterns or paths to exclude from indexing (globs like **/archive/** and absolute paths). These are added to a built-in list that always applies: node_modules, VCS directories, build output, and editor state such as VS Code's local history."
         },
         "scimax.db.autoIndex": {
           "type": "boolean",

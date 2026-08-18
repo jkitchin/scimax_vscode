@@ -8,6 +8,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { minimatch } from 'minimatch';
+import { withBaselineExcludes } from '../shared/ignorePatterns';
 
 /**
  * Database settings (scimax.db.*)
@@ -346,13 +347,10 @@ export function loadSettings(): ScimaxSettings {
     const settings = readVSCodeSettings();
 
     // Default exclude patterns (same as ScimaxDb defaults)
+    // Only the entries that are not already unconditional. BASELINE_DB_EXCLUDE
+    // is merged in below, so a user-edited scimax.db.exclude adds to the floor
+    // rather than replacing it.
     const defaultDbExclude = [
-        '**/node_modules/**',
-        '**/.git/**',
-        '**/dist/**',
-        '**/build/**',
-        '**/.ipynb_checkpoints/**',
-        '~/.vscode/extensions/**',
         '~/.claude/**',
     ];
 
@@ -366,7 +364,9 @@ export function loadSettings(): ScimaxSettings {
     return {
         db: {
             include: getSetting<string[]>(settings, 'scimax.db.include', []),
-            exclude: getSetting<string[]>(settings, 'scimax.db.exclude', defaultDbExclude),
+            exclude: withBaselineExcludes(
+                getSetting<string[]>(settings, 'scimax.db.exclude', defaultDbExclude)
+            ),
             maxFileSizeMB: getSetting<number>(settings, 'scimax.db.maxFileSizeMB', 10),
             maxFileLines: getSetting<number>(settings, 'scimax.db.maxFileLines', 5000),
         },

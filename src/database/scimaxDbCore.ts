@@ -26,6 +26,7 @@ import {
     LegacyHeading,
 } from '../parser/orgParserAdapter';
 import { extractAnchors, normalizeAnchorText } from '../parser/orgAnchors';
+import { withBaselineExcludes } from '../shared/ignorePatterns';
 // Migration data - inlined here to avoid importing migrations.ts which pulls in vscode via logger.
 // Keep in sync with src/database/migrations.ts.
 
@@ -750,13 +751,9 @@ export class ScimaxDbCore {
     // ----------------------------------------------------------
 
     private shouldIgnore(filePath: string): boolean {
-        const patterns = this.options.ignorePatterns ?? [
-            '**/node_modules/**',
-            '**/.git/**',
-            '**/dist/**',
-            '**/build/**',
-            '**/.ipynb_checkpoints/**'
-        ];
+        // The baseline is unconditional: a configured exclude list adds to it,
+        // it never replaces it. See BASELINE_DB_EXCLUDE for why.
+        const patterns = withBaselineExcludes(this.options.ignorePatterns);
         for (const pattern of patterns) {
             let expandedPattern = pattern;
             if (pattern.startsWith('~')) {
@@ -1552,6 +1549,51 @@ export class ScimaxDbCore {
 
     public async removeFile(filePath: string): Promise<void> {
         await this.removeFileData(filePath);
+    }
+
+    /**
+     * Remove many files by exact path.
+     *
+     * Calling removeFile() in a loop is correct but pathologically slow once the
+     * vector index is large: every file costs its own write lock and its own
+     * nine-statement transaction. Deleting in chunks amortizes both, which turns
+     * a multi-hour prune into a couple of minutes.
+     */
+    public async removeFiles(
+        filePaths: string[],
+        onProgress?: (done: number) => void
+    ): Promise<number> {
+        if (!this.db || filePaths.length === 0) return 0;
+
+        // Well under SQLite's variable limit, and small enough that a retry
+        // after a transient failure does not redo much work.
+        const CHUNK = 250;
+        let done = 0;
+
+        for (let i = 0; i < filePaths.length; i += CHUNK) {
+            const chunk = filePaths.slice(i, i + CHUNK);
+            const placeholders = chunk.map(() => '?').join(',');
+            await this.withWriteLock(async () => {
+                await coreWithRetry(
+                    () => this.db!.batch([
+                        { sql: `DELETE FROM headings WHERE file_path IN (${placeholders})`, args: chunk },
+                        { sql: `DELETE FROM source_blocks WHERE file_path IN (${placeholders})`, args: chunk },
+                        { sql: `DELETE FROM links WHERE file_path IN (${placeholders})`, args: chunk },
+                        { sql: `DELETE FROM anchors WHERE file_path IN (${placeholders})`, args: chunk },
+                        { sql: `DELETE FROM dependencies WHERE file_path IN (${placeholders})`, args: chunk },
+                        { sql: `DELETE FROM hashtags WHERE file_path IN (${placeholders})`, args: chunk },
+                        { sql: `DELETE FROM chunks WHERE file_path IN (${placeholders})`, args: chunk },
+                        { sql: `DELETE FROM fts_content WHERE file_path IN (${placeholders})`, args: chunk },
+                        { sql: `DELETE FROM files WHERE path IN (${placeholders})`, args: chunk }
+                    ]),
+                    { maxAttempts: 5, baseDelayMs: 100, operationName: 'removeFiles', isRetryable: coreIsTransientError }
+                );
+            });
+            done += chunk.length;
+            onProgress?.(done);
+        }
+
+        return done;
     }
 
     public async removeFilesByPattern(pattern: string): Promise<number> {

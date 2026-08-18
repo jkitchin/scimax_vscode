@@ -43,6 +43,50 @@ export const DEFAULT_IGNORE_PATTERNS: string[] = [
 ];
 
 /**
+ * Paths that are never worth indexing, applied on top of whatever the user
+ * configured in `scimax.db.exclude`.
+ *
+ * These are a floor, not a default: a VS Code settings array *replaces* the
+ * contributed default rather than extending it, so a user who adds one exclude
+ * pattern would otherwise silently drop every built-in one. The editor's local
+ * history is the worst offender — it keeps a timestamped copy of every edit
+ * under the original extension, so one org file becomes hundreds of `.org`
+ * files full of stale TODOs and deadlines that then show up in the agenda.
+ */
+export const BASELINE_DB_EXCLUDE: string[] = [
+    '**/node_modules/**',
+    '**/.git/**',
+    '**/.hg/**',
+    '**/.svn/**',
+    '**/dist/**',
+    '**/build/**',
+    '**/__pycache__/**',
+    '**/.ipynb_checkpoints/**',
+    '**/.Trash/**',
+    '**/Library/Caches/**',
+    // VS Code application state, for every channel and fork.
+    '**/Code/User/History/**',
+    '**/Code/User/globalStorage/**',
+    '**/Code/User/workspaceStorage/**',
+    '**/Code/agent-host/**',
+    '**/Code - Insiders/User/History/**',
+    '**/Code - Insiders/User/globalStorage/**',
+    '**/Code - Insiders/User/workspaceStorage/**',
+    '**/VSCodium/User/History/**',
+    '**/Cursor/User/History/**',
+    '**/.vscode/extensions/**',
+    '**/.vscode-insiders/extensions/**'
+];
+
+/**
+ * Merge configured exclude patterns with the baseline, dropping duplicates.
+ * Every indexing path should filter through this rather than the raw setting.
+ */
+export function withBaselineExcludes(configured: string[] | undefined): string[] {
+    return mergePatterns(BASELINE_DB_EXCLUDE, configured ?? []);
+}
+
+/**
  * Load ignore patterns from a directory (looks for .gitignore, etc.)
  * @param projectPath The directory to load patterns from
  * @param includeDefaults Whether to include default patterns (default: true)

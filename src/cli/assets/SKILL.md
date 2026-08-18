@@ -1,6 +1,6 @@
 ---
 name: scimax
-version: "0.11.0"
+version: "0.12.0"
 description: |
   Searches org-mode notes, displays agenda and TODOs, exports org files to
   HTML/PDF/LaTeX, validates citations, opens journal entries, maintains the
@@ -28,7 +28,7 @@ description: |
   "resource", "pick entity", "insert email", "insert address", "entity selector"
 allowed-tools: ["Bash(scimax*)", "Bash(code --goto*)", "Bash(sqlite3*)", "Read", "Glob", "Grep", "Write"]
 ---
-<!-- scimax-skill v0.11.0 -->
+<!-- scimax-skill v0.12.0 -->
 
 # Scimax Skill
 
@@ -64,6 +64,7 @@ You are an executive assistant and expert for the **scimax-vscode** extension. Y
 | Sync database | `scimax db sync` |
 | Scan new directory | `scimax db scan <dir>` |
 | Wipe database | `scimax db clear` |
+| Prune excluded junk from index | `scimax db prune` |
 | Today's journal | `scimax journal` |
 | Journal for date | `scimax journal tomorrow` |
 | What to work on next | `scimax task next` |

@@ -1383,7 +1383,7 @@ Indexing settings (see [[file:18-database-search.org][Database & Search]]):
 | scimax.db.includeWorkspace | true    | Index workspace folders    |
 | scimax.db.includeProjects  | true    | Index scimax projects      |
 | scimax.db.include          | []      | Additional paths to index  |
-| scimax.db.exclude          | []      | Don't index these          |
+| scimax.db.exclude          | []      | Don't index these (adds to the built-in baseline) |
 
 ** ✅ Agenda Item Properties
 CLOSED: [2026-01-18 Sun 12:49]

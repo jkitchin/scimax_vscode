@@ -126,6 +126,8 @@ scimax db scan <dir>                        # Ad-hoc one-off scan of a single di
 scimax db clear                             # Wipe the database (interactive confirm)
 scimax db clear --yes && scimax db sync     # Full rebuild from scratch
 scimax db check                             # Find stale/missing entries (read-only)
+scimax db prune --dry-run                   # Show indexed files the exclude rules now reject
+scimax db prune                             # Remove them
 ```
 
 **Guidance:**
@@ -135,6 +137,8 @@ scimax db check                             # Find stale/missing entries (read-o
 - Use `db scan` only for one-off directories outside the configured scan roots
 - Use `db clear` + `db sync` only when the index is corrupted or starting fresh
 - `db check` is useful for diagnosing why certain files aren't showing up in search
+- Use `db prune` when junk is already indexed — `db sync` will not remove it, because sync keeps entries whose files still exist on disk. Always `--dry-run` first and read the per-pattern breakdown.
+- `scimax.db.exclude` *adds* to a built-in baseline (node_modules, VCS, build output, VS Code local history); it does not replace it. Never tell the user to re-add those patterns.
 
 ---
 

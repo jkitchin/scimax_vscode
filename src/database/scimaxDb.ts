@@ -36,6 +36,7 @@ export {
 
 import { ScimaxDbCore, ScimaxDbCoreOptions } from './scimaxDbCore';
 
+import { withBaselineExcludes } from '../shared/ignorePatterns';
 /**
  * ScimaxDb - VS Code wrapper around ScimaxDbCore.
  *
@@ -133,13 +134,7 @@ export class ScimaxDb extends ScimaxDbCore {
 
     private loadIgnorePatterns(): string[] {
         const config = vscode.workspace.getConfiguration('scimax.db');
-        return config.get<string[]>('exclude') || [
-            '**/node_modules/**',
-            '**/.git/**',
-            '**/dist/**',
-            '**/build/**',
-            '**/.ipynb_checkpoints/**'
-        ];
+        return withBaselineExcludes(config.get<string[]>('exclude'));
     }
 
     private loadResilienceConfig(): { queryTimeoutMs: number; maxRetryAttempts: number } {

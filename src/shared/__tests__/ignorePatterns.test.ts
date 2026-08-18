@@ -14,6 +14,8 @@ vi.mock('fs', () => ({
 import * as fs from 'fs';
 import {
     DEFAULT_IGNORE_PATTERNS,
+    BASELINE_DB_EXCLUDE,
+    withBaselineExcludes,
     loadIgnorePatterns,
     shouldIgnore,
     mergePatterns
@@ -171,5 +173,34 @@ describe('mergePatterns', () => {
         const merged = mergePatterns([], ['one'], []);
 
         expect(merged).toEqual(['one']);
+    });
+});
+
+describe('withBaselineExcludes', () => {
+    // A VS Code settings array replaces the contributed default rather than
+    // extending it, so a user who excludes one personal path must not thereby
+    // re-enable indexing of node_modules or the editor's local history.
+    it('keeps the baseline when the user configured their own patterns', () => {
+        const merged = withBaselineExcludes(['~/notes/scratch.org']);
+
+        expect(merged).toContain('~/notes/scratch.org');
+        for (const pattern of BASELINE_DB_EXCLUDE) {
+            expect(merged).toContain(pattern);
+        }
+    });
+
+    it('returns the baseline when nothing is configured', () => {
+        expect(withBaselineExcludes(undefined)).toEqual(BASELINE_DB_EXCLUDE);
+        expect(withBaselineExcludes([])).toEqual(BASELINE_DB_EXCLUDE);
+    });
+
+    it('does not duplicate a pattern the user also listed', () => {
+        const merged = withBaselineExcludes(['**/node_modules/**']);
+
+        expect(merged.filter(p => p === '**/node_modules/**')).toHaveLength(1);
+    });
+
+    it("excludes VS Code's local history, which duplicates every edited file", () => {
+        expect(BASELINE_DB_EXCLUDE).toContain('**/Code/User/History/**');
     });
 });
