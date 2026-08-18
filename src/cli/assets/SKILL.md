@@ -1,6 +1,6 @@
 ---
 name: scimax
-version: "0.8.0"
+version: "0.11.0"
 description: |
   Searches org-mode notes, displays agenda and TODOs, exports org files to
   HTML/PDF/LaTeX, validates citations, opens journal entries, maintains the
@@ -22,12 +22,13 @@ description: |
   "dialog note", "decision note", "add note", "footnote",
   "task dependency", "depends on", "blocked task", "blocker", "ordered subtasks",
   "gantt", "gantt chart", "project table", "task table", "project management",
-  "assign task", "assignee", "who's working on", "add a person", "new person",
+  "assign task", "assignee", "who's working on", "what's blocked", "what's ready",
+  "project status", "critical path", "who's overloaded", "unblock", "what can I work on", "add a person", "new person",
   "contact", "contacts", "contact manager", "location", "address", "reagent",
   "resource", "pick entity", "insert email", "insert address", "entity selector"
-allowed-tools: ["Bash(scimax*)", "Bash(code --goto*)", "Read", "Glob", "Grep", "Write"]
+allowed-tools: ["Bash(scimax*)", "Bash(code --goto*)", "Bash(sqlite3*)", "Read", "Glob", "Grep", "Write"]
 ---
-<!-- scimax-skill v0.8.0 -->
+<!-- scimax-skill v0.11.0 -->
 
 # Scimax Skill
 
@@ -37,7 +38,11 @@ You are an executive assistant and expert for the **scimax-vscode** extension. Y
 
 1. **Read learnings** — Use the Read tool to check `~/.claude/skills/scimax/learnings.md` for user-specific corrections before answering. Apply any relevant learnings.
 2. **Read reference** — For detailed command syntax, use the Read tool to load `~/.claude/skills/scimax/reference.md`.
-3. **Read org-mode reference** — When helping with org-mode syntax, citations, source blocks, document structure, links, granular addressing (anchors, radio targets, `#+NAME`, back-links, orphan diagnostics), task dependencies (`:DEPENDS:`, `:ORDERED:`, blocking/triggering), project management (`project-table`/`gantt` dynamic blocks, `:person:`/`:ASSIGNEE:`), or entities (contacts/locations/reagents via `:person:`/`:location:` tags and the Pick Entity selector), use the Read tool to load `~/.claude/skills/scimax/orgmode-reference.md`.
+3. **Read project-management reference** — For questions about project status, what is
+   ready or blocked, assignee workload, dependency chains, or critical path, use the Read
+   tool to load `~/.claude/skills/scimax/pm-reference.md`. It covers the `scimax task`
+   commands and how to pick the right project file; do not improvise database queries.
+4. **Read org-mode reference** — When helping with org-mode syntax, citations, source blocks, document structure, links, granular addressing (anchors, radio targets, `#+NAME`, back-links, orphan diagnostics), task dependencies (`:DEPENDS:`, `:ORDERED:`, blocking/triggering), project management (`project-table`/`gantt` dynamic blocks, `:person:`/`:ASSIGNEE:`), or entities (contacts/locations/reagents via `:person:`/`:location:` tags and the Pick Entity selector), use the Read tool to load `~/.claude/skills/scimax/orgmode-reference.md`.
 
 ## Quick Reference
 
@@ -61,6 +66,11 @@ You are an executive assistant and expert for the **scimax-vscode** extension. Y
 | Wipe database | `scimax db clear` |
 | Today's journal | `scimax journal` |
 | Journal for date | `scimax journal tomorrow` |
+| What to work on next | `scimax task next` |
+| Blocked tasks | `scimax task list --blocked` |
+| Workload by person | `scimax task who` |
+| Critical path | `scimax task path` |
+| Mark a task done | `scimax task done <id>` |
 | Open a project | `scimax project` |
 | Add new project | `scimax project --add <path>` |
 | List projects | `scimax publish --list` |
@@ -151,6 +161,40 @@ Based on context, proactively suggest:
 - **Friday/end of week:** "Want to do a quick weekly review?"
 - **Empty journal for today:** "Want to start today's journal?"
 - **User mentions a person/project:** Search notes for context before responding
+
+## Project Management
+
+Task questions are answered with **`scimax task`** — never with `scimax project`,
+which is only a folder registry with no task semantics.
+
+Load `~/.claude/skills/scimax/pm-reference.md` for the full command reference.
+
+| Question | Command |
+|---|---|
+| What's next? | `scimax task next` |
+| What's blocked? | `scimax task list --blocked` |
+| What can X start? | `scimax task list --ready --assignee X` |
+| Who's overloaded? | `scimax task who` |
+| What's the long pole? | `scimax task path` |
+| If I finish X? | `scimax task show X` |
+| Mark X done | `scimax task done X` |
+
+`scimax task next` already ranks and explains its recommendation — lead with it
+instead of re-deriving one from a raw task list.
+
+Three things to get right:
+
+- **`scimax task done` refuses blocked tasks** by design, matching the editor's
+  guard. Report the blockers; do not pass `--force` on the user's behalf.
+- **Say what got unblocked.** After a `done`, the command reports newly ready
+  tasks — that is usually the most useful part of the answer.
+- **Pick the right file.** Selection is global by default — the file with the
+  most tasks anywhere wins, regardless of the working directory. Add `--local`
+  when the user means the current project, `--file <path>` when you know which,
+  and run `scimax task files` to see the candidates when you don't.
+
+Effort totals only count `Nd`/`Nh`; `task who` reports an `unestimated` column.
+Mention it rather than presenting a total as complete.
 
 ## Learnings Loop
 

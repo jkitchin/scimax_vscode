@@ -31,7 +31,7 @@ const REFERENCE_FILE = path.join(SKILL_INSTALL_DIR, 'reference.md');
 const LEARNINGS_FILE = path.join(SKILL_INSTALL_DIR, 'learnings.md');
 
 /** Files that get overwritten on update */
-const UPDATABLE_ASSETS = ['SKILL.md', 'reference.md', 'orgmode-reference.md'];
+const UPDATABLE_ASSETS = ['SKILL.md', 'reference.md', 'orgmode-reference.md', 'pm-reference.md'];
 
 /** Files that are only created if missing (never overwritten) */
 const PRESERVED_ASSETS = ['learnings.md'];
@@ -106,6 +106,7 @@ async function installSkill(force = false): Promise<void> {
     console.log('  SKILL.md              - Main skill instructions');
     console.log('  reference.md          - Detailed command reference');
     console.log('  orgmode-reference.md  - Org-mode syntax and citation reference');
+    console.log('  pm-reference.md       - Project management queries (ready/blocked, workload)');
     console.log('  learnings.md          - User corrections (preserved across updates)');
     console.log();
     console.log('In Claude Code, use /scimax to activate the skill.');
@@ -142,6 +143,7 @@ FILES:
     SKILL.md              Main skill instructions (overwritten on update)
     reference.md          Detailed command reference (overwritten on update)
     orgmode-reference.md  Org-mode syntax and citation reference (overwritten on update)
+    pm-reference.md       Project management query recipes (overwritten on update)
     learnings.md          User corrections and preferences (preserved on update)
 
 ABOUT:
