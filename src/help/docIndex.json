@@ -1,6 +1,6 @@
 {
-  "buildDate": "2026-08-15T20:25:59.771Z",
-  "count": 3502,
+  "buildDate": "2026-08-18T11:27:51.746Z",
+  "count": 3507,
   "entries": [
     {
       "heading": "Scimax VS Code",
@@ -8795,7 +8795,7 @@
       "level": 2,
       "file": "03.5-task-dependencies.org",
       "line": 137,
-      "content": "CLOSED: [2026-07-02 Thu 08:07] - [[file:03.6-project-management.org][Project Management]] — task tables, Gantt charts, people, and the dependency graph - [[file:03-todo-items.org][TODO Items and Task Management]] — TODO states and cycling - [[file:13-agenda.org][Agenda Views]] — viewing and filtering tasks - [[file:05-links.org][Hyperlinks]] and [[file:42-granular-addressing.org][Granular Addressing]] — the id linking dependencies build on - [[file:25-commands.org][Command Reference]] — all comm",
+      "content": "CLOSED: [2026-07-02 Thu 08:07] - [[file:03.6-project-management.org][Project Management]] — task tables, Gantt charts, people, and the dependency graph - [[file:30-cli.org][CLI]] — =scimax task= reads the same =:DEPENDS:=/=:ORDERED:= graph from the terminal - [[file:03-todo-items.org][TODO Items and Task Management]] — TODO states and cycling - [[file:13-agenda.org][Agenda Views]] — viewing and filtering tasks - [[file:05-links.org][Hyperlinks]] and [[file:42-granular-addressing.org][Granular Ad",
       "path": [
         "Task Dependencies"
       ],
@@ -8818,10 +8818,10 @@
         "people",
         "dependency",
         "graph",
-        "file03-todo-itemsorg",
-        "todo",
-        "items",
-        "states"
+        "file30-cliorg",
+        "cli",
+        "scimax",
+        "reads"
       ]
     },
     {
@@ -9115,7 +9115,7 @@
       "level": 2,
       "file": "03.6-project-management.org",
       "line": 157,
-      "content": "CLOSED: [2026-07-02 Thu 08:07] - [[file:03.5-task-dependencies.org][Task Dependencies]] — the dependency layer this builds on - [[file:03-todo-items.org][TODO Items]] — TODO states, priorities, effort - [[file:06-timestamps.org][Timestamps]] — SCHEDULED/DEADLINE and clocking - [[file:13-agenda.org][Agenda]] — date-based task views - [[file:25-commands.org][Command Reference]] · [[file:26-configuration.org][Configuration]]",
+      "content": "CLOSED: [2026-07-02 Thu 08:07] - [[file:03.5-task-dependencies.org][Task Dependencies]] — the dependency layer this builds on - [[file:30-cli.org][CLI]] — =scimax task next/who/path= answers the same questions from the terminal - [[file:03-todo-items.org][TODO Items]] — TODO states, priorities, effort - [[file:06-timestamps.org][Timestamps]] — SCHEDULED/DEADLINE and clocking - [[file:13-agenda.org][Agenda]] — date-based task views - [[file:25-commands.org][Command Reference]] · [[file:26-configu",
       "path": [
         "Project Management"
       ],
@@ -9134,14 +9134,14 @@
         "dependency",
         "layer",
         "builds",
-        "file03-todo-itemsorg",
-        "todo",
-        "items",
-        "states",
-        "priorities",
-        "effort",
-        "file06-timestampsorg",
-        "timestamps"
+        "file30-cliorg",
+        "cli",
+        "scimax",
+        "nextwhopath",
+        "answers",
+        "questions",
+        "terminal",
+        "file03-todo-itemsorg"
       ]
     },
     {
@@ -89102,10 +89102,184 @@
       ]
     },
     {
-      "heading": "Database",
+      "heading": "Tasks",
       "level": 2,
       "file": "30-cli.org",
       "line": 349,
+      "content": "Project management over org task graphs. Answers \"what should I work on next\", who is overloaded, what is blocked, and what the long pole is. Note that =scimax task= and =scimax project= are unrelated despite the similar-sounding names: =scimax project= opens VS Code workspaces, while =scimax task= reads task metadata inside org files. #+begin_src bash # What to work on now, ranked and explained scimax task next # Open tasks, filtered scimax task list --ready scimax task list --blocked scimax ta",
+      "path": [
+        "Commands"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "tasks",
+        "project",
+        "management",
+        "over",
+        "org",
+        "task",
+        "graphs",
+        "answers",
+        "work",
+        "next",
+        "overloaded",
+        "blocked",
+        "long",
+        "pole",
+        "note",
+        "scimax",
+        "unrelated",
+        "despite",
+        "similar-sounding",
+        "names"
+      ]
+    },
+    {
+      "heading": "Task Model",
+      "level": 3,
+      "file": "30-cli.org",
+      "line": 384,
+      "content": "A task is a heading carrying an =:ID:= property. The relevant properties are: | Property    | Meaning                              | Example              | |-------------+--------------------------------------+----------------------| | =:ID:=      | Task identifier (required)           | =synth=              | | =:ASSIGNEE:=| Who owns it                          | =liam=               | | =:EFFORT:=  | Estimated work, =Nd= or =Nh=         | =5d=                 | | =:DEPENDS:= | Explicit blocker",
+      "path": [
+        "Commands",
+        "Tasks"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "task",
+        "model",
+        "heading",
+        "carrying",
+        "property",
+        "relevant",
+        "properties",
+        "meaning",
+        "example",
+        "-------------------------------------------------------------------------",
+        "identifier",
+        "required",
+        "synth",
+        "assignee",
+        "owns",
+        "liam",
+        "effort",
+        "estimated",
+        "work",
+        "depends"
+      ]
+    },
+    {
+      "heading": "File Selection",
+      "level": 3,
+      "file": "30-cli.org",
+      "line": 400,
+      "content": "File selection is global by default. The database spans every indexed file, so =scimax task next= gives the same answer from any directory: it picks the file with the most task metadata anywhere. | Flag            | Effect                                            | |-----------------+---------------------------------------------------| | (none)          | The file with the most tasks, anywhere            | | =--local=       | Only files under the current directory            | | =--file <path>",
+      "path": [
+        "Commands",
+        "Tasks"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "selection",
+        "global",
+        "default",
+        "database",
+        "spans",
+        "indexed",
+        "scimax",
+        "task",
+        "next",
+        "gives",
+        "answer",
+        "any",
+        "directory",
+        "picks",
+        "metadata",
+        "anywhere",
+        "flag",
+        "effect",
+        "--------------------------------------------------------------------",
+        "none"
+      ]
+    },
+    {
+      "heading": "Options",
+      "level": 3,
+      "file": "30-cli.org",
+      "line": 414,
+      "content": "| Option          | Description                              | |-----------------+------------------------------------------| | =--file <path>= | Project file to operate on               | | =--local=       | Confine discovery to the current directory | | =--json=        | Structured output                        | | =--force=       | Allow =done= on a blocked task           |",
+      "path": [
+        "Commands",
+        "Tasks"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "options",
+        "option",
+        "description",
+        "-----------------------------------------------------------",
+        "--file",
+        "path",
+        "project",
+        "operate",
+        "--local",
+        "confine",
+        "discovery",
+        "current",
+        "directory",
+        "--json",
+        "structured",
+        "output",
+        "--force",
+        "allow",
+        "done",
+        "blocked"
+      ]
+    },
+    {
+      "heading": "Limitations",
+      "level": 3,
+      "file": "30-cli.org",
+      "line": 423,
+      "content": "- =done= does not write a =CLOSED:= timestamp, and does not regenerate =project-table= or =gantt= dynamic blocks; refresh those in the editor. - =:ORDERED:= sequences direct children only, not deeper descendants. - Task ids resolve within one file, so cross-file =:DEPENDS:= is not followed. - Effort totals count only =Nd= and =Nh=; anything else is reported as unestimated.",
+      "path": [
+        "Commands",
+        "Tasks"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "limitations",
+        "done",
+        "write",
+        "closed",
+        "timestamp",
+        "regenerate",
+        "project-table",
+        "gantt",
+        "dynamic",
+        "blocks",
+        "refresh",
+        "editor",
+        "ordered",
+        "sequences",
+        "direct",
+        "children",
+        "deeper",
+        "descendants",
+        "task",
+        "ids"
+      ]
+    },
+    {
+      "heading": "Database",
+      "level": 2,
+      "file": "30-cli.org",
+      "line": 432,
       "content": "Database maintenance operations.",
       "path": [
         "Commands"
@@ -89122,7 +89296,7 @@
       "heading": "Statistics",
       "level": 3,
       "file": "30-cli.org",
-      "line": 353,
+      "line": 436,
       "content": "Show database statistics: #+begin_src bash scimax db stats #+end_src Output: #+begin_example === Database Statistics === Database: /home/user/.config/Code/User/globalStorage/jkitchin.scimax-vscode/scimax-db.sqlite Root: /home/user/project Files indexed: 42 Headings: 1,234 TODO items: 89 Has embeddings: No #+end_example",
       "path": [
         "Commands",
@@ -89157,7 +89331,7 @@
       "heading": "Check Integrity",
       "level": 3,
       "file": "30-cli.org",
-      "line": 374,
+      "line": 457,
       "content": "Check for missing or stale files: #+begin_src bash scimax db check #+end_src Output: #+begin_example Checking database integrity... MISSING: old-file.org MISSING: deleted-folder/notes.org Total files in database: 42 Missing files: 2 Run =scimax db sync= to bring the index up to date. #+end_example",
       "path": [
         "Commands",
@@ -89192,7 +89366,7 @@
       "heading": "Sync",
       "level": 3,
       "file": "30-cli.org",
-      "line": 395,
+      "line": 478,
       "content": "CLOSED: [2026-07-11 Sat 09:08] Bring the database into agreement with the configured scan roots and the filesystem in one pass: pick up new files, refresh changed files (mtime-based), refresh in-scope files that are stale, and prune entries for files that no longer exist. Scan roots are unioned from: 1. =scimax.db.include= (VS Code settings) 2. =scimax.journal.directory= 3. =scimax.agenda.include= 4. NotebookManager projects (every project you have opened in VS Code, persisted in =notebooks.json",
       "path": [
         "Commands",
@@ -89231,7 +89405,7 @@
       "heading": "Clear",
       "level": 3,
       "file": "30-cli.org",
-      "line": 445,
+      "line": 528,
       "content": "CLOSED: [2026-07-11 Sat 09:08] Wipe the database. Use this before a full re-sync, after a schema change, or when troubleshooting suspected corruption. Requires confirmation. #+begin_src bash # Interactive confirmation scimax db clear # Skip the prompt scimax db clear --yes # Typical reset workflow scimax db clear --yes && scimax db sync #+end_src Output: #+begin_example Database: ~/Library/Application Support/Code/User/globalStorage/jkitchin.scimax-vscode/scimax-db.sqlite This will delete 1853 f",
       "path": [
         "Commands",
@@ -89266,7 +89440,7 @@
       "heading": "Scan Directory",
       "level": 3,
       "file": "30-cli.org",
-      "line": 470,
+      "line": 553,
       "content": "CLOSED: [2026-01-22 Thu 20:57] Scan a specific directory and add its files to the database. This is a simplified command that takes the directory as a direct argument, making it ideal for cron jobs and scripts. #+begin_src bash # Scan a specific directory scimax db scan /path/to/org-files # Scan multiple directories (run sequentially) scimax db scan ~/work/org-files scimax db scan ~/personal/notes #+end_src Output: #+begin_example Scanning directory: /path/to/org-files Database path: /home/user/",
       "path": [
         "Commands",
@@ -89301,7 +89475,7 @@
       "heading": "Cron Job Examples",
       "level": 4,
       "file": "30-cli.org",
-      "line": 499,
+      "line": 582,
       "content": "Schedule automatic database updates: #+begin_src bash # Edit crontab crontab -e # Scan every hour 0 * * * * cd /path/to/project && scimax db scan ~/org-files # Scan daily at 6am 0 6 * * * cd /path/to/project && scimax db scan ~/org-files >> /var/log/scimax-scan.log 2>&1 # Scan multiple directories every 30 minutes */30 * * * * cd /path/to/project && scimax db scan ~/work/notes && scimax db scan ~/personal/org #+end_src",
       "path": [
         "Commands",
@@ -89337,7 +89511,7 @@
       "heading": "Command Comparison",
       "level": 4,
       "file": "30-cli.org",
-      "line": 517,
+      "line": 600,
       "content": "| Command                | Use Case                                                  | |------------------------+-----------------------------------------------------------| | =scimax db sync=       | Daily driver: discover, refresh, and prune in one pass    | | =scimax db clear=      | Wipe the database (followed by =sync= for a full rebuild) | | =scimax db scan <dir>= | Ad-hoc scan of a single directory                         | | =scimax db check=      | Read-only integrity report (no changes",
       "path": [
         "Commands",
@@ -89373,7 +89547,7 @@
       "heading": "Scripting Examples",
       "level": 1,
       "file": "30-cli.org",
-      "line": 532,
+      "line": 615,
       "content": "",
       "path": [],
       "commands": [],
@@ -89387,7 +89561,7 @@
       "heading": "Export All Org Files to HTML",
       "level": 2,
       "file": "30-cli.org",
-      "line": 534,
+      "line": 617,
       "content": "#+begin_src bash #!/bin/bash for f in docs/*.org; do scimax export \"$f\" --format html --output \"build/$(basename \"$f\" .org).html\" done #+end_src",
       "path": [
         "Scripting Examples"
@@ -89415,7 +89589,7 @@
       "heading": "Check Citations in CI",
       "level": 2,
       "file": "30-cli.org",
-      "line": 543,
+      "line": 626,
       "content": "#+begin_src yaml # .github/workflows/check-citations.yml name: Check Citations on: [push, pull_request] jobs: check: runs-on: ubuntu-latest steps: - uses: actions/checkout@v3 - uses: actions/setup-node@v3 with: node-version: '18' - run: npm ci - run: npm run compile - run: node out/cli/index.js cite check paper.org --bib refs.bib #+end_src",
       "path": [
         "Scripting Examples"
@@ -89449,7 +89623,7 @@
       "heading": "Daily Agenda Email",
       "level": 2,
       "file": "30-cli.org",
-      "line": 562,
+      "line": 645,
       "content": "#+begin_src bash #!/bin/bash # Send daily agenda via email scimax agenda today | mail -s \"Today's Agenda\" user@example.com #+end_src",
       "path": [
         "Scripting Examples"
@@ -89476,7 +89650,7 @@
       "heading": "Find Files with Specific Tags",
       "level": 2,
       "file": "30-cli.org",
-      "line": 570,
+      "line": 653,
       "content": "#+begin_src bash # Using search (if tag is in heading) scimax search \":research:\" --limit 50 #+end_src",
       "path": [
         "Scripting Examples"
@@ -89502,7 +89676,7 @@
       "heading": "Limitations",
       "level": 1,
       "file": "30-cli.org",
-      "line": 577,
+      "line": 660,
       "content": "The CLI has some limitations compared to the VS Code extension: 1. *Semantic Search*: Requires embeddings which need the embedding service configured in VS Code. 2. *Live Updates*: The CLI reads a snapshot of the database. Changes made to org files won't be reflected until you run =scimax db sync= or VS Code re-indexes them. 3. *Interactive Features*: No support for interactive features like completion or live preview. 4. *FTS Index*: =scimax db sync= populates the main tables but doesn't rebuil",
       "path": [],
       "commands": [],
@@ -89534,8 +89708,8 @@
       "heading": "Related Topics",
       "level": 1,
       "file": "30-cli.org",
-      "line": 589,
-      "content": "- [[file:18-database-search.org][Database & Search]] - How the database indexing works - [[file:10-export.org][Export]] - Export options and configuration - [[file:19-references.org][References & Citations]] - Citation syntax and bibliography management - [[file:13-agenda.org][Agenda]] - Agenda views in VS Code",
+      "line": 672,
+      "content": "- [[file:18-database-search.org][Database & Search]] - How the database indexing works - [[file:10-export.org][Export]] - Export options and configuration - [[file:19-references.org][References & Citations]] - Citation syntax and bibliography management - [[file:13-agenda.org][Agenda]] - Agenda views in VS Code - [[file:03.5-task-dependencies.org][Task Dependencies]] - =:DEPENDS:= and =:ORDERED:= in the editor - [[file:03.6-project-management.org][Project Management]] - Task tables, Gantt charts",
       "path": [],
       "commands": [],
       "keybindings": [],
@@ -105399,7 +105573,7 @@
       "level": 1,
       "file": "index.org",
       "line": 18,
-      "content": "- [[file:todo-items.html][TODO Items and Task Management]] - [[file:task-dependencies.html][Task Dependencies]] - [[file:project-management.html][Project Management (Tables, Gantt, People)]] - [[file:contacts-and-locations.html][Contacts, Locations & Entity Selector]] - [[file:agenda.html][Agenda Views]] - [[file:timestamps.html][Timestamps and Time Tracking]] - [[file:capture.html][Capture]]",
+      "content": "- [[file:todo-items.html][TODO Items and Task Management]] - [[file:task-dependencies.html][Task Dependencies]] - [[file:project-management.html][Project Management (Tables, Gantt, People)]] - [[file:cli.html::#tasks][Tasks from the Command Line (=scimax task=)]] - [[file:contacts-and-locations.html][Contacts, Locations & Entity Selector]] - [[file:agenda.html][Agenda Views]] - [[file:timestamps.html][Timestamps and Time Tracking]] - [[file:capture.html][Capture]]",
       "path": [],
       "commands": [],
       "keybindings": [],
@@ -105416,21 +105590,21 @@
         "tables",
         "gantt",
         "people",
+        "fileclihtmltasks",
+        "tasks",
+        "command",
+        "line",
+        "scimax",
         "filecontacts-and-locationshtml",
         "contacts",
-        "locations",
-        "entity",
-        "selector",
-        "fileagendahtml",
-        "agenda",
-        "views"
+        "locations"
       ]
     },
     {
       "heading": "Code & Execution",
       "level": 1,
       "file": "index.org",
-      "line": 27,
+      "line": 28,
       "content": "- [[file:source-blocks.html][Source Code Blocks]] - [[file:supported-languages.html][Supported Languages in Scimax VS Code]] - [[file:jupyter.html][Jupyter Integration]]",
       "path": [],
       "commands": [],
@@ -105454,7 +105628,7 @@
       "heading": "Export & Publishing",
       "level": 1,
       "file": "index.org",
-      "line": 32,
+      "line": 33,
       "content": "- [[file:export.html][Org Export System]] - [[file:export-beamer.html][Beamer Export]] - [[file:publishing.html][Org Publishing System]] - [[file:latex-preview.html][LaTeX Preview]] - [[file:latex-navigation.html][LaTeX Navigation and Structure]] - [[file:image-overlays.html][Image Overlays]]",
       "path": [],
       "commands": [],
@@ -105483,7 +105657,7 @@
       "heading": "Advanced Features",
       "level": 1,
       "file": "index.org",
-      "line": 40,
+      "line": 41,
       "content": "- [[file:database-search.html][Database and Search]] - [[file:references.html][References and Citations]] - [[file:journal.html][Journal]] - [[file:notebook.html][Notebook (Project Organization)]] - [[file:projectile.html][Projectile (Project Management)]] - [[file:dired.html][Dired (Directory Editor)]] - [[file:find-file.html][Find File (C-x C-f)]] - [[file:hydra-menus.html][Hydra Menus]] - [[file:editmarks.html][Editmarks (Track Changes)]] - [[file:commands.html::#rectangle][Rectangle Commands",
       "path": [],
       "commands": [],
@@ -105517,8 +105691,8 @@
       "heading": "Reference",
       "level": 1,
       "file": "index.org",
-      "line": 52,
-      "content": "- [[file:org-api.html][Org API]]",
+      "line": 53,
+      "content": "- [[file:org-api.html][Org API]] - [[file:cli.html][Command Line Interface (CLI)]]",
       "path": [],
       "commands": [],
       "keybindings": [],
@@ -105526,14 +105700,19 @@
         "reference",
         "fileorg-apihtml",
         "org",
-        "api"
+        "api",
+        "fileclihtml",
+        "command",
+        "line",
+        "interface",
+        "cli"
       ]
     },
     {
       "heading": "Development",
       "level": 1,
       "file": "index.org",
-      "line": 55,
+      "line": 57,
       "content": "- [[file:extension-points.html][Extension Points for Plugin Development]]",
       "path": [],
       "commands": [],

@@ -346,6 +346,89 @@ Projects are pulled fresh from the scimax database each time. The extension regi
 
 When =fzf= is installed, the interactive selection uses fuzzy matching. Otherwise, a numbered list is displayed.
 
+** ⚠️ Tasks
+
+Project management over org task graphs. Answers "what should I work on
+next", who is overloaded, what is blocked, and what the long pole is.
+
+Note that =scimax task= and =scimax project= are unrelated despite the
+similar-sounding names: =scimax project= opens VS Code workspaces, while
+=scimax task= reads task metadata inside org files.
+
+#+begin_src bash
+# What to work on now, ranked and explained
+scimax task next
+
+# Open tasks, filtered
+scimax task list --ready
+scimax task list --blocked
+scimax task list --assignee priya
+
+# Workload by assignee
+scimax task who
+
+# One task: what blocks it, what it unblocks
+scimax task show synth
+
+# Critical path through the remaining work
+scimax task path
+
+# Mark done (refuses if blocked) and set an assignee
+scimax task done synth
+scimax task assign xrd priya
+
+# Which files contain tasks
+scimax task files
+#+end_src
+
+*** Task Model
+
+A task is a heading carrying an =:ID:= property. The relevant properties are:
+
+| Property    | Meaning                              | Example              |
+|-------------+--------------------------------------+----------------------|
+| =:ID:=      | Task identifier (required)           | =synth=              |
+| =:ASSIGNEE:=| Who owns it                          | =liam=               |
+| =:EFFORT:=  | Estimated work, =Nd= or =Nh=         | =5d=                 |
+| =:DEPENDS:= | Explicit blockers, space-separated   | =id:design id:xrd=   |
+| =:ORDERED:= | On a parent: children run in order   | =t=                  |
+
+Both blocking sources are honored, so =--ready= and =--blocked= match what the
+editor enforces. =scimax task done= refuses a blocked task unless =--force= is
+passed, and reports which tasks the completion unblocked.
+
+*** File Selection
+
+File selection is global by default. The database spans every indexed file, so
+=scimax task next= gives the same answer from any directory: it picks the file
+with the most task metadata anywhere.
+
+| Flag            | Effect                                            |
+|-----------------+---------------------------------------------------|
+| (none)          | The file with the most tasks, anywhere            |
+| =--local=       | Only files under the current directory            |
+| =--file <path>= | That file                                         |
+
+Run =scimax task files= to see the candidates with their task counts.
+
+*** Options
+
+| Option          | Description                              |
+|-----------------+------------------------------------------|
+| =--file <path>= | Project file to operate on               |
+| =--local=       | Confine discovery to the current directory |
+| =--json=        | Structured output                        |
+| =--force=       | Allow =done= on a blocked task           |
+
+*** Limitations
+
+- =done= does not write a =CLOSED:= timestamp, and does not regenerate
+  =project-table= or =gantt= dynamic blocks; refresh those in the editor.
+- =:ORDERED:= sequences direct children only, not deeper descendants.
+- Task ids resolve within one file, so cross-file =:DEPENDS:= is not followed.
+- Effort totals count only =Nd= and =Nh=; anything else is reported as
+  unestimated.
+
 ** Database
 
 Database maintenance operations.
@@ -592,3 +675,5 @@ The CLI has some limitations compared to the VS Code extension:
 - [[file:10-export.org][Export]] - Export options and configuration
 - [[file:19-references.org][References & Citations]] - Citation syntax and bibliography management
 - [[file:13-agenda.org][Agenda]] - Agenda views in VS Code
+- [[file:03.5-task-dependencies.org][Task Dependencies]] - =:DEPENDS:= and =:ORDERED:= in the editor
+- [[file:03.6-project-management.org][Project Management]] - Task tables, Gantt charts, assignees
