@@ -4155,7 +4155,7 @@
         "command": "scimax.mark.cancel",
         "key": "escape escape",
         "mac": "escape escape",
-        "when": "editorTextFocus && editorHasSelection"
+        "when": "editorTextFocus && editorHasSelection && !scimax.jumpActive"
       },
       {
         "command": "scimax.mark.push",
@@ -4556,19 +4556,19 @@
         "command": "scimax.ob.insertBlockAbove",
         "key": "escape a",
         "mac": "escape a",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && !scimax.jumpActive"
       },
       {
         "command": "scimax.ob.insertBlockBelow",
         "key": "escape b",
         "mac": "escape b",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && !scimax.jumpActive"
       },
       {
         "command": "scimax.ob.splitBlock",
         "key": "escape -",
         "mac": "escape -",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.inSourceBlock"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.inSourceBlock && !scimax.jumpActive"
       },
       {
         "command": "scimax.ob.executeAndNext",

@@ -95,6 +95,11 @@ the =!scimax.jumpActive= context. This covers the speed commands at headings,
 source blocks, LaTeX sections and environments, BibTeX entries, and the agenda
 buffer.
 
+The same guard applies to the chorded bindings that start with Escape
+(=Escape a=, =Escape b=, =Escape -=, =Escape Escape=). Without it VS Code would
+treat Escape as the start of a chord and wait for a second key instead of
+cancelling the jump, leaving the labels on screen.
+
 Speed commands come back the moment the jump ends, whether you jumped, pressed
 Escape, or let it time out.
 
