@@ -1866,6 +1866,20 @@ export class ScimaxDbCore {
         return result.rows as unknown as HeadingRecord[];
     }
 
+    /**
+     * Every heading in one file, in document order. Task tooling needs the
+     * full outline (not just matches) to reconstruct parent/child structure,
+     * which is how `:ORDERED:` sequencing is derived.
+     */
+    public async getHeadingsInFile(filePath: string): Promise<HeadingRecord[]> {
+        if (!this.db || !filePath) return [];
+        const result = await this.db.execute({
+            sql: 'SELECT * FROM headings WHERE file_path = ? ORDER BY line_number',
+            args: [filePath],
+        });
+        return result.rows as unknown as HeadingRecord[];
+    }
+
     public async searchByProperty(propertyName: string, value?: string): Promise<HeadingRecord[]> {
         if (!this.db) return [];
         const scope = this.getScopeClause();

@@ -11,6 +11,7 @@
  *   scimax db [sync|clear|stats|scan|check|remove|ignore]
  *   scimax journal [date]
  *   scimax project [query] [--add path] [--list]
+ *   scimax task [next|list|who|show|path|done|assign|files]
  *   scimax publish [project] [--init|--list]
  */
 
@@ -32,6 +33,7 @@ import { publishCommand } from './commands/publish';
 import { skillCommand } from './commands/skill';
 import { journalCommand } from './commands/journal';
 import { projectCommand } from './commands/project';
+import { taskCommand } from './commands/task';
 
 interface CliConfig {
     dbPath: string;
@@ -155,6 +157,7 @@ COMMANDS:
     db <subcommand>         Database operations (sync, clear, stats, scan, check, remove, ignore)
     journal [date]          Open journal entry (today, tomorrow, "next friday", etc.)
     project [query]         Fuzzy-select and open a known project in VS Code
+    task <subcommand>       Project tasks (next, list, who, show, path, done, assign)
     publish [project]       Publish org project(s) to HTML
     skill <subcommand>      Manage the scimax Claude Code skill
     help                    Show this help message
@@ -186,6 +189,13 @@ EXAMPLES:
     scimax project --cleanup
     scimax project --remove /old/path
     scimax project --scan ~/projects
+    scimax task next
+    scimax task next --local
+    scimax task list --ready
+    scimax task who
+    scimax task path
+    scimax task done synth
+    scimax task assign xrd priya
     scimax publish
     scimax publish --init
     scimax skill install
@@ -238,6 +248,9 @@ async function main(): Promise<void> {
                 break;
             case 'journal':
                 await journalCommand(config, args);
+                break;
+            case 'task':
+                await taskCommand(config, args);
                 break;
             case 'project':
                 await projectCommand(config, args);
