@@ -176,24 +176,32 @@ org-mode, markdown, and LaTeX files with consistent behavior.
 
 * Tables
 
-| Key               | Action                            |
-|-------------------+-----------------------------------|
-| C-c \vert         | Create table                      |
-| C-c S-\           | Create table (alternative)        |
-| C-c -             | Insert table separator row        |
-| C-c ^             | Sort table by column              |
-| C-c S-6           | Sort table by column (alt)        |
-| C-c C-c           | Recalculate table (on TBLFM line) |
-| C-c *             | Recalculate table (alternative)   |
-| C-c S-8           | Recalculate table (alt)           |
-| C-c C-e t         | Export table                      |
-| M-<return>        | Insert row below                  |
-| M-S-<return>      | Insert row above                  |
-| M-S-<up>          | Insert row above (alt)            |
-| M-S-<down>        | Insert row below (alt)            |
-| M-S-<backspace>   | Delete row                        |
-| M-S-<right>       | Insert column right (in table)    |
-| M-S-<left>        | Delete column (in table)          |
+| Key                 | Action                            |
+|---------------------+-----------------------------------|
+| C-c \vert           | Create table                      |
+| C-c S-\             | Create table (alternative)        |
+| C-c -               | Insert table separator row        |
+| C-c ^               | Sort table by column              |
+| C-c S-6             | Sort table by column (alt)        |
+| C-c C-c             | Recalculate table (on TBLFM line) |
+| C-c *               | Recalculate table (alternative)   |
+| C-c S-8             | Recalculate table (alt)           |
+| C-c C-e t           | Export table                      |
+| M-<return>          | Insert row below                  |
+| M-S-<return>        | Insert row above                  |
+| M-S-<up>            | Insert row above (alt)            |
+| M-S-<down>          | Insert row below (alt)            |
+| M-S-<backspace>     | Delete row                        |
+| M-S-<right>         | Insert column right (in table)    |
+| M-S-<left>          | Delete column (in table)          |
+| S-<up>/M-<up>       | Move row up                       |
+| S-<down>/M-<down>   | Move row down                     |
+| S-<left>/M-<left>   | Move column left                  |
+| S-<right>/M-<right> | Move column right                 |
+| C-M-<up>            | Move cell up (swap)               |
+| C-M-<down>          | Move cell down (swap)             |
+| C-M-<left>          | Move cell left (swap)             |
+| C-M-<right>         | Move cell right (swap)            |
 
 * Source Blocks (Babel)
 

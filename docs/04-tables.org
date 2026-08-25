@@ -93,15 +93,46 @@ CLOSED: [2026-01-15 Thu 15:41]
 | scimax.table.insertColumnLeft  | M-S-Left  | Insert column to the left  |
 | scimax.table.deleteColumn      |                 | Delete current column      |
 
-** ✅ Moving Rows/Columns
+** 👀 Moving Rows/Columns
 CLOSED: [2026-01-15 Thu 15:37]
 
-| Command                      | Key Binding | Action            |
-|------------------------------+-------------+-------------------|
-| scimax.table.moveRowUp       | S-up        | Move row up       |
-| scimax.table.moveRowDown     | S-down      | Move row down     |
-| scimax.table.moveColumnLeft  | S-left      | Move column left  |
-| scimax.table.moveColumnRight | S-right     | Move column right |
+| Command                      | Key Binding      | Action            |
+|------------------------------+------------------+-------------------|
+| scimax.table.moveRowUp       | S-up, M-up       | Move row up       |
+| scimax.table.moveRowDown     | S-down, M-down   | Move row down     |
+| scimax.table.moveColumnLeft  | S-left, M-left   | Move column left  |
+| scimax.table.moveColumnRight | S-right, M-right | Move column right |
+
+** ⚠️ Moving a Single Cell
+
+Move just the cell at the cursor, swapping it with the cell it displaces. The
+cursor follows the cell, so you can repeat the key to walk a value across the
+table.
+
+| Command                    | Key Binding | Action          |
+|----------------------------+-------------+-----------------|
+| scimax.table.moveCellUp    | C-M-up      | Move cell up    |
+| scimax.table.moveCellDown  | C-M-down    | Move cell down  |
+| scimax.table.moveCellLeft  | C-M-left    | Move cell left  |
+| scimax.table.moveCellRight | C-M-right   | Move cell right |
+
+Starting with the cursor on =15.00=, =C-M-up= gives:
+
+#+BEGIN_SRC org
+| Item     | Price |          | Item     | Price |
+|----------+-------|          |----------+-------|
+| Widget A | 10.00 |    →     | Widget A | 15.00 |
+| Widget B | 15.00 |          | Widget B | 10.00 |
+#+END_SRC
+
+Notes:
+
+- Vertical moves step *over* separator lines, so a cell can move into or out of
+  a header row.
+- The move stops at the table edges - it never wraps around.
+- The table is realigned after each move, so column widths follow the content.
+- Rows with fewer cells than the rest of the table are padded with empty cells
+  so the swap lands in the right column.
 
 ** ✅ Separator Lines
 CLOSED: [2026-01-15 Thu 15:36]
@@ -639,6 +670,10 @@ CLOSED: [2026-01-15 Thu 15:24]
 | scimax.table.moveRowDown            | Move row down               |
 | scimax.table.moveColumnLeft         | Move column left            |
 | scimax.table.moveColumnRight        | Move column right           |
+| scimax.table.moveCellUp             | Move cell up                |
+| scimax.table.moveCellDown           | Move cell down              |
+| scimax.table.moveCellLeft           | Move cell left              |
+| scimax.table.moveCellRight          | Move cell right             |
 | scimax.table.recalculate            | Recalculate formulas        |
 | scimax.table.sumColumn              | Sum current column          |
 | scimax.table.averageColumn          | Average current column      |

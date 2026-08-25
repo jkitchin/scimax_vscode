@@ -445,6 +445,10 @@ function getTableHelp(): ContextHelp {
             { command: 'scimax.table.moveRowDown', title: 'Move Row Down', keybinding: 'M-Down', category: 'Move' },
             { command: 'scimax.table.moveColumnLeft', title: 'Move Column Left', keybinding: 'M-Left', category: 'Move' },
             { command: 'scimax.table.moveColumnRight', title: 'Move Column Right', keybinding: 'M-Right', category: 'Move' },
+            { command: 'scimax.table.moveCellUp', title: 'Move Cell Up', keybinding: 'C-M-Up', category: 'Move' },
+            { command: 'scimax.table.moveCellDown', title: 'Move Cell Down', keybinding: 'C-M-Down', category: 'Move' },
+            { command: 'scimax.table.moveCellLeft', title: 'Move Cell Left', keybinding: 'C-M-Left', category: 'Move' },
+            { command: 'scimax.table.moveCellRight', title: 'Move Cell Right', keybinding: 'C-M-Right', category: 'Move' },
 
             // Format
             { command: 'scimax.table.align', title: 'Align Table', keybinding: 'C-c C-c', category: 'Format' },

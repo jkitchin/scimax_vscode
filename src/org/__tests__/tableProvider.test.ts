@@ -26,7 +26,7 @@ vi.mock('vscode', () => ({
     EventEmitter: class { event = vi.fn(); fire = vi.fn(); dispose = vi.fn(); },
 }));
 
-import { parseRow } from '../tableProvider';
+import { parseRow, swapCell, CellMoveRow } from '../tableProvider';
 
 describe('parseRow', () => {
     it('splits a simple row on pipes', () => {
@@ -75,5 +75,106 @@ describe('parseRow', () => {
         // candidate is preceded by space → fails FORBIDDEN_LAST. Should split.
         expect(parseRow('| $5 and $6 | next |'))
             .toEqual(['$5 and $6', 'next']);
+    });
+});
+
+describe('swapCell', () => {
+    // | a | b | c |
+    // |---+---+---|
+    // | d | e | f |
+    // | g | h | i |
+    const table = (): CellMoveRow[] => [
+        ['a', 'b', 'c'],
+        null,
+        ['d', 'e', 'f'],
+        ['g', 'h', 'i'],
+    ];
+
+    it('swaps with the cell to the right', () => {
+        const result = swapCell(table(), 2, 0, 0, 1);
+        expect(result?.rows[2]).toEqual(['e', 'd', 'f']);
+        expect(result).toMatchObject({ targetRow: 2, targetCol: 1 });
+    });
+
+    it('swaps with the cell to the left', () => {
+        const result = swapCell(table(), 2, 2, 0, -1);
+        expect(result?.rows[2]).toEqual(['d', 'f', 'e']);
+        expect(result).toMatchObject({ targetRow: 2, targetCol: 2 - 1 });
+    });
+
+    it('swaps with the cell below', () => {
+        const result = swapCell(table(), 2, 1, 1, 0);
+        expect(result?.rows[2]).toEqual(['d', 'h', 'f']);
+        expect(result?.rows[3]).toEqual(['g', 'e', 'i']);
+        expect(result).toMatchObject({ targetRow: 3, targetCol: 1 });
+    });
+
+    it('steps over a separator when moving up', () => {
+        const result = swapCell(table(), 2, 1, -1, 0);
+        expect(result?.rows[0]).toEqual(['a', 'e', 'c']);
+        expect(result?.rows[1]).toBeNull();
+        expect(result?.rows[2]).toEqual(['d', 'b', 'f']);
+        expect(result).toMatchObject({ targetRow: 0, targetCol: 1 });
+    });
+
+    it('does not mutate the input rows', () => {
+        const rows = table();
+        swapCell(rows, 2, 0, 0, 1);
+        expect(rows[2]).toEqual(['d', 'e', 'f']);
+    });
+
+    it('refuses to move past the first row', () => {
+        expect(swapCell(table(), 0, 0, -1, 0)).toBeNull();
+    });
+
+    it('refuses to move past the last row', () => {
+        expect(swapCell(table(), 3, 0, 1, 0)).toBeNull();
+    });
+
+    it('refuses to move past the first column', () => {
+        expect(swapCell(table(), 2, 0, 0, -1)).toBeNull();
+    });
+
+    it('refuses to move past the last column', () => {
+        expect(swapCell(table(), 2, 2, 0, 1)).toBeNull();
+    });
+
+    it('refuses to move from a separator row', () => {
+        expect(swapCell(table(), 1, 0, 1, 0)).toBeNull();
+    });
+
+    it('pads a ragged target row so the swap lands in the right column', () => {
+        const rows: CellMoveRow[] = [
+            ['a', 'b', 'c'],
+            ['d'],
+        ];
+        const result = swapCell(rows, 0, 2, 1, 0);
+        expect(result?.rows[0]).toEqual(['a', 'b', '']);
+        expect(result?.rows[1]).toEqual(['d', '', 'c']);
+    });
+
+    it('pads a ragged source row when moving into it', () => {
+        const rows: CellMoveRow[] = [
+            ['a', 'b', 'c'],
+            ['d'],
+        ];
+        const result = swapCell(rows, 1, 0, 0, 1);
+        // Padded only as far as the swap needs; formatting fills the rest
+        expect(result?.rows[1]).toEqual(['', 'd']);
+        expect(result).toMatchObject({ targetRow: 1, targetCol: 1 });
+    });
+
+    it('allows a column that only exists in another row', () => {
+        // Row 1 is short, but column 2 exists in the table
+        const rows: CellMoveRow[] = [
+            ['a', 'b', 'c'],
+            ['d', 'e'],
+        ];
+        const result = swapCell(rows, 1, 1, 0, 1);
+        expect(result?.rows[1]).toEqual(['d', '', 'e']);
+    });
+
+    it('refuses a cursor column past the end of the table', () => {
+        expect(swapCell(table(), 2, 3, 0, 1)).toBeNull();
     });
 });

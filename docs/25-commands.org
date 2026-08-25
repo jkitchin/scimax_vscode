@@ -210,18 +210,22 @@ CLOSED: [2026-01-17 Sat 12:25]
 ** ✅ Row and Column Operations
 CLOSED: [2026-01-17 Sat 12:25]
 
-| Command ID                           | Description               | Default Keybinding   |
-|--------------------------------------+---------------------------+----------------------|
-| [[cmd:scimax.table.insertRowBelow]]   | Insert Table Row Below    | M-S-down             |
-| [[cmd:scimax.table.insertRowAbove]]   | Insert Table Row Above    | M-S-up               |
-| [[cmd:scimax.table.deleteRow]]        | Delete Table Row          | M-S-BACKSPACE        |
-| [[cmd:scimax.table.insertColumnLeft]] | Insert Table Column Left  | -                    |
-| [[cmd:scimax.table.insertColumnRight]]| Insert Table Column Right | M-S-RIGHT (in table) |
-| [[cmd:scimax.table.deleteColumn]]     | Delete Table Column       | M-S-LEFT (in table)  |
-| [[cmd:scimax.table.moveRowUp]]       | Move Table Row Up         | -                    |
-| [[cmd:scimax.table.moveRowDown]]     | Move Table Row Down       | -                    |
-| [[cmd:scimax.table.moveColumnLeft]]  | Move Table Column Left    | -                    |
-| [[cmd:scimax.table.moveColumnRight]] | Move Table Column Right   | -                    |
+| Command ID                             | Description               | Default Keybinding   |
+|----------------------------------------+---------------------------+----------------------|
+| [[cmd:scimax.table.insertRowBelow]]    | Insert Table Row Below    | M-S-down             |
+| [[cmd:scimax.table.insertRowAbove]]    | Insert Table Row Above    | M-S-up               |
+| [[cmd:scimax.table.deleteRow]]         | Delete Table Row          | M-S-BACKSPACE        |
+| [[cmd:scimax.table.insertColumnLeft]]  | Insert Table Column Left  | -                    |
+| [[cmd:scimax.table.insertColumnRight]] | Insert Table Column Right | M-S-RIGHT (in table) |
+| [[cmd:scimax.table.deleteColumn]]      | Delete Table Column       | M-S-LEFT (in table)  |
+| [[cmd:scimax.table.moveRowUp]]         | Move Table Row Up         | -                    |
+| [[cmd:scimax.table.moveRowDown]]       | Move Table Row Down       | -                    |
+| [[cmd:scimax.table.moveColumnLeft]]    | Move Table Column Left    | -                    |
+| [[cmd:scimax.table.moveColumnRight]]   | Move Table Column Right   | -                    |
+| [[cmd:scimax.table.moveCellUp]]        | Move Table Cell Up        | C-M-UP (in table)    |
+| [[cmd:scimax.table.moveCellDown]]      | Move Table Cell Down      | C-M-DOWN (in table)  |
+| [[cmd:scimax.table.moveCellLeft]]      | Move Table Cell Left      | C-M-LEFT (in table)  |
+| [[cmd:scimax.table.moveCellRight]]     | Move Table Cell Right     | C-M-RIGHT (in table) |
 
 ** ✅ Advanced Table Operations
 CLOSED: [2026-01-17 Sat 12:25]

@@ -1621,6 +1621,22 @@
         "title": "Scimax: Move Table Column Right"
       },
       {
+        "command": "scimax.table.moveCellUp",
+        "title": "Scimax: Move Table Cell Up"
+      },
+      {
+        "command": "scimax.table.moveCellDown",
+        "title": "Scimax: Move Table Cell Down"
+      },
+      {
+        "command": "scimax.table.moveCellLeft",
+        "title": "Scimax: Move Table Cell Left"
+      },
+      {
+        "command": "scimax.table.moveCellRight",
+        "title": "Scimax: Move Table Cell Right"
+      },
+      {
         "command": "scimax.table.insertRowBelow",
         "title": "Scimax: Insert Table Row Below"
       },
@@ -3923,6 +3939,30 @@
         "command": "scimax.table.moveColumnRight",
         "key": "alt+right",
         "mac": "alt+right",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.inTable"
+      },
+      {
+        "command": "scimax.table.moveCellUp",
+        "key": "ctrl+alt+up",
+        "mac": "ctrl+alt+up",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.inTable"
+      },
+      {
+        "command": "scimax.table.moveCellDown",
+        "key": "ctrl+alt+down",
+        "mac": "ctrl+alt+down",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.inTable"
+      },
+      {
+        "command": "scimax.table.moveCellLeft",
+        "key": "ctrl+alt+left",
+        "mac": "ctrl+alt+left",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.inTable"
+      },
+      {
+        "command": "scimax.table.moveCellRight",
+        "key": "ctrl+alt+right",
+        "mac": "ctrl+alt+right",
         "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.inTable"
       },
       {

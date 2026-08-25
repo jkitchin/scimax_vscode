@@ -31,6 +31,7 @@ interface TableInfo {
     columnAlignments: ColumnAlignment[]; // Alignment for each column
     columnMinWidths: (number | undefined)[]; // Minimum widths from cookies
     columnMaxWidths: (number | undefined)[]; // Max display widths for truncation (from <N> without alignment)
+    columnSpecs: ColumnSpec[]; // Raw cookies from the column spec row (empty if none)
 }
 
 /**
@@ -516,6 +517,32 @@ export function parseRow(line: string): string[] {
 }
 
 /**
+ * Constrain a column width to its spec cookie: the column must be wide enough
+ * to show the cookie itself, at least minWidth, and no wider than maxWidth
+ * (but never narrower than the cookie).
+ */
+function applyColumnSpecWidth(width: number, spec: ColumnSpec): number {
+    // Width of the cookie as rendered, e.g. "<l>" = 3, "<15>" = 4
+    let cookieWidth: number;
+    if (spec.maxWidth !== undefined) {
+        cookieWidth = `<${spec.maxWidth}>`.length;
+    } else if (spec.minWidth !== undefined) {
+        cookieWidth = `<${spec.alignment}${spec.minWidth}>`.length;
+    } else {
+        cookieWidth = `<${spec.alignment}>`.length;
+    }
+
+    let result = Math.max(width, cookieWidth);
+    if (spec.minWidth !== undefined) {
+        result = Math.max(result, spec.minWidth);
+    }
+    if (spec.maxWidth !== undefined) {
+        result = Math.max(Math.min(result, spec.maxWidth), cookieWidth);
+    }
+    return result;
+}
+
+/**
  * Find the table boundaries around the cursor
  */
 function findTableAtCursor(document: vscode.TextDocument, position: vscode.Position): TableInfo | null {
@@ -588,32 +615,7 @@ function findTableAtCursor(document: vscode.TextDocument, position: vscode.Posit
             columnAlignments.push(columnSpecs[i].alignment);
             columnMinWidths.push(columnSpecs[i].minWidth);
             columnMaxWidths.push(columnSpecs[i].maxWidth);
-
-            // Calculate the width of the spec cookie itself (e.g., "<l>" = 3, "<15>" = 4)
-            // The column must be at least wide enough to display the cookie
-            const spec = columnSpecs[i];
-            let cookieWidth: number;
-            if (spec.maxWidth !== undefined) {
-                cookieWidth = `<${spec.maxWidth}>`.length;
-            } else if (spec.minWidth !== undefined) {
-                cookieWidth = `<${spec.alignment}${spec.minWidth}>`.length;
-            } else {
-                cookieWidth = `<${spec.alignment}>`.length;
-            }
-            columnWidths[i] = Math.max(columnWidths[i], cookieWidth);
-
-            // Apply minimum width if specified
-            if (columnSpecs[i].minWidth !== undefined) {
-                columnWidths[i] = Math.max(columnWidths[i], columnSpecs[i].minWidth!);
-            }
-            // Apply maximum width if specified (constrains column width for alignment)
-            // But never make it smaller than the cookie itself
-            if (columnSpecs[i].maxWidth !== undefined) {
-                columnWidths[i] = Math.max(
-                    Math.min(columnWidths[i], columnSpecs[i].maxWidth!),
-                    cookieWidth
-                );
-            }
+            columnWidths[i] = applyColumnSpecWidth(columnWidths[i], columnSpecs[i]);
         } else {
             columnAlignments.push('l');
             columnMinWidths.push(undefined);
@@ -630,7 +632,8 @@ function findTableAtCursor(document: vscode.TextDocument, position: vscode.Posit
         specRow,
         columnAlignments,
         columnMinWidths,
-        columnMaxWidths
+        columnMaxWidths,
+        columnSpecs
     };
 }
 
@@ -1029,6 +1032,180 @@ export async function moveColumnRight(): Promise<boolean> {
     editor.selection = new vscode.Selection(newPosition, newPosition);
 
     return true;
+}
+
+/**
+ * A table row for the purposes of moving a single cell. Data rows are cell
+ * arrays; structural rows (separators and the column spec row) are null.
+ */
+export type CellMoveRow = string[] | null;
+
+export interface CellSwap {
+    rows: CellMoveRow[]; // Copy of the input rows with the swap applied
+    targetRow: number;   // Row the moved cell landed in
+    targetCol: number;   // Column the moved cell landed in
+}
+
+/**
+ * Swap the cell at (rowIndex, colIndex) with the neighbor dRow/dCol away.
+ *
+ * Vertical moves step over separator and column spec rows, so a cell can move
+ * into or out of a header. Ragged rows are padded with empty cells so the swap
+ * lands in the right column. Returns null when the move is not possible: the
+ * cursor is on a structural row, or the neighbor is outside the table.
+ */
+export function swapCell(
+    rows: CellMoveRow[],
+    rowIndex: number,
+    colIndex: number,
+    dRow: number,
+    dCol: number
+): CellSwap | null {
+    if (rowIndex < 0 || rowIndex >= rows.length) return null;
+    if (colIndex < 0) return null;
+
+    // Can't move a cell that isn't there
+    if (!rows[rowIndex]) return null;
+
+    const maxCols = rows.reduce((max, row) => row ? Math.max(max, row.length) : max, 0);
+    if (colIndex >= maxCols) return null;
+
+    const targetCol = colIndex + dCol;
+    if (targetCol < 0 || targetCol >= maxCols) return null;
+
+    let targetRow = rowIndex;
+    if (dRow !== 0) {
+        targetRow += dRow;
+        // Skip separators and the spec row - they hold no cells
+        while (targetRow >= 0 && targetRow < rows.length && !rows[targetRow]) {
+            targetRow += dRow;
+        }
+        if (targetRow < 0 || targetRow >= rows.length) return null;
+    }
+
+    const newRows: CellMoveRow[] = rows.map(row => row ? [...row] : null);
+    const from = newRows[rowIndex]!;
+    const to = newRows[targetRow]!;
+
+    // Pad ragged rows so both cells exist
+    const needed = Math.max(colIndex, targetCol) + 1;
+    while (from.length < needed) from.push('');
+    while (to.length < needed) to.push('');
+
+    // Note: for a horizontal move `from` and `to` are the same array
+    const moved = from[colIndex];
+    from[colIndex] = to[targetCol];
+    to[targetCol] = moved;
+
+    return { rows: newRows, targetRow, targetCol };
+}
+
+/**
+ * Move the cell at the cursor by one position, swapping it with the cell it
+ * displaces, then realign the table and follow the cell with the cursor.
+ */
+async function moveCell(dRow: number, dCol: number): Promise<boolean> {
+    const editor = vscode.window.activeTextEditor;
+    if (!editor) return false;
+
+    const document = editor.document;
+    const position = editor.selection.active;
+    const table = findTableAtCursor(document, position);
+
+    if (!table) return false;
+
+    const rowIndex = position.line - table.startLine;
+    const colIndex = getColumnAtCursor(document.lineAt(position.line).text, position.character);
+    if (colIndex < 0) return false;
+
+    // Separators and the spec row are empty placeholders in table.rows
+    const rows: CellMoveRow[] = table.rows.map((cells, i) =>
+        (table.separatorLines.includes(table.startLine + i) || i === table.specRow) ? null : cells
+    );
+
+    const swap = swapCell(rows, rowIndex, colIndex, dRow, dCol);
+    if (!swap) return false;
+
+    const isOrg = document.languageId === 'org';
+
+    // Recalculate widths - a swap can change how wide a column needs to be
+    const columnWidths: number[] = new Array(table.columnWidths.length).fill(0);
+    for (const row of swap.rows) {
+        if (!row) continue;
+        for (let i = 0; i < row.length; i++) {
+            columnWidths[i] = Math.max(columnWidths[i] || 0, getDisplayWidth(row[i]), 1);
+        }
+    }
+    for (let i = 0; i < columnWidths.length; i++) {
+        if (i < table.columnSpecs.length) {
+            columnWidths[i] = applyColumnSpecWidth(columnWidths[i], table.columnSpecs[i]);
+        }
+    }
+
+    // Reformat the whole table with the new widths
+    const newLines: string[] = [];
+    for (let i = 0; i < swap.rows.length; i++) {
+        const row = swap.rows[i];
+        if (i === table.specRow) {
+            newLines.push(formatSpecRow(columnWidths, table.columnAlignments, table.columnMinWidths, table.columnMaxWidths));
+        } else if (!row) {
+            newLines.push(formatSeparator(columnWidths, isOrg));
+        } else {
+            const cells = [...row];
+            while (cells.length < columnWidths.length) {
+                cells.push('');
+            }
+            newLines.push(formatRow(cells, columnWidths, table.columnAlignments, table.columnMaxWidths));
+        }
+    }
+
+    await editor.edit(editBuilder => {
+        const range = new vscode.Range(
+            table.startLine, 0,
+            table.endLine, document.lineAt(table.endLine).text.length
+        );
+        editBuilder.replace(range, newLines.join('\n'));
+    });
+
+    // Follow the cell
+    const newPosition = new vscode.Position(
+        table.startLine + swap.targetRow,
+        getCursorPositionForColumn(columnWidths, swap.targetCol)
+    );
+    editor.selection = new vscode.Selection(newPosition, newPosition);
+
+    updateTruncationDecorations(editor);
+    codeLensProvider?.refresh();
+
+    return true;
+}
+
+/**
+ * Move the current cell up, swapping it with the cell above
+ */
+export async function moveCellUp(): Promise<boolean> {
+    return moveCell(-1, 0);
+}
+
+/**
+ * Move the current cell down, swapping it with the cell below
+ */
+export async function moveCellDown(): Promise<boolean> {
+    return moveCell(1, 0);
+}
+
+/**
+ * Move the current cell left, swapping it with the cell to its left
+ */
+export async function moveCellLeft(): Promise<boolean> {
+    return moveCell(0, -1);
+}
+
+/**
+ * Move the current cell right, swapping it with the cell to its right
+ */
+export async function moveCellRight(): Promise<boolean> {
+    return moveCell(0, 1);
 }
 
 /**
@@ -2806,6 +2983,10 @@ export function registerTableCommands(context: vscode.ExtensionContext): void {
         vscode.commands.registerCommand('scimax.table.moveRowDown', moveRowDown),
         vscode.commands.registerCommand('scimax.table.moveColumnLeft', moveColumnLeft),
         vscode.commands.registerCommand('scimax.table.moveColumnRight', moveColumnRight),
+        vscode.commands.registerCommand('scimax.table.moveCellUp', moveCellUp),
+        vscode.commands.registerCommand('scimax.table.moveCellDown', moveCellDown),
+        vscode.commands.registerCommand('scimax.table.moveCellLeft', moveCellLeft),
+        vscode.commands.registerCommand('scimax.table.moveCellRight', moveCellRight),
         vscode.commands.registerCommand('scimax.table.insertRowBelow', insertRowBelow),
         vscode.commands.registerCommand('scimax.table.insertRowAbove', insertRowAbove),
         vscode.commands.registerCommand('scimax.table.deleteRow', deleteRow),
