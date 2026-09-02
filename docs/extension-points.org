@@ -178,6 +178,7 @@ shows a =[c !]= entry when something failed. The usual causes are:
   "parent": "latex",
   "outputFormat": "pdf",
   "template": "template.tex",
+  "orgTemplate": "template.org",
   "keywords": {
     "JOURNAL": {
       "required": true,
@@ -193,6 +194,36 @@ shows a =[c !]= entry when something failed. The usual causes are:
   }
 }
 #+END_SRC
+
+*** ⚠️ The Org Header an Exporter Needs
+
+An exporter that declares =keywords= needs those keywords in the document
+(=#+TO:=, =#+FROM:=, =#+SUBJECT:= for a memo). You do not have to remember
+them:
+
+- =Scimax: Insert Custom Exporter Header= inserts the header for an exporter you
+  pick, with defaults filled in and required keywords left as =<<<PLACEHOLDER>>>=.
+- The same header appears in the template pickers (=Scimax: Insert Template= /
+  =Insert Org Template=) under the *Custom Exporters* category, named after the
+  exporter.
+- Exporting with a required keyword missing warns and offers to insert the
+  header, instead of quietly writing =[NOT FOUND: to]= into the output.
+
+Ship a real skeleton with an exporter by adding an =orgTemplate= to the
+manifest -- a =.org= file in the exporter directory:
+
+#+BEGIN_SRC json
+{
+  "id": "cmu-memo",
+  "template": "template.tex",
+  "orgTemplate": "template.org"
+}
+#+END_SRC
+
+That file may use the [[file:35-templates.org][template]] conventions: ={{author}}=, ={{date}}=,
+=${1:tab stops}=, =$0= for the final cursor position, and =<<<PLACEHOLDER>>>=
+for text to replace by hand. Without =orgTemplate=, the header is generated from
+the =keywords= in the manifest.
 
 *** ⚠️ Running a Custom Exporter
 

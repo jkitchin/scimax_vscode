@@ -14,6 +14,7 @@ import * as path from 'path';
 import * as fs from 'fs';
 import { format } from 'date-fns';
 import { resolveScimaxPath, expandTilde } from '../utils/pathResolver';
+import { ExporterRegistry, buildExporterOrgTemplate } from '../export/customExporter';
 
 export type TemplateFormat = 'org' | 'markdown' | 'latex';
 
@@ -278,6 +279,9 @@ export class TemplateManager {
             templates.push(template);
         }
 
+        // Add a header/skeleton for each custom exporter
+        templates.push(...this.getExporterTemplates());
+
         // Filter by format if specified
         if (format) {
             return templates.filter(t => t.format === format);
@@ -295,9 +299,46 @@ export class TemplateManager {
             return this.userTemplatesCache.get(id);
         }
 
+        // Custom exporter headers
+        if (id.startsWith('exporter:')) {
+            return this.getExporterTemplates().find(t => t.id === id);
+        }
+
         // Check built-in templates
         const builtIn = this.getBuiltInTemplates();
         return builtIn.find(t => t.id === id);
+    }
+
+    /**
+     * One org template per loaded custom exporter: the exporter's own
+     * `orgTemplate` when it ships one, otherwise a header generated from the
+     * keywords its manifest declares. Without these, the keywords an exporter
+     * needs (#+TO:, #+FROM:, ... for a memo) have to be remembered and typed by
+     * hand, and nothing in the template picker hints they exist.
+     */
+    public getExporterTemplates(): Template[] {
+        const classMap = vscode.workspace
+            .getConfiguration('scimax.export')
+            .get<Record<string, string>>('latexClassExporters') || {};
+
+        return ExporterRegistry.getInstance().getAll().map(exporter => {
+            // If a #+LATEX_CLASS routes to this exporter, the generated header
+            // says so, and the plain LaTeX/PDF exports then use it too.
+            const latexClass = Object.entries(classMap)
+                .find(([, id]) => id === exporter.id)?.[0];
+
+            return {
+                id: `exporter:${exporter.id}`,
+                name: exporter.name,
+                description: exporter.description
+                    ? `${exporter.description} (custom exporter)`
+                    : `Header for the ${exporter.name} exporter`,
+                format: 'org' as TemplateFormat,
+                content: buildExporterOrgTemplate(exporter, { latexClass }),
+                category: 'Custom Exporters',
+                builtIn: false,
+            };
+        });
     }
 
     /**

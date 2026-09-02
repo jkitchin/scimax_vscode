@@ -36,6 +36,9 @@ import {
     resolveCustomExporterRouteForContent,
     parseManifest,
     stripJsonExtras,
+    buildExporterOrgTemplate,
+    findMissingRequiredKeywords,
+    EXAMPLE_CMU_MEMO_ORG_TEMPLATE,
 } from '../customExporter';
 
 describe('Custom Exporter Template Engine', () => {
@@ -608,6 +611,62 @@ describe('Manifest parsing (issue #56)', () => {
     it('throws a message naming the file for JSON it cannot rescue', () => {
         expect(() => parseManifest('{ "id": }', '/x/manifest.json'))
             .toThrow(/\/x\/manifest\.json is not valid JSON/);
+    });
+});
+
+describe('Org skeletons for custom exporters', () => {
+    const exporter = {
+        ...EXAMPLE_CMU_MEMO_MANIFEST,
+        basePath: '/x/cmu-memo',
+        compiledTemplate: (() => '') as never,
+    };
+
+    it('uses the exporter own org template when it ships one', () => {
+        const withOrg = { ...exporter, orgTemplateContent: '#+TITLE: mine\n' };
+        expect(buildExporterOrgTemplate(withOrg)).toBe('#+TITLE: mine\n');
+    });
+
+    it('generates a header from the manifest keywords', () => {
+        const header = buildExporterOrgTemplate(exporter);
+
+        // Defaults are filled in
+        expect(header).toContain('#+DEPARTMENT: Department of Chemical Engineering');
+        // Required keywords with no default are obvious placeholders
+        expect(header).toContain('#+TO: <<<TO>>>');
+        expect(header).toContain('#+FROM: <<<FROM>>>');
+        expect(header).toContain('#+SUBJECT: <<<SUBJECT>>>');
+        // Optional ones are listed so they are discoverable
+        expect(header).toContain('#+CC:');
+        // Standard org metadata, using the template system variables
+        expect(header).toContain('#+AUTHOR: {{author}}');
+        expect(header).toContain('#+DATE: {{date}}');
+    });
+
+    it('includes #+LATEX_CLASS when a class routes to the exporter', () => {
+        expect(buildExporterOrgTemplate(exporter, { latexClass: 'cmu-memo' }))
+            .toContain('#+LATEX_CLASS: cmu-memo');
+        expect(buildExporterOrgTemplate(exporter)).not.toContain('#+LATEX_CLASS');
+    });
+
+    it('ships an org skeleton with the memo example', () => {
+        expect(EXAMPLE_CMU_MEMO_ORG_TEMPLATE).toContain('#+TO: <<<TO>>>');
+        expect(EXAMPLE_CMU_MEMO_MANIFEST.orgTemplate).toBe('template.org');
+    });
+
+    it('lists required keywords a document is missing', () => {
+        const missing = findMissingRequiredKeywords(
+            exporter,
+            '#+TITLE: T\n#+TO: Committee\n\n* Body\n'
+        );
+        expect(missing).toEqual(['FROM', 'SUBJECT']);
+    });
+
+    it('reports nothing when every required keyword is set', () => {
+        const missing = findMissingRequiredKeywords(
+            exporter,
+            '#+TO: A\n#+FROM: B\n#+SUBJECT: C\n\n* Body\n'
+        );
+        expect(missing).toEqual([]);
     });
 });
 

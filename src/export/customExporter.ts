@@ -64,6 +64,13 @@ export interface ExporterManifest {
 
     /** Path to template file (relative to manifest) */
     template: string;
+    /**
+     * Optional org skeleton for documents that use this exporter (relative to
+     * the manifest), e.g. "template.org". It is offered in the template pickers
+     * so the keywords the exporter needs can be inserted rather than
+     * remembered. Without it, a header is generated from `keywords`.
+     */
+    orgTemplate?: string;
     /** Optional path to preamble file (LaTeX only) */
     preamble?: string;
     /** Optional directory containing partial templates */
@@ -102,6 +109,8 @@ export interface CustomExporter extends ExporterManifest {
     compiledTemplate: Handlebars.TemplateDelegate;
     /** Preamble content (if any) */
     preambleContent?: string;
+    /** Contents of `orgTemplate`, when the manifest names one */
+    orgTemplateContent?: string;
 }
 
 /**
@@ -545,6 +554,19 @@ class ExporterRegistry {
             }
         }
 
+        // Load the org skeleton if specified
+        let orgTemplateContent: string | undefined;
+        if (manifest.orgTemplate) {
+            const orgTemplatePath = path.join(exporterPath, manifest.orgTemplate);
+            try {
+                orgTemplateContent = await fs.promises.readFile(orgTemplatePath, 'utf-8');
+            } catch {
+                throw new Error(
+                    `Org template not found: ${orgTemplatePath} (manifest "orgTemplate": "${manifest.orgTemplate}")`
+                );
+            }
+        }
+
         // Load partials if directory specified
         if (manifest.partialsDir) {
             const partialsPath = path.join(exporterPath, manifest.partialsDir);
@@ -557,6 +579,7 @@ class ExporterRegistry {
                 basePath: exporterPath,
                 compiledTemplate,
                 preambleContent,
+                orgTemplateContent,
             },
             warning,
         };
@@ -812,6 +835,73 @@ export function resolveCustomExporterRouteForContent(
 }
 
 // =============================================================================
+// Org Skeletons
+// =============================================================================
+
+/**
+ * The org header a document needs to export through this exporter.
+ *
+ * If the exporter ships an `orgTemplate` (see the manifest field), that text is
+ * used verbatim. Otherwise a header is generated from the manifest's keyword
+ * definitions: defaults are filled in, and a required keyword with no default
+ * becomes a <<<PLACEHOLDER>>> so it is obvious what still has to be written.
+ *
+ * The result uses the template system's conventions ({{author}}, {{date}},
+ * ${1:...} tab stops), so it can be handed straight to TemplateManager.
+ */
+export function buildExporterOrgTemplate(
+    exporter: CustomExporter,
+    options: { latexClass?: string } = {}
+): string {
+    if (exporter.orgTemplateContent) {
+        return exporter.orgTemplateContent;
+    }
+
+    const lines = [
+        '#+TITLE: ${1:Title}',
+        '#+AUTHOR: {{author}}',
+        '#+DATE: {{date}}',
+    ];
+
+    // With a class mapping in place, the ordinary LaTeX/PDF exports route to
+    // this exporter, so the document is self-describing.
+    if (options.latexClass) {
+        lines.push(`#+LATEX_CLASS: ${options.latexClass}`);
+    }
+
+    for (const [key, def] of Object.entries(exporter.keywords || {})) {
+        const name = key.toUpperCase();
+        if (def.default !== undefined && def.default !== '') {
+            lines.push(`#+${name}: ${def.default}`);
+        } else if (def.required) {
+            lines.push(`#+${name}: <<<${name}>>>`);
+        } else {
+            lines.push(`#+${name}: `);
+        }
+    }
+
+    lines.push('', '$0', '');
+    return lines.join('\n');
+}
+
+/**
+ * Required keywords the document does not set.
+ *
+ * These export as "[NOT FOUND: to]" placeholders, so it is worth saying so
+ * before someone mails out a memo addressed to nobody.
+ */
+export function findMissingRequiredKeywords(exporter: CustomExporter, content: string): string[] {
+    if (!exporter.keywords) return [];
+
+    const doc = parseOrgFast(content);
+    const present = extractCustomKeywords(doc, exporter.keywords);
+
+    return Object.entries(exporter.keywords)
+        .filter(([key, def]) => def.required && String(present[key] ?? '').startsWith('[NOT FOUND:'))
+        .map(([key]) => key.toUpperCase());
+}
+
+// =============================================================================
 // Discovery Paths
 // =============================================================================
 
@@ -905,12 +995,35 @@ export const EXAMPLE_CMU_MEMO_MANIFEST: ExporterManifest = {
     },
 
     template: 'template.tex',
+    orgTemplate: 'template.org',
 
     latexOptions: {
         documentClass: 'letter',
         classOptions: ['12pt'],
     },
 };
+
+/**
+ * Org skeleton for a CMU memo - the header the exporter needs, plus a body to
+ * start writing in. Offered by the template pickers as "CMU Memo".
+ */
+export const EXAMPLE_CMU_MEMO_ORG_TEMPLATE = `#+TITLE: \${1:Memo subject}
+#+AUTHOR: {{author}}
+#+DATE: {{date}}
+#+LATEX_CLASS: cmu-memo
+
+#+DEPARTMENT: Department of Chemical Engineering
+#+TO: <<<TO>>>
+#+FROM: {{author}}
+#+SUBJECT: \${1:Memo subject}
+#+CC:
+#+SIGNATURELINES: true
+
+$0
+
+# Export with C-c C-e and pick "CMU Memo", or map the class once with
+# "scimax.export.latexClassExporters": { "cmu-memo": "cmu-memo" } and use C-c C-e l o.
+`;
 
 /**
  * Example template for CMU Memo (Handlebars syntax)

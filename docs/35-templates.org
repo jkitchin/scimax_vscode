@@ -53,6 +53,29 @@ CLOSED: [2026-01-21 Wed 07:14]
 | Literature Review| Paper review with key contributions, methods   |
 | Source Block     | Code block with language selection             |
 
+** ⚠️ Custom Exporter Templates
+CLOSED: [2026-09-02 Wed]
+
+Every loaded [[file:extension-points.org::*Custom Exporters][custom exporter]] also contributes an org template, listed
+under the *Custom Exporters* category and named after the exporter. Inserting it
+writes the header that exporter needs -- for the CMU Memo example:
+
+#+BEGIN_SRC org
+,#+TITLE: Memo subject
+,#+AUTHOR: ...
+,#+DATE: 2026-09-02
+,#+LATEX_CLASS: cmu-memo
+
+,#+DEPARTMENT: Department of Chemical Engineering
+,#+TO: <<<TO>>>
+,#+FROM: ...
+,#+SUBJECT: Memo subject
+#+END_SRC
+
+Defaults from the manifest are filled in and required keywords appear as
+=<<<PLACEHOLDER>>>=. =Scimax: Insert Custom Exporter Header= does the same thing
+from the export side, and exporting with a required keyword missing offers it.
+
 ** ✅ Markdown Templates
 CLOSED: [2026-01-21 Wed 07:14]
 
@@ -232,6 +255,7 @@ CLOSED: [2026-01-21 Wed 07:17]
 | =scimax.templates.editTemplates=       |             | Open templates in VS Code            |
 | =scimax.templates.openDirectory=       |             | Open templates dir in file explorer  |
 | =scimax.templates.reload=              |             | Reload templates from disk           |
+| =scimax.export.insertExporterHeader=   |             | Insert a custom exporter's org header |
 
 * ✅ Configuration
 CLOSED: [2026-01-21 Wed 07:17]

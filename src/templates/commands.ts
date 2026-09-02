@@ -192,6 +192,48 @@ export function registerTemplateCommands(
         })
     );
 
+    // Insert the org header a custom exporter needs (#+TO:, #+FROM:, ... for a
+    // memo). Registered here, rather than in src/export/commands.ts, because
+    // inserting goes through the TemplateManager.
+    context.subscriptions.push(
+        vscode.commands.registerCommand('scimax.export.insertExporterHeader', async (exporterId?: string) => {
+            const templates = manager.getExporterTemplates();
+
+            if (templates.length === 0) {
+                const action = await vscode.window.showWarningMessage(
+                    'No custom exporters are loaded, so there is no header to insert.',
+                    'Create Example',
+                    'Show Problems'
+                );
+                if (action === 'Create Example') {
+                    await vscode.commands.executeCommand('scimax.export.createExampleExporter');
+                } else if (action === 'Show Problems') {
+                    await vscode.commands.executeCommand('scimax.export.showExporterProblems');
+                }
+                return;
+            }
+
+            let template = exporterId
+                ? templates.find(t => t.id === `exporter:${exporterId}`)
+                : undefined;
+
+            if (!template) {
+                const picked = await vscode.window.showQuickPick(
+                    templates.map(t => ({
+                        label: `$(file-text) ${t.name}`,
+                        description: t.description,
+                        template: t,
+                    })),
+                    { title: 'Insert Custom Exporter Header', placeHolder: 'Select an exporter' }
+                );
+                if (!picked) return;
+                template = picked.template;
+            }
+
+            await manager.insertTemplate(template);
+        })
+    );
+
     // Reload templates
     context.subscriptions.push(
         vscode.commands.registerCommand('scimax.templates.reload', () => {

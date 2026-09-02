@@ -15,6 +15,8 @@ import {
     resolveCustomExporterRouteForContent,
     EXAMPLE_CMU_MEMO_MANIFEST,
     EXAMPLE_CMU_MEMO_TEMPLATE,
+    EXAMPLE_CMU_MEMO_ORG_TEMPLATE,
+    findMissingRequiredKeywords,
 } from './customExporter';
 import { parseOrgFast } from '../parser/orgExportParser';
 import { resolveProfileForDocument, runProfile, readBuildKeywords } from '../latex/buildProfileService';
@@ -265,6 +267,25 @@ export async function runCustomExport(
     const inputName = path.basename(inputPath, '.org');
     const content = options.content ?? editor.document.getText();
     const suffix = options.note ? ` ${options.note}` : '';
+
+    // A required keyword the document never sets exports as "[NOT FOUND: to]".
+    // Say so, and offer the header, rather than letting it reach the PDF.
+    const missing = findMissingRequiredKeywords(exporter, content);
+    if (missing.length > 0) {
+        const action = await vscode.window.showWarningMessage(
+            `${exporter.name}: missing ${missing.map(k => `#+${k}:`).join(', ')} - ` +
+            'the output will show [NOT FOUND] placeholders.',
+            'Insert Header',
+            'Export Anyway'
+        );
+        if (action === 'Insert Header') {
+            await vscode.commands.executeCommand('scimax.export.insertExporterHeader', exporter.id);
+            return;
+        }
+        if (action !== 'Export Anyway') {
+            return;
+        }
+    }
 
     // Determine output name, honoring #+EXPORT_FILE_NAME if set
     const baseName = getCustomExportBaseName(content, inputName);
@@ -564,6 +585,28 @@ async function createExampleExporter(): Promise<void> {
     const exampleDir = path.join(exportersDir, 'cmu-memo');
 
     if (fs.existsSync(exampleDir)) {
+        // An example created before org skeletons existed has no template.org;
+        // add it rather than making the user delete the directory.
+        const orgTemplatePath = path.join(exampleDir, 'template.org');
+        if (!fs.existsSync(orgTemplatePath)) {
+            await fs.promises.writeFile(orgTemplatePath, EXAMPLE_CMU_MEMO_ORG_TEMPLATE, 'utf-8');
+            const manifestPath = path.join(exampleDir, 'manifest.json');
+            try {
+                const manifest = JSON.parse(await fs.promises.readFile(manifestPath, 'utf-8'));
+                if (!manifest.orgTemplate) {
+                    manifest.orgTemplate = 'template.org';
+                    await fs.promises.writeFile(manifestPath, JSON.stringify(manifest, null, 2), 'utf-8');
+                }
+            } catch {
+                // Leave a hand-edited manifest alone; the generated header still works
+            }
+            await reloadExporters();
+            vscode.window.showInformationMessage(
+                'Example exporter already existed - added its org template (template.org).'
+            );
+            return;
+        }
+
         vscode.window.showInformationMessage('Example exporter already exists');
         return;
     }
@@ -584,17 +627,28 @@ async function createExampleExporter(): Promise<void> {
         'utf-8'
     );
 
+    // Write the org skeleton, so the keywords the memo needs can be inserted
+    // rather than remembered
+    await fs.promises.writeFile(
+        path.join(exampleDir, 'template.org'),
+        EXAMPLE_CMU_MEMO_ORG_TEMPLATE,
+        'utf-8'
+    );
+
     // Reload exporters
     await reloadExporters();
 
     // Open the example directory
     const action = await vscode.window.showInformationMessage(
-        'Created example CMU Memo exporter',
+        'Created example CMU Memo exporter. Insert its org header with "Insert Custom Exporter Header".',
+        'Insert Header',
         'Open Template',
         'Open Folder'
     );
 
-    if (action === 'Open Template') {
+    if (action === 'Insert Header') {
+        await vscode.commands.executeCommand('scimax.export.insertExporterHeader', 'cmu-memo');
+    } else if (action === 'Open Template') {
         const doc = await vscode.workspace.openTextDocument(
             path.join(exampleDir, 'template.tex')
         );

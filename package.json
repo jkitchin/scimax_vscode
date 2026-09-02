@@ -1132,6 +1132,10 @@
         "title": "Scimax: Show Custom Exporter Problems"
       },
       {
+        "command": "scimax.export.insertExporterHeader",
+        "title": "Scimax: Insert Custom Exporter Header"
+      },
+      {
         "command": "scimax.export.createExampleExporter",
         "title": "Scimax: Create Example Custom Exporter"
       },

@@ -466,6 +466,41 @@ Content`;
             expect(article?.category).toBe('Documents');
         });
 
+        it('includes a template for each loaded custom exporter (issue #56)', async () => {
+            const { ExporterRegistry } = await import('../../export/customExporter');
+            const registry = ExporterRegistry.getInstance();
+            registry.clear();
+            registry.register({
+                id: 'cmu-memo',
+                name: 'CMU Memo',
+                description: 'CMU internal memo format',
+                parent: 'latex',
+                outputFormat: 'pdf',
+                template: 'template.tex',
+                keywords: {
+                    to: { required: true },
+                    department: { default: 'ChemE' },
+                },
+                basePath: '/x/cmu-memo',
+                compiledTemplate: (() => '') as never,
+            });
+
+            try {
+                const templates = manager.getAvailableTemplates('org');
+                const memo = templates.find(t => t.id === 'exporter:cmu-memo');
+
+                expect(memo).toBeDefined();
+                expect(memo?.name).toBe('CMU Memo');
+                expect(memo?.category).toBe('Custom Exporters');
+                expect(memo?.content).toContain('#+TO: <<<TO>>>');
+                expect(memo?.content).toContain('#+DEPARTMENT: ChemE');
+                // and it is retrievable by id, so the insert command can use it
+                expect(manager.getTemplate('exporter:cmu-memo')?.name).toBe('CMU Memo');
+            } finally {
+                registry.clear();
+            }
+        });
+
         it('should include markdown readme template', () => {
             const templates = manager.getAvailableTemplates('markdown');
             const readme = templates.find(t => t.id === 'md:readme');
