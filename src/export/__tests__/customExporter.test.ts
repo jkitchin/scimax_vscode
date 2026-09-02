@@ -34,6 +34,8 @@ import {
     ExporterManifest,
     resolveCustomExporterRoute,
     resolveCustomExporterRouteForContent,
+    parseManifest,
+    stripJsonExtras,
 } from '../customExporter';
 
 describe('Custom Exporter Template Engine', () => {
@@ -547,6 +549,68 @@ describe('getDefaultExporterPaths', () => {
     });
 });
 
+describe('Manifest parsing (issue #56)', () => {
+    const VALID = {
+        id: 'elsarticle',
+        name: 'elsarticle export',
+        parent: 'latex',
+        outputFormat: 'pdf',
+        template: 'template.tex',
+    };
+
+    it('parses strict JSON', () => {
+        const { manifest, warning } = parseManifest(JSON.stringify(VALID), 'manifest.json');
+        expect(manifest.id).toBe('elsarticle');
+        expect(warning).toBeUndefined();
+    });
+
+    it('tolerates a trailing comma, with a warning', () => {
+        const text = `{
+  "id": "elsarticle",
+  "name": "elsarticle export",
+  "parent": "latex",
+  "outputFormat": "pdf",
+  "template": "template.tex",
+  "latexOptions": {
+    "documentClass": "elsarticle",
+  }
+}`;
+        const { manifest, warning } = parseManifest(text, '/x/manifest.json');
+        expect(manifest.id).toBe('elsarticle');
+        expect(manifest.latexOptions?.documentClass).toBe('elsarticle');
+        expect(warning).toContain('/x/manifest.json');
+        expect(warning).toContain('not valid JSON');
+    });
+
+    it('tolerates comments', () => {
+        const text = `{
+  // the id used by scimax.export.customById
+  "id": "x", /* inline */
+  "name": "X",
+  "parent": "latex",
+  "outputFormat": "tex",
+  "template": "t.tex"
+}`;
+        const { manifest, warning } = parseManifest(text, 'm.json');
+        expect(manifest.id).toBe('x');
+        expect(warning).toBeDefined();
+    });
+
+    it('never edits inside strings', () => {
+        const text = '{"a": "http://x.com/y", "b": "trailing, ]", "c": "quote \\" and , }"}';
+        expect(JSON.parse(stripJsonExtras(text))).toEqual({
+            a: 'http://x.com/y',
+            b: 'trailing, ]',
+            c: 'quote " and , }',
+        });
+    });
+
+    it('throws a message naming the file for JSON it cannot rescue', () => {
+        expect(() => parseManifest('{ "id": }', '/x/manifest.json'))
+            .toThrow(/\/x\/manifest\.json is not valid JSON/);
+    });
+});
+
 describe('ExporterRegistry', () => {
     let tempDir: string;
 
@@ -631,6 +695,92 @@ describe('ExporterRegistry', () => {
 
         // Should not have loaded the invalid exporter
         expect(registry.has('invalid')).toBe(false);
+    });
+
+    it('reports why an exporter failed to load (issue #56)', async () => {
+        const exporterDir = path.join(tempDir, 'elsarticle');
+        await fs.promises.mkdir(exporterDir);
+        // Invalid JSON that cannot be rescued
+        await fs.promises.writeFile(
+            path.join(exporterDir, 'manifest.json'),
+            '{ "id": "elsarticle", '
+        );
+
+        const registry = ExporterRegistry.getInstance();
+        await registry.loadFromDirectory(tempDir);
+
+        expect(registry.has('elsarticle')).toBe(false);
+        const errors = registry.getLoadErrors();
+        expect(errors).toHaveLength(1);
+        expect(errors[0].path).toBe(exporterDir);
+        expect(errors[0].message).toContain('not valid JSON');
+    });
+
+    it('reports a missing template file by name', async () => {
+        const exporterDir = path.join(tempDir, 'no-template');
+        await fs.promises.mkdir(exporterDir);
+        await fs.promises.writeFile(
+            path.join(exporterDir, 'manifest.json'),
+            JSON.stringify({
+                id: 'no-template',
+                name: 'No template',
+                parent: 'latex',
+                outputFormat: 'tex',
+                template: 'missing.tex',
+            })
+        );
+
+        const registry = ExporterRegistry.getInstance();
+        await registry.loadFromDirectory(tempDir);
+
+        expect(registry.getLoadErrors()[0].message).toContain('Template file not found');
+    });
+
+    it('warns (not errors) about a directory with no manifest, and skips dotdirs', async () => {
+        await fs.promises.mkdir(path.join(tempDir, 'not-an-exporter'));
+        await fs.promises.mkdir(path.join(tempDir, '.git'));
+
+        const registry = ExporterRegistry.getInstance();
+        await registry.loadFromDirectory(tempDir);
+
+        const issues = registry.getLoadIssues();
+        expect(issues).toHaveLength(1);
+        expect(issues[0].severity).toBe('warning');
+        expect(issues[0].message).toContain('No manifest.json');
+    });
+
+    it('loads an exporter whose manifest has a trailing comma, and warns', async () => {
+        const exporterDir = path.join(tempDir, 'lenient');
+        await fs.promises.mkdir(exporterDir);
+        await fs.promises.writeFile(
+            path.join(exporterDir, 'manifest.json'),
+            '{\n "id": "lenient",\n "name": "Lenient",\n "parent": "latex",\n' +
+            ' "outputFormat": "tex",\n "template": "template.tex",\n}'
+        );
+        await fs.promises.writeFile(
+            path.join(exporterDir, 'template.tex'),
+            '{{{body}}}'
+        );
+
+        const registry = ExporterRegistry.getInstance();
+        await registry.loadFromDirectory(tempDir);
+
+        expect(registry.has('lenient')).toBe(true);
+        expect(registry.getLoadErrors()).toHaveLength(0);
+        expect(registry.getLoadIssues()[0].severity).toBe('warning');
+    });
+
+    it('clears issues along with the exporters', async () => {
+        const exporterDir = path.join(tempDir, 'broken');
+        await fs.promises.mkdir(exporterDir);
+        await fs.promises.writeFile(path.join(exporterDir, 'manifest.json'), 'nope');
+
+        const registry = ExporterRegistry.getInstance();
+        await registry.loadFromDirectory(tempDir);
+        expect(registry.getLoadIssues().length).toBeGreaterThan(0);
+
+        registry.clear();
+        expect(registry.getLoadIssues()).toHaveLength(0);
     });
 
     it('should clear all exporters', async () => {

@@ -68,6 +68,19 @@ CLOSED: [2026-01-24 Sat 17:34]
 - `[d d]' Word document - Export to .docx file
 - `[d o]' Word and open - Export and open in Microsoft Word
 
+*** ⚠️ Custom Exporters
+
+Every loaded [[file:extension-points.org::*Custom Exporters][custom exporter]] is listed by name on a digit key, so a
+user-defined backend is reachable the same way the built-in formats are:
+
+- `[1]', `[2]', ... - run that exporter
+- `[c]' Custom exports - the exporter picker
+- `[!]' - shown only when an exporter failed to load; explains why
+
+If an exporter you wrote is missing here, run =Scimax: Show Custom Exporter
+Problems=: an unparseable =manifest.json= (a trailing comma is the classic one)
+is the usual reason.
+
 *** ✅ Clipboard Exports (ox-clip style)
 CLOSED: [2026-01-24 Sat 17:34]
 

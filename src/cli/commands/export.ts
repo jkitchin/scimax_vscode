@@ -17,6 +17,7 @@ import {
     initializeExporterRegistry,
     executeCustomExport,
     ExporterRegistry,
+    getDefaultExporterPaths,
     resolveCustomExporterRouteForContent,
 } from '../../export/customExporter';
 import {
@@ -91,6 +92,7 @@ export async function exportCommand(config: CliConfig, args: ParsedArgs): Promis
         await initializeExporterRegistry();
         const registry = ExporterRegistry.getInstance();
         const exporters = registry.getAll();
+        const issues = registry.getLoadIssues();
         if (json) {
             console.log(JSON.stringify({
                 success: true,
@@ -101,15 +103,34 @@ export async function exportCommand(config: CliConfig, args: ParsedArgs): Promis
                     parent: e.parent,
                     outputFormat: e.outputFormat,
                 })),
+                issues,
             }));
-        } else if (exporters.length === 0) {
-            console.log('No custom exporters found.');
-            console.log('Place exporter definitions under ~/scimax/exporters/<id>/');
         } else {
-            console.log(`Found ${exporters.length} custom exporter(s):`);
-            for (const e of exporters) {
-                console.log(`  ${e.id.padEnd(20)} ${e.name} (${e.parent} → ${e.outputFormat})`);
-                if (e.description) console.log(`    ${e.description}`);
+            if (exporters.length === 0) {
+                console.log('No custom exporters found.');
+                console.log('Searched:');
+                for (const p of getDefaultExporterPaths()) console.log(`  ${p}`);
+                console.log('Place exporter definitions under <one of those>/<id>/manifest.json');
+            } else {
+                console.log(`Found ${exporters.length} custom exporter(s):`);
+                for (const e of exporters) {
+                    console.log(`  ${e.id.padEnd(20)} ${e.name} (${e.parent} → ${e.outputFormat})`);
+                    if (e.description) console.log(`    ${e.description}`);
+                }
+            }
+            // A manifest that will not parse is the usual reason an exporter is
+            // missing from this list, so always say so.
+            if (issues.length > 0) {
+                console.log('');
+                const failed = issues.filter(i => i.severity === 'error').length;
+                console.log(
+                    `${issues.length} exporter problem(s)` +
+                    (failed > 0 ? `, ${failed} of which kept an exporter from loading:` : ':')
+                );
+                for (const issue of issues) {
+                    console.log(`  [${issue.severity}] ${issue.path}`);
+                    console.log(`    ${issue.message}`);
+                }
             }
         }
         return;
@@ -312,7 +333,11 @@ async function runCustomExporter(
 
     if (!exporter) {
         const available = registry.getAll().map(e => e.id).join(', ') || '(none)';
-        const errMsg = `Custom exporter not found: ${exporterId}. Available: ${available}`;
+        const errors = registry.getLoadErrors();
+        const failed = errors.length > 0
+            ? ` ${errors.length} exporter(s) failed to load: ${errors.map(e => `${e.path} (${e.message})`).join('; ')}`
+            : '';
+        const errMsg = `Custom exporter not found: ${exporterId}. Available: ${available}.${failed}`;
         if (json) {
             console.log(JSON.stringify({ success: false, error: errMsg }));
         } else {

@@ -388,7 +388,7 @@ Quick reference to find specific features across documentation.
 | Citation link style   | [[file:19-references.org][References]]                       | [[file:26-configuration.org][Configuration]] - plain =cite:&key= vs bracketed =[[cite:&key]]= (Emacs round-trip)         |
 | CSL citation styles   | [[file:10-export.org][Export]]                               | [[file:19-references.org][References]] - APA, MLA, Chicago, Harvard, IEEE, Vancouver                           |
 | Code blocks           | [[file:07-source-blocks.org][Source Code Blocks]]            | [[file:08-supported-languages.org][Supported Languages]], [[file:04-tables.org][Tables]]                                   |
-| Custom exporters      | [[file:10-export.org][Export]]                               | [[file:25-commands.org][Commands]] - User-defined JS/TS export backends                                       |
+| Custom exporters      | [[file:extension-points.org][Extension Points]]                     | [[file:10-export.org][Export]], [[file:25-commands.org][Commands]] - Handlebars template backends, where they live, why one may not load |
 | Command markup        | [[file:28-non-standard-features.org][Non-Standard Features]] | [[file:24-keybindings.org][Keybindings]], [[file:10-export.org][Export]]                                                   |
 | Comment toggle (DWIM) | [[file:25-commands.org][Commands]]                           | [[file:24-keybindings.org][Keybindings]] - `M-;` toggles `# ` prefix on line or selection                                  |
 | Configuration         | [[file:26-configuration.org][Configuration]]                 | Feature-specific docs                                                                                                      |

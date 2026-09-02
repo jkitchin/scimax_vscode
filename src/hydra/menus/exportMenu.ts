@@ -7,7 +7,8 @@
  * - Body-only toggle: [b] to toggle body-only export mode
  */
 
-import { HydraMenuDefinition } from '../types';
+import { HydraMenuDefinition, HydraMenuGroup, HydraMenuItem } from '../types';
+import { ExporterRegistry } from '../../export/customExporter';
 
 // =============================================================================
 // Export State
@@ -39,6 +40,66 @@ export function setBodyOnlyMode(value: boolean): void {
 export function toggleBodyOnlyMode(): boolean {
     bodyOnlyMode = !bodyOnlyMode;
     return bodyOnlyMode;
+}
+
+// =============================================================================
+// Custom Exporters
+// =============================================================================
+
+/**
+ * The custom-exporter group. Its items are rebuilt every time the menu opens
+ * (see refreshCustomExporterItems) so user-defined exporters are listed by
+ * name, the way a derived backend appears in the Emacs dispatcher (#56).
+ */
+const customExporterGroup: HydraMenuGroup = {
+    title: 'Custom Exporters',
+    items: [],
+};
+
+/**
+ * Rebuild the custom-exporter items from the registry.
+ *
+ * Exported for testing; called from the menu's onShow hook.
+ */
+export function refreshCustomExporterItems(): void {
+    const registry = ExporterRegistry.getInstance();
+    const exporters = registry.getAll();
+    const errorCount = registry.getLoadErrors().length;
+
+    // Digits 1-9 are free in this menu; the letter keys are taken by formats.
+    const items: HydraMenuItem[] = exporters.slice(0, 9).map((exp, i) => ({
+        key: String(i + 1),
+        label: exp.name,
+        description: exp.description || `${exp.parent} → ${exp.outputFormat}`,
+        icon: 'file-text',
+        exit: 'exit' as const,
+        action: 'scimax.export.customById',
+        args: [exp.id],
+    }));
+
+    items.push({
+        key: 'c',
+        label: 'Custom exports',
+        description: exporters.length > 0
+            ? 'Pick from the custom exporters'
+            : 'User-defined export templates',
+        icon: 'extensions',
+        exit: 'exit',
+        action: 'scimax.export.custom',
+    });
+
+    if (errorCount > 0) {
+        items.push({
+            key: '!',
+            label: `${errorCount} exporter(s) failed to load`,
+            description: 'Show why (usually an invalid manifest.json)',
+            icon: 'error',
+            exit: 'exit',
+            action: 'scimax.export.showExporterProblems',
+        });
+    }
+
+    customExporterGroup.items = items;
 }
 
 /**
@@ -127,20 +188,9 @@ export const exportMenu: HydraMenuDefinition = {
                 },
             ],
         },
-        {
-            title: 'Custom Exporters',
-            items: [
-                {
-                    key: 'c',
-                    label: 'Custom exports',
-                    description: 'User-defined export templates',
-                    icon: 'extensions',
-                    exit: 'exit',
-                    action: 'scimax.export.custom',
-                },
-            ],
-        },
+        customExporterGroup,
     ],
+    onShow: refreshCustomExporterItems,
 };
 
 /**

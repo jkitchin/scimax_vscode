@@ -24,6 +24,7 @@ import type { OrgDocumentNode, HeadlineElement } from '../parser/orgElementTypes
 import { isBodyOnlyMode } from '../hydra/menus/exportMenu';
 import { registerClipboardCommands } from './clipboardExport';
 import { tryRouteCustomExport } from '../export/commands';
+import { ExporterRegistry } from '../export/customExporter';
 import { resolveProfileForDocument, runProfile, readBuildKeywords } from '../latex/buildProfileService';
 
 /**
@@ -2324,7 +2325,7 @@ async function exportDispatcher(): Promise<void> {
     }
 
     // All export options in one menu with hints
-    const exportOptions = [
+    const exportOptions: Array<vscode.QuickPickItem & { value: string; keys: string }> = [
         // HTML exports
         { label: '$(globe) [h h] HTML file', description: 'Export to .html file', value: 'html-file', keys: 'hh' },
         { label: '$(globe) [h o] HTML and open', description: 'Export to .html and open in browser', value: 'html-open', keys: 'ho' },
@@ -2351,13 +2352,62 @@ async function exportDispatcher(): Promise<void> {
         { label: '$(mortar-board) [j p] Participant notebook', description: 'Export with solutions stripped', value: 'ipynb-participant', keys: 'jp' },
     ];
 
+    // Custom exporters. They are derived backends, so - as in Emacs, where a
+    // derived backend appears in the dispatcher - they are listed here rather
+    // than only behind a separate command (#56).
+    const registry = ExporterRegistry.getInstance();
+    const customExporters = registry.getAll();
+    const exporterErrors = registry.getLoadErrors().length;
+
+    exportOptions.push({ label: '', kind: vscode.QuickPickItemKind.Separator, value: '', keys: '' });
+    customExporters.forEach((exp, i) => {
+        const key = i < 9 ? `c${i + 1}` : '';
+        exportOptions.push({
+            label: `$(file-text) ${key ? `[c ${i + 1}] ` : ''}${exp.name}`,
+            description: exp.description || `Custom exporter: ${exp.id}`,
+            detail: `Output: ${exp.outputFormat.toUpperCase()} via ${exp.parent}`,
+            value: `custom:${exp.id}`,
+            keys: key,
+        });
+    });
+    exportOptions.push({
+        label: '$(export) [c c] Custom exporter...',
+        description: customExporters.length > 0
+            ? 'Pick from the custom exporters'
+            : 'No custom exporters loaded yet - create one',
+        value: 'custom-picker',
+        keys: 'cc',
+    });
+    if (exporterErrors > 0) {
+        exportOptions.push({
+            label: `$(error) [c !] ${exporterErrors} custom exporter(s) failed to load`,
+            description: 'Show why (usually an invalid manifest.json)',
+            value: 'custom-problems',
+            keys: 'c!',
+        });
+    }
+
     const selected = await vscode.window.showQuickPick(exportOptions.filter(o => o.label !== ''), {
-        placeHolder: 'Select export format (type keys: hh, ho, ll, lp, mm, mo, jj, jo, jp)',
+        placeHolder: 'Select export format (type keys: hh, ho, ll, lp, mm, mo, jj, jo, jp, cc)',
         title: 'Org Export Dispatcher - C-c C-e',
         matchOnDescription: true,
     });
 
     if (!selected || !selected.value) return;
+
+    // Custom exporters are handled by the custom export commands
+    if (selected.value === 'custom-picker') {
+        await vscode.commands.executeCommand('scimax.export.custom');
+        return;
+    }
+    if (selected.value === 'custom-problems') {
+        await vscode.commands.executeCommand('scimax.export.showExporterProblems');
+        return;
+    }
+    if (selected.value.startsWith('custom:')) {
+        await vscode.commands.executeCommand('scimax.export.customById', selected.value.slice('custom:'.length));
+        return;
+    }
 
     const inputPath = editor.document.uri.fsPath;
     const inputDir = path.dirname(inputPath);

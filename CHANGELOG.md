@@ -15,6 +15,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Custom exporters appear in the export dispatcher** (#56) - Loaded custom exporters are listed by name in the `C-c C-e` menu on digit keys, next to the built-in formats, instead of hiding behind a separate command. A `[!]` entry appears when an exporter failed to load.
+- **`scimax.export.showExporterProblems`** - Lists every exporter directory that could not be loaded, with the reason, and opens the offending `manifest.json`. `scimax export --list-exporters` reports the same problems, and the searched directories when nothing is found.
+
 - **Open External Terminal Here** (`scimax.openExternalTerminalHere`) - Opens your real terminal application in the current file's directory, alongside the existing "Open Terminal Here" (which uses VS Code's integrated terminal). Available from the editor tab and explorer context menus. Auto-detects an installed terminal per platform (iTerm, Ghostty, WezTerm, kitty, Alacritty, Warp, Terminal.app on macOS; x-terminal-emulator, gnome-terminal, konsole, xfce4-terminal and others on Linux; Windows Terminal, else `cmd.exe`), overridable with `scimax.externalTerminal.app|command|args`.
 - **`scimax.ref.citationLinkStyle`** - Insert org-ref citations as bracketed org links, `[[cite:&key]]`, instead of the plain `cite:&key`. That is the form Emacs org-ref/scimax inserts, so files edited in both editors now look the same (#55). Citations carrying pre/post notes are always inserted bracketed, since a plain org link ends at the first space.
 - **`scimax.ref.insertCitationForKey`** - Insert a citation for a given key. The hover popup's "Insert Citation" link pointed at this command, which was never registered (clicking it did nothing).
@@ -44,6 +47,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Custom exporters honor **`#+EXPORT_FILE_NAME`**.
 
 ### Fixed
+
+- **A custom exporter that fails to load no longer vanishes silently** (#56) - An invalid `manifest.json` was reported only as a `console.warn` nobody sees, so the exporter simply never appeared and the picker said "No custom exporters found". Load problems are now collected, logged, surfaced on reload, and listed by `scimax.export.showExporterProblems`; the "none found" message also lists the directories that were searched. Manifest errors name the file and the JSON complaint, a missing template says which file it looked for, and a `manifest.json` with comments or trailing commas (the usual hand-written mistake) is read with a warning instead of being rejected.
 
 - **Citations written as org links (`[[cite:&key]]`) round-trip with Emacs** (#55) - Such a citation was parsed as an org-cite citation whose key was `&key`, so editing it (append a key, sort, transpose) rewrote it to `[cite:@&key]` and broke the link. It is now recognized as an org-ref citation, keeping its brackets and any link description. Bracketed `citep:`/`citet:`/`ref:`/`doi:` links also export correctly instead of degrading to a cross-reference, and clicking one opens the bibliography entry.
 - **Appending to a plain `cite:&key` no longer eats the following text** - The pattern used by Insert Citation allowed spaces inside the key list, so `cite:&smith-2020 and more words here.` matched through `here` and adding a second key replaced the whole span. A plain citation now ends at the first space, as org itself parses it; notes with spaces belong in the bracketed form.

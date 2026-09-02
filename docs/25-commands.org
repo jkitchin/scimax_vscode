@@ -412,17 +412,21 @@ Copy document content to clipboard in various formats for pasting into other app
 | [[cmd:scimax.org.clipboardLatex]]      | Copy as LaTeX                      | -                  |
 | [[cmd:scimax.org.clipboardMarkdown]]   | Copy as Markdown                   | -                  |
 
-** ✅ Custom Exporters
+** 👀 Custom Exporters
 CLOSED: [2026-01-24 Sat 17:42]
 
-User-defined export backends using JavaScript/TypeScript. See [[file:extension-points.org::*Custom Exporters][Custom Exporters documentation]].
+User-defined export backends using Handlebars templates. See [[file:extension-points.org::*Custom Exporters][Custom Exporters documentation]].
+
+Loaded exporters are also listed in the export dispatcher (=C-c C-e=) under
+=[c 1]=, =[c 2]=, ..., with =[c c]= opening the picker.
 
 | Command ID                                  | Description                      | Default Keybinding |
 |---------------------------------------------+----------------------------------+--------------------|
-| [[cmd:scimax.export.custom]]                | Export with Custom Exporter      | -                  |
+| [[cmd:scimax.export.custom]]                | Export with Custom Exporter      | - (C-c C-e, =c c=) |
 | [[cmd:scimax.export.createExampleExporter]] | Create Example Exporter Template | -                  |
 | [[cmd:scimax.export.openExportersFolder]]   | Open User Exporters Folder       | -                  |
 | [[cmd:scimax.export.reloadCustomExporters]] | Reload Custom Exporters          | -                  |
+| [[cmd:scimax.export.showExporterProblems]]  | Show Custom Exporter Problems    | -                  |
 
 * ✅ Links
 CLOSED: [2026-01-17 Sat 12:27]

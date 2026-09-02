@@ -1,6 +1,7 @@
 #+TITLE: Extension Points for Plugin Development
 #+AUTHOR: Scimax VS Code
 #+OPTIONS: toc:2
+#+TODO: ⚠️ 👀 | ✅
 
 * Overview
 
@@ -124,7 +125,20 @@ Add custom export formats using Handlebars templates - no code required.
 
 *** Directory Structure
 
-Location: =~/.scimax/exporters/= or workspace =.scimax/exporters/=
+Each exporter is a *subdirectory* containing =manifest.json=, placed in one of
+the searched locations:
+
+| Location                             | Notes                                     |
+|--------------------------------------+-------------------------------------------|
+| ={scimax.directory}/exporters/=      | Default =~/scimax/exporters/=             |
+| =~/.scimax/exporters/=               | Always searched                           |
+| =$XDG_CONFIG_HOME/scimax/exporters/= | Only when =XDG_CONFIG_HOME= is set        |
+| =<workspace>/.scimax/exporters/=     | Per-project exporters                     |
+| =scimax.export.customExporterPaths=  | Any extra directories you list (=~= is expanded) |
+
+A plain =exporters/= directory at the root of a project is *not* one of them --
+it has to be =.scimax/exporters/=, or added to
+=scimax.export.customExporterPaths=.
 
 #+BEGIN_SRC text
 ~/.scimax/exporters/
@@ -134,6 +148,25 @@ Location: =~/.scimax/exporters/= or workspace =.scimax/exporters/=
 │   └── partials/          # Optional partial templates
 │       └── header.tex
 #+END_SRC
+
+Run =Scimax: Reload Custom Exporters= after adding or editing one; exporters are
+loaded when the extension starts.
+
+*** ⚠️ When an Exporter Does Not Appear
+
+An exporter that fails to load is reported rather than silently skipped:
+=Scimax: Show Custom Exporter Problems= lists each directory that could not be
+read, with the reason, and opens its =manifest.json=. The export dispatcher also
+shows a =[c !]= entry when something failed. The usual causes are:
+
+- *Invalid JSON in manifest.json* -- most often a trailing comma:
+  ="documentClass": "elsarticle",= followed by =}=. Comments and trailing
+  commas are tolerated (with a warning), but anything else JSON rejects will
+  keep the exporter from loading.
+- *Missing =template= file* -- the =template= path is relative to the exporter
+  directory.
+- *A missing required field*: =id=, =name=, =parent=, =outputFormat=, =template=.
+- *The directory is not in a searched location* (see the table above).
 
 *** manifest.json
 
@@ -160,6 +193,15 @@ Location: =~/.scimax/exporters/= or workspace =.scimax/exporters/=
   }
 }
 #+END_SRC
+
+*** ⚠️ Running a Custom Exporter
+
+| How                                          | Notes                                  |
+|----------------------------------------------+----------------------------------------|
+| =C-c C-e=, then =[c 1]=, =[c 2]=, ...        | Loaded exporters appear in the export dispatcher |
+| =C-c C-e=, then =[c c]=                      | Opens the custom exporter picker       |
+| =Scimax: Export with Custom Exporter=        | The same picker from the palette       |
+| =#+LATEX_CLASS= routing                      | See below - the normal LaTeX/PDF exports use the exporter |
 
 *** Automatic Routing by LaTeX Class
 

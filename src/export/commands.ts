@@ -18,6 +18,9 @@ import {
 } from './customExporter';
 import { parseOrgFast } from '../parser/orgExportParser';
 import { resolveProfileForDocument, runProfile, readBuildKeywords } from '../latex/buildProfileService';
+import { createLogger, getLoggingService } from '../utils/logger';
+
+const log = createLogger('Export');
 
 /**
  * Determine the base output name (without extension) for a custom export,
@@ -63,6 +66,72 @@ function getExporterSearchPaths(): string[] {
 }
 
 /**
+ * Log every problem the last load ran into, and return how many were fatal.
+ *
+ * A manifest that will not parse used to fail silently (a console.warn nobody
+ * sees), which looks exactly like "my exporter does not show up" - see #56.
+ */
+function reportExporterIssues(): number {
+    const issues = ExporterRegistry.getInstance().getLoadIssues();
+    for (const issue of issues) {
+        const message = `${issue.path}: ${issue.message}`;
+        if (issue.severity === 'error') {
+            log.error(message);
+        } else {
+            log.warn(message);
+        }
+    }
+    return issues.filter(i => i.severity === 'error').length;
+}
+
+/**
+ * Show the exporter load problems, or say that there are none.
+ */
+async function showExporterIssues(): Promise<void> {
+    const issues = ExporterRegistry.getInstance().getLoadIssues();
+
+    if (issues.length === 0) {
+        const searched = getSearchedPaths().join('\n');
+        vscode.window.showInformationMessage(
+            `No custom exporter problems. ${ExporterRegistry.getInstance().getAll().length} exporter(s) loaded.`,
+            { modal: false, detail: `Searched:\n${searched}` }
+        );
+        return;
+    }
+
+    reportExporterIssues();
+
+    const items = issues.map(issue => ({
+        label: `$(${issue.severity === 'error' ? 'error' : 'warning'}) ${path.basename(issue.path)}`,
+        description: issue.path,
+        detail: issue.message,
+        issue,
+    }));
+
+    const selected = await vscode.window.showQuickPick(items, {
+        title: 'Custom Exporter Problems',
+        placeHolder: 'Select a problem to open its manifest.json',
+    });
+
+    if (!selected) return;
+
+    const manifestPath = path.join(selected.issue.path, 'manifest.json');
+    if (fs.existsSync(manifestPath)) {
+        const doc = await vscode.workspace.openTextDocument(manifestPath);
+        await vscode.window.showTextDocument(doc);
+    } else {
+        getLoggingService().show();
+    }
+}
+
+/**
+ * Every directory the registry looks in, for messages that need to say where.
+ */
+function getSearchedPaths(): string[] {
+    return [...getDefaultExporterPaths(), ...getExporterSearchPaths()];
+}
+
+/**
  * Reload the exporter registry
  */
 async function reloadExporters(): Promise<void> {
@@ -71,6 +140,18 @@ async function reloadExporters(): Promise<void> {
 
     const registry = ExporterRegistry.getInstance();
     const count = registry.getAll().length;
+    const errors = reportExporterIssues();
+
+    if (errors > 0) {
+        const action = await vscode.window.showWarningMessage(
+            `Loaded ${count} custom exporter(s); ${errors} could not be loaded.`,
+            'Show Problems'
+        );
+        if (action === 'Show Problems') {
+            await showExporterIssues();
+        }
+        return;
+    }
 
     if (count > 0) {
         vscode.window.showInformationMessage(`Loaded ${count} custom exporter(s)`);
@@ -91,13 +172,23 @@ async function showCustomExportPicker(): Promise<void> {
     const exporters = registry.getAll();
 
     if (exporters.length === 0) {
+        const errors = registry.getLoadErrors().length;
+        const actions = errors > 0
+            ? ['Show Problems', 'Create Example', 'Open Exporters Folder']
+            : ['Create Example', 'Open Exporters Folder'];
+        const message = errors > 0
+            ? `No custom exporters loaded - ${errors} could not be read (check manifest.json).`
+            : 'No custom exporters found. Would you like to create one?';
+
         const action = await vscode.window.showWarningMessage(
-            'No custom exporters found. Would you like to create one?',
-            'Create Example',
-            'Open Exporters Folder'
+            message,
+            { modal: false, detail: `Searched:\n${getSearchedPaths().join('\n')}` },
+            ...actions
         );
 
-        if (action === 'Create Example') {
+        if (action === 'Show Problems') {
+            await showExporterIssues();
+        } else if (action === 'Create Example') {
             await createExampleExporter();
         } else if (action === 'Open Exporters Folder') {
             await openExportersFolder();
@@ -517,9 +608,13 @@ async function createExampleExporter(): Promise<void> {
  * Register VS Code commands for custom exporters
  */
 export function registerCustomExportCommands(context: vscode.ExtensionContext): void {
-    // Initialize registry on extension activation
+    // Initialize registry on extension activation. Problems are logged (not
+    // shown) here - the user finds them via the picker or "Show Custom Exporter
+    // Problems"; a modal on startup would be worse than the silence it replaces.
     const additionalPaths = getExporterSearchPaths();
-    initializeExporterRegistry(additionalPaths).catch(console.error);
+    initializeExporterRegistry(additionalPaths)
+        .then(() => reportExporterIssues())
+        .catch(error => log.error('Failed to initialize exporter registry', error as Error));
 
     // Show custom export picker
     context.subscriptions.push(
@@ -542,6 +637,14 @@ export function registerCustomExportCommands(context: vscode.ExtensionContext): 
         vscode.commands.registerCommand(
             'scimax.export.openExportersFolder',
             openExportersFolder
+        )
+    );
+
+    // Show why an exporter did not load
+    context.subscriptions.push(
+        vscode.commands.registerCommand(
+            'scimax.export.showExporterProblems',
+            showExporterIssues
         )
     );
 

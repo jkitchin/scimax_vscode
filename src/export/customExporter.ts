@@ -78,6 +78,21 @@ export interface ExporterManifest {
 }
 
 /**
+ * A problem found while loading exporters. Collected rather than thrown so one
+ * bad manifest cannot hide the exporters that did load - and so the UI can tell
+ * the user *why* an exporter is missing from the list instead of silently
+ * showing nothing.
+ */
+export interface ExporterLoadIssue {
+    /** Directory (or file) the problem is in */
+    path: string;
+    /** Human-readable explanation */
+    message: string;
+    /** 'error' - the exporter was not loaded; 'warning' - loaded, but something is off */
+    severity: 'error' | 'warning';
+}
+
+/**
  * Loaded custom exporter with resolved paths
  */
 export interface CustomExporter extends ExporterManifest {
@@ -300,6 +315,119 @@ function parseKeywordValue(
 }
 
 // =============================================================================
+// Manifest Parsing
+// =============================================================================
+
+/**
+ * Strip line and block comments and trailing commas from JSON text.
+ *
+ * VS Code's own configuration files are JSON-with-comments, so a manifest.json
+ * written by hand very often has a trailing comma or a comment in it. Rather
+ * than rejecting the exporter outright (and, historically, saying nothing at
+ * all about why it vanished), we retry the parse on a cleaned-up copy and
+ * report a warning. Characters are only removed outside of string literals.
+ */
+export function stripJsonExtras(text: string): string {
+    const out: string[] = [];
+    let inString = false;
+    let inLineComment = false;
+    let inBlockComment = false;
+
+    /** Drop a comma that only whitespace separates from this closing bracket. */
+    const dropTrailingComma = () => {
+        let j = out.length - 1;
+        while (j >= 0 && /\s/.test(out[j])) j--;
+        if (j >= 0 && out[j] === ',') {
+            out.splice(j, 1);
+        }
+    };
+
+    for (let i = 0; i < text.length; i++) {
+        const ch = text[i];
+        const next = text[i + 1];
+
+        if (inLineComment) {
+            if (ch === '\n') {
+                inLineComment = false;
+                out.push(ch);
+            }
+            continue;
+        }
+        if (inBlockComment) {
+            if (ch === '*' && next === '/') {
+                inBlockComment = false;
+                i++;
+            }
+            continue;
+        }
+        if (inString) {
+            out.push(ch);
+            if (ch === '\\') {
+                // Copy the escaped character verbatim so \" does not end the string
+                if (next !== undefined) {
+                    out.push(next);
+                    i++;
+                }
+            } else if (ch === '"') {
+                inString = false;
+            }
+            continue;
+        }
+
+        if (ch === '"') {
+            inString = true;
+            out.push(ch);
+            continue;
+        }
+        if (ch === '/' && next === '/') {
+            inLineComment = true;
+            i++;
+            continue;
+        }
+        if (ch === '/' && next === '*') {
+            inBlockComment = true;
+            i++;
+            continue;
+        }
+        if (ch === '}' || ch === ']') {
+            dropTrailingComma();
+        }
+        out.push(ch);
+    }
+
+    return out.join('');
+}
+
+/**
+ * Parse a manifest, tolerating comments and trailing commas.
+ *
+ * Returns the manifest plus a warning when the text was not strict JSON, or
+ * throws an Error naming the file and the JSON complaint when it cannot be
+ * parsed at all.
+ */
+export function parseManifest(
+    content: string,
+    manifestPath: string
+): { manifest: ExporterManifest; warning?: string } {
+    try {
+        return { manifest: JSON.parse(content) as ExporterManifest };
+    } catch (strictError) {
+        try {
+            const manifest = JSON.parse(stripJsonExtras(content)) as ExporterManifest;
+            return {
+                manifest,
+                warning: `${manifestPath} is not valid JSON (${(strictError as Error).message}). ` +
+                    'It was read anyway by ignoring comments and trailing commas, but other tools will reject it.',
+            };
+        } catch {
+            throw new Error(
+                `${manifestPath} is not valid JSON: ${(strictError as Error).message}`
+            );
+        }
+    }
+}
+
+// =============================================================================
 // Exporter Registry
 // =============================================================================
 
@@ -308,6 +436,7 @@ function parseKeywordValue(
  */
 class ExporterRegistry {
     private exporters: Map<string, CustomExporter> = new Map();
+    private issues: ExporterLoadIssue[] = [];
     private static instance: ExporterRegistry;
 
     private constructor() {}
@@ -327,44 +456,82 @@ class ExporterRegistry {
             const entries = await fs.promises.readdir(dirPath, { withFileTypes: true });
 
             for (const entry of entries) {
-                if (entry.isDirectory()) {
-                    const exporterPath = path.join(dirPath, entry.name);
-                    try {
-                        const exporter = await this.loadExporter(exporterPath);
-                        this.exporters.set(exporter.id, exporter);
-                    } catch (error) {
-                        console.warn(`Failed to load exporter from ${exporterPath}:`, error);
+                // Skip dotted directories (.git, .DS_Store, ...) - they are not exporters
+                if (!entry.isDirectory() || entry.name.startsWith('.')) {
+                    continue;
+                }
+
+                const exporterPath = path.join(dirPath, entry.name);
+                try {
+                    const { exporter, warning } = await this.loadExporter(exporterPath);
+                    this.exporters.set(exporter.id, exporter);
+                    if (warning) {
+                        this.issues.push({ path: exporterPath, message: warning, severity: 'warning' });
                     }
+                } catch (error) {
+                    const missingManifest =
+                        (error as NodeJS.ErrnoException).code === 'ENOENT' &&
+                        String((error as NodeJS.ErrnoException).path || '').endsWith('manifest.json');
+                    this.issues.push({
+                        path: exporterPath,
+                        message: missingManifest
+                            ? 'No manifest.json in this directory'
+                            : (error as Error).message,
+                        severity: missingManifest ? 'warning' : 'error',
+                    });
                 }
             }
         } catch (error) {
-            // Directory doesn't exist or can't be read - skip silently
+            // Directory doesn't exist - that is normal, most search paths do not
             if ((error as NodeJS.ErrnoException).code !== 'ENOENT') {
-                console.warn(`Failed to read exporter directory ${dirPath}:`, error);
+                this.issues.push({
+                    path: dirPath,
+                    message: `Could not read exporter directory: ${(error as Error).message}`,
+                    severity: 'error',
+                });
             }
         }
     }
 
     /**
+     * Problems found by the last load: a manifest that would not parse, a
+     * missing template, and so on. The UI reports these so an exporter that
+     * fails to load does not just silently go missing.
+     */
+    getLoadIssues(): ExporterLoadIssue[] {
+        return [...this.issues];
+    }
+
+    /** Only the issues that kept an exporter from loading. */
+    getLoadErrors(): ExporterLoadIssue[] {
+        return this.issues.filter(i => i.severity === 'error');
+    }
+
+    /**
      * Load a single exporter from a directory
      */
-    async loadExporter(exporterPath: string): Promise<CustomExporter> {
+    async loadExporter(exporterPath: string): Promise<{ exporter: CustomExporter; warning?: string }> {
         const manifestPath = path.join(exporterPath, 'manifest.json');
 
         // Read and parse manifest
         const manifestContent = await fs.promises.readFile(manifestPath, 'utf-8');
-        const manifest: ExporterManifest = JSON.parse(manifestContent);
+        const { manifest, warning } = parseManifest(manifestContent, manifestPath);
 
         // Validate required fields
-        if (!manifest.id) throw new Error('Manifest missing required field: id');
-        if (!manifest.name) throw new Error('Manifest missing required field: name');
-        if (!manifest.parent) throw new Error('Manifest missing required field: parent');
-        if (!manifest.outputFormat) throw new Error('Manifest missing required field: outputFormat');
-        if (!manifest.template) throw new Error('Manifest missing required field: template');
+        for (const field of ['id', 'name', 'parent', 'outputFormat', 'template'] as const) {
+            if (!manifest[field]) {
+                throw new Error(`${manifestPath} is missing the required field: ${field}`);
+            }
+        }
 
         // Load template
         const templatePath = path.join(exporterPath, manifest.template);
-        const templateContent = await fs.promises.readFile(templatePath, 'utf-8');
+        let templateContent: string;
+        try {
+            templateContent = await fs.promises.readFile(templatePath, 'utf-8');
+        } catch {
+            throw new Error(`Template file not found: ${templatePath} (manifest "template": "${manifest.template}")`);
+        }
         const compiledTemplate = compileTemplate(templateContent);
 
         // Load preamble if specified
@@ -385,10 +552,13 @@ class ExporterRegistry {
         }
 
         return {
-            ...manifest,
-            basePath: exporterPath,
-            compiledTemplate,
-            preambleContent,
+            exporter: {
+                ...manifest,
+                basePath: exporterPath,
+                compiledTemplate,
+                preambleContent,
+            },
+            warning,
         };
     }
 
@@ -447,6 +617,7 @@ class ExporterRegistry {
      */
     clear(): void {
         this.exporters.clear();
+        this.issues = [];
     }
 }
 
