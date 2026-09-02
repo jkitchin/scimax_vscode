@@ -1735,6 +1735,11 @@
         "icon": "$(terminal)"
       },
       {
+        "command": "scimax.openExternalTerminalHere",
+        "title": "Scimax: Open External Terminal Here",
+        "icon": "$(terminal-bash)"
+      },
+      {
         "command": "scimax.openInNewWindow",
         "title": "Scimax: Open in New Window",
         "icon": "$(empty-window)"
@@ -5996,6 +6001,24 @@
           "maximum": 10,
           "description": "Number of rotated log backup files to keep (scimax.log.1, scimax.log.2, etc.). Oldest backup is deleted when limit is reached."
         },
+        "scimax.externalTerminal.app": {
+          "type": "string",
+          "default": "",
+          "description": "macOS only: name of the terminal application to open (as passed to `open -a`), e.g. \"iTerm\", \"Terminal\", \"Ghostty\", \"Warp\". Leave empty to auto-detect an installed terminal, preferring iTerm."
+        },
+        "scimax.externalTerminal.command": {
+          "type": "string",
+          "default": "",
+          "description": "Executable to launch for \"Open External Terminal Here\". Overrides auto-detection and scimax.externalTerminal.app on every platform. Leave empty to auto-detect."
+        },
+        "scimax.externalTerminal.args": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [],
+          "description": "Arguments passed to scimax.externalTerminal.command. ${dir} is replaced with the target directory; the directory is also used as the process working directory."
+        },
         "scimax.dired.showHidden": {
           "type": "boolean",
           "default": false,
@@ -7003,6 +7026,10 @@
           "group": "2_files"
         },
         {
+          "command": "scimax.openExternalTerminalHere",
+          "group": "2_files"
+        },
+        {
           "command": "scimax.openInNewWindow",
           "group": "2_files"
         },
@@ -7015,6 +7042,10 @@
         {
           "command": "scimax.openInNewWindow",
           "group": "navigation@10"
+        },
+        {
+          "command": "scimax.openExternalTerminalHere",
+          "group": "navigation@11"
         }
       ],
       "editor/context": [

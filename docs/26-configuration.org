@@ -53,9 +53,12 @@ General settings that apply across Scimax features.
 
 ** Settings Overview
 
-| Setting       | Type   | Default | Description                            |
-|---------------+--------+---------+----------------------------------------|
-| scimax.email  | string | ""      | Email for API integrations (OpenAlex)  |
+| Setting                          | Type   | Default | Description                                       |
+|----------------------------------+--------+---------+---------------------------------------------------|
+| scimax.email                     | string | ""      | Email for API integrations (OpenAlex)             |
+| scimax.externalTerminal.app      | string | ""      | macOS terminal app to open (auto-detect if empty) |
+| scimax.externalTerminal.command  | string | ""      | Terminal executable, overrides auto-detection     |
+| scimax.externalTerminal.args     | array  | []      | Arguments for that executable (=${dir}= expanded) |
 
 ** Detailed Configuration
 
@@ -77,6 +80,43 @@ This email is used for services that offer better access to identified users. Cu
 #+end_src
 
 You can also configure this via the command =scimax.ref.configureOpenAlex= which provides a quick pick menu for setting both your email and optional API key.
+
+*** ⚠️ scimax.externalTerminal.app / .command / .args
+
+These control =Scimax: Open External Terminal Here=, which opens your real
+terminal application in the directory of the current file. It is available on
+the editor tab context menu and the explorer context menu, next to =Open
+Terminal Here= (which uses VS Code's integrated terminal instead).
+
+- *scimax.externalTerminal.app* (string, default `""'): macOS only. The
+  application name passed to =open -a=, e.g. ="iTerm"=, ="Terminal"=,
+  ="Ghostty"=, ="WezTerm"=, ="kitty"=, ="Alacritty"=, ="Warp"=. When empty,
+  Scimax auto-detects an installed terminal, preferring iTerm.
+- *scimax.externalTerminal.command* (string, default `""'): An executable to
+  launch instead. Overrides auto-detection and =app= on every platform.
+- *scimax.externalTerminal.args* (array of strings, default =[]=): Arguments
+  for that executable. =${dir}= is replaced with the target directory, which is
+  also used as the process working directory.
+
+*Example* - always use Terminal.app on macOS:
+#+begin_src json
+{
+  "scimax.externalTerminal.app": "Terminal"
+}
+#+end_src
+
+*Example* - an explicit command with arguments:
+#+begin_src json
+{
+  "scimax.externalTerminal.command": "alacritty",
+  "scimax.externalTerminal.args": ["--working-directory", "${dir}"]
+}
+#+end_src
+
+On Linux, Scimax tries =x-terminal-emulator=, =gnome-terminal=, =konsole=,
+=xfce4-terminal=, =ghostty=, =wezterm=, =kitty=, =alacritty=, then =xterm=. On
+Windows it uses Windows Terminal (=wt.exe=) when available and falls back to
+=cmd.exe=.
 
 * Org-mode Settings
 

@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Open External Terminal Here** (`scimax.openExternalTerminalHere`) - Opens your real terminal application in the current file's directory, alongside the existing "Open Terminal Here" (which uses VS Code's integrated terminal). Available from the editor tab and explorer context menus. Auto-detects an installed terminal per platform (iTerm, Ghostty, WezTerm, kitty, Alacritty, Warp, Terminal.app on macOS; x-terminal-emulator, gnome-terminal, konsole, xfce4-terminal and others on Linux; Windows Terminal, else `cmd.exe`), overridable with `scimax.externalTerminal.app|command|args`.
 - **`scimax.ref.citationLinkStyle`** - Insert org-ref citations as bracketed org links, `[[cite:&key]]`, instead of the plain `cite:&key`. That is the form Emacs org-ref/scimax inserts, so files edited in both editors now look the same (#55). Citations carrying pre/post notes are always inserted bracketed, since a plain org link ends at the first space.
 - **`scimax.ref.insertCitationForKey`** - Insert a citation for a given key. The hover popup's "Insert Citation" link pointed at this command, which was never registered (clicking it did nothing).
 

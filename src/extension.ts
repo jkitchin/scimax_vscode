@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
 import * as fs from 'fs';
+import { resolveExternalTerminal, launchExternalTerminal } from './utils/externalTerminal';
 import { JournalManager } from './journal/journalManager';
 import { JournalCalendarProvider } from './journal/calendarView';
 import { JournalStatusBar } from './journal/statusBar';
@@ -161,6 +162,52 @@ export async function activate(context: vscode.ExtensionContext) {
             const dir = path.dirname(uri.fsPath);
             const terminal = vscode.window.createTerminal({ cwd: dir });
             terminal.show();
+        })
+    );
+
+    // Open External Terminal Here - opens the OS terminal app (iTerm, Terminal.app,
+    // gnome-terminal, Windows Terminal, ...) in the file's directory.
+    context.subscriptions.push(
+        vscode.commands.registerCommand('scimax.openExternalTerminalHere', async (uri?: vscode.Uri) => {
+            if (!uri) {
+                uri = vscode.window.activeTextEditor?.document.uri;
+            }
+            if (!uri || uri.scheme !== 'file') {
+                vscode.window.showWarningMessage('No file to open a terminal for');
+                return;
+            }
+
+            // A folder (from the explorer) is used as-is; a file uses its parent.
+            let dir = uri.fsPath;
+            try {
+                if (!fs.statSync(dir).isDirectory()) {
+                    dir = path.dirname(dir);
+                }
+            } catch {
+                dir = path.dirname(dir);
+            }
+
+            const config = vscode.workspace.getConfiguration('scimax.externalTerminal');
+            const launch = resolveExternalTerminal(dir, {
+                command: config.get<string>('command'),
+                args: config.get<string[]>('args'),
+                app: config.get<string>('app')
+            });
+
+            if (!launch) {
+                vscode.window.showErrorMessage(
+                    'No external terminal found. Set scimax.externalTerminal.command to your terminal executable.'
+                );
+                return;
+            }
+
+            try {
+                await launchExternalTerminal(launch);
+            } catch (err) {
+                vscode.window.showErrorMessage(
+                    `Could not open ${launch.command}: ${(err as Error).message}`
+                );
+            }
         })
     );
 

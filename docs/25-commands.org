@@ -1634,7 +1634,8 @@ Miscellaneous utility commands.
 | [[cmd:scimax.insertOcrScreenshot]] | Insert OCR Screenshot                 | S-F10              |
 | [[cmd:scimax.googleSearch]]        | Google Search Selection               | C-c C-g            |
 | [[cmd:scimax.killLine]]            | Kill Line (copy to clipboard)         | C-k                |
-| [[cmd:scimax.openTerminalHere]]    | Open Terminal in Document's Directory | -                  |
+| [[cmd:scimax.openTerminalHere]]    | Open Integrated Terminal in Dir       | -                  |
+| [[cmd:scimax.openExternalTerminalHere]] | Open External Terminal in Dir    | -                  |
 | [[cmd:scimax.openInNewWindow]]     | Open File/Folder in New Window     | -                  |
 | [[cmd:scimax.dired.open]]          | Open Dired (Directory Editor)         | C-x d              |
 | [[cmd:scimax.dired.openCurrent]]   | Open Dired for Current File Dir       | -                  |
