@@ -24,6 +24,25 @@ describe('LaTeX Export - Citations and References', () => {
             expect(latex).toContain('\\cite{smith-2020}');
         });
 
+        it('exports bracketed org-ref links, [[cite:&key]] (issue #55)', () => {
+            const content = '* Test\nSee [[cite:&smith-2020]] and [[citep:&jones-2021]] and [[citet:&a;&b]].';
+            const latex = exportToLatex(parseOrgFast(content), {});
+            expect(latex).toContain('\\cite{smith-2020}');
+            expect(latex).toContain('\\citep{jones-2021}');
+            expect(latex).toContain('\\citet{a,b}');
+        });
+
+        it('exports a bracketed v2 link without leaking the link type', () => {
+            const latex = exportToLatex(parseOrgFast('* T\n[[cite:smith-2020]]'), {});
+            expect(latex).toContain('\\cite{smith-2020}');
+            expect(latex).not.toContain('cite:smith-2020');
+        });
+
+        it('exports a bracketed doi link', () => {
+            const latex = exportToLatex(parseOrgFast('* T\n[[doi:10.1000/xyz][paper]]'), {});
+            expect(latex).toContain('\\href{https://doi.org/10.1000/xyz}{paper}');
+        });
+
         it('exports cite: with multiple keys', () => {
             const content = '* Test\ncite:key1,key2,key3';
             const doc = parseOrgFast(content);

@@ -1024,7 +1024,10 @@ export class HtmlExportBackend implements ExportBackend {
 
         // Parse citation keys from the path
         // For org-ref links, path contains the keys (e.g., "key1,key2" or "&key1;&key2")
-        const citationText = `${command}:${path}`;
+        // Parse as a bracketed org link: `path` is the complete citation path, so
+        // any pre/post notes in it (which contain spaces) must be kept. A plain
+        // `cite:...` string would be cut at the first space, as org itself does.
+        const citationText = `[[${command}:${path}]]`;
         const parsedCitations = parseCitationsFromLine(citationText);
 
         if (parsedCitations.length === 0) {

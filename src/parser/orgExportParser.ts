@@ -232,11 +232,8 @@ export function parseObjectsFast(text: string): OrgObject[] {
     // Links (highest priority)
     collectMatches(LINK_PATTERN, (m) => {
         const linkType = detectLinkType(m[1]);
-        // Strip protocol prefix from path for file links
-        let path = m[1];
-        if (linkType === 'file' && path.startsWith('file:')) {
-            path = path.slice(5); // Remove 'file:' prefix
-        }
+        // Strip the `type:` prefix (file:, cite:, doi:, ref:, ...) from the path
+        const path = stripLinkTypePrefix(linkType, m[1]);
         return {
             type: 'link' as const,
             range: { start: m.index!, end: m.index! + m[0].length },
@@ -793,15 +790,47 @@ export function parseObjectsFast(text: string): OrgObject[] {
     return objects;
 }
 
+/**
+ * Link types written as `type:path` inside a bracketed link, e.g.
+ * `[[citep:&key]]` or `[[doi:10.1000/x]]`. Emacs org-ref/scimax inserts
+ * citations in exactly this form, so all of its link types have to be
+ * recognized here, and the `type:` prefix stripped from the path - otherwise
+ * the exporters see a path of `citep:&key` and emit a broken cross-reference.
+ */
+const PREFIXED_LINK_TYPES = [
+    // org-ref citations
+    'cite', 'citep', 'citet', 'citenum', 'citeauthor', 'citeyear',
+    'citealp', 'citealt', 'Cite', 'Citep', 'Citet', 'Citeauthor', 'Citeyear',
+    // cross-references
+    'ref', 'eqref', 'pageref', 'nameref', 'autoref', 'cref', 'Cref', 'label',
+    // bibliography
+    'bibliography', 'bibliographystyle', 'bibstyle',
+    // misc
+    'doi', 'file',
+];
+
 function detectLinkType(path: string): string {
     if (path.startsWith('http://') || path.startsWith('https://')) return 'http';
-    if (path.startsWith('file:')) return 'file';
-    if (path.startsWith('doi:')) return 'doi';
-    if (path.startsWith('cite:')) return 'cite';
+    const colon = path.indexOf(':');
+    if (colon > 0) {
+        const prefix = path.slice(0, colon);
+        if (PREFIXED_LINK_TYPES.includes(prefix)) return prefix;
+    }
     if (path.startsWith('#')) return 'custom-id';
     if (path.startsWith('*')) return 'headline';
     if (path.match(/^\.\//)) return 'file';
     return 'fuzzy';
+}
+
+/**
+ * Strip the `type:` prefix from a bracketed link path for the types that carry
+ * one (`[[cite:&key]]` -> path `&key`).
+ */
+function stripLinkTypePrefix(linkType: string, path: string): string {
+    if (PREFIXED_LINK_TYPES.includes(linkType) && path.startsWith(`${linkType}:`)) {
+        return path.slice(linkType.length + 1);
+    }
+    return path;
 }
 
 // =============================================================================

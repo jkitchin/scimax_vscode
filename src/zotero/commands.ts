@@ -280,13 +280,19 @@ export function formatCitation(keys: string[], languageId: string): string {
         // Org-mode format (default)
         const syntax = config.get<string>('citationSyntax') || 'org-ref-v3';
         const style = config.get<string>('defaultCiteStyle') || 'cite';
+        const linkStyle = config.get<string>('citationLinkStyle') || 'plain';
+
+        // org-ref citations may be written as a bracketed org link,
+        // [[cite:&key]], which is what Emacs org-ref/scimax inserts.
+        const asLink = (citation: string) =>
+            linkStyle === 'bracketed' ? `[[${citation}]]` : citation;
 
         if (syntax === 'org-ref-v3') {
             // v3 format: cite:&key1;&key2
-            return `${style}:${keys.map(k => `&${k}`).join(';')}`;
+            return asLink(`${style}:${keys.map(k => `&${k}`).join(';')}`);
         } else {
             // v2 format: cite:key1,key2
-            return `${style}:${keys.join(',')}`;
+            return asLink(`${style}:${keys.join(',')}`);
         }
     }
 }

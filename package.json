@@ -1372,6 +1372,10 @@
         "title": "Scimax: Insert Citation"
       },
       {
+        "command": "scimax.ref.insertCitationForKey",
+        "title": "Scimax: Insert Citation for Key"
+      },
+      {
         "command": "scimax.zotero.insertCitation",
         "title": "Scimax: Insert Citation from Zotero"
       },
@@ -6336,6 +6340,15 @@
           ],
           "default": "org-ref-v3",
           "markdownDescription": "Citation syntax for inserting new citations:\n- **org-ref-v3** (recommended): `cite:&key1;&key2` with pre/post notes\n- **org-ref-v2** (legacy): `cite:key1,key2` comma-separated\n- **org-cite**: `[cite:@key1;@key2]` org-mode 9.5+ native syntax"
+        },
+        "scimax.ref.citationLinkStyle": {
+          "type": "string",
+          "enum": [
+            "plain",
+            "bracketed"
+          ],
+          "default": "plain",
+          "markdownDescription": "How org-ref citations are written when inserted:\n- **plain**: `cite:&key`\n- **bracketed**: `[[cite:&key]]` -- the form Emacs org-ref/scimax inserts, for files edited in both editors\n\nBoth forms are read correctly either way; this only controls insertion. Ignored when `#scimax.ref.citationSyntax#` is `org-cite`, which has its own brackets."
         },
         "scimax.bibtex.keyPattern": {
           "type": "string",

@@ -385,6 +385,7 @@ Quick reference to find specific features across documentation.
 | Capture templates     | [[file:15-capture.org][Capture]]                             | [[file:14-journal.org][Journal]], [[file:26-configuration.org][Configuration]]                                             |
 | Checkboxes            | [[file:03-todo-items.org][TODO Items]]                       | [[file:02-document-structure.org][Document Structure]]                                                                     |
 | Citations             | [[file:19-references.org][References]]                       | [[file:05-links.org][Links]], [[file:10-export.org][Export]], [[file:28-non-standard-features.org][Non-Standard Features]] |
+| Citation link style   | [[file:19-references.org][References]]                       | [[file:26-configuration.org][Configuration]] - plain =cite:&key= vs bracketed =[[cite:&key]]= (Emacs round-trip)         |
 | CSL citation styles   | [[file:10-export.org][Export]]                               | [[file:19-references.org][References]] - APA, MLA, Chicago, Harvard, IEEE, Vancouver                           |
 | Code blocks           | [[file:07-source-blocks.org][Source Code Blocks]]            | [[file:08-supported-languages.org][Supported Languages]], [[file:04-tables.org][Tables]]                                   |
 | Custom exporters      | [[file:10-export.org][Export]]                               | [[file:25-commands.org][Commands]] - User-defined JS/TS export backends                                       |

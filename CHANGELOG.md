@@ -15,6 +15,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **`scimax.ref.citationLinkStyle`** - Insert org-ref citations as bracketed org links, `[[cite:&key]]`, instead of the plain `cite:&key`. That is the form Emacs org-ref/scimax inserts, so files edited in both editors now look the same (#55). Citations carrying pre/post notes are always inserted bracketed, since a plain org link ends at the first space.
+- **`scimax.ref.insertCitationForKey`** - Insert a citation for a given key. The hover popup's "Insert Citation" link pointed at this command, which was never registered (clicking it did nothing).
+
 - **`scimax.jump.gotoHeading`** (`C-c j h`) - labels every visible heading, which in a folded buffer is most of the outline. The label covers the leading stars rather than the title, and the cursor lands at column 0 where speed commands are active. Headings are matched per language, so a `#` comment inside an org source block is not mistaken for one.
 - **`scimax.jump.gotoCharTimer`** (`C-c j t`) - the `avy-goto-char-timer` equivalent: type any number of characters, and the labels appear when you pause.
 - **`scimax.jump.listCommands`** (`C-c j ?`) - lists every jump command with its keybinding and description, read from the extension manifest so it cannot drift, and runs the one chosen.
@@ -40,6 +43,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Custom exporters honor **`#+EXPORT_FILE_NAME`**.
 
 ### Fixed
+
+- **Citations written as org links (`[[cite:&key]]`) round-trip with Emacs** (#55) - Such a citation was parsed as an org-cite citation whose key was `&key`, so editing it (append a key, sort, transpose) rewrote it to `[cite:@&key]` and broke the link. It is now recognized as an org-ref citation, keeping its brackets and any link description. Bracketed `citep:`/`citet:`/`ref:`/`doi:` links also export correctly instead of degrading to a cross-reference, and clicking one opens the bibliography entry.
+- **Appending to a plain `cite:&key` no longer eats the following text** - The pattern used by Insert Citation allowed spaces inside the key list, so `cite:&smith-2020 and more words here.` matched through `here` and adding a second key replaced the whole span. A plain citation now ends at the first space, as org itself parses it; notes with spaces belong in the bracketed form.
+- **org-cite insertion uses org-cite style names** - `citet`/`citep`/`citeauthor`/`citeyear` were written as `[cite/citet:@key]`; they are now `[cite/t:@key]`, `[cite/p:…]`, `[cite/a:…]`, `[cite/y:…]`.
 
 - **Editor responsiveness in org files** - Several fixes so editing and cycling TODO states in large files stay snappy: the assignee completion provider no longer registers space/colon as global trigger characters (removing per-keystroke completion work); the dependency tree view rebuilds only when visible and debounced; the save-triggered re-index queues embeddings for the background worker instead of generating them synchronously (a save no longer blocks on embedding the whole file); the blocked/ready CodeLens skips its per-heading whole-document scan when a file has no `:DEPENDS:`/`:ORDERED:` markup; dependency triggers run in the background; and people lookups are cached.
 - **Add Dependency** now offers the current file's headings from the live buffer (not only the saved index), so unsaved/just-edited headings appear.

@@ -645,6 +645,8 @@ Configure bibliography management and citation styles.
 | scimax.ref.pdfDirectory      | string | ""      | Directory with PDF files      |
 | scimax.ref.notesDirectory    | string | ""      | Directory for reference notes |
 | scimax.ref.defaultCiteStyle  | string | "cite"  | Default citation style        |
+| scimax.ref.citationSyntax    | string | "org-ref-v3" | Citation syntax to insert |
+| scimax.ref.citationLinkStyle | string | "plain" | Plain or bracketed cite links |
 
 ** Detailed Configuration
 
@@ -706,6 +708,52 @@ Configure bibliography management and citation styles.
 #+begin_src json
 {
   "scimax.ref.defaultCiteStyle": "citep"
+}
+#+end_src
+
+*** ⚠️ scimax.ref.citationSyntax
+
+- *Type*: string (enum)
+- *Default*: `"org-ref-v3"'
+- *Options*: `"org-ref-v3"', `"org-ref-v2"', `"org-cite"'
+- *Description*: Which citation syntax new citations are written in
+  - `org-ref-v3' (recommended): =cite:&key1;&key2=
+  - `org-ref-v2' (legacy): =cite:key1,key2=
+  - `org-cite' (org 9.5+): =[cite:@key1;@key2]=
+
+All three are *read* correctly regardless of this setting; it only controls
+insertion.
+
+*Example*:
+#+begin_src json
+{
+  "scimax.ref.citationSyntax": "org-ref-v3"
+}
+#+end_src
+
+*** ⚠️ scimax.ref.citationLinkStyle
+
+- *Type*: string (enum)
+- *Default*: `"plain"'
+- *Options*: `"plain"', `"bracketed"'
+- *Description*: Whether org-ref citations are inserted as a plain link or as a
+  bracketed org link
+  - `plain': =cite:&key=
+  - `bracketed': =[[cite:&key]]= -- the form Emacs org-ref/scimax inserts
+
+Set this to `bracketed' if you edit the same files in Emacs and want inserted
+citations to look identical in both editors. Both forms are read, exported and
+followed correctly either way. The setting is ignored when
+=scimax.ref.citationSyntax= is `org-cite', which has its own brackets.
+
+Note that a citation carrying pre/post notes (which contain spaces) is *always*
+inserted in the bracketed form: a plain org link ends at the first space, so
+=cite:&key p. 5= would leave "p. 5" outside the link.
+
+*Example*:
+#+begin_src json
+{
+  "scimax.ref.citationLinkStyle": "bracketed"
 }
 #+end_src
 

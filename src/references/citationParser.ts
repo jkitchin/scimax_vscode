@@ -2,8 +2,15 @@
  * Unified citation parser supporting multiple citation syntaxes:
  * - org-ref v2: cite:key1,key2
  * - org-ref v3: cite:&key1;&key2 (with optional pre/post notes)
+ * - org-ref link form: [[cite:&key1;&key2]] or [[cite:&key][description]]
  * - org-cite: [cite:@key1;@key2] (with optional style and notes)
  * - LaTeX: \cite{key1,key2}
+ *
+ * Note on the link form: Emacs org-ref (and scimax) insert citations as
+ * bracketed org links, `[[cite:&key]]`. That is also the only form that can
+ * carry notes containing spaces, because a *plain* org link ends at the first
+ * whitespace. This parser follows the same rule, so files round-trip between
+ * Emacs and VS Code unchanged.
  */
 
 import {
@@ -34,6 +41,12 @@ const PATTERNS = {
         `(${ALL_CITATION_COMMANDS.join('|')}):([^\\s\\[\\]]+(?:\\s+[^\\s\\[\\]]+)*)`,
         'g'
     ),
+
+    // org-ref link form: [[cite:&key]], [[cite:&k1;&k2 p. 5]], [[cite:&key][desc]]
+    'org-ref-link': new RegExp(
+        `\\[\\[(${ALL_CITATION_COMMANDS.join('|')}):([^\\]\\[]+)\\](?:\\[([^\\]]*)\\])?\\]`,
+        'g'
+    ),
 };
 
 /**
@@ -42,8 +55,12 @@ const PATTERNS = {
 export function parseCitationsFromLine(line: string): ParsedCitation[] {
     const citations: ParsedCitation[] = [];
 
+    // org-ref link form, [[cite:&key]] (most specific: its inner text also
+    // matches the org-cite and plain org-ref patterns, so it must win)
+    citations.push(...parseOrgRefLinkCitations(line));
+
     // org-cite (most specific due to brackets)
-    citations.push(...parseOrgCiteCitations(line));
+    citations.push(...parseOrgCiteCitations(line, citations.map(c => c.range)));
 
     // LaTeX
     citations.push(...parseLatexCitations(line));
@@ -111,36 +128,18 @@ function parseOrgRefCitations(
         let end: number;
 
         if (startsWithAmpersand || segmentHasAmpersand || hasAmpersand) {
-            // v3 citation
-            // Find where this citation ends - look for patterns that indicate end
-            // v3 content includes everything with & keys and any trailing suffix after last ;
-            let v3Content = '';
-
-            // Strategy: Take content until we hit a boundary that indicates end of citation
-            // Boundaries: double space, next citation command, [, \, end of line
-            // But include single-space separated words if they look like part of the citation
-
-            // Find potential end points
-            const nextCiteMatch = remainingLine.match(/\s+(cite[pt]?|citeauthor|citeyear|Citep|Citet|citealp|citealt|citenum):/i);
-            const nextBracket = remainingLine.indexOf('[');
-            const nextBackslash = remainingLine.indexOf('\\');
-            const doubleSpace = remainingLine.search(/\s{2,}/);
-
-            // Find the minimum positive boundary
-            const boundaries: number[] = [
-                nextCiteMatch?.index ?? -1,
-                nextBracket,
-                nextBackslash,
-                doubleSpace,
-            ].filter((b): b is number => b > 0);
-
-            const endPos = boundaries.length > 0 ? Math.min(...boundaries) : remainingLine.length;
+            // v3 citation. This is a *plain* org link, and a plain link ends at
+            // the first whitespace (or bracket/backslash) - exactly as Emacs
+            // parses it. Notes containing spaces therefore require the bracketed
+            // link form, [[cite:&key p. 5]], which is handled separately above.
+            // Anything looser here would swallow the prose that follows the
+            // citation and, worse, let a manipulation command overwrite it.
+            const boundary = remainingLine.search(/[\s[\]\\]/);
+            const endPos = boundary >= 0 ? boundary : remainingLine.length;
 
             // Take content up to the boundary
-            v3Content = remainingLine.slice(0, endPos);
+            let v3Content = remainingLine.slice(0, endPos);
 
-            // Clean up: remove trailing punctuation and standalone "and", "or" connectors at the end
-            v3Content = v3Content.replace(/\s+(and|or)\s*$/i, '');
             // Keep ; and , as they might be part of citation; strip a trailing
             // ":" though (colon introducing an equation/list, not a key char; #52).
             v3Content = v3Content.replace(/[.!?:]+$/, '');
@@ -194,9 +193,65 @@ function parseOrgRefCitations(
 }
 
 /**
+ * Parse org-ref citations written as bracketed org links:
+ *   [[cite:&key]]              (what Emacs org-ref/scimax inserts)
+ *   [[citep:&k1;&k2 p. 5]]     (notes with spaces are only legal here)
+ *   [[cite:&key][description]]
+ *   [[cite:key1,key2]]         (v2 keys)
+ */
+function parseOrgRefLinkCitations(line: string): ParsedCitation[] {
+    const citations: ParsedCitation[] = [];
+    const regex = new RegExp(PATTERNS['org-ref-link'].source, 'g');
+    let match;
+
+    while ((match = regex.exec(line)) !== null) {
+        const start = match.index;
+        const end = start + match[0].length;
+        const command = match[1] as CitationCommand;
+        const content = match[2];
+        const description = match[3];
+
+        if (content.includes('&')) {
+            const parsed = parseNotesAndKeys(content, '&', ';');
+            if (parsed.references.length === 0) continue;
+
+            citations.push({
+                syntax: 'org-ref-v3',
+                command,
+                references: parsed.references,
+                commonPrefix: parsed.commonPrefix,
+                commonSuffix: parsed.commonSuffix,
+                bracketed: true,
+                description,
+                raw: match[0],
+                range: { start, end },
+            });
+        } else {
+            const keys = content.split(',').map(k => k.trim()).filter(k => k);
+            if (keys.length === 0) continue;
+
+            citations.push({
+                syntax: 'org-ref-v2',
+                command,
+                references: keys.map(key => ({ key })),
+                bracketed: true,
+                description,
+                raw: match[0],
+                range: { start, end },
+            });
+        }
+    }
+
+    return citations;
+}
+
+/**
  * Parse org-cite citations: [cite:@key] or [cite/style:@key]
  */
-function parseOrgCiteCitations(line: string): ParsedCitation[] {
+function parseOrgCiteCitations(
+    line: string,
+    excludeRanges: Array<{ start: number; end: number }> = []
+): ParsedCitation[] {
     const citations: ParsedCitation[] = [];
     const regex = new RegExp(PATTERNS['org-cite'].source, 'g');
     let match;
@@ -204,6 +259,11 @@ function parseOrgCiteCitations(line: string): ParsedCitation[] {
     while ((match = regex.exec(line)) !== null) {
         const start = match.index;
         const end = start + match[0].length;
+
+        // Skip the inner [cite:...] of an org-ref link, [[cite:&key]]
+        if (excludeRanges.some(r => start >= r.start && start < r.end)) {
+            continue;
+        }
         const style = match[1]; // may be undefined; e.g. 't', 'a', 'a/c', 'bare-caps'
         const content = match[2];
 
@@ -454,6 +514,18 @@ export function findReferenceIndexAtPosition(
 }
 
 /**
+ * Wrap an org-ref citation in link brackets when it was written (or is being
+ * inserted) as `[[cite:&key]]`, preserving any link description.
+ */
+function wrapOrgRefLink(citation: ParsedCitation, inner: string): string {
+    if (!citation.bracketed) {
+        return inner;
+    }
+    const description = citation.description ? `[${citation.description}]` : '';
+    return `[[${inner}]${description}]`;
+}
+
+/**
  * Rebuild a citation string from its parsed components
  */
 export function rebuildCitation(citation: ParsedCitation): string {
@@ -462,7 +534,7 @@ export function rebuildCitation(citation: ParsedCitation): string {
     switch (citation.syntax) {
         case 'org-ref-v2': {
             const keys = citation.references.map(r => r.key).join(',');
-            return `${citation.command}:${keys}`;
+            return wrapOrgRefLink(citation, `${citation.command}:${keys}`);
         }
 
         case 'org-ref-v3': {
@@ -479,7 +551,7 @@ export function rebuildCitation(citation: ParsedCitation): string {
             if (citation.commonSuffix) {
                 parts.push(citation.commonSuffix);
             }
-            return `${citation.command}:${parts.join(';')}`;
+            return wrapOrgRefLink(citation, `${citation.command}:${parts.join(';')}`);
         }
 
         case 'org-cite': {
@@ -527,6 +599,11 @@ export function convertCitationSyntax(
     const converted: ParsedCitation = {
         ...citation,
         syntax: targetSyntax,
+        // org-cite and LaTeX carry their own delimiters; only org-ref citations
+        // can be written as [[cite:&key]] links.
+        bracketed: targetSyntax === 'org-ref-v2' || targetSyntax === 'org-ref-v3'
+            ? citation.bracketed
+            : false,
     };
 
     // Handle command mapping for org-cite

@@ -11,7 +11,8 @@ import {
     searchEntries,
     entryToBibTeX,
     generateKey,
-    OrgCitationSyntax
+    OrgCitationSyntax,
+    OrgCitationLinkStyle
 } from './bibtexParser';
 
 export interface ReferenceConfig {
@@ -20,6 +21,7 @@ export interface ReferenceConfig {
     notesDirectory: string;
     defaultCiteStyle: 'cite' | 'citet' | 'citep' | 'citeauthor' | 'citeyear';
     citationSyntax: OrgCitationSyntax;
+    citationLinkStyle: OrgCitationLinkStyle;
 }
 
 /**
@@ -57,7 +59,8 @@ export class ReferenceManager {
             pdfDirectory: (config.get<string>('pdfDirectory') || '').replace('~', homeDir),
             notesDirectory: (config.get<string>('notesDirectory') || '').replace('~', homeDir),
             defaultCiteStyle: config.get<'cite' | 'citet' | 'citep' | 'citeauthor' | 'citeyear'>('defaultCiteStyle') || 'cite',
-            citationSyntax: config.get<OrgCitationSyntax>('citationSyntax') || 'org-ref-v3'
+            citationSyntax: config.get<OrgCitationSyntax>('citationSyntax') || 'org-ref-v3',
+            citationLinkStyle: config.get<OrgCitationLinkStyle>('citationLinkStyle') || 'plain'
         };
     }
 

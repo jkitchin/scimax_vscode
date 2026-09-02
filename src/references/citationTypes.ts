@@ -57,6 +57,15 @@ export interface ParsedCitation {
     commonPrefix?: string;
     /** Common suffix for the entire citation */
     commonSuffix?: string;
+    /**
+     * True when an org-ref citation is written as a bracketed org link,
+     * e.g. `[[cite:&key]]` (the form Emacs org-ref/scimax inserts). Only
+     * meaningful for 'org-ref-v2' and 'org-ref-v3'; org-cite carries its own
+     * brackets and LaTeX has none.
+     */
+    bracketed?: boolean;
+    /** Description of a bracketed link, e.g. `[[cite:&key][see here]]` */
+    description?: string;
     /** Original raw text of the citation */
     raw: string;
     /** Position in the source text */

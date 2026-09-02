@@ -57,6 +57,25 @@ This is a test cite:smith-2020 citation.
         expect(html).toContain('class="citation-link"');
     });
 
+    it('links bracketed org-ref citations, [[cite:&key]] (issue #55)', () => {
+        const orgContent = `* Test Section
+Emacs-style [[cite:&smith-2020]] and [[citep:&jones-2021 p. 5]].
+`;
+        const doc = parseOrgFast(orgContent);
+        const citationProcessor = createCitationProcessor(sampleBibEntries, { style: 'apa' });
+
+        const html = exportToHtml(doc, {
+            bodyOnly: true,
+            bibliography: true,
+            citationProcessor,
+        });
+
+        expect(html).toContain('href="#ref-smith-2020"');
+        expect(html).toContain('href="#ref-jones-2021"');
+        // The link markup itself must not leak into the output
+        expect(html).not.toContain('[[cite');
+    });
+
     it('adds id anchors to bibliography entries', () => {
         const orgContent = `* Test Section
 This is a test cite:smith-2020 and cite:jones-2021 citations.

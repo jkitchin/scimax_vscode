@@ -3205,8 +3205,9 @@ export async function openLinkAtPoint(): Promise<void> {
         await vscode.commands.executeCommand('scimax.notebook.openLink', url.slice(3));
     } else if (url.startsWith('file:')) {
         await openFileLink(url, document);
-    } else if (url.startsWith('cite:') || url.startsWith('citep:') || url.startsWith('citet:')) {
-        // Citation link - jump to the entry in the bib file
+    } else if (/^(cite[pt]?|citeauthor|citeyear|Citep|Citet|citealp|citealt|citenum):/.test(url)) {
+        // Citation link - jump to the entry in the bib file. Covers both the
+        // plain form (cite:&key) and the org link form ([[cite:&key]]).
         const citePath = url.slice(url.indexOf(':') + 1);
         const keys = extractCiteKeysFromPath(citePath);
         if (keys.length > 0) {

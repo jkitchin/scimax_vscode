@@ -87,14 +87,14 @@ describe('Citation Parser', () => {
         });
 
         it('parses citation with common suffix', () => {
-            const citations = parseCitationsFromLine('citep:&smith-2020;for example');
+            const citations = parseCitationsFromLine('[[citep:&smith-2020;for example]]');
             expect(citations).toHaveLength(1);
             expect(citations[0].commonSuffix).toBe('for example');
             expect(citations[0].references[0].key).toBe('smith-2020');
         });
 
         it('parses citation with individual postnotes', () => {
-            const citations = parseCitationsFromLine('citep:&smith-2020 p. 42;&jones-2021 ch. 3');
+            const citations = parseCitationsFromLine('[[citep:&smith-2020 p. 42;&jones-2021 ch. 3]]');
             expect(citations).toHaveLength(1);
             expect(citations[0].references[0].key).toBe('smith-2020');
             expect(citations[0].references[0].suffix).toBe('p. 42');
@@ -103,13 +103,24 @@ describe('Citation Parser', () => {
         });
 
         it('parses complex citation with prefix, suffix, and notes', () => {
-            const citations = parseCitationsFromLine('citep:See;&smith-2020 p. 5;&jones-2021;for examples');
+            const citations = parseCitationsFromLine('[[citep:See;&smith-2020 p. 5;&jones-2021;for examples]]');
             expect(citations).toHaveLength(1);
             expect(citations[0].commonPrefix).toBe('See');
             expect(citations[0].commonSuffix).toBe('for examples');
             expect(citations[0].references[0].key).toBe('smith-2020');
             expect(citations[0].references[0].suffix).toBe('p. 5');
             expect(citations[0].references[1].key).toBe('jones-2021');
+        });
+
+        it('stops a plain cite: link at the first space, like org does', () => {
+            // A plain org link ends at whitespace, so the prose after the key is
+            // NOT part of the citation (issue #55). Notes need the bracketed form.
+            const line = 'See cite:&smith-2020 for details.';
+            const citations = parseCitationsFromLine(line);
+            expect(citations).toHaveLength(1);
+            expect(citations[0].references[0].suffix).toBeUndefined();
+            expect(line.slice(citations[0].range.start, citations[0].range.end))
+                .toBe('cite:&smith-2020');
         });
 
         it('parses citet, citep variants', () => {
@@ -248,6 +259,77 @@ describe('Citation Parser', () => {
             expect(syntaxes).toContain('org-ref-v3');
             expect(syntaxes).toContain('org-cite');
             expect(syntaxes).toContain('latex');
+        });
+    });
+
+    describe('org-ref link form (Emacs round-trip, issue #55)', () => {
+        it('parses [[cite:&key]] as an org-ref v3 citation, not org-cite', () => {
+            const line = 'See [[cite:&evans-2026-major-ion]] here.';
+            const citations = parseCitationsFromLine(line);
+            expect(citations).toHaveLength(1);
+            expect(citations[0].syntax).toBe('org-ref-v3');
+            expect(citations[0].bracketed).toBe(true);
+            expect(citations[0].references[0].key).toBe('evans-2026-major-ion');
+            expect(line.slice(citations[0].range.start, citations[0].range.end))
+                .toBe('[[cite:&evans-2026-major-ion]]');
+        });
+
+        it('parses multiple keys and a command in a link', () => {
+            const citations = parseCitationsFromLine('[[citep:&a;&b]]');
+            expect(citations).toHaveLength(1);
+            expect(citations[0].command).toBe('citep');
+            expect(citations[0].references.map(r => r.key)).toEqual(['a', 'b']);
+        });
+
+        it('parses v2 keys in a link', () => {
+            const citations = parseCitationsFromLine('[[cite:key1,key2]]');
+            expect(citations).toHaveLength(1);
+            expect(citations[0].syntax).toBe('org-ref-v2');
+            expect(citations[0].bracketed).toBe(true);
+            expect(citations[0].references.map(r => r.key)).toEqual(['key1', 'key2']);
+        });
+
+        it('keeps a link description', () => {
+            const citations = parseCitationsFromLine('[[cite:&key][see this]]');
+            expect(citations).toHaveLength(1);
+            expect(citations[0].description).toBe('see this');
+            expect(citations[0].references[0].key).toBe('key');
+        });
+
+        it('still parses a real org-cite citation next to a link', () => {
+            const citations = parseCitationsFromLine('[[cite:&a]] and [cite:@b]');
+            expect(citations).toHaveLength(2);
+            expect(citations[0].syntax).toBe('org-ref-v3');
+            expect(citations[1].syntax).toBe('org-cite');
+            expect(citations[1].references[0].key).toBe('b');
+        });
+
+        it('round-trips a bracketed citation unchanged', () => {
+            for (const text of [
+                '[[cite:&key]]',
+                '[[citep:&a;&b]]',
+                '[[cite:key1,key2]]',
+                '[[cite:&key][see this]]',
+                '[[citep:See;&smith-2020 p. 5]]',
+            ]) {
+                const citation = parseCitationsFromLine(text)[0];
+                expect(rebuildCitation(citation)).toBe(text);
+            }
+        });
+
+        it('appends a key without breaking the brackets', () => {
+            const citation = findCitationAtPosition('[[cite:&a]]', 5)!;
+            citation.references.push({ key: 'b' });
+            expect(rebuildCitation(citation)).toBe('[[cite:&a;&b]]');
+        });
+
+        it('drops the link brackets when converting to org-cite', () => {
+            const citation = parseCitationsFromLine('[[citet:&key]]')[0];
+            expect(convertCitationSyntax(citation, 'org-cite')).toBe('[cite/t:@key]');
+        });
+
+        it('extracts keys from a link', () => {
+            expect(extractCitationKeys('[[cite:&a;&b]] and [[cite:&c]]')).toEqual(['a', 'b', 'c']);
         });
     });
 

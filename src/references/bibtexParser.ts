@@ -260,6 +260,13 @@ export function formatCitation(entry: BibEntry, style: 'full' | 'short' | 'inlin
 export type OrgCitationSyntax = 'org-ref-v3' | 'org-ref-v2' | 'org-cite';
 
 /**
+ * How org-ref citations are written: as a plain link (`cite:&key`) or as a
+ * bracketed org link (`[[cite:&key]]`, what Emacs org-ref/scimax inserts).
+ * org-cite has its own brackets and ignores this.
+ */
+export type OrgCitationLinkStyle = 'plain' | 'bracketed';
+
+/**
  * Format citation for insertion based on style
  */
 export function formatCitationLink(
@@ -268,10 +275,11 @@ export function formatCitationLink(
     format: 'org' | 'markdown' | 'latex',
     prenote?: string,
     postnote?: string,
-    orgSyntax: OrgCitationSyntax = 'org-ref-v3'
+    orgSyntax: OrgCitationSyntax = 'org-ref-v3',
+    orgLinkStyle: OrgCitationLinkStyle = 'plain'
 ): string {
     if (format === 'org') {
-        return formatOrgCitation(key, style, orgSyntax, prenote, postnote);
+        return formatOrgCitation(key, style, orgSyntax, prenote, postnote, orgLinkStyle);
     } else if (format === 'latex') {
         // LaTeX style: \cite{key}, \citet{key}, \citep{key}, etc.
         // Map styles to LaTeX commands
@@ -305,32 +313,48 @@ function formatOrgCitation(
     style: 'cite' | 'citet' | 'citep' | 'citeauthor' | 'citeyear',
     syntax: OrgCitationSyntax,
     prenote?: string,
-    postnote?: string
+    postnote?: string,
+    linkStyle: OrgCitationLinkStyle = 'plain'
 ): string {
+    // org-ref citations may be written as a bracketed org link. Emacs org-ref
+    // inserts that form, and it is the only form that can hold notes with
+    // spaces, since a plain org link ends at the first whitespace.
+    const asLink = (citation: string) =>
+        linkStyle === 'bracketed' ? `[[${citation}]]` : citation;
+
     switch (syntax) {
         case 'org-ref-v3':
-            // org-ref v3 syntax: style:&key (with & prefix and ; separator)
+            // org-ref v3 syntax: style:&key (with & prefix and ; separator).
+            // Notes contain spaces, so they force the bracketed link form.
             if (prenote && postnote) {
-                return `${style}:${prenote};&${key} ${postnote}`;
+                return `[[${style}:${prenote};&${key} ${postnote}]]`;
             } else if (prenote) {
-                return `${style}:${prenote};&${key}`;
+                return asLink(`${style}:${prenote};&${key}`);
             } else if (postnote) {
-                return `${style}:&${key} ${postnote}`;
+                return `[[${style}:&${key} ${postnote}]]`;
             }
-            return `${style}:&${key}`;
+            return asLink(`${style}:&${key}`);
 
         case 'org-ref-v2':
             // org-ref v2 (legacy) syntax: style:key1,key2
             // Note: v2 doesn't support pre/post notes in the same way
             if (postnote) {
-                return `${style}:${key} ${postnote}`;
+                return `[[${style}:${key} ${postnote}]]`;
             }
-            return `${style}:${key}`;
+            return asLink(`${style}:${key}`);
 
-        case 'org-cite':
-            // org-mode 9.5+ native syntax: [cite:@key] or [cite/style:@key]
-            // Map cite styles to org-cite variants
-            const orgCiteStyle = style === 'cite' ? '' : `/${style}`;
+        case 'org-cite': {
+            // org-mode 9.5+ native syntax: [cite:@key] or [cite/style:@key].
+            // org-cite styles are short names (t, p, a, y) - emitting the
+            // org-ref command name ([cite/citet:...]) is not valid org-cite.
+            const ORG_CITE_STYLES: Record<string, string> = {
+                cite: '',
+                citet: '/t',
+                citep: '/p',
+                citeauthor: '/a',
+                citeyear: '/y',
+            };
+            const orgCiteStyle = ORG_CITE_STYLES[style] ?? '';
             if (prenote && postnote) {
                 return `[cite${orgCiteStyle}:${prenote};@${key} ${postnote}]`;
             } else if (prenote) {
@@ -339,9 +363,10 @@ function formatOrgCitation(
                 return `[cite${orgCiteStyle}:@${key} ${postnote}]`;
             }
             return `[cite${orgCiteStyle}:@${key}]`;
+        }
 
         default:
-            return `${style}:&${key}`;
+            return asLink(`${style}:&${key}`);
     }
 }
 

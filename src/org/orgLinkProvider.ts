@@ -5,6 +5,12 @@ import { getDatabase } from '../database/lazyDb';
 import { slugifyAnchor } from '../parser/orgAnchors';
 import { extractCiteKeysFromPath } from '../references/citationParser';
 
+/**
+ * Path of a citation written as an org link, e.g. `cite:&key` in [[cite:&key]].
+ * Not global: it is used with .exec() on a whole link path.
+ */
+const CITE_LINK_PATH_RE = /^(cite[pt]?|citeauthor|citeyear|Citep|Citet|citealp|citealt|citenum):(.+)$/;
+
 // Excalidraw file extensions
 const EXCALIDRAW_EXTENSIONS = ['.excalidraw', '.excalidraw.json', '.excalidraw.svg', '.excalidraw.png'];
 
@@ -233,6 +239,21 @@ export class OrgLinkProvider implements vscode.DocumentLinkProvider {
             return vscode.Uri.parse(target);
         }
 
+        // Citations written as org links, [[cite:&key]] - the form Emacs
+        // org-ref/scimax inserts. Same target as the bare cite: links below.
+        const citeMatch = CITE_LINK_PATH_RE.exec(target);
+        if (citeMatch) {
+            const keys = extractCiteKeysFromPath(citeMatch[2]);
+            if (keys.length > 0) {
+                return vscode.Uri.parse(
+                    `command:scimax.ref.gotoCitation?${encodeURIComponent(JSON.stringify({
+                        key: keys[0],
+                        keys: keys
+                    }))}`
+                );
+            }
+        }
+
         // DOI links
         if (target.startsWith('doi:')) {
             return vscode.Uri.parse(`https://doi.org/${target.slice(4)}`);
@@ -439,6 +460,13 @@ export class OrgLinkProvider implements vscode.DocumentLinkProvider {
     private getTooltip(target: string): string {
         if (target.startsWith('http://') || target.startsWith('https://')) {
             return `Open URL: ${target}`;
+        }
+        const citeMatch = CITE_LINK_PATH_RE.exec(target);
+        if (citeMatch) {
+            const keys = extractCiteKeysFromPath(citeMatch[2]);
+            if (keys.length > 0) {
+                return `Citation: ${keys.join(', ')}`;
+            }
         }
         if (target.startsWith('doi:')) {
             return `Open DOI: ${target.slice(4)}`;

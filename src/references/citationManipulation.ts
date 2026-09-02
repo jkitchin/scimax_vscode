@@ -60,8 +60,14 @@ function parsedToCitationInfo(parsed: ParsedCitation): CitationInfo {
             suffix = '}';
             break;
         default:
-            prefix = `${parsed.command}:`;
-            suffix = '';
+            // org-ref, either plain (cite:&key) or as a link ([[cite:&key]])
+            if (parsed.bracketed) {
+                prefix = `[[${parsed.command}:`;
+                suffix = parsed.description ? `][${parsed.description}]]` : ']]';
+            } else {
+                prefix = `${parsed.command}:`;
+                suffix = '';
+            }
     }
 
     // Calculate keysStart (position after prefix in the raw string)

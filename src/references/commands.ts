@@ -14,50 +14,7 @@ import {
     OpenAlexWork
 } from './openalexService';
 import { storeOpenAlexApiKey, getOpenAlexApiKey, deleteOpenAlexApiKey, hasOpenAlexApiKey } from '../database/secretStorage';
-
-/**
- * Find citation at cursor position to check if we should append
- * Supports both v2 (cite:key1,key2) and v3 (cite:&key1;&key2) syntax
- */
-function findCitationAtPosition(line: string, position: number): { start: number; end: number; keys: string[]; prefix: string; separator: string; isV3: boolean } | null {
-    // Try v3 pattern first: cite:&key1;&key2 or cite:prefix;&key1;&key2
-    const orgRefV3Pattern = /(cite[pt]?|citeauthor|citeyear|Citep|Citet|citealp|citealt):([^[\s]*&[a-zA-Z0-9_:;&\s-]+)/g;
-
-    let match;
-    while ((match = orgRefV3Pattern.exec(line)) !== null) {
-        const start = match.index;
-        const end = start + match[0].length;
-
-        if (position >= start && position <= end + 1) {
-            const prefix = match[1] + ':';
-            const content = match[2];
-            // Extract keys from v3 format (keys start with &)
-            const keyMatches = content.match(/&([a-zA-Z0-9_:-]+)/g) || [];
-            const keys = keyMatches.map(k => k.slice(1)); // Remove & prefix
-            return { start, end, keys, prefix, separator: ';&', isV3: true };
-        }
-    }
-
-    // Fall back to v2 pattern: cite:key1,key2,key3
-    const orgRefV2Pattern = /(cite[pt]?|citeauthor|citeyear|Citep|Citet|citealp|citealt):([a-zA-Z0-9_:,-]+)/g;
-
-    while ((match = orgRefV2Pattern.exec(line)) !== null) {
-        const start = match.index;
-        const end = start + match[0].length;
-
-        // Check if cursor is on or immediately after this citation
-        if (position >= start && position <= end + 1) {
-            const prefix = match[1] + ':';
-            const keysStr = match[2];
-            // Skip if this looks like v3 (has &)
-            if (keysStr.includes('&')) continue;
-            const keys = keysStr.split(',').map(k => k.trim());
-            return { start, end, keys, prefix, separator: ',', isV3: false };
-        }
-    }
-
-    return null;
-}
+import { findCitationAtPosition, rebuildCitation } from './citationParser';
 
 /**
  * Register all reference-related commands
@@ -115,25 +72,19 @@ export function registerReferenceCommands(
 
             if (existingCitation) {
                 // Check if key already exists in citation
-                if (existingCitation.keys.includes(selected.data.key)) {
+                if (existingCitation.references.some(r => r.key === selected.data.key)) {
                     vscode.window.showInformationMessage(`${selected.data.key} is already in this citation`);
                     return;
                 }
 
-                // Append to existing citation
-                const newKeys = [...existingCitation.keys, selected.data.key];
-                let newCitation: string;
-                if (existingCitation.isV3) {
-                    // v3 format: cite:&key1;&key2 - each key needs & prefix
-                    newCitation = existingCitation.prefix + newKeys.map(k => `&${k}`).join(';');
-                } else {
-                    // v2 format: cite:key1,key2
-                    newCitation = existingCitation.prefix + newKeys.join(existingCitation.separator);
-                }
+                // Append to the existing citation, preserving its syntax, any
+                // pre/post notes, and its link form ([[cite:&key]] vs cite:&key)
+                existingCitation.references.push({ key: selected.data.key });
+                const newCitation = rebuildCitation(existingCitation);
 
                 const range = new vscode.Range(
-                    position.line, existingCitation.start,
-                    position.line, existingCitation.end
+                    position.line, existingCitation.range.start,
+                    position.line, existingCitation.range.end
                 );
 
                 await editor.edit(editBuilder => {
@@ -141,7 +92,7 @@ export function registerReferenceCommands(
                 });
 
                 // Move cursor to end of citation
-                const newPosition = new vscode.Position(position.line, existingCitation.start + newCitation.length);
+                const newPosition = new vscode.Position(position.line, existingCitation.range.start + newCitation.length);
                 editor.selection = new vscode.Selection(newPosition, newPosition);
 
                 vscode.window.showInformationMessage(`Added ${selected.data.key} to citation`);
@@ -182,8 +133,44 @@ export function registerReferenceCommands(
                 format,
                 undefined, // prenote
                 undefined, // postnote
-                config.citationSyntax
+                config.citationSyntax,
+                config.citationLinkStyle
             );
+            await editor.edit(editBuilder => {
+                editBuilder.insert(editor.selection.active, citation);
+            });
+        })
+    );
+
+    // Insert a citation for a specific key (used by the hover "Insert Citation" link)
+    context.subscriptions.push(
+        vscode.commands.registerCommand('scimax.ref.insertCitationForKey', async (key?: string) => {
+            const editor = vscode.window.activeTextEditor;
+            if (!editor) return;
+
+            let citeKey = key;
+            if (!citeKey) {
+                citeKey = await vscode.window.showInputBox({
+                    prompt: 'Citation key to insert',
+                    placeHolder: 'e.g. kitchin-2015-examp-effec'
+                });
+            }
+            if (!citeKey) return;
+
+            const config = manager.getConfig();
+            const langId = editor.document.languageId;
+            const format = langId === 'org' ? 'org' : langId === 'latex' ? 'latex' : 'markdown';
+
+            const citation = formatCitationLink(
+                citeKey,
+                config.defaultCiteStyle,
+                format,
+                undefined, // prenote
+                undefined, // postnote
+                config.citationSyntax,
+                config.citationLinkStyle
+            );
+
             await editor.edit(editBuilder => {
                 editBuilder.insert(editor.selection.active, citation);
             });
@@ -1512,7 +1499,8 @@ async function showEntryActions(manager: ReferenceManager, entry: BibEntry): Pro
                     format,
                     undefined,
                     undefined,
-                    config.citationSyntax
+                    config.citationSyntax,
+                    config.citationLinkStyle
                 );
                 await editor.edit(editBuilder => {
                     editBuilder.insert(editor.selection.active, citation);
