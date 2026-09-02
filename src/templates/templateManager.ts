@@ -317,28 +317,17 @@ export class TemplateManager {
      * hand, and nothing in the template picker hints they exist.
      */
     public getExporterTemplates(): Template[] {
-        const classMap = vscode.workspace
-            .getConfiguration('scimax.export')
-            .get<Record<string, string>>('latexClassExporters') || {};
-
-        return ExporterRegistry.getInstance().getAll().map(exporter => {
-            // If a #+LATEX_CLASS routes to this exporter, the generated header
-            // says so, and the plain LaTeX/PDF exports then use it too.
-            const latexClass = Object.entries(classMap)
-                .find(([, id]) => id === exporter.id)?.[0];
-
-            return {
-                id: `exporter:${exporter.id}`,
-                name: exporter.name,
-                description: exporter.description
-                    ? `${exporter.description} (custom exporter)`
-                    : `Header for the ${exporter.name} exporter`,
-                format: 'org' as TemplateFormat,
-                content: buildExporterOrgTemplate(exporter, { latexClass }),
-                category: 'Custom Exporters',
-                builtIn: false,
-            };
-        });
+        return ExporterRegistry.getInstance().getAll().map(exporter => ({
+            id: `exporter:${exporter.id}`,
+            name: exporter.name,
+            description: exporter.description
+                ? `${exporter.description} (custom exporter)`
+                : `Header for the ${exporter.name} exporter`,
+            format: 'org' as TemplateFormat,
+            content: buildExporterOrgTemplate(exporter),
+            category: 'Custom Exporters',
+            builtIn: false,
+        }));
     }
 
     /**

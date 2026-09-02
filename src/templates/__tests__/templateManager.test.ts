@@ -493,6 +493,7 @@ Content`;
                 expect(memo?.name).toBe('CMU Memo');
                 expect(memo?.category).toBe('Custom Exporters');
                 expect(memo?.content).toContain('#+TO: <<<TO>>>');
+                expect(memo?.content).toContain('#+EXPORTER: cmu-memo');
                 expect(memo?.content).toContain('#+DEPARTMENT: ChemE');
                 // and it is retrievable by id, so the insert command can use it
                 expect(manager.getTemplate('exporter:cmu-memo')?.name).toBe('CMU Memo');

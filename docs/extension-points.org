@@ -262,7 +262,15 @@ exports through the =cmu-memo= exporter on =C-c C-e l o=, no custom command
 needed. The class name is matched case-insensitively, and the mapped value may
 be any exporter id (the class and the exporter do not have to share a name).
 
-Per-document overrides use the =#+EXPORTER= keyword:
+*A class that names a loaded exporter routes to it even with no mapping.* There
+is no =cmu-memo.cls= for LaTeX to load -- the exporter's template is what
+supplies =\documentclass= -- so an unmapped =#+LATEX_CLASS: cmu-memo= would
+otherwise fail the compile with =File `cmu-memo.cls' not found=. Map the class
+to =none= if you really do have a class file of that name and want the built-in
+backend.
+
+Per-document overrides use the =#+EXPORTER= keyword, which needs no
+configuration at all and is what the inserted header uses:
 
 | Keyword                | Effect                                            |
 |------------------------+---------------------------------------------------|

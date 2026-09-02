@@ -183,9 +183,12 @@ Then a file that begins with
 
 exports through the =cmu-memo= template on `C-c C-e l o' - no special command
 to remember. Class names match case-insensitively, and the mapped exporter id
-does not have to match the class name.
+does not have to match the class name. A class that *is* the name of a loaded
+exporter routes to it even without a mapping -- there is no =cmu-memo.cls= for
+LaTeX to find, the exporter's template supplies =\documentclass=.
 
-Per-document control:
+Per-document control (=#+EXPORTER= needs no configuration, and is what
+=Scimax: Insert Custom Exporter Header= writes):
 
 | Keyword                | Effect                                           |
 |------------------------+--------------------------------------------------|

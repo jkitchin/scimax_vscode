@@ -776,6 +776,12 @@ const ROUTE_OPT_OUT = new Set(['none', 'nil', 'default', 'off', 'no']);
  * Resolution order:
  *   1. `#+EXPORTER: <id>` in the document (use `none` to force the built-in backend)
  *   2. `#+LATEX_CLASS: <class>` looked up in `classMap` (case-insensitive)
+ *   3. `#+LATEX_CLASS: <class>` naming a loaded exporter directly
+ *
+ * Step 3 exists because a class that is really an exporter otherwise fails at
+ * compile time with "File `cmu-memo.cls' not found" - LaTeX has no such class,
+ * the exporter's template is what supplies \documentclass. Map the class to
+ * `none` in `classMap` to force the built-in backend anyway.
  *
  * Returns a route with no `exporterId` when the built-in backend should be used.
  */
@@ -795,18 +801,21 @@ export function resolveCustomExporterRoute(
     }
 
     const latexClass = keywords?.LATEX_CLASS?.trim();
-    if (!latexClass || !classMap) {
+    if (!latexClass) {
         return { reason: 'none' };
     }
 
-    const matchedKey = Object.keys(classMap).find(
+    const matchedKey = classMap && Object.keys(classMap).find(
         key => key.trim().toLowerCase() === latexClass.toLowerCase()
     );
-    if (matchedKey === undefined) {
-        return { reason: 'none' };
+    if (!matchedKey) {
+        // No mapping: a class that names a loaded exporter is that exporter.
+        return isRegistered(latexClass)
+            ? { exporterId: latexClass, reason: 'latex-class', latexClass }
+            : { reason: 'none' };
     }
 
-    const mapped = (classMap[matchedKey] || '').trim();
+    const mapped = (classMap![matchedKey] || '').trim();
     if (!mapped || ROUTE_OPT_OUT.has(mapped.toLowerCase())) {
         return { reason: 'opt-out', latexClass };
     }
@@ -849,10 +858,7 @@ export function resolveCustomExporterRouteForContent(
  * The result uses the template system's conventions ({{author}}, {{date}},
  * ${1:...} tab stops), so it can be handed straight to TemplateManager.
  */
-export function buildExporterOrgTemplate(
-    exporter: CustomExporter,
-    options: { latexClass?: string } = {}
-): string {
+export function buildExporterOrgTemplate(exporter: CustomExporter): string {
     if (exporter.orgTemplateContent) {
         return exporter.orgTemplateContent;
     }
@@ -861,13 +867,11 @@ export function buildExporterOrgTemplate(
         '#+TITLE: ${1:Title}',
         '#+AUTHOR: {{author}}',
         '#+DATE: {{date}}',
+        // Routes the ordinary LaTeX/PDF exports through this exporter, with no
+        // configuration. (#+LATEX_CLASS would name a .cls file that does not
+        // exist - the exporter's template supplies \documentclass.)
+        `#+EXPORTER: ${exporter.id}`,
     ];
-
-    // With a class mapping in place, the ordinary LaTeX/PDF exports route to
-    // this exporter, so the document is self-describing.
-    if (options.latexClass) {
-        lines.push(`#+LATEX_CLASS: ${options.latexClass}`);
-    }
 
     for (const [key, def] of Object.entries(exporter.keywords || {})) {
         const name = key.toUpperCase();
@@ -1010,7 +1014,7 @@ export const EXAMPLE_CMU_MEMO_MANIFEST: ExporterManifest = {
 export const EXAMPLE_CMU_MEMO_ORG_TEMPLATE = `#+TITLE: \${1:Memo subject}
 #+AUTHOR: {{author}}
 #+DATE: {{date}}
-#+LATEX_CLASS: cmu-memo
+#+EXPORTER: cmu-memo
 
 #+DEPARTMENT: Department of Chemical Engineering
 #+TO: <<<TO>>>
@@ -1021,8 +1025,9 @@ export const EXAMPLE_CMU_MEMO_ORG_TEMPLATE = `#+TITLE: \${1:Memo subject}
 
 $0
 
-# Export with C-c C-e and pick "CMU Memo", or map the class once with
-# "scimax.export.latexClassExporters": { "cmu-memo": "cmu-memo" } and use C-c C-e l o.
+# #+EXPORTER: routes C-c C-e l p / l o through the CMU Memo exporter, whose
+# template supplies \\documentclass. Do not add #+LATEX_CLASS: cmu-memo -
+# there is no cmu-memo.cls. Picking "CMU Memo" from C-c C-e works too.
 `;
 
 /**

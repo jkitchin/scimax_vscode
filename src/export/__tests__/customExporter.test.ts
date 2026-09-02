@@ -642,10 +642,15 @@ describe('Org skeletons for custom exporters', () => {
         expect(header).toContain('#+DATE: {{date}}');
     });
 
-    it('includes #+LATEX_CLASS when a class routes to the exporter', () => {
-        expect(buildExporterOrgTemplate(exporter, { latexClass: 'cmu-memo' }))
-            .toContain('#+LATEX_CLASS: cmu-memo');
-        expect(buildExporterOrgTemplate(exporter)).not.toContain('#+LATEX_CLASS');
+    it('routes with #+EXPORTER, never #+LATEX_CLASS', () => {
+        // #+LATEX_CLASS: cmu-memo would send the built-in LaTeX export looking
+        // for a cmu-memo.cls that does not exist; #+EXPORTER routes to the
+        // exporter, whose template supplies \documentclass.
+        const header = buildExporterOrgTemplate(exporter);
+        expect(header).toContain('#+EXPORTER: cmu-memo');
+        expect(header).not.toContain('#+LATEX_CLASS');
+        expect(EXAMPLE_CMU_MEMO_ORG_TEMPLATE).toContain('#+EXPORTER: cmu-memo');
+        expect(EXAMPLE_CMU_MEMO_ORG_TEMPLATE).not.toContain('#+LATEX_CLASS: cmu-memo\n');
     });
 
     it('ships an org skeleton with the memo example', () => {
@@ -1042,14 +1047,36 @@ describe('Exporter Routing (#+LATEX_CLASS -> custom exporter)', () => {
             expect(route.reason).toBe('none');
         });
 
-        it('does not route when there is no mapping at all', () => {
+        it('routes an unmapped class that names a loaded exporter', () => {
+            // Without this, "#+LATEX_CLASS: cmu-memo" reaches the built-in
+            // LaTeX export and fails with "File `cmu-memo.cls' not found".
             const route = resolveCustomExporterRoute(
                 { LATEX_CLASS: 'cmu-memo' },
                 {},
                 installed(['cmu-memo'])
             );
+            expect(route.exporterId).toBe('cmu-memo');
+            expect(route.reason).toBe('latex-class');
+        });
+
+        it('leaves an unmapped class alone when no exporter has that id', () => {
+            const route = resolveCustomExporterRoute(
+                { LATEX_CLASS: 'report' },
+                {},
+                installed(['cmu-memo'])
+            );
             expect(route.exporterId).toBeUndefined();
             expect(route.reason).toBe('none');
+        });
+
+        it('honors an explicit opt-out for a class that names an exporter', () => {
+            const route = resolveCustomExporterRoute(
+                { LATEX_CLASS: 'cmu-memo' },
+                { 'cmu-memo': 'none' },
+                installed(['cmu-memo'])
+            );
+            expect(route.exporterId).toBeUndefined();
+            expect(route.reason).toBe('opt-out');
         });
 
         it('reports a mapped exporter that is not installed', () => {
