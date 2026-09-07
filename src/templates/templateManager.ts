@@ -58,6 +58,13 @@ interface TemplateVariable {
     description?: string;
 }
 
+/**
+ * Keys that mark a header comment block as template metadata rather than
+ * document content. TITLE is deliberately excluded: it is a normal org/LaTeX
+ * keyword, so a block containing only TITLE is treated as content.
+ */
+const TEMPLATE_METADATA_KEYS = ['name', 'description', 'category', 'filename', 'defaultfilename', 'format'];
+
 export class TemplateManager {
     private context: vscode.ExtensionContext;
     private config: TemplateConfig;
@@ -223,7 +230,6 @@ export class TemplateManager {
     } {
         const lines = content.split('\n');
         const metadata: Record<string, string> = {};
-        let contentStartIndex = 0;
 
         // Parse metadata from header comments based on file type
         const commentPatterns = {
@@ -235,16 +241,38 @@ export class TemplateManager {
 
         const pattern = commentPatterns[ext as keyof typeof commentPatterns] || commentPatterns['.template'];
 
-        for (let i = 0; i < lines.length; i++) {
-            const match = lines[i].match(pattern);
-            if (match) {
-                metadata[match[1].toLowerCase()] = match[2];
-                contentStartIndex = i + 1;
-            } else if (lines[i].trim() !== '') {
-                // Stop parsing metadata at first non-metadata, non-empty line
+        // Skip blank lines before the header block.
+        let blockStart = 0;
+        while (blockStart < lines.length && lines[blockStart].trim() === '') {
+            blockStart++;
+        }
+
+        // The header block is the run of comment lines at the top of the file.
+        // It ends at the first blank line or the first line that is not a
+        // comment. Stopping at a blank line matters for org templates, whose
+        // content usually starts with real keywords (#+TITLE:, #+AUTHOR: ...)
+        // that must not be swallowed as template metadata.
+        let blockEnd = blockStart;
+        while (blockEnd < lines.length) {
+            const match = lines[blockEnd].match(pattern);
+            if (!match) {
                 break;
-            } else {
-                contentStartIndex = i + 1;
+            }
+            metadata[match[1].toLowerCase()] = match[2];
+            blockEnd++;
+        }
+
+        // Only strip the block when it actually declares template metadata.
+        // A block of plain document keywords is content, not a header, so it
+        // stays in the template (its TITLE can still name the template).
+        const isTemplateHeader = TEMPLATE_METADATA_KEYS.some(key => key in metadata);
+
+        let contentStartIndex = 0;
+        if (isTemplateHeader) {
+            contentStartIndex = blockEnd;
+            // Drop the blank lines separating the header from the content.
+            while (contentStartIndex < lines.length && lines[contentStartIndex].trim() === '') {
+                contentStartIndex++;
             }
         }
 

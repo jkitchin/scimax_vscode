@@ -274,6 +274,57 @@ Content`;
             expect(result.name).toBe('Title Based Name');
         });
 
+        it('should keep org keywords that follow the metadata block', () => {
+            const content = `#+NAME: CMU Memo
+#+DESCRIPTION: Memorandum template
+#+CATEGORY: CMU Documents
+#+FILENAME: memo-{{date}}
+
+#+TITLE: \${1:Memo Subject}
+#+AUTHOR: {{author}}
+#+TO: \${2:Recipient Name}
+#+EXPORT_BACKEND: cmu-memo
+
+* Summary`;
+            const result = manager.testParseTemplateMetadata(content, '.org');
+
+            expect(result.name).toBe('CMU Memo');
+            expect(result.description).toBe('Memorandum template');
+            expect(result.category).toBe('CMU Documents');
+            expect(result.defaultFilename).toBe('memo-{{date}}');
+            expect(result.content).toBe(`#+TITLE: \${1:Memo Subject}
+#+AUTHOR: {{author}}
+#+TO: \${2:Recipient Name}
+#+EXPORT_BACKEND: cmu-memo
+
+* Summary`);
+        });
+
+        it('should keep a header block that is document content, not metadata', () => {
+            const content = `#+TITLE: Title Based Name
+#+AUTHOR: Someone
+#+DATE: today
+
+* Heading`;
+            const result = manager.testParseTemplateMetadata(content, '.org');
+
+            expect(result.name).toBe('Title Based Name');
+            expect(result.content).toBe(content);
+        });
+
+        it('should keep LaTeX comments that follow the metadata block', () => {
+            const content = `% NAME: Thesis Chapter
+% CATEGORY: Academic
+
+% This comment is part of the template
+\\chapter{Intro}`;
+            const result = manager.testParseTemplateMetadata(content, '.tex');
+
+            expect(result.name).toBe('Thesis Chapter');
+            expect(result.content).toBe(`% This comment is part of the template
+\\chapter{Intro}`);
+        });
+
         it('should handle empty metadata', () => {
             const content = 'Just content, no metadata';
             const result = manager.testParseTemplateMetadata(content, '.org');

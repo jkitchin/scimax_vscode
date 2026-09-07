@@ -166,10 +166,20 @@ User templates are stored in =~/scimax/templates= by default (under =scimax.dire
     └── thesis-chapter.tex
 #+END_EXAMPLE
 
-** ✅ Template File Format
+** 👀 Template File Format
 CLOSED: [2026-01-21 Wed 07:16]
 
 Templates can include metadata in header comments:
+
+The metadata block must be the first thing in the file and is terminated by a
+blank line. Everything after that blank line is template content, so an org
+template can begin with real keywords (=#+TITLE:=, =#+AUTHOR:=, =#+TO:= ...)
+without them being mistaken for template metadata.
+
+Recognized metadata keys are =NAME=, =DESCRIPTION=, =CATEGORY=, =FILENAME=
+(or =DEFAULTFILENAME=), and =FORMAT=. A leading block that contains none of
+these is treated as document content and is kept in the template; its =TITLE=
+is still used to name the template when =NAME= is absent.
 
 *** ✅ Org-mode Template
 CLOSED: [2026-01-21 Wed 07:16]
