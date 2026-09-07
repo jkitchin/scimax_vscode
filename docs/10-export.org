@@ -200,6 +200,16 @@ and `l o' (compiles and opens it), plus =scimax export --format latex|pdf= on
 the command line. Body-only exports are never routed. If the mapped exporter is
 not installed you get a warning and the built-in export runs instead.
 
+=#+LATEX_HEADER:= lines work with custom exporters too - they land in the
+template's =latexHeaders= variable, or, for templates that do not use that
+variable, are inserted just before =\begin{document}=:
+
+#+BEGIN_SRC org
+,#+LATEX_CLASS: cmu-memo
+,#+LATEX_HEADER: \usepackage{setspace}
+,#+LATEX_HEADER: \onehalfspacing
+#+END_SRC
+
 *** ✅ Custom Preambles
 CLOSED: [2026-01-16 Fri 20:58]
 

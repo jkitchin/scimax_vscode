@@ -303,6 +303,23 @@ Notes:
 | ={{upper text}}=            | Uppercase                      |
 | ={{lower text}}=            | Lowercase                      |
 | ={{{body}}}=                | Raw body content (triple braces) |
+| ={{{latexHeaders}}}=        | Document =#+LATEX_HEADER:= lines |
+
+*** Document =#+LATEX_HEADER:= Lines
+
+A document's =#+LATEX_HEADER:= and =#+LATEX_HEADER_EXTRA:= lines are collected
+into the =latexHeaders= variable, so a letter can add packages the template
+does not know about:
+
+#+BEGIN_SRC org
+,#+LATEX_CLASS: cmu-memo
+,#+LATEX_HEADER: \usepackage{setspace}
+,#+LATEX_HEADER: \onehalfspacing
+#+END_SRC
+
+Place ={{{latexHeaders}}}= in the template wherever the headers belong. A
+LaTeX template that does *not* mention =latexHeaders= gets them inserted
+automatically just before =\begin{document}=, so older templates keep working.
 
 ** Export Backends (Programmatic)
 

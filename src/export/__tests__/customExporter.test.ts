@@ -39,6 +39,9 @@ import {
     buildExporterOrgTemplate,
     findMissingRequiredKeywords,
     EXAMPLE_CMU_MEMO_ORG_TEMPLATE,
+    executeCustomExport,
+    injectLatexHeaders,
+    CustomExporter,
 } from '../customExporter';
 
 describe('Custom Exporter Template Engine', () => {
@@ -1160,6 +1163,112 @@ describe('Exporter Routing (#+LATEX_CLASS -> custom exporter)', () => {
                 installed(['cmu-memo'])
             );
             expect(route.reason).toBe('none');
+        });
+    });
+});
+
+
+describe('LATEX_HEADER passthrough', () => {
+    const TEMPLATE_WITHOUT_PLACEHOLDER = `\\documentclass{letter}
+\\usepackage{cmumemo}
+
+\\begin{document}
+{{{body}}}
+\\end{document}
+`;
+
+    const TEMPLATE_WITH_PLACEHOLDER = `\\documentclass{letter}
+% headers here
+{{{latexHeaders}}}
+\\begin{document}
+{{{body}}}
+\\end{document}
+`;
+
+    function registerTemplate(id: string, templateSource: string): void {
+        const exporter: CustomExporter = {
+            id,
+            name: id,
+            parent: 'latex',
+            outputFormat: 'tex',
+            template: 'template.tex',
+            basePath: '/nonexistent',
+            compiledTemplate: compileTemplate(templateSource),
+            templateSource,
+        };
+        ExporterRegistry.getInstance().register(exporter);
+    }
+
+    afterEach(() => {
+        ExporterRegistry.getInstance().clear();
+    });
+
+    it('injects LATEX_HEADER lines before \\begin{document}', async () => {
+        registerTemplate('no-placeholder', TEMPLATE_WITHOUT_PLACEHOLDER);
+        const content = [
+            '#+LATEX_HEADER: \\usepackage{setspace}',
+            '#+LATEX_HEADER: \\onehalfspacing',
+            '',
+            'Hello.',
+            ''
+        ].join('\n');
+
+        const result = await executeCustomExport('no-placeholder', content);
+
+        expect(result).toContain('\\usepackage{setspace}');
+        expect(result).toContain('\\onehalfspacing');
+        expect(result.indexOf('\\onehalfspacing')).toBeLessThan(
+            result.indexOf('\\begin{document}')
+        );
+    });
+
+    it('includes LATEX_HEADER_EXTRA lines too', async () => {
+        registerTemplate('no-placeholder', TEMPLATE_WITHOUT_PLACEHOLDER);
+        const content = '#+LATEX_HEADER_EXTRA: \\usepackage{lineno}\n\nHello.\n';
+
+        const result = await executeCustomExport('no-placeholder', content);
+
+        expect(result).toContain('\\usepackage{lineno}');
+    });
+
+    it('lets a template place the headers itself without double-inserting', async () => {
+        registerTemplate('with-placeholder', TEMPLATE_WITH_PLACEHOLDER);
+        const content = '#+LATEX_HEADER: \\usepackage{setspace}\n\nHello.\n';
+
+        const result = await executeCustomExport('with-placeholder', content);
+
+        expect(result.split('\\usepackage{setspace}').length - 1).toBe(1);
+        expect(result).toContain('% headers here\n\\usepackage{setspace}');
+    });
+
+    it('leaves the document untouched when there are no headers', async () => {
+        registerTemplate('no-placeholder', TEMPLATE_WITHOUT_PLACEHOLDER);
+        const content = 'Hello.\n';
+
+        const result = await executeCustomExport('no-placeholder', content);
+
+        expect(result).toBe(
+            TEMPLATE_WITHOUT_PLACEHOLDER.replace('{{{body}}}', 'Hello.\n')
+        );
+    });
+
+    describe('injectLatexHeaders', () => {
+        it('returns the input unchanged with empty headers', () => {
+            const doc = '\\documentclass{letter}\n\\begin{document}\nx\n\\end{document}\n';
+            expect(injectLatexHeaders(doc, '')).toBe(doc);
+        });
+
+        it('returns the input unchanged when there is no \\begin{document}', () => {
+            const body = 'Just a body, no document environment.\n';
+            expect(injectLatexHeaders(body, '\\usepackage{setspace}')).toBe(body);
+        });
+
+        it('inserts at the first \\begin{document}', () => {
+            const doc = '\\documentclass{letter}\n\\begin{document}\n\\end{document}\n';
+            const out = injectLatexHeaders(doc, '\\usepackage{setspace}');
+            expect(out).toBe(
+                '\\documentclass{letter}\n\\usepackage{setspace}\n\n\\begin{document}\n\\end{document}\n'
+            );
         });
     });
 });

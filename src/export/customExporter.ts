@@ -107,6 +107,8 @@ export interface CustomExporter extends ExporterManifest {
     basePath: string;
     /** Compiled Handlebars template */
     compiledTemplate: Handlebars.TemplateDelegate;
+    /** Raw template source (used to detect which variables the template uses) */
+    templateSource?: string;
     /** Preamble content (if any) */
     preambleContent?: string;
     /** Contents of `orgTemplate`, when the manifest names one */
@@ -130,6 +132,8 @@ export interface TemplateContext {
     preamble?: string;
     documentClass?: string;
     classOptions?: string;
+    /** #+LATEX_HEADER: / #+LATEX_HEADER_EXTRA: lines from the document, joined by newlines */
+    latexHeaders?: string;
 
     // Custom keywords from document
     [key: string]: string | boolean | number | string[] | undefined;
@@ -578,6 +582,7 @@ class ExporterRegistry {
                 ...manifest,
                 basePath: exporterPath,
                 compiledTemplate,
+                templateSource: templateContent,
                 preambleContent,
                 orgTemplateContent,
             },
@@ -649,6 +654,47 @@ export { ExporterRegistry };
 // =============================================================================
 // Export Execution
 // =============================================================================
+
+/**
+ * Collect the `#+LATEX_HEADER:` / `#+LATEX_HEADER_EXTRA:` lines from a document
+ * into a single preamble block.
+ */
+export function collectLatexHeaders(doc: OrgDocumentNode): string {
+    const headers = [
+        ...(doc.keywordLists?.['LATEX_HEADER'] || []),
+        ...(doc.keywordLists?.['LATEX_HEADER_EXTRA'] || []),
+    ]
+        .map((line) => line.trim())
+        .filter((line) => line.length > 0);
+
+    return headers.join('\n');
+}
+
+/**
+ * Insert LaTeX header lines into a rendered document just before
+ * `\begin{document}`.
+ *
+ * Custom templates written before `latexHeaders` existed have no placeholder
+ * for it, so a document's `#+LATEX_HEADER:` lines would silently disappear.
+ * Injecting keeps those templates working; a template that references
+ * `latexHeaders` itself opts out of this (see `executeCustomExport`).
+ */
+export function injectLatexHeaders(rendered: string, headers: string): string {
+    if (!headers) return rendered;
+
+    const match = rendered.match(/^[ \t]*\\begin\{document\}/m);
+    if (!match || match.index === undefined) {
+        // No \begin{document} (body-only or non-standard template) - leave as is
+        return rendered;
+    }
+
+    return (
+        rendered.slice(0, match.index) +
+        headers +
+        '\n\n' +
+        rendered.slice(match.index)
+    );
+}
 
 /**
  * Execute a custom export
@@ -732,6 +778,9 @@ export async function executeCustomExport(
             throw new Error(`Unknown parent backend: ${exporter.parent}`);
     }
 
+    // #+LATEX_HEADER: lines from the document
+    const latexHeaders = collectLatexHeaders(doc);
+
     // Build template context
     const context: TemplateContext = {
         title,
@@ -742,11 +791,21 @@ export async function executeCustomExport(
         preamble: exporter.preambleContent,
         documentClass: exporter.latexOptions?.documentClass,
         classOptions: exporter.latexOptions?.classOptions?.join(', '),
+        latexHeaders,
         ...customKeywords,
     };
 
     // Render the template
-    return renderTemplate(exporter.compiledTemplate, context);
+    const rendered = renderTemplate(exporter.compiledTemplate, context);
+
+    // Templates that place {{{latexHeaders}}} themselves control where the
+    // headers go; everything else gets them inserted before \\begin{document}
+    // so #+LATEX_HEADER: is not silently dropped.
+    if (exporter.parent === 'latex' && !/latexHeaders/.test(exporter.templateSource || '')) {
+        return injectLatexHeaders(rendered, latexHeaders);
+    }
+
+    return rendered;
 }
 
 // =============================================================================
