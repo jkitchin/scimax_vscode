@@ -9,6 +9,7 @@ import * as path from 'path';
 import * as fs from 'fs';
 import { spawn } from 'child_process';
 import { getDatabase, isDatabaseInitialized } from '../database/lazyDb';
+import { getActivationFailures } from '../utils/activationStatus';
 
 /**
  * Result of checking an executable
@@ -769,6 +770,24 @@ export function formatReportAsMarkdown(info: DiagnosticInfo): string {
         }
     } else {
         lines.push('| Workspace Folders | (none) |');
+    }
+    lines.push('');
+
+    // Activation status - a failed step means the features it registers are missing,
+    // which users see as "command 'scimax.x' not found".
+    lines.push('## Activation');
+    lines.push('');
+    const failures = getActivationFailures();
+    if (failures.length === 0) {
+        lines.push('All activation steps completed.');
+    } else {
+        lines.push(`${failures.length} activation step(s) failed; their commands are unavailable:`);
+        lines.push('');
+        for (const failure of failures) {
+            lines.push(`- \`${failure}\``);
+        }
+        lines.push('');
+        lines.push('See the Scimax output channel for the errors.');
     }
     lines.push('');
 

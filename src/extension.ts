@@ -76,7 +76,7 @@ import { registerEntitySelector } from './org/entitySelector';
 // import { registerJupyterCommands } from './jupyter/commands';
 import { ProjectileManager, Project } from './projectile/projectileManager';
 import { registerProjectileCommands, checkPendingFilePicker } from './projectile/commands';
-import { ProjectTreeProvider } from './projectile/projectTreeProvider';
+import { ProjectTreeProvider, ProjectItem } from './projectile/projectTreeProvider';
 import { registerFuzzySearchCommands } from './fuzzySearch/commands';
 import { registerJumpCommands } from './jump/commands';
 import { registerMarkCommands } from './mark/markRing';
@@ -92,7 +92,8 @@ import { activateLatexFeatures } from './latex/commands';
 import { registerDiagnosticCommands } from './diagnostic';
 import { TemplateManager, registerTemplateCommands } from './templates';
 import { registerManuscriptCommands } from './manuscript';
-import { initializeLogging, extensionLogger } from './utils/logger';
+import { initializeLogging, extensionLogger, getLoggingService } from './utils/logger';
+import { recordActivationFailure, getActivationFailures } from './utils/activationStatus';
 import { registerDiredCommands } from './dired';
 import { registerFindFileCommands } from './findFile';
 import { registerLinkGraphCommands } from './linkGraph';
@@ -105,18 +106,101 @@ let notebookManager: NotebookManager;
 let projectileManager: ProjectileManager;
 let templateManager: TemplateManager;
 
+/**
+ * Run one step of activation, keeping a failure from aborting the rest of it.
+ *
+ * activate() is a long linear sequence of registrations. Without this, an
+ * exception anywhere in it silently drops every command registered after that
+ * point, which users see as "command 'scimax.foo' not found" from an extension
+ * that looks installed and enabled (see issue #57).
+ */
+function activationStep(name: string, fn: () => void): void {
+    try {
+        fn();
+    } catch (error: any) {
+        recordActivationFailure(name);
+        extensionLogger.error(
+            `Activation step failed: ${name}`,
+            error instanceof Error ? error : new Error(String(error))
+        );
+    }
+}
+
+/** Async counterpart of activationStep(). */
+async function activationStepAsync(name: string, fn: () => Promise<void>): Promise<void> {
+    try {
+        await fn();
+    } catch (error: any) {
+        recordActivationFailure(name);
+        extensionLogger.error(
+            `Activation step failed: ${name}`,
+            error instanceof Error ? error : new Error(String(error))
+        );
+    }
+}
+
 export async function activate(context: vscode.ExtensionContext) {
+    try {
+        return await activateScimax(context);
+    } catch (error: any) {
+        // Anything reaching here left most of the ~600 commands unregistered.
+        // Say so loudly instead of failing silently.
+        const message = error?.message || String(error);
+        try {
+            extensionLogger.error(
+                'Extension activation failed - most Scimax commands are unavailable',
+                error instanceof Error ? error : new Error(message)
+            );
+        } catch {
+            console.error('Scimax: activation failed:', error);
+        }
+        vscode.window.showErrorMessage(
+            `Scimax activation failed: ${message}. Most Scimax commands will report ` +
+            '"command not found" until this is fixed.',
+            'Show Log'
+        ).then(choice => {
+            if (choice === 'Show Log') {
+                getLoggingService().show();
+            }
+        });
+        return undefined;
+    }
+}
+
+async function activateScimax(context: vscode.ExtensionContext) {
+    const activationStart = Date.now();
+
     // Initialize logging first - errors will be visible in status bar
     initializeLogging(context);
     extensionLogger.info('Extension activating...');
 
+    // The directories below come from settings, which VS Code's Settings Sync shares
+    // between machines. A path that only exists on one machine is a common source of
+    // activation trouble, so record what we resolved before anything tries to use it.
+    activationStep('logActivationEnvironment', () => {
+        const scimaxConfig = vscode.workspace.getConfiguration('scimax');
+        extensionLogger.info('Activation environment', {
+            platform: process.platform,
+            vscode: vscode.version,
+            extension: vscode.extensions.getExtension('jkitchin.scimax-vscode')?.packageJSON?.version,
+            scimaxDirectory: scimaxConfig.get<string>('directory') || '(default)',
+            journalDirectory:
+                vscode.workspace.getConfiguration('scimax.journal').get<string>('directory') || '(default)',
+            globalStorage: context.globalStorageUri.fsPath
+        });
+    });
+
     // Register link follow handlers (VS Code-specific link actions)
-    context.subscriptions.push(...registerBuiltinFollowHandlers());
+    activationStep('registerBuiltinFollowHandlers', () => {
+        context.subscriptions.push(...registerBuiltinFollowHandlers());
+    });
 
     // Register block export and highlight handlers
-    const { registerBuiltinBlockHandlers, registerBuiltinBlockHighlights } = await import('./adapters');
-    context.subscriptions.push(...registerBuiltinBlockHandlers());
-    context.subscriptions.push(...registerBuiltinBlockHighlights());
+    await activationStepAsync('registerBuiltinBlockHandlers', async () => {
+        const { registerBuiltinBlockHandlers, registerBuiltinBlockHighlights } = await import('./adapters');
+        context.subscriptions.push(...registerBuiltinBlockHandlers());
+        context.subscriptions.push(...registerBuiltinBlockHighlights());
+    });
 
     // Register log level command
     context.subscriptions.push(
@@ -292,50 +376,56 @@ export async function activate(context: vscode.ExtensionContext) {
     );
 
     // Set Leuven as default theme on first activation
-    const hasSetDefaultTheme = context.globalState.get<boolean>('scimax.hasSetDefaultTheme');
-    if (!hasSetDefaultTheme) {
-        const config = vscode.workspace.getConfiguration('workbench');
-        const currentTheme = config.get<string>('colorTheme');
-        // Only set if user hasn't explicitly chosen another theme or is using a default
-        if (!currentTheme || currentTheme === 'Default Dark+' || currentTheme === 'Default Light+' ||
-            currentTheme === 'Visual Studio Dark' || currentTheme === 'Visual Studio Light') {
-            await config.update('colorTheme', 'Leuven', vscode.ConfigurationTarget.Global);
+    await activationStepAsync('defaultTheme', async () => {
+        const hasSetDefaultTheme = context.globalState.get<boolean>('scimax.hasSetDefaultTheme');
+        if (!hasSetDefaultTheme) {
+            const config = vscode.workspace.getConfiguration('workbench');
+            const currentTheme = config.get<string>('colorTheme');
+            // Only set if user hasn't explicitly chosen another theme or is using a default
+            if (!currentTheme || currentTheme === 'Default Dark+' || currentTheme === 'Default Light+' ||
+                currentTheme === 'Visual Studio Dark' || currentTheme === 'Visual Studio Light') {
+                await config.update('colorTheme', 'Leuven', vscode.ConfigurationTarget.Global);
+            }
+            await context.globalState.update('scimax.hasSetDefaultTheme', true);
         }
-        await context.globalState.update('scimax.hasSetDefaultTheme', true);
-    }
+    });
 
     // Initialize Journal Manager
-    journalManager = new JournalManager(context);
+    activationStep('JournalManager', () => {
+        journalManager = new JournalManager(context);
+    });
 
     // Set up lazy database loading - database initializes on first use
     setExtensionContext(context);
 
     // Register Journal Calendar WebView
-    const calendarProvider = new JournalCalendarProvider(journalManager, context.extensionUri);
-    context.subscriptions.push(
-        vscode.window.registerWebviewViewProvider(
-            JournalCalendarProvider.viewType,
-            calendarProvider
-        ),
-        vscode.commands.registerCommand('scimax.journal.refresh', () => {
-            calendarProvider.refresh();
-        })
-    );
+    activationStep('JournalCalendarProvider', () => {
+        const calendarProvider = new JournalCalendarProvider(journalManager, context.extensionUri);
+        context.subscriptions.push(
+            vscode.window.registerWebviewViewProvider(
+                JournalCalendarProvider.viewType,
+                calendarProvider
+            ),
+            vscode.commands.registerCommand('scimax.journal.refresh', () => {
+                calendarProvider.refresh();
+            })
+        );
+    });
 
     // Register Journal Commands
-    registerJournalCommands(context, journalManager);
+    activationStep('registerJournalCommands', () => registerJournalCommands(context, journalManager));
 
     // Register Database Commands (uses lazy loading - db initializes on first command use)
-    registerDbCommands(context);
+    activationStep('registerDbCommands', () => registerDbCommands(context));
 
     // Register Link Graph Commands (uses lazy loading)
     context.subscriptions.push(...registerLinkGraphCommands(context));
 
     // Register Database View
-    registerDatabaseView(context);
+    activationStep('registerDatabaseView', () => registerDatabaseView(context));
 
     // Register Context Help
-    registerContextHelp(context);
+    activationStep('registerContextHelp', () => registerContextHelp(context));
 
     // Watch for configuration changes
     context.subscriptions.push(
@@ -352,8 +442,10 @@ export async function activate(context: vscode.ExtensionContext) {
     );
 
     // Journal status bar (uses async caching for performance)
-    journalStatusBar = new JournalStatusBar(journalManager);
-    context.subscriptions.push({ dispose: () => journalStatusBar.dispose() });
+    activationStep('JournalStatusBar', () => {
+        journalStatusBar = new JournalStatusBar(journalManager);
+        context.subscriptions.push({ dispose: () => journalStatusBar.dispose() });
+    });
 
     // Initialize Reference Manager (deferred to avoid blocking extension host)
     try {
@@ -468,18 +560,20 @@ export async function activate(context: vscode.ExtensionContext) {
     );
 
     // Register Bibliography Diagnostic Provider (shows errors for missing bib files)
-    const bibDiagnosticProvider = new BibliographyDiagnosticProvider(referenceManager);
-    bibDiagnosticProvider.initialize();
-    context.subscriptions.push({ dispose: () => bibDiagnosticProvider.dispose() });
+    activationStep('BibliographyDiagnosticProvider', () => {
+        const bibDiagnosticProvider = new BibliographyDiagnosticProvider(referenceManager);
+        bibDiagnosticProvider.initialize();
+        context.subscriptions.push({ dispose: () => bibDiagnosticProvider.dispose() });
+    });
 
     // Register Org Link navigation commands
-    registerOrgLinkCommands(context);
+    activationStep('registerOrgLinkCommands', () => registerOrgLinkCommands(context));
 
     // Register Semantic Token Provider for org-mode
-    registerSemanticTokenProvider(context);
+    activationStep('registerSemanticTokenProvider', () => registerSemanticTokenProvider(context));
 
     // Register Folding Provider for org-mode
-    registerFoldingProvider(context);
+    activationStep('registerFoldingProvider', () => registerFoldingProvider(context));
 
     // Track documents that have had #+STARTUP: folding applied
     const startupAppliedDocs = new Set<string>();
@@ -560,37 +654,37 @@ export async function activate(context: vscode.ExtensionContext) {
     );
 
     // Register Block Decorations (background colors for src blocks, etc.)
-    registerBlockDecorations(context);
+    activationStep('registerBlockDecorations', () => registerBlockDecorations(context));
 
     // Register Emacs-style `command' markup decorations (theme-independent)
-    registerCommandMarkupDecorations(context);
+    activationStep('registerCommandMarkupDecorations', () => registerCommandMarkupDecorations(context));
 
     // Register Markdown Checkbox Features
-    registerCheckboxFeatures(context);
+    activationStep('registerCheckboxFeatures', () => registerCheckboxFeatures(context));
 
     // Register Markdown Task Commands
-    registerTaskCommands(context);
+    activationStep('registerTaskCommands', () => registerTaskCommands(context));
 
     // Register Timestamp Commands (shift-arrow to adjust dates)
-    registerTimestampCommands(context);
+    activationStep('registerTimestampCommands', () => registerTimestampCommands(context));
 
     // Register Table Commands (row/column manipulation)
-    registerTableCommands(context);
+    activationStep('registerTableCommands', () => registerTableCommands(context));
 
     // Register Heading Commands (promote/demote/move)
-    registerHeadingCommands(context);
+    activationStep('registerHeadingCommands', () => registerHeadingCommands(context));
 
     // Register Document Symbol Provider (for outline view)
-    registerDocumentSymbolProvider(context);
+    activationStep('registerDocumentSymbolProvider', () => registerDocumentSymbolProvider(context));
 
     // Register Org Completion Provider (for intelligent completions)
-    registerOrgCompletionProvider(context);
+    activationStep('registerOrgCompletionProvider', () => registerOrgCompletionProvider(context));
 
     // Register Org Hover Provider (for entities, timestamps, blocks, etc.)
-    registerOrgHoverProvider(context);
+    activationStep('registerOrgHoverProvider', () => registerOrgHoverProvider(context));
 
     // Initialize LaTeX preview cache for equation rendering
-    initLatexPreviewCache(context);
+    activationStep('initLatexPreviewCache', () => initLatexPreviewCache(context));
 
     // Register LaTeX preview commands
     context.subscriptions.push(
@@ -616,32 +710,32 @@ export async function activate(context: vscode.ExtensionContext) {
     );
 
     // Register LaTeX Live Preview commands (PDF preview with SyncTeX)
-    registerLatexLivePreviewCommands(context);
+    activationStep('registerLatexLivePreviewCommands', () => registerLatexLivePreviewCommands(context));
 
     // Register Babel commands and Code Lens (for source block execution)
-    registerBabelCommands(context);
-    registerBabelCodeLens(context);
+    activationStep('registerBabelCommands', () => registerBabelCommands(context));
+    activationStep('registerBabelCodeLens', () => registerBabelCodeLens(context));
 
     // Register advanced Babel features (tangling, noweb, caching, async queue)
-    registerBabelAdvancedCommands(context);
+    activationStep('registerBabelAdvancedCommands', () => registerBabelAdvancedCommands(context));
 
     // Register Export commands (for exporting to HTML, LaTeX, PDF, Markdown)
-    registerExportCommands(context);
+    activationStep('registerExportCommands', () => registerExportCommands(context));
 
     // Register Custom Export commands (user-defined export templates)
-    registerCustomExportCommands(context);
+    activationStep('registerCustomExportCommands', () => registerCustomExportCommands(context));
 
     // Register LaTeX build profile commands (named compile sequences)
-    registerBuildProfileCommands(context);
+    activationStep('registerBuildProfileCommands', () => registerBuildProfileCommands(context));
 
     // Register Markdown Export commands (pandoc-based export for .md files)
-    registerMarkdownExportCommands(context);
+    activationStep('registerMarkdownExportCommands', () => registerMarkdownExportCommands(context));
 
     // Register Manuscript commands (flatten LaTeX for journal submission)
-    registerManuscriptCommands(context);
+    activationStep('registerManuscriptCommands', () => registerManuscriptCommands(context));
 
     // Register Publishing commands (for multi-file project publishing)
-    registerPublishCommands(context);
+    activationStep('registerPublishCommands', () => registerPublishCommands(context));
 
     // Jupyter kernel support - uses dynamic import for lazy loading
     // Only loads zeromq when first jupyter block is executed
@@ -653,80 +747,82 @@ export async function activate(context: vscode.ExtensionContext) {
     }
 
     // Register Scimax-org commands (text markup, DWIM return, navigation)
-    registerScimaxOrgCommands(context);
+    activationStep('registerScimaxOrgCommands', () => registerScimaxOrgCommands(context));
 
     // Register macOS Finder/Chrome link commands
-    registerMacLinkCommands(context);
+    activationStep('registerMacLinkCommands', () => registerMacLinkCommands(context));
 
     // Register Screenshot commands
-    registerScreenshotCommands(context);
+    activationStep('registerScreenshotCommands', () => registerScreenshotCommands(context));
 
     // Register Scimax-ob commands (source block manipulation)
-    registerScimaxObCommands(context);
+    activationStep('registerScimaxObCommands', () => registerScimaxObCommands(context));
 
     // Register Refile commands (move/copy subtrees to target headings)
-    registerRefileCommands(context);
+    activationStep('registerRefileCommands', () => registerRefileCommands(context));
 
     // Register Speed Commands (single-key shortcuts at heading start)
-    registerSpeedCommands(context);
+    activationStep('registerSpeedCommands', () => registerSpeedCommands(context));
 
     // Register Help Commands (C-h k describe-key, C-h b list keybindings, C-h f describe command)
-    registerHelpCommands(context);
+    activationStep('registerHelpCommands', () => registerHelpCommands(context));
 
     // Register Diagnostic Commands (show debug/system info)
-    registerDiagnosticCommands(context);
+    activationStep('registerDiagnosticCommands', () => registerDiagnosticCommands(context));
 
     // Register Dired Commands (C-x d, Emacs-style directory editor)
-    registerDiredCommands(context);
+    activationStep('registerDiredCommands', () => registerDiredCommands(context));
 
     // Register Find File Commands (C-x C-f, Emacs-style file navigation)
-    registerFindFileCommands(context);
+    activationStep('registerFindFileCommands', () => registerFindFileCommands(context));
 
     // Register Image Overlay Commands (inline image thumbnails)
-    registerImageOverlayCommands(context);
+    activationStep('registerImageOverlayCommands', () => registerImageOverlayCommands(context));
 
     // Register Native Agenda Commands (file-scanning based agenda)
-    registerAgendaCommands(context);
+    activationStep('registerAgendaCommands', () => registerAgendaCommands(context));
 
     // Register Table Formula Commands (spreadsheet-like calculations)
-    registerTableFormulaCommands(context);
+    activationStep('registerTableFormulaCommands', () => registerTableFormulaCommands(context));
 
     // Register Capture Commands (org-capture quick note system)
-    registerCaptureCommands(context);
+    activationStep('registerCaptureCommands', () => registerCaptureCommands(context));
 
     // Register Org-Lint Commands (syntax checking for org files)
-    const orgLintProvider = new OrgLintProvider();
-    registerOrgLintCommands(context, orgLintProvider);
-    context.subscriptions.push(orgLintProvider);
+    activationStep('OrgLintProvider', () => {
+        const orgLintProvider = new OrgLintProvider();
+        registerOrgLintCommands(context, orgLintProvider);
+        context.subscriptions.push(orgLintProvider);
+    });
 
     // Orphan link diagnostics (granular addressing): flag [[name]] links whose
     // anchor/heading/text target no longer resolves.
-    registerOrphanLinkDiagnostics(context);
+    activationStep('registerOrphanLinkDiagnostics', () => registerOrphanLinkDiagnostics(context));
 
     // Dialog notes: capture, gutter decoration, and the Notes panel.
-    registerNotesProvider(context);
+    activationStep('registerNotesProvider', () => registerNotesProvider(context));
 
     // Object-level back-links via Find All References + a "N references" CodeLens.
-    registerBacklinksProvider(context);
+    activationStep('registerBacklinksProvider', () => registerBacklinksProvider(context));
 
     // TODO task dependencies (org-depend style): authoring commands, the
     // blocked/ready CodeLens, and the dependency tree view.
-    registerDependencyCommands(context);
-    registerDependencyProviders(context);
-    registerDependencyDiagnostics(context);
+    activationStep('registerDependencyCommands', () => registerDependencyCommands(context));
+    activationStep('registerDependencyProviders', () => registerDependencyProviders(context));
+    activationStep('registerDependencyDiagnostics', () => registerDependencyDiagnostics(context));
 
     // People database: :ASSIGNEE: completion/hover from :person: headings + capture.
-    registerPeopleProviders(context);
+    activationStep('registerPeopleProviders', () => registerPeopleProviders(context));
 
     // Project-management dynamic blocks (task table, Gantt) insert commands.
-    registerProjectCommands(context);
+    activationStep('registerProjectCommands', () => registerProjectCommands(context));
 
     // Task dependency graph webview.
-    registerTaskGraph(context);
+    activationStep('registerTaskGraph', () => registerTaskGraph(context));
 
     // Entity selector: fuzzy-pick a tagged/propertied heading (contacts,
     // locations, reagents…) and act on it (insert link/field, mailto, maps).
-    registerEntitySelector(context);
+    activationStep('registerEntitySelector', () => registerEntitySelector(context));
 
     // Track cursor position to set context for keybinding differentiation
     // This enables different keybindings when cursor is in a table vs on a heading
@@ -758,7 +854,7 @@ export async function activate(context: vscode.ExtensionContext) {
     );
 
     // Register BibTeX Speed Commands (single-key shortcuts at entry start)
-    registerBibtexSpeedCommands(context);
+    activationStep('registerBibtexSpeedCommands', () => registerBibtexSpeedCommands(context));
 
     // Additional reference commands for code lens
     context.subscriptions.push(
@@ -807,19 +903,23 @@ export async function activate(context: vscode.ExtensionContext) {
     );
 
     // Initialize Projectile Manager first (needed by notebook commands for nb: links)
-    projectileManager = new ProjectileManager(context);
-    context.subscriptions.push({ dispose: () => projectileManager.dispose() });
+    activationStep('ProjectileManager', () => {
+        projectileManager = new ProjectileManager(context);
+        context.subscriptions.push({ dispose: () => projectileManager.dispose() });
+    });
 
     // Register Projectile Commands
-    registerProjectileCommands(context, projectileManager);
+    activationStep('registerProjectileCommands', () => registerProjectileCommands(context, projectileManager));
 
     // Initialize Notebook Manager
-    notebookManager = new NotebookManager(context);
-    await notebookManager.initialize();
-    context.subscriptions.push({ dispose: () => notebookManager.dispose() });
+    await activationStepAsync('NotebookManager', async () => {
+        notebookManager = new NotebookManager(context);
+        await notebookManager.initialize();
+        context.subscriptions.push({ dispose: () => notebookManager.dispose() });
+    });
 
     // Register Notebook Commands (uses projectileManager for nb: link resolution)
-    registerNotebookCommands(context, notebookManager, projectileManager);
+    activationStep('registerNotebookCommands', () => registerNotebookCommands(context, notebookManager, projectileManager));
 
     // Check for pending navigation from notebook links opened in new window
     checkPendingNavigation(context).catch(err => {
@@ -827,20 +927,26 @@ export async function activate(context: vscode.ExtensionContext) {
     });
 
     // Initialize Template Manager
-    templateManager = new TemplateManager(context);
-    context.subscriptions.push({ dispose: () => templateManager.dispose() });
+    activationStep('TemplateManager', () => {
+        templateManager = new TemplateManager(context);
+        context.subscriptions.push({ dispose: () => templateManager.dispose() });
+    });
 
     // Register Template Commands
-    registerTemplateCommands(context, templateManager);
+    activationStep('registerTemplateCommands', () => registerTemplateCommands(context, templateManager));
 
     // Register Project Tree View with createTreeView for better control
-    const projectTreeProvider = new ProjectTreeProvider(projectileManager);
-    const projectTreeView = vscode.window.createTreeView('scimax.projects', {
-        treeDataProvider: projectTreeProvider,
-        showCollapseAll: false
+    let projectTreeProvider!: ProjectTreeProvider;
+    let projectTreeView!: vscode.TreeView<ProjectItem>;
+    activationStep('ProjectTreeProvider', () => {
+        projectTreeProvider = new ProjectTreeProvider(projectileManager);
+        projectTreeView = vscode.window.createTreeView<ProjectItem>('scimax.projects', {
+            treeDataProvider: projectTreeProvider,
+            showCollapseAll: false
+        });
+        projectTreeProvider.setTreeView(projectTreeView);
+        context.subscriptions.push(projectTreeView);
     });
-    projectTreeProvider.setTreeView(projectTreeView);
-    context.subscriptions.push(projectTreeView);
 
     // Command to open project from tree view
     context.subscriptions.push(
@@ -1043,33 +1149,47 @@ export async function activate(context: vscode.ExtensionContext) {
     });
 
     // Register Fuzzy Search Commands (search current/all open files)
-    registerFuzzySearchCommands(context);
+    activationStep('registerFuzzySearchCommands', () => registerFuzzySearchCommands(context));
 
     // Register Jump Commands (avy-style jump to visible locations)
-    registerJumpCommands(context);
+    activationStep('registerJumpCommands', () => registerJumpCommands(context));
 
     // Register Mark Ring Commands (Emacs-style mark ring)
-    registerMarkCommands(context);
+    activationStep('registerMarkCommands', () => registerMarkCommands(context));
 
     // Register Recenter Command (Emacs-style C-l recenter-top-bottom)
-    registerRecenterCommands(context);
+    activationStep('registerRecenterCommands', () => registerRecenterCommands(context));
 
     // Register Editmark Commands (track changes)
-    registerEditmarkCommands(context);
+    activationStep('registerEditmarkCommands', () => registerEditmarkCommands(context));
 
     // Register Rectangle Commands (Emacs-style rectangle editing)
-    registerRectangleCommands(context);
+    activationStep('registerRectangleCommands', () => registerRectangleCommands(context));
 
     // Activate LaTeX navigation and structure features
-    activateLatexFeatures(context);
+    activationStep('activateLatexFeatures', () => activateLatexFeatures(context));
 
     // Initialize Hydra Menu Framework
-    hydraManager = new HydraManager(context);
-    hydraManager.registerMenus(scimaxMenus);
-    registerHydraCommands(context, hydraManager);
-    context.subscriptions.push({ dispose: () => hydraManager.dispose() });
+    activationStep('HydraManager', () => {
+        hydraManager = new HydraManager(context);
+        hydraManager.registerMenus(scimaxMenus);
+        registerHydraCommands(context, hydraManager);
+        context.subscriptions.push({ dispose: () => hydraManager.dispose() });
+    });
 
-    extensionLogger.info('Extension activated');
+    // A single line that answers "did activation finish, and did anything break?"
+    // If this is missing from the log, activation died partway through and most
+    // commands will report "command not found".
+    const activationMs = Date.now() - activationStart;
+    const failures = getActivationFailures();
+    if (failures.length > 0) {
+        extensionLogger.warn(
+            `Extension activated in ${activationMs}ms with ${failures.length} failed step(s): ` +
+            `${failures.join(', ')}. Features from those steps are unavailable.`
+        );
+    } else {
+        extensionLogger.info(`Extension activated in ${activationMs}ms (all steps OK)`);
+    }
 
     // ==========================================================================
     // Extension API

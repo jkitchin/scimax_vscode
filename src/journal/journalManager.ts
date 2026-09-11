@@ -2,6 +2,7 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 import * as fs from 'fs';
 import { resolveScimaxPath } from '../utils/pathResolver';
+import { journalLogger } from '../utils/logger';
 import { getBuiltInTemplates, renderTemplate, buildTemplateContext, resolveTemplate } from './journalTemplates';
 
 // Use fs.promises for async operations
@@ -45,6 +46,9 @@ export class JournalManager {
     constructor(context: vscode.ExtensionContext) {
         this.context = context;
         this.config = this.loadConfig();
+        // Neither of these may throw: the manager is built early in activate(),
+        // so a failure here would abort activation and leave every later command
+        // unregistered ("command 'scimax.x' not found").
         this.ensureDirectoryExists();
         this.setupFileWatcher();
     }
@@ -53,22 +57,30 @@ export class JournalManager {
      * Set up file watcher to invalidate cache when journal files change
      */
     private setupFileWatcher(): void {
-        const pattern = new vscode.RelativePattern(
-            this.config.directory,
-            '**/*.{md,org}'
-        );
-        this.fileWatcher = vscode.workspace.createFileSystemWatcher(pattern);
+        try {
+            const pattern = new vscode.RelativePattern(
+                this.config.directory,
+                '**/*.{md,org}'
+            );
+            this.fileWatcher = vscode.workspace.createFileSystemWatcher(pattern);
 
-        const invalidateCache = () => {
-            this.invalidateCache();
-            this._onDidChangeEntries.fire();
-        };
+            const invalidateCache = () => {
+                this.invalidateCache();
+                this._onDidChangeEntries.fire();
+            };
 
-        this.fileWatcher.onDidCreate(invalidateCache);
-        this.fileWatcher.onDidDelete(invalidateCache);
-        this.fileWatcher.onDidChange(invalidateCache);
+            this.fileWatcher.onDidCreate(invalidateCache);
+            this.fileWatcher.onDidDelete(invalidateCache);
+            this.fileWatcher.onDidChange(invalidateCache);
 
-        this.context.subscriptions.push(this.fileWatcher);
+            this.context.subscriptions.push(this.fileWatcher);
+        } catch (error: any) {
+            this.fileWatcher = null;
+            journalLogger.error(
+                `Could not watch the journal directory: ${this.config.directory}`,
+                error instanceof Error ? error : new Error(String(error))
+            );
+        }
     }
 
     /**
@@ -118,8 +130,20 @@ export class JournalManager {
     }
 
     private ensureDirectoryExists(): void {
-        // recursive: true handles non-existent directories, no need for existsSync check
-        fs.mkdirSync(this.config.directory, { recursive: true });
+        // recursive: true handles non-existent directories, no need for existsSync check.
+        // This can still fail on a path that is not creatable here -- a directory synced
+        // from another machine with a different home directory or OS, or a cloud folder
+        // that is not mounted yet. Log it and carry on: the journal commands report the
+        // problem when they are used, and the rest of the extension stays usable.
+        try {
+            fs.mkdirSync(this.config.directory, { recursive: true });
+        } catch (error: any) {
+            journalLogger.error(
+                `Could not create the journal directory: ${this.config.directory}. ` +
+                'Check scimax.journal.directory / scimax.directory.',
+                error instanceof Error ? error : new Error(String(error))
+            );
+        }
     }
 
     public getConfig(): JournalConfig {

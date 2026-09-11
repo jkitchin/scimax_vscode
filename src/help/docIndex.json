@@ -1,6 +1,6 @@
 {
-  "buildDate": "2026-09-07T15:51:21.152Z",
-  "count": 3521,
+  "buildDate": "2026-09-11T21:46:58.258Z",
+  "count": 3522,
   "entries": [
     {
       "heading": "Scimax VS Code",
@@ -1249,7 +1249,7 @@
       "heading": "Quick Start by Use Case",
       "level": 1,
       "file": "00-index.org",
-      "line": 464,
+      "line": 465,
       "content": "",
       "path": [],
       "commands": [],
@@ -1264,7 +1264,7 @@
       "heading": "I want to...",
       "level": 2,
       "file": "00-index.org",
-      "line": 466,
+      "line": 467,
       "content": "",
       "path": [
         "Quick Start by Use Case"
@@ -1279,7 +1279,7 @@
       "heading": "Take notes and organize information",
       "level": 3,
       "file": "00-index.org",
-      "line": 468,
+      "line": 469,
       "content": "- Start with [[file:01-getting-started.org][Getting Started]] - Learn [[file:01.5-basic-syntax.org][Basic Syntax]] for formatting text - Learn [[file:02-document-structure.org][Document Structure]] for headings and organization - Use [[file:15-capture.org][Capture]] for quick note-taking - Search with [[file:18-database-search.org][Database and Search]]",
       "path": [
         "Quick Start by Use Case",
@@ -1314,7 +1314,7 @@
       "heading": "Manage tasks and projects",
       "level": 3,
       "file": "00-index.org",
-      "line": 475,
+      "line": 476,
       "content": "- Set up tasks with [[file:03-todo-items.org][TODO Items]] - Add dates with [[file:06-timestamps.org][Timestamps]] - View agenda with [[file:13-agenda.org][Agenda]] - Organize projects with [[file:17-projectile.org][Projectile]] or [[file:16-notebook.org][Notebook]]",
       "path": [
         "Quick Start by Use Case",
@@ -1348,7 +1348,7 @@
       "heading": "Write scientific documents",
       "level": 3,
       "file": "00-index.org",
-      "line": 481,
+      "line": 482,
       "content": "- Execute code with [[file:07-source-blocks.org][Source Code Blocks]] - Preview math with [[file:11-latex-preview.org][LaTeX Preview]] - Manage citations with [[file:19-references.org][References]] - Export with [[file:10-export.org][Export]]",
       "path": [
         "Quick Start by Use Case",
@@ -1381,7 +1381,7 @@
       "heading": "Keep a journal",
       "level": 3,
       "file": "00-index.org",
-      "line": 487,
+      "line": 488,
       "content": "- Set up with [[file:14-journal.org][Journal]] - Use templates from [[file:15-capture.org][Capture]] - Navigate entries with [[file:21-navigation.org][Navigation]]",
       "path": [
         "Quick Start by Use Case",
@@ -1407,7 +1407,7 @@
       "heading": "Navigate efficiently",
       "level": 3,
       "file": "00-index.org",
-      "line": 492,
+      "line": 493,
       "content": "- Learn [[file:21-navigation.org][Navigation]] techniques - Master [[file:23-speed-commands.org][Speed Commands]] - Use [[file:22-hydra-menus.org][Hydra Menus]] for discovery - Reference [[file:24-keybindings.org][Keybindings]]",
       "path": [
         "Quick Start by Use Case",
@@ -1439,7 +1439,7 @@
       "heading": "Programmatically modify org files",
       "level": 3,
       "file": "00-index.org",
-      "line": 498,
+      "line": 499,
       "content": "CLOSED: [2026-01-16 Fri 20:04] - Use the [[file:27-org-api.org][Org API]] in TypeScript source blocks - Bulk update TODO states, properties, and tags - Extract and transform table data - Automate repetitive org file operations",
       "path": [
         "Quick Start by Use Case",
@@ -1474,7 +1474,7 @@
       "heading": "Configure the extension",
       "level": 3,
       "file": "00-index.org",
-      "line": 505,
+      "line": 506,
       "content": "CLOSED: [2026-01-16 Fri 20:04] - See all options in [[file:26-configuration.org][Configuration]] - Set up keybindings with [[file:24-keybindings.org][Keybindings]] - Customize menus with [[file:22-hydra-menus.org][Hydra Menus]]",
       "path": [
         "Quick Start by Use Case",
@@ -1505,7 +1505,7 @@
       "heading": "Navigation",
       "level": 1,
       "file": "00-index.org",
-      "line": 511,
+      "line": 512,
       "content": "- Index: [[file:00-index.org][Documentation Index]] - Next: [[file:01-getting-started.org][Getting Started]]",
       "path": [],
       "commands": [],
@@ -2740,10 +2740,46 @@
       ]
     },
     {
-      "heading": "Code Blocks Not Executing",
+      "heading": "Scimax Commands Not Found",
       "level": 2,
       "file": "01-getting-started.org",
       "line": 361,
+      "content": "If VS Code reports ~command 'scimax.something' not found~ while the extension is installed and enabled, the extension host did not finish activating. Activation runs a long sequence of registration steps, so a step that fails takes the features it registers with it. 1. Open the Output panel and select the *Scimax* channel. Activation logs ~Extension activating...~ when it starts and ~Extension activated in <n>ms~ when it finishes. If the second line is missing, activation never completed; if it ",
+      "path": [
+        "Troubleshooting"
+      ],
+      "commands": [
+        "scimax.something"
+      ],
+      "keybindings": [],
+      "keywords": [
+        "scimax",
+        "commands",
+        "found",
+        "code",
+        "reports",
+        "command",
+        "while",
+        "extension",
+        "installed",
+        "enabled",
+        "host",
+        "finish",
+        "activating",
+        "activation",
+        "runs",
+        "long",
+        "sequence",
+        "registration",
+        "steps",
+        "step"
+      ]
+    },
+    {
+      "heading": "Code Blocks Not Executing",
+      "level": 2,
+      "file": "01-getting-started.org",
+      "line": 395,
       "content": "1. Check that the language is installed (e.g., Python, Node.js) 2. Verify the language is in your PATH 3. Check the Output panel (`C-S-U') for errors 4. Run `scimax.org.checkExecutors' to verify available executors",
       "path": [
         "Troubleshooting"
@@ -2778,7 +2814,7 @@
       "heading": "LaTeX Preview Not Working",
       "level": 2,
       "file": "01-getting-started.org",
-      "line": 368,
+      "line": 402,
       "content": "1. Ensure LaTeX is installed (`latex --version' in terminal) 2. Check that dvipng or dvisvgm is available 3. Run `scimax.checkLatexTools' to verify installation",
       "path": [
         "Troubleshooting"
@@ -2808,7 +2844,7 @@
       "heading": "Search Not Finding Results",
       "level": 2,
       "file": "01-getting-started.org",
-      "line": 374,
+      "line": 408,
       "content": "1. Run `scimax.db.refresh' to refresh the search index incrementally 2. Check that files aren't in excluded patterns 3. Verify the search scope (`scimax.db.setScope')",
       "path": [
         "Troubleshooting"
@@ -2838,7 +2874,7 @@
       "heading": "Journal Not Opening",
       "level": 2,
       "file": "01-getting-started.org",
-      "line": 380,
+      "line": 414,
       "content": "1. Check that `scimax.journal.directory' is set correctly 2. Ensure the directory exists and is writable 3. Try creating the directory manually if needed",
       "path": [
         "Troubleshooting"
@@ -2867,7 +2903,7 @@
       "heading": "Disable Option-Key Accents on macOS",
       "level": 2,
       "file": "01-getting-started.org",
-      "line": 386,
+      "line": 420,
       "content": "M-<key> combinations may produce accented characters instead of the intended commands on a Mac. To fix this, you can change your keyboard input settings: - Add Unicode Hex Input System Settings → Keyboard → Input Sources → click \"+\" → select Other → add \"Unicode Hex Input\" - Remove U.S. Input (optional) System Settings → Keyboard → Input Sources → select \"U.S.\" → click \"−\" * Navigation - Previous: [[file:00-index.org][Documentation Index]] - Index: [[file:00-index.org][Documentation Index]] - Ne",
       "path": [
         "Troubleshooting"

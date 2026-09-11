@@ -909,3 +909,50 @@ describe('JournalManager Edge Cases', () => {
         expect(entries2.length).toBe(2);
     });
 });
+
+// =============================================================================
+// Construction Resilience Tests
+// =============================================================================
+
+describe('JournalManager Construction Resilience', () => {
+    // The manager is built early in activate(). If its constructor throws, the
+    // rest of activation is abandoned and every command registered after it is
+    // missing, which users see as "command 'scimax.x' not found" (issue #57).
+    // A journal directory that cannot be created here -- a path synced from a
+    // machine with a different home directory or OS, an unmounted cloud folder --
+    // must therefore be survivable.
+    it.skipIf(process.platform === 'win32')(
+        'should not throw when the journal directory cannot be created',
+        () => {
+            // /dev/null is a file, so creating a directory beneath it fails (ENOTDIR)
+            setTestConfig({ directory: path.join('/dev/null', 'journal') });
+
+            let manager: JournalManager | undefined;
+            expect(() => {
+                manager = new JournalManager(
+                    createMockContext() as unknown as import('vscode').ExtensionContext
+                );
+            }).not.toThrow();
+
+            expect(manager?.getJournalDirectory()).toContain('journal');
+            manager?.dispose();
+        }
+    );
+
+    it.skipIf(process.platform === 'win32')(
+        'should not throw when reloading config onto an uncreatable directory',
+        () => {
+            const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'journal-reload-'));
+            setTestConfig({ directory: tempDir });
+            const manager = new JournalManager(
+                createMockContext() as unknown as import('vscode').ExtensionContext
+            );
+
+            setTestConfig({ directory: path.join('/dev/null', 'journal') });
+            expect(() => manager.reloadConfig()).not.toThrow();
+
+            manager.dispose();
+            fs.rmSync(tempDir, { recursive: true, force: true });
+        }
+    );
+});

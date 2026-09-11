@@ -5,7 +5,7 @@ import { ProjectileManager, Project } from './projectileManager';
 /**
  * Tree item representing a project
  */
-class ProjectItem extends vscode.TreeItem {
+export class ProjectItem extends vscode.TreeItem {
     constructor(
         public readonly project: Project,
         public readonly isCurrentProject: boolean

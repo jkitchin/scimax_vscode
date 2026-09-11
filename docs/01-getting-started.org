@@ -358,6 +358,40 @@ Now that you're set up, explore these topics:
 
 * Troubleshooting
 
+** ⚠️ Scimax Commands Not Found
+
+If VS Code reports ~command 'scimax.something' not found~ while the extension is
+installed and enabled, the extension host did not finish activating. Activation
+runs a long sequence of registration steps, so a step that fails takes the
+features it registers with it.
+
+1. Open the Output panel and select the *Scimax* channel. Activation logs
+   ~Extension activating...~ when it starts and
+   ~Extension activated in <n>ms~ when it finishes. If the second line is
+   missing, activation never completed; if it reports failed steps, those steps
+   are named in the message.
+2. Raise the detail level with ~Developer: Set Log Level...~ → *Scimax* →
+   *Trace*, or run ~scimax.setLogLevel~, then reload the window.
+3. Run ~scimax.showDiagnostics~ (*Scimax: Show Diagnostics*). Its *Activation*
+   section lists any steps that failed.
+4. Check ~Developer: Show Running Extensions~ and
+   ~Developer: Show Logs... → Extension Host~ for an
+   ~Activating extension 'jkitchin.scimax-vscode' failed~ entry.
+
+A common cause is a directory setting that is valid on one machine but not on
+another. VS Code's Settings Sync shares ~settings.json~ between machines, so a
+~scimax.directory~ or ~scimax.journal.directory~ pointing at a different home
+directory, a different operating system's path layout, or a cloud folder that
+is not mounted will fail to resolve on the other machine. The resolved paths
+are logged at the start of activation. To keep them machine-specific:
+
+#+BEGIN_SRC json
+"settingsSync.ignoredSettings": [
+    "scimax.directory",
+    "scimax.journal.directory"
+]
+#+END_SRC
+
 ** Code Blocks Not Executing
 
 1. Check that the language is installed (e.g., Python, Node.js)

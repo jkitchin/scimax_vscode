@@ -74,13 +74,24 @@ export class NotebookManager {
      * Initialize the notebook manager
      */
     public async initialize(): Promise<void> {
-        const storageDir = this.context.globalStorageUri.fsPath;
-        if (!fs.existsSync(storageDir)) {
-            fs.mkdirSync(storageDir, { recursive: true });
+        // Called from activate(), so nothing here may escape: a throw would abort
+        // activation and leave the rest of the extension's commands unregistered.
+        try {
+            const storageDir = this.context.globalStorageUri.fsPath;
+            if (!fs.existsSync(storageDir)) {
+                fs.mkdirSync(storageDir, { recursive: true });
+            }
+        } catch (error) {
+            console.error('NotebookManager: Failed to create storage directory', error);
         }
 
         await this.load();
-        this.detectWorkspaceProjects();
+
+        try {
+            this.detectWorkspaceProjects();
+        } catch (error) {
+            console.error('NotebookManager: Failed to detect workspace projects', error);
+        }
     }
 
     /**
