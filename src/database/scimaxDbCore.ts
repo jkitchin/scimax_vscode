@@ -13,7 +13,8 @@
 import * as path from 'path';
 import * as fs from 'fs';
 import * as crypto from 'crypto';
-import { createClient, Client } from '@libsql/client';
+import type { Client } from '@libsql/client';
+import { loadLibsqlClient } from './libsqlLoader';
 import { parse as parseDate } from 'date-fns';
 import { minimatch } from 'minimatch';
 import {
@@ -595,6 +596,7 @@ export class ScimaxDbCore {
             fs.mkdirSync(dir, { recursive: true });
         }
 
+        const { createClient } = await loadLibsqlClient();
         this.db = createClient({ url: `file:${this.options.dbPath}` });
 
         await this.db.execute('PRAGMA journal_mode = WAL');

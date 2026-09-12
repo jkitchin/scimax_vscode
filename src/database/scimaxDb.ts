@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
 import * as fs from 'fs';
-import { Client } from '@libsql/client';
+import type { Client } from '@libsql/client';
 import type { EmbeddingService } from './embeddingService';
 import { databaseLogger as log } from '../utils/logger';
 import {
