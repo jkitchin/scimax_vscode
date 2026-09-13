@@ -156,7 +156,7 @@ export class AgendaManager {
             showHabits: config.get<boolean>('showHabits', true),
             requireTodoState: config.get<boolean>('requireTodoState', true),
             todoStates: config.get<string[]>('todoStates', ['TODO', 'NEXT', 'WAITING']),
-            doneStates: config.get<string[]>('doneStates', ['DONE', 'CANCELLED']),
+            doneStates: config.get<string[]>('doneStates', ['DONE', 'CANCELLED', 'CANCELED']),
         };
     }
 
@@ -336,6 +336,7 @@ export class AgendaManager {
                 before: format(endDate, 'yyyy-MM-dd'),
                 includeUnscheduled: false,
                 requireTodoState: this.config.requireTodoState,
+                doneStates: this.config.doneStates,
             });
 
             // Optionally hide tasks blocked by unfinished dependencies so the
@@ -558,6 +559,9 @@ export class AgendaManager {
         try {
             const headings = await db.getTodos();
             const doneStates = new Set(this.config.doneStates);
+            // Done per the heading's own file (#+TODO line) or the configured list
+            const isDone = (h: { todo_state: string | null; todo_type?: string | null }) =>
+                h.todo_type === 'done' || (!!h.todo_state && doneStates.has(h.todo_state));
 
             const byState = new Map<string, AgendaItem[]>();
             const byPriority = new Map<string, AgendaItem[]>();
@@ -567,7 +571,7 @@ export class AgendaManager {
             for (const heading of headings) {
                 const state = heading.todo_state;
                 if (!state) continue;
-                if (!this.config.showDone && doneStates.has(state)) continue;
+                if (!this.config.showDone && isDone(heading)) continue;
                 if (this.isFileExcluded(heading.file_path)) continue;
 
                 const tags = heading.tags ? heading.tags.split(',').map((t: string) => t.trim()).filter((t: string) => t) : [];
@@ -612,7 +616,7 @@ export class AgendaManager {
                 countsPriority[priority] = (countsPriority[priority] || 0) + 1;
             }
 
-            const total = headings.filter(h => h.todo_state && (this.config.showDone || !doneStates.has(h.todo_state))).length;
+            const total = headings.filter(h => h.todo_state && (this.config.showDone || !isDone(h))).length;
 
             return {
                 byState,

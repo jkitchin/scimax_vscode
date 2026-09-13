@@ -77,9 +77,11 @@ function filterAgendaItems(items: AgendaItem[], settings: AgendaSettings): Agend
     return items.filter((item: AgendaItem) => {
         const todoState = item.heading.todo_state;
         if (!todoState) return true; // plain scheduled/deadline with no TODO keyword
-        if (settings.todoStates.includes(todoState)) return true; // active TODO state
-        if (settings.showDone && settings.doneStates.includes(todoState)) return true; // done (if enabled)
-        return false; // unknown/done state (ABANDONDED, DECLINED, DONE, CANCELLED, etc.)
+        // Done per the file's own #+TODO line (todo_type) or the configured list
+        if (item.heading.todo_type === 'done' || settings.doneStates.includes(todoState)) {
+            return settings.showDone;
+        }
+        return true; // active state, including custom ones declared in the file
     });
 }
 
@@ -281,7 +283,8 @@ async function showOverdue(db: ScimaxDbCore, settings: AgendaSettings, json: boo
     const overdue = items.filter((i: AgendaItem) => {
         if ((i.days_until ?? 0) >= 0) return false;
         const todoState = i.heading.todo_state;
-        if (!settings.showDone && todoState && settings.doneStates.includes(todoState)) {
+        if (!settings.showDone && todoState
+            && (i.heading.todo_type === 'done' || settings.doneStates.includes(todoState))) {
             return false;
         }
         return true;

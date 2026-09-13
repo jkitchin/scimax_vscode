@@ -413,7 +413,7 @@ export class LinkGraphQueryService {
         }
 
         if (filters.excludeDone) {
-            conditions.push("(h.id IS NULL OR h.todo_state IS NULL OR h.todo_state NOT IN ('DONE', 'CANCELLED'))");
+            conditions.push("(h.id IS NULL OR h.todo_state IS NULL OR h.todo_type IS NOT 'done')");
         }
 
         // Priority filter
@@ -501,7 +501,7 @@ export class LinkGraphQueryService {
             const headingResult = await this.db.execute({
                 sql: `SELECT
                         COUNT(*) as total,
-                        SUM(CASE WHEN todo_state IS NOT NULL AND todo_state NOT IN ('DONE', 'CANCELLED') THEN 1 ELSE 0 END) as todos,
+                        SUM(CASE WHEN todo_state IS NOT NULL AND todo_type IS NOT 'done' THEN 1 ELSE 0 END) as todos,
                         SUM(CASE WHEN deadline IS NOT NULL AND deadline > date('now') AND deadline < date('now', '+7 days') THEN 1 ELSE 0 END) as upcoming
                       FROM headings WHERE file_path = ?`,
                 args: [filePath]

@@ -1481,14 +1481,14 @@ The agenda is now a *view over the Scimax database*. Indexing scope
 the agenda) is controlled by =scimax.db.*= settings. The
 =scimax.agenda.*= settings below are display-only.
 
-| Setting                   | Type    | Default                     | Description                  |
-|---------------------------+---------+-----------------------------+------------------------------|
-| scimax.agenda.exclude     | array   | See below                   | Hide from view (still index) |
-| scimax.agenda.defaultSpan | number  | 7                           | Days to show in agenda       |
-| scimax.agenda.showDone    | boolean | false                       | Show completed items         |
-| scimax.agenda.showHabits  | boolean | true                        | Show habit-tagged items      |
-| scimax.agenda.todoStates  | array   | ["TODO", "NEXT", "WAITING"] | Active TODO states           |
-| scimax.agenda.doneStates  | array   | ["DONE", "CANCELLED"]       | Completed states             |
+| Setting                   | Type    | Default                           | Description                  |
+|---------------------------+---------+-----------------------------------+------------------------------|
+| scimax.agenda.exclude     | array   | See below                         | Hide from view (still index) |
+| scimax.agenda.defaultSpan | number  | 7                                 | Days to show in agenda       |
+| scimax.agenda.showDone    | boolean | false                             | Show completed items         |
+| scimax.agenda.showHabits  | boolean | true                              | Show habit-tagged items      |
+| scimax.agenda.todoStates  | array   | ["TODO", "NEXT", "WAITING"]       | Active TODO states           |
+| scimax.agenda.doneStates  | array   | ["DONE", "CANCELLED", "CANCELED"] | Completed states             |
 
 The following =scimax.agenda.*= settings are *deprecated* — they have
 no effect. Use the =scimax.db.*= equivalents instead:
@@ -1589,11 +1589,12 @@ indexing setting is set non-default in your config.
 }
 #+end_src
 
-*** scimax.agenda.doneStates
+*** 👀 scimax.agenda.doneStates
 
 - *Type*: array of strings
-- *Default*: `["DONE", "CANCELLED"]'
-- *Description*: Completed TODO states
+- *Default*: `["DONE", "CANCELLED", "CANCELED"]'
+- *Description*: Completed TODO states. These add to the done keywords each
+  file declares after =|= in its own =#+TODO:= line, which always count as done.
 
 *Example*:
 #+begin_src json

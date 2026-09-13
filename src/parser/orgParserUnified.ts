@@ -44,7 +44,7 @@ import type {
 import { parseObjects } from './orgObjects';
 import { parseTable, parsePlanningLine, parseClockLine, parseList } from './orgElements';
 import { PositionTracker, addPositionsToDocument } from './orgPosition';
-import { DEFAULT_TODO_STATES } from '../org/todoStates';
+import { DEFAULT_TODO_STATES, parseTodoKeywordLine } from '../org/todoStates';
 
 // =============================================================================
 // Parser Configuration
@@ -160,9 +160,11 @@ const RE_AFFILIATED_PLOT = /^#\+PLOT:\s*(.*)$/i;
 
 export class OrgParserUnified {
     private config: Required<OrgParserConfig>;
-    private todoKeywords: Set<string>;
-    private doneKeywords: Set<string>;
-    private allTodoKeywords: Set<string>;
+    // Set per parse by setTodoKeywords() (defaults + the file's #+TODO lines)
+    private todoKeywords!: Set<string>;
+    private doneKeywords!: Set<string>;
+    private allTodoKeywords!: Set<string>;
+    private keywordsFromConfig: boolean;
     // Pre-compiled patterns for inline task END markers (performance optimization)
     private static readonly inlinetaskEndPatterns: Map<number, RegExp> = OrgParserUnified.initEndPatterns();
     // Cache for block end patterns (lazily populated)
@@ -210,9 +212,46 @@ export class OrgParserUnified {
             inlinetaskMinLevel: config.inlinetaskMinLevel ?? DEFAULT_INLINETASK_MIN_LEVEL,
         };
 
-        this.todoKeywords = new Set(this.config.todoKeywords);
-        this.doneKeywords = new Set(this.config.doneKeywords);
+        this.keywordsFromConfig = config.todoKeywords !== undefined || config.doneKeywords !== undefined;
+        this.setTodoKeywords(this.config.todoKeywords, this.config.doneKeywords);
+    }
+
+    private setTodoKeywords(active: string[], done: string[]): void {
+        this.todoKeywords = new Set(active);
+        this.doneKeywords = new Set(done);
         this.allTodoKeywords = new Set([...this.todoKeywords, ...this.doneKeywords]);
+    }
+
+    /**
+     * Apply the file's own #+TODO / #+SEQ_TODO / #+TYP_TODO lines. A keyword the
+     * file lists after `|` is done and one before it is active, overriding the
+     * defaults (e.g. `#+TODO: TODO | DONE ABANDONED`). Default keywords stay
+     * recognized. Keywords passed explicitly via config take precedence.
+     */
+    private applyInBufferTodoKeywords(lines: string[], preambleEnd: number): void {
+        let active = this.config.todoKeywords;
+        let done = this.config.doneKeywords;
+
+        if (!this.keywordsFromConfig) {
+            const fileActive: string[] = [];
+            const fileDone: string[] = [];
+            for (let i = 0; i < preambleEnd; i++) {
+                const line = lines[i];
+                if (line[0] !== '#' || line[1] !== '+') continue;
+                const workflow = parseTodoKeywordLine(line);
+                if (workflow) {
+                    fileActive.push(...workflow.activeStates);
+                    fileDone.push(...workflow.doneStates);
+                }
+            }
+            if (fileActive.length > 0 || fileDone.length > 0) {
+                active = [...fileActive, ...active.filter(k => !fileDone.includes(k))];
+                done = [...fileDone, ...done.filter(k => !fileActive.includes(k))];
+            }
+        }
+
+        // Always reset, so keywords from a previously parsed file don't leak.
+        this.setTodoKeywords(active, done);
     }
 
     /**
@@ -248,6 +287,7 @@ export class OrgParserUnified {
             }
         }
         const preambleEnd = firstHeadlineIdx === -1 ? lines.length : firstHeadlineIdx;
+        this.applyInBufferTodoKeywords(lines, preambleEnd);
 
         if (preambleEnd > 0) {
             const preambleLines = lines.slice(0, preambleEnd);

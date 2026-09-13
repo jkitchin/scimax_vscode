@@ -124,7 +124,7 @@ export async function loadProject(db: ScimaxDbCore, filePath: string): Promise<T
     for (const h of headings) {
         const p = props(h);
         if (!p.ID) continue;
-        if (h.todo_state && DONE_STATES.has(h.todo_state)) doneIds.add(p.ID);
+        if (h.todo_type === 'done' || (h.todo_state && DONE_STATES.has(h.todo_state))) doneIds.add(p.ID);
         tasks.push({
             id: p.ID,
             title: h.title,

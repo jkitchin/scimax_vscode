@@ -197,6 +197,19 @@ const coreMigrations: CoreMigration[] = [
             `CREATE INDEX IF NOT EXISTS idx_dependencies_from ON dependencies(from_id)`,
             `CREATE INDEX IF NOT EXISTS idx_dependencies_file ON dependencies(file_id)`
         ]
+    },
+    {
+        version: 7,
+        description: 'Add todo_type to headings so done-ness follows each file\'s #+TODO line',
+        up: [
+            `ALTER TABLE headings ADD COLUMN todo_type TEXT`,
+            `CREATE INDEX IF NOT EXISTS idx_headings_todo_type ON headings(todo_type)`,
+            `UPDATE headings SET todo_type = CASE
+                WHEN todo_state IS NULL THEN NULL
+                WHEN todo_state IN ('DONE', 'CANCELLED', 'CANCELED') THEN 'done'
+                ELSE 'todo' END`,
+            `UPDATE files SET mtime = 0 WHERE file_type = 'org'`
+        ]
     }
 ];
 
@@ -240,6 +253,9 @@ export function parseDependsIds(value: string): string[] {
 // Type definitions (all exported for external use)
 // ============================================================
 
+/** Keywords treated as done when a file declares no #+TODO line of its own */
+export const DEFAULT_DONE_STATES = ['DONE', 'CANCELLED', 'CANCELED'];
+
 export interface FileRecord {
     id: number;
     path: string;
@@ -259,6 +275,8 @@ export interface HeadingRecord {
     line_number: number;
     begin_pos: number;
     todo_state: string | null;
+    /** 'done' when todo_state is a done keyword for its file (per #+TODO), else 'todo'; null without a keyword */
+    todo_type?: 'todo' | 'done' | null;
     priority: string | null;
     tags: string;
     inherited_tags: string;
@@ -1059,13 +1077,15 @@ export class ScimaxDbCore {
             statements.push({
                 sql: `INSERT INTO headings
                       (file_id, file_path, level, title, line_number, begin_pos,
-                       todo_state, priority, tags, inherited_tags, properties,
+                       todo_state, todo_type, priority, tags, inherited_tags, properties,
                        scheduled, deadline, closed, cell_index)
-                      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NULL)`,
+                      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NULL)`,
                 args: [
                     fileId, filePath, heading.level, heading.title,
                     heading.lineNumber, linePositions[headingLine] || 0,
-                    heading.todoState || null, heading.priority || null,
+                    heading.todoState || null,
+                    heading.todoState ? (heading.todoType ?? 'todo') : null,
+                    heading.priority || null,
                     JSON.stringify(heading.tags), JSON.stringify(inheritedTags),
                     JSON.stringify(heading.properties),
                     scheduled, deadline, closed
@@ -1421,9 +1441,13 @@ export class ScimaxDbCore {
                 statements.push({
                     sql: `INSERT INTO headings
                           (file_id, file_path, level, title, line_number, begin_pos,
-                           todo_state, tags, inherited_tags, properties, cell_index)
-                          VALUES (?, ?, ?, ?, ?, ?, ?, ?, '[]', '{}', NULL)`,
-                    args: [fileId, filePath, level, title.trim(), lineNumber, charPos, todoState, JSON.stringify(tags)]
+                           todo_state, todo_type, tags, inherited_tags, properties, cell_index)
+                          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, '[]', '{}', NULL)`,
+                    args: [
+                        fileId, filePath, level, title.trim(), lineNumber, charPos, todoState,
+                        todoState ? (DEFAULT_DONE_STATES.includes(todoState) ? 'done' : 'todo') : null,
+                        JSON.stringify(tags)
+                    ]
                 });
             }
             charPos += line.length + 1;
@@ -2018,11 +2042,14 @@ export class ScimaxDbCore {
 
         const scope = this.getScopeClause();
         const requireTodo = options?.requireTodoState ?? true;
-        const doneStates = options?.doneStates ?? ['DONE', 'CANCELLED'];
+        // A heading is done if the indexer classified its keyword as done using
+        // the file's own #+TODO line, or if the keyword is in doneStates.
+        const doneStates = options?.doneStates ?? DEFAULT_DONE_STATES;
         const doneList = doneStates.map(s => `'${s.replace(/'/g, "''")}'`).join(', ');
+        const notDone = `todo_type IS NOT 'done' AND (todo_state IS NULL OR todo_state NOT IN (${doneList}))`;
         const todoStateCondition = requireTodo
-            ? `AND todo_state IS NOT NULL AND todo_state NOT IN (${doneList})`
-            : `AND (todo_state IS NULL OR todo_state NOT IN (${doneList}))`;
+            ? `AND todo_state IS NOT NULL AND ${notDone}`
+            : `AND ${notDone}`;
 
         const deadlines = await this.db.execute({
             sql: `SELECT * FROM headings WHERE deadline IS NOT NULL ${todoStateCondition} ${scope.sql}`,
@@ -2052,7 +2079,7 @@ export class ScimaxDbCore {
 
         if (options?.includeUnscheduled) {
             const todos = await this.db.execute({
-                sql: `SELECT * FROM headings WHERE todo_state IS NOT NULL AND todo_state NOT IN ('DONE', 'CANCELLED') AND deadline IS NULL AND scheduled IS NULL ${scope.sql}`,
+                sql: `SELECT * FROM headings WHERE todo_state IS NOT NULL AND ${notDone} AND deadline IS NULL AND scheduled IS NULL ${scope.sql}`,
                 args: scope.args
             });
             for (const row of todos.rows) {

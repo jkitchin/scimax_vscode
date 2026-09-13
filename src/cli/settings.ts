@@ -381,7 +381,7 @@ export function loadSettings(): ScimaxSettings {
             showHabits: getSetting<boolean>(settings, 'scimax.agenda.showHabits', true),
             requireTodoState: getSetting<boolean>(settings, 'scimax.agenda.requireTodoState', true),
             todoStates: getSetting<string[]>(settings, 'scimax.agenda.todoStates', ['TODO', 'NEXT', 'WAITING']),
-            doneStates: getSetting<string[]>(settings, 'scimax.agenda.doneStates', ['DONE', 'CANCELLED']),
+            doneStates: getSetting<string[]>(settings, 'scimax.agenda.doneStates', ['DONE', 'CANCELLED', 'CANCELED']),
         },
         export: {
             latex: {

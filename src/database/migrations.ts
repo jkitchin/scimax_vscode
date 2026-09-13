@@ -230,6 +230,24 @@ export const migrations: Migration[] = [
             `CREATE INDEX IF NOT EXISTS idx_dependencies_from ON dependencies(from_id)`,
             `CREATE INDEX IF NOT EXISTS idx_dependencies_file ON dependencies(file_id)`
         ]
+    },
+    {
+        version: 7,
+        description: 'Add todo_type to headings so done-ness follows each file\'s #+TODO line',
+        up: [
+            // 'done' / 'todo' as classified by the parser using the file's own
+            // #+TODO line (e.g. `#+TODO: TODO | DONE CANCELED`); NULL when the
+            // heading has no keyword. Agenda and TODO queries filter on this.
+            `ALTER TABLE headings ADD COLUMN todo_type TEXT`,
+            `CREATE INDEX IF NOT EXISTS idx_headings_todo_type ON headings(todo_type)`,
+            // Backfill from the default done keywords, then mark org files stale
+            // so background sync reindexes them and applies per-file keywords.
+            `UPDATE headings SET todo_type = CASE
+                WHEN todo_state IS NULL THEN NULL
+                WHEN todo_state IN ('DONE', 'CANCELLED', 'CANCELED') THEN 'done'
+                ELSE 'todo' END`,
+            `UPDATE files SET mtime = 0 WHERE file_type = 'org'`
+        ]
     }
 ];
 

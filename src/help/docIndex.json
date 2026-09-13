@@ -1,5 +1,5 @@
 {
-  "buildDate": "2026-09-11T21:46:58.258Z",
+  "buildDate": "2026-09-12T20:32:44.941Z",
   "count": 3522,
   "entries": [
     {
@@ -40027,43 +40027,42 @@
       "level": 2,
       "file": "13-agenda.org",
       "line": 764,
-      "content": "CLOSED: [2026-01-17 Sat 13:26] Define which TODO keywords to include: | Setting                          | Default               | |----------------------------------+-----------------------| | scimax.agenda.todoStates         | [TODO, NEXT, WAITING] | | scimax.agenda.doneStates         | [DONE, CANCELLED]     | #+BEGIN_SRC json { \"scimax.agenda.todoStates\": [ \"TODO\", \"NEXT\", \"IN-PROGRESS\", \"WAITING\", \"REVIEW\" ], \"scimax.agenda.doneStates\": [ \"DONE\", \"CANCELLED\", \"REJECTED\" ]",
+      "content": "A file's own =#+TODO:= line decides which of its keywords are done. Keywords after the =|= are done, and those headings are left out of the agenda and TODO list: #+BEGIN_SRC org ,#+TODO: TODO NEXT WAITING | DONE CANCELED ABANDONED #+END_SRC In files without a =#+TODO:= line, =DONE=, =CANCELLED= and =CANCELED= are done. =scimax.agenda.doneStates= adds keywords that count as done in every file. Done-ness is recorded when a file is indexed, so after editing a file's =#+TODO:= line the agenda update",
       "path": [
         "Agenda Configuration"
       ],
       "commands": [
-        "scimax.agenda.todoStates",
         "scimax.agenda.doneStates"
       ],
       "keybindings": [],
       "keywords": [
         "states",
-        "closed",
-        "2026-01-17",
-        "sat",
-        "1326",
-        "define",
+        "own",
         "todo",
+        "line",
+        "decides",
         "keywords",
-        "include",
-        "setting",
-        "default",
-        "---------------------------------------------------------",
+        "done",
+        "after",
+        "headings",
+        "left",
+        "out",
+        "agenda",
+        "list",
+        "beginsrc",
+        "org",
         "next",
         "waiting",
-        "done",
-        "cancelled",
-        "beginsrc",
-        "json",
-        "in-progress",
-        "review"
+        "canceled",
+        "abandoned",
+        "endsrc"
       ]
     },
     {
       "heading": "Database Integration",
       "level": 1,
       "file": "13-agenda.org",
-      "line": 791,
+      "line": 803,
       "content": "CLOSED: [2026-01-17 Sat 12:32] The database-backed agenda provides additional capabilities.",
       "path": [],
       "commands": [],
@@ -40086,7 +40085,7 @@
       "heading": "Database Agenda Features",
       "level": 2,
       "file": "13-agenda.org",
-      "line": 796,
+      "line": 808,
       "content": "CLOSED: [2026-01-17 Sat 12:32] The database agenda (scimax.db.agenda) offers: 1. *Fast queries* - Indexed data for instant results 2. *Complex filtering* - Search by property, tag, etc. 3. *Semantic search* - Find items by meaning 4. *Hybrid views* - Combine agenda with search",
       "path": [
         "Database Integration"
@@ -40122,7 +40121,7 @@
       "heading": "Indexing for Agenda",
       "level": 2,
       "file": "13-agenda.org",
-      "line": 806,
+      "line": 818,
       "content": "CLOSED: [2026-05-03 Sun 08:00] Before using the agenda, index your files: | Command                   | Description                                | |---------------------------+--------------------------------------------| | [[cmd:scimax.db.refresh]] | Refresh database incrementally (mtime)     | | [[cmd:scimax.db.rebuild]] | Rebuild database from scratch              | For day-to-day use across machines (e.g. Dropbox sync), run =Refresh= on activation when prompted, or any time you want the ag",
       "path": [
         "Database Integration"
@@ -40159,7 +40158,7 @@
       "heading": "Database Agenda Commands",
       "level": 2,
       "file": "13-agenda.org",
-      "line": 820,
+      "line": 832,
       "content": "CLOSED: [2026-01-17 Sat 12:33] | Command               | Description             | |-----------------------+-------------------------| | scimax.db.agenda      | Time-based agenda view  | | scimax.db.deadlines   | Upcoming deadlines      | | scimax.db.showTodos   | All TODO items          | | scimax.db.searchByTag | Items with specific tag |",
       "path": [
         "Database Integration"
@@ -40196,7 +40195,7 @@
       "heading": "Search Scope",
       "level": 2,
       "file": "13-agenda.org",
-      "line": 830,
+      "line": 842,
       "content": "CLOSED: [2026-01-17 Sat 12:34] Limit agenda queries to specific directories: | Command                    | Description      | |----------------------------+------------------| | [[cmd:scimax.db.setScope]] | Set search scope | Options: - *All files* - Search entire database - *Current directory* - Only files in current directory",
       "path": [
         "Database Integration"
@@ -40232,7 +40231,7 @@
       "heading": "Agenda Item Data",
       "level": 2,
       "file": "13-agenda.org",
-      "line": 844,
+      "line": 856,
       "content": "CLOSED: [2026-01-17 Sat 12:34] Database agenda items include: #+BEGIN_SRC typescript interface AgendaItem { type: 'deadline' | 'scheduled' | 'todo'; heading: HeadingRecord; date?: string; days_until?: number; overdue?: boolean; } #+END_SRC Properties: - type - Item category - heading - Full heading info (title, tags, priority, etc.) - date - Scheduled/deadline date - days_until - Days until/past date (negative = overdue) - overdue - Boolean flag for past deadlines",
       "path": [
         "Database Integration"
@@ -40266,7 +40265,7 @@
       "heading": "Querying Agenda",
       "level": 2,
       "file": "13-agenda.org",
-      "line": 866,
+      "line": 878,
       "content": "CLOSED: [2026-01-17 Sat 12:34] Programmatic access to agenda data: #+BEGIN_SRC typescript // Get agenda items const items = await db.getAgenda({ before: '+2w',           // Next 2 weeks includeUnscheduled: true // Include TODOs without dates }); // Filter deadlines const deadlines = items.filter(item => item.type === 'deadline'); // Find overdue const overdue = items.filter(item => item.overdue); #+END_SRC See [[file:18-database-search.org][Database Search]] for more on database queries.",
       "path": [
         "Database Integration"
@@ -40300,7 +40299,7 @@
       "heading": "Agenda Workflows",
       "level": 1,
       "file": "13-agenda.org",
-      "line": 887,
+      "line": 899,
       "content": "CLOSED: [2026-01-17 Sat 12:34] Practical approaches to using the agenda effectively.",
       "path": [],
       "commands": [],
@@ -40321,7 +40320,7 @@
       "heading": "Morning Planning",
       "level": 2,
       "file": "13-agenda.org",
-      "line": 892,
+      "line": 904,
       "content": "CLOSED: [2026-01-17 Sat 12:34] Start your day with the day agenda: 1. Run [[cmd:scimax.agenda.day]] 2. Review today's items 3. Mark priorities 4. Identify blockers 5. Clock in to first task",
       "path": [
         "Agenda Workflows"
@@ -40357,7 +40356,7 @@
       "heading": "Weekly Review",
       "level": 2,
       "file": "13-agenda.org",
-      "line": 903,
+      "line": 915,
       "content": "CLOSED: [2026-01-17 Sat 12:34] Every week: 1. Run [[cmd:scimax.agenda.week]] 2. Check for overdue items 3. Reschedule as needed 4. Add new scheduled items 5. Review WAITING tasks",
       "path": [
         "Agenda Workflows"
@@ -40392,7 +40391,7 @@
       "heading": "Deadline Management",
       "level": 2,
       "file": "13-agenda.org",
-      "line": 914,
+      "line": 926,
       "content": "CLOSED: [2026-01-17 Sat 12:35] Stay on top of deadlines: 1. Run [[cmd:scimax.agenda.deadlines]] or [[cmd:scimax.db.deadlines]] 2. Note items due soon 3. Start working on items with warnings 4. Address overdue items immediately 5. Update estimates for late items",
       "path": [
         "Agenda Workflows"
@@ -40429,7 +40428,7 @@
       "heading": "Context-Based Work",
       "level": 2,
       "file": "13-agenda.org",
-      "line": 925,
+      "line": 937,
       "content": "CLOSED: [2026-01-17 Sat 12:35] Use tags to filter by context: #+BEGIN_SRC text ; At office Command: scimax.agenda.filterByTag → Select: \"office\" Work on office-only tasks ; Have phone available → Select: \"phone\" Make all phone calls ; At computer → Select: \"computer\" Handle computer-required tasks #+END_SRC",
       "path": [
         "Agenda Workflows"
@@ -40465,7 +40464,7 @@
       "heading": "Project Review",
       "level": 2,
       "file": "13-agenda.org",
-      "line": 945,
+      "line": 957,
       "content": "CLOSED: [2026-01-16 Fri 21:06] Review project status: 1. Filter agenda by project tag 2. Check all project items 3. Identify NEXT action 4. Update completed items 5. Add new tasks as needed",
       "path": [
         "Agenda Workflows"
@@ -40499,7 +40498,7 @@
       "heading": "Priority Triage",
       "level": 2,
       "file": "13-agenda.org",
-      "line": 956,
+      "line": 968,
       "content": "CLOSED: [2026-01-16 Fri 21:06] Focus on high-priority items: 1. Filter or group by priority 2. Work through all [#A] items 3. Move to [#B] items 4. Reschedule [#C] if needed",
       "path": [
         "Agenda Workflows"
@@ -40529,7 +40528,7 @@
       "heading": "Agenda Best Practices",
       "level": 1,
       "file": "13-agenda.org",
-      "line": 966,
+      "line": 978,
       "content": "CLOSED: [2026-01-16 Fri 21:06]",
       "path": [],
       "commands": [],
@@ -40548,7 +40547,7 @@
       "heading": "Keep Agenda Files Organized",
       "level": 2,
       "file": "13-agenda.org",
-      "line": 969,
+      "line": 981,
       "content": "CLOSED: [2026-01-16 Fri 21:06] Structure agenda files logically: #+BEGIN_SRC text ~/org/ ├── work.org          ; Work tasks ├── personal.org      ; Personal tasks ├── projects/         ; Project-specific files │   ├── project-a.org │   └── project-b.org └── archive/          ; Archived (excluded) #+END_SRC Configure agenda to scan ~/org/ and exclude archive/.",
       "path": [
         "Agenda Best Practices"
@@ -40582,7 +40581,7 @@
       "heading": "Use Meaningful Categories",
       "level": 2,
       "file": "13-agenda.org",
-      "line": 986,
+      "line": 998,
       "content": "CLOSED: [2026-01-16 Fri 21:06] Set CATEGORY properties for better grouping: #+BEGIN_SRC org #+CATEGORY: Work",
       "path": [
         "Agenda Best Practices"
@@ -40610,7 +40609,7 @@
       "heading": "TODO Project tasks",
       "level": 1,
       "file": "13-agenda.org",
-      "line": 994,
+      "line": 1006,
       "content": ":PROPERTIES: :CATEGORY: ProjectA :END: #+END_SRC",
       "path": [],
       "commands": [],
@@ -40630,7 +40629,7 @@
       "heading": "Schedule Realistically",
       "level": 2,
       "file": "13-agenda.org",
-      "line": 1000,
+      "line": 1012,
       "content": "CLOSED: [2026-01-16 Fri 21:05] Don't over-schedule: #+BEGIN_SRC org ; Bad - too many items",
       "path": [
         "TODO Project tasks"
@@ -40657,7 +40656,7 @@
       "heading": "TODO 20 tasks scheduled for Monday",
       "level": 1,
       "file": "13-agenda.org",
-      "line": 1007,
+      "line": 1019,
       "content": "; Good - realistic daily load",
       "path": [],
       "commands": [],
@@ -40677,7 +40676,7 @@
       "heading": "TODO 3-5 priority tasks per day",
       "level": 1,
       "file": "13-agenda.org",
-      "line": 1010,
+      "line": 1022,
       "content": "#+END_SRC",
       "path": [],
       "commands": [],
@@ -40696,7 +40695,7 @@
       "heading": "Use Deadlines Sparingly",
       "level": 2,
       "file": "13-agenda.org",
-      "line": 1013,
+      "line": 1025,
       "content": "CLOSED: [2026-01-16 Fri 21:05] Only use deadlines for true hard deadlines: #+BEGIN_SRC org ; Good - actual deadline",
       "path": [
         "TODO 3-5 priority tasks per day"
@@ -40723,7 +40722,7 @@
       "heading": "TODO Submit tax return",
       "level": 1,
       "file": "13-agenda.org",
-      "line": 1020,
+      "line": 1032,
       "content": "DEADLINE: <2026-04-15 Tue> ; Bad - arbitrary deadline",
       "path": [],
       "commands": [],
@@ -40744,7 +40743,7 @@
       "heading": "TODO Read interesting article",
       "level": 1,
       "file": "13-agenda.org",
-      "line": 1024,
+      "line": 1036,
       "content": "DEADLINE: <2026-01-20 Mon> ; Use SCHEDULED instead #+END_SRC",
       "path": [],
       "commands": [],
@@ -40766,7 +40765,7 @@
       "heading": "Regular Cleanup",
       "level": 2,
       "file": "13-agenda.org",
-      "line": 1029,
+      "line": 1041,
       "content": "CLOSED: [2026-01-16 Fri 21:05] Weekly maintenance: - Archive completed items - Cancel obsolete tasks - Update dates on delayed items - Remove duplicate entries",
       "path": [
         "TODO Read interesting article"
@@ -40800,7 +40799,7 @@
       "heading": "Leverage Repeaters",
       "level": 2,
       "file": "13-agenda.org",
-      "line": 1038,
+      "line": 1050,
       "content": "CLOSED: [2026-01-16 Fri 21:05] Use repeaters for recurring items: #+BEGIN_SRC org ; Meetings",
       "path": [
         "TODO Read interesting article"
@@ -40825,7 +40824,7 @@
       "heading": "TODO Weekly standup",
       "level": 1,
       "file": "13-agenda.org",
-      "line": 1045,
+      "line": 1057,
       "content": "SCHEDULED: <2026-01-15 Wed 09:00 +1w> ; Habits",
       "path": [],
       "commands": [],
@@ -40845,7 +40844,7 @@
       "heading": "TODO Morning exercise",
       "level": 1,
       "file": "13-agenda.org",
-      "line": 1049,
+      "line": 1061,
       "content": "SCHEDULED: <2026-01-15 Wed ++1d> ; Maintenance",
       "path": [],
       "commands": [],
@@ -40864,7 +40863,7 @@
       "heading": "TODO Backup files",
       "level": 1,
       "file": "13-agenda.org",
-      "line": 1053,
+      "line": 1065,
       "content": "SCHEDULED: <2026-01-15 Wed .+7d> #+END_SRC",
       "path": [],
       "commands": [],
@@ -40882,7 +40881,7 @@
       "heading": "Balance Time Spans",
       "level": 2,
       "file": "13-agenda.org",
-      "line": 1057,
+      "line": 1069,
       "content": "CLOSED: [2026-01-16 Fri 21:05] Use different views for different purposes: | View      | Purpose                          | Frequency      | |-----------|----------------------------------|----------------| | Day       | Immediate planning               | Every morning  | | Week      | Short-term planning              | Daily review   | | Fortnight | Medium-term awareness            | Weekly review  | | Month     | Long-term planning               | Monthly review |",
       "path": [
         "TODO Backup files"
@@ -40916,7 +40915,7 @@
       "heading": "Practical Examples",
       "level": 1,
       "file": "13-agenda.org",
-      "line": 1069,
+      "line": 1081,
       "content": "CLOSED: [2026-01-16 Fri 21:05]",
       "path": [],
       "commands": [],
@@ -40934,7 +40933,7 @@
       "heading": "Example: Software Developer",
       "level": 2,
       "file": "13-agenda.org",
-      "line": 1072,
+      "line": 1084,
       "content": "CLOSED: [2026-01-16 Fri 21:05] #+BEGIN_SRC org ; work.org",
       "path": [
         "Practical Examples"
@@ -40958,7 +40957,7 @@
       "heading": "TODO [#A] Fix production bug                              :urgent:bug:",
       "level": 1,
       "file": "13-agenda.org",
-      "line": 1078,
+      "line": 1090,
       "content": "DEADLINE: <2026-01-15 Wed> Critical database connection issue.",
       "path": [],
       "commands": [],
@@ -40982,7 +40981,7 @@
       "heading": "TODO [#A] Code review for PR #234                         :review:",
       "level": 1,
       "file": "13-agenda.org",
-      "line": 1082,
+      "line": 1094,
       "content": "SCHEDULED: <2026-01-15 Wed 10:00> Review authentication changes.",
       "path": [],
       "commands": [],
@@ -41004,7 +41003,7 @@
       "heading": "TODO [#B] Implement user settings page                    :feature:",
       "level": 1,
       "file": "13-agenda.org",
-      "line": 1086,
+      "line": 1098,
       "content": "SCHEDULED: <2026-01-16 Thu> DEADLINE: <2026-01-20 Mon> :PROPERTIES: :EFFORT: 6:00 :END:",
       "path": [],
       "commands": [],
@@ -41032,7 +41031,7 @@
       "heading": "TODO Weekly team standup                                  :meeting:",
       "level": 1,
       "file": "13-agenda.org",
-      "line": 1093,
+      "line": 1105,
       "content": "SCHEDULED: <2026-01-15 Wed 09:00 +1w>",
       "path": [],
       "commands": [],
@@ -41053,7 +41052,7 @@
       "heading": "TODO Sprint planning                                      :meeting:",
       "level": 1,
       "file": "13-agenda.org",
-      "line": 1096,
+      "line": 1108,
       "content": "SCHEDULED: <2026-01-22 Wed 14:00 +2w> #+END_SRC Agenda shows: - Today: Bug fix (overdue!), code review at 10am, standup at 9am - Tomorrow: Start user settings - Next Monday: Settings deadline",
       "path": [],
       "commands": [],
@@ -41085,7 +41084,7 @@
       "heading": "Example: Project Manager",
       "level": 2,
       "file": "13-agenda.org",
-      "line": 1105,
+      "line": 1117,
       "content": "CLOSED: [2026-01-16 Fri 21:05] #+BEGIN_SRC org ; projects.org #+CATEGORY: Projects",
       "path": [
         "TODO Sprint planning                                      :meeting:"
@@ -41111,7 +41110,7 @@
       "heading": "TODO [#A] Submit Q1 budget                                :finance:admin:",
       "level": 1,
       "file": "13-agenda.org",
-      "line": 1113,
+      "line": 1125,
       "content": "DEADLINE: <2026-01-31 Fri -7d> :PROPERTIES: :EFFORT: 4:00 :END:",
       "path": [],
       "commands": [],
@@ -41135,7 +41134,7 @@
       "heading": "WAITING Client approval on timeline                       :client:blocked:",
       "level": 1,
       "file": "13-agenda.org",
-      "line": 1119,
+      "line": 1131,
       "content": "SCHEDULED: <2026-01-10 Fri> Sent proposal on Jan 10, follow up if no response.",
       "path": [],
       "commands": [],
@@ -41160,7 +41159,7 @@
       "heading": "TODO [#B] Update project roadmap                          :planning:",
       "level": 1,
       "file": "13-agenda.org",
-      "line": 1123,
+      "line": 1135,
       "content": "SCHEDULED: <2026-01-16 Thu> Quarterly roadmap review and updates.",
       "path": [],
       "commands": [],
@@ -41183,7 +41182,7 @@
       "heading": "TODO Monthly status meeting                               :meeting:",
       "level": 1,
       "file": "13-agenda.org",
-      "line": 1127,
+      "line": 1139,
       "content": "SCHEDULED: <2026-01-30 Thu 15:00 +1m> With stakeholders.",
       "path": [],
       "commands": [],
@@ -41204,7 +41203,7 @@
       "heading": "TODO Weekly team check-in                                 :meeting:",
       "level": 1,
       "file": "13-agenda.org",
-      "line": 1131,
+      "line": 1143,
       "content": "SCHEDULED: <2026-01-17 Fri 10:00 +1w> #+END_SRC Agenda grouped by priority shows: - Priority A: Budget (due in 7 days with warning) - WAITING: Client approval (needs follow-up) - Priority B: Roadmap update",
       "path": [],
       "commands": [],
@@ -41236,7 +41235,7 @@
       "heading": "Example: Academic/Researcher",
       "level": 2,
       "file": "13-agenda.org",
-      "line": 1140,
+      "line": 1152,
       "content": "CLOSED: [2026-01-16 Fri 21:05] #+BEGIN_SRC org ; research.org #+CATEGORY: Research",
       "path": [
         "TODO Weekly team check-in                                 :meeting:"
@@ -41261,7 +41260,7 @@
       "heading": "TODO [#A] Submit conference paper                         :paper:deadline:",
       "level": 1,
       "file": "13-agenda.org",
-      "line": 1148,
+      "line": 1160,
       "content": "DEADLINE: <2026-02-15 Sun -14d> ICML submission deadline. :PROPERTIES: :EFFORT: 40:00 :END:",
       "path": [],
       "commands": [],
@@ -41288,7 +41287,7 @@
       "heading": "TODO Literature review                                    :reading:",
       "level": 1,
       "file": "13-agenda.org",
-      "line": 1155,
+      "line": 1167,
       "content": "SCHEDULED: <2026-01-16 Thu> :PROPERTIES: :EFFORT: 3:00 :END: Read papers on attention mechanisms.",
       "path": [],
       "commands": [],
@@ -41315,7 +41314,7 @@
       "heading": "TODO Weekly advisor meeting                               :meeting:",
       "level": 1,
       "file": "13-agenda.org",
-      "line": 1162,
+      "line": 1174,
       "content": "SCHEDULED: <2026-01-17 Fri 14:00 +1w> Prepare update slides.",
       "path": [],
       "commands": [],
@@ -41338,7 +41337,7 @@
       "heading": "TODO Run experiments                                      :lab:computer:",
       "level": 1,
       "file": "13-agenda.org",
-      "line": 1166,
+      "line": 1178,
       "content": "SCHEDULED: <2026-01-18 Sat> :PROPERTIES: :EFFORT: 8:00 :END: Training runs for new model.",
       "path": [],
       "commands": [],
@@ -41365,7 +41364,7 @@
       "heading": "TODO Grade assignments                                    :teaching:",
       "level": 1,
       "file": "13-agenda.org",
-      "line": 1173,
+      "line": 1185,
       "content": "DEADLINE: <2026-01-20 Mon> CS101 homework submissions. #+END_SRC Week view shows balanced schedule: - Ongoing: Paper writing (big effort) - Daily: Literature review, experiments - Weekly: Advisor meeting - Deadline: Grading due Monday",
       "path": [],
       "commands": [],
@@ -41397,7 +41396,7 @@
       "heading": "Troubleshooting",
       "level": 1,
       "file": "13-agenda.org",
-      "line": 1184,
+      "line": 1196,
       "content": "CLOSED: [2026-01-18 Sun 11:50]",
       "path": [],
       "commands": [],
@@ -41414,7 +41413,7 @@
       "heading": "Agenda Shows No Items",
       "level": 2,
       "file": "13-agenda.org",
-      "line": 1187,
+      "line": 1199,
       "content": "CLOSED: [2026-07-11 Sat 09:14] *Issue*: Agenda view is empty or shows fewer items than expected. *Solutions*: 1. *Check indexed files*: #+BEGIN_SRC text Command: scimax.agenda.configure Add your org directories; they are stored in scimax.db.include and indexed automatically #+END_SRC 2. *Verify TODO keywords*: - Check headlines have TODO, SCHEDULED, or DEADLINE - Ensure correct keyword spelling 3. *Check time range*: - Day view only shows today's items - Try week or month view for more items",
       "path": [
         "Troubleshooting"
@@ -41451,7 +41450,7 @@
       "heading": "Items Not Updating",
       "level": 2,
       "file": "13-agenda.org",
-      "line": 1218,
+      "line": 1230,
       "content": "CLOSED: [2026-01-18 Sun 12:50] *Issue*: Changed items don't appear or update in agenda. *Solutions*: 1. *Refresh agenda*: #+BEGIN_SRC text Command: scimax.agenda.refresh #+END_SRC 2. *Sync database*: #+BEGIN_SRC text Command: scimax.db.reindex #+END_SRC 3. *Check file watcher*: - Extension should auto-detect changes - Manual refresh if needed 4. *Save file*: - Ensure file is saved (C-s) - Agenda reads from disk",
       "path": [
         "Troubleshooting"
@@ -41490,7 +41489,7 @@
       "heading": "Tree View Not Showing",
       "level": 2,
       "file": "13-agenda.org",
-      "line": 1243,
+      "line": 1255,
       "content": "CLOSED: [2026-01-18 Sun 12:50] *Issue*: Agenda tree view not visible in sidebar. *Solutions*: 1. *Check view visibility*: - View → Open View → Scimax: Agenda 2. *Refresh view*: #+BEGIN_SRC text Command: scimax.agenda.refresh #+END_SRC 3. *Check for errors*: - View extension logs - Check for parsing errors in org files",
       "path": [
         "Troubleshooting"
@@ -41526,7 +41525,7 @@
       "heading": "Slow Performance",
       "level": 2,
       "file": "13-agenda.org",
-      "line": 1262,
+      "line": 1274,
       "content": "CLOSED: [2026-01-18 Sun 12:50] *Issue*: Agenda is slow to load or refresh. *Solutions*: 1. *Use database agenda*: - scimax.db.agenda is faster for large collections - Index files once, query quickly 2. *Limit agenda files*: - Don't include entire filesystem - Use specific directories 3. *Exclude large directories*: #+BEGIN_SRC json { \"scimax.agenda.exclude\": [ \"**/node_modules/**\", \"**/vendor/**\", \"**/build/**\" ] } #+END_SRC 4. *Optimize file sizes*: - Archive old DONE items",
       "path": [
         "Troubleshooting"
@@ -41563,7 +41562,7 @@
       "heading": "Date Display Issues",
       "level": 2,
       "file": "13-agenda.org",
-      "line": 1292,
+      "line": 1304,
       "content": "CLOSED: [2026-01-18 Sun 12:50] *Issue*: Dates show incorrectly or items appear on wrong days. *Solutions*: 1. *Check timestamp format*: #+BEGIN_SRC org ; Correct SCHEDULED: <2026-01-15 Wed> ; Incorrect SCHEDULED: <01/15/2026> #+END_SRC 2. *Verify day of week*: - Day must match date - Use S-<right> to recalculate 3. *Check repeaters*: #+BEGIN_SRC org ; Ensure repeater syntax is correct SCHEDULED: <2026-01-15 Wed +1w> #+END_SRC",
       "path": [
         "Troubleshooting"
@@ -41597,7 +41596,7 @@
       "heading": "Quick Reference",
       "level": 1,
       "file": "13-agenda.org",
-      "line": 1318,
+      "line": 1330,
       "content": "CLOSED: [2026-01-18 Sun 12:46]",
       "path": [],
       "commands": [],
@@ -41615,7 +41614,7 @@
       "heading": "Main Agenda Commands",
       "level": 2,
       "file": "13-agenda.org",
-      "line": 1321,
+      "line": 1333,
       "content": "CLOSED: [2026-01-18 Sun 12:47] | Command                           | Description            | |-----------------------------------+------------------------| | [[cmd:scimax.agenda.menu]]        | Show agenda menu       | | [[cmd:scimax.agenda.day]]         | Today's agenda         | | [[cmd:scimax.agenda.week]]        | 7-day agenda           | | [[cmd:scimax.agenda.fortnight]]   | 14-day agenda          | | [[cmd:scimax.agenda.month]]       | 30-day agenda          | | [[cmd:scimax.agenda.todoLi",
       "path": [
         "Quick Reference"
@@ -41653,7 +41652,7 @@
       "heading": "Database Agenda Commands",
       "level": 2,
       "file": "13-agenda.org",
-      "line": 1338,
+      "line": 1350,
       "content": "CLOSED: [2026-01-18 Sun 12:55] | Command                       | Description            | |-------------------------------+------------------------| | [[cmd:scimax.db.agenda]]      | Database agenda view   | | [[cmd:scimax.db.deadlines]]   | Database deadline view | | [[cmd:scimax.db.showTodos]]   | Database TODO list     | | [[cmd:scimax.db.searchByTag]] | Database tag search    | | [[cmd:scimax.db.setScope]]    | Set search scope       | | [[cmd:scimax.db.refresh]]     | Refresh database (incr",
       "path": [
         "Quick Reference"
@@ -41694,7 +41693,7 @@
       "heading": "Tree View Commands",
       "level": 2,
       "file": "13-agenda.org",
-      "line": 1351,
+      "line": 1363,
       "content": "CLOSED: [2026-01-18 Sun 12:49] | Command                             | Description                    | |-------------------------------------|--------------------------------| | [[cmd:scimax.agenda.showAgenda]]           | Show agenda in tree view       | | [[cmd:scimax.agenda.showTodos]]            | Show TODOs in tree view        | | [[cmd:scimax.agenda.groupByDate]]          | Group by date                  | | [[cmd:scimax.agenda.groupByCategory]]      | Group by category              | | [",
       "path": [
         "Quick Reference"
@@ -41731,7 +41730,7 @@
       "heading": "Configuration Settings",
       "level": 2,
       "file": "13-agenda.org",
-      "line": 1363,
+      "line": 1375,
       "content": "CLOSED: [2026-05-03 Sun 08:00] Indexing scope (what's available to the agenda) lives under =scimax.db.*=. The agenda's own settings are display-only: | Setting                   | Default      | Description                  | |---------------------------+--------------+------------------------------| | scimax.agenda.exclude     | node_modules | Hide from view (still index) | | scimax.agenda.defaultSpan | 7            | Default days to show         | | scimax.agenda.showDone    | false        | S",
       "path": [
         "Quick Reference"
@@ -41770,7 +41769,7 @@
       "heading": "Agenda Item Properties",
       "level": 2,
       "file": "13-agenda.org",
-      "line": 1388,
+      "line": 1400,
       "content": "CLOSED: [2026-01-18 Sun 12:49] | Property  | Description                       | |-----------+-----------------------------------| | title     | Headline text                     | | todoState | TODO keyword (TODO, NEXT, etc.)   | | priority  | Priority (A, B, C)                | | tags      | Tag list                          | | scheduled | Scheduled date                    | | deadline  | Deadline date                     | | time      | Time of day                       | | daysUntil | Days ",
       "path": [
         "Quick Reference"
@@ -41804,7 +41803,7 @@
       "heading": "Item Type Icons",
       "level": 2,
       "file": "13-agenda.org",
-      "line": 1406,
+      "line": 1418,
       "content": "CLOSED: [2026-01-18 Sun 12:49] | Icon | Type                | Description                        | |------|---------------------|------------------------------------| | ⚠    | Overdue deadline    | Past due date, needs attention     | | 🔔   | Deadline            | Has deadline, not overdue          | | 📅   | Scheduled           | Has SCHEDULED timestamp            | | ⚪   | TODO                | Regular TODO item                  | | ✓    | DONE                | Completed item                 ",
       "path": [
         "Quick Reference"
@@ -41838,7 +41837,7 @@
       "heading": "Quick Workflow",
       "level": 2,
       "file": "13-agenda.org",
-      "line": 1420,
+      "line": 1432,
       "content": "CLOSED: [2026-01-18 Sun 12:50] 1. *Morning*: [[cmd:scimax.agenda.day]] - See today's tasks 2. *Planning*: [[cmd:scimax.agenda.week]] - Plan upcoming work 3. *Triage*: [[cmd:scimax.agenda.deadlines]] - Handle urgent items 4. *Context work*: [[cmd:scimax.agenda.filterByTag]] - Focus by context 5. *Review*: [[cmd:scimax.agenda.todoList]] - Review all TODOs",
       "path": [
         "Quick Reference"
@@ -41878,7 +41877,7 @@
       "heading": "Related Topics",
       "level": 1,
       "file": "13-agenda.org",
-      "line": 1429,
+      "line": 1441,
       "content": "CLOSED: [2026-01-18 Sun 11:49] - [[file:03-todo-items.org][TODO Items]] - Creating and managing TODO items - [[file:06-timestamps.org][Timestamps]] - Date formats, scheduling, deadlines, repeaters - [[file:02-document-structure.org][Document Structure]] - Organizing headlines and content - [[file:18-database-search.org][Database Search]] - Advanced search and filtering - [[file:26-configuration.org][Configuration]] - Extension settings - [[file:01-getting-started.org][Getting Started]] - Basic u",
       "path": [],
       "commands": [],
@@ -41910,7 +41909,7 @@
       "heading": "Navigation",
       "level": 1,
       "file": "13-agenda.org",
-      "line": 1439,
+      "line": 1451,
       "content": "- Previous: [[file:12-image-overlays.org][Image Overlays]] - Index: [[file:00-index.org][Documentation Index]] - Next: [[file:14-journal.org][Journal]]",
       "path": [],
       "commands": [],
@@ -83570,7 +83569,7 @@
       "level": 2,
       "file": "26-configuration.org",
       "line": 1477,
-      "content": "The agenda is now a *view over the Scimax database*. Indexing scope (what files exist in the database, and therefore what's eligible for the agenda) is controlled by =scimax.db.*= settings. The =scimax.agenda.*= settings below are display-only. | Setting                   | Type    | Default                     | Description                  | |---------------------------+---------+-----------------------------+------------------------------| | scimax.agenda.exclude     | array   | See below    ",
+      "content": "The agenda is now a *view over the Scimax database*. Indexing scope (what files exist in the database, and therefore what's eligible for the agenda) is controlled by =scimax.db.*= settings. The =scimax.agenda.*= settings below are display-only. | Setting                   | Type    | Default                           | Description                  | |---------------------------+---------+-----------------------------------+------------------------------| | scimax.agenda.exclude     | array   | S",
       "path": [
         "Agenda Settings"
       ],
@@ -83790,7 +83789,7 @@
       "level": 3,
       "file": "26-configuration.org",
       "line": 1592,
-      "content": "- *Type*: array of strings - *Default*: `[\"DONE\", \"CANCELLED\"]' - *Description*: Completed TODO states *Example*: #+begin_src json { \"scimax.agenda.doneStates\": [ \"DONE\", \"CANCELLED\", \"DEFERRED\", \"ARCHIVED\" ] } #+end_src",
+      "content": "- *Type*: array of strings - *Default*: `[\"DONE\", \"CANCELLED\", \"CANCELED\"]' - *Description*: Completed TODO states. These add to the done keywords each file declares after =|= in its own =#+TODO:= line, which always count as done. *Example*: #+begin_src json { \"scimax.agenda.doneStates\": [ \"DONE\", \"CANCELLED\", \"DEFERRED\", \"ARCHIVED\" ] } #+end_src",
       "path": [
         "Agenda Settings",
         "Detailed Configuration"
@@ -83806,23 +83805,27 @@
         "default",
         "done",
         "cancelled",
+        "canceled",
         "description",
         "completed",
         "todo",
         "states",
-        "example",
-        "beginsrc",
-        "json",
-        "deferred",
-        "archived",
-        "endsrc"
+        "add",
+        "keywords",
+        "declares",
+        "after",
+        "own",
+        "line",
+        "always",
+        "count",
+        "example"
       ]
     },
     {
       "heading": "Image Overlay Settings",
       "level": 1,
       "file": "26-configuration.org",
-      "line": 1610,
+      "line": 1611,
       "content": "Configure inline image thumbnails in org-mode files.",
       "path": [],
       "commands": [],
@@ -83841,7 +83844,7 @@
       "heading": "Settings Overview",
       "level": 2,
       "file": "26-configuration.org",
-      "line": 1614,
+      "line": 1615,
       "content": "| Setting                                      | Type    | Default  | Description                        | |----------------------------------------------+---------+----------+------------------------------------| | scimax.imageOverlays.enabled                 | boolean | true     | Enable inline image thumbnails     | | scimax.imageOverlays.maxWidth                | number  | 96       | Maximum thumbnail width in pixels  | | scimax.imageOverlays.maxHeight               | number  | 96       | Ma",
       "path": [
         "Image Overlay Settings"
@@ -83877,7 +83880,7 @@
       "heading": "Detailed Configuration",
       "level": 2,
       "file": "26-configuration.org",
-      "line": 1628,
+      "line": 1629,
       "content": "",
       "path": [
         "Image Overlay Settings"
@@ -83893,7 +83896,7 @@
       "heading": "scimax.imageOverlays.enabled",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 1630,
+      "line": 1631,
       "content": "- *Type*: boolean - *Default*: `true' - *Description*: Enable inline image thumbnails in org-mode files *Example*: #+begin_src json { \"scimax.imageOverlays.enabled\": true } #+end_src",
       "path": [
         "Image Overlay Settings",
@@ -83924,7 +83927,7 @@
       "heading": "scimax.imageOverlays.maxWidth",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 1643,
+      "line": 1644,
       "content": "- *Type*: number - *Default*: `96' - *Description*: Maximum width in pixels for thumbnail icons *Example*: #+begin_src json { \"scimax.imageOverlays.maxWidth\": 128 } #+end_src",
       "path": [
         "Image Overlay Settings",
@@ -83955,7 +83958,7 @@
       "heading": "scimax.imageOverlays.maxHeight",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 1656,
+      "line": 1657,
       "content": "- *Type*: number - *Default*: `96' - *Description*: Maximum height in pixels for thumbnail icons *Example*: #+begin_src json { \"scimax.imageOverlays.maxHeight\": 128 } #+end_src",
       "path": [
         "Image Overlay Settings",
@@ -83986,7 +83989,7 @@
       "heading": "scimax.imageOverlays.renderMode",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 1669,
+      "line": 1670,
       "content": "- *Type*: string (enum) - *Default*: `\"gutter\"' - *Options*: `\"gutter\"', `\"after\"', `\"both\"' - *Description*: Where to display image thumbnails - `gutter': In the line margin (gutter) - `after': Inline emoji after the link - `both': Both locations *Example*: #+begin_src json { \"scimax.imageOverlays.renderMode\": \"both\" } #+end_src",
       "path": [
         "Image Overlay Settings",
@@ -84023,7 +84026,7 @@
       "heading": "scimax.imageOverlays.onlyWhenCursorNotInLink",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 1686,
+      "line": 1687,
       "content": "- *Type*: boolean - *Default*: `true' - *Description*: Hide overlay when cursor is inside the image link (prevents interference with editing) *Example*: #+begin_src json { \"scimax.imageOverlays.onlyWhenCursorNotInLink\": true } #+end_src",
       "path": [
         "Image Overlay Settings",
@@ -84058,7 +84061,7 @@
       "heading": "scimax.imageOverlays.excludePatterns",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 1699,
+      "line": 1700,
       "content": "- *Type*: array of strings - *Default*: `[ ]' - *Description*: Regex patterns for image paths to exclude from overlays *Example*: #+begin_src json { \"scimax.imageOverlays.excludePatterns\": [ \".*\\\\.ico$\", \".*thumbnail.*\" ] } #+end_src",
       "path": [
         "Image Overlay Settings",
@@ -84092,7 +84095,7 @@
       "heading": "scimax.imageOverlays.maxOverlaysPerDocument",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 1715,
+      "line": 1716,
       "content": "- *Type*: number - *Default*: `200' - *Description*: Maximum number of image overlays to display per document (prevents performance issues) *Example*: #+begin_src json { \"scimax.imageOverlays.maxOverlaysPerDocument\": 500 } #+end_src",
       "path": [
         "Image Overlay Settings",
@@ -84128,7 +84131,7 @@
       "heading": "scimax.imageOverlays.showDimensions",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 1728,
+      "line": 1729,
       "content": "- *Type*: boolean - *Default*: `true' - *Description*: Show image dimensions in the after-content decoration *Example*: #+begin_src json { \"scimax.imageOverlays.showDimensions\": false } #+end_src",
       "path": [
         "Image Overlay Settings",
@@ -84160,7 +84163,7 @@
       "heading": "scimax.imageOverlays.cacheEnabled",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 1741,
+      "line": 1742,
       "content": "- *Type*: boolean - *Default*: `true' - *Description*: Cache generated thumbnails for faster loading *Example*: #+begin_src json { \"scimax.imageOverlays.cacheEnabled\": true } #+end_src",
       "path": [
         "Image Overlay Settings",
@@ -84191,7 +84194,7 @@
       "heading": "Capture Settings",
       "level": 1,
       "file": "26-configuration.org",
-      "line": 1754,
+      "line": 1755,
       "content": "Configure the org-capture system for quick note-taking.",
       "path": [],
       "commands": [],
@@ -84210,7 +84213,7 @@
       "heading": "Settings Overview",
       "level": 2,
       "file": "26-configuration.org",
-      "line": 1758,
+      "line": 1759,
       "content": "| Setting                          | Type    | Default | Description                                  | |----------------------------------+---------+---------+----------------------------------------------| | scimax.capture.templates         | array   | [ ]     | Capture templates                            | | scimax.capture.defaultFile       | string  | \"\"      | Default capture file                         | | scimax.capture.defaultDirectory  | string  | \"\"      | Base directory for relative",
       "path": [
         "Capture Settings"
@@ -84242,7 +84245,7 @@
       "heading": "Detailed Configuration",
       "level": 2,
       "file": "26-configuration.org",
-      "line": 1769,
+      "line": 1770,
       "content": "",
       "path": [
         "Capture Settings"
@@ -84258,7 +84261,7 @@
       "heading": "scimax.capture.templates",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 1771,
+      "line": 1772,
       "content": "- *Type*: array of objects - *Default*: `[ ]' - *Description*: Capture templates for quick note-taking. Each template has: - `key': Single character shortcut - `name': Template name - `type': entry, item, or table-line - `file': Target file - `headline': Optional target headline - `datetree': Boolean, use datetree structure - `template': Template text with placeholders *Template placeholders*: - `%^{prompt}': Prompt for input - `%t': Current timestamp - `%T': Current timestamp with time - `%i': ",
       "path": [
         "Capture Settings",
@@ -84295,7 +84298,7 @@
       "heading": "scimax.capture.defaultFile",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 1823,
+      "line": 1824,
       "content": "- *Type*: string - *Default*: `\"\"' (falls back to `{scimax.directory}/notes.org') - *Description*: Default file for captures when no target file is specified in template *Example*: #+begin_src json { \"scimax.capture.defaultFile\": \"~/Documents/inbox.org\" } #+end_src",
       "path": [
         "Capture Settings",
@@ -84329,7 +84332,7 @@
       "heading": "scimax.capture.defaultDirectory",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 1836,
+      "line": 1837,
       "content": "- *Type*: string - *Default*: `\"\"' - *Description*: Base directory for resolving relative capture template file paths (supports `~'). If empty, relative paths resolve against the default capture file's directory. *Example*: #+begin_src json { \"scimax.capture.defaultDirectory\": \"~/org\" } #+end_src",
       "path": [
         "Capture Settings",
@@ -84366,7 +84369,7 @@
       "heading": "scimax.capture.showPreview",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 1849,
+      "line": 1850,
       "content": "- *Type*: boolean - *Default*: `true' - *Description*: Show a preview of the expanded template before inserting the capture.",
       "path": [
         "Capture Settings",
@@ -84395,7 +84398,7 @@
       "heading": "scimax.capture.openAfterCapture",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 1855,
+      "line": 1856,
       "content": "- *Type*: boolean - *Default*: `true' - *Description*: Open the target file and move the cursor to the insertion point after a capture.",
       "path": [
         "Capture Settings",
@@ -84425,7 +84428,7 @@
       "heading": "scimax.capture.datetreeFormat",
       "level": 3,
       "file": "26-configuration.org",
-      "line": 1861,
+      "line": 1862,
       "content": "- *Type*: string (enum) - *Default*: `\"day\"' - *Options*: `\"day\"', `\"week\"', `\"month\"' - *Description*: Granularity for =file+datetree= capture targets — controls the heading tree that captures are filed under. Missing headings are created automatically. - `day': =* 2024= > =** 2024-04 April= > =*** 2024-04-15 Monday= (entry at level 4) - `week': =* 2024= > =** 2024-W16= (ISO week; entry at level 3) - `month': =* 2024= > =** 2024-04 April= (entry at level 3) Week mode uses the ISO week-numbering",
       "path": [
         "Capture Settings",
@@ -84462,7 +84465,7 @@
       "heading": "Common Configurations",
       "level": 1,
       "file": "26-configuration.org",
-      "line": 1883,
+      "line": 1884,
       "content": "This section provides complete `settings.json' examples for different use cases.",
       "path": [],
       "commands": [],
@@ -84483,7 +84486,7 @@
       "heading": "Academic Writing Setup",
       "level": 2,
       "file": "26-configuration.org",
-      "line": 1887,
+      "line": 1888,
       "content": "Perfect for researchers, graduate students, and academic writers: #+begin_src json { // Journal for daily research log \"scimax.journal.directory\": \"~/research/journal\", \"scimax.journal.format\": \"org\", \"scimax.journal.autoTimestamp\": true, // References and bibliography \"scimax.ref.bibliographyFiles\": [ \"~/research/bibliography/main.bib\", \"~/research/bibliography/conferences.bib\" ], \"scimax.ref.pdfDirectory\": \"~/research/papers\", \"scimax.ref.notesDirectory\": \"~/research/notes\", \"scimax.ref.defaul",
       "path": [
         "Common Configurations"
@@ -84525,7 +84528,7 @@
       "heading": "Software Development Setup",
       "level": 2,
       "file": "26-configuration.org",
-      "line": 1954,
+      "line": 1955,
       "content": "Optimized for software developers and programmers: #+begin_src json { // Journal for development log \"scimax.journal.directory\": \"~/devlog\", \"scimax.journal.format\": \"markdown\", \"scimax.journal.template\": \"daily-standup\", // Code execution \"scimax.literate.pythonPath\": \"~/.pyenv/shims/python\", \"scimax.literate.jupyterPath\": \"~/.pyenv/shims/jupyter\", // Database - index project documentation \"scimax.db.include\": [ \"~/projects\", \"~/docs\" ], \"scimax.db.exclude\": [ \"**/node_modules/**\",",
       "path": [
         "Common Configurations"
@@ -84567,7 +84570,7 @@
       "heading": "Personal Notes & PKM Setup",
       "level": 2,
       "file": "26-configuration.org",
-      "line": 2024,
+      "line": 2025,
       "content": "For personal knowledge management and note-taking: #+begin_src json { // Journal \"scimax.journal.directory\": \"~/notes/journal\", \"scimax.journal.format\": \"org\", \"scimax.journal.weekStartsOn\": \"monday\", \"scimax.journal.autoTimestamp\": true, // Database with semantic search \"scimax.db.include\": [ \"~/notes\", \"~/books\", \"~/articles\" ], \"scimax.db.exclude\": [ \"**/archive/**\", \"**/temp/**\" ], \"scimax.db.autoIndex\": true, \"scimax.db.embeddingProvider\": \"ollama\", \"scimax.db.ollamaModel\": \"nomic-embed-tex",
       "path": [
         "Common Configurations"
@@ -84611,7 +84614,7 @@
       "heading": "Minimal Configuration",
       "level": 2,
       "file": "26-configuration.org",
-      "line": 2113,
+      "line": 2114,
       "content": "Bare-bones setup with just the essentials: #+begin_src json { \"scimax.journal.directory\": \"~/journal\", \"scimax.db.autoIndex\": false, \"scimax.agenda.include\": [\"~/notes\"] } #+end_src",
       "path": [
         "Common Configurations"
@@ -84640,7 +84643,7 @@
       "heading": "Troubleshooting",
       "level": 1,
       "file": "26-configuration.org",
-      "line": 2125,
+      "line": 2126,
       "content": "",
       "path": [],
       "commands": [],
@@ -84653,7 +84656,7 @@
       "heading": "Database Performance",
       "level": 2,
       "file": "26-configuration.org",
-      "line": 2127,
+      "line": 2128,
       "content": "If database indexing is slow or uses too much memory: #+begin_src json { \"scimax.db.autoIndex\": false, \"scimax.db.exclude\": [ \"**/node_modules/**\", \"**/.git/**\", \"**/dist/**\", \"**/build/**\", \"**/*.min.js\", \"**/archive/**\" ] } #+end_src Then manually trigger indexing with `C-S-P' → \"Scimax: Sync Files\"",
       "path": [
         "Troubleshooting"
@@ -84692,7 +84695,7 @@
       "heading": "Jupyter Kernels Not Found",
       "level": 2,
       "file": "26-configuration.org",
-      "line": 2147,
+      "line": 2148,
       "content": "Ensure Jupyter is in your PATH or specify the full path: #+begin_src json { \"scimax.literate.jupyterPath\": \"/usr/local/bin/jupyter\" } #+end_src Check available kernels with `C-S-P' → \"Scimax: Show Available Jupyter Kernels\"",
       "path": [
         "Troubleshooting"
@@ -84726,7 +84729,7 @@
       "heading": "LaTeX Preview Not Working",
       "level": 2,
       "file": "26-configuration.org",
-      "line": 2159,
+      "line": 2160,
       "content": "Ensure you have a LaTeX distribution installed (TeX Live, MiKTeX, etc.), then: #+begin_src json { \"scimax.latexPreview.enabled\": true, \"scimax.latexPreview.cacheEnabled\": false } #+end_src",
       "path": [
         "Troubleshooting"
@@ -84758,7 +84761,7 @@
       "heading": "Semantic Search Not Working",
       "level": 2,
       "file": "26-configuration.org",
-      "line": 2170,
+      "line": 2171,
       "content": "Ensure the Ollama server is running and the embedding model is pulled: #+begin_src bash curl http://localhost:11434/api/version #+end_src",
       "path": [
         "Troubleshooting"
@@ -84787,7 +84790,7 @@
       "heading": "Related Documentation",
       "level": 1,
       "file": "26-configuration.org",
-      "line": 2177,
+      "line": 2178,
       "content": "- [[file:01-getting-started.org][Getting Started Guide]] - [[file:07-source-blocks.org][Source Blocks Documentation]] - [[file:10-export.org][Export Documentation]] - [[file:24-keybindings.org][Keybindings Reference]]",
       "path": [],
       "commands": [],
@@ -84813,7 +84816,7 @@
       "heading": "Navigation",
       "level": 1,
       "file": "26-configuration.org",
-      "line": 2184,
+      "line": 2185,
       "content": "- Previous: [[file:25-commands.org][Commands]] - Index: [[file:00-index.org][Documentation Index]] - Next: [[file:27-org-api.org][Org API]]",
       "path": [],
       "commands": [],

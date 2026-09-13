@@ -761,15 +761,27 @@ Control display of recurring habit tasks:
 |--------------------------+---------+----------------------------|
 | scimax.agenda.showHabits | true    | Show habit items in agenda |
 
-** ✅ States
-CLOSED: [2026-01-17 Sat 13:26]
+** 👀 States
 
-Define which TODO keywords to include:
+A file's own =#+TODO:= line decides which of its keywords are done. Keywords
+after the =|= are done, and those headings are left out of the agenda and TODO
+list:
 
-| Setting                          | Default               |
-|----------------------------------+-----------------------|
-| scimax.agenda.todoStates         | [TODO, NEXT, WAITING] |
-| scimax.agenda.doneStates         | [DONE, CANCELLED]     |
+#+BEGIN_SRC org
+,#+TODO: TODO NEXT WAITING | DONE CANCELED ABANDONED
+#+END_SRC
+
+In files without a =#+TODO:= line, =DONE=, =CANCELLED= and =CANCELED= are done.
+=scimax.agenda.doneStates= adds keywords that count as done in every file.
+
+Done-ness is recorded when a file is indexed, so after editing a file's
+=#+TODO:= line the agenda updates once that file is reindexed (on save, or via
+=scimax db sync=).
+
+| Setting                  | Default                     |
+|--------------------------+-----------------------------|
+| scimax.agenda.todoStates | [TODO, NEXT, WAITING]       |
+| scimax.agenda.doneStates | [DONE, CANCELLED, CANCELED] |
 
 #+BEGIN_SRC json
 {

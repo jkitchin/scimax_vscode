@@ -6825,9 +6825,10 @@
           },
           "default": [
             "DONE",
-            "CANCELLED"
+            "CANCELLED",
+            "CANCELED"
           ],
-          "description": "Completed TODO states"
+          "description": "Completed TODO states, in addition to the done keywords a file declares after | in its #+TODO line"
         },
         "scimax.agenda.maxFiles": {
           "type": "number",

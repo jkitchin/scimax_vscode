@@ -176,11 +176,11 @@ describe('LinkGraphQueryService', () => {
 
             await service.buildGraph('/test/file.org', 1, 'both', filters, 100);
 
-            // Check that DONE exclusion was included in query
+            // Check that done exclusion (per-file todo_type) was included in query
             const calls = executeSpy.mock.calls;
             const hasDoneFilter = calls.some(call => {
                 const sql = (call[0] as any).sql || '';
-                return sql.includes('DONE') || sql.includes('CANCELLED');
+                return sql.includes("todo_type IS NOT 'done'");
             });
             expect(hasDoneFilter).toBe(true);
         });

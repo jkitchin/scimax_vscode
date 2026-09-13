@@ -24,6 +24,8 @@ export interface LegacyHeading {
     level: number;
     title: string;
     todoState?: string;
+    /** Whether todoState is an active or done keyword, per the file's #+TODO line */
+    todoType?: 'todo' | 'done';
     priority?: string;
     tags: string[];
     lineNumber: number;
@@ -193,6 +195,7 @@ function extractHeadline(
         level: props.level || 1,
         title: props.rawValue || '',
         todoState: props.todoKeyword,
+        todoType: props.todoType,
         priority: props.priority,
         tags: props.tags || [],
         lineNumber: lineNumber + 1, // Convert to 1-indexed
