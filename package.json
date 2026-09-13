@@ -2,7 +2,7 @@
   "name": "scimax-vscode",
   "displayName": "Scimax for VS Code",
   "description": "Scientific computing environment inspired by Emacs Scimax - journal, literate programming, org-mode enhancements",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "publisher": "jkitchin",
   "license": "MIT",
   "repository": {
@@ -7275,5 +7275,10 @@
     "tesseract.js": "^7.0.0",
     "uuid": "^9.0.0",
     "zeromq": "^6.0.0-beta.19"
+  },
+  "overrides": {
+    "libsql": {
+      "detect-libc": "^2.1.2"
+    }
   }
 }

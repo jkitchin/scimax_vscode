@@ -7,6 +7,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.7.0] - 2026-09-13
+
+### Fixed
+
+- **Commands no longer go missing after an activation error** (#57) - An exception anywhere in activation used to drop every command registered after it, leaving the extension installed but reporting `command 'scimax.…' not found`. Each registration step now fails on its own and is logged, the rest of activation carries on, and a top-level catch offers the log. The journal directory and notebook setup no longer throw when `scimax.journal.directory` does not resolve on this machine (a common Settings Sync situation). Activation logs the resolved directories and names any failed steps, and **Scimax: Show Diagnostic Report** lists them.
+- **Scimax activates on Linux builds where `process.report` is unavailable** (#57) - The database client is now loaded on first use rather than when the extension loads, so a native-loader failure disables database features instead of the whole extension. libsql's libc detection no longer reads an undefined diagnostic report, and `detect-libc` is updated so current glibc systems are recognized without it.
+- **Per-file TODO keywords decide what is done** - Keywords after `|` in a file's own `#+TODO:` line (e.g. `ABANDONED`) now count as done for that file, so those headings drop out of the agenda, TODO list, link graph, and `scimax task`. `CANCELED` joins `DONE` and `CANCELLED` in `scimax.agenda.doneStates`. A database migration marks org files for reindexing so the change applies on the next sync.
+- **SVG images in PDF export** (#49) - `[[file:fig.svg]]` is converted to PDF during export (via rsvg-convert, cairosvg, or inkscape) instead of aborting the LaTeX build.
+- **Clear LaTeX errors from `scimax export --format pdf`** (#50) - A failed build prints the first LaTeX error with its `.tex` line, deletes the misleading partial PDF, and reports the details in `--json`. `--show-log` prints the log tail.
+- **Trailing colon after a citation** (#52) - `cite:key:` no longer exports `\cite{key:}`.
+- **Long inline code wraps in PDF export** (#53) - `=long.dotted.identifier()=` breaks at separators instead of overflowing the margin.
+- **Agenda tags** - Tags no longer render as `:[]:` or `:["taxes"]:` in the agenda views.
+- **Overdue deadlines** read `N d. ago:` in the agenda instead of looking like future ones.
+- **CLI agenda** - `scimax agenda todos` no longer reports zero on large databases, `today`/`week` no longer include every past item, and `--json` output stays parseable.
+- **Exclude patterns** - Adding a pattern to `scimax.db.exclude` no longer drops the built-in excludes (`node_modules`, VCS directories, VS Code local history, …), which could flood the index and agenda. `scimax db prune` removes files already indexed that the excludes now match.
+- **Escape cancels an avy jump in org files** instead of starting an `Escape` chord.
+- **Custom exporters** - A manifest that fails to parse is reported instead of silently skipped (#56), comments and trailing commas in `manifest.json` are tolerated, `#+LATEX_HEADER:` lines are passed to custom LaTeX templates, and a `#+LATEX_CLASS` naming an exporter no longer sends a nonexistent class to LaTeX.
+- **Template headers** - Inserting a template no longer strips its `#+TITLE:` and other org keywords.
+- **Cross-file heading links in HTML export** - `file:other.org::*Heading` links point at the heading's anchor instead of a 404.
+- **Cancelled LaTeX build steps** are reported only once their process has exited.
+
 ### Changed
 
 - **Avy-style jump commands rewritten** - Jump labels are now drawn *on top of* the text at their screen positions instead of being listed in a picker, and keystrokes are read straight from the editor (the extension takes over the `type` command for the duration of a jump), so there is no widget and the cursor never leaves the buffer. Labels are assigned nearest-first, so the closest targets get single-character labels; two-character labels narrow as you type, redrawing only the characters left to press. Every visible editor is labeled by default, so a jump can cross a split. Backspace undoes a keystroke, Escape cancels, and if another extension already owns `type` the session falls back to an input box. New settings `scimax.jump.timeoutMs|labelChars|allVisibleEditors|dimBackground|labelBackground|labelForeground`.
@@ -15,6 +36,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Agenda buffer** (`C-c a v`) - A persistent, read-only full-window agenda like Emacs `org-agenda-mode`. `RET` jumps to the heading, `t` cycles its TODO state, `g` refreshes, `f`/`b` page, `.` returns to today, `q` closes.
+- **LaTeX build profiles** - Named build sequences (e.g. lualatex + biber + a makeglossaries pass) from built-ins, `scimax.export.pdf.profiles`, or `latex-profiles.json` near the document, chosen per file with `#+LATEX_BUILD:` or `% !SCIMAX build =`. Used by org → PDF export and by `.tex` compiles. Project-local profiles are honored only in a trusted workspace.
+- **LaTeX-class exporter routing** - The ordinary LaTeX/PDF exports pick a custom exporter when `#+LATEX_CLASS` matches `scimax.export.latexClassExporters` or names a loaded exporter, and `#+EXPORTER: <id>` (or `none`) selects one per file.
+- **`scimax task`** - Project management from the CLI over the database: `next`, `list`, `who`, `show`, `path`, `done`, `assign`, and `files`, honoring `:DEPENDS:` and `:ORDERED:` blocking. The bundled scimax skill documents it.
+- **Move a table cell** with `C-M-arrow`, alongside the existing row and column moves.
+- **`literal-dollar` lint check** (#54) - Flags a literal `$` in prose (e.g. `$50,000`) that would open math mode in LaTeX export.
 - **Custom exporters appear in the export dispatcher** (#56) - Loaded custom exporters are listed by name in the `C-c C-e` menu on digit keys, next to the built-in formats, instead of hiding behind a separate command. A `[!]` entry appears when an exporter failed to load.
 - **Org headers for custom exporters** - A custom exporter that declares `keywords` now contributes an org template, listed in the template pickers under *Custom Exporters* and insertable with **Scimax: Insert Custom Exporter Header**: defaults filled in, required keywords left as `<<<PLACEHOLDER>>>`, and `#+LATEX_CLASS` included when a class routes to that exporter. An exporter can ship a real skeleton with a new `orgTemplate` manifest field (the CMU Memo example now does). Exporting with a required keyword missing warns and offers the header instead of writing `[NOT FOUND: to]` into the output.
 - **`scimax.export.showExporterProblems`** - Lists every exporter directory that could not be loaded, with the reason, and opens the offending `manifest.json`. `scimax export --list-exporters` reports the same problems, and the searched directories when nothing is found.
