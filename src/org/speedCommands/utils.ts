@@ -20,6 +20,32 @@ export function formatTags(tags: string[]): string {
     return `:${tags.join(':')}:`;
 }
 
+/** Edit distance, used to flag near-duplicate tags such as groupmeeting/groupmeetings. */
+function editDistance(a: string, b: string): number {
+    const prev = Array.from({ length: b.length + 1 }, (_, j) => j);
+    for (let i = 1; i <= a.length; i++) {
+        let diag = prev[0];
+        prev[0] = i;
+        for (let j = 1; j <= b.length; j++) {
+            const tmp = prev[j];
+            prev[j] = Math.min(prev[j] + 1, prev[j - 1] + 1, diag + (a[i - 1] === b[j - 1] ? 0 : 1));
+            diag = tmp;
+        }
+    }
+    return prev[b.length];
+}
+
+/** Existing tags that look like a misspelling or plural of `tag`. */
+export function similarTags(tag: string, existing: string[]): string[] {
+    const t = tag.toLowerCase();
+    return existing.filter(e => {
+        const x = e.toLowerCase();
+        if (x === t) return e !== tag; // differs only by case
+        const maxDist = Math.min(t.length, x.length) <= 4 ? 1 : 2;
+        return editDistance(t, x) <= maxDist;
+    });
+}
+
 /**
  * Remove tags from the end of a heading line
  */

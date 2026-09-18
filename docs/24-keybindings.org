@@ -132,7 +132,7 @@ Then restart VS Code.
 Note: Navigation keybindings (C-c C-n, C-c C-p, C-c C-f, C-c C-b, C-c C-j) work in
 org-mode, markdown, and LaTeX files with consistent behavior.
 
-* Headings
+* 👀 Headings
 
 | Key           | Action                         |
 |---------------+--------------------------------|
@@ -148,6 +148,7 @@ org-mode, markdown, and LaTeX files with consistent behavior.
 | C-c C-x t     | Insert inline task             |
 | C-c C-x i     | Add ID to heading              |
 | C-c x p       | Set property (fuzzy-match name/value) |
+| C-c C-q       | Set tags (pick from tags in use)      |
 | C-c C-w       | Refile subtree to target       |
 | C-c M-w       | Copy subtree to refile target  |
 

@@ -489,13 +489,31 @@ Tags appear at the end of the headline, enclosed in colons:
 ,* TODO Buy groceries                                         :personal:errands:
 #+END_SRC
 
-** ✅ Tag Commands
-CLOSED: [2026-01-15 Thu 14:39]
+** 👀 Tag Commands
 
-| Key/Command        | Action               |
-|--------------------+----------------------|
-| Speed key ;  | Edit tags            |
-| scimax.org.setTags | Set tags via command |
+| Key/Command                   | Action                                 |
+|-------------------------------+----------------------------------------|
+| Speed key =:= (S-;)           | Set tags on the heading                |
+| C-c C-q                       | Set tags on the heading (org files)    |
+| [[cmd:scimax.speed.setTags]]  | Set tags via command                   |
+| [[cmd:scimax.db.searchByTag]] | List all tags in use, jump to headings |
+
+Setting tags opens a multi-select list of every tag already in use: the tags
+in the current file and its =#+TAGS:= / =#+FILETAGS:= lines, plus every
+heading tag in the database, each with how many headings carry it. Check or
+uncheck tags and press =Enter=. The heading's current tags start out checked.
+
+To add a tag nobody has used yet, type it. It shows up at the top as a
+"new tag". If it looks like an existing tag (a plural, a typo, or a
+different capitalization), the entry warns you, for example:
+
+#+BEGIN_EXAMPLE
+groupmeetings   new tag
+  ⚠ similar to existing: :groupmeeting:
+#+END_EXAMPLE
+
+That makes it easy to reuse =:groupmeeting:= instead of starting a second
+spelling of it.
 
 ** ✅ Inherited Tags
 CLOSED: [2026-01-15 Thu 14:39]
@@ -522,12 +540,13 @@ CLOSED: [2026-01-15 Thu 14:42]
 | urgent    | Priority indicator      |
 | project   | Part of larger project  |
 
-** ✅ Filtering by Tags
-CLOSED: [2026-01-15 Thu 14:42]
+** 👀 Filtering by Tags
 
 Use agenda views or search to filter tasks by tag:
 
-- scimax.db.searchByTag - Search for specific tags
+- scimax.db.searchByTag - List every heading tag in the database with its
+  count (like Emacs =org-tags-view=), then pick one to see the headings that
+  carry it, including headings that inherit it from a parent
 - scimax.agenda.filterByTag - Filter agenda by tag
 
 * ✅ Scheduling and Deadlines

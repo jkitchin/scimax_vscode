@@ -786,18 +786,20 @@ export function registerDbCommands(
                 return;
             }
 
-            const tagItems = tags.map(tag => ({
+            const tagItems = tags.map(({ tag, count }) => ({
                 label: `:${tag}:`,
+                description: `${count} heading${count === 1 ? '' : 's'}`,
                 tag
             }));
 
             const selected = await vscode.window.showQuickPick(tagItems, {
-                placeHolder: 'Select a tag to filter headings'
+                placeHolder: `${tags.length} tags in use. Select one to list its headings`,
+                matchOnDescription: false
             });
 
             if (!selected) return;
 
-            const results = await db.searchHeadings('', { tag: selected.tag });
+            const results = await db.searchHeadings('', { tag: selected.tag, limit: 5000 });
 
             if (results.length === 0) {
                 vscode.window.showInformationMessage(`No headings with tag :${selected.tag}:`);

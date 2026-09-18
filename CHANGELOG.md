@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.7.1] - 2026-09-18
+
+### Added
+
+- **Set Tags picks from tags already in use** (#58) - `scimax.speed.setTags` (speed key `:`, and now `C-c C-q` in org files) opens a multi-select list of every tag in the file and the database, with usage counts. Typing a new tag offers it as a new entry and warns when it looks like an existing one (a plural, typo, or case variant), so `:groupmeetings:` doesn't quietly split off from `:groupmeeting:`.
+
+### Fixed
+
+- **Search by Tag lists heading tags** (#58) - `scimax.db.searchByTag` listed `#hashtags` instead of heading `:tags:`, so it couldn't show the tags you actually use. It now lists every heading tag with its count, sorted case-insensitively so spelling variants sit together, like Emacs `org-tags-view`, and finds up to 5000 matching headings instead of 100.
+
 ## [0.7.0] - 2026-09-13
 
 ### Fixed

@@ -657,18 +657,27 @@ python
 <empty query>
 #+END_SRC
 
-** Tag Search
+** 👀 Tag Search
 
-Search headings by org-mode tags:
+Search headings by org-mode tags. This is the closest thing to Emacs
+=org-tags-view=, and it doubles as a way to review the tags you already use.
 
 *** Command
 `Scimax: Search By Tag' (`scimax.db.searchByTag')
 
 *** Features
-- Lists all tags found in indexed files
-- Shows heading count per tag
-- Supports both direct and inherited tags
+- Lists every heading tag (=:tag:=) in the indexed files. =#hashtags= have
+  their own command, =scimax.db.searchHashtags=.
+- Shows how many headings carry each tag
+- Sorted alphabetically, ignoring case, so spelling variants such as
+  =:groupmeeting:= and =:groupmeetings:= sit next to each other
+- Picking a tag lists headings that carry it directly or inherit it
+- Respects the current search scope (all files or one directory)
 - Tags displayed as `:tagname:'
+
+The same tag list feeds =scimax.speed.setTags= (=C-c C-q=), which warns when
+a new tag looks like one you already use. See
+[[file:03-todo-items.org::*Tag Commands][Tag Commands]].
 
 ** Property Search
 

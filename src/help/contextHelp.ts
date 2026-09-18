@@ -492,7 +492,7 @@ function getHeadingHelp(): ContextHelp {
             { command: 'scimax.org.cycleGlobalVisibility', title: 'Cycle Global', keybinding: 'S-Tab', category: 'Fold' },
 
             // Tags
-            { command: 'scimax.org.setTags', title: 'Set Tags', keybinding: 'C-c C-q', category: 'Tags' },
+            { command: 'scimax.speed.setTags', title: 'Set Tags', keybinding: 'C-c C-q', category: 'Tags' },
 
             // Properties
             { command: 'scimax.org.setProperty', title: 'Set Property', keybinding: 'C-c C-x p', category: 'Properties' },

@@ -2127,10 +2127,23 @@ export class ScimaxDbCore {
         return result.rows as unknown as HeadingRecord[];
     }
 
-    public async getAllTags(): Promise<string[]> {
+    /**
+     * Every heading tag (the `:tag:` kind, not #hashtags) in scope, with how
+     * many headings carry it. Sorted by tag, case-insensitively, so spelling
+     * variants like groupmeeting/groupmeetings sit next to each other.
+     */
+    public async getAllTags(): Promise<{ tag: string; count: number }[]> {
         if (!this.db) return [];
-        const result = await this.db.execute('SELECT DISTINCT tag FROM hashtags ORDER BY tag');
-        return result.rows.map(r => r.tag as string);
+        const scope = this.getScopeClause('h.file_path');
+        const result = await this.db.execute({
+            sql: `SELECT t.value AS tag, COUNT(*) AS count
+                  FROM headings h, json_each(h.tags) t
+                  WHERE h.tags IS NOT NULL AND h.tags != '[]'${scope.sql}
+                  GROUP BY t.value
+                  ORDER BY t.value COLLATE NOCASE`,
+            args: scope.args
+        });
+        return result.rows.map(r => ({ tag: r.tag as string, count: Number(r.count) }));
     }
 
     public async getAllTodoStates(): Promise<string[]> {

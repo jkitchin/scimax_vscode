@@ -4846,6 +4846,12 @@
         "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
+        "command": "scimax.speed.setTags",
+        "key": "ctrl+c ctrl+q",
+        "mac": "ctrl+c ctrl+q",
+        "when": "editorTextFocus && editorLangId == 'org' && scimax.onHeading && !terminalFocus"
+      },
+      {
         "command": "scimax.speed.setEffort",
         "key": "e",
         "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled && !scimax.jumpActive"

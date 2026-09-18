@@ -6,7 +6,7 @@
 
 import * as vscode from 'vscode';
 import { getHeadingLevel } from './context';
-import { extractTags, formatTags, removeTagsFromLine } from './utils';
+import { extractTags, formatTags, removeTagsFromLine, similarTags } from './utils';
 import { getDatabase } from '../../database/lazyDb';
 import { getPropCaseInsensitive } from '../../database/scimaxDbCore';
 
@@ -97,6 +97,100 @@ async function collectPropertyValues(document: vscode.TextDocument, name: string
 }
 
 /**
+ * Tags known for this document (headings and #+TAGS lines) merged with every
+ * heading tag in the index, with index usage counts where available.
+ */
+async function collectTags(document: vscode.TextDocument): Promise<Map<string, number | undefined>> {
+    const tags = new Map<string, number | undefined>();
+    for (let i = 0; i < document.lineCount; i++) {
+        const text = document.lineAt(i).text;
+        if (/^\*+\s/.test(text)) {
+            for (const t of extractTags(text)) tags.set(t, undefined);
+        } else {
+            const m = text.match(/^\s*#\+(?:FILE)?TAGS:\s*(.+)$/i);
+            if (m) {
+                for (const t of m[1].split(/[\s:{}]+/)) {
+                    const name = t.replace(/\(.\)$/, ''); // drop fast-select keys like work(w)
+                    if (/^[\w@#%]+$/.test(name)) tags.set(name, undefined);
+                }
+            }
+        }
+    }
+    try {
+        const db = await getDatabase();
+        if (db) {
+            for (const { tag, count } of await db.getAllTags()) tags.set(tag, count);
+        }
+    } catch { /* index optional */ }
+    return tags;
+}
+
+interface TagItem extends vscode.QuickPickItem { tag: string; isNew?: boolean }
+
+/**
+ * Multi-select picker over known tags. Typing a tag that doesn't exist yet
+ * offers it as a new entry and warns about similar existing tags.
+ */
+function pickTags(known: Map<string, number | undefined>, current: string[]): Promise<string[] | undefined> {
+    return new Promise(resolve => {
+        const qp = vscode.window.createQuickPick<TagItem>();
+        qp.canSelectMany = true;
+        qp.placeholder = 'Check tags to apply; type to filter or to add a new tag';
+        const names = [...new Set([...known.keys(), ...current])]
+            .sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }));
+        const base: TagItem[] = names.map(tag => {
+            const count = known.get(tag);
+            return {
+                label: tag,
+                description: count === undefined ? undefined : `${count} heading${count === 1 ? '' : 's'}`,
+                tag
+            };
+        });
+        const added: TagItem[] = [];
+        qp.items = base;
+        qp.selectedItems = base.filter(i => current.includes(i.tag));
+
+        const newItemFor = (value: string): TagItem | undefined => {
+            const tag = value.trim().replace(/^:+|:+$/g, '');
+            if (!/^[\w@#%]+$/.test(tag) || names.includes(tag) || added.some(a => a.tag === tag)) return undefined;
+            const similar = similarTags(tag, names);
+            return {
+                label: tag,
+                description: 'new tag',
+                detail: similar.length ? `$(warning) similar to existing: ${similar.map(t => `:${t}:`).join(' ')}` : undefined,
+                tag,
+                isNew: true
+            };
+        };
+
+        qp.onDidChangeValue(v => {
+            const selected = qp.selectedItems;
+            // A checked new tag must survive further typing
+            for (const s of selected) {
+                if (s.isNew && !added.some(a => a.tag === s.tag)) added.push(s);
+            }
+            const candidate = newItemFor(v);
+            qp.items = candidate ? [candidate, ...added, ...base] : [...added, ...base];
+            qp.selectedItems = qp.items.filter(i => selected.some(s => s.tag === i.tag));
+        });
+
+        let done = false;
+        qp.onDidAccept(() => {
+            const result = new Set(qp.selectedItems.map(i => i.tag));
+            // Enter with a new tag typed but not checked: take it too
+            const candidate = newItemFor(qp.value);
+            if (candidate) result.add(candidate.tag);
+            done = true;
+            qp.hide();
+            // Keep the heading's existing order, append newcomers
+            resolve([...current.filter(t => result.has(t)), ...[...result].filter(t => !current.includes(t))]);
+        });
+        qp.onDidHide(() => { if (!done) resolve(undefined); qp.dispose(); });
+        qp.show();
+    });
+}
+
+/**
  * Set tags on the current heading
  */
 export async function setTags(): Promise<void> {
@@ -116,16 +210,8 @@ export async function setTags(): Promise<void> {
     const line = document.lineAt(headingLine);
     const currentTags = extractTags(line.text);
 
-    // Prompt for new tags
-    const input = await vscode.window.showInputBox({
-        prompt: 'Enter tags (colon-separated, e.g., work:urgent:project)',
-        value: currentTags.join(':'),
-        placeHolder: 'tag1:tag2:tag3'
-    });
-
-    if (input === undefined) return; // Cancelled
-
-    const newTags = input.split(':').map(t => t.trim()).filter(t => t.length > 0);
+    const newTags = await pickTags(await collectTags(document), currentTags);
+    if (newTags === undefined) return; // Cancelled
 
     // Remove existing tags from line
     let newLineText = removeTagsFromLine(line.text);
