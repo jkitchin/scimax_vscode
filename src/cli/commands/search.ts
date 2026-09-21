@@ -44,7 +44,7 @@ export async function searchCommand(config: CliConfig, args: ParsedArgs): Promis
         const settings = loadSettings();
         const embeddingService = createCliEmbeddingService(settings.embedding);
         if (embeddingService) {
-            db.setEmbeddingService(embeddingService);
+            await db.setEmbeddingService(embeddingService);
         }
     }
 

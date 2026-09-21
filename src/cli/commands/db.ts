@@ -9,6 +9,7 @@ import * as path from 'path';
 import * as readline from 'readline';
 import { minimatch } from 'minimatch';
 import { createCliDatabase, createCliEmbeddingService, testCliEmbeddingService } from '../database';
+import type { ScimaxDbCore } from '../database';
 import {
     loadSettings,
     expandPath,
@@ -261,7 +262,7 @@ async function syncDatabase(config: CliConfig, args: ParsedArgs): Promise<void> 
             const ok = await testCliEmbeddingService(embeddingService);
             if (ok) {
                 updateEmbeddings = true;
-                db.setEmbeddingService(embeddingService);
+                await db.setEmbeddingService(embeddingService);
                 console.log(' OK');
                 console.log(`  Provider: ${settings.embedding.provider}, Model: ${settings.embedding.ollamaModel}`);
             } else {
@@ -347,8 +348,11 @@ async function syncDatabase(config: CliConfig, args: ParsedArgs): Promise<void> 
         console.log(`  -${removed} removed`);
         console.log(`  ${unchanged} unchanged`);
         if (skippedOutOfScope > 0) console.log(`  ${skippedOutOfScope} out-of-scope unchanged`);
-        if (updateEmbeddings && !dryRun) console.log(`  embeddings queued for changed files`);
         if (errors > 0) console.log(`  ${errors} error(s)`);
+        if (updateEmbeddings && !dryRun) {
+            await db.queueMissingEmbeddings();
+            await finishEmbeddings(db);
+        }
     } finally {
         await db.close();
     }
@@ -447,7 +451,7 @@ async function scanDirectory(config: CliConfig, args: ParsedArgs): Promise<void>
             const ok = await testCliEmbeddingService(embeddingService);
             if (ok) {
                 updateEmbeddings = true;
-                db.setEmbeddingService(embeddingService);
+                await db.setEmbeddingService(embeddingService);
                 console.log(' OK');
                 console.log(`  Provider: ${settings.embedding.provider}`);
                 console.log(`  Model: ${settings.embedding.ollamaModel}`);
@@ -479,10 +483,27 @@ async function scanDirectory(config: CliConfig, args: ParsedArgs): Promise<void>
 
         console.log();
         console.log(`Indexed: ${indexed} file(s)`);
-        if (updateEmbeddings) console.log(`Embeddings queued for async processing.`);
         if (errors > 0) console.log(`Errors: ${errors} file(s)`);
+        if (updateEmbeddings) await finishEmbeddings(db);
     } finally {
         await db.close();
+    }
+}
+
+/**
+ * Wait for queued embeddings to finish before the caller closes the database
+ * (close() cancels the queue), then report any failures.
+ */
+async function finishEmbeddings(db: ScimaxDbCore): Promise<void> {
+    // The queue starts draining as soon as the first file is indexed, so the
+    // remaining length may be 0 while the last file is still being embedded.
+    console.log(`Generating embeddings (${db.getEmbeddingQueueLength()} file(s) remaining)...`);
+    await db.waitForEmbeddings();
+    const failures = db.getEmbeddingFailures();
+    if (failures.count > 0) {
+        console.log(`  Embeddings failed for ${failures.count} file(s). Last error: ${failures.lastError}`);
+    } else {
+        console.log('  Embeddings complete');
     }
 }
 

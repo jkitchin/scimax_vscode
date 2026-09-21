@@ -248,9 +248,18 @@ export class ScimaxDb extends ScimaxDbCore {
         try {
             // We can't easily intercept per-file progress in the base class,
             // so run the core processor and just show/hide the status bar.
+            this.resetEmbeddingFailures();
             await originalProcessing();
 
-            if (this.embeddingStatusBar) {
+            const failures = this.getEmbeddingFailures();
+            if (failures.count > 0) {
+                log.error(`Embeddings failed for ${failures.count} file(s): ${failures.lastError}`);
+                this.embeddingStatusBar?.dispose();
+                this.embeddingStatusBar = null;
+                vscode.window.showWarningMessage(
+                    `Scimax: embeddings failed for ${failures.count} file(s). Last error: ${failures.lastError}`
+                );
+            } else if (this.embeddingStatusBar) {
                 this.embeddingStatusBar.text = `$(check) Embeddings complete`;
                 setTimeout(() => {
                     this.embeddingStatusBar?.dispose();
@@ -277,8 +286,8 @@ export class ScimaxDb extends ScimaxDbCore {
     // Embedding service (wraps EmbeddingService -> CoreEmbeddingService)
     // ----------------------------------------------------------
 
-    public setEmbeddingService(service: EmbeddingService): void {
-        super.setEmbeddingService(service);
+    public async setEmbeddingService(service: EmbeddingService): Promise<void> {
+        await super.setEmbeddingService(service);
         this.initAdvancedSearch();
     }
 

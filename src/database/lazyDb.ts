@@ -90,7 +90,7 @@ async function initializeDatabase(context: vscode.ExtensionContext): Promise<Sci
     // Set up embedding service if configured
     const embeddingService = await createEmbeddingServiceAsync();
     if (embeddingService) {
-        db.setEmbeddingService(embeddingService);
+        await db.setEmbeddingService(embeddingService);
         log.info('Semantic search enabled');
     }
 

@@ -323,6 +323,13 @@ export function registerDbCommands(
 
                 log.info('Phase 3 complete', { checked: totalUniqueFiles, needIndex: filesToIndex.length });
 
+                // Files indexed before a provider was configured have no
+                // chunks and won't be re-indexed (mtime unchanged).
+                const missingEmbeddings = await db.queueMissingEmbeddings();
+                if (missingEmbeddings > 0) {
+                    log.info('Queued embeddings for files without them', { count: missingEmbeddings });
+                }
+
                 if (filesToIndex.length === 0) {
                     const stats = await db.getStats();
                     const deletedMsg = totalDeleted > 0 ? `Removed ${totalDeleted} deleted. ` : '';
@@ -696,7 +703,7 @@ export function registerDbCommands(
 
                 const db = await getDatabase();
                 if (db) {
-                    db.setEmbeddingService(testService);
+                    await db.setEmbeddingService(testService);
                 }
                 vscode.window.showInformationMessage(
                     `Configured Ollama with ${modelChoice.label}. Run "Sync Files" to enable semantic search.`

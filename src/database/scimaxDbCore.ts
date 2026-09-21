@@ -588,6 +588,13 @@ export class ScimaxDbCore {
     private embeddingQueue: string[] = [];
     private isProcessingEmbeddings: boolean = false;
     private embeddingCancelled: boolean = false;
+    private embeddingQueuePromise: Promise<void> | null = null;
+
+    // Embedding failures since the last resetEmbeddingFailures() call.
+    // createChunks() swallows errors so indexing still succeeds; this is how
+    // callers find out that embeddings silently failed (e.g. dimension mismatch).
+    private embeddingFailures: number = 0;
+    private lastEmbeddingError: string | null = null;
 
     // Resilience config
     private queryTimeoutMs: number;
@@ -631,6 +638,41 @@ export class ScimaxDbCore {
         const result = await runCoreMigrations(this.db);
         if (result.applied > 0) {
             console.error(`[ScimaxDbCore] Applied ${result.applied} migration(s), now at v${result.currentVersion}`);
+        }
+
+        await this.ensureChunksTable();
+    }
+
+    /** Declared dimension of chunks.embedding, or null if the table doesn't exist. */
+    private async getChunksTableDimensions(): Promise<number | null> {
+        if (!this.db) return null;
+        const result = await this.db.execute(
+            "SELECT sql FROM sqlite_master WHERE type = 'table' AND name = 'chunks'"
+        );
+        if (result.rows.length === 0) return null;
+        const match = String((result.rows[0] as any).sql).match(/F32_BLOB\s*\(\s*(\d+)\s*\)/i);
+        return match ? Number(match[1]) : null;
+    }
+
+    /**
+     * Create the chunks table sized for the current embedding dimensions.
+     *
+     * The table is created during initialize(), usually before an embedding
+     * service is set, so it may have been sized for the wrong model. When an
+     * embedding service is configured and the declared size differs, the table
+     * is rebuilt: chunks are derived data and every insert into a mis-sized
+     * vector index fails ("dimensions are different: 768 != 384").
+     */
+    private async ensureChunksTable(): Promise<void> {
+        if (!this.db) return;
+
+        const existing = await this.getChunksTableDimensions();
+        if (existing !== null && this.embeddingService && existing !== this.embeddingDimensions) {
+            console.error(
+                `[ScimaxDbCore] Rebuilding chunks table: ${existing} -> ${this.embeddingDimensions} dimensions`
+            );
+            await this.db.execute('DROP INDEX IF EXISTS idx_chunks_embedding');
+            await this.db.execute('DROP TABLE chunks');
         }
 
         // Create chunks table with dynamic embedding dimensions
@@ -681,9 +723,11 @@ export class ScimaxDbCore {
     // Embedding service
     // ----------------------------------------------------------
 
-    public setEmbeddingService(service: CoreEmbeddingService): void {
+    public async setEmbeddingService(service: CoreEmbeddingService): Promise<void> {
         this.embeddingService = service;
         this.embeddingDimensions = service.dimensions;
+        // No-op before initialize(); initialize() then sizes the table itself.
+        await this.ensureChunksTable();
     }
 
     public isVectorSearchAvailable(): boolean {
@@ -1509,7 +1553,44 @@ export class ScimaxDbCore {
                 });
             }
         } catch (error: any) {
+            this.embeddingFailures++;
+            this.lastEmbeddingError = error?.message || String(error);
             console.error(`[ScimaxDbCore] Failed to create embeddings for ${filePath}:`, error);
+        }
+    }
+
+    /** Number of files whose embeddings failed, and the most recent error. */
+    public getEmbeddingFailures(): { count: number; lastError: string | null } {
+        return { count: this.embeddingFailures, lastError: this.lastEmbeddingError };
+    }
+
+    public resetEmbeddingFailures(): void {
+        this.embeddingFailures = 0;
+        this.lastEmbeddingError = null;
+    }
+
+    /**
+     * Queue embeddings for indexed files that have no chunks yet.
+     *
+     * Sync only re-indexes files whose mtime changed, so files indexed before
+     * an embedding provider was configured would otherwise never get embedded.
+     */
+    public async queueMissingEmbeddings(): Promise<number> {
+        if (!this.db || !this.embeddingService || !this.vectorSearchSupported) return 0;
+        const result = await this.db.execute(`
+            SELECT f.path FROM files f
+            WHERE NOT EXISTS (SELECT 1 FROM chunks c WHERE c.file_id = f.id)
+        `);
+        for (const row of result.rows) {
+            this.queueEmbeddings(String((row as any).path));
+        }
+        return result.rows.length;
+    }
+
+    /** Resolve once the embedding queue has been fully processed. */
+    public async waitForEmbeddings(): Promise<void> {
+        while (this.embeddingQueuePromise) {
+            await this.embeddingQueuePromise;
         }
     }
 
@@ -1518,10 +1599,14 @@ export class ScimaxDbCore {
         if (!this.embeddingQueue.includes(filePath)) {
             this.embeddingQueue.push(filePath);
         }
-        if (!this.isProcessingEmbeddings) {
-            this.processEmbeddingQueueCore().catch(error => {
-                console.error('[ScimaxDbCore] Embedding queue processing failed:', error);
-            });
+        if (!this.isProcessingEmbeddings && !this.embeddingQueuePromise) {
+            this.embeddingQueuePromise = this.processEmbeddingQueueCore()
+                .catch(error => {
+                    console.error('[ScimaxDbCore] Embedding queue processing failed:', error);
+                })
+                .finally(() => {
+                    this.embeddingQueuePromise = null;
+                });
         }
     }
 
