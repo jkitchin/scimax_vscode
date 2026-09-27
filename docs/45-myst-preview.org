@@ -1,0 +1,79 @@
+#+TITLE: MyST Markdown Preview
+#+AUTHOR: Scimax VS Code
+#+DATE: 2026-09-27
+#+STARTUP: overview
+#+OPTIONS: toc:t num:t
+#+TODO: ⚠️ 👀 | ✅
+
+* ⚠️ Overview
+
+[[https://mystmd.org/][MyST]] is the Markdown dialect used by Jupyter Book. It adds /directives/
+(fenced blocks such as ~{figure}~ and ~{admonition}~) and /roles/ (inline
+markup such as ~{ref}`target`~). VS Code's built-in Markdown preview does not
+know them, so it shows directives as code blocks or as literal ~:::{...}~ text.
+
+Scimax extends the preview so a MyST file reads roughly as it will in the
+built book. Nothing needs to be run: open the preview as usual
+(~Markdown: Open Preview to the Side~, =Cmd+K V= on macOS, =Ctrl+K V= elsewhere).
+
+* ⚠️ What Is Rendered
+
+Both fence styles work, with options as ~:key: value~ lines or a ~---~ YAML
+block at the top of the body:
+
+#+begin_example
+:::{admonition} At a glance
+:class: tip
+
+- **Session** Lecture 11
+:::
+
+```{figure} figures/ad-graph.png
+:alt: A computation graph
+:width: 80%
+
+The caption, with $math$ and `code`.
+```
+#+end_example
+
+| Directive                                                   | Preview                                                        |
+|-------------------------------------------------------------+----------------------------------------------------------------|
+| ~admonition~                                                | Callout titled with the argument; colour from ~:class:~        |
+| ~note~, ~tip~, ~hint~, ~important~, ~warning~, ~caution~, ~danger~, ~error~, ~seealso~, ... | Callout titled with the directive name     |
+| ~dropdown~, or any admonition with ~:class: dropdown~       | Collapsible callout (add ~:open:~ to start expanded)           |
+| ~figure~, ~image~                                           | The image, with ~:alt:~, ~:width:~ and ~:align:~; caption below |
+| ~code-cell~, ~code-block~, ~code~                           | Highlighted code block in the argument's language              |
+| ~math~                                                      | Display math (when ~markdown.math.enabled~ is on)              |
+| ~margin~, ~sidebar~, ~topic~, ~card~, ...                   | An indented block of Markdown                                  |
+| ~index~, ~toctree~, ~tableofcontents~, ~bibliography~       | Hidden, as in the built book                                   |
+| Anything else                                               | A labelled box showing ~{name} argument~, body rendered        |
+
+| Role                                        | Preview                                                   |
+|---------------------------------------------+-----------------------------------------------------------|
+| ~{ref}~, ~{doc}~, ~{term}~, ~{numref}~, ... | The link text (or the target), dotted underline; hover for the target |
+| ~{index}~                                   | The plain text                                            |
+| ~{math}~                                    | Inline math                                               |
+| ~{sub}~, ~{sup}~, ~{kbd}~, ~{abbr}~         | Subscript, superscript, key, abbreviation                 |
+
+Cross-references are shown, not resolved: the preview has no project-wide
+view of labels, so ~{ref}`intro`~ displays as /intro/ rather than as a link to
+that section. Scroll sync and VS Code's double-click-to-source still work
+inside directives.
+
+* ⚠️ Configuration
+
+| Setting                        | Default | Effect                                        |
+|--------------------------------+---------+-----------------------------------------------|
+| ~scimax.markdown.myst.enabled~ | ~true~  | Render MyST directives and roles in the preview |
+
+After changing the setting, run ~Markdown: Refresh Preview~.
+
+Marp slide decks (front matter ~marp: true~) are rendered by the Marp
+extension and are not affected.
+
+* ⚠️ Related Topics
+
+- [[file:30-markdown-compatibility.org][Markdown Compatibility]] - Scimax editing features in Markdown files
+- [[file:44-marp.org][Marp Slides]] - navigating between a Marp deck and its preview
+- [[file:26-configuration.org][Configuration Reference]]
+- [[https://mystmd.org/guide/directives][MyST directives]] and [[https://mystmd.org/guide/roles][roles]] - syntax reference

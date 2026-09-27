@@ -1,0 +1,102 @@
+/*
+ * Scimax: MyST directives and roles in the Markdown preview.
+ * Markup comes from src/markdown/mystPreview.ts. Colours are translucent so
+ * they read on light and dark themes alike.
+ */
+
+.myst-admonition,
+.myst-directive {
+    --myst-accent: 59, 130, 246; /* note: blue */
+    margin: 1em 0;
+    padding: 0.2em 1em 0.4em;
+    border-left: 4px solid rgb(var(--myst-accent));
+    border-radius: 4px;
+    background: rgba(var(--myst-accent), 0.08);
+}
+
+.myst-tip, .myst-hint, .myst-important, .myst-versionadded {
+    --myst-accent: 16, 163, 127;
+}
+.myst-warning, .myst-caution, .myst-attention, .myst-versionchanged {
+    --myst-accent: 234, 139, 20;
+}
+.myst-danger, .myst-error, .myst-deprecated {
+    --myst-accent: 220, 53, 69;
+}
+.myst-seealso, .myst-todo {
+    --myst-accent: 124, 92, 214;
+}
+
+.myst-admonition-title {
+    margin: 0.4em -1em 0.6em;
+    padding: 0.2em 1em;
+    font-weight: 600;
+    background: rgba(var(--myst-accent), 0.14);
+}
+
+details.myst-admonition > summary.myst-admonition-title {
+    cursor: pointer;
+    margin-bottom: 0.4em;
+}
+
+details.myst-admonition:not([open]) > summary.myst-admonition-title {
+    margin-bottom: 0;
+}
+
+.myst-admonition > :last-child,
+.myst-directive > :last-child,
+.myst-figure figcaption > :last-child {
+    margin-bottom: 0;
+}
+
+/* Directives without special rendering: a neutral, labelled box. */
+.myst-directive {
+    --myst-accent: 128, 128, 128;
+    border-left-style: dashed;
+}
+
+.myst-directive-name {
+    margin: 0.4em 0;
+    font-family: var(--vscode-editor-font-family, monospace);
+    font-size: 0.85em;
+    opacity: 0.75;
+}
+
+.myst-container {
+    margin: 1em 0;
+    padding: 0 1em;
+    border-left: 2px solid rgba(128, 128, 128, 0.4);
+}
+
+.myst-figure {
+    margin: 1.2em 0;
+    text-align: center;
+}
+
+.myst-figure img {
+    width: var(--myst-width, auto);
+    max-width: 100%;
+}
+
+.myst-figure.myst-align-left {
+    text-align: left;
+}
+
+.myst-figure.myst-align-right {
+    text-align: right;
+}
+
+.myst-figure figcaption {
+    margin-top: 0.5em;
+    font-size: 0.9em;
+    text-align: left;
+    opacity: 0.85;
+}
+
+.myst-role {
+    border-bottom: 1px dotted currentColor;
+}
+
+pre.myst-math {
+    font-family: var(--vscode-editor-font-family, monospace);
+}

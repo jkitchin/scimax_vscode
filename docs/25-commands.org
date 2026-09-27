@@ -389,6 +389,15 @@ Export markdown (=.md=) files to other formats via Pandoc. Complements the org-t
 
 Requires Pandoc to be installed on the system.
 
+** ⚠️ Markdown Preview
+
+| Command ID                         | Description                            | Default Keybinding |
+|------------------------------------+----------------------------------------+--------------------|
+| [[cmd:scimax.marp.revealInPreview]] | Reveal Cursor in Markdown Preview      | -                  |
+
+Scrolls the Markdown preview (opening one if needed) to the cursor line. See
+[[file:44-marp.org][Marp Slides]]. For the other direction, double-click the preview.
+
 ** ✅ Jupyter Notebook Export
 CLOSED: [2026-01-25 Sun 20:43]
 

@@ -37,6 +37,8 @@ import { registerCommandMarkupDecorations } from './highlighting/commandMarkupDe
 import { registerCheckboxFeatures } from './markdown/checkboxProvider';
 import { registerMarkdownExportCommands } from './markdown/markdownExportCommands';
 import { registerTaskCommands } from './markdown/taskCommands';
+import { registerMarpCommands } from './marp/marpCommands';
+import { mystPreviewPlugin } from './markdown/mystPreview';
 import { registerTimestampCommands } from './org/timestampProvider';
 import { registerTableCommands, isInTable } from './org/tableProvider';
 import { registerHeadingCommands } from './org/headingProvider';
@@ -665,6 +667,9 @@ async function activateScimax(context: vscode.ExtensionContext) {
     // Register Markdown Task Commands
     activationStep('registerTaskCommands', () => registerTaskCommands(context));
 
+    // Register Marp slide navigation (source -> preview)
+    activationStep('registerMarpCommands', () => registerMarpCommands(context));
+
     // Register Timestamp Commands (shift-arrow to adjust dates)
     activationStep('registerTimestampCommands', () => registerTimestampCommands(context));
 
@@ -1217,6 +1222,16 @@ async function activateScimax(context: vscode.ExtensionContext) {
     const { linkTypeRegistry } = await import('./parser/orgLinkTypes');
 
     return {
+        /**
+         * Called by VS Code's Markdown preview (markdown.markdownItPlugins)
+         * to render MyST directives and roles.
+         */
+        extendMarkdownIt(md: any) {
+            return md.use(mystPreviewPlugin, {
+                isEnabled: () => vscode.workspace.getConfiguration('scimax.markdown').get<boolean>('myst.enabled', true),
+            });
+        },
+
         /**
          * Register a custom Babel language executor
          * @example

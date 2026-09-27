@@ -1,0 +1,102 @@
+#+TITLE: Marp Slides
+#+AUTHOR: Scimax VS Code
+#+DATE: 2026-09-27
+#+STARTUP: overview
+#+OPTIONS: toc:t num:t
+#+TODO: ⚠️ 👀 | ✅
+
+* ⚠️ Overview
+
+Scimax adds source navigation to [[https://marp.app/][Marp]] slide decks. With the [[https://marketplace.visualstudio.com/items?itemName=marp-team.marp-vscode][Marp for VS Code]]
+extension installed, double-click anywhere on a slide in the Markdown preview
+and the editor opens with the cursor on the matching line of the ~.md~ file.
+
+It works in any Markdown preview that is showing Marp slides (front matter
+~marp: true~), once double-click is enabled for the preview (see
+[[*Configuration][Configuration]]).
+
+* ⚠️ Usage
+
+1. Open a Marp deck (a Markdown file whose front matter has ~marp: true~).
+2. Open the preview: ~Markdown: Open Preview to the Side~ (=Ctrl+K V=, =Cmd+K V= on macOS) or
+   ~Markdown: Open Preview~ (=Ctrl+Shift+V=, =Cmd+Shift+V=).
+3. Double-click the text you want to edit.
+
+The editor comes forward (or opens, if the file was not visible), the cursor
+moves to the start of that line, and the line is scrolled into view.
+
+** Where the cursor lands
+
+The line is taken from the element under the pointer, not from its vertical
+position on the page, so it stays accurate in scaled slides.
+
+| Double-click on                  | Cursor goes to                                       |
+|----------------------------------+------------------------------------------------------|
+| A heading                        | The heading line                                     |
+| A line of a multi-line paragraph | That source line of the paragraph                    |
+| A list item (at any depth)       | That item's line                                     |
+| A line of a fenced code block    | That line of code (not the fence)                    |
+| A table row                      | That row                                             |
+| Empty space on a slide           | The slide's ~---~ separator (file start for slide 1) |
+
+Links are left alone: double-clicking one does not jump to the source.
+
+* ⚠️ Reveal the Cursor in the Preview
+
+The other direction: from the ~.md~ editor, run ~Scimax: Reveal Cursor in
+Markdown Preview~ ([[cmd:scimax.marp.revealInPreview]]) from the command palette.
+The preview scrolls so that the element on the cursor line sits at its top,
+and the editor scrolls the same line to its first visible row. If no preview
+is open, one opens to the side first. Focus stays in the editor.
+
+It works for any Markdown preview, Marp or not. It uses the preview's
+scroll sync, so ~markdown.preview.scrollPreviewWithEditor~ must be on (the
+default).
+
+The command has no default keybinding. To add one, open Keyboard Shortcuts
+and search for ~scimax.marp.revealInPreview~.
+
+* ⚠️ Configuration
+
+The feature follows VS Code's own setting for double-clicking in the Markdown
+preview. Current VS Code releases turn it off by default, so enable it once in
+your user settings:
+
+#+begin_src json
+"markdown.preview.doubleClickToSwitchToEditor": true
+#+end_src
+
+| Setting                                        | Default | Effect                                      |
+|------------------------------------------------+---------+---------------------------------------------|
+| ~markdown.preview.doubleClickToSwitchToEditor~ | ~false~ | Set to ~true~ to turn on double-click jumps |
+
+If double-clicking a slide does nothing, this setting is the first thing to
+check. It also turns on VS Code's own (approximate) double-click for ordinary
+Markdown previews.
+
+* ⚠️ How It Works
+
+Scimax contributes a preview script (~media/marp/marpPreview.js~) through the
+~markdown.previewScripts~ contribution point. Marp already tags each rendered
+element with its source line (~data-line~). On double-click inside a slide the
+script:
+
+1. finds the nearest element carrying a line number;
+2. adds the number of source line breaks between the start of that element and
+   the caret (and one for the opening fence of a code block);
+3. sends the preview's own ~didClick~ message with that line, so VS Code
+   reveals it exactly as it does for its built-in double-click.
+
+VS Code's built-in handler estimates the line by interpolating the click's
+vertical position between tagged elements, which drifts inside scaled slides.
+Scimax's handler replaces it for Marp slides only; ordinary Markdown previews
+are unchanged. If the preview's message channel cannot be reached, the
+built-in handler runs as before.
+
+* ⚠️ Related Topics
+
+- [[file:30-markdown-compatibility.org][Markdown Compatibility]] - Scimax editing features in Markdown files
+- [[file:45-myst-preview.org][MyST Markdown Preview]] - Jupyter Book directives and roles in the preview
+- [[file:41-export-beamer.org][Beamer Export]] - slides from org files via LaTeX Beamer
+- [[file:26-configuration.org][Configuration Reference]]
+- [[https://marpit.marp.app/markdown][Marpit Markdown]] - slide syntax reference

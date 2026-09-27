@@ -235,6 +235,8 @@ This documentation is organized into several sections:
 | [[file:41-export-beamer.org][Beamer Export]]             | Slide presentations via Beamer   |
 | [[file:42-granular-addressing.org][Granular Addressing]]  | Anchors, back-links, orphan links |
 | [[file:43-notes.org][Dialog Notes]]                       | Decisions/questions as footnotes  |
+| [[file:44-marp.org][Marp Slides]]                        | Double-click a slide to its source |
+| [[file:45-myst-preview.org][MyST Preview]]                 | Jupyter Book directives in preview |
 
 ** Quick Start
 
@@ -424,10 +426,12 @@ Quick reference to find specific features across documentation.
 | Link graph            | [[file:39-link-graph.org][Link Graph]]                       | [[file:05-links.org][Links]], [[file:18-database-search.org][Database and Search]]                                         |
 | Lists (ordered)       | [[file:01.5-basic-syntax.org][Basic Syntax]]                 | [[file:02-document-structure.org][Document Structure]]                                                                     |
 | Lists (unordered)     | [[file:01.5-basic-syntax.org][Basic Syntax]]                 | [[file:02-document-structure.org][Document Structure]]                                                                     |
+| Marp slides           | [[file:44-marp.org][Marp Slides]]                            | [[file:30-markdown-compatibility.org][Markdown Compatibility]] - double-click the preview to jump to the source line     |
 | Markdown export       | [[file:10-export.org][Export]]                               | Pandoc-backed export of `.md` to HTML, LaTeX, PDF, DOCX                                                                    |
 | Markdown support      | [[file:30-markdown-compatibility.org][Markdown Compatibility]] | [[file:02-document-structure.org][Document Structure]], [[file:23-speed-commands.org][Speed Commands]], [[file:07-source-blocks.org][Source Blocks]] |
 | Mark ring             | [[file:24-keybindings.org][Keybindings]]                     | Emacs-style mark and region commands                                                                                       |
 | Markup (text)         | [[file:01.5-basic-syntax.org][Basic Syntax]]                 | [[file:10-export.org][Export]], bold, italic, underline, code                                            |
+| MyST / Jupyter Book   | [[file:45-myst-preview.org][MyST Markdown Preview]]           | [[file:30-markdown-compatibility.org][Markdown Compatibility]] - admonitions, figures and roles in the preview             |
 | Math preview          | [[file:11-latex-preview.org][LaTeX Preview]]                 | [[file:10-export.org][Export]]                                                                                             |
 | Non-standard features | [[file:28-non-standard-features.org][Non-Standard Features]] | [[file:19-references.org][References]], [[file:10-export.org][Export]]                                                     |
 | Notebooks             | [[file:16-notebook.org][Notebook]]                           | [[file:17-projectile.org][Projectile]], [[file:14-journal.org][Journal]]                                                   |

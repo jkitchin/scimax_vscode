@@ -40,6 +40,13 @@
     "scimax": "./out/cli/index.js"
   },
   "contributes": {
+    "markdown.markdownItPlugins": true,
+    "markdown.previewScripts": [
+      "./media/marp/marpPreview.js"
+    ],
+    "markdown.previewStyles": [
+      "./media/myst/mystPreview.css"
+    ],
     "languages": [
       {
         "id": "org",
@@ -1060,6 +1067,10 @@
       {
         "command": "scimax.markdown.exportMenu",
         "title": "Scimax: Markdown Export Menu"
+      },
+      {
+        "command": "scimax.marp.revealInPreview",
+        "title": "Scimax: Reveal Cursor in Markdown Preview"
       },
       {
         "command": "scimax.markdown.exportHtml",
@@ -5781,6 +5792,11 @@
           "type": "string",
           "default": "~/scimax",
           "description": "Root directory for Scimax files. Subdirectories include journal/, templates/, and notes.org. Individual directory settings (scimax.journal.directory, scimax.templates.directory) override this when explicitly set."
+        },
+        "scimax.markdown.myst.enabled": {
+          "type": "boolean",
+          "default": true,
+          "markdownDescription": "Render MyST (Jupyter Book) directives and roles, such as `{admonition}`, `{figure}`, `{index}` and `` {ref}`target` ``, in VS Code's Markdown preview. Run **Markdown: Refresh Preview** after changing it."
         },
         "scimax.fillColumn": {
           "type": "integer",

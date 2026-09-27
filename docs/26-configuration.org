@@ -1881,6 +1881,19 @@ Configure the org-capture system for quick note-taking.
 }
 #+end_src
 
+* ⚠️ Markdown Preview Settings
+
+| Setting                        | Type    | Default | Description                                            |
+|--------------------------------+---------+---------+--------------------------------------------------------|
+| scimax.markdown.myst.enabled   | boolean | true    | Render MyST directives and roles in the Markdown preview |
+
+Run ~Markdown: Refresh Preview~ after changing it. See [[file:45-myst-preview.org][MyST Markdown Preview]].
+
+Related VS Code settings used by the Marp navigation ([[file:44-marp.org][Marp Slides]]):
+~markdown.preview.doubleClickToSwitchToEditor~ (must be ~true~ for double-click
+jumps) and ~markdown.preview.scrollPreviewWithEditor~ (must be ~true~ for
+~scimax.marp.revealInPreview~).
+
 * Common Configurations
 
 This section provides complete `settings.json' examples for different use cases.

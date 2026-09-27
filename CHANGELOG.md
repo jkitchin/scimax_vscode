@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **Double-click a Marp slide to jump to its source** - with the Marp for VS Code extension, double-clicking a slide in the Markdown preview puts the cursor on the exact source line: the right line of a multi-line paragraph or code block, list item, or table row. VS Code's own double-click estimates the line from the click's height on the page, which lands several lines off inside scaled slides. Requires `"markdown.preview.doubleClickToSwitchToEditor": true`, which current VS Code releases leave off by default. See `docs/44-marp.org`.
+- **Reveal the cursor in the Markdown preview** - `scimax.marp.revealInPreview` (command palette: *Scimax: Reveal Cursor in Markdown Preview*) scrolls the preview so the element on the cursor line sits at its top, opening a preview to the side if none is showing. Works for Marp decks and ordinary Markdown.
+- **MyST (Jupyter Book) directives and roles in the Markdown preview** - `:::{admonition}` and typed admonitions render as coloured callouts (`:class: dropdown` collapses), `{figure}` shows its image and caption, `{code-cell}` is highlighted, `{index}` and `{toctree}` are hidden, unknown directives get a labelled box, and roles like `` {ref}`text <target>` `` show their text. Previously directives showed as raw `:::{...}` text or empty code boxes. Controlled by `scimax.markdown.myst.enabled`. See `docs/45-myst-preview.org`.
+
 ## [0.7.1] - 2026-09-18
 
 ### Added
