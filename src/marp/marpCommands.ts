@@ -6,6 +6,9 @@
  */
 
 import * as vscode from 'vscode';
+import { registerMarpDirectiveProviders } from './marpDirectiveProvider';
+import { registerClaudeEditCommand } from './claudeEdit';
+import { registerMarpEditorMenu } from './marpEditorMenu';
 
 /** Webview tabs of the built-in Markdown preview have a viewType ending in this. */
 const MARKDOWN_PREVIEW_VIEW_TYPE = 'markdown.preview';
@@ -88,8 +91,47 @@ async function scrollToTop(editor: vscode.TextEditor, line: number): Promise<voi
     }
 }
 
+/** Online Marp documentation offered by `scimax.marp.help`. */
+const MARP_HELP_LINKS: Array<{ label: string; detail: string; url: string }> = [
+    { label: 'Marp', detail: 'Overview of the Marp ecosystem', url: 'https://marp.app/' },
+    { label: 'Slide syntax', detail: 'Marpit Markdown: slides, front matter, comments', url: 'https://marpit.marp.app/markdown' },
+    { label: 'Directives', detail: 'theme, paginate, header, footer, class, backgrounds...', url: 'https://marpit.marp.app/directives' },
+    { label: 'Image syntax', detail: 'Sizes, filters, backgrounds and split backgrounds', url: 'https://marpit.marp.app/image-syntax' },
+    { label: 'Fragmented lists', detail: 'Lists shown one item at a time', url: 'https://marpit.marp.app/fragmented-list' },
+    { label: 'Theme CSS', detail: 'Writing a custom theme', url: 'https://marpit.marp.app/theme-css' },
+    { label: 'Marp Core', detail: 'Built-in features: math, emoji, fitting headings, size', url: 'https://github.com/marp-team/marp-core' },
+    { label: 'Built-in themes', detail: 'default, gaia and uncover, and their classes', url: 'https://github.com/marp-team/marp-core/tree/main/themes' },
+    { label: 'Marp CLI', detail: 'Exports, the HTML slideshow and presenter view', url: 'https://github.com/marp-team/marp-cli' },
+];
+
+/** Pick a Marp help page: Scimax's own guide, or the online Marp documentation. */
+async function marpHelp(context: vscode.ExtensionContext): Promise<void> {
+    const guide = { label: '$(book) Scimax Marp guide', detail: 'Slide preview, sorter, menus, slideshow and export in Scimax', url: '' };
+    const choice = await vscode.window.showQuickPick(
+        [guide, ...MARP_HELP_LINKS.map(link => ({ ...link, label: `$(link-external) ${link.label}` }))],
+        { title: 'Marp help', matchOnDetail: true }
+    );
+    if (!choice) {
+        return;
+    }
+    if (choice === guide) {
+        await vscode.window.showTextDocument(vscode.Uri.joinPath(context.extensionUri, 'docs', '44-marp.org'), { preview: true });
+    } else {
+        await vscode.env.openExternal(vscode.Uri.parse(choice.url));
+    }
+}
+
 export function registerMarpCommands(context: vscode.ExtensionContext): void {
+    context.subscriptions.push(
+        vscode.commands.registerCommand('scimax.marp.help', () => marpHelp(context))
+    );
     context.subscriptions.push(
         vscode.commands.registerCommand('scimax.marp.revealInPreview', revealInPreview)
     );
+    // Completion and hover for Marp directives (front matter and comments).
+    registerMarpDirectiveProviders(context);
+    // Edit the slide under the cursor with Claude Code.
+    registerClaudeEditCommand(context);
+    // The Marp menu in the editor's right-click menu.
+    registerMarpEditorMenu(context);
 }

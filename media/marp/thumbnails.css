@@ -196,3 +196,84 @@ body {
     width: auto;
     height: 3px;
 }
+
+/* ---- Grid / slide toggle and slide navigation ---- */
+
+.modes {
+    display: inline-flex;
+    flex: 0 0 auto;
+    border-radius: 3px;
+    overflow: hidden;
+    outline: 1px solid var(--vscode-panel-border, rgba(128, 128, 128, 0.35));
+}
+
+.mode-button,
+.nav-button {
+    flex: 0 0 auto;
+    width: 24px;
+    height: 22px;
+    padding: 0;
+    border: none;
+    color: var(--vscode-foreground);
+    background: transparent;
+    font-size: 14px;
+    line-height: 22px;
+    cursor: pointer;
+}
+
+.mode-button:hover,
+.nav-button:hover {
+    background: var(--vscode-toolbar-hoverBackground);
+}
+
+.mode-button.on {
+    color: var(--vscode-button-foreground);
+    background: var(--vscode-button-background);
+}
+
+.nav-button {
+    border-radius: 3px;
+    font-size: 18px;
+}
+
+.grid-mode .nav-button,
+.slide-mode .zoom,
+.slide-mode .zoom-button {
+    display: none;
+}
+
+/* ---- Slide mode: one slide fitted to the view ---- */
+
+.slide-mode .slides {
+    grid-template-columns: 1fr;
+    justify-items: center;
+}
+
+.slide-mode .thumb {
+    display: none;
+    width: 100%;
+    align-items: center;
+    cursor: default;
+}
+
+.slide-mode .thumb.shown {
+    display: flex;
+}
+
+.slide-mode .thumb .frame {
+    /* As wide as the view, or as wide as fits the view's height. */
+    width: min(100%, calc((100vh - 5.5em) * var(--aspect, 1.7778)));
+    outline: 1px solid var(--vscode-panel-border, rgba(128, 128, 128, 0.35));
+    outline-offset: 0;
+}
+
+.slide-mode .thumb .number {
+    display: none;
+}
+
+.slide-mode .thumb.selected .frame,
+.slides:focus .slide-mode .thumb.focused .frame,
+.slide-mode .slides:focus .thumb.focused .frame {
+    outline: 1px solid var(--vscode-panel-border, rgba(128, 128, 128, 0.35));
+    outline-offset: 0;
+}

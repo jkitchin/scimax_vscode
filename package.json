@@ -43,10 +43,13 @@
   "contributes": {
     "markdown.markdownItPlugins": true,
     "markdown.previewScripts": [
-      "./media/marp/marpPreview.js"
+      "./media/marp/marpPreview.js",
+      "./media/marp/marpPreviewMode.js",
+      "./node_modules/@marp-team/marp-core/lib/browser.js"
     ],
     "markdown.previewStyles": [
-      "./media/myst/mystPreview.css"
+      "./media/myst/mystPreview.css",
+      "./media/marp/marpPreviewSlides.css"
     ],
     "languages": [
       {
@@ -1193,9 +1196,37 @@
         "title": "Scimax: Export Marp Presenter Notes"
       },
       {
+        "command": "scimax.marp.present",
+        "title": "Scimax: Present Marp Slides",
+        "icon": "$(play)"
+      },
+      {
+        "command": "scimax.marp.presentFromCurrent",
+        "title": "Scimax: Present Marp Slides from Current Slide"
+      },
+      {
+        "command": "scimax.marp.slide.present",
+        "title": "Present from This Slide",
+        "category": "Scimax Marp"
+      },
+      {
+        "command": "scimax.marp.slide.editWithClaude",
+        "title": "Edit with Claude Code...",
+        "category": "Scimax Marp"
+      },
+      {
+        "command": "scimax.marp.editSlideWithClaude",
+        "title": "Scimax: Edit Marp Slide with Claude Code"
+      },
+      {
         "command": "scimax.marp.openSlideSorter",
         "title": "Scimax: Open Marp Slide Sorter",
         "icon": "$(layout)"
+      },
+      {
+        "command": "scimax.marp.openSlidePreview",
+        "title": "Scimax: Open Marp Slide Preview",
+        "icon": "$(open-preview)"
       },
       {
         "command": "scimax.marp.refreshSlides",
@@ -3511,6 +3542,235 @@
       {
         "command": "scimax.rectangle.cancel",
         "title": "Scimax: Cancel Rectangle Operation"
+      },
+      {
+        "command": "scimax.marp.newSlide",
+        "title": "New Slide After This One",
+        "category": "Scimax Marp"
+      },
+      {
+        "command": "scimax.marp.splitSlide",
+        "title": "Split Slide at Cursor",
+        "category": "Scimax Marp"
+      },
+      {
+        "command": "scimax.marp.duplicateCurrentSlide",
+        "title": "Duplicate Slide",
+        "category": "Scimax Marp"
+      },
+      {
+        "command": "scimax.marp.moveCurrentSlideUp",
+        "title": "Move Slide Up",
+        "category": "Scimax Marp"
+      },
+      {
+        "command": "scimax.marp.moveCurrentSlideDown",
+        "title": "Move Slide Down",
+        "category": "Scimax Marp"
+      },
+      {
+        "command": "scimax.marp.toggleHideCurrentSlide",
+        "title": "Hide or Unhide Slide",
+        "category": "Scimax Marp"
+      },
+      {
+        "command": "scimax.marp.deleteCurrentSlide",
+        "title": "Delete Slide",
+        "category": "Scimax Marp"
+      },
+      {
+        "command": "scimax.marp.layout.title",
+        "title": "Title Slide",
+        "category": "Scimax Marp"
+      },
+      {
+        "command": "scimax.marp.layout.section",
+        "title": "Section Divider",
+        "category": "Scimax Marp"
+      },
+      {
+        "command": "scimax.marp.layout.imageRight",
+        "title": "Image Right",
+        "category": "Scimax Marp"
+      },
+      {
+        "command": "scimax.marp.layout.imageLeft",
+        "title": "Image Left",
+        "category": "Scimax Marp"
+      },
+      {
+        "command": "scimax.marp.layout.fullImage",
+        "title": "Full Image",
+        "category": "Scimax Marp"
+      },
+      {
+        "command": "scimax.marp.layout.twoColumns",
+        "title": "Two Columns",
+        "category": "Scimax Marp"
+      },
+      {
+        "command": "scimax.marp.layout.quote",
+        "title": "Quote",
+        "category": "Scimax Marp"
+      },
+      {
+        "command": "scimax.marp.layout.code",
+        "title": "Code",
+        "category": "Scimax Marp"
+      },
+      {
+        "command": "scimax.marp.layout.table",
+        "title": "Table",
+        "category": "Scimax Marp"
+      },
+      {
+        "command": "scimax.marp.layout.bigNumber",
+        "title": "Big Number",
+        "category": "Scimax Marp"
+      },
+      {
+        "command": "scimax.marp.insert.image",
+        "title": "Image...",
+        "category": "Scimax Marp"
+      },
+      {
+        "command": "scimax.marp.insert.notes",
+        "title": "Speaker Notes",
+        "category": "Scimax Marp"
+      },
+      {
+        "command": "scimax.marp.insert.fitHeading",
+        "title": "Fitted Heading",
+        "category": "Scimax Marp"
+      },
+      {
+        "command": "scimax.marp.insert.math",
+        "title": "Math Block",
+        "category": "Scimax Marp"
+      },
+      {
+        "command": "scimax.marp.insert.code",
+        "title": "Code Block",
+        "category": "Scimax Marp"
+      },
+      {
+        "command": "scimax.marp.insert.table",
+        "title": "Table",
+        "category": "Scimax Marp"
+      },
+      {
+        "command": "scimax.marp.insert.buildList",
+        "title": "Build List (One Item at a Time)",
+        "category": "Scimax Marp"
+      },
+      {
+        "command": "scimax.marp.thisSlide.class",
+        "title": "Class (lead, invert)...",
+        "category": "Scimax Marp"
+      },
+      {
+        "command": "scimax.marp.thisSlide.backgroundColor",
+        "title": "Background Color...",
+        "category": "Scimax Marp"
+      },
+      {
+        "command": "scimax.marp.thisSlide.backgroundImage",
+        "title": "Background Image...",
+        "category": "Scimax Marp"
+      },
+      {
+        "command": "scimax.marp.thisSlide.color",
+        "title": "Text Color...",
+        "category": "Scimax Marp"
+      },
+      {
+        "command": "scimax.marp.thisSlide.header",
+        "title": "Header...",
+        "category": "Scimax Marp"
+      },
+      {
+        "command": "scimax.marp.thisSlide.footer",
+        "title": "Footer...",
+        "category": "Scimax Marp"
+      },
+      {
+        "command": "scimax.marp.thisSlide.paginate",
+        "title": "Page Number...",
+        "category": "Scimax Marp"
+      },
+      {
+        "command": "scimax.marp.thisSlide.transition",
+        "title": "Transition...",
+        "category": "Scimax Marp"
+      },
+      {
+        "command": "scimax.marp.thisSlide.scopedStyle",
+        "title": "Scoped Style",
+        "category": "Scimax Marp"
+      },
+      {
+        "command": "scimax.marp.deck.theme",
+        "title": "Theme...",
+        "category": "Scimax Marp"
+      },
+      {
+        "command": "scimax.marp.deck.size",
+        "title": "Size...",
+        "category": "Scimax Marp"
+      },
+      {
+        "command": "scimax.marp.deck.paginate",
+        "title": "Page Numbers...",
+        "category": "Scimax Marp"
+      },
+      {
+        "command": "scimax.marp.deck.header",
+        "title": "Header...",
+        "category": "Scimax Marp"
+      },
+      {
+        "command": "scimax.marp.deck.footer",
+        "title": "Footer...",
+        "category": "Scimax Marp"
+      },
+      {
+        "command": "scimax.marp.deck.headingDivider",
+        "title": "Heading Divider...",
+        "category": "Scimax Marp"
+      },
+      {
+        "command": "scimax.marp.deck.math",
+        "title": "Math Typesetting...",
+        "category": "Scimax Marp"
+      },
+      {
+        "command": "scimax.marp.deck.metadata",
+        "title": "Title, Author and Description...",
+        "category": "Scimax Marp"
+      },
+      {
+        "command": "scimax.marp.theme.new",
+        "title": "New Custom Theme...",
+        "category": "Scimax Marp"
+      },
+      {
+        "command": "scimax.marp.theme.edit",
+        "title": "Edit Current Theme",
+        "category": "Scimax Marp"
+      },
+      {
+        "command": "scimax.marp.theme.styleBlock",
+        "title": "Add Deck Style Block",
+        "category": "Scimax Marp"
+      },
+      {
+        "command": "scimax.marp.insertHeader",
+        "title": "Scimax: Make Marp Deck (Insert Marp Header)"
+      },
+      {
+        "command": "scimax.marp.help",
+        "title": "Scimax: Marp Help",
+        "icon": "$(question)"
       }
     ],
     "keybindings": [
@@ -3920,6 +4180,12 @@
         "key": "ctrl+c ctrl+e",
         "mac": "ctrl+c ctrl+e",
         "when": "editorTextFocus && editorLangId == 'org' && !terminalFocus"
+      },
+      {
+        "command": "scimax.marp.openSlideSorter",
+        "key": "ctrl+shift+v",
+        "mac": "cmd+shift+v",
+        "when": "editorTextFocus && editorLangId == 'markdown' && scimax.marp.isMarpDocument"
       },
       {
         "command": "scimax.markdown.exportMenu",
@@ -5923,6 +6189,29 @@
           "default": "~/scimax",
           "description": "Root directory for Scimax files. Subdirectories include journal/, templates/, and notes.org. Individual directory settings (scimax.journal.directory, scimax.templates.directory) override this when explicitly set."
         },
+        "scimax.marp.themes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [],
+          "markdownDescription": "Custom Marp theme CSS files (paths relative to the workspace folder, or absolute) for the slide thumbnails, preview and exports. A theme file names itself with a `/* @theme name */` comment; use it with `theme: name` in the deck. When not set, `markdown.marp.themes` (Marp for VS Code) is used."
+        },
+        "scimax.marp.enableHtml": {
+          "type": "boolean",
+          "default": false,
+          "markdownDescription": "Allow all raw HTML in Marp slides. When off, Marp's allowlist of safe elements applies. When not set, `markdown.marp.enableHtml` (Marp for VS Code) is used."
+        },
+        "scimax.marp.mathTypesetting": {
+          "type": "string",
+          "enum": [
+            "mathjax",
+            "katex",
+            "off"
+          ],
+          "default": "mathjax",
+          "markdownDescription": "Math typesetting for Marp slides in the thumbnails and preview. When not set, `markdown.marp.mathTypesetting` (Marp for VS Code) is used."
+        },
         "scimax.marp.cliPath": {
           "type": "string",
           "default": "",
@@ -7205,6 +7494,36 @@
         }
       }
     },
+    "submenus": [
+      {
+        "id": "scimax.marp.exportSubmenu",
+        "label": "Export Deck"
+      },
+      {
+        "id": "scimax.marp.editorMenu",
+        "label": "Marp"
+      },
+      {
+        "id": "scimax.marp.layoutMenu",
+        "label": "New Slide from Layout"
+      },
+      {
+        "id": "scimax.marp.insertMenu",
+        "label": "Insert"
+      },
+      {
+        "id": "scimax.marp.thisSlideMenu",
+        "label": "This Slide"
+      },
+      {
+        "id": "scimax.marp.deckMenu",
+        "label": "Deck"
+      },
+      {
+        "id": "scimax.marp.themeMenu",
+        "label": "Theme"
+      }
+    ],
     "menus": {
       "editor/title/context": [
         {
@@ -7235,6 +7554,21 @@
         }
       ],
       "editor/context": [
+        {
+          "submenu": "scimax.marp.editorMenu",
+          "when": "editorLangId == markdown && scimax.marp.isMarpDocument",
+          "group": "0_scimaxMarp@1"
+        },
+        {
+          "command": "scimax.marp.insertHeader",
+          "when": "editorLangId == markdown && !scimax.marp.isMarpDocument",
+          "group": "0_scimaxMarp@1"
+        },
+        {
+          "command": "scimax.marp.help",
+          "when": "editorLangId == markdown && !scimax.marp.isMarpDocument",
+          "group": "0_scimaxMarp@2"
+        },
         {
           "command": "scimax.org.executeBlock",
           "when": "editorLangId =~ /org|markdown/",
@@ -7281,7 +7615,55 @@
           "group": "agendaBufferNav@3"
         }
       ],
+      "scimax.marp.exportSubmenu": [
+        {
+          "command": "scimax.marp.exportPdf",
+          "group": "1_documents@1"
+        },
+        {
+          "command": "scimax.marp.exportPdfNotes",
+          "group": "1_documents@2"
+        },
+        {
+          "command": "scimax.marp.exportHtml",
+          "group": "1_documents@3"
+        },
+        {
+          "command": "scimax.marp.exportPptx",
+          "group": "2_powerpoint@1"
+        },
+        {
+          "command": "scimax.marp.exportPptxEditable",
+          "group": "2_powerpoint@2"
+        },
+        {
+          "command": "scimax.marp.exportPptxPandoc",
+          "group": "2_powerpoint@3"
+        },
+        {
+          "command": "scimax.marp.exportGoogleSlides",
+          "group": "2_powerpoint@4"
+        },
+        {
+          "command": "scimax.marp.exportImages",
+          "group": "3_other@1"
+        },
+        {
+          "command": "scimax.marp.exportNotes",
+          "group": "3_other@2"
+        }
+      ],
       "webview/context": [
+        {
+          "command": "scimax.marp.slide.editWithClaude",
+          "when": "(webviewId == 'scimax.marp.slides' || webviewId == 'scimax.marp.slideSorter') && webviewSection == 'slide'",
+          "group": "0_claude@1"
+        },
+        {
+          "submenu": "scimax.marp.exportSubmenu",
+          "when": "webviewId == 'scimax.marp.slides' || webviewId == 'scimax.marp.slideSorter'",
+          "group": "8_export"
+        },
         {
           "command": "scimax.marp.slide.gotoSource",
           "when": "(webviewId == 'scimax.marp.slides' || webviewId == 'scimax.marp.slideSorter') && webviewSection == 'slide'",
@@ -7291,6 +7673,11 @@
           "command": "scimax.marp.slide.revealInPreview",
           "when": "(webviewId == 'scimax.marp.slides' || webviewId == 'scimax.marp.slideSorter') && webviewSection == 'slide'",
           "group": "1_navigate@2"
+        },
+        {
+          "command": "scimax.marp.slide.present",
+          "when": "(webviewId == 'scimax.marp.slides' || webviewId == 'scimax.marp.slideSorter') && webviewSection == 'slide'",
+          "group": "1_navigate@3"
         },
         {
           "command": "scimax.marp.slide.cut",
@@ -7365,9 +7752,19 @@
       ],
       "editor/title": [
         {
+          "command": "scimax.marp.present",
+          "when": "resourceLangId == markdown && scimax.marp.isMarpDocument",
+          "group": "navigation@0"
+        },
+        {
+          "command": "scimax.marp.openSlidePreview",
+          "when": "resourceLangId == markdown && scimax.marp.isMarpDocument",
+          "group": "navigation@1"
+        },
+        {
           "command": "scimax.marp.openSlideSorter",
           "when": "resourceLangId == markdown && scimax.marp.isMarpDocument",
-          "group": "navigation"
+          "group": "navigation@2"
         },
         {
           "command": "scimax.marp.exportMenu",
@@ -7384,6 +7781,30 @@
         {
           "command": "scimax.marp.openSlideSorter",
           "when": "editorLangId == markdown"
+        },
+        {
+          "command": "scimax.marp.openSlidePreview",
+          "when": "editorLangId == markdown"
+        },
+        {
+          "command": "scimax.marp.present",
+          "when": "editorLangId == markdown"
+        },
+        {
+          "command": "scimax.marp.presentFromCurrent",
+          "when": "editorLangId == markdown"
+        },
+        {
+          "command": "scimax.marp.slide.present",
+          "when": "false"
+        },
+        {
+          "command": "scimax.marp.slide.editWithClaude",
+          "when": "false"
+        },
+        {
+          "command": "scimax.marp.editSlideWithClaude",
+          "when": "editorLangId == markdown && scimax.marp.isMarpDocument"
         },
         {
           "command": "scimax.marp.exportMenu",
@@ -7488,6 +7909,190 @@
         {
           "command": "scimax.journal.next",
           "when": "resourceFilename =~ /^\\d{4}-\\d{2}-\\d{2}\\.(org|md)$/"
+        },
+        {
+          "command": "scimax.marp.newSlide",
+          "when": "editorLangId == markdown && scimax.marp.isMarpDocument"
+        },
+        {
+          "command": "scimax.marp.splitSlide",
+          "when": "editorLangId == markdown && scimax.marp.isMarpDocument"
+        },
+        {
+          "command": "scimax.marp.duplicateCurrentSlide",
+          "when": "editorLangId == markdown && scimax.marp.isMarpDocument"
+        },
+        {
+          "command": "scimax.marp.moveCurrentSlideUp",
+          "when": "editorLangId == markdown && scimax.marp.isMarpDocument"
+        },
+        {
+          "command": "scimax.marp.moveCurrentSlideDown",
+          "when": "editorLangId == markdown && scimax.marp.isMarpDocument"
+        },
+        {
+          "command": "scimax.marp.toggleHideCurrentSlide",
+          "when": "editorLangId == markdown && scimax.marp.isMarpDocument"
+        },
+        {
+          "command": "scimax.marp.deleteCurrentSlide",
+          "when": "editorLangId == markdown && scimax.marp.isMarpDocument"
+        },
+        {
+          "command": "scimax.marp.layout.title",
+          "when": "editorLangId == markdown && scimax.marp.isMarpDocument"
+        },
+        {
+          "command": "scimax.marp.layout.section",
+          "when": "editorLangId == markdown && scimax.marp.isMarpDocument"
+        },
+        {
+          "command": "scimax.marp.layout.imageRight",
+          "when": "editorLangId == markdown && scimax.marp.isMarpDocument"
+        },
+        {
+          "command": "scimax.marp.layout.imageLeft",
+          "when": "editorLangId == markdown && scimax.marp.isMarpDocument"
+        },
+        {
+          "command": "scimax.marp.layout.fullImage",
+          "when": "editorLangId == markdown && scimax.marp.isMarpDocument"
+        },
+        {
+          "command": "scimax.marp.layout.twoColumns",
+          "when": "editorLangId == markdown && scimax.marp.isMarpDocument"
+        },
+        {
+          "command": "scimax.marp.layout.quote",
+          "when": "editorLangId == markdown && scimax.marp.isMarpDocument"
+        },
+        {
+          "command": "scimax.marp.layout.code",
+          "when": "editorLangId == markdown && scimax.marp.isMarpDocument"
+        },
+        {
+          "command": "scimax.marp.layout.table",
+          "when": "editorLangId == markdown && scimax.marp.isMarpDocument"
+        },
+        {
+          "command": "scimax.marp.layout.bigNumber",
+          "when": "editorLangId == markdown && scimax.marp.isMarpDocument"
+        },
+        {
+          "command": "scimax.marp.insert.image",
+          "when": "editorLangId == markdown && scimax.marp.isMarpDocument"
+        },
+        {
+          "command": "scimax.marp.insert.notes",
+          "when": "editorLangId == markdown && scimax.marp.isMarpDocument"
+        },
+        {
+          "command": "scimax.marp.insert.fitHeading",
+          "when": "editorLangId == markdown && scimax.marp.isMarpDocument"
+        },
+        {
+          "command": "scimax.marp.insert.math",
+          "when": "editorLangId == markdown && scimax.marp.isMarpDocument"
+        },
+        {
+          "command": "scimax.marp.insert.code",
+          "when": "editorLangId == markdown && scimax.marp.isMarpDocument"
+        },
+        {
+          "command": "scimax.marp.insert.table",
+          "when": "editorLangId == markdown && scimax.marp.isMarpDocument"
+        },
+        {
+          "command": "scimax.marp.insert.buildList",
+          "when": "editorLangId == markdown && scimax.marp.isMarpDocument"
+        },
+        {
+          "command": "scimax.marp.thisSlide.class",
+          "when": "editorLangId == markdown && scimax.marp.isMarpDocument"
+        },
+        {
+          "command": "scimax.marp.thisSlide.backgroundColor",
+          "when": "editorLangId == markdown && scimax.marp.isMarpDocument"
+        },
+        {
+          "command": "scimax.marp.thisSlide.backgroundImage",
+          "when": "editorLangId == markdown && scimax.marp.isMarpDocument"
+        },
+        {
+          "command": "scimax.marp.thisSlide.color",
+          "when": "editorLangId == markdown && scimax.marp.isMarpDocument"
+        },
+        {
+          "command": "scimax.marp.thisSlide.header",
+          "when": "editorLangId == markdown && scimax.marp.isMarpDocument"
+        },
+        {
+          "command": "scimax.marp.thisSlide.footer",
+          "when": "editorLangId == markdown && scimax.marp.isMarpDocument"
+        },
+        {
+          "command": "scimax.marp.thisSlide.paginate",
+          "when": "editorLangId == markdown && scimax.marp.isMarpDocument"
+        },
+        {
+          "command": "scimax.marp.thisSlide.transition",
+          "when": "editorLangId == markdown && scimax.marp.isMarpDocument"
+        },
+        {
+          "command": "scimax.marp.thisSlide.scopedStyle",
+          "when": "editorLangId == markdown && scimax.marp.isMarpDocument"
+        },
+        {
+          "command": "scimax.marp.deck.theme",
+          "when": "editorLangId == markdown && scimax.marp.isMarpDocument"
+        },
+        {
+          "command": "scimax.marp.deck.size",
+          "when": "editorLangId == markdown && scimax.marp.isMarpDocument"
+        },
+        {
+          "command": "scimax.marp.deck.paginate",
+          "when": "editorLangId == markdown && scimax.marp.isMarpDocument"
+        },
+        {
+          "command": "scimax.marp.deck.header",
+          "when": "editorLangId == markdown && scimax.marp.isMarpDocument"
+        },
+        {
+          "command": "scimax.marp.deck.footer",
+          "when": "editorLangId == markdown && scimax.marp.isMarpDocument"
+        },
+        {
+          "command": "scimax.marp.deck.headingDivider",
+          "when": "editorLangId == markdown && scimax.marp.isMarpDocument"
+        },
+        {
+          "command": "scimax.marp.deck.math",
+          "when": "editorLangId == markdown && scimax.marp.isMarpDocument"
+        },
+        {
+          "command": "scimax.marp.deck.metadata",
+          "when": "editorLangId == markdown && scimax.marp.isMarpDocument"
+        },
+        {
+          "command": "scimax.marp.theme.new",
+          "when": "editorLangId == markdown && scimax.marp.isMarpDocument"
+        },
+        {
+          "command": "scimax.marp.theme.edit",
+          "when": "editorLangId == markdown && scimax.marp.isMarpDocument"
+        },
+        {
+          "command": "scimax.marp.theme.styleBlock",
+          "when": "editorLangId == markdown && scimax.marp.isMarpDocument"
+        },
+        {
+          "command": "scimax.marp.insertHeader",
+          "when": "editorLangId == markdown"
+        },
+        {
+          "command": "scimax.marp.help",
+          "when": "editorLangId == markdown"
         }
       ],
       "view/title": [
@@ -7610,6 +8215,11 @@
           "command": "scimax.projectile.scan",
           "when": "view == scimax.projects",
           "group": "2_manage"
+        },
+        {
+          "command": "scimax.marp.help",
+          "when": "view == scimax.marp.slides",
+          "group": "navigation@9"
         }
       ],
       "view/item/context": [
@@ -7622,6 +8232,246 @@
           "command": "scimax.agenda.ignoreFileFromItem",
           "when": "view == scimax.agenda && viewItem == agendaItem",
           "group": "navigation"
+        }
+      ],
+      "scimax.marp.editorMenu": [
+        {
+          "command": "scimax.marp.newSlide",
+          "group": "1_slides@1"
+        },
+        {
+          "command": "scimax.marp.splitSlide",
+          "group": "1_slides@2"
+        },
+        {
+          "command": "scimax.marp.duplicateCurrentSlide",
+          "group": "1_slides@3"
+        },
+        {
+          "command": "scimax.marp.moveCurrentSlideUp",
+          "group": "1_slides@4"
+        },
+        {
+          "command": "scimax.marp.moveCurrentSlideDown",
+          "group": "1_slides@5"
+        },
+        {
+          "command": "scimax.marp.toggleHideCurrentSlide",
+          "group": "1_slides@6"
+        },
+        {
+          "command": "scimax.marp.deleteCurrentSlide",
+          "group": "1_slides@7"
+        },
+        {
+          "submenu": "scimax.marp.layoutMenu",
+          "group": "2_content@1"
+        },
+        {
+          "submenu": "scimax.marp.insertMenu",
+          "group": "2_content@2"
+        },
+        {
+          "submenu": "scimax.marp.thisSlideMenu",
+          "group": "2_content@3"
+        },
+        {
+          "submenu": "scimax.marp.deckMenu",
+          "group": "2_content@4"
+        },
+        {
+          "submenu": "scimax.marp.themeMenu",
+          "group": "2_content@5"
+        },
+        {
+          "command": "scimax.marp.present",
+          "group": "3_actions@1"
+        },
+        {
+          "command": "scimax.marp.presentFromCurrent",
+          "group": "3_actions@2"
+        },
+        {
+          "command": "scimax.marp.openSlidePreview",
+          "group": "3_actions@3"
+        },
+        {
+          "command": "scimax.marp.openSlideSorter",
+          "group": "3_actions@4"
+        },
+        {
+          "command": "scimax.marp.editSlideWithClaude",
+          "group": "3_actions@5"
+        },
+        {
+          "submenu": "scimax.marp.exportSubmenu",
+          "group": "3_actions@9"
+        },
+        {
+          "command": "scimax.marp.help",
+          "group": "9_help@1"
+        }
+      ],
+      "scimax.marp.layoutMenu": [
+        {
+          "command": "scimax.marp.layout.title",
+          "group": "1@1"
+        },
+        {
+          "command": "scimax.marp.layout.section",
+          "group": "1@2"
+        },
+        {
+          "command": "scimax.marp.layout.imageRight",
+          "group": "1@3"
+        },
+        {
+          "command": "scimax.marp.layout.imageLeft",
+          "group": "1@4"
+        },
+        {
+          "command": "scimax.marp.layout.fullImage",
+          "group": "1@5"
+        },
+        {
+          "command": "scimax.marp.layout.twoColumns",
+          "group": "1@6"
+        },
+        {
+          "command": "scimax.marp.layout.quote",
+          "group": "1@7"
+        },
+        {
+          "command": "scimax.marp.layout.code",
+          "group": "1@8"
+        },
+        {
+          "command": "scimax.marp.layout.table",
+          "group": "1@9"
+        },
+        {
+          "command": "scimax.marp.layout.bigNumber",
+          "group": "1@10"
+        }
+      ],
+      "scimax.marp.insertMenu": [
+        {
+          "command": "scimax.marp.insert.image",
+          "group": "1@1"
+        },
+        {
+          "command": "scimax.marp.insert.notes",
+          "group": "1@2"
+        },
+        {
+          "command": "scimax.marp.insert.fitHeading",
+          "group": "1@3"
+        },
+        {
+          "command": "scimax.marp.insert.math",
+          "group": "1@4"
+        },
+        {
+          "command": "scimax.marp.insert.code",
+          "group": "1@5"
+        },
+        {
+          "command": "scimax.marp.insert.table",
+          "group": "1@6"
+        },
+        {
+          "command": "scimax.marp.insert.buildList",
+          "group": "1@7"
+        }
+      ],
+      "scimax.marp.thisSlideMenu": [
+        {
+          "command": "scimax.marp.thisSlide.class",
+          "group": "1@1"
+        },
+        {
+          "command": "scimax.marp.thisSlide.backgroundColor",
+          "group": "1@2"
+        },
+        {
+          "command": "scimax.marp.thisSlide.backgroundImage",
+          "group": "1@3"
+        },
+        {
+          "command": "scimax.marp.thisSlide.color",
+          "group": "1@4"
+        },
+        {
+          "command": "scimax.marp.thisSlide.header",
+          "group": "1@5"
+        },
+        {
+          "command": "scimax.marp.thisSlide.footer",
+          "group": "1@6"
+        },
+        {
+          "command": "scimax.marp.thisSlide.paginate",
+          "group": "1@7"
+        },
+        {
+          "command": "scimax.marp.thisSlide.transition",
+          "group": "1@8"
+        },
+        {
+          "command": "scimax.marp.thisSlide.scopedStyle",
+          "group": "1@9"
+        }
+      ],
+      "scimax.marp.deckMenu": [
+        {
+          "command": "scimax.marp.deck.theme",
+          "group": "1@1"
+        },
+        {
+          "command": "scimax.marp.deck.size",
+          "group": "1@2"
+        },
+        {
+          "command": "scimax.marp.deck.paginate",
+          "group": "1@3"
+        },
+        {
+          "command": "scimax.marp.deck.header",
+          "group": "1@4"
+        },
+        {
+          "command": "scimax.marp.deck.footer",
+          "group": "1@5"
+        },
+        {
+          "command": "scimax.marp.deck.headingDivider",
+          "group": "1@6"
+        },
+        {
+          "command": "scimax.marp.deck.math",
+          "group": "1@7"
+        },
+        {
+          "command": "scimax.marp.deck.metadata",
+          "group": "1@8"
+        }
+      ],
+      "scimax.marp.themeMenu": [
+        {
+          "command": "scimax.marp.deck.theme",
+          "group": "1@1"
+        },
+        {
+          "command": "scimax.marp.theme.new",
+          "group": "1@2"
+        },
+        {
+          "command": "scimax.marp.theme.edit",
+          "group": "1@3"
+        },
+        {
+          "command": "scimax.marp.theme.styleBlock",
+          "group": "1@4"
         }
       ]
     }

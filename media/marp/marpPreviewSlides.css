@@ -1,0 +1,15 @@
+/* Scimax Marp: slides in VS Code's Markdown preview (see media/marp/marpPreviewMode.js). */
+
+body.scimax-marp {
+    margin: 0;
+    padding: 20px;
+    background: var(--vscode-editorWidget-background, #333);
+}
+
+body.scimax-marp div.marpit > svg[data-marpit-svg] {
+    display: block;
+    width: 100%;
+    height: auto;
+    margin: 0 auto 20px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.35);
+}

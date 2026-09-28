@@ -395,12 +395,77 @@ Requires Pandoc to be installed on the system.
 |------------------------------------+----------------------------------------+--------------------|
 | [[cmd:scimax.marp.revealInPreview]] | Reveal Cursor in Markdown Preview      | -                  |
 | [[cmd:scimax.marp.refreshSlides]]   | Refresh Marp Slide Thumbnails          | -                  |
-| [[cmd:scimax.marp.openSlideSorter]] | Open Marp Slide Sorter (grid tab)      | -                  |
 
 Reveal scrolls the Markdown preview (opening one if needed) to the cursor
 line. For the other direction, double-click the preview. Refresh re-renders
 the Marp Slides sidebar and the Slide Sorter, for example after editing a
 theme file. See [[file:44-marp.org][Marp Slides]].
+
+*** ⚠️ Marp Slides and Slideshow
+
+Preview and present Marp decks. See [[file:44-marp.org][Marp Slides]].
+
+| Command ID                              | Description                                             | Default Keybinding           |
+|-----------------------------------------+---------------------------------------------------------+------------------------------|
+| [[cmd:scimax.marp.insertHeader]]        | Make a Markdown file a Marp deck (insert the header)    | -                            |
+| [[cmd:scimax.marp.help]]                | Marp help: this guide and the online Marp documentation | C-c C-e ? (in a Marp deck)   |
+| [[cmd:scimax.marp.present]]             | Present the deck as a slideshow in the browser          | C-c C-e x (in a Marp deck)   |
+| [[cmd:scimax.marp.presentFromCurrent]]  | Present from the slide under the cursor                 | C-c C-e c (in a Marp deck)   |
+| [[cmd:scimax.marp.openSlidePreview]]    | Slide preview beside the deck, following the cursor     | -                            |
+| [[cmd:scimax.marp.editSlideWithClaude]] | Edit the slide under the cursor with Claude Code        | -                            |
+| [[cmd:scimax.marp.openSlideSorter]]     | Slide Sorter (grid of all slides)                       | Cmd+Shift+V (in a Marp deck) |
+
+*** ⚠️ Marp Menu (Editor)
+
+Right-click in a Marp deck > Marp. These act on the slide under the cursor
+or every selected slide. See [[file:44-marp.org::*The Marp Menu][The Marp Menu]].
+
+| Command ID                                    | Description                     | Default Keybinding |
+|-----------------------------------------------+---------------------------------+--------------------|
+| [[cmd:scimax.marp.newSlide]]                  | New Slide After This One        | -                  |
+| [[cmd:scimax.marp.splitSlide]]                | Split Slide at Cursor           | -                  |
+| [[cmd:scimax.marp.duplicateCurrentSlide]]     | Duplicate Slide                 | -                  |
+| [[cmd:scimax.marp.moveCurrentSlideUp]]        | Move Slide Up                   | -                  |
+| [[cmd:scimax.marp.moveCurrentSlideDown]]      | Move Slide Down                 | -                  |
+| [[cmd:scimax.marp.toggleHideCurrentSlide]]    | Hide or Unhide Slide            | -                  |
+| [[cmd:scimax.marp.deleteCurrentSlide]]        | Delete Slide                    | -                  |
+| [[cmd:scimax.marp.layout.title]]              | Title Slide                     | -                  |
+| [[cmd:scimax.marp.layout.section]]            | Section Divider                 | -                  |
+| [[cmd:scimax.marp.layout.imageRight]]         | Image Right                     | -                  |
+| [[cmd:scimax.marp.layout.imageLeft]]          | Image Left                      | -                  |
+| [[cmd:scimax.marp.layout.fullImage]]          | Full Image                      | -                  |
+| [[cmd:scimax.marp.layout.twoColumns]]         | Two Columns                     | -                  |
+| [[cmd:scimax.marp.layout.quote]]              | Quote                           | -                  |
+| [[cmd:scimax.marp.layout.code]]               | Code                            | -                  |
+| [[cmd:scimax.marp.layout.table]]              | Table                           | -                  |
+| [[cmd:scimax.marp.layout.bigNumber]]          | Big Number                      | -                  |
+| [[cmd:scimax.marp.insert.image]]              | Image                           | -                  |
+| [[cmd:scimax.marp.insert.notes]]              | Speaker Notes                   | -                  |
+| [[cmd:scimax.marp.insert.fitHeading]]         | Fitted Heading                  | -                  |
+| [[cmd:scimax.marp.insert.math]]               | Math Block                      | -                  |
+| [[cmd:scimax.marp.insert.code]]               | Code Block                      | -                  |
+| [[cmd:scimax.marp.insert.table]]              | Table                           | -                  |
+| [[cmd:scimax.marp.insert.buildList]]          | Build List (One Item at a Time) | -                  |
+| [[cmd:scimax.marp.thisSlide.class]]           | Class (lead, invert)            | -                  |
+| [[cmd:scimax.marp.thisSlide.backgroundColor]] | Background Color                | -                  |
+| [[cmd:scimax.marp.thisSlide.backgroundImage]] | Background Image                | -                  |
+| [[cmd:scimax.marp.thisSlide.color]]           | Text Color                      | -                  |
+| [[cmd:scimax.marp.thisSlide.header]]          | Header                          | -                  |
+| [[cmd:scimax.marp.thisSlide.footer]]          | Footer                          | -                  |
+| [[cmd:scimax.marp.thisSlide.paginate]]        | Page Number                     | -                  |
+| [[cmd:scimax.marp.thisSlide.transition]]      | Transition                      | -                  |
+| [[cmd:scimax.marp.thisSlide.scopedStyle]]     | Scoped Style                    | -                  |
+| [[cmd:scimax.marp.deck.theme]]                | Theme                           | -                  |
+| [[cmd:scimax.marp.deck.size]]                 | Size                            | -                  |
+| [[cmd:scimax.marp.deck.paginate]]             | Page Numbers                    | -                  |
+| [[cmd:scimax.marp.deck.header]]               | Header                          | -                  |
+| [[cmd:scimax.marp.deck.footer]]               | Footer                          | -                  |
+| [[cmd:scimax.marp.deck.headingDivider]]       | Heading Divider                 | -                  |
+| [[cmd:scimax.marp.deck.math]]                 | Math Typesetting                | -                  |
+| [[cmd:scimax.marp.deck.metadata]]             | Title, Author and Description   | -                  |
+| [[cmd:scimax.marp.theme.new]]                 | New Custom Theme                | -                  |
+| [[cmd:scimax.marp.theme.edit]]                | Edit Current Theme              | -                  |
+| [[cmd:scimax.marp.theme.styleBlock]]          | Add Deck Style Block            | -                  |
 
 *** ⚠️ Marp Slide Export
 
@@ -433,6 +498,8 @@ and are handled by the view, so they cannot be rebound. See
 |-------------------------------------------+---------------------------------+-----------------|
 | [[cmd:scimax.marp.slide.gotoSource]]      | Go to the slide's source        | Enter           |
 | [[cmd:scimax.marp.slide.revealInPreview]] | Reveal the slide in the preview | -               |
+| [[cmd:scimax.marp.slide.present]]         | Present from this slide         | -               |
+| [[cmd:scimax.marp.slide.editWithClaude]]  | Edit with Claude Code           | -               |
 | [[cmd:scimax.marp.slide.cut]]             | Cut slides                      | Cmd+X           |
 | [[cmd:scimax.marp.slide.copy]]            | Copy slides                     | Cmd+C           |
 | [[cmd:scimax.marp.slide.pasteAfter]]      | Paste slides after              | Cmd+V           |

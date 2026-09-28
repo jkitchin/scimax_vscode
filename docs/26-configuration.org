@@ -1894,6 +1894,18 @@ Related VS Code settings used by the Marp navigation ([[file:44-marp.org][Marp S
 jumps) and ~markdown.preview.scrollPreviewWithEditor~ (must be ~true~ for
 ~scimax.marp.revealInPreview~).
 
+* ⚠️ Marp Slide Settings
+
+| Setting                     | Type    | Default   | Description                                       |
+|-----------------------------+---------+-----------+---------------------------------------------------|
+| scimax.marp.themes          | array   | []        | Custom theme CSS files (~/* @theme name */~)      |
+| scimax.marp.enableHtml      | boolean | false     | Allow all raw HTML in slides                      |
+| scimax.marp.mathTypesetting | string  | "mathjax" | Math in thumbnails and preview: mathjax, katex, off |
+
+These are used by the slide thumbnails, preview and exports. When one is not
+set, Marp for VS Code's matching ~markdown.marp.*~ setting is used. See
+[[file:44-marp.org::*Configuration][Marp Slides]].
+
 * ⚠️ Marp Export Settings
 
 | Setting                        | Type    | Default | Description                                                 |
@@ -1904,8 +1916,8 @@ jumps) and ~markdown.preview.scrollPreviewWithEditor~ (must be ~true~ for
 | scimax.marp.allowLocalFiles    | boolean | true    | Include local images in exports (trusted workspaces only)   |
 | scimax.marp.pandocReferenceDoc | string  | ""      | PowerPoint template for the Pandoc export                   |
 
-See [[file:44-marp.org::*Exporting Slides][Exporting Slides]]. The exports also follow Marp for VS Code's
-~markdown.marp.themes~ and ~markdown.marp.enableHtml~.
+See [[file:44-marp.org::*Exporting Slides][Exporting Slides]]. The exports also follow ~scimax.marp.themes~ and
+~scimax.marp.enableHtml~ (above).
 
 * Common Configurations
 

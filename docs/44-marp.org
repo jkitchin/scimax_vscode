@@ -7,21 +7,69 @@
 
 * 👀 Overview
 
-Scimax adds source navigation to [[https://marp.app/][Marp]] slide decks, and a
-sidebar of slide thumbnails (see [[*Slide Thumbnails][Slide Thumbnails]]), and exports to PDF,
-PowerPoint and Google Slides (see [[*Exporting Slides][Exporting Slides]]). With the [[https://marketplace.visualstudio.com/items?itemName=marp-team.marp-vscode][Marp for VS Code]]
-extension installed, double-click anywhere on a slide in the Markdown preview
-and the editor opens with the cursor on the matching line of the ~.md~ file.
+Scimax supports [[https://marp.app/][Marp]] slide decks on its own: a Markdown file whose front
+matter has ~marp: true~. It renders the slides with its own copy of Marp Core,
+so the [[https://marketplace.visualstudio.com/items?itemName=marp-team.marp-vscode][Marp for VS Code]] extension is not needed.
 
-It works in any Markdown preview that is showing Marp slides (front matter
-~marp: true~), once double-click is enabled for the preview (see
-[[*Configuration][Configuration]]).
+| Task                             | How                                                                                                                     |
+|----------------------------------+-------------------------------------------------------------------------------------------------------------------------|
+| See one slide as you edit        | Slide preview: the play-preview button in the editor title bar ([[*Slide Preview][Slide Preview]])                      |
+| See and rearrange the whole deck | Slide Sorter and the Marp Slides sidebar ([[*Slide Thumbnails][Slide Thumbnails]], [[*Editing Slides][Editing Slides]]) |
+| Present                          | =C-c C-e x=, the play button, or a ~marp:~ link in an org file ([[*Slideshow][Slideshow]])                              |
+| Write directives                 | Completion and hover in the front matter and comments ([[*Directives][Directives]])                                     |
+| Export                           | =C-c C-e= for PDF, PowerPoint, Google Slides, HTML, images ([[*Exporting Slides][Exporting Slides]])                    |
 
-* ⚠️ Usage
+For help, *Scimax: Marp Help* ([[cmd:scimax.marp.help]], also at the bottom of
+the Marp menu, as =C-c C-e ?= and as ? in the Marp Slides view) opens this
+guide or the online Marp documentation: slide syntax, directives, image
+syntax, fragmented lists, theme CSS, the built-in themes and Marp CLI.
+
+To make a Markdown file a deck, run *Scimax: Make Marp Deck*
+([[cmd:scimax.marp.insertHeader]]), also in the editor's right-click menu of
+a Markdown file that is not a deck yet. It inserts the header below, with the
+theme and page numbers as choices (=Tab= moves between them); if the file
+already has front matter, it adds ~marp: true~ to it.
+
+A minimal deck:
+
+#+begin_src markdown
+---
+marp: true
+theme: default
+paginate: true
+---
+
+# Title slide
+
+---
+
+## Second slide
+
+- A point
+#+end_src
+
+In a Marp deck, =Cmd+Shift+V= (=Ctrl+Shift+V= on Windows and Linux) opens the
+Slide Sorter instead of VS Code's Markdown preview. The Markdown preview is
+still there with =Cmd+K V= (beside the editor), and shows a Marp deck as
+slides too: Scimax renders it with Marp Core, in
+the deck's theme, with scroll sync and double-click to the source (see
+[[*Double-Click in the Markdown Preview][Double-Click in the Markdown Preview]]). Other Markdown files preview as usual.
+
+If you also have Marp for VS Code, it and Scimax both render decks in the
+Markdown preview; either works. Its ~markdown.marp.*~ settings are used when
+the matching ~scimax.marp.*~ ones are not set.
+
+* 👀 Double-Click in the Markdown Preview
+
+VS Code's Markdown preview shows a Marp deck as slides (Scimax renders it;
+Marp for VS Code is not needed). Double-clicking in it jumps to the exact
+source line. The [[*Slide Preview][Slide Preview]] is the alternative that shows one slide
+at a time.
 
 1. Open a Marp deck (a Markdown file whose front matter has ~marp: true~).
 2. Open the preview: ~Markdown: Open Preview to the Side~ (=Ctrl+K V=, =Cmd+K V= on macOS) or
-   ~Markdown: Open Preview~ (=Ctrl+Shift+V=, =Cmd+Shift+V=).
+   ~Markdown: Open Preview~ from the command palette. (In a Marp deck
+   =Cmd+Shift+V= opens the Slide Sorter instead.)
 3. Double-click the text you want to edit.
 
 The editor comes forward (or opens, if the file was not visible), the cursor
@@ -43,9 +91,10 @@ position on the page, so it stays accurate in scaled slides.
 
 Links are left alone: double-clicking one does not jump to the source.
 
-* ⚠️ Reveal the Cursor in the Preview
+* 👀 Reveal the Cursor in the Preview
 
-The other direction: from the ~.md~ editor, run ~Scimax: Reveal Cursor in
+This is for VS Code's Markdown preview (of a deck or any Markdown file); the
+[[*Slide Preview][Slide Preview]] follows the cursor by itself. The other direction: from the ~.md~ editor, run ~Scimax: Reveal Cursor in
 Markdown Preview~ ([[cmd:scimax.marp.revealInPreview]]) from the command palette.
 The preview scrolls so that the element on the cursor line sits at its top,
 and the editor scrolls the same line to its first visible row. If no preview
@@ -58,6 +107,95 @@ default).
 The command has no default keybinding. To add one, open Keyboard Shortcuts
 and search for ~scimax.marp.revealInPreview~.
 
+* ⚠️ Slide Preview
+
+The slide preview shows the slide under the editor cursor, fitted to its
+tab, and follows the cursor as you move and type. Open it with the preview
+button in a Marp deck's editor title bar, or ~Scimax: Open Marp Slide
+Preview~ ([[cmd:scimax.marp.openSlidePreview]]). It opens beside the deck
+and leaves the focus in the editor.
+
+The preview is the Slide Sorter tab in /slide/ mode. The two buttons at the
+left of its toolbar switch between one slide and the grid of all slides
+(=V= does too), and the tab remembers the last mode. The Marp Slides sidebar
+view has the same buttons, so it can be a small preview too.
+
+| Key or action                                                     | Effect                                                   |
+|-------------------------------------------------------------------+----------------------------------------------------------|
+| Move the editor cursor                                            | Shows the slide under it                                 |
+| =Left= / =Right=, =Up= / =Down=, =Page Up= / =Page Down=, =Space= | Previous / next slide                                    |
+| ‹ and › in the toolbar                                            | Previous / next slide                                    |
+| Double-click the slide                                            | Cursor to the slide's first content line                 |
+| =V=, or the grid and slide buttons                                | Switch between one slide and the grid                    |
+| Right-click                                                       | The slide menu (see [[*Editing Slides][Editing Slides]]) |
+
+Hidden slides are shown (dimmed in the grid) so they can still be edited.
+
+* ⚠️ Slideshow
+
+To present, Scimax makes Marp's HTML slideshow of the deck and opens it in the
+browser. Marp CLI builds it (see [[*Marp CLI][Marp CLI]]), and it is written to a new private
+temporary folder, so nothing is added next to the deck. Relative images still
+load from the deck's folder. Unsaved changes are saved first.
+
+| Command                                                                                   | Starts at                  |
+|-------------------------------------------------------------------------------------------+----------------------------|
+| ~Scimax: Present Marp Slides~ ([[cmd:scimax.marp.present]])                               | The first slide            |
+| ~Scimax: Present Marp Slides from Current Slide~ ([[cmd:scimax.marp.presentFromCurrent]]) | The slide under the cursor |
+| Present from This Slide (thumbnail menu)                                                  | The clicked slide          |
+
+The play button in a Marp deck's editor title bar presents from the start,
+and so does =x= in the export menu (=C-c C-e=); =c= there starts at the
+current slide.
+
+| Key in the slideshow                         | Effect                                                                     |
+|----------------------------------------------+----------------------------------------------------------------------------|
+| =Right=, =Down=, =Space=, =Page Down=, click | Next slide                                                                 |
+| =Left=, =Up=, =Page Up=                      | Previous slide                                                             |
+| =F=                                          | Full screen                                                                |
+| =P=                                          | Presenter view: current and next slide, notes and a timer, in a new window |
+| =Home= / =End=                               | First / last slide                                                         |
+
+Hidden slides are left out of the slideshow, and its slide numbers count only
+the slides it shows.
+
+** Presenting from an org file
+
+A ~marp:~ link in an org file launches the slideshow when clicked (or with
+=C-c C-o= on it):
+
+#+begin_example
+[[marp:talks/group-meeting.md][Group meeting slides]]
+[[marp:talks/group-meeting.md::5][Start at slide 5]]
+#+end_example
+
+The path is relative to the org file (absolute paths and ~~/~ work too), and
+~::N~ starts at slide /N/. When the org file is exported, the link becomes an
+ordinary link to the ~.md~ file.
+
+* ⚠️ Directives
+
+Marp directives set a deck's theme, pagination, headers and so on. Global
+directives go in the front matter. Local directives go in the front matter
+(for every slide) or in an HTML comment (from that slide on); with a leading
+underscore, ~<!-- _class: lead -->~, they apply to that one slide.
+
+In a Marp deck, Scimax completes directive names as you type them at the
+start of a front matter line or inside ~<!-- -->~, then their values, and
+shows what a directive does when you hover over it.
+
+| Directive                                                                     | Scope  | Values offered                                                      |
+|-------------------------------------------------------------------------------+--------+---------------------------------------------------------------------|
+| ~theme~                                                                       | Global | ~default~, ~gaia~, ~uncover~, and themes from ~scimax.marp.themes~  |
+| ~paginate~                                                                    | Local  | ~true~, ~false~, ~hold~, ~skip~                                     |
+| ~headingDivider~                                                              | Global | ~1~ to ~6~                                                          |
+| ~size~                                                                        | Global | ~16:9~, ~4:3~                                                       |
+| ~math~                                                                        | Global | ~mathjax~, ~katex~                                                  |
+| ~class~                                                                       | Local  | ~lead~, ~invert~                                                    |
+| ~transition~                                                                  | Local  | The HTML slideshow transitions (~fade~, ~push~, ...)                |
+| ~header~, ~footer~, ~color~, ~background*~                                    | Local  | (free text; ~background*~ positions, repeats and sizes are offered) |
+| ~style~, ~lang~, ~title~, ~author~, ~description~, ~keywords~, ~url~, ~image~ | Global | (free text)                                                         |
+
 * ⚠️ Slide Thumbnails
 
 Scimax shows a thumbnail of every slide in the active deck in two places:
@@ -67,8 +205,9 @@ Scimax shows a thumbnail of every slide in the active deck in two places:
   It is often collapsed at the bottom of the Explorer; drag its header to the
   Secondary Side Bar or the bottom panel for more room.
 - The *Slide Sorter*, an editor tab that lays the thumbnails out in a grid,
-  like a slide sorter in PowerPoint or Keynote. Open it with ~Scimax: Open
-  Marp Slide Sorter~ ([[cmd:scimax.marp.openSlideSorter]]) or the layout
+  like a slide sorter in PowerPoint or Keynote. Open it with =Cmd+Shift+V=
+  (=Ctrl+Shift+V=) in the deck, ~Scimax: Open Marp Slide Sorter~
+  ([[cmd:scimax.marp.openSlideSorter]]), or the layout
   button in the deck's editor title bar or the sidebar view's title bar. It
   opens beside the deck, and like any tab it can be split, moved or dragged
   into its own window. It reopens after a reload.
@@ -111,14 +250,14 @@ come from Marp itself, so ~---~, ~***~ and ~___~ separators and the
 ~headingDivider~ directive all split slides exactly as they do in the preview,
 and a ~---~ inside a code block does not.
 
-The view renders with its own copy of Marp Core and reads these Marp for VS
-Code settings so the thumbnails match the preview:
+The view renders with its own copy of Marp Core and follows these settings
+(see [[*Configuration][Configuration]]):
 
 | Setting                         | Effect on thumbnails                                         |
 |---------------------------------+--------------------------------------------------------------|
-| ~markdown.marp.themes~          | Custom theme CSS files (local paths only; URLs are skipped)  |
-| ~markdown.marp.enableHtml~      | Allows all raw HTML; otherwise Marp's safe allowlist applies |
-| ~markdown.marp.mathTypesetting~ | ~mathjax~ (default), ~katex~ or ~off~                        |
+| ~scimax.marp.themes~            | Custom theme CSS files (local paths only; URLs are skipped)  |
+| ~scimax.marp.enableHtml~        | Allows all raw HTML; otherwise Marp's safe allowlist applies |
+| ~scimax.marp.mathTypesetting~   | ~mathjax~ (default), ~katex~ or ~off~                        |
 
 Run ~Scimax: Refresh Marp Slide Thumbnails~ ([[cmd:scimax.marp.refreshSlides]])
 after editing a theme file, since theme files are not watched.
@@ -154,8 +293,10 @@ when the clicked slide is part of the selection.
 
 | Menu item               | Command                                   | Key in the view           |
 |-------------------------+-------------------------------------------+---------------------------|
+| Edit with Claude Code…  | [[cmd:scimax.marp.slide.editWithClaude]]  |                           |
 | Go to Source            | [[cmd:scimax.marp.slide.gotoSource]]      | =Enter= (or double-click) |
 | Reveal in Preview       | [[cmd:scimax.marp.slide.revealInPreview]] |                           |
+| Present from This Slide | [[cmd:scimax.marp.slide.present]]         |                           |
 | Cut Slide               | [[cmd:scimax.marp.slide.cut]]             | =Cmd+X=                   |
 | Copy Slide              | [[cmd:scimax.marp.slide.copy]]            | =Cmd+C=                   |
 | Paste Slide After       | [[cmd:scimax.marp.slide.pasteAfter]]      | =Cmd+V=                   |
@@ -167,7 +308,13 @@ when the clicked slide is part of the selection.
 | Move Slide Down         | [[cmd:scimax.marp.slide.moveDown]]        | =Alt+Down= or =Alt+Right= |
 | Hide Slide              | [[cmd:scimax.marp.slide.hide]]            | =H= (toggles)             |
 | Unhide Slide            | [[cmd:scimax.marp.slide.unhide]]          | =H= (toggles)             |
+| Export Deck             | (submenu of the export commands)          |                           |
 | Delete Slide            | [[cmd:scimax.marp.slide.delete]]          | =Delete= or =Backspace=   |
+
+Reveal in Preview moves the editor cursor to the slide and opens the
+[[*Slide Preview][Slide Preview]] on it. Present from This Slide starts the [[*Slideshow][Slideshow]] there.
+Export Deck lists every export (see [[*Exporting Slides][Exporting Slides]]); it exports the
+whole deck.
 
 On Windows and Linux use =Ctrl= in place of =Cmd=. =Cmd+Z= and =Cmd+Shift+Z=
 in the view undo and redo in the editor. These keys work only while the Marp
@@ -215,6 +362,138 @@ One side effect: Marp treats comments as presenter notes, so the hidden
 slide's text appears in the notes of the slide before it (for example in the
 presenter view of an HTML export).
 
+* ⚠️ The Marp Menu
+
+Right-click in a Marp deck for the *Marp* menu. It acts on the slide under
+the cursor, or on every slide the selection touches. Each change is one edit,
+so one undo reverses it. All of these are in the command palette too, as
+/Scimax Marp: .../.
+
+** Slides
+
+| Item                     | Command                                    | What it does                                                      |
+|--------------------------+--------------------------------------------+-------------------------------------------------------------------|
+| New Slide After This One | [[cmd:scimax.marp.newSlide]]               | An empty slide after the current one, with the cursor in it       |
+| Split Slide at Cursor    | [[cmd:scimax.marp.splitSlide]]             | Everything from the cursor line on becomes a new slide            |
+| Duplicate Slide          | [[cmd:scimax.marp.duplicateCurrentSlide]]  | A copy after it                                                   |
+| Move Slide Up / Down     | [[cmd:scimax.marp.moveCurrentSlideUp]]     | Swap with the slide before or after (also ~moveCurrentSlideDown~) |
+| Hide or Unhide Slide     | [[cmd:scimax.marp.toggleHideCurrentSlide]] | See [[*Hidden slides][Hidden slides]]                             |
+| Delete Slide             | [[cmd:scimax.marp.deleteCurrentSlide]]     | Front matter stays                                                |
+
+** New Slide from Layout
+
+Each adds a slide after the current one, with tab stops to fill in.
+
+| Item                     | Command                               | What it does                                                                                |
+|--------------------------+---------------------------------------+---------------------------------------------------------------------------------------------|
+| Title Slide              | [[cmd:scimax.marp.layout.title]]      | Centered title, subtitle, author and today's date; no page number                           |
+| Section Divider          | [[cmd:scimax.marp.layout.section]]    | Centered heading on inverted colors                                                         |
+| Image Right / Image Left | [[cmd:scimax.marp.layout.imageRight]] | Text beside an image filling 40% of the slide (also ~layout.imageLeft~); asks for the image |
+| Full Image               | [[cmd:scimax.marp.layout.fullImage]]  | An image covering the slide; asks for the image                                             |
+| Two Columns              | [[cmd:scimax.marp.layout.twoColumns]] | Two columns of text; needs HTML in slides, and offers to allow it                           |
+| Quote                    | [[cmd:scimax.marp.layout.quote]]      | A large quotation with its source                                                           |
+| Code                     | [[cmd:scimax.marp.layout.code]]       | A heading and a code block                                                                  |
+| Table                    | [[cmd:scimax.marp.layout.table]]      | A heading and a table                                                                       |
+| Big Number               | [[cmd:scimax.marp.layout.bigNumber]]  | One large figure with a caption                                                             |
+
+** Insert
+
+Inserted at the cursor, as its own paragraph.
+
+| Item           | Command                               | What it does                                                                                           |
+|----------------+---------------------------------------+--------------------------------------------------------------------------------------------------------|
+| Image...       | [[cmd:scimax.marp.insert.image]]      | Pick a file, then inline, inline with a width, background, or left/right split, and an optional filter |
+| Speaker Notes  | [[cmd:scimax.marp.insert.notes]]      | A comment Marp shows as presenter notes                                                                |
+| Fitted Heading | [[cmd:scimax.marp.insert.fitHeading]] | ~# <!-- fit --> Title~, scaled to the slide width; on a heading line it makes that heading fit         |
+| Math Block     | [[cmd:scimax.marp.insert.math]]       | ~$$ ... $$~                                                                                            |
+| Code Block     | [[cmd:scimax.marp.insert.code]]       | A fenced code block                                                                                    |
+| Table          | [[cmd:scimax.marp.insert.table]]      | A three-column table                                                                                   |
+| Build List     | [[cmd:scimax.marp.insert.buildList]]  | ~*~ bullets, shown one at a time in the HTML slideshow                                                 |
+
+** This Slide
+
+Each sets a directive for just this slide, ~<!-- _name: value -->~, at the top of the slide (or of every selected slide), replacing one already there. Choose /(remove)/ or leave the text empty to remove it.
+
+| Item                  | Command                                       | What it does                                                     |
+|-----------------------+-----------------------------------------------+------------------------------------------------------------------|
+| Class...              | [[cmd:scimax.marp.thisSlide.class]]           | ~lead~, ~invert~, or both                                        |
+| Background Color...   | [[cmd:scimax.marp.thisSlide.backgroundColor]] | A CSS color                                                      |
+| Background Image...   | [[cmd:scimax.marp.thisSlide.backgroundImage]] | A file, as ~url(...)~                                            |
+| Text Color...         | [[cmd:scimax.marp.thisSlide.color]]           | A CSS color                                                      |
+| Header... / Footer... | [[cmd:scimax.marp.thisSlide.header]]          | Text at the top or bottom (also ~thisSlide.footer~)              |
+| Page Number...        | [[cmd:scimax.marp.thisSlide.paginate]]        | ~true~, ~false~, ~hold~ or ~skip~                                |
+| Transition...         | [[cmd:scimax.marp.thisSlide.transition]]      | For the HTML slideshow                                           |
+| Scoped Style          | [[cmd:scimax.marp.thisSlide.scopedStyle]]     | A ~<style scoped>~ block for CSS that applies only to this slide |
+
+** Deck
+
+Each sets a key in the front matter, or removes it.
+
+| Item                             | Command                                 | What it does                                           |
+|----------------------------------+-----------------------------------------+--------------------------------------------------------|
+| Theme...                         | [[cmd:scimax.marp.deck.theme]]          | Built-in and custom themes, or a new custom theme      |
+| Size...                          | [[cmd:scimax.marp.deck.size]]           | ~16:9~ or ~4:3~                                        |
+| Page Numbers...                  | [[cmd:scimax.marp.deck.paginate]]       | On every slide                                         |
+| Header... / Footer...            | [[cmd:scimax.marp.deck.header]]         | On every slide (also ~deck.footer~)                    |
+| Heading Divider...               | [[cmd:scimax.marp.deck.headingDivider]] | Start a slide at every heading of this level and above |
+| Math Typesetting...              | [[cmd:scimax.marp.deck.math]]           | ~mathjax~ or ~katex~                                   |
+| Title, Author and Description... | [[cmd:scimax.marp.deck.metadata]]       | Also keywords and language; used by exports            |
+
+** Theme
+
+| Item                 | Command                              | What it does                                                                        |
+|----------------------+--------------------------------------+-------------------------------------------------------------------------------------|
+| Choose Theme...      | [[cmd:scimax.marp.deck.theme]]       | As in Deck                                                                          |
+| New Custom Theme...  | [[cmd:scimax.marp.theme.new]]        | See [[*Custom themes][Custom themes]]                                               |
+| Edit Current Theme   | [[cmd:scimax.marp.theme.edit]]       | Opens the theme's CSS file; for a built-in theme, offers a custom theme based on it |
+| Add Deck Style Block | [[cmd:scimax.marp.theme.styleBlock]] | A ~style: |~ block in the front matter for small CSS changes                        |
+
+** Custom themes
+
+/New Custom Theme.../ asks for a name and a built-in theme to start from, then:
+
+1. writes ~themes/<name>.css~ in the workspace folder (next to the deck
+   outside a workspace), with ~/* @theme <name> */~, ~@import '<base>';~ and
+   commented-out rules for the usual things to change;
+2. adds it to ~scimax.marp.themes~ (in the workspace settings);
+3. sets ~theme: <name>~ in the deck;
+4. opens the CSS beside the deck.
+
+Uncomment and change the rules, and save: the thumbnails and preview update
+on every save of a theme file. The [[https://marpit.marp.app/theme-css][Marpit theme CSS]] reference lists what a
+theme can style.
+
+** Actions
+
+The last part of the menu has Present, Present from Current Slide, Slide
+Preview, Slide Sorter, Edit with Claude Code and Export Deck, then Marp Help.
+
+* ⚠️ Editing Slides with Claude Code
+
+With the [[https://marketplace.visualstudio.com/items?itemName=anthropic.claude-code][Claude Code]] extension installed, right-click a thumbnail (or several
+selected ones) and choose *Edit with Claude Code…*. Claude Code opens with a
+prompt already filled in that names the deck, the slides and their lines,
+and ends with "Change: ", for example:
+
+#+begin_example
+In the Marp slide deck talks/deck.md, edit slide 3 (lines 25-38). Change
+only that slide and keep the rest of the deck as it is. Change:
+#+end_example
+
+Type what you want ("split this into two columns with the figure on the
+right") and send it. Claude Code reads the deck and edits it with its own
+tools, showing you the changes, and you can keep the conversation going. The
+thumbnails and preview update as the file changes.
+
+In the ~.md~ file, *Scimax: Edit Marp Slide with Claude Code*
+([[cmd:scimax.marp.editSlideWithClaude]], also in the editor's right-click menu)
+does the same for the slide under the cursor, or every slide the selection
+touches. Unsaved changes are saved first, since Claude Code reads the file.
+
+Claude Code has no command that takes a prompt from another extension, so
+this uses its ~vscode://anthropic.claude-code/open?prompt=~ link: the prompt
+is filled in but not sent, and it opens in a Claude Code tab.
+
 * ⚠️ Exporting Slides
 
 Press =C-c C-e= in a Marp deck (or click the export button in the Marp Slides
@@ -248,8 +527,8 @@ answer.
 PDF, PowerPoint and image exports render the slides in Google Chrome,
 Microsoft Edge or Firefox, so one of them must be installed. Local images are
 included when the workspace is trusted (see ~scimax.marp.allowLocalFiles~).
-The export reads ~markdown.marp.themes~ and ~markdown.marp.enableHtml~, so it
-matches the preview. Marp CLI's output is in the /Scimax Marp Export/ output
+The export follows ~scimax.marp.themes~ and ~scimax.marp.enableHtml~, so it
+matches the thumbnails. Marp CLI's output is in the /Scimax Marp Export/ output
 channel.
 
 ** Which PowerPoint
@@ -295,9 +574,24 @@ upload the file (New > File upload), then open it with Google Slides.
 | ~scimax.marp.allowLocalFiles~    | ~true~  | Include local images (~--allow-local-files~), trusted workspaces only |
 | ~scimax.marp.pandocReferenceDoc~ | (empty) | PowerPoint template for the Pandoc export (=d=)                       |
 
-* ⚠️ Configuration
+* 👀 Configuration
 
-The feature follows VS Code's own setting for double-clicking in the Markdown
+| Setting                        | Default   | Effect                                                     |
+|--------------------------------+-----------+------------------------------------------------------------|
+| ~scimax.marp.themes~           | ~[]~      | Custom theme CSS files for thumbnails, preview and exports |
+| ~scimax.marp.enableHtml~       | ~false~   | Allow all raw HTML in slides                               |
+| ~scimax.marp.mathTypesetting~  | ~mathjax~ | ~mathjax~, ~katex~ or ~off~                                |
+
+Each falls back to Marp for VS Code's ~markdown.marp.themes~,
+~markdown.marp.enableHtml~ or ~markdown.marp.mathTypesetting~ when it is not
+set. A theme file names itself with a ~/* @theme name */~ comment, and a deck
+uses it with ~theme: name~. The export settings are listed under
+[[*Export settings][Export settings]].
+
+** Double-click in the Markdown preview
+
+Double-click in the Markdown preview (with Marp for VS Code) follows VS
+Code's own setting for double-clicking in the Markdown
 preview. Current VS Code releases turn it off by default, so enable it once in
 your user settings:
 
@@ -314,6 +608,20 @@ check. It also turns on VS Code's own (approximate) double-click for ordinary
 Markdown previews.
 
 * ⚠️ How It Works
+
+** Slides in the Markdown preview
+
+Scimax contributes a markdown-it plugin (~markdown.markdownItPlugins~,
+~src/marp/marpPreviewPlugin.ts~). For a file with ~marp: true~ in its front
+matter it parses and renders with Marp Core instead of plain markdown-it, adds
+VS Code's ~code-line~ class and ~data-line~ source line to each block (for
+scroll sync and double-click), and puts the deck's theme CSS in front. The
+preview script ~media/marp/marpPreviewMode.js~ then turns off VS Code's own
+Markdown styles for that preview, since they would leak into the slides, and
+~media/marp/marpPreviewSlides.css~ lays the slides out. Marp Core's browser
+script (also a preview script) fits headings marked ~<!-- fit -->~.
+
+** Double-click in the Markdown preview
 
 Scimax contributes a preview script (~media/marp/marpPreview.js~) through the
 ~markdown.previewScripts~ contribution point. Marp already tags each rendered

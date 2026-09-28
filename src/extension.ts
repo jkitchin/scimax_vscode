@@ -40,6 +40,8 @@ import { registerTaskCommands } from './markdown/taskCommands';
 import { registerMarpCommands } from './marp/marpCommands';
 import { registerSlideThumbnailView } from './marp/slideThumbnailView';
 import { registerMarpExportCommands } from './marp/marpExportCommands';
+import { marpPreviewPlugin } from './marp/marpPreviewPlugin';
+import { marpPreviewRenderOptions } from './marp/marpSettings';
 import { mystPreviewPlugin } from './markdown/mystPreview';
 import { registerTimestampCommands } from './org/timestampProvider';
 import { registerTableCommands, isInTable } from './org/tableProvider';
@@ -1235,9 +1237,12 @@ async function activateScimax(context: vscode.ExtensionContext) {
          * to render MyST directives and roles.
          */
         extendMarkdownIt(md: any) {
-            return md.use(mystPreviewPlugin, {
-                isEnabled: () => vscode.workspace.getConfiguration('scimax.markdown').get<boolean>('myst.enabled', true),
-            });
+            return md
+                .use(mystPreviewPlugin, {
+                    isEnabled: () => vscode.workspace.getConfiguration('scimax.markdown').get<boolean>('myst.enabled', true),
+                })
+                // Marp decks render as slides, without the Marp for VS Code extension.
+                .use(marpPreviewPlugin, { renderOptions: marpPreviewRenderOptions });
         },
 
         /**

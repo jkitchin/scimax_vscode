@@ -17,9 +17,9 @@ export interface RenderedDeck {
 }
 
 export interface RenderOptions {
-    /** Allow all raw HTML (Marp's `markdown.marp.enableHtml`). Otherwise Marp's safe allowlist applies. */
+    /** Allow all raw HTML (`scimax.marp.enableHtml`). Otherwise Marp's safe allowlist applies. */
     enableHtml?: boolean;
-    /** Math typesetting (Marp's `markdown.marp.mathTypesetting`). */
+    /** Math typesetting (`scimax.marp.mathTypesetting`). */
     math?: 'mathjax' | 'katex' | 'off';
     /** Contents of custom theme CSS files. */
     themes?: string[];
@@ -71,9 +71,8 @@ export function slideStarts(text: string): number[] {
         .map(token => token.map![0]);
 }
 
-/** Render a deck with each slide as an inline SVG (`<svg data-marpit-svg>`). */
-export function renderDeck(text: string, options: RenderOptions = {}): RenderedDeck {
-    const MarpClass = loadMarp();
+/** A Marp instance with the deck's options and custom themes. */
+function newMarp<T extends Marp>(MarpClass: new (options?: MarpOptions) => T, options: RenderOptions): T {
     const marp = new MarpClass({
         inlineSVG: true,
         // `undefined` keeps Marp's default allowlist of safe HTML elements.
@@ -87,7 +86,29 @@ export function renderDeck(text: string, options: RenderOptions = {}): RenderedD
             // A theme without a valid `@theme` comment is skipped, as Marp does.
         }
     }
+    return marp;
+}
 
-    const { html, css } = marp.render(text);
+/** Render a deck with each slide as an inline SVG (`<svg data-marpit-svg>`). */
+export function renderDeck(text: string, options: RenderOptions = {}): RenderedDeck {
+    const { html, css } = newMarp(loadMarp(), options).render(text);
     return { html, css };
+}
+
+/** A Marp instance that can also give the CSS for the deck it last parsed. */
+export type PreviewMarp = Marp & { deckStyle(): string };
+
+/**
+ * A Marp instance for the Markdown preview, which parses and renders tokens
+ * itself: after parsing a deck, `deckStyle()` gives the theme CSS for it.
+ */
+export function createPreviewMarp(options: RenderOptions = {}): PreviewMarp {
+    const Base = loadMarp();
+    class WithDeckStyle extends Base {
+        deckStyle(): string {
+            // Both are protected in Marpit's types, hence the subclass.
+            return this.renderStyle(this.lastGlobalDirectives?.theme);
+        }
+    }
+    return newMarp(WithDeckStyle, options);
 }

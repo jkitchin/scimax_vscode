@@ -668,6 +668,27 @@ export const marpExportMenu: HydraMenuDefinition = {
     hint: 'Export slides via Marp CLI',
     groups: [
         {
+            title: 'Present',
+            items: [
+                {
+                    key: 'x',
+                    label: 'Slideshow',
+                    description: 'Present in the browser (F full screen, P presenter view)',
+                    icon: 'play',
+                    exit: 'exit',
+                    action: 'scimax.marp.present',
+                },
+                {
+                    key: 'c',
+                    label: 'Slideshow from current slide',
+                    description: 'Start at the slide under the cursor',
+                    icon: 'debug-continue',
+                    exit: 'exit',
+                    action: 'scimax.marp.presentFromCurrent',
+                },
+            ],
+        },
+        {
             title: 'Documents',
             items: [
                 {
@@ -751,6 +772,14 @@ export const marpExportMenu: HydraMenuDefinition = {
                     icon: 'note',
                     exit: 'exit',
                     action: 'scimax.marp.exportNotes',
+                },
+                {
+                    key: '?',
+                    label: 'Marp help',
+                    description: 'Online Marp documentation and the Scimax Marp guide',
+                    icon: 'question',
+                    exit: 'exit',
+                    action: 'scimax.marp.help',
                 },
                 {
                     key: 'm',

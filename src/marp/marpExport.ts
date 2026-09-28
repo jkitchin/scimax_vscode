@@ -42,9 +42,9 @@ export const EXIT_LIBREOFFICE_NOT_FOUND = 5;
 export interface MarpArgOptions {
     /** Allow local images and files (only for trusted workspaces). */
     allowLocalFiles?: boolean;
-    /** Allow raw HTML in the Markdown (`markdown.marp.enableHtml`). */
+    /** Allow raw HTML in the Markdown (`scimax.marp.enableHtml`). */
     enableHtml?: boolean;
-    /** Theme CSS files (`markdown.marp.themes`). */
+    /** Theme CSS files (`scimax.marp.themes`). */
     themeFiles?: string[];
     /** Browser executable to use instead of the one Marp finds. */
     browserPath?: string;
@@ -313,4 +313,44 @@ export function buildPandocPptxArgs(outputPath: string, resourceDir: string, ref
         args.push('--reference-doc', referenceDoc);
     }
     return args;
+}
+
+// =============================================================================
+// Slideshow
+// =============================================================================
+
+/**
+ * Make Marp's HTML slideshow work from a temporary file: relative images
+ * resolve against the deck's folder (`deckFolderUrl`, a file: URL ending in
+ * "/"), and the show opens at `startSlide` (1-based) when given.
+ */
+export function prepareSlideshowHtml(html: string, deckFolderUrl: string, startSlide?: number): string {
+    const escaped = deckFolderUrl.replace(/&/g, '&amp;').replace(/"/g, '&quot;');
+    let inject = `<base href="${escaped}">`;
+    if (startSlide !== undefined && Number.isInteger(startSlide) && startSlide > 1) {
+        // Marp's slideshow shows the slide named by the URL hash.
+        inject += `<script>if (!location.hash) { history.replaceState(null, '', '#${startSlide}'); }</script>`;
+    }
+    const head = /<head(\s[^>]*)?>/i.exec(html);
+    if (!head) {
+        return inject + html;
+    }
+    const at = head.index + head[0].length;
+    return html.slice(0, at) + inject + html.slice(at);
+}
+
+/**
+ * Parse a `marp:` org link path, `deck.md` or `deck.md::3` (start at slide
+ * 3), into the arguments of `scimax.marp.present`. A relative path is taken
+ * from the folder of the file containing the link; `~` is the home folder.
+ */
+export function marpLinkArgs(linkPath: string, linkingFile: string, home: string): { file: string; slide?: number } {
+    const match = /^(.*?)::(\d+)$/.exec(linkPath.trim());
+    let file = match ? match[1] : linkPath.trim();
+    if (file === '~' || file.startsWith('~/')) {
+        file = path.join(home, file.slice(1));
+    } else if (!path.isAbsolute(file)) {
+        file = path.resolve(path.dirname(linkingFile), file);
+    }
+    return match ? { file, slide: Number(match[2]) } : { file };
 }

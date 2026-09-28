@@ -257,8 +257,11 @@ org-mode, markdown, and LaTeX files with consistent behavior.
 | C-c C-e m m   | Export to Markdown            |
 
 In a Marp deck (Markdown with ~marp: true~), =C-c C-e= opens the Marp slide
-export menu instead (PDF, PowerPoint, Google Slides, HTML, images). See
-[[file:44-marp.org::*Exporting Slides][Exporting Slides]].
+export menu instead (PDF, PowerPoint, Google Slides, HTML, images). There
+=C-c C-e x= presents the deck as a slideshow, =C-c C-e c= presents from the
+current slide, and =C-c C-e ?= opens Marp help. =Cmd+Shift+V= (=Ctrl+Shift+V=) opens the Slide Sorter in place
+of the Markdown preview; =Cmd+K V= still opens the Markdown preview beside the
+editor. See [[file:44-marp.org::*Exporting Slides][Exporting Slides]] and [[file:44-marp.org::*Slideshow][Slideshow]].
 
 * Links
 
@@ -409,24 +412,26 @@ Keys that work while the Marp Slides view or the Slide Sorter has focus. They
 are handled by the view, so they do not appear in Keyboard Shortcuts. Use
 =Ctrl= in place of =Cmd= on Windows and Linux. See [[file:44-marp.org::*Editing Slides][Editing Slides]].
 
-| Key                 | Action                                                           |
-|---------------------+------------------------------------------------------------------|
-| Left / Right        | Select previous / next slide                                     |
-| Up / Down           | Select the slide a row up / down (previous / next in one column) |
-| Shift + arrow keys  | Extend the selection                                             |
-| Home / End          | Select first / last slide                                        |
-| Cmd+A               | Select all slides                                                |
-| Enter               | Go to the slide's source                                         |
-| Cmd+X / Cmd+C       | Cut / copy slides                                                |
-| Cmd+V / Cmd+Alt+V   | Paste slides after / before                                      |
-| Cmd+Enter           | Insert new slide after                                           |
-| Cmd+Shift+Enter     | Insert new slide before                                          |
-| Cmd+D               | Duplicate slides                                                 |
-| Alt+Up / Alt+Down   | Move slides up / down (also Alt+Left / Alt+Right)                |
-| H                   | Hide or unhide slides                                            |
-| Delete / Backspace  | Delete slides                                                    |
-| Cmd+Z / Cmd+Shift+Z | Undo / redo in the editor                                        |
-| + / - / 0           | Larger / smaller / default thumbnails                            |
+| Key                        | Action                                                           |
+|----------------------------+------------------------------------------------------------------|
+| Left / Right               | Select previous / next slide                                     |
+| Up / Down                  | Select the slide a row up / down (previous / next in one column) |
+| Shift + arrow keys         | Extend the selection                                             |
+| Home / End                 | Select first / last slide                                        |
+| Cmd+A                      | Select all slides                                                |
+| Enter                      | Go to the slide's source                                         |
+| Cmd+X / Cmd+C              | Cut / copy slides                                                |
+| Cmd+V / Cmd+Alt+V          | Paste slides after / before                                      |
+| Cmd+Enter                  | Insert new slide after                                           |
+| Cmd+Shift+Enter            | Insert new slide before                                          |
+| Cmd+D                      | Duplicate slides                                                 |
+| Alt+Up / Alt+Down          | Move slides up / down (also Alt+Left / Alt+Right)                |
+| H                          | Hide or unhide slides                                            |
+| Delete / Backspace         | Delete slides                                                    |
+| Cmd+Z / Cmd+Shift+Z        | Undo / redo in the editor                                        |
+| + / - / 0                  | Larger / smaller / default thumbnails                            |
+| V                          | Switch between the grid and one slide (the slide preview)        |
+| Left / Right in slide mode | Previous / next slide (also Up / Down, Page Up / Down, Space)    |
 
 * Edit Marks (Track Changes)
 

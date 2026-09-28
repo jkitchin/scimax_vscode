@@ -8,6 +8,10 @@
  * cards out in a grid whose thumbnail width is set by the zoom control, and
  * keeps a selection of cards (click, Cmd/Ctrl-click, Shift-click, arrow keys).
  *
+ * In slide mode only one card is shown, fitted to the view: the slide under
+ * the editor cursor, or the one stepped to with the arrow keys. This is the
+ * slide preview.
+ *
  * Double-click, the context menu (contributed by the extension through each
  * card's data-vscode-context), drag and drop and the keyboard shortcuts below
  * all send the selection to the extension, which edits the Markdown.
@@ -44,6 +48,13 @@
     let anchor = -1;
     /** Card that has keyboard focus. */
     let focus = -1;
+    /** 'grid' or 'slide'. */
+    let mode = body.dataset.mode === 'slide' ? 'slide' : 'grid';
+    /** Card shown in slide mode. */
+    let shown = 0;
+    /** Deck name and slide count for the toolbar. */
+    let deckTitle = '';
+    let hiddenCount = 0;
 
     function cards() {
         return /** @type {HTMLElement[]} */ (Array.from(container.children));
@@ -89,6 +100,69 @@
             setZoom(Number(zoomInput.value) * Math.exp(-event.deltaY / 200));
         }
     }, { passive: false });
+
+    // -------------------------------------------------------------------------
+    // Grid or single slide
+    // -------------------------------------------------------------------------
+
+    function updateCount() {
+        const total = cards().length;
+        if (total === 0) {
+            count.textContent = '';
+        } else if (mode === 'slide') {
+            count.textContent = `Slide ${shown + 1} of ${total}` + (cards()[shown]?.classList.contains('hidden-slide') ? ' (hidden)' : '');
+        } else {
+            count.textContent = `${deckTitle}: ${total} slide${total === 1 ? '' : 's'}`
+                + (hiddenCount > 0 ? ` (${hiddenCount} hidden)` : '');
+        }
+    }
+
+    /** @param {number} index */
+    function showSlide(index) {
+        const all = cards();
+        if (all.length === 0) {
+            return;
+        }
+        shown = Math.max(0, Math.min(all.length - 1, index));
+        all.forEach((card, i) => card.classList.toggle('shown', i === shown));
+        updateCount();
+    }
+
+    /**
+     * @param {string} next 'grid' or 'slide'
+     * @param {boolean} [save] remember it (in the extension, per surface)
+     */
+    function setMode(next, save = true) {
+        mode = next === 'slide' ? 'slide' : 'grid';
+        body.classList.toggle('slide-mode', mode === 'slide');
+        body.classList.toggle('grid-mode', mode === 'grid');
+        /** @type {HTMLElement} */ (document.getElementById('modeGrid')).classList.toggle('on', mode === 'grid');
+        /** @type {HTMLElement} */ (document.getElementById('modeSlide')).classList.toggle('on', mode === 'slide');
+        if (mode === 'slide') {
+            showSlide(focus >= 0 ? focus : shown);
+        } else {
+            updateCount();
+            if (focus >= 0) {
+                scrollToCard(focus);
+            }
+        }
+        if (save) {
+            vscode.postMessage({ type: 'mode', mode });
+        }
+    }
+
+    /** @param {number} delta */
+    function stepSlide(delta) {
+        const total = cards().length;
+        if (total > 0) {
+            selectCard(Math.max(0, Math.min(total - 1, shown + delta)));
+        }
+    }
+
+    /** @type {HTMLElement} */ (document.getElementById('modeGrid')).addEventListener('click', () => setMode('grid'));
+    /** @type {HTMLElement} */ (document.getElementById('modeSlide')).addEventListener('click', () => setMode('slide'));
+    /** @type {HTMLElement} */ (document.getElementById('prev')).addEventListener('click', () => stepSlide(-1));
+    /** @type {HTMLElement} */ (document.getElementById('next')).addEventListener('click', () => stepSlide(1));
 
     // -------------------------------------------------------------------------
     // Selection
@@ -144,7 +218,14 @@
      */
     function setActive(index) {
         cards().forEach((card, i) => card.classList.toggle('active', i === index));
-        scrollToCard(index);
+        if (mode === 'slide' && index >= 0) {
+            // The preview follows the editor cursor.
+            focus = anchor = index;
+            setSelection([index]);
+            showSlide(index);
+        } else {
+            scrollToCard(index);
+        }
     }
 
     /**
@@ -175,6 +256,9 @@
         focus = index;
         paintSelection();
         scrollToCard(index);
+        if (mode === 'slide') {
+            showSlide(index);
+        }
     }
 
     /** Number of cards in a row of the grid. */
@@ -226,6 +310,11 @@
             card.draggable = true;
             card.setAttribute('role', 'option');
             card.title = `Slide ${index + 1}${hidden ? ' (hidden)' : ''}: double-click to edit, drag to move`;
+            // Slide mode fits the slide to the view by its aspect ratio.
+            const viewBox = (svg.getAttribute('viewBox') || '0 0 1280 720').split(/\s+/).map(Number);
+            if (viewBox[2] > 0 && viewBox[3] > 0) {
+                card.style.setProperty('--aspect', String(viewBox[2] / viewBox[3]));
+            }
             card.dataset.vscodeContext = JSON.stringify({
                 webviewSection: 'slide',
                 surface,
@@ -257,9 +346,8 @@
         if (newCards.length === 0) {
             status.textContent = 'This deck has no slides.';
         }
-        const hiddenCount = message.hidden.filter(Boolean).length;
-        count.textContent = `${message.title}: ${newCards.length} slide${newCards.length === 1 ? '' : 's'}`
-            + (hiddenCount > 0 ? ` (${hiddenCount} hidden)` : '');
+        hiddenCount = message.hidden.filter(Boolean).length;
+        deckTitle = message.title;
 
         const scrollTop = document.scrollingElement ? document.scrollingElement.scrollTop : 0;
         container.replaceChildren(...newCards);
@@ -275,10 +363,17 @@
             focus = anchor = newCards.length - 1;
         }
         paintSelection();
-        setActive(message.active);
-        if (current.length > 0) {
-            scrollToCard(focus);
+        if (mode === 'slide') {
+            // Keep showing the same slide across re-renders while typing.
+            showSlide(current.length > 0 ? focus : (message.active >= 0 ? message.active : shown));
+            cards().forEach((card, i) => card.classList.toggle('active', i === message.active));
+        } else {
+            setActive(message.active);
+            if (current.length > 0) {
+                scrollToCard(focus);
+            }
         }
+        updateCount();
     }
 
     // -------------------------------------------------------------------------
@@ -440,8 +535,24 @@
         const total = cards().length;
         const mod = isMac ? event.metaKey : event.ctrlKey;
 
+        if (!mod && !event.altKey && event.code === 'KeyV' && !event.shiftKey) {
+            event.preventDefault();
+            setMode(mode === 'grid' ? 'slide' : 'grid');
+            return;
+        }
+
+        // In slide mode every arrow (and Space, Page Up/Down) steps one slide.
+        if (mode === 'slide' && !mod && !event.altKey && !event.shiftKey) {
+            const delta = { ArrowLeft: -1, ArrowUp: -1, PageUp: -1, ArrowRight: 1, ArrowDown: 1, PageDown: 1, ' ': 1 }[event.key];
+            if (delta !== undefined) {
+                event.preventDefault();
+                stepSlide(delta);
+                return;
+            }
+        }
+
         // Zoom: plain + - 0, since Cmd+= and Cmd+- zoom the whole window.
-        if (!mod && !event.altKey) {
+        if (!mod && !event.altKey && mode === 'grid') {
             if (event.key === '+' || event.key === '=') { event.preventDefault(); zoomBy(ZOOM_STEP); return; }
             if (event.key === '-' || event.key === '_') { event.preventDefault(); zoomBy(1 / ZOOM_STEP); return; }
             if (event.key === '0') { event.preventDefault(); setZoom(ZOOM_DEFAULT); return; }
@@ -484,6 +595,9 @@
             case 'active':
                 setActive(message.index);
                 break;
+            case 'setMode':
+                setMode(message.mode, false);
+                break;
             case 'empty':
                 showStatus('Open a Marp deck (front matter marp: true) to see its slides.');
                 break;
@@ -493,5 +607,6 @@
         }
     });
 
+    setMode(mode, false);
     vscode.postMessage({ type: 'ready' });
 })();

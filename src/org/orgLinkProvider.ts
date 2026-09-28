@@ -4,6 +4,8 @@ import * as fs from 'fs';
 import { getDatabase } from '../database/lazyDb';
 import { slugifyAnchor } from '../parser/orgAnchors';
 import { extractCiteKeysFromPath } from '../references/citationParser';
+import { marpLinkArgs } from '../marp/marpExport';
+import * as os from 'os';
 
 /**
  * Path of a citation written as an org link, e.g. `cite:&key` in [[cite:&key]].
@@ -259,6 +261,12 @@ export class OrgLinkProvider implements vscode.DocumentLinkProvider {
             return vscode.Uri.parse(`https://doi.org/${target.slice(4)}`);
         }
 
+        // Marp slideshow links: marp:deck.md or marp:deck.md::3 (start at slide 3)
+        if (target.startsWith('marp:')) {
+            const args = marpLinkArgs(target.slice(5), document.uri.fsPath, os.homedir());
+            return vscode.Uri.parse(`command:scimax.marp.present?${encodeURIComponent(JSON.stringify(args))}`);
+        }
+
         // Command links: cmd:command.name or cmd:command.name?args - execute VS Code commands
         // Supports: cmd:command (no args), cmd:command?stringArg, cmd:command?{"json":"args"}
         if (target.startsWith('cmd:')) {
@@ -470,6 +478,9 @@ export class OrgLinkProvider implements vscode.DocumentLinkProvider {
         }
         if (target.startsWith('doi:')) {
             return `Open DOI: ${target.slice(4)}`;
+        }
+        if (target.startsWith('marp:')) {
+            return `Present Marp slides: ${target.slice(5)}`;
         }
         // Excalidraw files
         if (isExcalidrawFile(target)) {

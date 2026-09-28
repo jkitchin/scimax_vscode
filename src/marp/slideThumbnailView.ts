@@ -17,7 +17,10 @@ import * as crypto from 'crypto';
 import * as path from 'path';
 import * as vscode from 'vscode';
 import { isMarpText, renderDeck, slideStarts } from './slideRenderer';
-import { marpHtmlEnabled, marpThemeUris } from './marpSettings';
+import { setCurrentDeckSource } from './currentDeck';
+import { editSlidesWithClaudeCode } from './claudeEdit';
+import { replaceDocumentText } from './deckEdits';
+import { affectsMarpRendering, marpHtmlEnabled, marpMathTypesetting, marpThemeUris } from './marpSettings';
 import {
     assembleDeck, Deck, DeckEdit, deleteSlides, duplicateSlides, emptySlide, insertSlides,
     moveSlides, moveSlidesTo, normalizeSelection, parseDeck, setHidden, slideAtLine, slidesFromText, slidesToText,
@@ -34,13 +37,16 @@ const ZOOM_DEFAULT: Record<SurfaceKind, number> = { sidebar: 640, sorter: 240 };
 
 /** Operations on the selected slides, from the context menu or the keyboard shortcuts. */
 const SLIDE_OPERATIONS = [
-    'gotoSource', 'revealInPreview', 'cut', 'copy', 'pasteAfter', 'pasteBefore',
+    'gotoSource', 'revealInPreview', 'present', 'editWithClaude', 'cut', 'copy', 'pasteAfter', 'pasteBefore',
     'duplicate', 'insertAfter', 'insertBefore', 'moveUp', 'moveDown',
     'hide', 'unhide', 'toggleHidden', 'delete', 'undo', 'redo',
 ] as const;
 type SlideOperation = typeof SLIDE_OPERATIONS[number];
 
 type SurfaceKind = 'sidebar' | 'sorter';
+
+/** Grid of thumbnails, or one slide fitted to the view (the slide preview). */
+type ViewMode = 'grid' | 'slide';
 
 /** Messages the webview may send. Anything else is ignored. */
 type WebviewMessage =
@@ -49,7 +55,8 @@ type WebviewMessage =
     | { type: 'select'; indices: number[] }
     | { type: 'command'; command: SlideOperation; indices: number[] }
     | { type: 'moveTo'; indices: number[]; target: number }
-    | { type: 'zoom'; width: number };
+    | { type: 'zoom'; width: number }
+    | { type: 'mode'; mode: ViewMode };
 
 /** What VS Code passes to a `webview/context` command: the thumbnail's `data-vscode-context`. */
 interface ThumbnailContext {
@@ -87,6 +94,13 @@ class MarpDeckTracker implements vscode.Disposable {
         this.disposables.push(
             this.changed,
             vscode.window.onDidChangeActiveTextEditor(editor => this.follow(editor)),
+            // Adding or removing `marp: true` switches the file over without reopening it.
+            vscode.workspace.onDidChangeTextDocument(event => {
+                const editor = vscode.window.activeTextEditor;
+                if (editor && event.document === editor.document && event.contentChanges.some(c => c.range.start.line < 50)) {
+                    this.follow(editor);
+                }
+            }),
             vscode.workspace.onDidCloseTextDocument(document => {
                 if (document === this.document) {
                     this.set(undefined);
@@ -172,8 +186,14 @@ class SlideWebviewController implements vscode.Disposable {
                 }
             }),
             vscode.workspace.onDidChangeConfiguration(event => {
-                if (event.affectsConfiguration('markdown.marp')) {
+                if (affectsMarpRendering(event)) {
                     this.scheduleRender();
+                }
+            }),
+            // Saving one of the deck's theme files updates the slides.
+            vscode.workspace.onDidSaveTextDocument(saved => {
+                if (this.document && marpThemeUris(this.document).some(uri => uri.fsPath === saved.uri.fsPath)) {
+                    this.scheduleRender(0);
                 }
             })
         );
@@ -182,6 +202,12 @@ class SlideWebviewController implements vscode.Disposable {
 
     public refresh(): void {
         this.scheduleRender(0);
+    }
+
+    /** Switch between the grid and the single-slide preview. */
+    public async setMode(mode: ViewMode): Promise<void> {
+        await this.globalState.update(this.modeKey(), mode);
+        void this.surface.webview.postMessage({ type: 'setMode', mode });
     }
 
     /** Called when the webview becomes visible again. */
@@ -239,6 +265,14 @@ class SlideWebviewController implements vscode.Disposable {
         return `scimax.marp.thumbnailWidth.${this.surface.kind}`;
     }
 
+    private modeKey(): string {
+        return `scimax.marp.viewMode.${this.surface.kind}`;
+    }
+
+    private mode(): ViewMode {
+        return this.globalState.get<ViewMode>(this.modeKey(), 'grid') === 'slide' ? 'slide' : 'grid';
+    }
+
     private zoom(): number {
         const width = this.globalState.get<number>(this.zoomKey(), ZOOM_DEFAULT[this.surface.kind]);
         return Math.max(ZOOM_MIN, Math.min(ZOOM_MAX, width));
@@ -261,7 +295,6 @@ class SlideWebviewController implements vscode.Disposable {
             return;
         }
 
-        const config = vscode.workspace.getConfiguration('markdown.marp', document.uri);
         try {
             const text = document.getText();
             const deck = parseText(text);
@@ -271,7 +304,7 @@ class SlideWebviewController implements vscode.Disposable {
             const displayText = hidden.some(Boolean) ? assembleDeck(deck, { revealHidden: true }) : text;
             const rendered = renderDeck(displayText, {
                 enableHtml: marpHtmlEnabled(document),
-                math: config.get<'mathjax' | 'katex' | 'off'>('mathTypesetting', 'mathjax'),
+                math: marpMathTypesetting(document),
                 themes: await this.loadThemes(document),
             });
             if (document !== this.document) {
@@ -300,7 +333,7 @@ class SlideWebviewController implements vscode.Disposable {
         }
     }
 
-    /** Contents of the theme files in `markdown.marp.themes`. Missing files are skipped. */
+    /** Contents of the theme files in `scimax.marp.themes`. Missing files are skipped. */
     private async loadThemes(document: vscode.TextDocument): Promise<string[]> {
         const results: string[] = [];
         for (const uri of marpThemeUris(document)) {
@@ -347,6 +380,11 @@ class SlideWebviewController implements vscode.Disposable {
                     await this.moveTo(message.indices.filter(Number.isInteger), message.target);
                 }
                 break;
+            case 'mode':
+                if (message.mode === 'grid' || message.mode === 'slide') {
+                    await this.globalState.update(this.modeKey(), message.mode);
+                }
+                break;
             case 'zoom':
                 if (Number.isFinite(message.width)) {
                     const width = Math.round(Math.max(ZOOM_MIN, Math.min(ZOOM_MAX, message.width)));
@@ -385,10 +423,21 @@ class SlideWebviewController implements vscode.Disposable {
                 return;
             case 'revealInPreview':
                 if (indices.length > 0) {
+                    // The slide preview follows the editor cursor.
                     await this.gotoSlide(first, deck);
-                    await vscode.commands.executeCommand('scimax.marp.revealInPreview');
+                    await vscode.commands.executeCommand('scimax.marp.openSlidePreview');
                 }
                 return;
+            case 'editWithClaude':
+                await editSlidesWithClaudeCode(document, indices);
+                return;
+            case 'present': {
+                // The slideshow numbers only the slides it shows.
+                const at = indices.length > 0 ? first : 0;
+                const slide = deck.slides.slice(0, at).filter(s => !s.hidden).length + 1;
+                await vscode.commands.executeCommand('scimax.marp.present', { file: document.uri.fsPath, slide });
+                return;
+            }
             case 'copy':
             case 'cut':
                 if (indices.length === 0) {
@@ -461,30 +510,7 @@ class SlideWebviewController implements vscode.Disposable {
      * changed so the rest of the file (and its undo history) is untouched.
      */
     private async apply(document: vscode.TextDocument, oldText: string, edit: DeckEdit): Promise<boolean> {
-        const newText = assembleDeck(edit.deck);
-        if (newText === oldText) {
-            return false;
-        }
-        let prefix = 0;
-        const maxPrefix = Math.min(oldText.length, newText.length);
-        while (prefix < maxPrefix && oldText[prefix] === newText[prefix]) {
-            prefix++;
-        }
-        let suffix = 0;
-        const maxSuffix = maxPrefix - prefix;
-        while (suffix < maxSuffix
-            && oldText[oldText.length - 1 - suffix] === newText[newText.length - 1 - suffix]) {
-            suffix++;
-        }
-
-        const workspaceEdit = new vscode.WorkspaceEdit();
-        workspaceEdit.replace(
-            document.uri,
-            new vscode.Range(document.positionAt(prefix), document.positionAt(oldText.length - suffix)),
-            newText.slice(prefix, newText.length - suffix)
-        );
-        if (!(await vscode.workspace.applyEdit(workspaceEdit))) {
-            vscode.window.showWarningMessage('Could not edit the slides.');
+        if (!(await replaceDocumentText(document, oldText, assembleDeck(edit.deck)))) {
             return false;
         }
         this.selection = edit.selection;
@@ -544,10 +570,16 @@ class SlideWebviewController implements vscode.Disposable {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="${mediaUri('thumbnails.css')}">
 </head>
-<body class="${kind}" data-surface="${kind}" data-zoom="${this.zoom()}"
+<body class="${kind}" data-surface="${kind}" data-mode="${this.mode()}" data-zoom="${this.zoom()}"
       data-zoom-min="${ZOOM_MIN}" data-zoom-max="${ZOOM_MAX}" data-zoom-default="${ZOOM_DEFAULT[kind]}"
       data-vscode-context='${context}'>
     <div class="toolbar">
+        <span class="modes" role="group" aria-label="View">
+            <button id="modeGrid" class="mode-button" title="All slides (V)" aria-label="All slides">&#9638;</button>
+            <button id="modeSlide" class="mode-button" title="One slide, following the cursor (V)" aria-label="One slide">&#9645;</button>
+        </span>
+        <button id="prev" class="nav-button" title="Previous slide (Left)" aria-label="Previous slide">&lsaquo;</button>
+        <button id="next" class="nav-button" title="Next slide (Right)" aria-label="Next slide">&rsaquo;</button>
         <span id="count" class="count"></span>
         <button id="zoomOut" class="zoom-button" title="Smaller thumbnails (-)" aria-label="Smaller thumbnails">&minus;</button>
         <input id="zoom" class="zoom" type="range" min="${ZOOM_MIN}" max="${ZOOM_MAX}" step="10"
@@ -573,19 +605,27 @@ class SlideSorter implements vscode.WebviewPanelSerializer, vscode.Disposable {
         private readonly tracker: MarpDeckTracker
     ) {}
 
-    public open(): void {
+    public async open(mode?: ViewMode): Promise<void> {
         if (!this.tracker.document) {
             vscode.window.showInformationMessage('Open a Marp deck (a Markdown file with marp: true in its front matter) first.');
             return;
         }
         if (this.panel) {
-            this.panel.reveal();
+            if (mode) {
+                await this.controller?.setMode(mode);
+            }
+            this.panel.reveal(undefined, mode === 'slide');
             return;
+        }
+        if (mode) {
+            // Read by the new panel's HTML.
+            await this.globalState.update('scimax.marp.viewMode.sorter', mode);
         }
         const panel = vscode.window.createWebviewPanel(
             'scimax.marp.slideSorter',
             'Slides',
-            { viewColumn: vscode.ViewColumn.Beside, preserveFocus: false },
+            // The preview keeps focus in the editor, so its cursor drives the slide shown.
+            { viewColumn: vscode.ViewColumn.Beside, preserveFocus: mode === 'slide' },
             { enableScripts: true }
         );
         this.attach(panel);
@@ -677,6 +717,7 @@ class SlideSidebarProvider implements vscode.WebviewViewProvider, vscode.Disposa
 
 export function registerSlideThumbnailView(context: vscode.ExtensionContext): void {
     const tracker = new MarpDeckTracker();
+    setCurrentDeckSource(() => tracker.document);
     const sidebar = new SlideSidebarProvider(context.extensionUri, context.globalState, tracker);
     const sorter = new SlideSorter(context.extensionUri, context.globalState, tracker);
 
@@ -692,7 +733,8 @@ export function registerSlideThumbnailView(context: vscode.ExtensionContext): vo
         sorter,
         vscode.window.registerWebviewViewProvider(SIDEBAR_VIEW_TYPE, sidebar),
         vscode.window.registerWebviewPanelSerializer('scimax.marp.slideSorter', sorter),
-        vscode.commands.registerCommand('scimax.marp.openSlideSorter', () => sorter.open()),
+        vscode.commands.registerCommand('scimax.marp.openSlideSorter', () => sorter.open('grid')),
+        vscode.commands.registerCommand('scimax.marp.openSlidePreview', () => sorter.open('slide')),
         vscode.commands.registerCommand('scimax.marp.refreshSlides', () => {
             sidebar.controller?.refresh();
             sorter.controller?.refresh();
@@ -700,6 +742,8 @@ export function registerSlideThumbnailView(context: vscode.ExtensionContext): vo
         // Thumbnail context menu (webview/context).
         vscode.commands.registerCommand('scimax.marp.slide.gotoSource', menu('gotoSource')),
         vscode.commands.registerCommand('scimax.marp.slide.revealInPreview', menu('revealInPreview')),
+        vscode.commands.registerCommand('scimax.marp.slide.present', menu('present')),
+        vscode.commands.registerCommand('scimax.marp.slide.editWithClaude', menu('editWithClaude')),
         vscode.commands.registerCommand('scimax.marp.slide.cut', menu('cut')),
         vscode.commands.registerCommand('scimax.marp.slide.copy', menu('copy')),
         vscode.commands.registerCommand('scimax.marp.slide.pasteAfter', menu('pasteAfter')),

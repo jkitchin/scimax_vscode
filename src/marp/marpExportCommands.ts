@@ -8,15 +8,19 @@
 
 import { spawn } from 'child_process';
 import * as fs from 'fs';
+import * as os from 'os';
 import * as path from 'path';
+import { pathToFileURL } from 'url';
 import * as vscode from 'vscode';
 import { checkPandoc } from '../markdown/markdownExport';
 import { isMarpText, slideStarts } from './slideRenderer';
+import { currentMarpDeck } from './currentDeck';
 import { marpHtmlEnabled, marpThemeUris } from './marpSettings';
 import {
     buildMarpArgs, buildPandocPptxArgs, describeMarpFailure, localFilesWereBlocked,
-    MARP_FORMATS, MarpExportFormat, marpOutputPath, marpToPandocMarkdown,
+    MARP_FORMATS, MarpExportFormat, marpOutputPath, marpToPandocMarkdown, prepareSlideshowHtml,
 } from './marpExport';
+import { parseDeck } from './slideModel';
 
 /** Marp CLI major version run through npx. */
 const NPX_PACKAGE = '@marp-team/marp-cli@4';
@@ -218,11 +222,13 @@ function run(
     });
 }
 
-/** The Marp deck to export: the active editor, else a visible Marp editor. */
+/**
+ * The Marp deck to export: the active editor, else a visible Marp editor,
+ * else the deck the slide thumbnails show (when run from their menu).
+ */
 async function activeDeck(): Promise<vscode.TextDocument | undefined> {
     const isDeck = (d: vscode.TextDocument) => d.languageId === 'markdown' && isMarpText(d.getText());
-    const document = [vscode.window.activeTextEditor, ...vscode.window.visibleTextEditors]
-        .map(editor => editor?.document)
+    const document = [vscode.window.activeTextEditor?.document, ...vscode.window.visibleTextEditors.map(e => e.document), currentMarpDeck()]
         .find((d): d is vscode.TextDocument => d !== undefined && isDeck(d));
     if (!document) {
         vscode.window.showWarningMessage('Open a Marp deck (a Markdown file with marp: true in its front matter) to export it.');
@@ -263,19 +269,25 @@ async function announceForGoogleSlides(outputPath: string): Promise<void> {
     }
 }
 
-async function exportWithMarp(context: vscode.ExtensionContext, format: MarpExportFormat, forGoogleSlides = false): Promise<void> {
-    const document = await activeDeck();
-    if (!document) {
-        return;
-    }
+/**
+ * Run Marp CLI to convert `document` to `outputPath` in `format`, with a
+ * cancellable progress notification. Reports failures itself; returns true
+ * when the output was written.
+ */
+async function convertWithMarp(
+    context: vscode.ExtensionContext,
+    document: vscode.TextDocument,
+    format: MarpExportFormat,
+    outputPath: string,
+    title: string
+): Promise<boolean> {
     const cli = await resolveMarpCli(context);
     if (!cli) {
-        return;
+        return false;
     }
 
     const config = vscode.workspace.getConfiguration('scimax.marp', document.uri);
     const input = document.uri.fsPath;
-    const outputPath = marpOutputPath(input, format);
     const allowLocalFiles = config.get<boolean>('allowLocalFiles', true) && vscode.workspace.isTrusted;
     const args = buildMarpArgs(input, outputPath, format, {
         allowLocalFiles,
@@ -289,27 +301,24 @@ async function exportWithMarp(context: vscode.ExtensionContext, format: MarpExpo
         env.SOFFICE_PATH = soffice;
     }
 
-    const shownName = format === 'images' ? `${path.parse(input).name}.001.png, ...` : path.basename(outputPath);
     let result: RunResult;
     try {
         result = await vscode.window.withProgress(
-            { location: vscode.ProgressLocation.Notification, title: `Exporting ${shownName}`, cancellable: true },
+            { location: vscode.ProgressLocation.Notification, title, cancellable: true },
             (_progress, token) => run(cli.command, [...cli.prefix, ...args], { cwd: path.dirname(input), env }, token)
         );
     } catch (error) {
         vscode.window.showErrorMessage(`Could not run Marp CLI: ${error instanceof Error ? error.message : String(error)}`);
-        return;
+        return false;
     }
     if (result.cancelled) {
         vscode.window.setStatusBarMessage('Marp export cancelled', 3000);
-        return;
+        return false;
     }
-
     if (result.code !== 0) {
         await reportMarpFailure(context, format, result);
-        return;
+        return false;
     }
-
     if (localFilesWereBlocked(result.output)) {
         vscode.window.showWarningMessage(
             vscode.workspace.isTrusted
@@ -317,6 +326,21 @@ async function exportWithMarp(context: vscode.ExtensionContext, format: MarpExpo
                 : 'Some local images were left out because this workspace is not trusted.'
         );
     }
+    return true;
+}
+
+async function exportWithMarp(context: vscode.ExtensionContext, format: MarpExportFormat, forGoogleSlides = false): Promise<void> {
+    const document = await activeDeck();
+    if (!document) {
+        return;
+    }
+    const input = document.uri.fsPath;
+    const outputPath = marpOutputPath(input, format);
+    const shownName = format === 'images' ? `${path.parse(input).name}.001.png, ...` : path.basename(outputPath);
+    if (!(await convertWithMarp(context, document, format, outputPath, `Exporting ${shownName}`))) {
+        return;
+    }
+
     if (format === 'googleSlides' || forGoogleSlides) {
         await announceForGoogleSlides(outputPath);
     } else if (format === 'images') {
@@ -419,11 +443,87 @@ async function exportWithPandoc(forGoogleSlides = false): Promise<void> {
     }
 }
 
+/** Arguments of `scimax.marp.present`, as passed by a `marp:` org link. */
+interface PresentArgs {
+    /** Absolute path of the deck. */
+    file?: string;
+    /** 1-based slide to start at. */
+    slide?: number;
+}
+
+/** The deck at `file`, saved if it has unsaved changes. */
+async function deckAt(file: string): Promise<vscode.TextDocument | undefined> {
+    let document: vscode.TextDocument;
+    try {
+        document = await vscode.workspace.openTextDocument(vscode.Uri.file(file));
+    } catch {
+        vscode.window.showErrorMessage(`Cannot open the slide deck ${file}.`);
+        return undefined;
+    }
+    if (!isMarpText(document.getText())) {
+        vscode.window.showWarningMessage(`${path.basename(file)} is not a Marp deck (no marp: true in its front matter).`);
+        return undefined;
+    }
+    if (document.isDirty && !(await document.save())) {
+        return undefined;
+    }
+    return document;
+}
+
+/**
+ * Number (1-based, counting only slides that are shown) of the slide under
+ * the cursor, if the deck is the active editor. A hidden slide gives the next
+ * shown one.
+ */
+function slideUnderCursor(document: vscode.TextDocument): number | undefined {
+    const editor = vscode.window.activeTextEditor;
+    if (editor?.document !== document) {
+        return undefined;
+    }
+    const text = document.getText();
+    const slides = parseDeck(text, slideStarts(text)).slides;
+    const line = editor.selection.active.line;
+    let index = slides.findIndex((slide, i) => line >= slide.startLine && (i + 1 >= slides.length || line < slides[i + 1].startLine));
+    if (index < 0) {
+        index = 0;
+    }
+    const shownBefore = slides.slice(0, index).filter(slide => !slide.hidden).length;
+    return shownBefore + 1;
+}
+
+/**
+ * Present the deck as Marp's HTML slideshow in the browser: F for full
+ * screen, P for the presenter view with notes and a timer, arrow keys or
+ * clicks to move. The HTML is written to a new private temporary folder.
+ */
+async function present(context: vscode.ExtensionContext, args?: PresentArgs, fromCursor = false): Promise<void> {
+    const document = args?.file ? await deckAt(args.file) : await activeDeck();
+    if (!document) {
+        return;
+    }
+    const startSlide = args?.slide ?? (fromCursor ? slideUnderCursor(document) : undefined);
+
+    const dir = await fs.promises.mkdtemp(path.join(os.tmpdir(), 'scimax-marp-'));
+    const output = path.join(dir, `${path.parse(document.uri.fsPath).name}.html`);
+    if (!(await convertWithMarp(context, document, 'html', output, `Preparing slideshow of ${path.basename(document.fileName)}`))) {
+        return;
+    }
+    const folderUrl = pathToFileURL(path.dirname(document.uri.fsPath) + path.sep).href;
+    const html = await fs.promises.readFile(output, 'utf8');
+    await fs.promises.writeFile(output, prepareSlideshowHtml(html, folderUrl, startSlide), 'utf8');
+    await vscode.env.openExternal(vscode.Uri.file(output));
+    vscode.window.setStatusBarMessage('Slideshow opened in the browser: F for full screen, P for presenter view', 6000);
+}
+
 export function registerMarpExportCommands(context: vscode.ExtensionContext): void {
     context.subscriptions.push(
         vscode.commands.registerCommand('scimax.marp.exportMenu', () =>
             vscode.commands.executeCommand('scimax.hydra.show', 'scimax.marp.export')
         ),
+        vscode.commands.registerCommand('scimax.marp.present', (args?: PresentArgs) =>
+            present(context, args && typeof args.file === 'string' ? args : undefined)
+        ),
+        vscode.commands.registerCommand('scimax.marp.presentFromCurrent', () => present(context, undefined, true)),
         vscode.commands.registerCommand('scimax.marp.exportPdf', () => exportWithMarp(context, 'pdf')),
         vscode.commands.registerCommand('scimax.marp.exportPdfNotes', () => exportWithMarp(context, 'pdfNotes')),
         vscode.commands.registerCommand('scimax.marp.exportPptx', () => exportWithMarp(context, 'pptx')),

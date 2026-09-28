@@ -39,6 +39,8 @@ import {
 } from './planningLine';
 import { pushMark } from '../mark/markRing';
 import { extractCiteKeysFromPath } from '../references/citationParser';
+import { marpLinkArgs } from '../marp/marpExport';
+import * as os from 'os';
 
 // Re-export planning line utilities for external use
 export { findPlanningLine, buildPlanningLine, removeClosed };
@@ -3203,6 +3205,12 @@ export async function openLinkAtPoint(): Promise<void> {
     } else if (url.startsWith('nb:')) {
         // Notebook link - delegate to notebook module command
         await vscode.commands.executeCommand('scimax.notebook.openLink', url.slice(3));
+    } else if (url.startsWith('marp:')) {
+        // Marp slideshow link: [[marp:deck.md]] or [[marp:deck.md::3]]
+        await vscode.commands.executeCommand(
+            'scimax.marp.present',
+            marpLinkArgs(url.slice(5), document.uri.fsPath, os.homedir())
+        );
     } else if (url.startsWith('file:')) {
         await openFileLink(url, document);
     } else if (/^(cite[pt]?|citeauthor|citeyear|Citep|Citet|citealp|citealt|citenum):/.test(url)) {

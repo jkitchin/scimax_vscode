@@ -887,6 +887,41 @@ export const refHandler: LinkTypeHandler = {
 /**
  * Register all built-in link type handlers
  */
+/**
+ * Marp slideshow links: [[marp:talk.md]], or [[marp:talk.md::3]] to start
+ * at slide 3. In VS Code they present the deck (see
+ * src/org/orgLinkProvider.ts); exported, they link to the deck's file.
+ */
+export const marpHandler: LinkTypeHandler = {
+    type: 'marp',
+    description: 'Marp slideshows',
+    pattern: /^[^\s]+$/,
+
+    resolve(path: string): LinkResolution {
+        const file = path.replace(/::\d+$/, '');
+        return {
+            displayText: file,
+            url: file,
+            tooltip: `Present Marp slides: ${path}`,
+            metadata: { file },
+        };
+    },
+
+    export(path: string, description: string | undefined, backend: 'html' | 'latex' | 'text'): string {
+        const file = path.replace(/::\d+$/, '');
+        const text = description || file;
+        switch (backend) {
+            case 'html':
+                return `<a href="${escapeHtml(file)}">${escapeHtml(text)}</a>`;
+            case 'latex':
+                return `\\href{${escapeLatex(file)}}{${escapeLatex(text)}}`;
+            case 'text':
+            default:
+                return text;
+        }
+    },
+};
+
 export function registerBuiltinHandlers(): void {
     linkTypeRegistry.register(httpHandler);
     linkTypeRegistry.register(httpsHandler);
@@ -903,6 +938,7 @@ export function registerBuiltinHandlers(): void {
     linkTypeRegistry.register(cmdHandler);
     linkTypeRegistry.register(notebookHandler);
     linkTypeRegistry.register(refHandler);
+    linkTypeRegistry.register(marpHandler);
 }
 
 // Auto-register built-in handlers
