@@ -1,0 +1,198 @@
+/* Scimax Marp slide thumbnails. Slide contents are styled by Marp's theme CSS. */
+
+body {
+    --thumb-width: 240px;
+    padding: 0 12px 12px;
+    color: var(--vscode-foreground);
+    font-family: var(--vscode-font-family);
+    font-size: var(--vscode-font-size);
+}
+
+.sorter {
+    padding: 0 20px 20px;
+}
+
+/* ---- Toolbar: slide count and zoom ---- */
+
+.toolbar {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 6px 0;
+    background: var(--vscode-sideBar-background, var(--vscode-editor-background));
+}
+
+.sorter .toolbar {
+    background: var(--vscode-editor-background);
+    padding: 10px 0;
+}
+
+.count {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    color: var(--vscode-descriptionForeground);
+}
+
+.zoom {
+    flex: 0 1 140px;
+    min-width: 60px;
+    accent-color: var(--vscode-focusBorder);
+}
+
+.zoom-button {
+    flex: 0 0 auto;
+    width: 22px;
+    height: 22px;
+    padding: 0;
+    border: none;
+    border-radius: 3px;
+    color: var(--vscode-foreground);
+    background: transparent;
+    font-size: 15px;
+    line-height: 22px;
+    cursor: pointer;
+}
+
+.zoom-button:hover {
+    background: var(--vscode-toolbar-hoverBackground);
+}
+
+.status {
+    padding: 8px 0;
+    color: var(--vscode-descriptionForeground);
+}
+
+/* ---- Grid of thumbnails ---- */
+
+.slides {
+    display: grid;
+    /* Each column is the zoom width, or the whole view if that is narrower. */
+    grid-template-columns: repeat(auto-fill, min(var(--thumb-width), 100%));
+    justify-content: start;
+    gap: 14px 16px;
+    padding: 4px 2px;
+}
+
+.slides:focus {
+    outline: none;
+}
+
+.thumb {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    min-width: 0;
+    cursor: pointer;
+    user-select: none;
+}
+
+.thumb .frame {
+    position: relative;
+    outline: 1px solid var(--vscode-panel-border, rgba(128, 128, 128, 0.35));
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.thumb .frame > svg {
+    display: block;
+    width: 100%;
+    height: auto;
+    /* Clicks go to the card, not links or text inside the slide. */
+    pointer-events: none;
+}
+
+.thumb .number {
+    text-align: center;
+    color: var(--vscode-descriptionForeground);
+    font-variant-numeric: tabular-nums;
+}
+
+.thumb:hover .frame {
+    outline-color: var(--vscode-focusBorder);
+}
+
+/* The slide under the editor cursor. */
+.thumb.active .number {
+    color: var(--vscode-foreground);
+    font-weight: bold;
+}
+
+.thumb.selected .frame {
+    outline: 2px solid var(--vscode-list-activeSelectionBackground, var(--vscode-focusBorder));
+}
+
+.slides:focus .thumb.focused .frame {
+    outline: 2px solid var(--vscode-focusBorder);
+    outline-offset: 2px;
+}
+
+.thumb.hidden-slide .frame > svg {
+    opacity: 0.35;
+}
+
+.thumb .badge {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    padding: 0 4px;
+    border-radius: 2px;
+    font-size: 0.85em;
+    color: var(--vscode-badge-foreground);
+    background: var(--vscode-badge-background);
+}
+
+/* ---- Drag and drop ---- */
+
+.dragging .thumb.selected {
+    opacity: 0.5;
+}
+
+.thumb.drop-before::before,
+.thumb.drop-after::after {
+    content: '';
+    position: absolute;
+    z-index: 1;
+    background: var(--vscode-focusBorder);
+    border-radius: 2px;
+}
+
+/* In a grid the marker is a bar between columns... */
+.thumb.drop-before::before {
+    top: 0;
+    bottom: 1.4em;
+    left: -10px;
+    width: 3px;
+}
+
+.thumb.drop-after::after {
+    top: 0;
+    bottom: 1.4em;
+    right: -10px;
+    width: 3px;
+}
+
+/* ...and between rows when there is only one column. */
+.single-column .thumb.drop-before::before {
+    top: -9px;
+    bottom: auto;
+    left: 0;
+    right: 0;
+    width: auto;
+    height: 3px;
+}
+
+.single-column .thumb.drop-after::after {
+    top: auto;
+    bottom: -9px;
+    left: 0;
+    right: 0;
+    width: auto;
+    height: 3px;
+}

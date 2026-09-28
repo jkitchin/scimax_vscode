@@ -5,9 +5,11 @@
 #+OPTIONS: toc:t num:t
 #+TODO: ⚠️ 👀 | ✅
 
-* ⚠️ Overview
+* 👀 Overview
 
-Scimax adds source navigation to [[https://marp.app/][Marp]] slide decks. With the [[https://marketplace.visualstudio.com/items?itemName=marp-team.marp-vscode][Marp for VS Code]]
+Scimax adds source navigation to [[https://marp.app/][Marp]] slide decks, and a
+sidebar of slide thumbnails (see [[*Slide Thumbnails][Slide Thumbnails]]), and exports to PDF,
+PowerPoint and Google Slides (see [[*Exporting Slides][Exporting Slides]]). With the [[https://marketplace.visualstudio.com/items?itemName=marp-team.marp-vscode][Marp for VS Code]]
 extension installed, double-click anywhere on a slide in the Markdown preview
 and the editor opens with the cursor on the matching line of the ~.md~ file.
 
@@ -55,6 +57,243 @@ default).
 
 The command has no default keybinding. To add one, open Keyboard Shortcuts
 and search for ~scimax.marp.revealInPreview~.
+
+* ⚠️ Slide Thumbnails
+
+Scimax shows a thumbnail of every slide in the active deck in two places:
+
+- The *Marp Slides* view in the Explorer sidebar. It appears whenever a
+  Markdown file with ~marp: true~ in its front matter is the active editor.
+  It is often collapsed at the bottom of the Explorer; drag its header to the
+  Secondary Side Bar or the bottom panel for more room.
+- The *Slide Sorter*, an editor tab that lays the thumbnails out in a grid,
+  like a slide sorter in PowerPoint or Keynote. Open it with ~Scimax: Open
+  Marp Slide Sorter~ ([[cmd:scimax.marp.openSlideSorter]]) or the layout
+  button in the deck's editor title bar or the sidebar view's title bar. It
+  opens beside the deck, and like any tab it can be split, moved or dragged
+  into its own window. It reopens after a reload.
+
+Both follow the active Marp deck and keep showing it while you work in its
+preview or in the sorter. Both do everything described here and in
+[[*Editing Slides][Editing Slides]]; the sorter just has more room.
+
+Double-click a thumbnail to jump to the text that defines that slide. The
+editor comes forward with the cursor on the slide's first content line and
+that line scrolled to the top. The slide's ~---~ separator, the front matter
+(for slide 1), blank lines and directive comments such as
+~<!-- _class: lead -->~ are skipped. A slide with no content puts the cursor
+on its separator. From the sorter, a deck that is not open in any group opens
+beside the sorter rather than replacing it.
+
+| In the thumbnails               | Effect                                                    |
+|---------------------------------+-----------------------------------------------------------|
+| Double-click a thumbnail        | Cursor to that slide's first content line                 |
+| Click a thumbnail               | Selects it                                                |
+| Drag a thumbnail                | Moves the slide (see [[*Editing Slides][Editing Slides]]) |
+| Move the cursor in the editor   | Bold number on the slide under the cursor                 |
+| Right-click a thumbnail         | Slide menu (see [[*Editing Slides][Editing Slides]])      |
+| Zoom slider, or =+= / =-= / =0= | Larger, smaller or default thumbnails                     |
+| Pinch, or =Ctrl= + scroll       | Zoom                                                      |
+| Refresh button                  | Re-renders the deck                                       |
+
+** Zoom
+
+The slider in the toolbar at the top sets the thumbnail width, from 80 to 640
+pixels. The thumbnails flow into as many columns as fit, so in the sidebar a
+small zoom gives two or more columns. By default the sidebar fills its width
+with one column and the sorter starts at 240 pixels. Each remembers its own
+zoom. The keys =+= and =-= step the zoom and =0= resets it; they are plain keys
+because =Cmd+==/=Cmd+-= zoom the whole VS Code window. A trackpad pinch (or
+=Ctrl= + scroll wheel) zooms too.
+
+The thumbnails re-render as you type (after a short pause). Slide boundaries
+come from Marp itself, so ~---~, ~***~ and ~___~ separators and the
+~headingDivider~ directive all split slides exactly as they do in the preview,
+and a ~---~ inside a code block does not.
+
+The view renders with its own copy of Marp Core and reads these Marp for VS
+Code settings so the thumbnails match the preview:
+
+| Setting                         | Effect on thumbnails                                         |
+|---------------------------------+--------------------------------------------------------------|
+| ~markdown.marp.themes~          | Custom theme CSS files (local paths only; URLs are skipped)  |
+| ~markdown.marp.enableHtml~      | Allows all raw HTML; otherwise Marp's safe allowlist applies |
+| ~markdown.marp.mathTypesetting~ | ~mathjax~ (default), ~katex~ or ~off~                        |
+
+Run ~Scimax: Refresh Marp Slide Thumbnails~ ([[cmd:scimax.marp.refreshSlides]])
+after editing a theme file, since theme files are not watched.
+
+* ⚠️ Editing Slides
+
+The Marp Slides view and the Slide Sorter can rearrange a deck without
+scrolling through the Markdown. Each change edits the ~.md~ file directly and is a single edit, so
+one Undo in the editor (or =Cmd+Z= in the view) reverses it. Only the lines
+that change are rewritten; the rest of the file is left exactly as it was.
+
+** Selecting slides
+
+Click a thumbnail to select it, =Cmd+click= (=Ctrl+click= on Windows and
+Linux) to add or remove one, and =Shift+click= to select a range. =Left= and
+=Right= move the selection by one slide and =Up= and =Down= by one row of the
+grid (=Shift= extends it), =Home= and =End= jump to the first and last slide,
+and =Cmd+A= selects them all. Right-clicking a slide that is not selected
+selects just that slide, as in the Explorer.
+
+** Drag and drop
+
+Drag a thumbnail to move its slide. A bar shows where it will land: between
+two thumbnails in the grid, or between two rows in a single column. Dragging
+a selected thumbnail moves the whole selection, in order, as one block, even
+when the selected slides were not next to each other. Dropping past the last
+thumbnail moves the slides to the end.
+
+** The slide menu
+
+Right-click a thumbnail for these commands. They act on all selected slides
+when the clicked slide is part of the selection.
+
+| Menu item               | Command                                   | Key in the view           |
+|-------------------------+-------------------------------------------+---------------------------|
+| Go to Source            | [[cmd:scimax.marp.slide.gotoSource]]      | =Enter= (or double-click) |
+| Reveal in Preview       | [[cmd:scimax.marp.slide.revealInPreview]] |                           |
+| Cut Slide               | [[cmd:scimax.marp.slide.cut]]             | =Cmd+X=                   |
+| Copy Slide              | [[cmd:scimax.marp.slide.copy]]            | =Cmd+C=                   |
+| Paste Slide After       | [[cmd:scimax.marp.slide.pasteAfter]]      | =Cmd+V=                   |
+| Paste Slide Before      | [[cmd:scimax.marp.slide.pasteBefore]]     | =Cmd+Alt+V=               |
+| Insert New Slide Before | [[cmd:scimax.marp.slide.insertBefore]]    | =Cmd+Shift+Enter=         |
+| Insert New Slide After  | [[cmd:scimax.marp.slide.insertAfter]]     | =Cmd+Enter=               |
+| Duplicate Slide         | [[cmd:scimax.marp.slide.duplicate]]       | =Cmd+D=                   |
+| Move Slide Up           | [[cmd:scimax.marp.slide.moveUp]]          | =Alt+Up= or =Alt+Left=    |
+| Move Slide Down         | [[cmd:scimax.marp.slide.moveDown]]        | =Alt+Down= or =Alt+Right= |
+| Hide Slide              | [[cmd:scimax.marp.slide.hide]]            | =H= (toggles)             |
+| Unhide Slide            | [[cmd:scimax.marp.slide.unhide]]          | =H= (toggles)             |
+| Delete Slide            | [[cmd:scimax.marp.slide.delete]]          | =Delete= or =Backspace=   |
+
+On Windows and Linux use =Ctrl= in place of =Cmd=. =Cmd+Z= and =Cmd+Shift+Z=
+in the view undo and redo in the editor. These keys work only while the Marp
+Slides view has focus. They are handled by the view itself, so they are not
+listed in Keyboard Shortcuts and cannot be rebound. Right-clicking empty space
+below the slides offers Paste Slide After and Insert New Slide After, which
+add to the end of the deck.
+
+** How the Markdown changes
+
+Copy and Cut put the slides' Markdown on the system clipboard, joined with
+~---~, so you can also paste them into another deck or any file. Paste reads
+Markdown from the clipboard: text copied from the view comes back as the same
+slides, and any other text becomes one new slide.
+
+Slide 1 never takes the front matter with it. Moving, pasting or deleting
+slides adds or drops ~---~ separators as needed, so the first slide never
+starts with one and slides never merge. In a deck using ~headingDivider~, a
+slide that starts with a divider-level heading gets no separator, since the
+heading already starts a slide. A slide's own directive comments
+(~<!-- _class: lead -->~) and speaker notes move with it.
+
+Insert New Slide adds an empty slide (a ~---~ line and a blank line) and moves
+the cursor into it, ready to type.
+
+** Hidden slides
+
+Marp has no way to skip a slide, so Hide Slide wraps it in a comment that
+Scimax recognizes:
+
+#+begin_example
+<!-- scimax-hidden
+# Backup results
+Details for questions.
+scimax-hidden -->
+#+end_example
+
+Marp does not render the comment, so the slide is left out of the preview and
+of every export. Its thumbnail stays in the view, dimmed and marked /hidden/,
+and can be moved, copied or unhidden like any other slide. Any ~-->~ inside
+the hidden slide (such as its own directive comments) is written as ~-\->~
+so it cannot end the comment early, and Unhide restores it.
+
+One side effect: Marp treats comments as presenter notes, so the hidden
+slide's text appears in the notes of the slide before it (for example in the
+presenter view of an HTML export).
+
+* ⚠️ Exporting Slides
+
+Press =C-c C-e= in a Marp deck (or click the export button in the Marp Slides
+view's title bar) for the Marp export menu. In other Markdown files =C-c C-e=
+still opens the Markdown (Pandoc) export menu, which is also =m= in this one.
+Exports are written next to the deck, and the deck is saved first. When an
+export finishes, a notification offers to open the file or show it in its
+folder.
+
+| Key | Export                                               | Output                 | Needs                   |
+|-----+------------------------------------------------------+------------------------+-------------------------|
+| =p= | PDF, with bookmarks                                  | ~deck.pdf~             | Browser                 |
+| =n= | PDF with presenter notes as annotations              | ~deck-notes.pdf~       | Browser                 |
+| =h= | Self-contained HTML slideshow                        | ~deck.html~            | Nothing                 |
+| =s= | PowerPoint, each slide a picture (keeps notes)       | ~deck.pptx~            | Browser                 |
+| =e= | Editable PowerPoint in the Marp theme (experimental) | ~deck-editable.pptx~   | Browser and LibreOffice |
+| =d= | Editable PowerPoint through Pandoc                   | ~deck-pandoc.pptx~     | Pandoc                  |
+| =g= | Editable PowerPoint for Google Slides                | (one of the two above) | LibreOffice or Pandoc   |
+| =i= | PNG image per slide                                  | ~deck.001.png~, ...    | Browser                 |
+| =t= | Presenter notes as text                              | ~deck-notes.txt~       | Nothing                 |
+| =m= | The Markdown (Pandoc) export menu                    |                        |                         |
+
+** Marp CLI
+
+All exports except =d= run [[https://github.com/marp-team/marp-cli][Marp CLI]], the tool behind Marp for VS Code's own
+export. Scimax uses ~scimax.marp.cliPath~ if set, then ~marp~ on the PATH
+(=npm install -g @marp-team/marp-cli=). Failing both, it offers to run it with
+~npx~, which downloads Marp CLI the first time. It asks once and remembers the
+answer.
+
+PDF, PowerPoint and image exports render the slides in Google Chrome,
+Microsoft Edge or Firefox, so one of them must be installed. Local images are
+included when the workspace is trusted (see ~scimax.marp.allowLocalFiles~).
+The export reads ~markdown.marp.themes~ and ~markdown.marp.enableHtml~, so it
+matches the preview. Marp CLI's output is in the /Scimax Marp Export/ output
+channel.
+
+** Which PowerPoint
+
+There are three PowerPoint exports:
+
+|                        | PowerPoint (=s=) | Editable, Marp (=e=)    | Editable, Pandoc (=d=)                  |
+|------------------------+------------------+-------------------------+-----------------------------------------|
+| Looks like the preview | Exactly          | Mostly                  | No: PowerPoint default or your template |
+| Text editable          | No (pictures)    | Yes                     | Yes                                     |
+| Presenter notes        | Yes              | No                      | Yes                                     |
+| Needs                  | Browser          | Browser and LibreOffice | Pandoc                                  |
+
+Marp's editable PowerPoint is experimental: complex themes (such as ~gaia~)
+may fail or come out incomplete. If LibreOffice is missing, the error offers
+the Pandoc export or the picture PowerPoint instead.
+
+The Pandoc export gives real text boxes and notes in PowerPoint's own layouts.
+Set ~scimax.marp.pandocReferenceDoc~ to a ~.pptx~ to use its layouts and
+styles instead. Scimax prepares the deck for Pandoc: every Marp slide
+(including those made by ~headingDivider~) becomes one slide, presenter-note
+comments become speaker notes, directive comments and hidden slides are
+dropped, and Marp image keywords (~bg~, ~w:300~, ...) are removed. A slide
+with both text and pictures gets two columns, with the pictures on the right
+(on the left for ~bg left~), since Pandoc would otherwise move the text to a
+slide of its own. A ~title:~ in the front matter makes a title slide.
+
+** Google Slides
+
+Google Slides has no import from Marp, but it opens PowerPoint files, and
+editable ones import best. The =g= export makes Marp's editable PowerPoint
+when LibreOffice is installed, otherwise the Pandoc one, otherwise (after
+asking) the picture PowerPoint. The notification links to Google Drive:
+upload the file (New > File upload), then open it with Google Slides.
+
+** Export settings
+
+| Setting                          | Default | Effect                                                                |
+|----------------------------------+---------+-----------------------------------------------------------------------|
+| ~scimax.marp.cliPath~            | (empty) | Marp CLI executable; empty means ~marp~ on the PATH, else ~npx~       |
+| ~scimax.marp.browserPath~        | (empty) | Browser for PDF, PowerPoint and images; empty lets Marp find one      |
+| ~scimax.marp.libreOfficePath~    | (empty) | LibreOffice ~soffice~ for editable PowerPoint (=e=)                   |
+| ~scimax.marp.allowLocalFiles~    | ~true~  | Include local images (~--allow-local-files~), trusted workspaces only |
+| ~scimax.marp.pandocReferenceDoc~ | (empty) | PowerPoint template for the Pandoc export (=d=)                       |
 
 * ⚠️ Configuration
 

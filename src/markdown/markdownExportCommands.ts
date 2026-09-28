@@ -5,6 +5,7 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
 import { exportMarkdown, MarkdownExportFormat } from './markdownExport';
+import { isMarpText } from '../marp/slideRenderer';
 
 /**
  * Get the active markdown editor content and file path.
@@ -74,7 +75,10 @@ export function registerMarkdownExportCommands(context: vscode.ExtensionContext)
         vscode.commands.registerCommand('scimax.markdown.exportLatex', () => doExport('latex', false)),
         vscode.commands.registerCommand('scimax.markdown.exportLatexOpen', () => doExport('latex', true)),
         vscode.commands.registerCommand('scimax.markdown.exportMenu', () => {
-            return vscode.commands.executeCommand('scimax.hydra.show', 'scimax.markdown.export');
+            // Marp decks get the slide export menu, which links back to this one.
+            const document = vscode.window.activeTextEditor?.document;
+            const menu = document && isMarpText(document.getText()) ? 'scimax.marp.export' : 'scimax.markdown.export';
+            return vscode.commands.executeCommand('scimax.hydra.show', menu);
         }),
     );
 }

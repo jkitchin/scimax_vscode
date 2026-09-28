@@ -1894,6 +1894,19 @@ Related VS Code settings used by the Marp navigation ([[file:44-marp.org][Marp S
 jumps) and ~markdown.preview.scrollPreviewWithEditor~ (must be ~true~ for
 ~scimax.marp.revealInPreview~).
 
+* ⚠️ Marp Export Settings
+
+| Setting                        | Type    | Default | Description                                                 |
+|--------------------------------+---------+---------+-------------------------------------------------------------|
+| scimax.marp.cliPath            | string  | ""      | Marp CLI executable (empty: ~marp~ on the PATH, else ~npx~) |
+| scimax.marp.browserPath        | string  | ""      | Browser Marp CLI renders with (empty: Marp finds one)       |
+| scimax.marp.libreOfficePath    | string  | ""      | LibreOffice ~soffice~ for editable PowerPoint               |
+| scimax.marp.allowLocalFiles    | boolean | true    | Include local images in exports (trusted workspaces only)   |
+| scimax.marp.pandocReferenceDoc | string  | ""      | PowerPoint template for the Pandoc export                   |
+
+See [[file:44-marp.org::*Exporting Slides][Exporting Slides]]. The exports also follow Marp for VS Code's
+~markdown.marp.themes~ and ~markdown.marp.enableHtml~.
+
 * Common Configurations
 
 This section provides complete `settings.json' examples for different use cases.

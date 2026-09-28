@@ -1,0 +1,437 @@
+/**
+ * Export Marp decks: PDF, PowerPoint (image or editable), HTML, PNG images and
+ * presenter notes through Marp CLI, and editable PowerPoint through Pandoc.
+ *
+ * Marp CLI is taken from `scimax.marp.cliPath`, then `marp` on the PATH, then
+ * `npx @marp-team/marp-cli` (after asking once, since npx downloads it).
+ */
+
+import { spawn } from 'child_process';
+import * as fs from 'fs';
+import * as path from 'path';
+import * as vscode from 'vscode';
+import { checkPandoc } from '../markdown/markdownExport';
+import { isMarpText, slideStarts } from './slideRenderer';
+import { marpHtmlEnabled, marpThemeUris } from './marpSettings';
+import {
+    buildMarpArgs, buildPandocPptxArgs, describeMarpFailure, localFilesWereBlocked,
+    MARP_FORMATS, MarpExportFormat, marpOutputPath, marpToPandocMarkdown,
+} from './marpExport';
+
+/** Marp CLI major version run through npx. */
+const NPX_PACKAGE = '@marp-team/marp-cli@4';
+const NPX_CONSENT_KEY = 'scimax.marp.npxConsent';
+const EXPORT_TIMEOUT_MS = 5 * 60 * 1000;
+const GOOGLE_DRIVE_URL = 'https://drive.google.com/drive/my-drive';
+const LIBREOFFICE_URL = 'https://www.libreoffice.org/download/';
+const MARP_CLI_URL = 'https://github.com/marp-team/marp-cli#install';
+
+let output: vscode.OutputChannel | undefined;
+
+function log(): vscode.OutputChannel {
+    output ??= vscode.window.createOutputChannel('Scimax Marp Export');
+    return output;
+}
+
+interface Command {
+    command: string;
+    prefix: string[];
+}
+
+interface RunResult {
+    code: number | null;
+    output: string;
+    cancelled: boolean;
+}
+
+/** An executable on the PATH, or undefined. */
+function findOnPath(name: string): string | undefined {
+    const exts = process.platform === 'win32' ? ['.cmd', '.exe', '.bat', ''] : [''];
+    for (const dir of (process.env.PATH ?? '').split(path.delimiter)) {
+        for (const ext of exts) {
+            const candidate = path.join(dir, name + ext);
+            try {
+                fs.accessSync(candidate, fs.constants.X_OK);
+                if (fs.statSync(candidate).isFile()) {
+                    return candidate;
+                }
+            } catch {
+                // Not here.
+            }
+        }
+    }
+    return undefined;
+}
+
+/**
+ * Windows runs .cmd/.bat files only through cmd.exe. Arguments are quoted,
+ * and characters cmd.exe would interpret are refused rather than escaped.
+ */
+function windowsCommand(command: string, args: string[]): { command: string; args: string[] } {
+    if (process.platform !== 'win32' || !/\.(cmd|bat)$/i.test(command)) {
+        return { command, args };
+    }
+    const quoted = [command, ...args].map(arg => {
+        if (/["%!^&|<>\r\n]/.test(arg)) {
+            throw new Error(`Cannot pass "${arg}" to ${path.basename(command)}: it contains a character cmd.exe interprets.`);
+        }
+        return `"${arg}"`;
+    });
+    return { command: process.env.ComSpec ?? 'cmd.exe', args: ['/d', '/s', '/c', `"${quoted.join(' ')}"`] };
+}
+
+/** Whether Marp CLI will find LibreOffice (the same places it looks). */
+function libreOfficeAvailable(document: vscode.TextDocument): boolean {
+    const configured = vscode.workspace.getConfiguration('scimax.marp', document.uri).get<string>('libreOfficePath', '').trim();
+    const candidates = [configured, process.env.SOFFICE_PATH ?? ''];
+    if (process.platform === 'darwin') {
+        candidates.push('/Applications/LibreOffice.app/Contents/MacOS/soffice');
+    } else if (process.platform === 'win32') {
+        for (const root of [process.env.ProgramFiles, process.env['ProgramFiles(x86)']]) {
+            if (root) {
+                candidates.push(path.join(root, 'LibreOffice', 'program', 'soffice.exe'));
+            }
+        }
+    }
+    return candidates.some(c => c !== '' && fs.existsSync(c)) || findOnPath('soffice') !== undefined;
+}
+
+/**
+ * Google Slides imports editable PowerPoint best. Use Marp's (keeps the
+ * theme) when LibreOffice is there, else Pandoc's, else the image PowerPoint.
+ */
+async function exportForGoogleSlides(context: vscode.ExtensionContext): Promise<void> {
+    const document = await activeDeck();
+    if (!document) {
+        return;
+    }
+    if (libreOfficeAvailable(document)) {
+        await exportWithMarp(context, 'googleSlides');
+    } else if (checkPandoc().available) {
+        await exportWithPandoc(true);
+    } else {
+        const choice = await vscode.window.showWarningMessage(
+            'An editable export needs LibreOffice or Pandoc. Export PowerPoint with each slide as a picture instead? '
+            + 'Google Slides can show it, but not edit the text.',
+            'Export Image PowerPoint'
+        );
+        if (choice) {
+            await exportWithMarp(context, 'pptx', true);
+        }
+    }
+}
+
+async function resolveMarpCli(context: vscode.ExtensionContext): Promise<Command | undefined> {
+    const configured = vscode.workspace.getConfiguration('scimax.marp').get<string>('cliPath', '').trim();
+    if (configured) {
+        return { command: configured, prefix: [] };
+    }
+    const marp = findOnPath('marp');
+    if (marp) {
+        return { command: marp, prefix: [] };
+    }
+    const npx = findOnPath('npx');
+    if (!npx) {
+        const choice = await vscode.window.showErrorMessage(
+            'Marp export needs Marp CLI. Install it (npm install -g @marp-team/marp-cli) or Node.js, '
+            + 'or set scimax.marp.cliPath.',
+            'How to Install'
+        );
+        if (choice) {
+            await vscode.env.openExternal(vscode.Uri.parse(MARP_CLI_URL));
+        }
+        return undefined;
+    }
+    if (!context.globalState.get<boolean>(NPX_CONSENT_KEY)) {
+        const choice = await vscode.window.showInformationMessage(
+            'Marp CLI is not installed. Scimax can run it with npx, which downloads '
+            + `${NPX_PACKAGE} from npm the first time (this takes a little while).`,
+            { modal: true },
+            'Use npx',
+            'How to Install'
+        );
+        if (choice === 'How to Install') {
+            await vscode.env.openExternal(vscode.Uri.parse(MARP_CLI_URL));
+        }
+        if (choice !== 'Use npx') {
+            return undefined;
+        }
+        await context.globalState.update(NPX_CONSENT_KEY, true);
+    }
+    return { command: npx, prefix: ['--yes', NPX_PACKAGE] };
+}
+
+/** Run a process, logging its output, until it exits, times out or is cancelled. */
+function run(
+    command: string,
+    args: string[],
+    options: { cwd: string; env?: NodeJS.ProcessEnv; input?: string },
+    token: vscode.CancellationToken
+): Promise<RunResult> {
+    const channel = log();
+    const resolved = windowsCommand(command, args);
+    channel.appendLine(`$ ${[command, ...args].join(' ')}`);
+
+    return new Promise((resolve, reject) => {
+        const child = spawn(resolved.command, resolved.args, {
+            cwd: options.cwd,
+            env: options.env ?? process.env,
+            windowsVerbatimArguments: resolved.command !== command,
+        });
+        let text = '';
+        let cancelled = false;
+        const collect = (chunk: Buffer) => {
+            const s = chunk.toString();
+            text += s;
+            channel.append(s);
+        };
+        child.stdout.on('data', collect);
+        child.stderr.on('data', collect);
+
+        const stop = () => {
+            cancelled = true;
+            child.kill();
+        };
+        const cancel = token.onCancellationRequested(stop);
+        const timer = setTimeout(() => {
+            channel.appendLine(`Timed out after ${EXPORT_TIMEOUT_MS / 1000} s.`);
+            stop();
+        }, EXPORT_TIMEOUT_MS);
+
+        child.on('error', error => {
+            clearTimeout(timer);
+            cancel.dispose();
+            reject(error);
+        });
+        child.on('close', code => {
+            clearTimeout(timer);
+            cancel.dispose();
+            channel.appendLine(`(exit code ${code})`);
+            resolve({ code, output: text, cancelled });
+        });
+
+        if (options.input !== undefined) {
+            child.stdin.end(options.input);
+        } else {
+            child.stdin.end();
+        }
+    });
+}
+
+/** The Marp deck to export: the active editor, else a visible Marp editor. */
+async function activeDeck(): Promise<vscode.TextDocument | undefined> {
+    const isDeck = (d: vscode.TextDocument) => d.languageId === 'markdown' && isMarpText(d.getText());
+    const document = [vscode.window.activeTextEditor, ...vscode.window.visibleTextEditors]
+        .map(editor => editor?.document)
+        .find((d): d is vscode.TextDocument => d !== undefined && isDeck(d));
+    if (!document) {
+        vscode.window.showWarningMessage('Open a Marp deck (a Markdown file with marp: true in its front matter) to export it.');
+        return undefined;
+    }
+    if (document.isUntitled) {
+        vscode.window.showWarningMessage('Save the deck before exporting it.');
+        return undefined;
+    }
+    // Marp CLI reads the file from disk.
+    if (document.isDirty && !(await document.save())) {
+        return undefined;
+    }
+    return document;
+}
+
+/** Offer to open the exported file, or its folder. */
+async function announce(outputPath: string, message: string, extra: string[] = []): Promise<string | undefined> {
+    const actions = [...extra, 'Open', 'Show in Folder'];
+    const choice = await vscode.window.showInformationMessage(message, ...actions);
+    if (choice === 'Open') {
+        await vscode.env.openExternal(vscode.Uri.file(outputPath));
+    } else if (choice === 'Show in Folder') {
+        await vscode.commands.executeCommand('revealFileInOS', vscode.Uri.file(outputPath));
+    }
+    return choice;
+}
+
+async function announceForGoogleSlides(outputPath: string): Promise<void> {
+    const choice = await announce(
+        outputPath,
+        `Saved ${path.basename(outputPath)}. To edit it in Google Slides, upload it to Google Drive `
+        + '(New > File upload), then open it with Google Slides.',
+        ['Open Google Drive']
+    );
+    if (choice === 'Open Google Drive') {
+        await vscode.env.openExternal(vscode.Uri.parse(GOOGLE_DRIVE_URL));
+    }
+}
+
+async function exportWithMarp(context: vscode.ExtensionContext, format: MarpExportFormat, forGoogleSlides = false): Promise<void> {
+    const document = await activeDeck();
+    if (!document) {
+        return;
+    }
+    const cli = await resolveMarpCli(context);
+    if (!cli) {
+        return;
+    }
+
+    const config = vscode.workspace.getConfiguration('scimax.marp', document.uri);
+    const input = document.uri.fsPath;
+    const outputPath = marpOutputPath(input, format);
+    const allowLocalFiles = config.get<boolean>('allowLocalFiles', true) && vscode.workspace.isTrusted;
+    const args = buildMarpArgs(input, outputPath, format, {
+        allowLocalFiles,
+        enableHtml: marpHtmlEnabled(document),
+        themeFiles: marpThemeUris(document).filter(uri => fs.existsSync(uri.fsPath)).map(uri => uri.fsPath),
+        browserPath: config.get<string>('browserPath', '').trim() || undefined,
+    });
+    const env = { ...process.env };
+    const soffice = config.get<string>('libreOfficePath', '').trim();
+    if (soffice) {
+        env.SOFFICE_PATH = soffice;
+    }
+
+    const shownName = format === 'images' ? `${path.parse(input).name}.001.png, ...` : path.basename(outputPath);
+    let result: RunResult;
+    try {
+        result = await vscode.window.withProgress(
+            { location: vscode.ProgressLocation.Notification, title: `Exporting ${shownName}`, cancellable: true },
+            (_progress, token) => run(cli.command, [...cli.prefix, ...args], { cwd: path.dirname(input), env }, token)
+        );
+    } catch (error) {
+        vscode.window.showErrorMessage(`Could not run Marp CLI: ${error instanceof Error ? error.message : String(error)}`);
+        return;
+    }
+    if (result.cancelled) {
+        vscode.window.setStatusBarMessage('Marp export cancelled', 3000);
+        return;
+    }
+
+    if (result.code !== 0) {
+        await reportMarpFailure(context, format, result);
+        return;
+    }
+
+    if (localFilesWereBlocked(result.output)) {
+        vscode.window.showWarningMessage(
+            vscode.workspace.isTrusted
+                ? 'Some local images were left out. Enable scimax.marp.allowLocalFiles to include them.'
+                : 'Some local images were left out because this workspace is not trusted.'
+        );
+    }
+    if (format === 'googleSlides' || forGoogleSlides) {
+        await announceForGoogleSlides(outputPath);
+    } else if (format === 'images') {
+        const choice = await vscode.window.showInformationMessage(`Exported slides as ${shownName}`, 'Show in Folder');
+        if (choice) {
+            await vscode.commands.executeCommand('revealFileInOS', vscode.Uri.file(input));
+        }
+    } else {
+        await announce(outputPath, `Exported ${MARP_FORMATS[format].label}: ${path.basename(outputPath)}`);
+    }
+}
+
+async function reportMarpFailure(context: vscode.ExtensionContext, format: MarpExportFormat, result: RunResult): Promise<void> {
+    const failure = describeMarpFailure(result.code, result.output);
+    if (failure.kind === 'libreoffice') {
+        // Editable PowerPoint has two other routes.
+        const choice = await vscode.window.showErrorMessage(
+            failure.message,
+            'Use Pandoc Instead',
+            'Image PowerPoint Instead',
+            'Get LibreOffice'
+        );
+        if (choice === 'Use Pandoc Instead') {
+            await exportWithPandoc(format === 'googleSlides');
+        } else if (choice === 'Image PowerPoint Instead') {
+            await exportWithMarp(context, 'pptx', format === 'googleSlides');
+        } else if (choice === 'Get LibreOffice') {
+            await vscode.env.openExternal(vscode.Uri.parse(LIBREOFFICE_URL));
+        }
+        return;
+    }
+    const choice = await vscode.window.showErrorMessage(failure.message, 'Show Log');
+    if (choice) {
+        log().show();
+    }
+}
+
+/**
+ * Editable PowerPoint through Pandoc: real text boxes and speaker notes, in
+ * PowerPoint's default look or `scimax.marp.pandocReferenceDoc`'s. Marp
+ * themes do not carry over.
+ */
+async function exportWithPandoc(forGoogleSlides = false): Promise<void> {
+    const document = await activeDeck();
+    if (!document) {
+        return;
+    }
+    if (!checkPandoc().available) {
+        const choice = await vscode.window.showErrorMessage(
+            'Editable PowerPoint through Pandoc needs Pandoc.',
+            'Get Pandoc'
+        );
+        if (choice) {
+            await vscode.env.openExternal(vscode.Uri.parse('https://pandoc.org/installing.html'));
+        }
+        return;
+    }
+
+    const input = document.uri.fsPath;
+    const dir = path.dirname(input);
+    const outputPath = path.join(dir, `${path.parse(input).name}-pandoc.pptx`);
+    let referenceDoc = vscode.workspace.getConfiguration('scimax.marp', document.uri)
+        .get<string>('pandocReferenceDoc', '').trim();
+    if (referenceDoc && !path.isAbsolute(referenceDoc)) {
+        const folder = vscode.workspace.getWorkspaceFolder(document.uri);
+        referenceDoc = path.join(folder ? folder.uri.fsPath : dir, referenceDoc);
+    }
+
+    let result: RunResult;
+    try {
+        result = await vscode.window.withProgress(
+            { location: vscode.ProgressLocation.Notification, title: `Exporting ${path.basename(outputPath)}`, cancellable: true },
+            (_progress, token) => run(
+                'pandoc',
+                buildPandocPptxArgs(outputPath, dir, referenceDoc || undefined),
+                { cwd: dir, input: marpToPandocMarkdown(document.getText(), slideStarts(document.getText())) },
+                token
+            )
+        );
+    } catch (error) {
+        vscode.window.showErrorMessage(`Could not run Pandoc: ${error instanceof Error ? error.message : String(error)}`);
+        return;
+    }
+    if (result.cancelled) {
+        vscode.window.setStatusBarMessage('Pandoc export cancelled', 3000);
+        return;
+    }
+    if (result.code !== 0) {
+        const detail = result.output.trim().split(/\r?\n/).filter(Boolean).pop() ?? `exit code ${result.code}`;
+        const choice = await vscode.window.showErrorMessage(`Pandoc export failed: ${detail}`, 'Show Log');
+        if (choice) {
+            log().show();
+        }
+        return;
+    }
+    if (forGoogleSlides) {
+        await announceForGoogleSlides(outputPath);
+    } else {
+        await announce(outputPath, `Exported editable PowerPoint: ${path.basename(outputPath)}`);
+    }
+}
+
+export function registerMarpExportCommands(context: vscode.ExtensionContext): void {
+    context.subscriptions.push(
+        vscode.commands.registerCommand('scimax.marp.exportMenu', () =>
+            vscode.commands.executeCommand('scimax.hydra.show', 'scimax.marp.export')
+        ),
+        vscode.commands.registerCommand('scimax.marp.exportPdf', () => exportWithMarp(context, 'pdf')),
+        vscode.commands.registerCommand('scimax.marp.exportPdfNotes', () => exportWithMarp(context, 'pdfNotes')),
+        vscode.commands.registerCommand('scimax.marp.exportPptx', () => exportWithMarp(context, 'pptx')),
+        vscode.commands.registerCommand('scimax.marp.exportPptxEditable', () => exportWithMarp(context, 'pptxEditable')),
+        vscode.commands.registerCommand('scimax.marp.exportPptxPandoc', () => exportWithPandoc()),
+        vscode.commands.registerCommand('scimax.marp.exportGoogleSlides', () => exportForGoogleSlides(context)),
+        vscode.commands.registerCommand('scimax.marp.exportHtml', () => exportWithMarp(context, 'html')),
+        vscode.commands.registerCommand('scimax.marp.exportImages', () => exportWithMarp(context, 'images')),
+        vscode.commands.registerCommand('scimax.marp.exportNotes', () => exportWithMarp(context, 'notes'))
+    );
+}

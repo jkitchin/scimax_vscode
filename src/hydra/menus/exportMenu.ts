@@ -654,12 +654,124 @@ export const mdLatexExportMenu: HydraMenuDefinition = {
 /**
  * All markdown file export menus
  */
+// =============================================================================
+// Marp Slide Export Menu (for Marp decks, using Marp CLI or Pandoc)
+// =============================================================================
+
+/**
+ * Marp deck export dispatcher.
+ * Shown instead of the Markdown one when C-c C-e is pressed in a Marp deck.
+ */
+export const marpExportMenu: HydraMenuDefinition = {
+    id: 'scimax.marp.export',
+    title: 'Marp Slides Export',
+    hint: 'Export slides via Marp CLI',
+    groups: [
+        {
+            title: 'Documents',
+            items: [
+                {
+                    key: 'p',
+                    label: 'PDF',
+                    description: 'Slides as a PDF, with bookmarks',
+                    icon: 'file-pdf',
+                    exit: 'exit',
+                    action: 'scimax.marp.exportPdf',
+                },
+                {
+                    key: 'n',
+                    label: 'PDF with notes',
+                    description: 'PDF with presenter notes as annotations',
+                    icon: 'file-pdf',
+                    exit: 'exit',
+                    action: 'scimax.marp.exportPdfNotes',
+                },
+                {
+                    key: 'h',
+                    label: 'HTML',
+                    description: 'Self-contained HTML slideshow',
+                    icon: 'file-code',
+                    exit: 'exit',
+                    action: 'scimax.marp.exportHtml',
+                },
+            ],
+        },
+        {
+            title: 'PowerPoint',
+            items: [
+                {
+                    key: 's',
+                    label: 'PowerPoint',
+                    description: 'Exact look, slides are pictures (keeps notes)',
+                    icon: 'preview',
+                    exit: 'exit',
+                    action: 'scimax.marp.exportPptx',
+                },
+                {
+                    key: 'e',
+                    label: 'Editable PowerPoint',
+                    description: 'Editable text, Marp theme (experimental, needs LibreOffice)',
+                    icon: 'edit',
+                    exit: 'exit',
+                    action: 'scimax.marp.exportPptxEditable',
+                },
+                {
+                    key: 'd',
+                    label: 'Editable PowerPoint (Pandoc)',
+                    description: 'Editable text and notes, plain or template styling',
+                    icon: 'edit',
+                    exit: 'exit',
+                    action: 'scimax.marp.exportPptxPandoc',
+                },
+                {
+                    key: 'g',
+                    label: 'Google Slides',
+                    description: 'Editable PowerPoint to upload to Google Drive',
+                    icon: 'cloud-upload',
+                    exit: 'exit',
+                    action: 'scimax.marp.exportGoogleSlides',
+                },
+            ],
+        },
+        {
+            title: 'Other',
+            items: [
+                {
+                    key: 'i',
+                    label: 'PNG images',
+                    description: 'One image per slide',
+                    icon: 'file-media',
+                    exit: 'exit',
+                    action: 'scimax.marp.exportImages',
+                },
+                {
+                    key: 't',
+                    label: 'Presenter notes',
+                    description: 'Notes as a text file',
+                    icon: 'note',
+                    exit: 'exit',
+                    action: 'scimax.marp.exportNotes',
+                },
+                {
+                    key: 'm',
+                    label: 'Markdown exports',
+                    description: 'Pandoc HTML, PDF, Word and LaTeX',
+                    icon: 'markdown',
+                    exit: 'submenu',
+                    action: 'scimax.markdown.export',
+                },
+            ],
+        },
+    ],
+};
+
 export const mdExportMenus: HydraMenuDefinition[] = [
     mdFileExportMenu,
     mdHtmlExportMenu,
     mdPdfExportMenu,
     mdDocxExportMenu,
     mdLatexExportMenu,
+    marpExportMenu,
 ];
 
 /**

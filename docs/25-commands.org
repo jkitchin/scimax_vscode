@@ -389,14 +389,62 @@ Export markdown (=.md=) files to other formats via Pandoc. Complements the org-t
 
 Requires Pandoc to be installed on the system.
 
-** ⚠️ Markdown Preview
+** 👀 Markdown Preview
 
 | Command ID                         | Description                            | Default Keybinding |
 |------------------------------------+----------------------------------------+--------------------|
 | [[cmd:scimax.marp.revealInPreview]] | Reveal Cursor in Markdown Preview      | -                  |
+| [[cmd:scimax.marp.refreshSlides]]   | Refresh Marp Slide Thumbnails          | -                  |
+| [[cmd:scimax.marp.openSlideSorter]] | Open Marp Slide Sorter (grid tab)      | -                  |
 
-Scrolls the Markdown preview (opening one if needed) to the cursor line. See
-[[file:44-marp.org][Marp Slides]]. For the other direction, double-click the preview.
+Reveal scrolls the Markdown preview (opening one if needed) to the cursor
+line. For the other direction, double-click the preview. Refresh re-renders
+the Marp Slides sidebar and the Slide Sorter, for example after editing a
+theme file. See [[file:44-marp.org][Marp Slides]].
+
+*** ⚠️ Marp Slide Export
+
+Export a Marp deck with Marp CLI or Pandoc. =C-c C-e= in a Marp deck opens
+the menu. See [[file:44-marp.org::*Exporting Slides][Exporting Slides]].
+
+| Command ID                             | Description                                        | Default Keybinding       |
+|----------------------------------------+----------------------------------------------------+--------------------------|
+| [[cmd:scimax.marp.exportMenu]]         | Marp export menu                                   | C-c C-e (in a Marp deck) |
+| [[cmd:scimax.marp.exportPdf]]          | Slides to PDF                                      | -                        |
+| [[cmd:scimax.marp.exportPdfNotes]]     | Slides to PDF with notes                           | -                        |
+| [[cmd:scimax.marp.exportHtml]]         | Slides to HTML                                     | -                        |
+| [[cmd:scimax.marp.exportPptx]]         | Slides to PowerPoint (pictures)                    | -                        |
+| [[cmd:scimax.marp.exportPptxEditable]] | Slides to editable PowerPoint (Marp, experimental) | -                        |
+| [[cmd:scimax.marp.exportPptxPandoc]]   | Slides to editable PowerPoint (Pandoc)             | -                        |
+| [[cmd:scimax.marp.exportGoogleSlides]] | Slides for Google Slides                           | -                        |
+| [[cmd:scimax.marp.exportImages]]       | Slides to PNG images                               | -                        |
+| [[cmd:scimax.marp.exportNotes]]        | Presenter notes to text                            | -                        |
+
+*** ⚠️ Marp Slides View
+
+These commands act on the selected thumbnails in the Marp Slides view or the
+Slide Sorter. They
+are in the thumbnails' right-click menu, not the command palette. The keys
+work while the view has focus (=Ctrl= in place of =Cmd= on Windows and Linux)
+and are handled by the view, so they cannot be rebound. See
+[[file:44-marp.org::*Editing Slides][Editing Slides]].
+
+| Command ID                                | Description                     | Key in the view |
+|-------------------------------------------+---------------------------------+-----------------|
+| [[cmd:scimax.marp.slide.gotoSource]]      | Go to the slide's source        | Enter           |
+| [[cmd:scimax.marp.slide.revealInPreview]] | Reveal the slide in the preview | -               |
+| [[cmd:scimax.marp.slide.cut]]             | Cut slides                      | Cmd+X           |
+| [[cmd:scimax.marp.slide.copy]]            | Copy slides                     | Cmd+C           |
+| [[cmd:scimax.marp.slide.pasteAfter]]      | Paste slides after              | Cmd+V           |
+| [[cmd:scimax.marp.slide.pasteBefore]]     | Paste slides before             | Cmd+Alt+V       |
+| [[cmd:scimax.marp.slide.insertBefore]]    | Insert new slide before         | Cmd+Shift+Enter |
+| [[cmd:scimax.marp.slide.insertAfter]]     | Insert new slide after          | Cmd+Enter       |
+| [[cmd:scimax.marp.slide.duplicate]]       | Duplicate slides                | Cmd+D           |
+| [[cmd:scimax.marp.slide.moveUp]]          | Move slides up                  | Alt+Up          |
+| [[cmd:scimax.marp.slide.moveDown]]        | Move slides down                | Alt+Down        |
+| [[cmd:scimax.marp.slide.hide]]            | Hide slides                     | H (toggle)      |
+| [[cmd:scimax.marp.slide.unhide]]          | Unhide slides                   | H (toggle)      |
+| [[cmd:scimax.marp.slide.delete]]          | Delete slides                   | Delete          |
 
 ** ✅ Jupyter Notebook Export
 CLOSED: [2026-01-25 Sun 20:43]

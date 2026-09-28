@@ -300,6 +300,11 @@ describe('manifest consistency: when-clause contexts exist', () => {
         let sm: RegExpExecArray | null;
         while ((sm = scRe.exec(allSrc))) setContextKeys.add(sm[1] ?? sm[2]);
 
+        // Webview panel types, matched by `webviewId` / `activeWebviewPanelId` clauses.
+        const panelTypes = new Set<string>();
+        const panelRe = /(?:createWebviewPanel|registerWebviewPanelSerializer)\(\s*['"]([^'"]+)['"]/g;
+        while ((sm = panelRe.exec(allSrc))) panelTypes.add(sm[1]);
+
         const whens: string[] = [];
         for (const kb of contributes.keybindings ?? []) if (kb.when) whens.push(kb.when);
         for (const items of Object.values<any>(contributes.menus ?? {})) {
@@ -314,6 +319,7 @@ describe('manifest consistency: when-clause contexts exist', () => {
                 // `view == scimax.agenda` style uses view ids; `config.scimax.x` uses config keys.
                 if (setContextKeys.has(tok)) continue;
                 if (viewIds.has(tok)) continue;
+                if (panelTypes.has(tok)) continue;
                 if (tok.startsWith('config.') && registeredSettings.has(tok.slice('config.'.length))) continue;
                 if (registeredSettings.has(tok)) continue;
                 violations.add(tok);

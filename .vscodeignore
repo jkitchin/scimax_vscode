@@ -64,6 +64,34 @@ node_modules/**
 !node_modules/source-map/**
 !node_modules/wordwrap/**
 !node_modules/uglify-js/**
+# marp-core (Marp slide thumbnails) and dependencies
+!node_modules/@marp-team/**
+!node_modules/@csstools/**
+!node_modules/@xmldom/**
+!node_modules/argparse/**
+!node_modules/cssesc/**
+!node_modules/cssfilter/**
+!node_modules/entities/**
+!node_modules/esm/**
+!node_modules/highlight.js/**
+!node_modules/katex/**
+!node_modules/lodash.kebabcase/**
+!node_modules/markdown-it-front-matter/**
+!node_modules/mathjax-full/package.json
+!node_modules/mathjax-full/js/**
+!node_modules/mhchemparser/**
+!node_modules/mj-context-menu/**
+!node_modules/nanoid/**
+!node_modules/picocolors/**
+!node_modules/postcss/**
+!node_modules/postcss-nesting/**
+!node_modules/postcss-selector-parser/**
+!node_modules/punycode.js/**
+!node_modules/source-map-js/**
+!node_modules/speech-rule-engine/**
+!node_modules/util-deprecate/**
+!node_modules/wicked-good-xpath/**
+!node_modules/xss/**
 # date-fns: include all (selective inclusion is too fragile)
 !node_modules/date-fns/**
 !node_modules/minimatch/**

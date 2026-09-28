@@ -38,6 +38,8 @@ import { registerCheckboxFeatures } from './markdown/checkboxProvider';
 import { registerMarkdownExportCommands } from './markdown/markdownExportCommands';
 import { registerTaskCommands } from './markdown/taskCommands';
 import { registerMarpCommands } from './marp/marpCommands';
+import { registerSlideThumbnailView } from './marp/slideThumbnailView';
+import { registerMarpExportCommands } from './marp/marpExportCommands';
 import { mystPreviewPlugin } from './markdown/mystPreview';
 import { registerTimestampCommands } from './org/timestampProvider';
 import { registerTableCommands, isInTable } from './org/tableProvider';
@@ -669,6 +671,12 @@ async function activateScimax(context: vscode.ExtensionContext) {
 
     // Register Marp slide navigation (source -> preview)
     activationStep('registerMarpCommands', () => registerMarpCommands(context));
+
+    // Register the Marp slide thumbnail sidebar
+    activationStep('registerSlideThumbnailView', () => registerSlideThumbnailView(context));
+
+    // Register Marp slide export (Marp CLI and Pandoc)
+    activationStep('registerMarpExportCommands', () => registerMarpExportCommands(context));
 
     // Register Timestamp Commands (shift-arrow to adjust dates)
     activationStep('registerTimestampCommands', () => registerTimestampCommands(context));
