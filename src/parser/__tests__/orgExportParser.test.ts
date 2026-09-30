@@ -394,6 +394,36 @@ The theorem statement.
             const link = objects.find(o => o.type === 'link') as any;
             expect(link?.properties?.path).toBe('refs1.bib,refs2.bib');
         });
+
+        it('parses plain web links without italicizing the slashes', () => {
+            const objects = parseObjectsFast('See https://example.com/a/b, and /italic/.');
+            const links = objects.filter(o => o.type === 'link') as any[];
+            expect(links).toHaveLength(1);
+            expect(links[0].properties.linkType).toBe('http');
+            expect(links[0].properties.path).toBe('https://example.com/a/b');
+            expect(objects.filter(o => o.type === 'italic')).toHaveLength(1);
+        });
+
+        it('keeps balanced parentheses but not trailing punctuation in plain links', () => {
+            const objects = parseObjectsFast('(https://en.wikipedia.org/wiki/Foo_(bar)).');
+            const link = objects.find(o => o.type === 'link') as any;
+            expect(link?.properties?.path).toBe('https://en.wikipedia.org/wiki/Foo_(bar)');
+        });
+
+        it('parses angle and mailto links', () => {
+            const objects = parseObjectsFast('<https://y.org/x> or mailto:me@x.org');
+            const links = objects.filter(o => o.type === 'link') as any[];
+            expect(links.map(l => l.properties.linkType)).toEqual(['http', 'mailto']);
+            expect(links.map(l => l.properties.path)).toEqual(['https://y.org/x', 'me@x.org']);
+        });
+
+        it('leaves URLs inside verbatim and bracket links alone', () => {
+            const objects = parseObjectsFast('=https://code.org= [[https://a.org][A]]');
+            expect(objects[0].type).toBe('verbatim');
+            const links = objects.filter(o => o.type === 'link') as any[];
+            expect(links).toHaveLength(1);
+            expect(links[0].properties.format).toBe('bracket');
+        });
     });
 
     describe('Text Markup', () => {

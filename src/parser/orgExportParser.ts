@@ -65,6 +65,14 @@ const LINK_PATTERN = /\[\[([^\]]+)\](?:\[([^\]]+)\])?\]/g;
 const CITATION_PATTERN = /(cite[pt]?|citenum|citeauthor|citeyear|Citep|Citet|citealp|citealt):([\w&;,:-]*[\w&-])/g;
 const REF_PATTERN = /(ref|eqref|pageref|nameref|autoref|cref|Cref|label):([a-zA-Z0-9_:-]+)/g;
 const DOI_PATTERN = /doi:(10\.\d{4,9}\/[^\s<>[\](){}]+)/g;
+// Plain web links: https://example.com/path. Org-mode rules: no whitespace,
+// brackets or angle brackets; one level of balanced parentheses is allowed
+// (Wikipedia URLs); the last character is a letter, digit, "/" or a closing
+// paren group, so trailing sentence punctuation (and emphasis markers such as
+// "=" or "*") are left as text. Not preceded by a word character.
+const PLAIN_URL_PATTERN = /(?<![\w@])(?:https?:\/\/|mailto:)(?:[^\s()<>[\]]|\([^\s()<>[\]]*\))*(?:[\p{L}\p{N}/]|\([^\s()<>[\]]*\))/gu;
+// Angle links: <https://example.com> or <mailto:me@example.com>
+const ANGLE_LINK_PATTERN = /<((?:https?:\/\/|mailto:)[^<>\n]+)>/g;
 const BIBLIOGRAPHY_PATTERN = /bibliography:([^\s<>[\](){}]+)/g;
 const BIBSTYLE_PATTERN = /(?:bibliographystyle|bibstyle):([^\s<>[\](){}]+)/g;
 
@@ -250,6 +258,29 @@ export function parseObjectsFast(text: string): OrgObject[] {
             children: m[2] ? [createPlainText(m[2], m.index! + m[1].length + 3, m.index! + m[1].length + 3 + m[2].length)] : undefined,
         };
     });
+
+    // Angle and plain web links. Collected before citations etc. so their
+    // emphasis-like characters (the "//" in a URL) get masked below.
+    const webLink = (url: string, start: number, end: number): LinkObject => {
+        const mailto = /^mailto:/i.test(url);
+        return {
+            type: 'link' as const,
+            range: { start, end },
+            postBlank: 0,
+            properties: {
+                linkType: mailto ? 'mailto' : 'http',
+                path: mailto ? url.slice('mailto:'.length) : url,
+                format: 'plain' as const,
+                rawLink: url,
+            },
+        };
+    };
+    if (text.includes(':')) {
+        collectMatches(ANGLE_LINK_PATTERN, (m) =>
+            webLink(m[1], m.index!, m.index! + m[0].length));
+        collectMatches(PLAIN_URL_PATTERN, (m) =>
+            webLink(m[0], m.index!, m.index! + m[0].length));
+    }
 
     // Citations
     collectMatches(CITATION_PATTERN, (m) => ({
