@@ -8490,6 +8490,7 @@
   },
   "devDependencies": {
     "@electron/rebuild": "^4.0.2",
+    "@types/js-yaml": "^4.0.9",
     "@types/node": "^20.19.30",
     "@types/uuid": "^10.0.0",
     "@types/vscode": "^1.85.0",
@@ -8512,6 +8513,7 @@
     "@marp-team/marp-core": "^4.4.0",
     "date-fns": "^2.30.0",
     "handlebars": "^4.7.9",
+    "js-yaml": "^4.3.2",
     "jszip": "^3.10.1",
     "minimatch": "^9.0.0",
     "tesseract.js": "^7.0.0",

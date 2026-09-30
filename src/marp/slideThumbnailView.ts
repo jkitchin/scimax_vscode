@@ -20,10 +20,12 @@ import { isMarpText, renderDeck, slideStarts } from './slideRenderer';
 import { setCurrentDeckSource } from './currentDeck';
 import { editSlidesWithClaudeCode } from './claudeEdit';
 import { replaceDocumentText } from './deckEdits';
+import { copySlidesText, preparePaste } from './slideClipboard';
+import { isMarpConfigFile } from './marpConfig';
 import { affectsMarpRendering, marpHtmlEnabled, marpMathTypesetting, marpThemeUris } from './marpSettings';
 import {
     assembleDeck, Deck, DeckEdit, deleteSlides, duplicateSlides, emptySlide, insertSlides,
-    moveSlides, moveSlidesTo, normalizeSelection, parseDeck, setHidden, slideAtLine, slidesFromText, slidesToText,
+    moveSlides, moveSlidesTo, normalizeSelection, parseDeck, setHidden, slideAtLine, slidesFromText,
 } from './slideModel';
 
 const SIDEBAR_VIEW_TYPE = 'scimax.marp.slides';
@@ -190,9 +192,10 @@ class SlideWebviewController implements vscode.Disposable {
                     this.scheduleRender();
                 }
             }),
-            // Saving one of the deck's theme files updates the slides.
+            // Saving one of the deck's theme files or a Marp CLI configuration updates the slides.
             vscode.workspace.onDidSaveTextDocument(saved => {
-                if (this.document && marpThemeUris(this.document).some(uri => uri.fsPath === saved.uri.fsPath)) {
+                if (this.document && (isMarpConfigFile(saved.uri.fsPath)
+                    || marpThemeUris(this.document).some(uri => uri.fsPath === saved.uri.fsPath))) {
                     this.scheduleRender(0);
                 }
             })
@@ -443,7 +446,7 @@ class SlideWebviewController implements vscode.Disposable {
                 if (indices.length === 0) {
                     return;
                 }
-                await vscode.env.clipboard.writeText(slidesToText(deck, indices));
+                await vscode.env.clipboard.writeText(copySlidesText(document, deck, indices));
                 if (operation === 'copy') {
                     vscode.window.setStatusBarMessage(`Copied ${plural(indices.length, 'slide')}`, 3000);
                     return;
@@ -453,11 +456,20 @@ class SlideWebviewController implements vscode.Disposable {
             case 'pasteAfter':
             case 'pasteBefore': {
                 const clip = await vscode.env.clipboard.readText();
-                const slides = slidesFromText(clip, slideStarts(clip));
-                if (slides.length === 0) {
+                if (slidesFromText(clip, slideStarts(clip)).length === 0) {
                     vscode.window.setStatusBarMessage('Nothing to paste', 3000);
                     return;
                 }
+                // Image paths are made relative to this deck; this may ask to copy the images.
+                const ready = await preparePaste(clip, document);
+                if (ready === undefined) {
+                    return;
+                }
+                if (document.getText() !== text) {
+                    vscode.window.setStatusBarMessage('The deck changed while pasting; paste again', 5000);
+                    return;
+                }
+                const slides = slidesFromText(ready, slideStarts(ready));
                 const at = operation === 'pasteAfter'
                     ? (indices.length > 0 ? last + 1 : deck.slides.length)
                     : (indices.length > 0 ? first : 0);

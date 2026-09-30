@@ -330,6 +330,32 @@ Copy and Cut put the slides' Markdown on the system clipboard, joined with
 Markdown from the clipboard: text copied from the view comes back as the same
 slides, and any other text becomes one new slide.
 
+** ⚠️ Pasting slides with images
+
+Slides often show images by relative path, such as ~![bg](figs/a.png)~, which
+would break in a deck in another folder. So Copy and Cut write every relative
+path in the slides as an absolute one, and Paste makes them relative to the
+deck you paste into. Pasting back into the same deck gives the original
+paths. This covers Markdown images and links, ~<img>~, ~<video>~ and other
+HTML ~src~ attributes, and ~url(...)~ in directives such as
+~<!-- _backgroundImage: url(bg.png) -->~ and in ~<style scoped>~ blocks. Code
+and URLs are left alone.
+
+When you paste into a deck in another folder and some images are outside that
+deck's folder, Paste asks what to do:
+
+- *Copy the images into this deck's folder*: an image under the source deck's
+  folder keeps its path relative to the deck (~figs/a.png~ goes to
+  ~figs/a.png~ beside the new deck); any other image goes into ~figs/~. A file
+  already there with the same content is reused; a different file with the
+  same name gets a numbered name (~a-1.png~).
+- *Link to the original images*: the paths point back at the originals.
+- *Cancel paste*.
+
+Cut never moves or deletes images. Slides pasted with an ordinary Cmd+V in the
+editor keep the absolute paths, which work on your computer but not on
+someone else's.
+
 Slide 1 never takes the front matter with it. Moving, pasting or deleting
 slides adds or drops ~---~ separators as needed, so the first slide never
 starts with one and slides never merge. In a deck using ~headingDivider~, a
@@ -492,7 +518,14 @@ touches. Unsaved changes are saved first, since Claude Code reads the file.
 
 Claude Code has no command that takes a prompt from another extension, so
 this uses its ~vscode://anthropic.claude-code/open?prompt=~ link: the prompt
-is filled in but not sent, and it opens in a Claude Code tab.
+is filled in but not sent, and it opens in a new Claude Code tab.
+
+If a Claude Code tab is already open, the slides go to that chat instead:
+their lines are selected in the deck and added to the chat's input as an
+@-mention (for example ~@talks/deck.md#L25-38~), and you type the change
+after it. Claude Code's link can only fill in a prompt in a new tab, which is
+why an open chat gets the @-mention rather than the full sentence. A chat open
+only in the Claude Code side bar is not detected, so a new tab opens.
 
 * ⚠️ Exporting Slides
 
@@ -587,6 +620,35 @@ Each falls back to Marp for VS Code's ~markdown.marp.themes~,
 set. A theme file names itself with a ~/* @theme name */~ comment, and a deck
 uses it with ~theme: name~. The export settings are listed under
 [[*Export settings][Export settings]].
+
+** ⚠️ Marp CLI configuration files
+
+A deck set up for Marp CLI often keeps its themes and options in a
+configuration file beside it rather than in VS Code settings:
+
+#+begin_src yaml
+# .marprc.yml
+themeSet: ./theme
+html: true
+#+end_src
+
+Scimax reads the same file, so the thumbnails, the slide preview, the
+Markdown preview and exports show the deck the way Marp CLI renders it. It
+uses the nearest ~.marprc~, ~.marprc.json~, ~.marprc.yaml~, ~.marprc.yml~ or
+~marp~ key of ~package.json~, looking in the deck's folder and then each folder
+above it up to the workspace folder. Paths in the file are relative to it.
+
+| Key            | Effect in Scimax                                                                    |
+|----------------+-------------------------------------------------------------------------------------|
+| ~themeSet~     | Theme CSS files or folders (all ~.css~ files inside), added to ~scimax.marp.themes~ |
+| ~html~         | ~true~ or ~false~, used when ~scimax.marp.enableHtml~ is not set                    |
+| ~options.math~ | ~katex~, ~mathjax~ or ~false~, used when ~scimax.marp.mathTypesetting~ is not set   |
+
+An ~html~ allowlist object is not supported, and JavaScript configuration
+files (~marp.config.js~, ~.marprc.js~) are not run. Saving the configuration
+file updates the thumbnails. The Marp for VS Code extension does not read
+these files, so if it is installed and renders the Markdown preview, set
+~markdown.marp.themes~ for it as well.
 
 ** Double-click in the Markdown preview
 

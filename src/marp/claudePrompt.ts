@@ -50,3 +50,19 @@ export function slideEditPrompt(filePath: string, lines: string[], slides: Slide
         + `Change only ${chosen.length === 1 ? 'that slide' : 'those slides'} and keep the rest of the deck as it is.`
         + `${hiddenNote} Change: `;
 }
+
+/**
+ * The lines (0-based, inclusive) spanning slides `indices`, from the first
+ * slide's first line to the last slide's last non-blank line. Used to select
+ * the slides when handing them to an open Claude Code chat as an @-mention.
+ * Returns undefined when no index names a slide.
+ */
+export function slideLineSpan(lines: string[], slides: Slide[], indices: number[]): { start: number; end: number } | undefined {
+    const chosen = indices.filter(i => i >= 0 && i < slides.length);
+    if (chosen.length === 0) {
+        return undefined;
+    }
+    const first = slides[Math.min(...chosen)];
+    const last = slides[Math.max(...chosen)];
+    return { start: first.startLine, end: lastContentLine(lines, last) };
+}

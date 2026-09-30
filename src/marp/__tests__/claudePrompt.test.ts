@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { slideStarts } from '../slideRenderer';
 import { assembleDeck, parseDeck, setHidden } from '../slideModel';
-import { slideEditPrompt } from '../claudePrompt';
+import { slideEditPrompt, slideLineSpan } from '../claudePrompt';
 
 const DECK = '---\nmarp: true\n---\n\n# A\n\n---\n\n# B\n\ntext\n\n---\n\n# C\n';
 
@@ -26,5 +26,22 @@ describe('slideEditPrompt', () => {
     it('explains hidden slides', () => {
         const hidden = assembleDeck(setHidden(parseDeck(DECK, slideStarts(DECK)), [1], true).deck);
         expect(prompt(hidden, [1])).toContain('Slide 2 is hidden');
+    });
+});
+
+describe('slideLineSpan', () => {
+    const deck = parseDeck(DECK, slideStarts(DECK));
+    const lines = DECK.split('\n');
+
+    it('spans one slide without trailing blank lines', () => {
+        expect(slideLineSpan(lines, deck.slides, [1])).toEqual({ start: 6, end: 10 });
+    });
+
+    it('spans from the first to the last chosen slide', () => {
+        expect(slideLineSpan(lines, deck.slides, [2, 0])).toEqual({ start: 3, end: 14 });
+    });
+
+    it('is undefined when no index names a slide', () => {
+        expect(slideLineSpan(lines, deck.slides, [7])).toBeUndefined();
     });
 });

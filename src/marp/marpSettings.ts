@@ -5,11 +5,17 @@
  * `scimax.marp.mathTypesetting`, so it works without the Marp for VS Code
  * extension. When one of them is not set, the matching `markdown.marp.*`
  * setting of that extension is used, so decks set up for it keep working.
+ *
+ * A Marp CLI configuration file next to the deck (`.marprc.yml` and so on, see
+ * marpConfig.ts) is read too, so the deck looks the same here as from Marp
+ * CLI: its `themeSet` themes are added to the configured ones, and its `html`
+ * and `options.math` apply unless the Scimax setting is set.
  */
 
 import * as fs from 'fs';
 import * as path from 'path';
 import * as vscode from 'vscode';
+import { findMarpCliConfig, MarpCliConfig } from './marpConfig';
 
 export type MathTypesetting = 'mathjax' | 'katex' | 'off';
 
@@ -34,12 +40,27 @@ function splitKey(key: string): [string, string] {
     return [key.slice(0, dot), key.slice(dot + 1)];
 }
 
-/** The Scimax setting `key` if set, else the Marp for VS Code setting `marpKey`, else `fallback`. */
-function marpSetting<T>(document: SettingsScope, key: string, marpKey: string, fallback: T): T {
+/** The Marp CLI configuration that applies to a deck, if any. */
+export function marpCliConfig(document: SettingsScope): MarpCliConfig | undefined {
+    if (document.uri.scheme !== 'file') {
+        return undefined;
+    }
+    const folder = vscode.workspace.getWorkspaceFolder(document.uri);
+    return findMarpCliConfig(path.dirname(document.uri.fsPath), folder?.uri.fsPath);
+}
+
+/**
+ * The Scimax setting `key` if set, else the deck's Marp CLI configuration
+ * value `fromCli`, else the Marp for VS Code setting `marpKey`, else `fallback`.
+ */
+function marpSetting<T>(document: SettingsScope, key: string, marpKey: string, fallback: T, fromCli?: T): T {
     const [section, prop] = splitKey(key);
     const scimax = vscode.workspace.getConfiguration(section, document.uri);
     if (isSet<T>(scimax, prop)) {
         return scimax.get<T>(prop, fallback);
+    }
+    if (fromCli !== undefined) {
+        return fromCli;
     }
     const [marpSection, marpProp] = splitKey(marpKey);
     const marp = vscode.workspace.getConfiguration(marpSection, document.uri);
@@ -50,30 +71,35 @@ function marpSetting<T>(document: SettingsScope, key: string, marpKey: string, f
 }
 
 /**
- * Local theme CSS files (`scimax.marp.themes`), resolved against the
- * document's workspace folder, or its own folder outside a workspace. Remote
- * URLs are skipped.
+ * Local theme CSS files: `scimax.marp.themes`, resolved against the
+ * document's workspace folder (or its own folder outside a workspace), then
+ * the `themeSet` of the deck's Marp CLI configuration. Remote URLs are skipped.
  */
 export function marpThemeUris(document: SettingsScope): vscode.Uri[] {
     const themes = marpSetting<string[]>(document, 'scimax.marp.themes', 'markdown.marp.themes', []);
     const folder = vscode.workspace.getWorkspaceFolder(document.uri);
-    return themes
+    const uris = themes
         .filter(theme => !/^https?:\/\//i.test(theme))
         .map(theme => path.isAbsolute(theme)
             ? vscode.Uri.file(theme)
             : folder
                 ? vscode.Uri.joinPath(folder.uri, theme)
                 : vscode.Uri.file(path.join(path.dirname(document.uri.fsPath), theme)));
+    const configured = new Set(uris.map(uri => uri.fsPath));
+    const fromCli = (marpCliConfig(document)?.themeFiles ?? []).filter(file => !configured.has(file));
+    return [...uris, ...fromCli.map(file => vscode.Uri.file(file))];
 }
 
-/** Allow all raw HTML in slides (`scimax.marp.enableHtml`). */
+/** Allow all raw HTML in slides (`scimax.marp.enableHtml`, or `html` in `.marprc.yml`). */
 export function marpHtmlEnabled(document: SettingsScope): boolean {
-    return marpSetting<boolean>(document, 'scimax.marp.enableHtml', 'markdown.marp.enableHtml', false);
+    return marpSetting<boolean>(document, 'scimax.marp.enableHtml', 'markdown.marp.enableHtml', false,
+        marpCliConfig(document)?.html);
 }
 
 /** Math typesetting for rendered slides (`scimax.marp.mathTypesetting`). */
 export function marpMathTypesetting(document: SettingsScope): MathTypesetting {
-    return marpSetting<MathTypesetting>(document, 'scimax.marp.mathTypesetting', 'markdown.marp.mathTypesetting', 'mathjax');
+    return marpSetting<MathTypesetting>(document, 'scimax.marp.mathTypesetting', 'markdown.marp.mathTypesetting', 'mathjax',
+        marpCliConfig(document)?.math);
 }
 
 /**
