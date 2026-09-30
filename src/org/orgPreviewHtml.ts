@@ -67,14 +67,14 @@ export function resolveLocalResource(src: string, baseDir: string): string | und
         try {
             // file:///abs/path URLs
             if (/^file:\/\//i.test(value)) {
-                return fileURLToPath(value);
+                return path.resolve(fileURLToPath(value));
             }
         } catch {
             // Fall through to org-style file:relative/path
         }
         const rest = value.replace(/^file:/i, '');
         const expanded = expandHome(rest);
-        return path.isAbsolute(expanded) ? expanded : path.resolve(baseDir, expanded);
+        return path.resolve(baseDir, expanded);
     }
     // Any other scheme (http:, https:, data:, vscode-webview:, ...). A single
     // letter followed by ':' is a Windows drive, not a scheme.
@@ -82,7 +82,7 @@ export function resolveLocalResource(src: string, baseDir: string): string | und
         return undefined;
     }
     const expanded = expandHome(value);
-    return path.isAbsolute(expanded) ? expanded : path.resolve(baseDir, expanded);
+    return path.resolve(baseDir, expanded);
 }
 
 function expandHome(p: string): string {

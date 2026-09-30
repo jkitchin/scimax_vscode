@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest';
+import * as path from 'path';
 import { directiveAt, directiveContext, findDirective, themeNames } from '../marpDirectives';
 import { marpLinkArgs, prepareSlideshowHtml } from '../marpExport';
 
@@ -76,11 +77,11 @@ describe('themeNames', () => {
 
 describe('marpLinkArgs', () => {
     it('resolves the deck relative to the linking file', () => {
-        expect(marpLinkArgs('talks/deck.md', '/notes/index.org', '/home/me')).toEqual({ file: '/notes/talks/deck.md' });
+        expect(marpLinkArgs('talks/deck.md', '/notes/index.org', '/home/me')).toEqual({ file: path.resolve('/notes/talks/deck.md') });
     });
 
     it('reads a start slide and ~', () => {
-        expect(marpLinkArgs('~/deck.md::3', '/notes/index.org', '/home/me')).toEqual({ file: '/home/me/deck.md', slide: 3 });
+        expect(marpLinkArgs('~/deck.md::3', '/notes/index.org', '/home/me')).toEqual({ file: path.join('/home/me', 'deck.md'), slide: 3 });
         expect(marpLinkArgs('/abs/deck.md', '/notes/index.org', '/home/me')).toEqual({ file: '/abs/deck.md' });
     });
 });

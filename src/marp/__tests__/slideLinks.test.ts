@@ -1,17 +1,22 @@
 import { describe, it, expect } from 'vitest';
+import * as path from 'path';
 import {
     absolutizeLinks, assetTargets, isInside, numberedName, planAssetCopies, relativizeLinks,
 } from '../slideLinks';
 
 const lines = (...l: string[]) => l.join('\n');
+/** A POSIX-style absolute path as this platform resolves it (`D:\d\a.png` on Windows). */
+const abs = (p: string) => path.resolve(p);
+/** The same path as written into slide Markdown, with forward slashes. */
+const md = (p: string) => abs(p).split(path.sep).join('/');
 
 describe('absolutizeLinks', () => {
     it('makes Markdown images and links absolute', () => {
         const text = lines('![bg left:40%](figs/a.png)', '[paper](../docs/p.pdf "Title")', '![](./b.png)');
         expect(absolutizeLinks(text, '/talks/one')).toBe(lines(
-            '![bg left:40%](/talks/one/figs/a.png)',
-            '[paper](/talks/docs/p.pdf "Title")',
-            '![](/talks/one/b.png)',
+            `![bg left:40%](${md('/talks/one/figs/a.png')})`,
+            `[paper](${md('/talks/docs/p.pdf')} "Title")`,
+            `![](${md('/talks/one/b.png')})`,
         ));
     });
 
@@ -23,10 +28,10 @@ describe('absolutizeLinks', () => {
             '[logo]: figs/logo.svg',
         );
         expect(absolutizeLinks(text, '/d')).toBe(lines(
-            '<img src="/d/figs/a.png" width="200"><video poster=\'/d/p.jpg\'></video>',
-            '<!-- _backgroundImage: url(/d/bg.png) -->',
-            '<style scoped>section { background: url("/d/x y.png"); }</style>',
-            '[logo]: /d/figs/logo.svg',
+            `<img src="${md('/d/figs/a.png')}" width="200"><video poster='${md('/d/p.jpg')}'></video>`,
+            `<!-- _backgroundImage: url(${md('/d/bg.png')}) -->`,
+            `<style scoped>section { background: url("${md('/d/x y.png')}"); }</style>`,
+            `[logo]: ${md('/d/figs/logo.svg')}`,
         ));
     });
 
@@ -43,11 +48,11 @@ describe('absolutizeLinks', () => {
 
     it('decodes and re-encodes spaces', () => {
         expect(absolutizeLinks('![](my%20fig.png) ![](<other fig.png>)', '/d'))
-            .toBe('![](/d/my%20fig.png) ![](</d/other fig.png>)');
+            .toBe(`![](${md('/d/my fig.png').replace(/ /g, '%20')}) ![](<${md('/d/other fig.png')}>)`);
     });
 
     it('keeps a fragment', () => {
-        expect(absolutizeLinks('![](icons.svg#star)', '/d')).toBe('![](/d/icons.svg#star)');
+        expect(absolutizeLinks('![](icons.svg#star)', '/d')).toBe(`![](${md('/d/icons.svg')}#star)`);
     });
 });
 
@@ -64,7 +69,7 @@ describe('relativizeLinks', () => {
 
     it('points at copies', () => {
         const clip = absolutizeLinks('![bg](figs/a.png)', '/talks/one');
-        const moved = new Map([['/talks/one/figs/a.png', '/talks/two/figs/a-1.png']]);
+        const moved = new Map([[abs('/talks/one/figs/a.png'), abs('/talks/two/figs/a-1.png')]]);
         expect(relativizeLinks(clip, '/talks/two', moved)).toBe('![bg](figs/a-1.png)');
     });
 });
@@ -72,14 +77,15 @@ describe('relativizeLinks', () => {
 describe('assets', () => {
     it('lists shown files, not links', () => {
         const clip = absolutizeLinks(lines('![](a.png) [pdf](p.pdf)', '<!-- _backgroundImage: url(a.png) -->'), '/d');
-        expect(assetTargets(clip)).toEqual(['/d/a.png']);
+        expect(assetTargets(clip)).toEqual([abs('/d/a.png')]);
     });
 
     it('plans copies next to the target deck', () => {
-        const plan = planAssetCopies(['/one/figs/a.png', '/shared/logo.png', '/two/figs/b.png'], '/two', '/one');
+        const plan = planAssetCopies(
+            [abs('/one/figs/a.png'), abs('/shared/logo.png'), abs('/two/figs/b.png')], abs('/two'), abs('/one'));
         expect([...plan]).toEqual([
-            ['/one/figs/a.png', '/two/figs/a.png'],
-            ['/shared/logo.png', '/two/figs/logo.png'],
+            [abs('/one/figs/a.png'), abs('/two/figs/a.png')],
+            [abs('/shared/logo.png'), abs('/two/figs/logo.png')],
         ]);
     });
 
