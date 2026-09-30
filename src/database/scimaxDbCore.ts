@@ -655,6 +655,30 @@ export class ScimaxDbCore {
     }
 
     /**
+     * Dimension recorded in idx_chunks_embedding's libsql metadata, or null if
+     * the index (or libsql's metadata table) doesn't exist. The metadata blob is
+     * a sequence of 9-byte records: a 1-byte key and a little-endian u64 value;
+     * key 4 is the vector dimension.
+     */
+    private async getVectorIndexDimensions(): Promise<number | null> {
+        if (!this.db) return null;
+        try {
+            const result = await this.db.execute(
+                "SELECT metadata FROM libsql_vector_meta_shadow WHERE name = 'idx_chunks_embedding'"
+            );
+            if (result.rows.length === 0) return null;
+            const blob = new Uint8Array((result.rows[0] as any).metadata as ArrayBuffer);
+            const view = new DataView(blob.buffer, blob.byteOffset, blob.byteLength);
+            for (let i = 0; i + 9 <= blob.length; i += 9) {
+                if (blob[i] === 4) return Number(view.getBigUint64(i + 1, true));
+            }
+            return null;
+        } catch {
+            return null;
+        }
+    }
+
+    /**
      * Create the chunks table sized for the current embedding dimensions.
      *
      * The table is created during initialize(), usually before an embedding
@@ -689,6 +713,19 @@ export class ScimaxDbCore {
             )
         `);
         await this.db.execute('CREATE INDEX IF NOT EXISTS idx_chunks_file ON chunks(file_id)');
+
+        // The vector index keeps its own dimension in libsql metadata, and it
+        // can disagree with the table (seen after a 384 -> 768 rebuild). Every
+        // insert then fails, so drop the index and let testVectorSupport()
+        // recreate it from the table's declared size.
+        const tableDims = await this.getChunksTableDimensions();
+        const indexDims = await this.getVectorIndexDimensions();
+        if (tableDims !== null && indexDims !== null && tableDims !== indexDims) {
+            console.error(
+                `[ScimaxDbCore] Rebuilding vector index: ${indexDims} -> ${tableDims} dimensions`
+            );
+            await this.db.execute('DROP INDEX IF EXISTS idx_chunks_embedding');
+        }
 
         await this.testVectorSupport();
     }

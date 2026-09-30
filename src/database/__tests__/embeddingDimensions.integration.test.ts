@@ -75,4 +75,36 @@ describe('embedding dimensions (integration)', () => {
         expect(db.getEmbeddingFailures().count).toBe(0);
         expect((await db.getStats()).chunks).toBeGreaterThan(0);
     });
+
+    it('rebuilds a vector index whose metadata disagrees with the table', async () => {
+        await db.setEmbeddingService(fakeService(768));
+        await db.close();
+
+        // Rewrite the index metadata to 384 dims (key 4) while the table stays
+        // 768: the state a real database was found in after a rebuild.
+        const { createClient } = await import('@libsql/client');
+        const raw = createClient({ url: `file:${path.join(dir, 'test.db')}` });
+        const row = (await raw.execute(
+            "SELECT metadata FROM libsql_vector_meta_shadow WHERE name = 'idx_chunks_embedding'"
+        )).rows[0] as any;
+        const blob = new Uint8Array(row.metadata as ArrayBuffer).slice();
+        const view = new DataView(blob.buffer);
+        for (let i = 0; i + 9 <= blob.length; i += 9) {
+            if (blob[i] === 4) view.setBigUint64(i + 1, 384n, true);
+        }
+        await raw.execute({
+            sql: "UPDATE libsql_vector_meta_shadow SET metadata = ? WHERE name = 'idx_chunks_embedding'",
+            args: [blob],
+        });
+        raw.close();
+
+        db = new ScimaxDbCore({ dbPath: path.join(dir, 'test.db') });
+        await db.initialize();
+        await db.setEmbeddingService(fakeService(768));
+        await db.indexFile(file, { queueEmbeddings: true });
+        await db.waitForEmbeddings();
+
+        expect(db.getEmbeddingFailures().count).toBe(0);
+        expect((await db.getStats()).chunks).toBeGreaterThan(0);
+    });
 });
