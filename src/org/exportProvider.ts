@@ -86,7 +86,7 @@ async function deleteExistingOutput(outputPath: string): Promise<void> {
 /**
  * Preprocess content before export - handles #+INCLUDE: directives
  */
-function preprocessContent(content: string, basePath: string): string {
+export function preprocessContent(content: string, basePath: string): string {
     if (!hasIncludes(content)) {
         return content;
     }
@@ -207,7 +207,7 @@ const EXPORT_SCOPES: ExportScope[] = [
 /**
  * Extract document metadata from keywords
  */
-function extractMetadata(doc: OrgDocumentNode): Partial<ExportOptions> {
+export function extractMetadata(doc: OrgDocumentNode): Partial<ExportOptions> {
     const options: Partial<ExportOptions> = {};
 
     // Get keywords directly from document keywords map
@@ -357,7 +357,7 @@ function findHeadlineBoundaries(
 /**
  * Extract bibliography paths from document content
  */
-function extractBibPaths(content: string, basePath: string): string[] {
+export function extractBibPaths(content: string, basePath: string): string[] {
     const paths: string[] = [];
     const homeDir = process.env.HOME || process.env.USERPROFILE || '';
 
@@ -428,7 +428,7 @@ async function loadBibEntries(bibPaths: string[]): Promise<BibEntry[]> {
 /**
  * Export to HTML format - runs in chunks to avoid blocking
  */
-async function exportHtml(
+export async function exportHtml(
     content: string,
     options: Partial<HtmlExportOptions>,
     bodyOnly: boolean,
@@ -1715,48 +1715,10 @@ async function quickExportDocx(): Promise<void> {
 }
 
 /**
- * Preview HTML export in a webview panel
+ * Preview HTML export - kept as an alias for the live org preview
  */
 async function previewHtml(): Promise<void> {
-    const editor = vscode.window.activeTextEditor;
-    if (!editor || editor.document.languageId !== 'org') {
-        vscode.window.showWarningMessage('No org-mode file open');
-        return;
-    }
-
-    const inputPath = editor.document.uri.fsPath;
-    const inputDir = path.dirname(inputPath);
-    const content = preprocessContent(editor.document.getText(), inputDir);
-    const fileName = path.basename(inputPath);
-
-    // Parse document to extract metadata and export settings
-    const doc = parseOrgFast(content);
-    const metadata = extractMetadata(doc);
-
-    try {
-        const htmlContent = await exportHtml(content, metadata, false, inputDir);
-
-        // Inject CSP meta tag to allow loading external scripts (MathJax, highlight.js)
-        // VS Code webviews have restrictive default CSP that blocks CDN scripts
-        const cspMeta = `<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; style-src 'unsafe-inline' https://cdnjs.cloudflare.com; img-src 'self' data: https:; font-src https://cdn.jsdelivr.net https://cdnjs.cloudflare.com;">`;
-        const htmlWithCsp = htmlContent.replace(/<head>/, `<head>\n${cspMeta}`);
-
-        // Create webview panel
-        const panel = vscode.window.createWebviewPanel(
-            'orgHtmlPreview',
-            `Preview: ${fileName}`,
-            vscode.ViewColumn.Beside,
-            {
-                enableScripts: true,
-                retainContextWhenHidden: true,
-            }
-        );
-
-        panel.webview.html = htmlWithCsp;
-    } catch (error) {
-        const message = error instanceof Error ? error.message : String(error);
-        vscode.window.showErrorMessage(`Preview failed: ${message}`);
-    }
+    await vscode.commands.executeCommand('scimax.org.preview.openToSide');
 }
 
 /**

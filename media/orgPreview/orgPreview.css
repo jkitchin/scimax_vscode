@@ -1,0 +1,86 @@
+/* Scimax org preview: adapt the HTML export styles to the VS Code theme. */
+
+body {
+    background: var(--vscode-editor-background);
+    color: var(--vscode-editor-foreground);
+    font-family: var(--vscode-markdown-font-family, var(--vscode-font-family, system-ui, sans-serif));
+    font-size: var(--vscode-markdown-font-size, 14px);
+    padding: 0;
+    margin: 0;
+}
+
+.org-content {
+    padding: 1rem 2rem 3rem;
+}
+
+a,
+.citation a,
+.citation-link,
+.citation-backlink {
+    color: var(--vscode-textLink-foreground);
+}
+
+a:hover {
+    color: var(--vscode-textLink-activeForeground);
+}
+
+img {
+    max-width: 100%;
+}
+
+code,
+.org-timestamp {
+    font-family: var(--vscode-editor-font-family, monospace);
+    background: var(--vscode-textCodeBlock-background);
+}
+
+.src,
+pre.src,
+pre.example,
+.org-toc,
+.org-table th {
+    background: var(--vscode-textCodeBlock-background);
+    color: var(--vscode-editor-foreground);
+}
+
+pre code.hljs {
+    background: transparent;
+    padding: 0;
+}
+
+.org-tag {
+    background: var(--vscode-badge-background);
+    color: var(--vscode-badge-foreground);
+}
+
+.org-table th,
+.org-table td,
+.org-footnotes,
+.bibliography {
+    border-color: var(--vscode-panel-border, rgba(128, 128, 128, 0.35));
+}
+
+blockquote {
+    border-left-color: var(--vscode-textBlockQuote-border);
+    background: var(--vscode-textBlockQuote-background);
+    color: inherit;
+}
+
+.section-number,
+.citation-backlinks {
+    color: var(--vscode-descriptionForeground);
+}
+
+body.vscode-dark .admonition,
+body.vscode-high-contrast .admonition {
+    background: var(--vscode-textCodeBlock-background);
+}
+
+body.vscode-dark .bibliography .csl-entry:target,
+body.vscode-dark .citation:target {
+    background-color: var(--vscode-editor-findMatchHighlightBackground);
+}
+
+#postamble {
+    display: none;
+}

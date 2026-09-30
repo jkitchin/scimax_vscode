@@ -27,11 +27,12 @@ CLOSED: [2026-01-16 Fri 20:55]
 
 The dispatcher menu is organized into logical groups:
 
-*** ✅ HTML Exports
+*** 👀 HTML Exports
 CLOSED: [2026-01-16 Fri 20:55]
 - `[h h]' HTML file - Export to .html file
 - `[h o]' HTML and open - Export to .html and open in browser
-- `[h p]' HTML preview - Preview HTML in VS Code webview
+- `[h p]' HTML preview - Open the live [[file:46-org-preview.org][Org Preview]] beside the editor
+  (also =Cmd+Shift+V= / =Ctrl+Shift+V= in any org file)
 
 *** ✅ LaTeX/PDF Exports
 CLOSED: [2026-01-16 Fri 20:55]
@@ -2784,6 +2785,7 @@ This documentation covers the complete export system in Scimax VS Code. For addi
 
 * Related Topics
 
+- [[file:46-org-preview.org][Org Preview]] - Live rendered preview while you edit
 - [[file:07-source-blocks.org][Source Code Blocks]] - Code execution in documents
 - [[file:11-latex-preview.org][LaTeX Preview]] - Math preview before export
 - [[file:19-references.org][References]] - Citations and bibliography in exports
