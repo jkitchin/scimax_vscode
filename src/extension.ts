@@ -54,6 +54,7 @@ import { registerLatexLivePreviewCommands } from './org/latexLivePreview';
 import { registerBabelCommands, registerBabelCodeLens } from './org/babelProvider';
 import { registerBabelAdvancedCommands } from './parser/orgBabelAdvanced';
 import { registerExportCommands } from './org/exportProvider';
+import { registerOrgPreview } from './org/orgPreview';
 import { registerCustomExportCommands } from './export/commands';
 import { registerBuildProfileCommands } from './latex/buildProfileService';
 import { registerScimaxOrgCommands } from './org/scimaxOrg';
@@ -736,6 +737,7 @@ async function activateScimax(context: vscode.ExtensionContext) {
 
     // Register Export commands (for exporting to HTML, LaTeX, PDF, Markdown)
     activationStep('registerExportCommands', () => registerExportCommands(context));
+    activationStep('registerOrgPreview', () => registerOrgPreview(context));
 
     // Register Custom Export commands (user-defined export templates)
     activationStep('registerCustomExportCommands', () => registerCustomExportCommands(context));

@@ -184,6 +184,17 @@ database), so valid cross-file anchor links are not flagged. Custom-id
 (=[[#id]]=) and =id:= links are checked by the separate org-lint =broken-link=
 checker. Set this to =false= to turn the warnings off.
 
+** ⚠️ Org Preview
+
+Settings for the live org preview (=Cmd+Shift+V= / =Ctrl+Shift+V=). See
+[[file:46-org-preview.org][Org Preview]].
+
+| Setting                                      | Default | Description                                          |
+|----------------------------------------------+---------+------------------------------------------------------|
+| ~scimax.orgPreview.updateDelay~              | ~300~   | Milliseconds after typing before the preview updates |
+| ~scimax.orgPreview.scrollPreviewWithEditor~  | ~true~  | Scroll the preview when the source editor scrolls    |
+| ~scimax.orgPreview.scrollEditorWithPreview~  | ~true~  | Scroll the source editor when the preview scrolls    |
+
 ** ✅ Detailed Configuration
 CLOSED: [2026-01-24 Sat 17:41]
 

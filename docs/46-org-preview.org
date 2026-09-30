@@ -1,0 +1,89 @@
+#+TITLE: Org Preview
+#+AUTHOR: Scimax VS Code
+#+DATE: 2026-09-30
+#+STARTUP: overview
+#+OPTIONS: toc:t num:t
+#+TODO: ⚠️ 👀 | ✅
+
+* ⚠️ Overview
+
+The org preview shows the rendered document next to (or instead of) the
+source, the way VS Code's Markdown preview does for =.md= files. It uses the
+same engine as HTML export ([[file:10-export.org][Export]]), so what you see is what
+HTML export produces, and it updates as you type.
+
+* ⚠️ Opening the Preview
+
+| Action                          | macOS         | Windows/Linux  | Command                            |
+|---------------------------------+---------------+----------------+------------------------------------|
+| Open preview (in this group)    | =Cmd+Shift+V= | =Ctrl+Shift+V= | ~scimax.org.preview.open~          |
+| Open preview to the side        | =Cmd+K V=     | =Ctrl+K V=     | ~scimax.org.preview.openToSide~    |
+| Back to the source from preview | =Cmd+Shift+V= | =Ctrl+Shift+V= | ~scimax.org.preview.showSource~    |
+
+The preview icon in the editor title bar of an org file also opens the preview
+to the side. Each org file has at most one preview; running the command again
+reveals the existing one.
+
+The older command ~scimax.org.previewHtml~ (/Scimax: Preview HTML/, also
+reachable from the export menu) now opens this live preview to the side.
+
+* ⚠️ What the Preview Does
+
+- *Live updates*: the preview re-renders shortly after you stop typing (see
+  ~scimax.orgPreview.updateDelay~) and when you save. The page is updated in
+  place, so it does not flicker and keeps its scroll position.
+- *Math*: LaTeX fragments (~$x^2$~, ~\[...\]~, equation environments) are
+  typeset with MathJax.
+- *Code*: source blocks are highlighted with highlight.js, in a light or
+  dark style that follows the VS Code theme.
+- *Images*: local images such as =[[./figure.png]]=, =file:= links and Jupyter
+  results in =.ob-jupyter/= are shown. Images outside the document folder and
+  workspace are allowed as they are found.
+- *Theme*: colours, fonts and code backgrounds follow the VS Code theme.
+- *Citations*: =cite:= links are formatted against the files named by
+  =#+BIBLIOGRAPHY:= / =bibliography:=, as in HTML export. The bibliography is
+  re-read only when the =.bib= file changes.
+- *#+INCLUDE:* directives are expanded.
+
+* ⚠️ Scroll Sync and Navigation
+
+- Scrolling the source editor scrolls the preview to the same place, and
+  scrolling the preview scrolls the editor. Each direction can be turned off
+  (see [[*⚠️ Settings][Settings]]).
+- *Double-click* in the preview to move the cursor to that place in the
+  source. Collapsed headings, blocks and drawers around that line are
+  unfolded so the text is visible.
+- *Links*: =http(s)= and =mailto= links open in the browser; =#= links jump
+  within the preview; links to files (including other =.org= files) open in
+  the editor.
+
+Sync works at the level of headlines, paragraphs, lists, tables and blocks.
+Inside a long element the position is interpolated. After an =#+INCLUDE:=
+directive, the included lines shift the line numbers, so sync can drift
+below the include point.
+
+* ⚠️ Settings
+
+| Setting                                      | Default | Description                                         |
+|----------------------------------------------+---------+-----------------------------------------------------|
+| ~scimax.orgPreview.updateDelay~              | ~300~   | Milliseconds after typing before the preview updates |
+| ~scimax.orgPreview.scrollPreviewWithEditor~  | ~true~  | Scroll the preview when the source editor scrolls   |
+| ~scimax.orgPreview.scrollEditorWithPreview~  | ~true~  | Scroll the source editor when the preview scrolls   |
+
+* ⚠️ Security
+
+Source blocks are never executed by the preview. Scripts in the document
+(for example in =#+HTML:= blocks or =#+HTML_HEAD:=) do not run either: the
+preview only runs its own scripts and MathJax / highlight.js from their CDNs.
+Because those libraries load from the network, math and highlighting need an
+internet connection; the rest of the preview works offline.
+
+* ⚠️ Related Topics
+
+- [[file:10-export.org][Export]] - HTML export, which the preview is built on
+- [[file:11-latex-preview.org][LaTeX Preview]] - inline equation previews in the editor
+- [[file:12-image-overlays.org][Image Overlays]] - inline image thumbnails in the editor
+- [[file:19-references.org][References]] - citations and bibliographies
+- [[file:24-keybindings.org][Keybindings]] - all keyboard shortcuts
+- [[file:26-configuration.org][Configuration]] - all settings
+- [[file:45-myst-preview.org][MyST Preview]] - the equivalent for MyST Markdown

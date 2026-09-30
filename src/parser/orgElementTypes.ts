@@ -185,6 +185,8 @@ export interface OrgElement extends OrgNode {
     contentsRange?: OrgRange;
     /** Child elements or objects (for greater elements and elements with inline content) */
     children?: (OrgElement | OrgObject)[];
+    /** 1-based source line where the element starts (set by the fast export parser) */
+    sourceLine?: number;
 }
 
 /**

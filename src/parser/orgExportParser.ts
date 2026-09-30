@@ -1149,8 +1149,12 @@ function parseSection(state: FastParserState, parentLevel: number): OrgElement[]
         }
 
         // Try to parse different element types
+        const startLine = state.lineIndex;
         const element = parseElement(state);
         if (element) {
+            if (element.sourceLine === undefined) {
+                element.sourceLine = startLine + 1;
+            }
             // Check if this is an affiliated keyword that should attach to the next element
             if (element.type === 'keyword') {
                 const kw = element as KeywordElement;

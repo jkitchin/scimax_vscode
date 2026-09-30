@@ -237,6 +237,7 @@ This documentation is organized into several sections:
 | [[file:43-notes.org][Dialog Notes]]                       | Decisions/questions as footnotes  |
 | [[file:44-marp.org][Marp Slides]]                        | Slide sorter: thumbnails, editing  |
 | [[file:45-myst-preview.org][MyST Preview]]                 | Jupyter Book directives in preview |
+| [[file:46-org-preview.org][Org Preview]]                   | Live rendered preview (Cmd+Shift+V) |
 
 ** Quick Start
 
@@ -442,6 +443,7 @@ Quick reference to find specific features across documentation.
 | Notebooks             | [[file:16-notebook.org][Notebook]]                           | [[file:17-projectile.org][Projectile]], [[file:14-journal.org][Journal]]                                                   |
 | Org file modification | [[file:27-org-api.org][Org API]]                             | [[file:07-source-blocks.org][Source Code Blocks]], [[file:04-tables.org][Tables]]                                          |
 | Org-mode syntax       | [[file:01.5-basic-syntax.org][Basic Syntax]]                 | [[file:02-document-structure.org][Document Structure]], [[file:07-source-blocks.org][Source Code Blocks]], [[file:04-tables.org][Tables]]         |
+| Org preview           | [[file:46-org-preview.org][Org Preview]]                     | [[file:10-export.org][Export]], [[file:24-keybindings.org][Keybindings]] - live rendered preview, Cmd+Shift+V / Cmd+K V, scroll sync |
 | org-ref citations     | [[file:28-non-standard-features.org][Non-Standard Features]] | [[file:19-references.org][References]], [[file:05-links.org][Links]]                                                       |
 | PDF export            | [[file:10-export.org][Export]]                               | [[file:11-latex-preview.org][LaTeX Preview]]                                                                               |
 | Priorities            | [[file:03-todo-items.org][TODO Items]]                       | [[file:13-agenda.org][Agenda]]                                                                                             |

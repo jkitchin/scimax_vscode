@@ -330,6 +330,17 @@ CLOSED: [2026-01-17 Sat 12:27]
 | [[cmd:scimax.org.exportMenu]]      | Export Menu (C-c C-e) | C-c C-e            |
 | [[cmd:scimax.org.previewHtml]]     | Preview HTML          | -                  |
 
+** ⚠️ Org Preview
+
+Live rendered preview of an org file. See [[file:46-org-preview.org][Org Preview]].
+
+| Command ID                             | Description                          | Default Keybinding      |
+|----------------------------------------+--------------------------------------+-------------------------|
+| [[cmd:scimax.org.preview.open]]        | Open Org Preview (in this group)     | Cmd+Shift+V / Ctrl+Shift+V |
+| [[cmd:scimax.org.preview.openToSide]]  | Open Org Preview to the Side         | Cmd+K V / Ctrl+K V      |
+| [[cmd:scimax.org.preview.showSource]]  | Show Org Source (from the preview)   | Cmd+Shift+V / Ctrl+Shift+V |
+| [[cmd:scimax.org.previewHtml]]         | Alias: opens the preview to the side | -                       |
+
 ** ✅ HTML Export
 CLOSED: [2026-01-17 Sat 12:27]
 

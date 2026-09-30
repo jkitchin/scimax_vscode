@@ -144,6 +144,12 @@ export interface HtmlExportOptions extends ExportOptions {
     // Editmark options
     /** Editmark export mode: show, accept, reject, or hide */
     editmarkMode?: EditmarkExportMode;
+
+    /**
+     * Tag headlines and section-level elements with `data-line` attributes
+     * holding their 1-based source line (used for preview scroll sync)
+     */
+    sourceLineMarkers?: boolean;
 }
 
 const DEFAULT_HTML_OPTIONS: HtmlExportOptions = {
@@ -339,6 +345,10 @@ export class HtmlExportBackend implements ExportBackend {
         const content = this.exportElementContent(element, state);
         let result = prefix + content;
 
+        if ((state as HtmlExportState).htmlOptions?.sourceLineMarkers && element.sourceLine !== undefined) {
+            result = addSourceLineMarker(result, element.sourceLine);
+        }
+
         // Run element filter hooks
         result = exportHookRegistry.runElementFilters(result, {
             element,
@@ -524,7 +534,10 @@ export class HtmlExportBackend implements ExportBackend {
         const parts: string[] = [];
 
         // Opening div with id
-        parts.push(`<div id="${id}" class="org-section org-level-${headline.properties.level}">`);
+        const lineAttr = (state as HtmlExportState).htmlOptions?.sourceLineMarkers && headline.properties.lineNumber
+            ? ` data-line="${headline.properties.lineNumber}"`
+            : '';
+        parts.push(`<div id="${id}" class="org-section org-level-${headline.properties.level}"${lineAttr}>`);
 
         // Headline
         parts.push(`<h${level}>${title}</h${level}>`);
@@ -1525,6 +1538,22 @@ ${EDITMARK_CSS}
 /**
  * Export an org document to HTML
  */
+/**
+ * Attach a `data-line` attribute to the first opening tag of an exported
+ * element, or prepend an empty marker span when the output does not start
+ * with a tag.
+ */
+export function addSourceLineMarker(html: string, line: number): string {
+    if (!html.trim()) {
+        return html;
+    }
+    const match = html.match(/^(\s*<[a-zA-Z][\w-]*)(?=[\s>/])/);
+    if (match) {
+        return `${match[1]} data-line="${line}"${html.slice(match[1].length)}`;
+    }
+    return `<span class="org-line-marker" data-line="${line}"></span>${html}`;
+}
+
 export function exportToHtml(
     doc: OrgDocumentNode,
     options?: Partial<HtmlExportOptions>

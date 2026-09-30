@@ -263,6 +263,16 @@ current slide, and =C-c C-e ?= opens Marp help. =Cmd+Shift+V= (=Ctrl+Shift+V=) o
 of the Markdown preview; =Cmd+K V= still opens the Markdown preview beside the
 editor. See [[file:44-marp.org::*Exporting Slides][Exporting Slides]] and [[file:44-marp.org::*Slideshow][Slideshow]].
 
+* ⚠️ Org Preview
+
+Like the Markdown preview, but for org files. See [[file:46-org-preview.org][Org Preview]].
+
+| Key (macOS)   | Key (Windows/Linux) | Where        | Action                          |
+|---------------+---------------------+--------------+---------------------------------|
+| Cmd+Shift+V   | Ctrl+Shift+V        | Org editor   | Open preview in this group      |
+| Cmd+K V       | Ctrl+K V            | Org editor   | Open preview to the side        |
+| Cmd+Shift+V   | Ctrl+Shift+V        | Org preview  | Back to the org source          |
+
 * Links
 
 | Key        | Action                   |
