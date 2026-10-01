@@ -22,6 +22,7 @@
  *            edit or rebuild with Marp next to the original
  *   S        save just the annotations as JSON (a backup you can load again)
  *   i        load annotations from such a JSON file (or drag the file onto the deck)
+ *   d        edit the slides' text and layout in place (editor.js); s and S save the edits too
  *   Cmd/Ctrl+P  print → "Save as PDF" gives every slide with its ink, as vector graphics
  *
  * The keys also work while a widget has keyboard focus (e.g. after dragging a slider).
@@ -119,9 +120,13 @@
              notes: has(nts).reduce((n, k) => n + nts[k].length, 0) };
   };
   const total = () => count(ink, notes);
-  const nothing = c => !c.strokes && !c.notes;
-  const describe = c => [c.strokes && plural(c.strokes, "stroke"), c.notes && plural(c.notes, "note")].filter(Boolean).join(" and ") +
-    " on " + plural(c.slides, "slide");
+  // Text and layout edits from editor.js (d), saved alongside the ink
+  const edits = () => (window.__marpEdits ? window.__marpEdits.data() : {});
+  const editCount = () => (window.__marpEdits ? window.__marpEdits.count() : 0);
+  const nothing = c => !c.strokes && !c.notes && !editCount();
+  const describe = c => [(c.strokes || c.notes) && [c.strokes && plural(c.strokes, "stroke"), c.notes && plural(c.notes, "note")]
+      .filter(Boolean).join(" and ") + " on " + plural(c.slides, "slide"),
+    editCount() && plural(editCount(), "text or layout edit")].filter(Boolean).join(", and ");
   const validInk = o => o && typeof o === "object" && Object.values(o).every(v => Array.isArray(v) && v.every(s => s && Array.isArray(s.pts) && PENS[s.pen]));
   const validNotes = o => o && typeof o === "object" && Object.values(o).every(v => Array.isArray(v) && v.every(n => n && typeof n.text === "string" && isFinite(n.x) && isFinite(n.y)));
   function download(text, name, type) {
@@ -137,7 +142,7 @@
     const now = new Date(), pad = n => String(n).padStart(2, "0");
     const stamp = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}-${pad(now.getHours())}${pad(now.getMinutes())}`;
     const name = `${DECK}-annotations-${stamp}.json`;
-    download(JSON.stringify({ format: "marp-ink", version: 2, deck: DECK, saved: now.toISOString(), ink, notes }, null, 1),
+    download(JSON.stringify({ format: "marp-ink", version: 2, deck: DECK, saved: now.toISOString(), ink, notes, edits: edits() }, null, 1),
              name, "application/json");
     say(`Saved ${describe(c)} → ${name}`);
   }
@@ -216,13 +221,15 @@
     return [...head, ...chunks.flatMap((c, i) => i ? [seps[i - 1], ...c] : c)].join("\n");
   }
   async function saveMarkdown() {
-    if (nothing(total())) { say("Nothing to save: no annotations yet"); return; }
+    const c = total();
+    if (!c.strokes && !c.notes) { say(editCount() ? "No ink or notes to save: text and layout edits are saved with s" : "Nothing to save: no annotations yet"); return; }
     if (!source) { mdPicker.click(); return; }       // not bundled: ask for the .md
     let text;
     try { text = annotatedMarkdown(source); } catch (e) { say("Could not save Markdown: " + e.message + ". Press S to save the ink as JSON."); return; }
     const name = DECK.replace(/-annotated$/, "") + "-annotated.md";
+    const lost = editCount() ? " Text and layout edits are not in Markdown: press s to keep them." : "";
     await writeFile(text, name, "Markdown", "text/markdown", ".md",
-      `Saved ${name} to Downloads. Build it next to the original .md so its images and widgets resolve.`);
+      `Saved ${name} to Downloads. Build it next to the original .md so its images and widgets resolve.${lost}`);
   }
   // Chrome/Edge let you choose where the file goes; elsewhere (or if that fails) it downloads.
   async function writeFile(text, name, what, type, ext, downloadedMsg) {
@@ -264,7 +271,7 @@
     if (!b64) { say("This deck was not built with scimax presenter tools, so saving the Markdown instead"); saveMarkdown(); return; }
     const page = b64decode(b64);
     if (!page.includes(INK_EMPTY) || !page.includes(SELF_EMPTY)) { say("Could not save: the embedded copy of the deck is damaged. Press m or S instead."); return; }
-    const inkJson = JSON.stringify({ ink, notes }).replace(/</g, "\\u003c");
+    const inkJson = JSON.stringify({ ink, notes, edits: edits() }).replace(/</g, "\\u003c");
     const text = page.replace(INK_EMPTY, () => INK_EMPTY.replace("{}", inkJson))
                      .replace(SELF_EMPTY, () => SELF_EMPTY.replace("</script>", b64 + "</script>"))
                      .replace(PYODIDE_EMPTY, () => {
@@ -316,6 +323,7 @@
     if (!valid) { say(`${name} is not an annotation file saved from these slides`); return; }
     try { localStorage.setItem(KEY + ":before-load", JSON.stringify({ ink, notes })); } catch (e) { /* ignore */ }
     ink = data.ink; notes = data.notes || {}; stroke = null; save(); saveNotes(); redraw(); buildNotes();
+    if (data.edits && window.__marpEdits) window.__marpEdits.replace(data.edits);
     say(`Loaded ${describe(total())} from ${name}` +
         (data.deck && data.deck !== DECK ? ` (saved from "${data.deck}")` : ""));
   }
@@ -787,6 +795,7 @@
       { swatches: true },
       { label: "Laser pointer", key: "l", check: laserOn, run: () => act("l") },
       { label: "Add a note here", key: "n", run: () => { lastX = menuX; lastY = menuY; act("n"); } },
+      ...(window.__marpEdits && window.__marpEdits.canEdit ? [{ label: "Edit text and layout", key: "d", check: window.__marpEdits.editing, run: () => window.__marpEdits.toggle() }] : []),
       "-",
       { label: "Undo last stroke", key: "z", off: !here, run: () => act("z") },
       { label: "Clear ink on this slide", key: "c", off: !here, run: () => act("c") },

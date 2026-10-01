@@ -18,7 +18,7 @@ import {
 import { parseDocument, replaceDocumentText, slidesInSelection } from './deckEdits';
 import { marpHtmlEnabled, marpThemeUris } from './marpSettings';
 import { BUILTIN_THEMES, themeNames } from './marpDirectives';
-import { presenterOffline, presenterRequested } from './presenterBundle';
+import { parseTimer, presenterOffline, presenterRequested } from './presenterBundle';
 import {
     customThemeCss, ensureStyleBlock, frontMatterRange, frontMatterValue, MARP_HEADER_SNIPPET, IMAGE_PLACEMENTS, ImageFilter, imageMarkdown,
     ImagePlacement, LayoutName, LAYOUTS, layoutSnippet, setFrontMatterValue, setSlideDirective,
@@ -356,6 +356,31 @@ async function insertPythonCell(): Promise<void> {
     await insertBlock(editor, `\`\`\`python ${kind.flags}\n\${1:print("hello")}\n\`\`\``);
 }
 
+/**
+ * Insert an exercise countdown (a ```countdown fence), which runs on the
+ * slide while presenting. Like Python cells, it needs the presenter tools.
+ */
+async function insertCountdown(): Promise<void> {
+    const editor = deckEditor();
+    if (!editor) {
+        return;
+    }
+    const time = await vscode.window.showInputBox({
+        title: 'Exercise countdown',
+        prompt: 'How long: minutes (5), or 5m, 90s, 2:30',
+        value: '5',
+        validateInput: v => parseTimer(v) !== undefined ? undefined : 'Not a time: try 5, 5m, 90s or 2:30',
+    });
+    if (time === undefined) {
+        return;
+    }
+    if (!presenterRequested(frontMatterValue(editor.document.getText().split(/\r?\n/), 'presenter'))) {
+        await editLines(editor, lines => setFrontMatterValue(lines, 'presenter', 'true'));
+        vscode.window.setStatusBarMessage('Turned on presenter tools for this deck (presenter: true)', 5000);
+    }
+    await insertBlock(editor, `\`\`\`countdown ${time.trim().replace(/\s+/g, '')}\n\${1:Discuss with your neighbour}\n\`\`\``);
+}
+
 // =============================================================================
 // This slide
 // =============================================================================
@@ -487,6 +512,39 @@ async function setPresenter(): Promise<void> {
         ], { title: 'Presenter tools' });
         return choice === undefined ? undefined : choice.value;
     });
+}
+
+/**
+ * Set the talk timer (a countdown in the corner of every slide). It is part of
+ * the presenter tools, so this turns them on for the deck too.
+ */
+async function setTimer(): Promise<void> {
+    const editor = deckEditor();
+    if (!editor) {
+        return;
+    }
+    const current = frontMatterValue(editor.document.getText().split(/\r?\n/), 'timer');
+    const answer = await vscode.window.showInputBox({
+        title: 'Talk timer',
+        prompt: 'Length of the talk: minutes (20), or 20m, 45:00, 1h30m. Empty removes the timer.',
+        value: current ?? '20',
+        validateInput: v => v.trim() === '' || parseTimer(v) !== undefined ? undefined : 'Not a time: try 20, 20m, 45:00 or 1h30m',
+    });
+    if (answer === undefined) {
+        return;
+    }
+    const value = answer.trim() || undefined;
+    const turnOn = value !== undefined && !presenterRequested(frontMatterValue(editor.document.getText().split(/\r?\n/), 'presenter'));
+    await editLines(editor, lines => {
+        let out = setFrontMatterValue(lines, 'timer', value);
+        if (turnOn) {
+            out = setFrontMatterValue(out, 'presenter', 'true');
+        }
+        return out;
+    });
+    if (turnOn) {
+        vscode.window.setStatusBarMessage('Turned on presenter tools for this deck (presenter: true)', 5000);
+    }
 }
 
 async function setTheme(): Promise<void> {
@@ -663,6 +721,7 @@ export function registerMarpEditorMenu(context: vscode.ExtensionContext): void {
         vscode.commands.registerCommand('scimax.marp.insert.math', () => insertSnippetBlock('$$\n${1:E = mc^2}\n$$')),
         vscode.commands.registerCommand('scimax.marp.insert.code', () => insertSnippetBlock('```${1:python}\n${2}\n```')),
         vscode.commands.registerCommand('scimax.marp.insert.pythonCell', insertPythonCell),
+        vscode.commands.registerCommand('scimax.marp.insert.countdown', insertCountdown),
         vscode.commands.registerCommand('scimax.marp.insert.table', () =>
             insertSnippetBlock('| ${1:Column} | ${2:Column} | ${3:Column} |\n| --- | --- | --- |\n| ${4} | ${5} | ${6} |')
         ),
@@ -691,6 +750,7 @@ export function registerMarpEditorMenu(context: vscode.ExtensionContext): void {
         vscode.commands.registerCommand('scimax.marp.deck.math', () => setDeck('math', askChoice('Math typesetting', ['mathjax', 'katex']))),
         vscode.commands.registerCommand('scimax.marp.deck.metadata', setMetadata),
         vscode.commands.registerCommand('scimax.marp.deck.presenter', setPresenter),
+        vscode.commands.registerCommand('scimax.marp.deck.timer', setTimer),
         // Themes
         vscode.commands.registerCommand('scimax.marp.theme.new', () => newCustomTheme()),
         vscode.commands.registerCommand('scimax.marp.theme.edit', editCurrentTheme),

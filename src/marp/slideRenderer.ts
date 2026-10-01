@@ -9,6 +9,7 @@
  * This module has no VS Code dependency so it can be unit tested directly.
  */
 
+import * as path from 'path';
 import type { Marp, MarpOptions } from '@marp-team/marp-core';
 
 export interface RenderedDeck {
@@ -36,6 +37,26 @@ function loadMarp(): MarpConstructor {
         marpClass = require('@marp-team/marp-core').Marp as MarpConstructor;
     }
     return marpClass;
+}
+
+let presenterEngine: ((args: { marp: Marp }) => Marp) | null | undefined;
+
+/**
+ * The presenter tools' Marp engine (media/marpPresent/engine.cjs), so the
+ * preview and thumbnails show ```countdown boxes as the slideshow does.
+ * Null if it cannot be found (the preview then shows a code block).
+ */
+function loadPresenterEngine(): ((args: { marp: Marp }) => Marp) | null {
+    if (presenterEngine === undefined) {
+        try {
+            // out/marp or src/marp -> media/marpPresent
+            // eslint-disable-next-line @typescript-eslint/no-var-requires
+            presenterEngine = require(path.join(__dirname, '..', '..', 'media', 'marpPresent', 'engine.cjs'));
+        } catch {
+            presenterEngine = null;
+        }
+    }
+    return presenterEngine ?? null;
 }
 
 const FRONT_MATTER_OPEN = /^---\s*$/;
@@ -79,6 +100,7 @@ function newMarp<T extends Marp>(MarpClass: new (options?: MarpOptions) => T, op
         html: options.enableHtml ? true : undefined,
         math: options.math === 'off' ? false : (options.math ?? 'mathjax'),
     });
+    loadPresenterEngine()?.({ marp });
     for (const css of options.themes ?? []) {
         try {
             marp.themeSet.add(css);

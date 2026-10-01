@@ -29,6 +29,9 @@ import * as path from 'path';
 /** Marks the vendored scripts carry in their first line, so a page is never given them twice. */
 const PRESENTER_MARK = 'marp-present: presenter tools';
 const PYCELLS_MARK = 'marp-present: live, editable Python cells';
+const TIMER_MARK = 'marp-present: talk timer';
+const SHOW_MARK = 'marp-present: show tools';
+const EDIT_MARK = 'marp-present: slide editing';
 const INK_EMPTY = '<script type="application/json" id="marp-ink-data">{}</script>';
 const SELF_EMPTY = '<script type="text/plain" id="marp-self"></script>';
 const PYODIDE_EMPTY = '<script type="application/json" id="marp-pyodide"></script>';
@@ -50,6 +53,11 @@ export interface PresenterAssets {
     marked: string;
     pycells: string;
     codemirror: string;
+    timer: string;
+    /** Blank screen, zoom, go to a slide, exercise countdowns. */
+    show: string;
+    /** Editing the slides' text and layout in the slideshow. */
+    edit: string;
 }
 
 /** What inlining did. */
@@ -292,10 +300,20 @@ export function hasRunCells(html: string): boolean {
  * Add the presenter tools (and the Python cell runner, if the deck has run
  * cells) before the last </body>. Scripts already in the page are not added again.
  */
-export function addPresenterScripts(html: string, assets: PresenterAssets): string {
+export function addPresenterScripts(html: string, assets: PresenterAssets, timer = false): string {
     const files: string[] = [];
+    // The editor goes first: while editing, it takes every key and mouse press before the other tools
+    if (!html.includes(EDIT_MARK)) {
+        files.push(assets.edit);
+    }
     if (!html.includes(PRESENTER_MARK)) {
         files.push(assets.marked, assets.presenter);   // marked renders sticky notes
+    }
+    if (!html.includes(SHOW_MARK)) {
+        files.push(assets.show);
+    }
+    if (timer && !html.includes(TIMER_MARK)) {
+        files.push(assets.timer);
     }
     if (hasRunCells(html) && !html.includes(PYCELLS_MARK)) {
         files.push(assets.codemirror, assets.pycells);
@@ -319,6 +337,8 @@ export interface BundleOptions extends InlineOptions {
     assets: PresenterAssets;
     /** Pyodide files to embed for offline Python (file name under the Pyodide base URL -> bytes). */
     pyodide?: Record<string, Buffer>;
+    /** Length of the talk in seconds: a countdown in the corner of every slide. */
+    timer?: number;
 }
 
 /**
@@ -340,12 +360,19 @@ export async function bundlePresenterDeck(html: string, options: BundleOptions):
     if (options.markdown !== undefined) {
         head += `<script>window.__MARP_SOURCE__ = ${JSON.stringify(options.markdown).replace(/<\//g, '<\\/')};</script>`;
     }
+    const timer = options.timer !== undefined && options.timer > 0 ? Math.round(options.timer) : undefined;
+    if (timer) {
+        head += `<script>window.__MARP_TIMER__ = ${timer};</script>`;
+    }
     const pyodide = options.pyodide && hasRunCells(text) ? options.pyodide : undefined;
     // In <head>, so it is in the page before pycells.js (at the end of <body>) runs
     head += INK_EMPTY + SELF_EMPTY + (pyodide ? PYODIDE_EMPTY : '');
     text = text.replace('</head>', () => head + '</head>');
-    text = addPresenterScripts(text, options.assets);
+    text = addPresenterScripts(text, options.assets, timer !== undefined);
     inlined.report.counts.presenter = 1;
+    if (timer) {
+        inlined.report.counts.timer = 1;
+    }
     if (hasRunCells(text)) {
         inlined.report.counts['python cells'] = 1;
     }
@@ -371,6 +398,9 @@ export function presenterAssets(mediaDir: string): PresenterAssets {
         pycells: path.join(mediaDir, 'pycells.js'),
         marked: path.join(mediaDir, 'vendor', 'marked.js'),
         codemirror: path.join(mediaDir, 'vendor', 'codemirror.js'),
+        timer: path.join(mediaDir, 'timer.js'),
+        show: path.join(mediaDir, 'showtools.js'),
+        edit: path.join(mediaDir, 'editor.js'),
     };
 }
 
@@ -382,6 +412,27 @@ export function presenterRequested(frontMatterValue: string | undefined): boolea
 /** True if the deck asks for Python cells that run without a network (`presenter: offline`). */
 export function presenterOffline(frontMatterValue: string | undefined): boolean {
     return /^offline$/i.test((frontMatterValue ?? '').trim());
+}
+
+/**
+ * Length of the talk from the deck's `timer:` front matter, in seconds: a bare
+ * number is minutes (`20`, `7.5`); also `20m`, `90s`, `1h30m`, `1h 5m 30s`,
+ * `45:00` (m:ss) and `1:05:00` (h:mm:ss). Undefined if absent, zero or not a time.
+ */
+export function parseTimer(value: string | undefined): number | undefined {
+    const text = (value ?? '').trim().replace(/^["']|["']$/g, '').trim().toLowerCase();
+    let seconds: number | undefined;
+    if (/^\d+(\.\d+)?$/.test(text)) {
+        seconds = parseFloat(text) * 60;
+    } else if (/^\d+(:\d{1,2}){1,2}$/.test(text)) {
+        seconds = text.split(':').map(Number).reduce((total, part) => total * 60 + part, 0);
+    } else {
+        const m = text.match(/^(?:(\d+(?:\.\d+)?)\s*h(?:ours?|rs?)?)?\s*(?:(\d+(?:\.\d+)?)\s*m(?:in(?:utes?|s)?)?)?\s*(?:(\d+)\s*s(?:ec(?:onds?|s)?)?)?$/);
+        if (m && (m[1] || m[2] || m[3])) {
+            seconds = parseFloat(m[1] ?? '0') * 3600 + parseFloat(m[2] ?? '0') * 60 + parseInt(m[3] ?? '0', 10);
+        }
+    }
+    return seconds !== undefined && seconds > 0 ? Math.round(seconds) : undefined;
 }
 
 // ------------------------------------------------------------ offline Python --

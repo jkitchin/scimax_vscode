@@ -3675,6 +3675,11 @@
         "category": "Scimax Marp"
       },
       {
+        "command": "scimax.marp.insert.countdown",
+        "title": "Exercise Countdown...",
+        "category": "Scimax Marp"
+      },
+      {
         "command": "scimax.marp.runCell",
         "title": "Run Python Cell",
         "category": "Scimax Marp"
@@ -3787,6 +3792,11 @@
       {
         "command": "scimax.marp.deck.presenter",
         "title": "Presenter Tools (Pen, Live Python)...",
+        "category": "Scimax Marp"
+      },
+      {
+        "command": "scimax.marp.deck.timer",
+        "title": "Talk Timer...",
         "category": "Scimax Marp"
       },
       {
@@ -8116,6 +8126,10 @@
           "when": "editorLangId == markdown && scimax.marp.isMarpDocument"
         },
         {
+          "command": "scimax.marp.insert.countdown",
+          "when": "editorLangId == markdown && scimax.marp.isMarpDocument"
+        },
+        {
           "command": "scimax.marp.runCell",
           "when": "editorLangId == markdown && scimax.marp.isMarpDocument"
         },
@@ -8205,6 +8219,10 @@
         },
         {
           "command": "scimax.marp.deck.presenter",
+          "when": "editorLangId == markdown && scimax.marp.isMarpDocument"
+        },
+        {
+          "command": "scimax.marp.deck.timer",
           "when": "editorLangId == markdown && scimax.marp.isMarpDocument"
         },
         {
@@ -8525,6 +8543,10 @@
           "group": "1@8"
         },
         {
+          "command": "scimax.marp.insert.countdown",
+          "group": "1@9"
+        },
+        {
           "command": "scimax.marp.runCell",
           "group": "2@1"
         },
@@ -8611,6 +8633,10 @@
         {
           "command": "scimax.marp.deck.presenter",
           "group": "1@9"
+        },
+        {
+          "command": "scimax.marp.deck.timer",
+          "group": "1@10"
         },
         {
           "command": "scimax.marp.checkOffline",

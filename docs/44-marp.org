@@ -444,16 +444,17 @@ Each adds a slide after the current one, with tab stops to fill in.
 
 Inserted at the cursor, as its own paragraph.
 
-| Item           | Command                               | What it does                                                                                           |
-|----------------+---------------------------------------+--------------------------------------------------------------------------------------------------------|
-| Image...       | [[cmd:scimax.marp.insert.image]]      | Pick a file, then inline, inline with a width, background, or left/right split, and an optional filter |
-| Speaker Notes  | [[cmd:scimax.marp.insert.notes]]      | A comment Marp shows as presenter notes                                                                |
-| Fitted Heading | [[cmd:scimax.marp.insert.fitHeading]] | ~# <!-- fit --> Title~, scaled to the slide width; on a heading line it makes that heading fit         |
-| Math Block     | [[cmd:scimax.marp.insert.math]]       | ~$$ ... $$~                                                                                            |
-| Code Block     | [[cmd:scimax.marp.insert.code]]       | A fenced code block                                                                                    |
-| Table          | [[cmd:scimax.marp.insert.table]]      | A three-column table                                                                                   |
-| Build List     | [[cmd:scimax.marp.insert.buildList]]  | ~*~ bullets, shown one at a time in the HTML slideshow                                                 |
-| Python Cell... | [[cmd:scimax.marp.insert.pythonCell]] | A live ~python run~ cell (~run~, ~run auto~ or ~run hidden~); turns on ~presenter: true~ if needed     |
+| Item                  | Command                               | What it does                                                                                           |
+|-----------------------+---------------------------------------+--------------------------------------------------------------------------------------------------------|
+| Image...              | [[cmd:scimax.marp.insert.image]]      | Pick a file, then inline, inline with a width, background, or left/right split, and an optional filter |
+| Speaker Notes         | [[cmd:scimax.marp.insert.notes]]      | A comment Marp shows as presenter notes                                                                |
+| Fitted Heading        | [[cmd:scimax.marp.insert.fitHeading]] | ~# <!-- fit --> Title~, scaled to the slide width; on a heading line it makes that heading fit         |
+| Math Block            | [[cmd:scimax.marp.insert.math]]       | ~$$ ... $$~                                                                                            |
+| Code Block            | [[cmd:scimax.marp.insert.code]]       | A fenced code block                                                                                    |
+| Table                 | [[cmd:scimax.marp.insert.table]]      | A three-column table                                                                                   |
+| Build List            | [[cmd:scimax.marp.insert.buildList]]  | ~*~ bullets, shown one at a time in the HTML slideshow                                                 |
+| Python Cell...        | [[cmd:scimax.marp.insert.pythonCell]] | A live ~python run~ cell (~run~, ~run auto~ or ~run hidden~); turns on ~presenter: true~ if needed     |
+| Exercise Countdown... | [[cmd:scimax.marp.insert.countdown]]  | A ~countdown~ box for an exercise on the slide; turns on ~presenter: true~ if needed                   |
 
 ** This Slide
 
@@ -484,6 +485,7 @@ Each sets a key in the front matter, or removes it.
 | Math Typesetting...              | [[cmd:scimax.marp.deck.math]]           | ~mathjax~ or ~katex~                                   |
 | Title, Author and Description... | [[cmd:scimax.marp.deck.metadata]]       | Also keywords and language; used by exports            |
 | Presenter Tools...               | [[cmd:scimax.marp.deck.presenter]]      | ~true~ or ~offline~: pen, laser, notes, live Python    |
+| Talk Timer...                    | [[cmd:scimax.marp.deck.timer]]          | A countdown on every slide; turns on presenter tools   |
 
 ** Theme
 
@@ -566,27 +568,146 @@ exported exactly as before. The tools are added when you present (see
 [[*Slideshow][Slideshow]]) and when you export HTML with =h= (see [[*Exporting Slides][Exporting Slides]]).
 ~examples/marp-present/demo.md~ in the Scimax repository shows all of them.
 
-** Keys in the slideshow
+** 👀 Keys in the slideshow
 
-| Key                       | Effect                                                                    |
-|---------------------------+---------------------------------------------------------------------------|
-| =a=                       | Turn the pen on or off (widgets cannot be clicked while it is on)         |
-| =1= to =5=                | Pen colour: red, blue, green, black, yellow highlighter                   |
-| =z=                       | Undo the last stroke on this slide                                        |
-| =c= / =C=                 | Clear this slide / every slide                                            |
-| =l=                       | Laser pointer: a red dot that follows the mouse                           |
-| =n=                       | New sticky note at the mouse; type Markdown, click away to render it      |
-| Right-click               | A menu with all of these (Shift+right-click gives the browser's own menu) |
-| Hold the mouse on a slide | Spotlight: the screen darkens except a circle around the cursor           |
-| =s=                       | Save a standalone copy of the deck with the ink, ~<deck>-annotated.html~  |
-| =m=                       | Save the Markdown source with the ink as SVG, ~<deck>-annotated.md~       |
-| =S=                       | Save only the ink, as JSON                                                |
-| =i=                       | Load ink from such a JSON file (or drag the file onto the deck)           |
-| =Cmd+P= / =Ctrl+P=        | Print; "Save as PDF" keeps every slide's ink as vector graphics           |
+| Key                       | Effect                                                                         |
+|---------------------------+--------------------------------------------------------------------------------|
+| =a=                       | Turn the pen on or off (widgets cannot be clicked while it is on)              |
+| =1= to =5=                | Pen colour: red, blue, green, black, yellow highlighter                        |
+| =z=                       | Undo the last stroke on this slide                                             |
+| =c= / =C=                 | Clear this slide / every slide                                                 |
+| =l=                       | Laser pointer: a red dot that follows the mouse                                |
+| =n=                       | New sticky note at the mouse; type Markdown, click away to render it           |
+| Right-click               | A menu with all of these (Shift+right-click gives the browser's own menu)      |
+| Hold the mouse on a slide | Spotlight: the screen darkens except a circle around the cursor                |
+| =s=                       | Save a standalone copy of the deck with the ink, ~<deck>-annotated.html~       |
+| =m=                       | Save the Markdown source with the ink as SVG, ~<deck>-annotated.md~            |
+| =S=                       | Save only the ink, as JSON                                                     |
+| =i=                       | Load ink from such a JSON file (or drag the file onto the deck)                |
+| =t= / =T=                 | Start or pause the talk timer / reset it to the full time                      |
+| =e= / =E=                 | Start or pause this slide's exercise countdown / reset it                      |
+| =b= / =w=                 | Black / white screen, to pause for discussion; again, =Esc= or a click returns |
+| =x=                       | Zoom: drag a box (or click) to magnify it; =x= or =Esc= zooms out              |
+| =g=                       | Go to a slide: type a number or words from its title or text, then Enter       |
+| A number, then Enter      | Jump to that slide (=12= Enter goes to slide 12)                               |
+| =d=                       | Edit the slides' text and layout in place (see below)                          |
+| =Cmd+P= / =Ctrl+P=        | Print; "Save as PDF" keeps every slide's ink as vector graphics                |
 
 Marp's own keys (=F= full screen, =P= presenter view, arrows) still work. A
 note's bar drags it; its =●= picks a colour, =–= shrinks it to an icon and
 =×= deletes it.
+
+** ⚠️ Talk timer
+
+Give the length of the talk with a ~timer~ key and a small countdown sits in
+the top-right corner of every slide:
+
+#+begin_src markdown
+---
+marp: true
+presenter: true
+timer: 20
+---
+#+end_src
+
+A bare number is minutes; ~20m~, ~45:00~, ~1h30m~ and ~90s~ also work. Deck →
+Talk Timer... in the Marp menu ([[cmd:scimax.marp.deck.timer]]) sets it, and
+turns on the presenter tools if the deck does not have them (the timer is one
+of them).
+
+- It starts by itself the first time you move off the slide the show opened
+  on. =t= (or a click on the timer) starts and pauses it; =T= resets it to
+  the full time.
+- It turns amber in the last 5 minutes (the last fifth of a short talk), red
+  in the last minute, and after time is up counts the overtime as =-1:05=.
+- The audience window and Marp's presenter view (=P=), where the countdown
+  sits next to Marp's clock, show the same time: pausing in one pauses both.
+  The time is kept in the browser's local storage, so a reload, or a live
+  reload when you save the deck, does not reset it.
+- After a rehearsal, press =T= before the talk. A timer untouched for 12
+  hours, or a deck rebuilt with a different ~timer~, starts afresh.
+- It is not printed and is not in PDF, PowerPoint or image exports.
+
+** ⚠️ Exercise countdowns
+
+A ~countdown~ fence puts a countdown box on a slide, for an exercise or a
+discussion. The first line is the time, the rest is the label (Markdown):
+
+#+begin_src markdown
+```countdown 3:00
+Discuss with your neighbour: *which step is rate limiting?*
+```
+#+end_src
+
+The time is written as for the talk timer: a bare number is minutes, and
+~3:00~, ~90s~ and ~2m30s~ also work (the default is 5 minutes). Insert →
+Exercise Countdown... in the Marp menu ([[cmd:scimax.marp.insert.countdown]])
+adds one and turns on the presenter tools.
+
+- =e= (or a click on the box) starts and pauses the countdown on the current
+  slide; =E= resets it.
+- At zero it flashes red and reads "Time's up".
+- It runs in step in the audience window and the presenter view, and is kept
+  across a reload.
+- The Markdown preview and the slide thumbnails show the box; PDF and
+  PowerPoint exports show it with its full time.
+
+** ⚠️ Blank, zoom and go to a slide
+
+- *Blank screen.* =b= turns the audience screen black and =w= white, so the
+  room looks at you instead of the slide. Press the key again, =Esc=, or
+  click to bring the slide back. Pressed in Marp's presenter view, it blanks
+  the audience window and the presenter view shows a reminder instead of
+  going blank itself.
+- *Zoom.* =x= then drag a box over a dense figure or table to magnify that
+  part to fill the screen (a click magnifies 2.5 times around that point).
+  The audience window zooms too. =x= or =Esc= zooms out, as does moving to
+  another slide. The pen still works while zoomed and the ink stays on the
+  slide.
+- *Go to a slide.* =g= opens a list of slides by number and title. Type a
+  number or words from a slide's title or text, use the arrows, and press
+  Enter. Without the list, type a slide number and press Enter: =1= =2=
+  Enter goes to slide 12.
+
+** ⚠️ Editing slides in the slideshow
+
+For last-minute polish just before a talk, =d= lets you fix the slides in
+the slideshow itself: correct a typo, move a heading, make a figure bigger,
+or hide a line. A bar at the top says what is selected and what you can do.
+The edits stay in the HTML; they do not change the Markdown.
+
+| Key or action      | Effect                                                                      |
+|--------------------+-----------------------------------------------------------------------------|
+| =d=                | Start or stop editing (also in the right-click menu)                        |
+| Click              | Select a heading, paragraph, list item, image, table, code or widget        |
+| Drag               | Move it (hold Shift to keep it level or upright)                            |
+| Double-click       | Edit its text; Enter or a click elsewhere finishes, Shift+Enter breaks line |
+| Enter              | Edit the selected text                                                      |
+| Arrows             | Nudge the selection (Shift: 10 px); with nothing selected, change slide     |
+| =+= / =-=          | Bigger / smaller: text size, or the width of an image, table or code        |
+| Corner handle      | Drag to resize                                                              |
+| Delete             | Hide it (it shows faintly while editing); Delete again shows it             |
+| Tab / Shift+Tab    | Select the enclosing block (the list, not the item) / back again            |
+| =0=                | Undo every edit to the selection                                            |
+| =Cmd+Z= / =Ctrl+Z= | Undo (add Shift to redo); the bar also has Undo and Reset slide             |
+| =Esc=              | Clear the selection, then stop editing                                      |
+
+- Edits are kept in the browser's local storage, so a reload keeps them,
+  and Marp's presenter view shows them as you make them. You edit in the
+  audience window, not the presenter view.
+- =s= saves the deck with its edits, ink and notes in one file, and opening
+  that file brings the edits back. The JSON save (=S=) and load (=i=)
+  include them too. =m= cannot put them in Markdown, and says so.
+- Edits belong to the content of their slide. If you change a slide in the
+  Markdown and the slideshow reloads, that slide's edits are set aside
+  rather than put in the wrong place, and a message says so. Slides you did
+  not change keep theirs, even if they moved.
+- Text you type or paste is plain text; maths in a paragraph stays as it
+  is. Code cells, countdowns and widgets can be moved and resized but not
+  typed in.
+- Printing (=Cmd+P=) shows the slides as edited.
+
+To keep a change for good, make it in the Markdown too.
 
 ** Keeping the ink
 

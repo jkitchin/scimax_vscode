@@ -27,4 +27,10 @@ describe('renderDeck', () => {
         expect(deck.html.match(/<svg data-marpit-svg/g)).toHaveLength(3);
         expect(deck.css.length).toBeGreaterThan(0);
     });
+
+    it('shows countdown fences as countdown boxes', () => {
+        const deck = renderDeck('---\nmarp: true\n---\n\n```countdown 2:30\nTalk it over\n```\n');
+        expect(deck.html).toContain('class="marp-countdown"');
+        expect(deck.html).toContain('data-seconds="150"');
+    });
 });

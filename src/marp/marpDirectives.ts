@@ -40,6 +40,7 @@ export const DIRECTIVES: DirectiveSpec[] = [
     { name: 'url', scope: 'global', description: 'Canonical URL of the deck, for the exported HTML.' },
     { name: 'image', scope: 'global', description: 'Open Graph image URL for the exported HTML.' },
     { name: 'presenter', scope: 'global', description: 'Scimax presenter tools in the slideshow and HTML export: `a` pen, `l` laser, `n` sticky note, `s` save the deck with ink; ```` ```python run ```` cells run in the browser. `offline` also puts Python and the packages the cells import inside the deck, so they run without internet.', values: ['true', 'offline', 'false'] },
+    { name: 'timer', scope: 'global', description: 'Talk timer (with `presenter: true`): a countdown in the corner of every slide and in the presenter view, kept in step between windows. Minutes (`20`), or `20m`, `45:00`, `1h30m`. It starts when you leave the first slide; `t` or a click starts and pauses it, `T` resets it.', values: ['10', '15', '20', '30', '45', '60'] },
     { name: 'paginate', scope: 'local', description: 'Show the page number: `true` or `false`; `hold` shows it without counting the slide, `skip` hides it without counting.', values: ['true', 'false', 'hold', 'skip'] },
     { name: 'header', scope: 'local', description: 'Text at the top of each slide (Markdown allowed).' },
     { name: 'footer', scope: 'local', description: 'Text at the bottom of each slide (Markdown allowed).' },

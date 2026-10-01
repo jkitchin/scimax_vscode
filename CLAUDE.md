@@ -239,8 +239,11 @@ After making changes, always rebuild and install the extension to verify it work
 
 ```bash
 make                    # Full build: compile + package VSIX
-code --install-extension scimax-vscode-*.vsix --force
+code --install-extension "scimax-vscode-$(node -p "require('./package.json').version").vsix" --force
 ```
+
+Install only the current version's VSIX: a `scimax-vscode-*.vsix` glob also
+matches older VSIX files left in the repo and reinstalls those versions.
 
 Then reload VS Code (`Ctrl+Shift+P` → "Developer: Reload Window") to test changes.
 

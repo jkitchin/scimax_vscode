@@ -25,7 +25,7 @@ import { parseDeck } from './slideModel';
 import { frontMatterValue } from './marpAuthoring';
 import {
     BundleReport, bundlePresenterDeck, inlineDeck, OfflineCheck, offlineIssues, OfflinePlan, planOfflinePython,
-    presenterAssets, presenterOffline, presenterRequested, pyodideBaseUrl, PyodideLock,
+    parseTimer, presenterAssets, presenterOffline, presenterRequested, pyodideBaseUrl, PyodideLock,
 } from './presenterBundle';
 
 /** Marp CLI major version run through npx. */
@@ -418,6 +418,7 @@ async function addPresenterTools(
             baseDir: path.dirname(document.uri.fsPath),
             markdown,
             pyodide,
+            timer: parseTimer(frontMatterValue(markdown.split(/\r?\n/), 'timer')),
             assets: presenterAssets(context.asAbsolutePath(path.join('media', 'marpPresent'))),
             fetchFont: url => fetchFontCached(context, url),
         });

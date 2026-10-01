@@ -462,6 +462,7 @@ or every selected slide. See [[file:44-marp.org::*The Marp Menu][The Marp Menu]]
 | [[cmd:scimax.marp.insert.table]]              | Table                           | -                  |
 | [[cmd:scimax.marp.insert.buildList]]          | Build List (One Item at a Time) | -                  |
 | [[cmd:scimax.marp.insert.pythonCell]]         | Live Python Cell                | -                  |
+| [[cmd:scimax.marp.insert.countdown]]          | Exercise Countdown              | -                  |
 | [[cmd:scimax.marp.thisSlide.class]]           | Class (lead, invert)            | -                  |
 | [[cmd:scimax.marp.thisSlide.backgroundColor]] | Background Color                | -                  |
 | [[cmd:scimax.marp.thisSlide.backgroundImage]] | Background Image                | -                  |
@@ -480,6 +481,7 @@ or every selected slide. See [[file:44-marp.org::*The Marp Menu][The Marp Menu]]
 | [[cmd:scimax.marp.deck.math]]                 | Math Typesetting                | -                  |
 | [[cmd:scimax.marp.deck.metadata]]             | Title, Author and Description   | -                  |
 | [[cmd:scimax.marp.deck.presenter]]            | Presenter Tools                 | -                  |
+| [[cmd:scimax.marp.deck.timer]]                | Talk Timer                      | -                  |
 | [[cmd:scimax.marp.theme.new]]                 | New Custom Theme                | -                  |
 | [[cmd:scimax.marp.theme.edit]]                | Edit Current Theme              | -                  |
 | [[cmd:scimax.marp.theme.styleBlock]]          | Add Deck Style Block            | -                  |

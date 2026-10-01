@@ -11,7 +11,7 @@ import * as path from 'path';
 import { createRequire } from 'module';
 import {
     addPresenterScripts, bundlePresenterDeck, hasRunCells, inlineDeck, isLocalRef,
-    planOfflinePython, PresenterAssets, presenterAssets, presenterOffline, presenterRequested,
+    parseTimer, planOfflinePython, PresenterAssets, presenterAssets, presenterOffline, presenterRequested,
     offlineIssues, pyodideBaseUrl, PyodideLock, pythonImports, runCellAt, runCellCode, runCells, scriptSafe,
 } from '../presenterBundle';
 import { buildMarpArgs } from '../marpExport';
@@ -42,7 +42,13 @@ beforeAll(() => {
         marked: path.join(fake, 'marked.js'),
         pycells: path.join(fake, 'pycells.js'),
         codemirror: path.join(fake, 'codemirror.js'),
+        timer: path.join(fake, 'timer.js'),
+        show: path.join(fake, 'showtools.js'),
+        edit: path.join(fake, 'editor.js'),
     };
+    fs.writeFileSync(assets.edit, '/* marp-present: slide editing */ window.E = 1;');
+    fs.writeFileSync(assets.show, '/* marp-present: show tools for Marp HTML decks */ window.W = 1;');
+    fs.writeFileSync(assets.timer, '/* marp-present: talk timer */ window.T = 1;');
     fs.writeFileSync(assets.presenter, '/* marp-present: presenter tools for Marp HTML decks */ window.P = 1;');
     fs.writeFileSync(assets.marked, 'var marked = {};');
     fs.writeFileSync(assets.pycells, '/* marp-present: live, editable Python cells in Marp slides */ window.C = 1;');
@@ -131,6 +137,10 @@ describe('addPresenterScripts', () => {
         const plain = addPresenterScripts(page('<p>x</p>'), assets);
         expect(plain).toContain('window.P = 1');
         expect(plain).toContain('var marked');
+        expect(plain).toContain('window.W = 1');
+        // the editor comes before the presenter tools, so it sees keys first while editing
+        expect(plain.indexOf('window.E = 1')).toBeGreaterThan(-1);
+        expect(plain.indexOf('window.E = 1')).toBeLessThan(plain.indexOf('window.P = 1'));
         expect(plain).not.toContain('window.C = 1');
         expect(plain.indexOf('window.P')).toBeLessThan(plain.indexOf('</body>'));
 
@@ -143,6 +153,51 @@ describe('addPresenterScripts', () => {
     it('does not add the scripts twice', () => {
         const once = addPresenterScripts(page('<pre data-run=""></pre>'), assets);
         expect(addPresenterScripts(once, assets)).toBe(once);
+    });
+});
+
+describe('talk timer', () => {
+    it('reads the length of the talk', () => {
+        expect(parseTimer('20')).toBe(1200);
+        expect(parseTimer('7.5')).toBe(450);
+        expect(parseTimer('20m')).toBe(1200);
+        expect(parseTimer('20 min')).toBe(1200);
+        expect(parseTimer('90s')).toBe(90);
+        expect(parseTimer('1h30m')).toBe(5400);
+        expect(parseTimer('1h 5m 30s')).toBe(3930);
+        expect(parseTimer('45:00')).toBe(2700);
+        expect(parseTimer('1:05:00')).toBe(3900);
+        expect(parseTimer('"25"')).toBe(1500);
+        expect(parseTimer(' 2H ')).toBe(7200);
+    });
+
+    it('ignores a missing, zero or unreadable time', () => {
+        for (const value of [undefined, '', '0', '0:00', 'soon', '20 parsecs', 'h', '-5', '1:2:3:4']) {
+            expect(parseTimer(value)).toBeUndefined();
+        }
+    });
+
+    it('adds the timer script only when asked, once', () => {
+        expect(addPresenterScripts(page('<p>x</p>'), assets)).not.toContain('window.T = 1');
+        const once = addPresenterScripts(page('<p>x</p>'), assets, true);
+        expect(once).toContain('window.T = 1');
+        expect(addPresenterScripts(once, assets, true)).toBe(once);
+    });
+
+    it('puts the length in the bundled deck', async () => {
+        const { html, report } = await bundlePresenterDeck(page('<p>x</p>'), { baseDir: dir, assets, timer: 1200 });
+        expect(html).toContain('<script>window.__MARP_TIMER__ = 1200;</script>');
+        expect(html.indexOf('__MARP_TIMER__')).toBeLessThan(html.indexOf('</head>'));
+        expect(html).toContain('window.T = 1');
+        expect(report.counts.timer).toBe(1);
+
+        const plain = await bundlePresenterDeck(page('<p>x</p>'), { baseDir: dir, assets });
+        expect(plain.html).not.toContain('__MARP_TIMER__');
+        expect(plain.html).not.toContain('window.T = 1');
+    });
+
+    it('is a deck directive', () => {
+        expect(DIRECTIVES.find(d => d.name === 'timer')?.scope).toBe('global');
     });
 });
 
@@ -279,6 +334,9 @@ describe('presenter settings', () => {
         }
         expect(fs.readFileSync(path.join(MEDIA, 'presenter.js'), 'utf8')).toContain('marp-present: presenter tools');
         expect(fs.readFileSync(path.join(MEDIA, 'pycells.js'), 'utf8')).toContain('marp-present: live, editable Python cells');
+        expect(fs.readFileSync(path.join(MEDIA, 'timer.js'), 'utf8')).toContain('marp-present: talk timer');
+        expect(fs.readFileSync(path.join(MEDIA, 'showtools.js'), 'utf8')).toContain('marp-present: show tools');
+        expect(fs.readFileSync(path.join(MEDIA, 'editor.js'), 'utf8')).toContain('marp-present: slide editing');
     });
 });
 
@@ -292,6 +350,24 @@ describe('engine.cjs', () => {
         expect(render('```python run\n1\n```')).toContain('<pre data-run=""');
         expect(render('```python run auto\n1\n```')).toContain('<pre data-run="auto"');
         expect(render('```py run hidden\n1\n```')).toMatch(/<pre data-run="hidden" style="display:none"/);
+    });
+
+    it('renders countdown fences as a countdown box', () => {
+        const html = render('```countdown 2:30\nTalk to your *neighbour*\nthen vote\n```');
+        expect(html).toContain('<div class="marp-countdown" data-seconds="150"');
+        expect(html).toContain('⏱ 2:30');
+        expect(html).toContain('Talk to your <em>neighbour</em><br>then vote');
+        expect(render('```countdown 10\n```')).toContain('data-seconds="600"');
+        expect(render('```countdown 90s\n```')).toContain('⏱ 1:30');
+        expect(render('```countdown\n```')).toContain('data-seconds="300"');   // 5 minutes if no time is given
+        expect(render('```countdown 1\n<script>x</script>\n```')).not.toContain('<script>x');
+    });
+
+    it('reads countdown times', () => {
+        const cases: Array<[string, number]> = [['3', 180], ['2.5', 150], ['3m', 180], ['90s', 90], ['1m30s', 90], ['3:00', 180], ['1:05:00', 3900], ['soon', 0]];
+        for (const [text, secs] of cases) {
+            expect(engine.seconds(text)).toBe(secs);
+        }
     });
 
     it('leaves other code blocks alone', () => {
