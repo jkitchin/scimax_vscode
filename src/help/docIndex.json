@@ -1,5 +1,5 @@
 {
-  "buildDate": "2026-10-01T16:57:19.464Z",
+  "buildDate": "2026-10-01T17:57:15.443Z",
   "count": 3598,
   "entries": [
     {
@@ -104336,11 +104336,13 @@
       "level": 2,
       "file": "44-marp.org",
       "line": 832,
-      "content": "- The tools are added only in a trusted workspace, since the deck's HTML and Python run in the browser. In an untrusted workspace Scimax warns and shows the plain slideshow. - A deck with ~presenter: true~ is built with Marp CLI's ~--html~ option, so raw HTML in its slides is rendered. - Scimax passes its own markdown-it engine to Marp CLI (~--engine~), which replaces an ~engine~ set in a Marp CLI configuration file for these decks. - The fonts for KaTeX math are downloaded once and cached, so ~",
+      "content": "- The tools are added only in a trusted workspace, since the deck's HTML and Python run in the browser. In an untrusted workspace Scimax warns and shows the plain slideshow. - A deck with ~presenter: true~ is built with Marp CLI's ~--html~ option, so raw HTML in its slides is rendered. The slide thumbnails and previews allow all HTML for these decks too (in a trusted workspace), so an ~<iframe>~ widget shows there as well, whatever ~scimax.marp.enableHtml~ says. - Scimax passes its own markdown-",
       "path": [
         "Presenter Tools and Live Python"
       ],
-      "commands": [],
+      "commands": [
+        "scimax.marp.enableHtml"
+      ],
       "keybindings": [],
       "keywords": [
         "notes",
@@ -104369,7 +104371,7 @@
       "heading": "Exporting Slides",
       "level": 1,
       "file": "44-marp.org",
-      "line": 847,
+      "line": 849,
       "content": "Press =C-c C-e= in a Marp deck (or click the export button in the Marp Slides view's title bar) for the Marp export menu. In other Markdown files =C-c C-e= still opens the Markdown (Pandoc) export menu, which is also =m= in this one. Exports are written next to the deck, and the deck is saved first. When an export finishes, a notification offers to open the file or show it in its folder. | Key | Export                                               | Output                 | Needs                ",
       "path": [],
       "commands": [],
@@ -104403,7 +104405,7 @@
       "heading": "Marp CLI",
       "level": 2,
       "file": "44-marp.org",
-      "line": 874,
+      "line": 876,
       "content": "All exports except =d= run [[https://github.com/marp-team/marp-cli][Marp CLI]], the tool behind Marp for VS Code's own export. Scimax uses ~scimax.marp.cliPath~ if set, then ~marp~ on the PATH (=npm install -g @marp-team/marp-cli=). Failing both, it offers to run it with ~npx~, which downloads Marp CLI the first time. It asks once and remembers the answer. PDF, PowerPoint and image exports render the slides in Google Chrome, Microsoft Edge or Firefox, so one of them must be installed. Local imag",
       "path": [
         "Exporting Slides"
@@ -104439,7 +104441,7 @@
       "heading": "Which PowerPoint",
       "level": 2,
       "file": "44-marp.org",
-      "line": 889,
+      "line": 891,
       "content": "There are three PowerPoint exports: |                        | PowerPoint (=s=) | Editable, Marp (=e=)    | Editable, Pandoc (=d=)                  | |------------------------+------------------+-------------------------+-----------------------------------------| | Looks like the preview | Exactly          | Mostly                  | No: PowerPoint default or your template | | Text editable          | No (pictures)    | Yes                     | Yes                                     | | Presen",
       "path": [
         "Exporting Slides"
@@ -104472,7 +104474,7 @@
       "heading": "Google Slides",
       "level": 2,
       "file": "44-marp.org",
-      "line": 914,
+      "line": 916,
       "content": "Google Slides has no import from Marp, but it opens PowerPoint files, and editable ones import best. The =g= export makes Marp's editable PowerPoint when LibreOffice is installed, otherwise the Pandoc one, otherwise (after asking) the picture PowerPoint. The notification links to Google Drive: upload the file (New > File upload), then open it with Google Slides.",
       "path": [
         "Exporting Slides"
@@ -104506,7 +104508,7 @@
       "heading": "Export settings",
       "level": 2,
       "file": "44-marp.org",
-      "line": 922,
+      "line": 924,
       "content": "| Setting                          | Default | Effect                                                                | |----------------------------------+---------+-----------------------------------------------------------------------| | ~scimax.marp.cliPath~            | (empty) | Marp CLI executable; empty means ~marp~ on the PATH, else ~npx~       | | ~scimax.marp.browserPath~        | (empty) | Browser for PDF, PowerPoint and images; empty lets Marp find one      | | ~scimax.marp.libreOffi",
       "path": [
         "Exporting Slides"
@@ -104544,7 +104546,7 @@
       "heading": "Configuration",
       "level": 1,
       "file": "44-marp.org",
-      "line": 932,
+      "line": 934,
       "content": "| Setting                       | Default   | Effect                                                     | |-------------------------------+-----------+------------------------------------------------------------| | ~scimax.marp.themes~          | ~[]~      | Custom theme CSS files for thumbnails, preview and exports | | ~scimax.marp.enableHtml~      | ~false~   | Allow all raw HTML in slides                               | | ~scimax.marp.mathTypesetting~ | ~mathjax~ | ~mathjax~, ~katex~ or ~off",
       "path": [],
       "commands": [
@@ -104579,7 +104581,7 @@
       "heading": "Marp CLI configuration files",
       "level": 2,
       "file": "44-marp.org",
-      "line": 947,
+      "line": 949,
       "content": "A deck set up for Marp CLI often keeps its themes and options in a configuration file beside it rather than in VS Code settings: #+begin_src yaml # .marprc.yml themeSet: ./theme html: true #+end_src Scimax reads the same file, so the thumbnails, the slide preview, the Markdown preview and exports show the deck the way Marp CLI renders it. It uses the nearest ~.marprc~, ~.marprc.json~, ~.marprc.yaml~, ~.marprc.yml~ or ~marp~ key of ~package.json~, looking in the deck's folder and then each folder",
       "path": [
         "Configuration"
@@ -104613,7 +104615,7 @@
       "heading": "Double-click in the Markdown preview",
       "level": 2,
       "file": "44-marp.org",
-      "line": 976,
+      "line": 978,
       "content": "Double-click in the Markdown preview (with Marp for VS Code) follows VS Code's own setting for double-clicking in the Markdown preview. Current VS Code releases turn it off by default, so enable it once in your user settings: #+begin_src json \"markdown.preview.doubleClickToSwitchToEditor\": true #+end_src | Setting                                        | Default | Effect                                      | |------------------------------------------------+---------+---------------------------",
       "path": [
         "Configuration"
@@ -104647,7 +104649,7 @@
       "heading": "How It Works",
       "level": 1,
       "file": "44-marp.org",
-      "line": 995,
+      "line": 997,
       "content": "",
       "path": [],
       "commands": [],
@@ -104660,7 +104662,7 @@
       "heading": "Slides in the Markdown preview",
       "level": 2,
       "file": "44-marp.org",
-      "line": 997,
+      "line": 999,
       "content": "Scimax contributes a markdown-it plugin (~markdown.markdownItPlugins~, ~src/marp/marpPreviewPlugin.ts~). For a file with ~marp: true~ in its front matter it parses and renders with Marp Core instead of plain markdown-it, adds VS Code's ~code-line~ class and ~data-line~ source line to each block (for scroll sync and double-click), and puts the deck's theme CSS in front. The preview script ~media/marp/marpPreviewMode.js~ then turns off VS Code's own Markdown styles for that preview, since they wou",
       "path": [
         "How It Works"
@@ -104694,7 +104696,7 @@
       "heading": "Double-click in the Markdown preview",
       "level": 2,
       "file": "44-marp.org",
-      "line": 1009,
+      "line": 1011,
       "content": "Scimax contributes a preview script (~media/marp/marpPreview.js~) through the ~markdown.previewScripts~ contribution point. Marp already tags each rendered element with its source line (~data-line~). On double-click inside a slide the script: 1. finds the nearest element carrying a line number; 2. adds the number of source line breaks between the start of that element and the caret (and one for the opening fence of a code block); 3. sends the preview's own ~didClick~ message with that line, so V",
       "path": [
         "How It Works"
@@ -104728,7 +104730,7 @@
       "heading": "Related Topics",
       "level": 1,
       "file": "44-marp.org",
-      "line": 1028,
+      "line": 1030,
       "content": "- [[file:30-markdown-compatibility.org][Markdown Compatibility]] - Scimax editing features in Markdown files - [[file:45-myst-preview.org][MyST Markdown Preview]] - Jupyter Book directives and roles in the preview - [[file:41-export-beamer.org][Beamer Export]] - slides from org files via LaTeX Beamer - [[file:26-configuration.org][Configuration Reference]] - [[https://marpit.marp.app/markdown][Marpit Markdown]] - slide syntax reference",
       "path": [],
       "commands": [],
