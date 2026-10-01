@@ -1001,10 +1001,31 @@
   addEventListener("load", hookAll);
   loadSource();
   // The script runs from the first slide, before the later slides are parsed.
-  const ready = () => { importBaked(); if (overview) thumbnails(); else { redraw(); buildNotes(); } };
-  // In the overview: every slide with its own ink and notes, as for printing
+  const ready = () => { importBaked(); if (overview) showInOverview(); else { redraw(); buildNotes(); } };
+  // In the overview: every slide with its own ink and notes, as for printing. The ink comes from
+  // the slideshow itself: Chrome treats a file:// frame as another site, and may not let it read
+  // the slideshow's storage.
+  function showInOverview() {
+    thumbnails();
+    if (parent === window) return;
+    addEventListener("message", e => {
+      const d = e.source === parent && e.data && e.data.marpInk;
+      if (!d || typeof d !== "object") return;
+      if (validInk(d.ink)) ink = d.ink;
+      if (validNotes(d.notes)) notes = d.notes;
+      if (d.edits && window.__marpEdits) window.__marpEdits.replace(d.edits);
+      thumbnails();
+    });
+    parent.postMessage({ marpInk: "want" }, "*");
+  }
+  addEventListener("message", e => {
+    const f = !overview && document.querySelector(".bespoke-marp-overview iframe");
+    if (!f || e.source !== f.contentWindow || !e.data || e.data.marpInk !== "want") return;
+    e.source.postMessage({ marpInk: { ink, notes, edits: edits() } }, "*");
+  });
   function thumbnails() {
     document.querySelectorAll(".annotate-layer").forEach(el => { el.style.display = "none"; });
+    document.querySelectorAll("svg.thumb-ink, .mp-print-note").forEach(el => el.remove());
     slides().forEach((svg, i) => {
       const strokes = ink[String(i + 1)], sec = sectionOf(svg);
       if (strokes && strokes.length && sec) sec.insertAdjacentHTML("beforeend", inkSvg(strokes, " thumb-ink"));
