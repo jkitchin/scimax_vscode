@@ -47,6 +47,9 @@
   if (params.get("view") === "presenter" || params.get("view") === "next") return;  // presenter window
   if (window.__annotate) return;
   window.__annotate = true;
+  // Marp's overview (the four squares) shows the deck in a frame with ?view=overview: there the
+  // slides only show their ink and notes, small, and the tools are off
+  const overview = params.get("view") === "overview";
 
   const PENS = [
     { color: "#ff3040", width: 4 },
@@ -75,7 +78,9 @@
   const style = document.createElement("style");
   const HIDE_CURSOR = "html.laser-on, html.laser-on * { cursor: none !important; }";
   style.textContent = "@media print { .annotate-layer { display: none !important; } }\n" + HIDE_CURSOR +
-    "\n@media screen { svg.marp-ink { display: none !important; } }";   // baked ink: the canvas draws it on screen
+    "\n@media screen { svg.marp-ink:not(.thumb-ink) { display: none !important; } }" +   // baked ink: the canvas draws it on screen
+    // the slideshow's ink and notes are of the slide on screen: hide them while the overview is open
+    "\nbody:has(.bespoke-marp-overview[data-open=\"1\"]) .annotate-layer { visibility: hidden !important; }";
   const laser = document.createElement("div");
   Object.assign(laser.style, {
     position: "fixed", left: "0", top: "0", zIndex: "100001", pointerEvents: "none", display: "none",
@@ -463,7 +468,7 @@
       `rgba(0,0,0,0) ${radius - 1}px, rgba(0,0,0,.72) ${radius + 1}px)`;
   }
   function spotStart(e) {
-    if (e.button !== 0 || enabled || erasing || e.ctrlKey || e.metaKey || e.altKey || e.shiftKey) return;
+    if (overview || e.button !== 0 || enabled || erasing || e.ctrlKey || e.metaKey || e.altKey || e.shiftKey) return;
     if (menuOpen()) return;                                    // this click just closes the menu
     if (e.target && e.target.closest && e.target.closest(INTERACTIVE)) return;
     spotOn = true;
@@ -483,6 +488,8 @@
   addEventListener("pointerup", spotEnd, true);
   addEventListener("pointercancel", spotEnd, true);
   addEventListener("blur", spotEnd);
+  // Holding the button on an image would start the browser's drag of it (which ends the spotlight)
+  addEventListener("dragstart", e => { if (spotOn) e.preventDefault(); }, true);
 
   // ---- sticky notes: n adds one at the mouse; Markdown, rendered when you click away ----
   const noteLayer = document.createElement("div");
@@ -816,6 +823,7 @@
     canvas.style.cursor = erasing ? ERASER_CURSOR : "";
   }
   function onKey(e) {
+    if (overview) return;
     if (e.key === "Escape" && menuOpen()) { e.preventDefault(); closeMenu(); return; }
     if (e.ctrlKey || e.metaKey || e.altKey) return;
     if (/^(TEXTAREA|SELECT)$/.test((e.target && e.target.tagName) || "")) return;
@@ -964,7 +972,7 @@
   const NATIVE_MENU = "textarea, input, select, [contenteditable], .cm-editor, .mp-menu";
   let menuNote = null;                                   // the note that was right-clicked, if any
   function onContextMenu(e, x, y) {
-    if (e.shiftKey || (e.target && e.target.closest && e.target.closest(NATIVE_MENU))) return;
+    if (overview || e.shiftKey || (e.target && e.target.closest && e.target.closest(NATIVE_MENU))) return;
     e.preventDefault();
     const host = e.target && e.target.closest && e.target.closest("[data-note-id]");
     menuNote = host ? (notes[slideId()] || []).find(n => n.id === host.dataset.noteId) || null : null;
@@ -993,6 +1001,15 @@
   addEventListener("load", hookAll);
   loadSource();
   // The script runs from the first slide, before the later slides are parsed.
-  const ready = () => { importBaked(); redraw(); buildNotes(); };
+  const ready = () => { importBaked(); if (overview) thumbnails(); else { redraw(); buildNotes(); } };
+  // In the overview: every slide with its own ink and notes, as for printing
+  function thumbnails() {
+    document.querySelectorAll(".annotate-layer").forEach(el => { el.style.display = "none"; });
+    slides().forEach((svg, i) => {
+      const strokes = ink[String(i + 1)], sec = sectionOf(svg);
+      if (strokes && strokes.length && sec) sec.insertAdjacentHTML("beforeend", inkSvg(strokes, " thumb-ink"));
+      if (sec) (notes[String(i + 1)] || []).forEach(n => sec.appendChild(printNote(n)));
+    });
+  }
   document.readyState === "loading" ? addEventListener("DOMContentLoaded", ready) : ready();
 })();

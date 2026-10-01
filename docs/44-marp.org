@@ -157,6 +157,14 @@ current slide.
 | =P=                                          | Presenter view: current and next slide, notes and a timer, in a new window |
 | =Home= / =End=                               | First / last slide                                                         |
 
+The four squares in the slideshow's control bar (bottom left, between full
+screen and the presenter view) open Marp's overview: every slide as a
+thumbnail. Click one to go there. It needs Marp CLI 4.3 or later; with an older
+one the button is missing (=marp --version= shows yours, and
+=npm install -g @marp-team/marp-cli@latest= updates it). In a ~presenter: true~
+deck each thumbnail shows that slide's ink and sticky notes, and the
+slideshow's own ink comes back when you pick a slide.
+
 Hidden slides are left out of the slideshow, and its slide numbers count only
 the slides it shows.
 
@@ -594,7 +602,9 @@ exported exactly as before. The tools are added when you present (see
 | =d=                       | Edit the slides' text and layout in place (see below)                          |
 | =Cmd+P= / =Ctrl+P=        | Print; "Save as PDF" keeps every slide's ink as vector graphics                |
 
-Marp's own keys (=F= full screen, =P= presenter view, arrows) still work. A
+Marp's own keys (=F= full screen, =P= presenter view, arrows) still work, and
+so does its overview button (the four squares): each slide's ink and notes show
+on its thumbnail. A
 note's bar drags it; its =●= picks a colour, =–= shrinks it to an icon and
 =×= deletes it.
 
@@ -680,6 +690,7 @@ The edits stay in the HTML; they do not change the Markdown.
 | Key or action      | Effect                                                                      |
 |--------------------+-----------------------------------------------------------------------------|
 | =d=                | Start or stop editing (also in the right-click menu)                        |
+| Double-click slide | Start editing there: type in the text, or select an image, table, ...       |
 | Click              | Select a heading, paragraph, list item, image, table, code or widget        |
 | Drag               | Move it (hold Shift to keep it level or upright)                            |
 | Double-click       | Edit its text; Enter or a click elsewhere finishes, Shift+Enter breaks line |

@@ -14,7 +14,7 @@
  */
 (() => {
   const view = new URLSearchParams(location.search).get("view");
-  if (view === "next" || window.__marpShow) return;   // the presenter view's next-slide preview
+  if (view === "next" || view === "overview" || window.__marpShow) return;   // the presenter view's next-slide preview, Marp's overview
   window.__marpShow = true;
   const presenterView = view === "presenter";
 

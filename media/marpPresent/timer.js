@@ -12,7 +12,7 @@
  */
 (() => {
   const view = new URLSearchParams(location.search).get("view");
-  if (view === "next" || window.__marpTimer) return;   // the presenter view's next-slide preview
+  if (view === "next" || view === "overview" || window.__marpTimer) return;   // the presenter view's next-slide preview, Marp's overview
   const DURATION = Math.round(+window.__MARP_TIMER__);
   if (!(DURATION > 0)) return;
   window.__marpTimer = true;
@@ -66,6 +66,7 @@
   font-variant-numeric: tabular-nums; padding: 5px 9px; border-radius: 999px; color: #fff; background: rgba(30, 41, 59, .55);
   cursor: pointer; user-select: none; opacity: .75; transition: opacity .2s, background-color .4s; }
 .marp-timer:hover { opacity: 1; }
+body:has(.bespoke-marp-overview[data-open="1"]) .marp-timer { visibility: hidden; }   /* under the overview's close button */
 .marp-timer.paused { background: rgba(100, 116, 139, .45); }
 .marp-timer.paused::before { content: "❚❚ "; font-size: 10px; vertical-align: 2px; }
 .marp-timer.warn { background: rgba(217, 119, 6, .85); opacity: .9; }

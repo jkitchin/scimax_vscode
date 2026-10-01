@@ -450,6 +450,8 @@ self.onmessage = e => {
     if (!setupQueued && visible.some(shown)) warm();
     visible.forEach(c => { if (c.auto && !c.didAuto && shown(c)) { c.didAuto = true; execute(c); } });
   };
+  // Marp's overview shows the cells as they are, without starting Python
+  if (new URLSearchParams(location.search).get("view") === "overview") { addEventListener("load", fitAll); setTimeout(fitAll, 0); return; }
   new MutationObserver(check).observe(document.body, { subtree: true, attributes: true, attributeFilter: ["class"] });
   addEventListener("load", check);
   addEventListener("resize", fitAll);

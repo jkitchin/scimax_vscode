@@ -3,6 +3,7 @@
  * they do not change the Markdown.
  *
  *   d          start / stop editing (or right-click → Edit text and layout)
+ *   double-click a heading, paragraph, image, ...: start editing it (text to type in, anything else selected)
  *
  * While editing:
  *   click            select a heading, paragraph, list item, image, table, ...
@@ -349,6 +350,20 @@
     e.stopImmediatePropagation();
     const d = drag; drag = null;
     if (d.moved) { const op = opOf(d.el); change(() => op.set({ dx: d.nx, dy: d.ny })); }
+  }, true);
+
+  // Double-clicking the slide starts editing too: text to type in, anything else selected
+  const LIVE = "a, button, input, select, textarea, label, summary, iframe, video, audio, [contenteditable], .pyc, .marp-countdown";
+  addEventListener("dblclick", e => {
+    if (editing || !canEdit || e.button !== 0) return;
+    const t = e.target, svg = activeSvg(), slide = svg && slideOf(svg);
+    if (!slide || !t || !t.closest || !slide.section.contains(t) || t.closest(LIVE)) return;
+    const el = pick(t);
+    if (!el) return;
+    e.preventDefault(); e.stopImmediatePropagation();
+    getSelection().removeAllRanges();                       // not the word the double-click selected
+    setEditing(true);
+    if (isText(el) || [...el.querySelectorAll("[data-mpe]")].some(isText)) startTyping(el); else select(el);
   }, true);
 
   // Resize from the corner handle: width for media, text size for text

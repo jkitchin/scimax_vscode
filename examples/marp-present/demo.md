@@ -153,7 +153,7 @@ Press **e** (or click here) to start, **e** to pause, **E** to reset
 
 Thsi sentence has a typo to fix.
 
-*Try it:* press **d**. Drag the chart, double-click the text to fix it, then **+** / **-** to resize. **Esc** twice finishes.
+*Try it:* double-click the typo to fix it. Then drag the chart, and use **+** / **-** to resize it. **Esc** twice finishes.
 
 ---
 
