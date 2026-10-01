@@ -7,6 +7,7 @@
  */
 
 import { spawn } from 'child_process';
+import { createHash } from 'crypto';
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
@@ -21,6 +22,8 @@ import {
     MARP_FORMATS, MarpExportFormat, marpOutputPath, marpToPandocMarkdown, prepareSlideshowHtml,
 } from './marpExport';
 import { parseDeck } from './slideModel';
+import { frontMatterValue } from './marpAuthoring';
+import { bundlePresenterDeck, presenterAssets, presenterRequested } from './presenterBundle';
 
 /** Marp CLI major version run through npx. */
 const NPX_PACKAGE = '@marp-team/marp-cli@4';
@@ -245,6 +248,71 @@ async function activeDeck(): Promise<vscode.TextDocument | undefined> {
     return document;
 }
 
+/**
+ * True if the deck asks for presenter tools (`presenter: true` in its front
+ * matter) and they may run here. They inline local files and run the deck's
+ * Python in the browser, so an untrusted workspace gets the plain slideshow.
+ */
+function presenterEnabled(document: vscode.TextDocument): boolean {
+    if (!presenterRequested(frontMatterValue(document.getText().split(/\r?\n/), 'presenter'))) {
+        return false;
+    }
+    if (!vscode.workspace.isTrusted) {
+        vscode.window.showWarningMessage('Presenter tools are off because this workspace is not trusted; using the plain slideshow.');
+        return false;
+    }
+    return true;
+}
+
+/** Download a KaTeX font once, caching it in the extension's global storage. */
+async function fetchFontCached(context: vscode.ExtensionContext, url: string): Promise<Buffer> {
+    const dir = path.join(context.globalStorageUri.fsPath, 'marp-present-fonts');
+    const file = path.join(dir, path.basename(new URL(url).pathname));
+    try {
+        return await fs.promises.readFile(file);
+    } catch {
+        // Not cached yet.
+    }
+    const response = await fetch(url, { signal: AbortSignal.timeout(30000) });
+    if (!response.ok) {
+        throw new Error(`Could not download ${url}: HTTP ${response.status}`);
+    }
+    const data = Buffer.from(await response.arrayBuffer());
+    await fs.promises.mkdir(dir, { recursive: true });
+    await fs.promises.writeFile(file, data);
+    return data;
+}
+
+/**
+ * Turn the Marp HTML at `htmlPath` into a self-contained deck with the
+ * presenter tools (pen, laser, notes, save with ink, live Python cells).
+ * Returns false (after reporting why) if it failed.
+ */
+async function addPresenterTools(context: vscode.ExtensionContext, document: vscode.TextDocument, htmlPath: string): Promise<boolean> {
+    try {
+        const html = await fs.promises.readFile(htmlPath, 'utf8');
+        const { html: bundled, report } = await bundlePresenterDeck(html, {
+            baseDir: path.dirname(document.uri.fsPath),
+            markdown: document.getText(),
+            assets: presenterAssets(context.asAbsolutePath(path.join('media', 'marpPresent'))),
+            fetchFont: url => fetchFontCached(context, url),
+        });
+        await fs.promises.writeFile(htmlPath, bundled, 'utf8');
+        const counts = Object.entries(report.counts).map(([what, n]) => `${n} ${what}`).join(', ');
+        log().appendLine(`Presenter tools added to ${path.basename(htmlPath)}: ${counts}`);
+        for (const missing of report.missing) {
+            log().appendLine(`  not found: ${missing}`);
+        }
+        if (report.external.length > 0) {
+            log().appendLine(`  still loaded from the web:\n    ${report.external.slice(0, 20).join('\n    ')}`);
+        }
+        return true;
+    } catch (error) {
+        vscode.window.showErrorMessage(`Could not add presenter tools: ${error instanceof Error ? error.message : String(error)}`);
+        return false;
+    }
+}
+
 /** Offer to open the exported file, or its folder. */
 async function announce(outputPath: string, message: string, extra: string[] = []): Promise<string | undefined> {
     const actions = [...extra, 'Open', 'Show in Folder'];
@@ -279,7 +347,8 @@ async function convertWithMarp(
     document: vscode.TextDocument,
     format: MarpExportFormat,
     outputPath: string,
-    title: string
+    title: string,
+    presenter = false
 ): Promise<boolean> {
     const cli = await resolveMarpCli(context);
     if (!cli) {
@@ -291,7 +360,9 @@ async function convertWithMarp(
     const allowLocalFiles = config.get<boolean>('allowLocalFiles', true) && vscode.workspace.isTrusted;
     const args = buildMarpArgs(input, outputPath, format, {
         allowLocalFiles,
-        enableHtml: marpHtmlEnabled(document),
+        // Presenter decks may use HTML widgets (e.g. iframes), as marp-present always allowed.
+        enableHtml: presenter || marpHtmlEnabled(document),
+        engine: presenter ? context.asAbsolutePath(path.join('media', 'marpPresent', 'engine.cjs')) : undefined,
         themeFiles: marpThemeUris(document).filter(uri => fs.existsSync(uri.fsPath)).map(uri => uri.fsPath),
         browserPath: config.get<string>('browserPath', '').trim() || undefined,
     });
@@ -337,7 +408,15 @@ async function exportWithMarp(context: vscode.ExtensionContext, format: MarpExpo
     const input = document.uri.fsPath;
     const outputPath = marpOutputPath(input, format);
     const shownName = format === 'images' ? `${path.parse(input).name}.001.png, ...` : path.basename(outputPath);
-    if (!(await convertWithMarp(context, document, format, outputPath, `Exporting ${shownName}`))) {
+    const presenter = presenterEnabled(document);
+    if (!(await convertWithMarp(context, document, format, outputPath, `Exporting ${shownName}`, presenter))) {
+        return;
+    }
+    if (format === 'html' && presenter) {
+        if (!(await addPresenterTools(context, document, outputPath))) {
+            return;
+        }
+        await announce(outputPath, `Exported ${path.basename(outputPath)} with presenter tools: a pen, l laser, n note, s save with ink`);
         return;
     }
 
@@ -503,16 +582,30 @@ async function present(context: vscode.ExtensionContext, args?: PresentArgs, fro
     }
     const startSlide = args?.slide ?? (fromCursor ? slideUnderCursor(document) : undefined);
 
-    const dir = await fs.promises.mkdtemp(path.join(os.tmpdir(), 'scimax-marp-'));
+    // Presenter tools keep ink in the browser's storage, keyed by the page's path, so
+    // their slideshow goes to the same private folder each time the deck is presented.
+    const presenter = presenterEnabled(document);
+    const dir = presenter
+        ? path.join(context.globalStorageUri.fsPath, 'slideshows',
+            createHash('sha256').update(document.uri.fsPath).digest('hex').slice(0, 16))
+        : await fs.promises.mkdtemp(path.join(os.tmpdir(), 'scimax-marp-'));
+    if (presenter) {
+        await fs.promises.mkdir(dir, { recursive: true, mode: 0o700 });
+    }
     const output = path.join(dir, `${path.parse(document.uri.fsPath).name}.html`);
-    if (!(await convertWithMarp(context, document, 'html', output, `Preparing slideshow of ${path.basename(document.fileName)}`))) {
+    if (!(await convertWithMarp(context, document, 'html', output, `Preparing slideshow of ${path.basename(document.fileName)}`, presenter))) {
+        return;
+    }
+    if (presenter && !(await addPresenterTools(context, document, output))) {
         return;
     }
     const folderUrl = pathToFileURL(path.dirname(document.uri.fsPath) + path.sep).href;
     const html = await fs.promises.readFile(output, 'utf8');
     await fs.promises.writeFile(output, prepareSlideshowHtml(html, folderUrl, startSlide), 'utf8');
     await vscode.env.openExternal(vscode.Uri.file(output));
-    vscode.window.setStatusBarMessage('Slideshow opened in the browser: F for full screen, P for presenter view', 6000);
+    vscode.window.setStatusBarMessage(presenter
+        ? 'Slideshow opened: F full screen, P presenter view, a pen, l laser, n note, s save with ink'
+        : 'Slideshow opened in the browser: F for full screen, P for presenter view', 6000);
 }
 
 export function registerMarpExportCommands(context: vscode.ExtensionContext): void {

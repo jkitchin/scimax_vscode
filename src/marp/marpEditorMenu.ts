@@ -18,6 +18,7 @@ import {
 import { parseDocument, replaceDocumentText, slidesInSelection } from './deckEdits';
 import { marpHtmlEnabled, marpThemeUris } from './marpSettings';
 import { BUILTIN_THEMES, themeNames } from './marpDirectives';
+import { presenterRequested } from './presenterBundle';
 import {
     customThemeCss, ensureStyleBlock, frontMatterRange, frontMatterValue, MARP_HEADER_SNIPPET, IMAGE_PLACEMENTS, ImageFilter, imageMarkdown,
     ImagePlacement, LayoutName, LAYOUTS, layoutSnippet, setFrontMatterValue, setSlideDirective,
@@ -329,6 +330,32 @@ async function insertSnippetBlock(snippet: string): Promise<void> {
     }
 }
 
+const PYTHON_CELLS = [
+    { label: 'Live cell', description: '```python run', detail: 'Editable, with a Run button (Shift+Enter runs it)', flags: 'run' },
+    { label: 'Runs when shown', description: '```python run auto', detail: 'Runs by itself the first time its slide is shown', flags: 'run auto' },
+    { label: 'Hidden setup', description: '```python run hidden', detail: 'Not shown; runs before the first cell does (imports, data)', flags: 'run hidden' },
+];
+
+/**
+ * Insert a ```python run cell, which runs in the browser while presenting.
+ * Cells need the presenter tools, so this turns them on for the deck too.
+ */
+async function insertPythonCell(): Promise<void> {
+    const editor = deckEditor();
+    if (!editor) {
+        return;
+    }
+    const kind = await vscode.window.showQuickPick(PYTHON_CELLS, { title: 'Live Python cell (runs in the slideshow)' });
+    if (!kind) {
+        return;
+    }
+    if (!presenterRequested(frontMatterValue(editor.document.getText().split(/\r?\n/), 'presenter'))) {
+        await editLines(editor, lines => setFrontMatterValue(lines, 'presenter', 'true'));
+        vscode.window.setStatusBarMessage('Turned on presenter tools for this deck (presenter: true)', 5000);
+    }
+    await insertBlock(editor, `\`\`\`python ${kind.flags}\n\${1:print("hello")}\n\`\`\``);
+}
+
 // =============================================================================
 // This slide
 // =============================================================================
@@ -446,6 +473,18 @@ async function allThemes(document: vscode.TextDocument): Promise<Array<{ name: s
         }
     }
     return themes;
+}
+
+/** Turn the presenter tools (pen, laser, notes, save with ink, live Python) on or off. */
+async function setPresenter(): Promise<void> {
+    await setDeck('presenter', async current => {
+        const on = presenterRequested(current);
+        const choice = await vscode.window.showQuickPick([
+            { label: 'On', description: on ? 'current' : undefined, detail: 'Pen, laser, notes and save with ink in the slideshow and HTML export; ```python run cells run', value: 'true' },
+            { label: 'Off', description: on ? undefined : 'current', detail: "Marp's plain slideshow", value: null },
+        ], { title: 'Presenter tools' });
+        return choice === undefined ? undefined : choice.value;
+    });
 }
 
 async function setTheme(): Promise<void> {
@@ -621,6 +660,7 @@ export function registerMarpEditorMenu(context: vscode.ExtensionContext): void {
         vscode.commands.registerCommand('scimax.marp.insert.fitHeading', insertFitHeading),
         vscode.commands.registerCommand('scimax.marp.insert.math', () => insertSnippetBlock('$$\n${1:E = mc^2}\n$$')),
         vscode.commands.registerCommand('scimax.marp.insert.code', () => insertSnippetBlock('```${1:python}\n${2}\n```')),
+        vscode.commands.registerCommand('scimax.marp.insert.pythonCell', insertPythonCell),
         vscode.commands.registerCommand('scimax.marp.insert.table', () =>
             insertSnippetBlock('| ${1:Column} | ${2:Column} | ${3:Column} |\n| --- | --- | --- |\n| ${4} | ${5} | ${6} |')
         ),
@@ -648,6 +688,7 @@ export function registerMarpEditorMenu(context: vscode.ExtensionContext): void {
         ),
         vscode.commands.registerCommand('scimax.marp.deck.math', () => setDeck('math', askChoice('Math typesetting', ['mathjax', 'katex']))),
         vscode.commands.registerCommand('scimax.marp.deck.metadata', setMetadata),
+        vscode.commands.registerCommand('scimax.marp.deck.presenter', setPresenter),
         // Themes
         vscode.commands.registerCommand('scimax.marp.theme.new', () => newCustomTheme()),
         vscode.commands.registerCommand('scimax.marp.theme.edit', editCurrentTheme),

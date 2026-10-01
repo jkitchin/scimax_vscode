@@ -39,6 +39,7 @@ export const DIRECTIVES: DirectiveSpec[] = [
     { name: 'keywords', scope: 'global', description: 'Keywords of the deck (comma separated), used by exports.' },
     { name: 'url', scope: 'global', description: 'Canonical URL of the deck, for the exported HTML.' },
     { name: 'image', scope: 'global', description: 'Open Graph image URL for the exported HTML.' },
+    { name: 'presenter', scope: 'global', description: 'Scimax presenter tools in the slideshow and HTML export: `a` pen, `l` laser, `n` sticky note, `s` save the deck with ink; ```` ```python run ```` cells run in the browser.', values: ['true', 'false'] },
     { name: 'paginate', scope: 'local', description: 'Show the page number: `true` or `false`; `hold` shows it without counting the slide, `skip` hides it without counting.', values: ['true', 'false', 'hold', 'skip'] },
     { name: 'header', scope: 'local', description: 'Text at the top of each slide (Markdown allowed).' },
     { name: 'footer', scope: 'local', description: 'Text at the bottom of each slide (Markdown allowed).' },

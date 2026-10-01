@@ -48,6 +48,8 @@ export interface MarpArgOptions {
     themeFiles?: string[];
     /** Browser executable to use instead of the one Marp finds. */
     browserPath?: string;
+    /** Marp engine module (`--engine`), e.g. the presenter tools' engine.cjs. */
+    engine?: string;
 }
 
 /** Output file for a deck, next to it: deck.md -> deck.pdf, deck-editable.pptx, ... */
@@ -77,6 +79,9 @@ export function buildMarpArgs(
     }
     if (options.themeFiles && options.themeFiles.length > 0) {
         args.push('--theme-set', ...options.themeFiles);
+    }
+    if (options.engine) {
+        args.push('--engine', options.engine);
     }
     // `--` so a file name starting with "-" is not read as an option.
     args.push('-o', outputPath, '--', inputPath);

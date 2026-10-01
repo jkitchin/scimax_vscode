@@ -412,7 +412,7 @@ line. For the other direction, double-click the preview. Refresh re-renders
 the Marp Slides sidebar and the Slide Sorter, for example after editing a
 theme file. See [[file:44-marp.org][Marp Slides]].
 
-*** ⚠️ Marp Slides and Slideshow
+*** 👀 Marp Slides and Slideshow
 
 Preview and present Marp decks. See [[file:44-marp.org][Marp Slides]].
 
@@ -426,7 +426,7 @@ Preview and present Marp decks. See [[file:44-marp.org][Marp Slides]].
 | [[cmd:scimax.marp.editSlideWithClaude]] | Edit the slide under the cursor with Claude Code        | -                            |
 | [[cmd:scimax.marp.openSlideSorter]]     | Slide Sorter (grid of all slides)                       | Cmd+Shift+V (in a Marp deck) |
 
-*** ⚠️ Marp Menu (Editor)
+*** 👀 Marp Menu (Editor)
 
 Right-click in a Marp deck > Marp. These act on the slide under the cursor
 or every selected slide. See [[file:44-marp.org::*The Marp Menu][The Marp Menu]].
@@ -457,6 +457,7 @@ or every selected slide. See [[file:44-marp.org::*The Marp Menu][The Marp Menu]]
 | [[cmd:scimax.marp.insert.code]]               | Code Block                      | -                  |
 | [[cmd:scimax.marp.insert.table]]              | Table                           | -                  |
 | [[cmd:scimax.marp.insert.buildList]]          | Build List (One Item at a Time) | -                  |
+| [[cmd:scimax.marp.insert.pythonCell]]         | Live Python Cell                | -                  |
 | [[cmd:scimax.marp.thisSlide.class]]           | Class (lead, invert)            | -                  |
 | [[cmd:scimax.marp.thisSlide.backgroundColor]] | Background Color                | -                  |
 | [[cmd:scimax.marp.thisSlide.backgroundImage]] | Background Image                | -                  |
@@ -474,6 +475,7 @@ or every selected slide. See [[file:44-marp.org::*The Marp Menu][The Marp Menu]]
 | [[cmd:scimax.marp.deck.headingDivider]]       | Heading Divider                 | -                  |
 | [[cmd:scimax.marp.deck.math]]                 | Math Typesetting                | -                  |
 | [[cmd:scimax.marp.deck.metadata]]             | Title, Author and Description   | -                  |
+| [[cmd:scimax.marp.deck.presenter]]            | Presenter Tools                 | -                  |
 | [[cmd:scimax.marp.theme.new]]                 | New Custom Theme                | -                  |
 | [[cmd:scimax.marp.theme.edit]]                | Edit Current Theme              | -                  |
 | [[cmd:scimax.marp.theme.styleBlock]]          | Add Deck Style Block            | -                  |

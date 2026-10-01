@@ -131,7 +131,7 @@ view has the same buttons, so it can be a small preview too.
 
 Hidden slides are shown (dimmed in the grid) so they can still be edited.
 
-* ⚠️ Slideshow
+* 👀 Slideshow
 
 To present, Scimax makes Marp's HTML slideshow of the deck and opens it in the
 browser. Marp CLI builds it (see [[*Marp CLI][Marp CLI]]), and it is written to a new private
@@ -158,6 +158,11 @@ current slide.
 
 Hidden slides are left out of the slideshow, and its slide numbers count only
 the slides it shows.
+
+A deck with ~presenter: true~ also gets a pen, a laser pointer, sticky notes
+and live Python cells in the slideshow; see [[*Presenter Tools and Live Python][Presenter Tools and Live Python]].
+Such a deck is written to a fixed private folder for that deck instead of a
+new temporary one, so ink drawn in one slideshow is still there the next time.
 
 ** Presenting from an org file
 
@@ -253,11 +258,11 @@ and a ~---~ inside a code block does not.
 The view renders with its own copy of Marp Core and follows these settings
 (see [[*Configuration][Configuration]]):
 
-| Setting                         | Effect on thumbnails                                         |
-|---------------------------------+--------------------------------------------------------------|
-| ~scimax.marp.themes~            | Custom theme CSS files (local paths only; URLs are skipped)  |
-| ~scimax.marp.enableHtml~        | Allows all raw HTML; otherwise Marp's safe allowlist applies |
-| ~scimax.marp.mathTypesetting~   | ~mathjax~ (default), ~katex~ or ~off~                        |
+| Setting                       | Effect on thumbnails                                         |
+|-------------------------------+--------------------------------------------------------------|
+| ~scimax.marp.themes~          | Custom theme CSS files (local paths only; URLs are skipped)  |
+| ~scimax.marp.enableHtml~      | Allows all raw HTML; otherwise Marp's safe allowlist applies |
+| ~scimax.marp.mathTypesetting~ | ~mathjax~ (default), ~katex~ or ~off~                        |
 
 Run ~Scimax: Refresh Marp Slide Thumbnails~ ([[cmd:scimax.marp.refreshSlides]])
 after editing a theme file, since theme files are not watched.
@@ -422,7 +427,7 @@ Each adds a slide after the current one, with tab stops to fill in.
 | Table                    | [[cmd:scimax.marp.layout.table]]      | A heading and a table                                                                       |
 | Big Number               | [[cmd:scimax.marp.layout.bigNumber]]  | One large figure with a caption                                                             |
 
-** Insert
+** 👀 Insert
 
 Inserted at the cursor, as its own paragraph.
 
@@ -435,6 +440,7 @@ Inserted at the cursor, as its own paragraph.
 | Code Block     | [[cmd:scimax.marp.insert.code]]       | A fenced code block                                                                                    |
 | Table          | [[cmd:scimax.marp.insert.table]]      | A three-column table                                                                                   |
 | Build List     | [[cmd:scimax.marp.insert.buildList]]  | ~*~ bullets, shown one at a time in the HTML slideshow                                                 |
+| Python Cell... | [[cmd:scimax.marp.insert.pythonCell]] | A live ~python run~ cell (~run~, ~run auto~ or ~run hidden~); turns on ~presenter: true~ if needed     |
 
 ** This Slide
 
@@ -451,7 +457,7 @@ Each sets a directive for just this slide, ~<!-- _name: value -->~, at the top o
 | Transition...         | [[cmd:scimax.marp.thisSlide.transition]]      | For the HTML slideshow                                           |
 | Scoped Style          | [[cmd:scimax.marp.thisSlide.scopedStyle]]     | A ~<style scoped>~ block for CSS that applies only to this slide |
 
-** Deck
+** 👀 Deck
 
 Each sets a key in the front matter, or removes it.
 
@@ -464,6 +470,7 @@ Each sets a key in the front matter, or removes it.
 | Heading Divider...               | [[cmd:scimax.marp.deck.headingDivider]] | Start a slide at every heading of this level and above |
 | Math Typesetting...              | [[cmd:scimax.marp.deck.math]]           | ~mathjax~ or ~katex~                                   |
 | Title, Author and Description... | [[cmd:scimax.marp.deck.metadata]]       | Also keywords and language; used by exports            |
+| Presenter Tools...               | [[cmd:scimax.marp.deck.presenter]]      | ~presenter: true~: pen, laser, notes and live Python   |
 
 ** Theme
 
@@ -527,7 +534,108 @@ after it. Claude Code's link can only fill in a prompt in a new tab, which is
 why an open chat gets the @-mention rather than the full sentence. A chat open
 only in the Claude Code side bar is not detected, so a new tab opens.
 
-* ⚠️ Exporting Slides
+* ⚠️ Presenter Tools and Live Python
+
+A deck can opt in to presenter tools in the HTML slideshow: a pen to draw on
+slides, a laser pointer, sticky notes, a spotlight, and Python code cells that
+run in the browser while you present. Add one key to the front matter:
+
+#+begin_src markdown
+---
+marp: true
+presenter: true
+---
+#+end_src
+
+or choose Deck → Presenter Tools... in the Marp menu
+([[cmd:scimax.marp.deck.presenter]]). Decks without the key are presented and
+exported exactly as before. The tools are added when you present (see
+[[*Slideshow][Slideshow]]) and when you export HTML with =h= (see [[*Exporting Slides][Exporting Slides]]).
+~examples/marp-present/demo.md~ in the Scimax repository shows all of them.
+
+** Keys in the slideshow
+
+| Key                       | Effect                                                                    |
+|---------------------------+---------------------------------------------------------------------------|
+| =a=                       | Turn the pen on or off (widgets cannot be clicked while it is on)         |
+| =1= to =5=                | Pen colour: red, blue, green, black, yellow highlighter                   |
+| =z=                       | Undo the last stroke on this slide                                        |
+| =c= / =C=                 | Clear this slide / every slide                                            |
+| =l=                       | Laser pointer: a red dot that follows the mouse                           |
+| =n=                       | New sticky note at the mouse; type Markdown, click away to render it      |
+| Right-click               | A menu with all of these (Shift+right-click gives the browser's own menu) |
+| Hold the mouse on a slide | Spotlight: the screen darkens except a circle around the cursor           |
+| =s=                       | Save a standalone copy of the deck with the ink, ~<deck>-annotated.html~  |
+| =m=                       | Save the Markdown source with the ink as SVG, ~<deck>-annotated.md~       |
+| =S=                       | Save only the ink, as JSON                                                |
+| =i=                       | Load ink from such a JSON file (or drag the file onto the deck)           |
+| =Cmd+P= / =Ctrl+P=        | Print; "Save as PDF" keeps every slide's ink as vector graphics           |
+
+Marp's own keys (=F= full screen, =P= presenter view, arrows) still work. A
+note's bar drags it; its =●= picks a colour, =–= shrinks it to an icon and
+=×= deletes it.
+
+** Keeping the ink
+
+Ink and notes belong to the slide they were drawn on and are kept in the
+browser's local storage, so a reload does not lose them. Scimax presents a
+deck with presenter tools from the same private folder every time, so the ink
+is still there when you present it again. To keep the ink for good, move it to
+another machine or share it, press =s=: the browser downloads one HTML file
+with the theme, images, iframes, fonts, tools and ink inside. Open it
+anywhere, keep annotating, and press =s= again.
+
+** Live Python cells
+
+Mark a Python code block with ~run~ to make it a cell you can edit and run
+during the talk:
+
+#+begin_src markdown
+```python run
+import numpy as np
+np.linspace(0, 1, 5)
+```
+#+end_src
+
+| Fence                  | Cell                                              |
+|------------------------+---------------------------------------------------|
+| ~```python run~        | Editable, with a Run button                       |
+| ~```python run auto~   | Runs by itself the first time its slide is shown  |
+| ~```python run hidden~ | Setup code: not shown, runs before the first cell |
+
+Insert one with Insert → Python Cell... ([[cmd:scimax.marp.insert.pythonCell]]),
+which also adds ~presenter: true~ if the deck does not have it.
+
+In the slideshow, click a cell to edit it, press =Shift+Enter= (or =▶=) to run
+it and =Esc= to leave the editor so the arrow keys change slides again. =↺=
+restores the original code and =⟲= restarts Python. All cells share one
+Python session, like a notebook. Output shows printed text, errors, the value
+of the last expression and matplotlib figures.
+
+Python is [[https://pyodide.org][Pyodide]], running in the browser. It is downloaded from the
+jsdelivr CDN when the deck opens, so *running cells needs an internet
+connection* (the rest of the tools work offline). Pyodide's packages (numpy,
+scipy, matplotlib, pandas, sympy, ...) load on ~import~, and ~%pip install
+name~ in a cell installs pure-Python packages from PyPI.
+
+In PDF, PowerPoint and image exports a ~run~ cell is ordinary highlighted code,
+and a ~run hidden~ cell is left out.
+
+** Notes
+
+- The tools are added only in a trusted workspace, since the deck's HTML and
+  Python run in the browser. In an untrusted workspace Scimax warns and shows
+  the plain slideshow.
+- A deck with ~presenter: true~ is built with Marp CLI's ~--html~ option, so raw
+  HTML in its slides is rendered.
+- Scimax passes its own markdown-it engine to Marp CLI (~--engine~), which
+  replaces an ~engine~ set in a Marp CLI configuration file for these decks.
+- The fonts for KaTeX math are downloaded once and cached, so ~deck.html~ also
+  typesets math offline.
+- The browser files live in ~media/marpPresent/~ of the extension; the Output
+  panel (/Scimax Marp Export/) lists what was inlined and any missing files.
+
+* 👀 Exporting Slides
 
 Press =C-c C-e= in a Marp deck (or click the export button in the Marp Slides
 view's title bar) for the Marp export menu. In other Markdown files =C-c C-e=
@@ -548,6 +656,11 @@ folder.
 | =i= | PNG image per slide                                  | ~deck.001.png~, ...    | Browser                 |
 | =t= | Presenter notes as text                              | ~deck-notes.txt~       | Nothing                 |
 | =m= | The Markdown (Pandoc) export menu                    |                        |                         |
+
+For a deck with ~presenter: true~, =h= also inlines the theme, images,
+iframes, fonts and the [[*Presenter Tools and Live Python][presenter tools]] into ~deck.html~, so the one file
+works anywhere. Other formats show live Python cells as ordinary highlighted
+code and leave out ~run hidden~ cells.
 
 ** Marp CLI
 
@@ -609,11 +722,11 @@ upload the file (New > File upload), then open it with Google Slides.
 
 * 👀 Configuration
 
-| Setting                        | Default   | Effect                                                     |
-|--------------------------------+-----------+------------------------------------------------------------|
-| ~scimax.marp.themes~           | ~[]~      | Custom theme CSS files for thumbnails, preview and exports |
-| ~scimax.marp.enableHtml~       | ~false~   | Allow all raw HTML in slides                               |
-| ~scimax.marp.mathTypesetting~  | ~mathjax~ | ~mathjax~, ~katex~ or ~off~                                |
+| Setting                       | Default   | Effect                                                     |
+|-------------------------------+-----------+------------------------------------------------------------|
+| ~scimax.marp.themes~          | ~[]~      | Custom theme CSS files for thumbnails, preview and exports |
+| ~scimax.marp.enableHtml~      | ~false~   | Allow all raw HTML in slides                               |
+| ~scimax.marp.mathTypesetting~ | ~mathjax~ | ~mathjax~, ~katex~ or ~off~                                |
 
 Each falls back to Marp for VS Code's ~markdown.marp.themes~,
 ~markdown.marp.enableHtml~ or ~markdown.marp.mathTypesetting~ when it is not

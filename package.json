@@ -3670,6 +3670,11 @@
         "category": "Scimax Marp"
       },
       {
+        "command": "scimax.marp.insert.pythonCell",
+        "title": "Live Python Cell...",
+        "category": "Scimax Marp"
+      },
+      {
         "command": "scimax.marp.insert.table",
         "title": "Table",
         "category": "Scimax Marp"
@@ -3757,6 +3762,11 @@
       {
         "command": "scimax.marp.deck.math",
         "title": "Math Typesetting...",
+        "category": "Scimax Marp"
+      },
+      {
+        "command": "scimax.marp.deck.presenter",
+        "title": "Presenter Tools (Pen, Live Python)...",
         "category": "Scimax Marp"
       },
       {
@@ -8071,6 +8081,10 @@
           "when": "editorLangId == markdown && scimax.marp.isMarpDocument"
         },
         {
+          "command": "scimax.marp.insert.pythonCell",
+          "when": "editorLangId == markdown && scimax.marp.isMarpDocument"
+        },
+        {
           "command": "scimax.marp.insert.table",
           "when": "editorLangId == markdown && scimax.marp.isMarpDocument"
         },
@@ -8140,6 +8154,10 @@
         },
         {
           "command": "scimax.marp.deck.math",
+          "when": "editorLangId == markdown && scimax.marp.isMarpDocument"
+        },
+        {
+          "command": "scimax.marp.deck.presenter",
           "when": "editorLangId == markdown && scimax.marp.isMarpDocument"
         },
         {
@@ -8454,6 +8472,10 @@
         {
           "command": "scimax.marp.insert.buildList",
           "group": "1@7"
+        },
+        {
+          "command": "scimax.marp.insert.pythonCell",
+          "group": "1@8"
         }
       ],
       "scimax.marp.thisSlideMenu": [
@@ -8526,6 +8548,10 @@
         {
           "command": "scimax.marp.deck.metadata",
           "group": "1@8"
+        },
+        {
+          "command": "scimax.marp.deck.presenter",
+          "group": "1@9"
         }
       ],
       "scimax.marp.themeMenu": [
