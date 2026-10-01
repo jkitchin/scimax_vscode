@@ -568,6 +568,19 @@ The theorem statement.
                 .map((o: any) => o.properties.value);
             expect(verbatims).toEqual(['foo', 'bar', 'baz']);
         });
+
+        it('keeps a marker inside code that cannot close it', () => {
+            // An interior `=` followed by a letter is not a closing marker.
+            const values = (text: string) => parseObjectsFast(text)
+                .filter(o => o.type === 'verbatim' || o.type === 'code')
+                .map((o: any) => o.properties.value);
+            expect(values('use =feral_ordering=metis= here')).toEqual(['feral_ordering=metis']);
+            expect(values('then =x=1= end')).toEqual(['x=1']);
+            expect(values('and ~a~b~ too')).toEqual(['a~b']);
+            // A marker followed by a closing character still ends the span.
+            expect(values('=a= =b= and =a=, done')).toEqual(['a', 'b', 'a']);
+            expect(values('a = b = c, and x=y=z')).toEqual([]);
+        });
     });
 
     describe('Complex Documents', () => {

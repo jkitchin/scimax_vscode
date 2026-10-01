@@ -83,7 +83,8 @@ const BIBSTYLE_PATTERN = /(?:bibliographystyle|bibstyle):([^\s<>[\](){}]+)/g;
 // Org emphasis markers (*/_+=~) are also allowed on either side so that
 // chained markup like =foo=/=bar= or *a*/=b= parses each span individually.
 const PRE = '(?:^|(?<=[\\s\\-({\'"*/_+=~]))';
-const POST = '(?=[\\s\\-.,:!?;\\\'")}\\\\\\[\\]*/_+=~]|$)';
+const POST_CHARS = '[\\s\\-.,:!?;\\\'")}\\\\\\[\\]*/_+=~]';
+const POST = `(?=${POST_CHARS}|$)`;
 const BOLD_PATTERN = new RegExp(`${PRE}\\*([^\\s*](?:[^*]*[^\\s*])?)\\*${POST}`, 'g');
 // Italic content may contain an interior slash as long as that slash is
 // immediately followed by an alphanumeric (so it is NOT a valid closing
@@ -92,8 +93,11 @@ const BOLD_PATTERN = new RegExp(`${PRE}\\*([^\\s*](?:[^*]*[^\\s*])?)\\*${POST}`,
 const ITALIC_PATTERN = new RegExp(`${PRE}\\/([^\\s/](?:(?:[^/]|\\/(?=[a-zA-Z0-9]))*[^\\s/])?)\\/(?![a-zA-Z0-9])${POST}`, 'g');
 const UNDERLINE_PATTERN = new RegExp(`${PRE}_([^\\s_](?:[^_]*[^\\s_])?)_(?![a-zA-Z])${POST}`, 'g');
 const STRIKE_PATTERN = new RegExp(`${PRE}\\+([^\\s+](?:[^+]*[^\\s+])?)\\+(?![a-zA-Z0-9])${POST}`, 'g');
-const CODE_PATTERN = new RegExp(`${PRE}=([^\\s=](?:[^=]*[^\\s=])?)=${POST}`, 'g');
-const VERBATIM_PATTERN = new RegExp(`${PRE}~([^\\s~](?:[^~]*[^\\s~])?)~${POST}`, 'g');
+// Code and verbatim may contain their own marker when it cannot close the
+// span (it is not followed by a closing character), as in Org:
+// =feral_ordering=metis= is one code span.
+const CODE_PATTERN = new RegExp(`${PRE}=([^\\s=](?:(?:[^=]|=(?!${POST_CHARS}|$))*[^\\s=])?)=${POST}`, 'g');
+const VERBATIM_PATTERN = new RegExp(`${PRE}~([^\\s~](?:(?:[^~]|~(?!${POST_CHARS}|$))*[^\\s~])?)~${POST}`, 'g');
 // Emacs-style command markup: `command'
 const COMMAND_PATTERN = /`([^`'\n]+)'/g;
 
