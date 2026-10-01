@@ -33,7 +33,7 @@ Press → to begin. The talk timer in the corner starts when you do.
 
 ![width:300px](img/chart.png)
 
-- **a** pen on/off, **1**–**5** colours, **z** undo, **c** / **C** clear
+- **a** pen on/off, **1**–**5** colours, **r** eraser, **z** undo, **c** / **C** clear
 - **l** laser pointer, **n** sticky note at the mouse
 - Hold the mouse button down for a spotlight
 

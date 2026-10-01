@@ -4,6 +4,7 @@
  *   a        toggle the pen (widgets are not clickable while it is on)
  *   1-5      pen colour: red, blue, green, black, yellow highlighter
  *   z        undo the last stroke on this slide
+ *   r        toggle the eraser: drag over strokes to remove them (z puts them back)
  *   c        clear this slide        shift+C  clear every slide
  *   l        toggle the laser pointer (a red dot that follows the mouse, also over widgets)
  *   n        new sticky note at the mouse: type Markdown, click away to render it; drag its bar
@@ -111,6 +112,8 @@
   const saveNotes = () => { try { localStorage.setItem(KEY + ":notes", JSON.stringify(notes)); } catch (e) { /* private mode */ } };
 
   let enabled = false, pen = 0, stroke = null, laserOn = false;
+  let erasing = false, rubbing = null;                // the eraser, and the strokes one drag of it removed
+  const erased = {};                                  // per slide: what each drag removed, for z
 
   // ---- save / load annotations as a JSON file ----
   const DECK = decodeURIComponent(location.pathname.split("/").pop() || "slides").replace(/\.html?$/, "");
@@ -445,9 +448,9 @@
     redraw();
   }
   function showBadge() {
-    badge.style.display = enabled ? "block" : "none";
-    badge.style.background = PENS[pen].color.replace("0.45", "0.9");
-    badge.textContent = "✎ pen " + (pen + 1) + "  ·  a: off  z: undo  c: clear";
+    badge.style.display = enabled || erasing ? "block" : "none";
+    badge.style.background = erasing ? "rgba(75,85,99,.9)" : PENS[pen].color.replace("0.45", "0.9");
+    badge.textContent = erasing ? "⌫ eraser  ·  drag over ink to remove it  ·  r: off  z: undo" : "✎ pen " + (pen + 1) + "  ·  a: off  z: undo  c: clear";
   }
 
   // ---- spotlight: hold the mouse button to darken everything but a circle at the cursor ----
@@ -460,7 +463,7 @@
       `rgba(0,0,0,0) ${radius - 1}px, rgba(0,0,0,.72) ${radius + 1}px)`;
   }
   function spotStart(e) {
-    if (e.button !== 0 || enabled || e.ctrlKey || e.metaKey || e.altKey || e.shiftKey) return;
+    if (e.button !== 0 || enabled || erasing || e.ctrlKey || e.metaKey || e.altKey || e.shiftKey) return;
     if (menuOpen()) return;                                    // this click just closes the menu
     if (e.target && e.target.closest && e.target.closest(INTERACTIVE)) return;
     spotOn = true;
@@ -757,24 +760,61 @@
   }
   const hookAll = () => iframes().forEach(f => { hookFrame(f); f.addEventListener("load", () => hookFrame(f)); });
 
+  // The eraser removes whole strokes: any stroke passing within a few pixels of the pointer
+  function rubOut(e) {
+    const id = slideId(), list = ink[id];
+    if (!list || !list.length) return;
+    const r = slideRect(), x = e.clientX, y = e.clientY, reach = 10;
+    const px = ([u, v]) => [r.left + u * r.width, r.top + v * r.height];
+    const near = s => {
+      const pts = s.pts.map(px), half = PENS[s.pen].width * r.width / 1280 / 2 + reach;
+      for (let i = 0; i < pts.length; i++) {
+        const [ax, ay] = pts[i], [bx, by] = pts[Math.min(i + 1, pts.length - 1)];
+        const dx = bx - ax, dy = by - ay, len = dx * dx + dy * dy;
+        const t = len ? Math.max(0, Math.min(1, ((x - ax) * dx + (y - ay) * dy) / len)) : 0;
+        if (Math.hypot(ax + t * dx - x, ay + t * dy - y) <= half) return true;
+      }
+      return false;
+    };
+    let gone = false;
+    for (let i = list.length - 1; i >= 0; i--) {
+      if (near(list[i])) { rubbing.push({ i, s: list[i] }); list.splice(i, 1); gone = true; }
+    }
+    if (gone) redraw();
+  }
   canvas.addEventListener("pointerdown", e => {
-    if (!enabled) return;
+    if (!enabled && !erasing) return;
     e.preventDefault(); e.stopPropagation();
     canvas.setPointerCapture(e.pointerId);
+    if (erasing) { rubbing = []; rubOut(e); return; }
     stroke = { pen, pts: [toSlide(e)] };
     (ink[slideId()] = ink[slideId()] || []).push(stroke);
+    delete erased[slideId()];                           // z now undoes this stroke, not an erase
     redraw();
   });
   canvas.addEventListener("pointermove", e => {
+    if (rubbing) { e.preventDefault(); e.stopPropagation(); rubOut(e); return; }
     if (!stroke) return;
     e.preventDefault(); e.stopPropagation();
     stroke.pts.push(toSlide(e));
     redraw();
   });
-  const end = () => { if (stroke) { stroke = null; save(); } };
+  const end = () => {
+    if (stroke) { stroke = null; save(); }
+    if (rubbing) {
+      if (rubbing.length) { (erased[slideId()] = erased[slideId()] || []).push(rubbing); save(); }
+      rubbing = null;
+    }
+  };
   canvas.addEventListener("pointerup", end);
   canvas.addEventListener("pointercancel", end);
 
+  // The canvas takes the mouse while the pen or the eraser is on (other tools check this)
+  const ERASER_CURSOR = "url(\"data:image/svg+xml," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"><circle cx="12" cy="12" r="10" fill="rgba(255,255,255,.5)" stroke="#374151" stroke-width="1.5"/></svg>') + "\") 12 12, cell";
+  function setCanvas() {
+    canvas.style.pointerEvents = enabled || erasing ? "auto" : "none";
+    canvas.style.cursor = erasing ? ERASER_CURSOR : "";
+  }
   function onKey(e) {
     if (e.key === "Escape" && menuOpen()) { e.preventDefault(); closeMenu(); return; }
     if (e.ctrlKey || e.metaKey || e.altKey) return;
@@ -788,11 +828,15 @@
     const id = slideId();
     if (k === "a" || k === "A") {
       enabled = !enabled;
-      canvas.style.pointerEvents = enabled ? "auto" : "none";
-      if (enabled && laserOn) setLaser(false);
+      if (enabled) { erasing = false; if (laserOn) setLaser(false); }
+      setCanvas();
+    } else if (k === "r" || k === "R") {
+      erasing = !erasing;
+      if (erasing) { enabled = false; if (laserOn) setLaser(false); }
+      setCanvas();
     } else if (k === "l" || k === "L") {
       setLaser(!laserOn);
-      if (laserOn && enabled) { enabled = false; canvas.style.pointerEvents = "none"; }
+      if (laserOn) { enabled = erasing = false; setCanvas(); }
     } else if (k === "s") {
       saveStandalone(); return true;
     } else if (k === "m") {
@@ -807,6 +851,10 @@
       delete ink[id]; save(); redraw();
     } else if (k === "C") {
       ink = {}; save(); redraw();
+    } else if (k === "z" && erased[id] && erased[id].length) {
+      const list = ink[id] = ink[id] || [];             // put back what the last drag of the eraser removed
+      erased[id].pop().slice().reverse().forEach(({ i, s }) => list.splice(i, 0, s));
+      save(); redraw();
     } else if (k === "z" && ink[id] && ink[id].length) {
       ink[id].pop(); save(); redraw();
     } else if (enabled && k >= "1" && k <= String(PENS.length)) {
@@ -852,6 +900,7 @@
     return [...noteItems,
       { label: "Pen", key: "a", check: enabled, run: () => act("a") },
       { swatches: true },
+      { label: "Eraser", key: "r", check: erasing, off: !total().strokes && !erasing, run: () => act("r") },
       { label: "Laser pointer", key: "l", check: laserOn, run: () => act("l") },
       { label: "Add a note here", key: "n", run: () => { lastX = menuX; lastY = menuY; act("n"); } },
       ...(window.__marpEdits && window.__marpEdits.canEdit ? [{ label: "Edit text and layout", key: "d", check: window.__marpEdits.editing, run: () => window.__marpEdits.toggle() }] : []),

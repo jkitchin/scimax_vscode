@@ -574,7 +574,8 @@ exported exactly as before. The tools are added when you present (see
 |---------------------------+--------------------------------------------------------------------------------|
 | =a=                       | Turn the pen on or off (widgets cannot be clicked while it is on)              |
 | =1= to =5=                | Pen colour: red, blue, green, black, yellow highlighter                        |
-| =z=                       | Undo the last stroke on this slide                                             |
+| =r=                       | Eraser: drag over strokes to remove them; =r= again turns it off               |
+| =z=                       | Undo the last stroke (or the last erase) on this slide                         |
 | =c= / =C=                 | Clear this slide / every slide                                                 |
 | =l=                       | Laser pointer: a red dot that follows the mouse                                |
 | =n=                       | New sticky note at the mouse; type Markdown, click away to render it           |
