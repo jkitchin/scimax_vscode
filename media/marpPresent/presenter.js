@@ -33,6 +33,8 @@
  * kept in localStorage under "<key>:before-load" in case you need it back.
  *
  * A deck built with `presenter: offline` also carries Pyodide (in <script id="marp-pyodide">), and s keeps it.
+ * The right-click menu's "Save a copy that works offline" saves <deck>-offline.html with Pyodide and
+ * the packages the Python cells import put in it (downloaded once, so it needs a connection then).
  *
  * Saving as Markdown needs the deck's source; scimax (src/marp/presenterBundle.ts) embeds it as window.__MARP_SOURCE__, and
  * without it `m` asks you to pick the .md file. Ink stored in a saved deck (the JSON block of a
@@ -238,7 +240,8 @@
       try {
         const h = await showSaveFilePicker({ suggestedName: name, types: [{ description: what, accept: { [type]: [ext] } }] });
         const w = await h.createWritable(); await w.write(text); await w.close();
-        say(`Saved ${describe(c)} → ${h.name}`);
+        const done = describe(c);
+        say(done ? `Saved ${done} → ${h.name}` : `Saved ${h.name}`);
         return;
       } catch (e) { if (e.name === "AbortError") return; /* otherwise fall back to a download */ }
     }
@@ -259,27 +262,83 @@
   const PYODIDE_EMPTY = TAG("application/json", "pyodide") + "</script>";
   const selfCopy = () => { const el = document.getElementById("marp-self"); return el && el.textContent.trim(); };
   const b64decode = b64 => new TextDecoder().decode(Uint8Array.from(atob(b64), ch => ch.charCodeAt(0)));
-  const b64encode = str => {
-    const bytes = new TextEncoder().encode(str);
+  const b64encode = str => b64bytes(new TextEncoder().encode(str));
+  const b64bytes = bytes => {
     let bin = "";
     for (let i = 0; i < bytes.length; i += 0x8000) bin += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000));
     return btoa(bin);
   };
-  async function saveStandalone() {
-    if (nothing(total())) { say("Nothing to save: no annotations yet"); return; }
-    const b64 = selfCopy();
-    if (!b64) { say("This deck was not built with scimax presenter tools, so saving the Markdown instead"); saveMarkdown(); return; }
-    const page = b64decode(b64);
+  // offline: also put Pyodide and the packages the cells import in the copy (<deck>-offline.html),
+  // as `presenter: offline` does when scimax builds the deck
+  async function saveStandalone(offline) {
+    if (!offline && nothing(total())) { say("Nothing to save: no annotations yet"); return; }
+    let b64 = selfCopy();
+    if (!b64) {
+      if (offline) { say("This deck was not built with scimax presenter tools: use presenter: offline in its front matter instead"); return; }
+      say("This deck was not built with scimax presenter tools, so saving the Markdown instead"); saveMarkdown(); return;
+    }
+    let page = b64decode(b64);
     if (!page.includes(INK_EMPTY) || !page.includes(SELF_EMPTY)) { say("Could not save: the embedded copy of the deck is damaged. Press m or S instead."); return; }
+    const el = document.getElementById("marp-pyodide");
+    let pyodide = el ? el.textContent : "", pipNote = "";
+    if (offline && !pyodide.trim() && window.__PYCELLS_PYODIDE__) {
+      let got;
+      try { got = await offlinePython(window.__PYCELLS_PYODIDE__); }
+      catch (e) { say("Could not get Python for offline use (" + e.message + "). It is downloaded once, so this needs an internet connection."); return; }
+      pyodide = got.json;
+      if (got.pip) pipNote = " Cells that %pip install still need a connection.";
+      if (!page.includes(PYODIDE_EMPTY)) { page = page.replace(SELF_EMPTY, () => SELF_EMPTY + PYODIDE_EMPTY); b64 = b64encode(page); }
+    }
     const inkJson = JSON.stringify({ ink, notes, edits: edits() }).replace(/</g, "\\u003c");
     const text = page.replace(INK_EMPTY, () => INK_EMPTY.replace("{}", inkJson))
                      .replace(SELF_EMPTY, () => SELF_EMPTY.replace("</script>", b64 + "</script>"))
-                     .replace(PYODIDE_EMPTY, () => {
-                       const el = document.getElementById("marp-pyodide");
-                       return PYODIDE_EMPTY.replace("</script>", (el ? el.textContent : "") + "</script>");
-                     });
-    const name = DECK.replace(/-annotated$/, "") + "-annotated.html";
-    await writeFile(text, name, "Web page", "text/html", ".html");
+                     .replace(PYODIDE_EMPTY, () => PYODIDE_EMPTY.replace("</script>", pyodide + "</script>"));
+    const base = DECK.replace(/-(annotated|offline)$/, "");
+    const name = base + (offline || /-offline$/.test(DECK) ? "-offline.html" : "-annotated.html");
+    await writeFile(text, name, "Web page", "text/html", ".html",
+      offline ? `Saved ${name} to Downloads: it works without internet.${pipNote}` : undefined);
+    if (offline && pipNote) setTimeout(() => say(pipNote.trim()), 3600);
+  }
+
+  // Pyodide's own files, micropip, and the Pyodide packages the Python cells import with what they
+  // depend on: the same choice as planOfflinePython in src/marp/presenterBundle.ts.
+  async function offlinePython(BASE) {
+    const get = async name => {
+      const r = await fetch(BASE + name);
+      if (!r.ok) throw new Error(name + ": HTTP " + r.status);
+      return new Uint8Array(await r.arrayBuffer());
+    };
+    say("Getting Python for offline use…");
+    const lockBytes = await get("pyodide-lock.json");
+    const lock = JSON.parse(new TextDecoder().decode(lockBytes)).packages || {};
+    const code = [];
+    const fence = /^([ \t]*)(`{3,}|~{3,})[ \t]*(python|py|python3)\b([^\n]*)\n([\s\S]*?)^\1\2[ \t]*$/gim;
+    for (let m; source && (m = fence.exec(source.replace(/\r\n/g, "\n")));) if (m[4].trim().split(/\s+/).includes("run")) code.push(m[5]);
+    document.querySelectorAll(".pyc .cm-content").forEach(c => code.push(c.innerText));   // cells as edited now
+    const byImport = {};
+    for (const [name, pkg] of Object.entries(lock)) for (const imp of pkg.imports || []) byImport[imp] = name;
+    const wanted = ["micropip"];
+    for (const line of code.join("\n").split("\n")) {
+      const imp = line.match(/^\s*import\s+([\w.]+(?:\s+as\s+\w+)?(?:\s*,\s*[\w.]+(?:\s+as\s+\w+)?)*)/);
+      const from = line.match(/^\s*from\s+(\w[\w.]*)\s+import\b/);
+      const names = imp ? imp[1].split(",").map(p => p.trim().split(/[.\s]/)[0]) : from ? [from[1].split(".")[0]] : [];
+      for (const n of names) if (byImport[n] || lock[n]) wanted.push(byImport[n] || n);
+    }
+    const packages = new Set(), stack = [...wanted];
+    while (stack.length) {
+      const n = stack.pop();
+      if (packages.has(n) || !lock[n]) continue;
+      packages.add(n);
+      stack.push(...(lock[n].depends || []));
+    }
+    const names = ["pyodide.mjs", "pyodide.asm.mjs", "pyodide.asm.wasm", "python_stdlib.zip", ...[...packages].map(n => lock[n].file_name)];
+    const files = { "pyodide-lock.json": b64bytes(lockBytes) };
+    for (let i = 0; i < names.length; i++) {
+      say(`Getting Python for offline use: ${i + 1} of ${names.length} files…`);
+      files[names[i]] = b64bytes(await get(names[i]));
+    }
+    // Base64 and file names never contain '<', so the JSON cannot close the script
+    return { json: JSON.stringify(files), pip: code.some(c => /^\s*[%!]pip\s/m.test(c)) };
   }
   const mdPicker = document.createElement("input");
   Object.assign(mdPicker, { type: "file", accept: ".md,text/markdown" });
@@ -802,6 +861,7 @@
       { label: "Clear all ink", key: "⇧C", off: !total().strokes, run: () => act("C") },
       "-",
       { label: "Save deck with annotations…", key: "s", run: () => act("s") },
+      { label: "Save a copy that works offline…", run: () => saveStandalone(true) },
       { label: "Save annotated Markdown…", key: "m", run: () => act("m") },
       { label: "Save annotations (JSON)", key: "⇧S", run: () => act("S") },
       { label: "Load annotations…", key: "i", run: () => act("i") },

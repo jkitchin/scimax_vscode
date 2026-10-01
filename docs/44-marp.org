@@ -809,6 +809,12 @@ presenter: offline
   them, and the cell shows an error when it cannot. The Output panel (/Scimax
   Marp Export/) lists the packages that were included and those that were not.
 - =s= keeps the embedded Python, so the annotated copy also runs offline.
+- In the slideshow of a ~presenter: true~ deck, right-click → /Save a copy that
+  works offline.../ saves ~<deck>-offline.html~. That copy contains Python, the
+  packages chosen as above (including any edits you made to the cells), and
+  your ink, notes and edits. The browser downloads Python for it, so you need
+  a connection while saving, but not afterwards. When you save that copy again
+  with =s=, it keeps the ~-offline~ name.
 
 ** ⚠️ Checking a deck for offline use
 

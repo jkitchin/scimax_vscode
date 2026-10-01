@@ -267,6 +267,7 @@ self.onmessage = e => {
 
   // Scimax's Python panel (runner.js) runs cells in VS Code with this same worker
   window.__PYCELLS_WORKER__ = WORKER;
+  window.__PYCELLS_PYODIDE__ = PYODIDE;      // presenter.js downloads Pyodide from here for an offline copy
 
   let worker = null, nextId = 0, counter = 0, setupQueued = false;
   const handlers = new Map();
