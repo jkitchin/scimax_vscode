@@ -1,6 +1,7 @@
 ---
 marp: true
 presenter: true
+timer: 20
 theme: gaia
 paginate: true
 math: katex
@@ -10,15 +11,46 @@ math: katex
 
 # Scimax presenter tools demo
 
-Press **a** to draw, **l** for the laser, **s** to save this deck with your ink.
+Every slide shows a tool and how to try it.
+**Right-click** anywhere for a menu of them all.
+
+Press → to begin. The talk timer in the corner starts when you do.
 
 ---
 
-## An image and some math
+## The talk timer
 
-![width:520px](img/chart.png)
+`timer: 20` in the front matter puts a 20 minute countdown in the corner.
+
+- It starts by itself when you leave the first slide
+- **t** pauses and restarts it, **T** resets it (do this after a rehearsal)
+- Amber in the last 5 minutes, red in the last minute, then it counts overtime
+- **P** opens Marp's presenter view, which shows the same time
+
+---
+
+## Draw, point and take notes
+
+![width:300px](img/chart.png)
+
+- **a** pen on/off, **1**–**5** colours, **z** undo, **c** / **C** clear
+- **l** laser pointer, **n** sticky note at the mouse
+- Hold the mouse button down for a spotlight
+
+*Try it:* press **a** and circle the peak.
+
+---
+
+## Zoom in
 
 $$ \bar y \pm t_{0.975,\,n-1}\, \frac{s}{\sqrt n} $$
+
+| n  | ȳ    | s    | 95% interval   |
+|----|------|------|----------------|
+| 5  | 2.31 | 0.42 | 2.31 ± 0.52    |
+| 20 | 2.28 | 0.39 | 2.28 ± 0.18    |
+
+*Try it:* press **x** and drag a box around the formula. **x** or **Esc** zooms out.
 
 ---
 
@@ -91,3 +123,54 @@ df = pd.DataFrame({"x": np.tile(np.arange(10), 3), "g": np.repeat(list("abc"), 1
 df["y"] = df.x * df.g.map({"a": 1, "b": 2, "c": 3}) + np.random.default_rng(2).normal(0, 1, len(df))
 sns.lmplot(data=df, x="x", y="y", hue="g", height=2.6, aspect=2)
 ```
+
+---
+
+## Exercise: change the plot
+
+Go back to slide 7, make the decay faster, and run it and the plot again.
+
+```countdown 2:00
+Press **e** (or click here) to start, **e** to pause, **E** to reset
+```
+
+---
+
+## Pause the room, jump around
+
+- **b** black screen, **w** white screen: the room looks at you.
+  Press it again, **Esc** or click to come back.
+- **g** lists the slides: type a number or words from a title, then Enter
+- Or type a slide number and press Enter: **3** Enter goes back to *Draw*
+
+*Try it:* press **g**, type `plot`, press Enter.
+
+---
+
+## Polish a slide just before the talk
+
+![width:300px](img/chart.png)
+
+Thsi sentence has a typo to fix.
+
+*Try it:* press **d**. Drag the chart, double-click the text to fix it, then **+** / **-** to resize. **Esc** twice finishes.
+
+---
+
+## Keep what you did
+
+- **s** saves one HTML file with the ink, notes and edits in it
+- **m** saves the Markdown with the ink as SVG (no edits)
+- **S** / **i** save and load the ink, notes and edits as JSON
+- **Cmd+P** → *Save as PDF* prints every slide with its ink
+
+A reload keeps everything: it lives in the browser until you save it.
+
+---
+
+## Writing the deck in VS Code
+
+- **C-c C-c** in a `python run` cell runs it in a Python panel, no slideshow needed
+- Saving the deck while the slideshow is open reloads it at the slide you are editing
+- `presenter: offline` puts Python in the HTML, for a talk without internet
+- *Scimax Marp: Check for Offline Use* lists what would still need a connection

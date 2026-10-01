@@ -356,11 +356,19 @@ describe('engine.cjs', () => {
         const html = render('```countdown 2:30\nTalk to your *neighbour*\nthen vote\n```');
         expect(html).toContain('<div class="marp-countdown" data-seconds="150"');
         expect(html).toContain('⏱ 2:30');
-        expect(html).toContain('Talk to your <em>neighbour</em><br>then vote');
+        expect(html).toMatch(/Talk to your <em>neighbour<\/em><br \/>\s*then vote/);
         expect(render('```countdown 10\n```')).toContain('data-seconds="600"');
         expect(render('```countdown 90s\n```')).toContain('⏱ 1:30');
         expect(render('```countdown\n```')).toContain('data-seconds="300"');   // 5 minutes if no time is given
         expect(render('```countdown 1\n<script>x</script>\n```')).not.toContain('<script>x');
+    });
+
+    it('keeps the math styles of a deck with a countdown', () => {
+        for (const label of ['', 'Press **e** to start', 'Solve $x^2 = 2$']) {
+            const out = engine({ marp: new Marp({ math: 'katex' }) }).render(`---\nmarp: true\n---\n\n$$ a^2 $$\n\n---\n\n\`\`\`countdown 2\n${label}\n\`\`\``);
+            expect(out.css).toContain('KaTeX_AMS');
+        }
+        expect(render('```countdown 2\nSolve $x^2 = 2$\n```')).toMatch(/class="katex"|MathJax/);   // maths in the label is typeset
     });
 
     it('reads countdown times', () => {
