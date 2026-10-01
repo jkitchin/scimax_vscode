@@ -19,7 +19,9 @@
  * cells, then prefetches every cell's packages and imports (in slide order) without running
  * them, so the first Run is quick. A Run jumps ahead of the prefetching.
  * Output: printed text, errors, the value of the last expression, matplotlib figures.
- * Needs internet to run code; editing works offline. Requires vendor/codemirror.js (global CM).
+ * Needs internet to run code; editing works offline. A deck built with `presenter: offline` carries
+ * Pyodide and the packages its cells import (<script id="marp-pyodide">), so those run offline;
+ * anything else (other packages, %pip) is still downloaded when there is a connection. Requires vendor/codemirror.js (global CM).
  */
 (() => {
   if (window.__pycells) return;
@@ -60,7 +62,23 @@
 
   // ---------------------------------------------------------------- the Python worker --
   const WORKER = `
-import { loadPyodide } from ${JSON.stringify(PYODIDE + "pyodide.mjs")};   // a module worker: classic importScripts is not reliable
+const BASE = ${JSON.stringify(PYODIDE)};
+// An offline deck (presenter: offline) carries Pyodide and its packages as base64, keyed by file
+// name under BASE. Every Pyodide download is answered from them instead of the network.
+let OFFLINE = null;
+const bytes = b64 => Uint8Array.from(atob(b64), ch => ch.charCodeAt(0));
+const realFetch = self.fetch.bind(self);
+self.fetch = (input, opts) => {
+  const url = String(input && input.url || input);
+  if (!OFFLINE || !url.startsWith(BASE)) return realFetch(input, opts);
+  const name = url.slice(BASE.length).split(/[?#]/)[0];
+  if (!OFFLINE[name]) {        // not embedded: download it if there is a connection
+    return realFetch(input, opts).catch(() => { throw new TypeError(name + " is not included in this offline deck, and it could not be downloaded"); });
+  }
+  const type = name.endsWith(".wasm") ? "application/wasm" : name.endsWith(".json") ? "application/json" : "application/octet-stream";
+  return Promise.resolve(new Response(bytes(OFFLINE[name]), { headers: { "Content-Type": type } }));
+};
+const moduleURL = name => OFFLINE ? "data:text/javascript;base64," + OFFLINE[name] : BASE + name;
 let py = null, cur = null, pycseDone = false, quiet = false;   // quiet: installer chatter goes to the status line
 const tried = new Set();
 const post = (type, extra) => postMessage(Object.assign({ type, id: cur }, extra));
@@ -69,7 +87,15 @@ const NAME = { sklearn: "scikit-learn", PIL: "Pillow", yaml: "pyyaml", bs4: "bea
 
 async function init() {
   note("loading Python (first run only)…");
-  py = await loadPyodide({ indexURL: ${JSON.stringify(PYODIDE)} });
+  // a module worker: classic importScripts is not reliable
+  const { loadPyodide } = await import(moduleURL("pyodide.mjs"));
+  const opts = { indexURL: BASE };
+  if (OFFLINE) {
+    opts.packageBaseUrl = BASE;
+    opts.lockFileContents = new TextDecoder().decode(bytes(OFFLINE["pyodide-lock.json"]));
+    opts.createPyodideModule = (await import(moduleURL("pyodide.asm.mjs"))).default;
+  }
+  py = await loadPyodide(opts);
   py.setStdout({ batched: s => quiet ? note(s.slice(0, 120)) : post("stream", { name: "stdout", text: s + "\\n" }) });
   py.setStderr({ batched: s => post("stream", { name: "stderr", text: s + "\\n" }) });
   await py.loadPackage("micropip", { messageCallback: () => {} });
@@ -233,8 +259,14 @@ async function pump() {
   }
   busy = false;
 }
-self.onmessage = e => { (e.data.type === "prefetch" ? prefetches : runs).push(e.data); pump(); };
+self.onmessage = e => {
+  if (e.data.type === "offline") { OFFLINE = e.data.files; return; }
+  (e.data.type === "prefetch" ? prefetches : runs).push(e.data); pump();
+};
 `;
+
+  // Scimax's Python panel (runner.js) runs cells in VS Code with this same worker
+  window.__PYCELLS_WORKER__ = WORKER;
 
   let worker = null, nextId = 0, counter = 0, setupQueued = false;
   const handlers = new Map();
@@ -243,10 +275,12 @@ self.onmessage = e => { (e.data.type === "prefetch" ? prefetches : runs).push(e.
     // A module worker (Pyodide 314 refuses classic workers) from a data: URL: a blob: URL module
     // worker fails when the deck is opened from file://, a data: URL works there and on http(s).
     worker = new Worker("data:text/javascript;charset=utf-8," + encodeURIComponent(WORKER), { type: "module" });
+    const offline = document.getElementById("marp-pyodide");
+    if (offline && offline.textContent.trim()) worker.postMessage({ type: "offline", files: JSON.parse(offline.textContent) });
     worker.onmessage = e => { const h = handlers.get(e.data.id); if (h) h(e.data); };
     worker.onerror = e => {
       e.preventDefault();
-      handlers.forEach(h => { h({ type: "error", text: "Python could not start (it is downloaded from cdn.jsdelivr.net: no internet?)\n" + (e.message || "") }); h({ type: "done", ok: false }); });
+      handlers.forEach(h => { h({ type: "error", text: (document.getElementById("marp-pyodide") ? "Python could not start\n" : "Python could not start (it is downloaded from cdn.jsdelivr.net: no internet?)\n") + (e.message || "") }); h({ type: "done", ok: false }); });
       worker = null; setupQueued = false;
     };
     return worker;

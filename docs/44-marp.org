@@ -134,9 +134,10 @@ Hidden slides are shown (dimmed in the grid) so they can still be edited.
 * 👀 Slideshow
 
 To present, Scimax makes Marp's HTML slideshow of the deck and opens it in the
-browser. Marp CLI builds it (see [[*Marp CLI][Marp CLI]]), and it is written to a new private
-temporary folder, so nothing is added next to the deck. Relative images still
-load from the deck's folder. Unsaved changes are saved first.
+browser. Marp CLI builds it (see [[*Marp CLI][Marp CLI]]), and it is written to a private folder
+of the extension's storage, one per deck, so nothing is added next to the deck.
+Relative images still load from the deck's folder. Unsaved changes are saved
+first.
 
 | Command                                                                                   | Starts at                  |
 |-------------------------------------------------------------------------------------------+----------------------------|
@@ -161,8 +162,20 @@ the slides it shows.
 
 A deck with ~presenter: true~ also gets a pen, a laser pointer, sticky notes
 and live Python cells in the slideshow; see [[*Presenter Tools and Live Python][Presenter Tools and Live Python]].
-Such a deck is written to a fixed private folder for that deck instead of a
-new temporary one, so ink drawn in one slideshow is still there the next time.
+Because each deck always uses the same folder, ink drawn in one slideshow is
+still there the next time.
+
+** ⚠️ Live reload
+
+While the slideshow is open, saving the deck rebuilds it and the browser
+reloads at the slide you are editing (the one under the cursor when you
+save), so you can fix a slide and see it in the talk's layout without
+presenting again. Ink is kept. Edits are picked up only on save, and only
+for a slideshow started from this VS Code window.
+
+The page checks for a new build once a second by loading a small
+~<name>.html.version.js~ file written next to it, so it needs no server. Turn it
+off with ~scimax.marp.liveReload~.
 
 ** Presenting from an org file
 
@@ -470,7 +483,7 @@ Each sets a key in the front matter, or removes it.
 | Heading Divider...               | [[cmd:scimax.marp.deck.headingDivider]] | Start a slide at every heading of this level and above |
 | Math Typesetting...              | [[cmd:scimax.marp.deck.math]]           | ~mathjax~ or ~katex~                                   |
 | Title, Author and Description... | [[cmd:scimax.marp.deck.metadata]]       | Also keywords and language; used by exports            |
-| Presenter Tools...               | [[cmd:scimax.marp.deck.presenter]]      | ~presenter: true~: pen, laser, notes and live Python   |
+| Presenter Tools...               | [[cmd:scimax.marp.deck.presenter]]      | ~true~ or ~offline~: pen, laser, notes, live Python    |
 
 ** Theme
 
@@ -612,14 +625,88 @@ restores the original code and =⟲= restarts Python. All cells share one
 Python session, like a notebook. Output shows printed text, errors, the value
 of the last expression and matplotlib figures.
 
-Python is [[https://pyodide.org][Pyodide]], running in the browser. It is downloaded from the
-jsdelivr CDN when the deck opens, so *running cells needs an internet
-connection* (the rest of the tools work offline). Pyodide's packages (numpy,
-scipy, matplotlib, pandas, sympy, ...) load on ~import~, and ~%pip install
-name~ in a cell installs pure-Python packages from PyPI.
+Python is [[https://pyodide.org][Pyodide]], running in the browser. With ~presenter: true~ it is
+downloaded from the jsdelivr CDN when the deck opens, so *running cells needs
+an internet connection* (the rest of the tools work offline). To present
+without one, use ~presenter: offline~ (see [[*Offline Python][Offline Python]]). Pyodide's packages
+(numpy, scipy, matplotlib, pandas, sympy, ...) load on ~import~, and ~%pip
+install name~ in a cell installs pure-Python packages from PyPI.
 
 In PDF, PowerPoint and image exports a ~run~ cell is ordinary highlighted code,
 and a ~run hidden~ cell is left out.
+
+** ⚠️ Running cells in VS Code
+
+Press =C-c C-c= in a ~run~ cell to run it while you write the deck, without
+presenting. The output shows in a /Python/ panel beside the editor, from the
+same Pyodide the slideshow uses, so code that works there works in the talk.
+
+| Command                                                               | Key       | Effect                                              |
+|-----------------------------------------------------------------------+-----------+-----------------------------------------------------|
+| ~Scimax Marp: Run Python Cell~ ([[cmd:scimax.marp.runCell]])          | =C-c C-c= | Run the cell under the cursor                       |
+| ~Scimax Marp: Run All Python Cells~ ([[cmd:scimax.marp.runAllCells]]) |           | Restart Python and run every shown cell in order    |
+| ~Scimax Marp: Restart Python~ ([[cmd:scimax.marp.restartPython]])     |           | A fresh Python: variables and imports are forgotten |
+
+- All cells of the deck share one Python, as in the slideshow. The ~run hidden~
+  cells run first, once, before the first cell you run.
+- Each output is labelled with its slide and cell number; click the label to
+  go to the cell. *Clear* removes the output and *Restart* restarts Python.
+- The panel is for one deck at a time: running a cell of another deck
+  restarts Python for that deck.
+- A ~presenter: offline~ deck runs from the Python files it carries, so this
+  works without a connection too; otherwise Pyodide is downloaded when the
+  first cell runs.
+- Cells run only in a trusted workspace. The cells are also in Insert →
+  Python Cell... and the commands are in the Marp menu's Insert section.
+- =C-c C-c= elsewhere in a Markdown file keeps its usual meaning (run a Babel
+  code block, toggle a checkbox).
+
+** ⚠️ Offline Python
+
+Set ~presenter: offline~ instead of ~presenter: true~ (or choose "On, with
+offline Python" in Deck → Presenter Tools...) to put Python inside the deck,
+so its cells run with no internet connection:
+
+#+begin_src markdown
+---
+marp: true
+presenter: offline
+---
+#+end_src
+
+- When you present or export HTML (=h=), Scimax adds Pyodide and the packages
+  the deck's ~run~ cells import (with their dependencies) to the HTML file.
+  Pyodide is downloaded once per version and cached in the extension's
+  storage, so later builds need no connection either.
+- Packages are found from the top-level ~import~ / ~from ... import~ lines
+  of the ~run~ cells. To include a package that is only imported later, during
+  the talk, import it in a ~run hidden~ cell.
+- The file grows by about 12 MB for Python alone, and to 35-45 MB with numpy,
+  matplotlib and pandas. It loads in a few seconds from disk.
+- ~%pip install~, and packages that are not part of Pyodide (for example
+  ~pycse~ or ~seaborn~), still need a connection; the deck tries to download
+  them, and the cell shows an error when it cannot. The Output panel (/Scimax
+  Marp Export/) lists the packages that were included and those that were not.
+- =s= keeps the embedded Python, so the annotated copy also runs offline.
+
+** ⚠️ Checking a deck for offline use
+
+~Scimax Marp: Check for Offline Use~ ([[cmd:scimax.marp.checkOffline]], also Deck →
+Check for Offline Use in the Marp menu) builds the deck in a temporary folder
+and lists in the Problems panel what would not work without an internet
+connection, each on the line it comes from:
+
+- Python cells in a deck with ~presenter: true~ (Python is downloaded when the
+  deck opens; use ~presenter: offline~)
+- ~%pip~ lines, and imports of packages that are not part of Pyodide, in an
+  offline deck
+- images and other files that are not found
+- images, videos and scripts loaded from the web, and fonts or styles a theme
+  loads from the web (shown on the ~theme:~ line)
+
+Presenting or exporting HTML (=h=) an offline deck runs the same check and
+says when it found something. The problems are cleared when the deck is
+closed or checked again.
 
 ** Notes
 
@@ -631,7 +718,8 @@ and a ~run hidden~ cell is left out.
 - Scimax passes its own markdown-it engine to Marp CLI (~--engine~), which
   replaces an ~engine~ set in a Marp CLI configuration file for these decks.
 - The fonts for KaTeX math are downloaded once and cached, so ~deck.html~ also
-  typesets math offline.
+  typesets math offline. Fonts that a theme loads from the web (an ~@import~
+  of a font service) fall back to local fonts without a connection.
 - The browser files live in ~media/marpPresent/~ of the extension; the Output
   panel (/Scimax Marp Export/) lists what was inlined and any missing files.
 
@@ -727,6 +815,7 @@ upload the file (New > File upload), then open it with Google Slides.
 | ~scimax.marp.themes~          | ~[]~      | Custom theme CSS files for thumbnails, preview and exports |
 | ~scimax.marp.enableHtml~      | ~false~   | Allow all raw HTML in slides                               |
 | ~scimax.marp.mathTypesetting~ | ~mathjax~ | ~mathjax~, ~katex~ or ~off~                                |
+| ~scimax.marp.liveReload~      | ~true~    | Reload an open slideshow when the deck is saved            |
 
 Each falls back to Marp for VS Code's ~markdown.marp.themes~,
 ~markdown.marp.enableHtml~ or ~markdown.marp.mathTypesetting~ when it is not

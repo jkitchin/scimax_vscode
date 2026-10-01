@@ -1917,7 +1917,7 @@ These are used by the slide thumbnails, preview and exports. When one is not
 set, Marp for VS Code's matching ~markdown.marp.*~ setting is used. See
 [[file:44-marp.org::*Configuration][Marp Slides]].
 
-* ⚠️ Marp Export Settings
+* 👀 Marp Export Settings
 
 | Setting                        | Type    | Default | Description                                                 |
 |--------------------------------+---------+---------+-------------------------------------------------------------|
@@ -1926,6 +1926,7 @@ set, Marp for VS Code's matching ~markdown.marp.*~ setting is used. See
 | scimax.marp.libreOfficePath    | string  | ""      | LibreOffice ~soffice~ for editable PowerPoint               |
 | scimax.marp.allowLocalFiles    | boolean | true    | Include local images in exports (trusted workspaces only)   |
 | scimax.marp.pandocReferenceDoc | string  | ""      | PowerPoint template for the Pandoc export                   |
+| scimax.marp.liveReload         | boolean | true    | Reload an open slideshow when the deck is saved             |
 
 See [[file:44-marp.org::*Exporting Slides][Exporting Slides]]. The exports also follow ~scimax.marp.themes~ and
 ~scimax.marp.enableHtml~ (above).

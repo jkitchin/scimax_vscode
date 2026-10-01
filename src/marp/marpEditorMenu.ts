@@ -18,7 +18,7 @@ import {
 import { parseDocument, replaceDocumentText, slidesInSelection } from './deckEdits';
 import { marpHtmlEnabled, marpThemeUris } from './marpSettings';
 import { BUILTIN_THEMES, themeNames } from './marpDirectives';
-import { presenterRequested } from './presenterBundle';
+import { presenterOffline, presenterRequested } from './presenterBundle';
 import {
     customThemeCss, ensureStyleBlock, frontMatterRange, frontMatterValue, MARP_HEADER_SNIPPET, IMAGE_PLACEMENTS, ImageFilter, imageMarkdown,
     ImagePlacement, LayoutName, LAYOUTS, layoutSnippet, setFrontMatterValue, setSlideDirective,
@@ -478,10 +478,12 @@ async function allThemes(document: vscode.TextDocument): Promise<Array<{ name: s
 /** Turn the presenter tools (pen, laser, notes, save with ink, live Python) on or off. */
 async function setPresenter(): Promise<void> {
     await setDeck('presenter', async current => {
-        const on = presenterRequested(current);
+        const offline = presenterOffline(current);
+        const on = presenterRequested(current) && !offline;
         const choice = await vscode.window.showQuickPick([
-            { label: 'On', description: on ? 'current' : undefined, detail: 'Pen, laser, notes and save with ink in the slideshow and HTML export; ```python run cells run', value: 'true' },
-            { label: 'Off', description: on ? undefined : 'current', detail: "Marp's plain slideshow", value: null },
+            { label: 'On', description: on ? 'current' : undefined, detail: 'Pen, laser, notes and save with ink in the slideshow and HTML export; ```python run cells run (Python is downloaded when the deck opens)', value: 'true' },
+            { label: 'On, with offline Python', description: offline ? 'current' : undefined, detail: 'Also put Python and the packages the cells import inside the deck, so cells run without internet (adds 15-40 MB)', value: 'offline' },
+            { label: 'Off', description: on || offline ? undefined : 'current', detail: "Marp's plain slideshow", value: null },
         ], { title: 'Presenter tools' });
         return choice === undefined ? undefined : choice.value;
     });

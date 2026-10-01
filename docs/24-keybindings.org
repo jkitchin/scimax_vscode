@@ -242,7 +242,7 @@ org-mode, markdown, and LaTeX files with consistent behavior.
 | C-c C-v i | Execute inline code         |
 | C-c C-v q | Queue block for execution   |
 
-* Export
+* 👀 Export
 
 | Key           | Action                        |
 |---------------+-------------------------------|
@@ -261,7 +261,8 @@ export menu instead (PDF, PowerPoint, Google Slides, HTML, images). There
 =C-c C-e x= presents the deck as a slideshow, =C-c C-e c= presents from the
 current slide, and =C-c C-e ?= opens Marp help. =Cmd+Shift+V= (=Ctrl+Shift+V=) opens the Slide Sorter in place
 of the Markdown preview; =Cmd+K V= still opens the Markdown preview beside the
-editor. See [[file:44-marp.org::*Exporting Slides][Exporting Slides]] and [[file:44-marp.org::*Slideshow][Slideshow]].
+editor. =C-c C-c= in a ~```python run~ cell of a deck runs it in a Python panel
+beside the editor. See [[file:44-marp.org::*Exporting Slides][Exporting Slides]], [[file:44-marp.org::*Slideshow][Slideshow]] and [[file:44-marp.org::*Running cells in VS Code][Running cells in VS Code]].
 
 * ⚠️ Org Preview
 
@@ -648,12 +649,11 @@ CLOSED: [2026-01-19 Mon 18:19]
 * ✅ Additional Notes
 CLOSED: [2026-01-19 Mon 18:19]
 
-** ✅ Context-Dependent Keybindings
-CLOSED: [2026-01-19 Mon 18:19]
+** 👀 Context-Dependent Keybindings
 
 Many keybindings are context-aware and behave differently depending on cursor position:
 
-- C-c C-c toggles checkboxes normally, executes source blocks inside code blocks, and recalculates tables on TBLFM lines
+- C-c C-c toggles checkboxes normally, executes source blocks inside code blocks, recalculates tables on TBLFM lines, and runs a Marp deck's ~```python run~ cell in the Python panel
 - S-<arrow> keys modify timestamps normally, but transpose/sort citations when on a citation
 - M-S-<left>/M-S-<right> promote/demote subtrees normally, but delete/insert columns when in a table
 - <return> opens links when cursor is on a link

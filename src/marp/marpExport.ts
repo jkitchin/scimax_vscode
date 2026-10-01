@@ -324,17 +324,63 @@ export function buildPandocPptxArgs(outputPath: string, resourceDir: string, ref
 // Slideshow
 // =============================================================================
 
+/** How an open slideshow notices that the deck was rebuilt (see liveReloadScript). */
+export interface LiveReload {
+    /** file: URL of the version script written next to the slideshow */
+    url: string;
+    /** This build's version */
+    version: string;
+}
+
+/**
+ * A script that reloads the slideshow when the deck is rebuilt. Every second
+ * it loads the version script (`reload.url`), which calls
+ * `__marpLiveReload(version, slide)`; a version other than this page's
+ * reloads it, first moving to `slide` when one is given. A <script> element
+ * can load a file: URL where fetch() cannot, so this needs no server.
+ */
+export function liveReloadScript(reload: LiveReload): string {
+    const url = JSON.stringify(reload.url).replace(/</g, '\\u003c');
+    const version = JSON.stringify(reload.version).replace(/</g, '\\u003c');
+    return '<script>(() => {' +
+        `const url = ${url}, mine = ${version};` +
+        'window.__marpLiveReload = (version, slide) => {' +
+        'if (version === mine) return;' +
+        // An absolute URL: '#n' alone would resolve against the <base> (the deck's folder).
+        "if (slide) history.replaceState(null, '', location.href.split('#')[0] + '#' + slide);" +
+        'location.reload();' +
+        '};' +
+        'setInterval(() => {' +
+        "const s = document.createElement('script');" +
+        "s.src = url + '?t=' + Date.now();" +
+        's.onload = s.onerror = () => s.remove();' +
+        'document.head.appendChild(s);' +
+        '}, 1000);' +
+        '})();</script>';
+}
+
+/** The version script for liveReloadScript: tells the page the current version and slide. */
+export function liveReloadVersionScript(version: string, slide?: number): string {
+    const at = slide !== undefined && Number.isInteger(slide) && slide > 0 ? `, ${slide}` : '';
+    return `window.__marpLiveReload && window.__marpLiveReload(${JSON.stringify(version)}${at});\n`;
+}
+
 /**
  * Make Marp's HTML slideshow work from a temporary file: relative images
  * resolve against the deck's folder (`deckFolderUrl`, a file: URL ending in
- * "/"), and the show opens at `startSlide` (1-based) when given.
+ * "/"), and the show opens at `startSlide` (1-based) when given. With
+ * `reload`, the page also reloads itself when the deck is rebuilt.
  */
-export function prepareSlideshowHtml(html: string, deckFolderUrl: string, startSlide?: number): string {
+export function prepareSlideshowHtml(html: string, deckFolderUrl: string, startSlide?: number, reload?: LiveReload): string {
     const escaped = deckFolderUrl.replace(/&/g, '&amp;').replace(/"/g, '&quot;');
     let inject = `<base href="${escaped}">`;
     if (startSlide !== undefined && Number.isInteger(startSlide) && startSlide > 1) {
-        // Marp's slideshow shows the slide named by the URL hash.
-        inject += `<script>if (!location.hash) { history.replaceState(null, '', '#${startSlide}'); }</script>`;
+        // Marp's slideshow shows the slide named by the URL hash. The URL is absolute
+        // because a relative '#n' would resolve against the <base> (the deck's folder).
+        inject += `<script>if (!location.hash) { history.replaceState(null, '', location.href.split('#')[0] + '#${startSlide}'); }</script>`;
+    }
+    if (reload) {
+        inject += liveReloadScript(reload);
     }
     const head = /<head(\s[^>]*)?>/i.exec(html);
     if (!head) {

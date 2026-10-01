@@ -425,6 +425,10 @@ Preview and present Marp decks. See [[file:44-marp.org][Marp Slides]].
 | [[cmd:scimax.marp.openSlidePreview]]    | Slide preview beside the deck, following the cursor     | -                            |
 | [[cmd:scimax.marp.editSlideWithClaude]] | Edit the slide under the cursor with Claude Code        | -                            |
 | [[cmd:scimax.marp.openSlideSorter]]     | Slide Sorter (grid of all slides)                       | Cmd+Shift+V (in a Marp deck) |
+| [[cmd:scimax.marp.runCell]]             | Run the Python cell at the cursor in the Python panel   | C-c C-c (in a run cell)      |
+| [[cmd:scimax.marp.runAllCells]]         | Restart Python and run every shown Python cell          | -                            |
+| [[cmd:scimax.marp.restartPython]]       | Restart the Python panel's Python                       | -                            |
+| [[cmd:scimax.marp.checkOffline]]        | List what needs an internet connection (Problems panel) | -                            |
 
 *** 👀 Marp Menu (Editor)
 

@@ -16,6 +16,10 @@
  * key), an empty ink block, and a base64 copy of the finished page, which the
  * `s` key writes back out with the ink filled in.
  *
+ * An offline deck (`presenter: offline`) also carries Pyodide and the packages
+ * its cells import, so the cells run without a network. That block is kept out
+ * of the base64 copy (it would double the size); `s` copies it from the page.
+ *
  * No VS Code dependency, so it can be unit tested.
  */
 
@@ -27,6 +31,7 @@ const PRESENTER_MARK = 'marp-present: presenter tools';
 const PYCELLS_MARK = 'marp-present: live, editable Python cells';
 const INK_EMPTY = '<script type="application/json" id="marp-ink-data">{}</script>';
 const SELF_EMPTY = '<script type="text/plain" id="marp-self"></script>';
+const PYODIDE_EMPTY = '<script type="application/json" id="marp-pyodide"></script>';
 const MAX_IFRAME_DEPTH = 3;
 
 const MIME_TYPES: Record<string, string> = {
@@ -312,6 +317,8 @@ export interface BundleOptions extends InlineOptions {
     /** The deck's Markdown, for saving annotated Markdown (`m`). */
     markdown?: string;
     assets: PresenterAssets;
+    /** Pyodide files to embed for offline Python (file name under the Pyodide base URL -> bytes). */
+    pyodide?: Record<string, Buffer>;
 }
 
 /**
@@ -320,7 +327,7 @@ export interface BundleOptions extends InlineOptions {
  * already bundled.
  */
 export async function bundlePresenterDeck(html: string, options: BundleOptions): Promise<{ html: string; report: BundleReport }> {
-    if (html.includes(INK_EMPTY) || html.includes('<script type="text/plain" id="marp-self">')) {
+    if (html.includes(INK_EMPTY) || html.includes('<script type="text/plain" id="marp-self">') || html.includes('id="marp-pyodide"')) {
         throw new Error('This deck already has presenter tools; rebuild it from the Markdown first');
     }
     const inlined = await inlineDeck(html, options.baseDir, options);
@@ -333,7 +340,9 @@ export async function bundlePresenterDeck(html: string, options: BundleOptions):
     if (options.markdown !== undefined) {
         head += `<script>window.__MARP_SOURCE__ = ${JSON.stringify(options.markdown).replace(/<\//g, '<\\/')};</script>`;
     }
-    head += INK_EMPTY + SELF_EMPTY;
+    const pyodide = options.pyodide && hasRunCells(text) ? options.pyodide : undefined;
+    // In <head>, so it is in the page before pycells.js (at the end of <body>) runs
+    head += INK_EMPTY + SELF_EMPTY + (pyodide ? PYODIDE_EMPTY : '');
     text = text.replace('</head>', () => head + '</head>');
     text = addPresenterScripts(text, options.assets);
     inlined.report.counts.presenter = 1;
@@ -342,8 +351,17 @@ export async function bundlePresenterDeck(html: string, options: BundleOptions):
     }
 
     const b64 = Buffer.from(text, 'utf8').toString('base64');
-    const withSelf = text.replace(SELF_EMPTY, () => SELF_EMPTY.replace('></script>', `>${b64}</script>`));
-    return { html: withSelf, report: inlined.report };
+    let result = text.replace(SELF_EMPTY, () => SELF_EMPTY.replace('></script>', `>${b64}</script>`));
+    if (pyodide) {
+        const files: Record<string, string> = {};
+        for (const [name, data] of Object.entries(pyodide)) {
+            files[name] = data.toString('base64');
+        }
+        // Base64 and file names never contain '<', so the JSON cannot close the script
+        result = result.replace(PYODIDE_EMPTY, () => PYODIDE_EMPTY.replace('></script>', `>${JSON.stringify(files)}</script>`));
+        inlined.report.counts['offline Python files'] = Object.keys(files).length;
+    }
+    return { html: result, report: inlined.report };
 }
 
 /** The vendored scripts under the extension's media/marpPresent folder. */
@@ -356,7 +374,231 @@ export function presenterAssets(mediaDir: string): PresenterAssets {
     };
 }
 
-/** True if the deck's front matter turns presenter tools on (`presenter: true`). */
+/** True if the deck's front matter turns presenter tools on (`presenter: true` or `offline`). */
 export function presenterRequested(frontMatterValue: string | undefined): boolean {
-    return /^(true|yes|on)$/i.test((frontMatterValue ?? '').trim());
+    return /^(true|yes|on|offline)$/i.test((frontMatterValue ?? '').trim());
+}
+
+/** True if the deck asks for Python cells that run without a network (`presenter: offline`). */
+export function presenterOffline(frontMatterValue: string | undefined): boolean {
+    return /^offline$/i.test((frontMatterValue ?? '').trim());
+}
+
+// ------------------------------------------------------------ offline Python --
+
+/** Pyodide's own files, always embedded. */
+export const PYODIDE_CORE_FILES = ['pyodide.mjs', 'pyodide.asm.mjs', 'pyodide.asm.wasm', 'python_stdlib.zip', 'pyodide-lock.json'];
+
+/** The Pyodide release pycells.js loads (its `const PYODIDE = "..."`), e.g. https://cdn.jsdelivr.net/pyodide/v314.0.7/full/ */
+export function pyodideBaseUrl(pycellsSource: string): string {
+    const m = pycellsSource.match(/const PYODIDE = "(https:\/\/[^"]+\/)"/);
+    if (!m) {
+        throw new Error('Could not find the Pyodide URL in pycells.js');
+    }
+    return m[1];
+}
+
+/** A ```python run cell in a deck's Markdown (a fence engine.cjs marks). */
+export interface RunCell {
+    code: string;
+    /** The words after the language: `run`, and `auto` / `hidden` */
+    flags: string[];
+    /** 0-based line of the opening fence */
+    startLine: number;
+    /** 0-based line of the closing fence */
+    endLine: number;
+}
+
+/** The ```python run cells in a deck's Markdown, in order. */
+export function runCells(markdown: string): RunCell[] {
+    const text = markdown.replace(/\r\n/g, '\n');
+    const cells: RunCell[] = [];
+    const re = /^([ \t]*)(`{3,}|~{3,})[ \t]*(python|py|python3)\b([^\n]*)\n([\s\S]*?)^\1\2[ \t]*$/gim;
+    let m: RegExpExecArray | null;
+    while ((m = re.exec(text)) !== null) {
+        const flags = m[4].trim().split(/\s+/);
+        if (flags.includes('run')) {
+            const startLine = text.slice(0, m.index).split('\n').length - 1;
+            cells.push({ code: m[5], flags, startLine, endLine: startLine + m[0].split('\n').length - 1 });
+        }
+    }
+    return cells;
+}
+
+/** The run cell containing 0-based `line` (fences included), if any. */
+export function runCellAt(markdown: string, line: number): RunCell | undefined {
+    return runCells(markdown).find(cell => line >= cell.startLine && line <= cell.endLine);
+}
+
+/** The code of the ```python run cells in a deck's Markdown. */
+export function runCellCode(markdown: string): string[] {
+    return runCells(markdown).map(cell => cell.code);
+}
+
+/** Top-level module names a piece of Python imports (import a.b, c / from d.e import f). */
+export function pythonImports(code: string): string[] {
+    const names = new Set<string>();
+    for (const line of code.split(/\r?\n/)) {
+        const imp = line.match(/^\s*import\s+([\w.]+(?:\s+as\s+\w+)?(?:\s*,\s*[\w.]+(?:\s+as\s+\w+)?)*)/);
+        if (imp) {
+            for (const part of imp[1].split(',')) {
+                names.add(part.trim().split(/[.\s]/)[0]);
+            }
+            continue;
+        }
+        const from = line.match(/^\s*from\s+(\w[\w.]*)\s+import\b/);
+        if (from) {
+            names.add(from[1].split('.')[0]);
+        }
+    }
+    return [...names];
+}
+
+/** The part of pyodide-lock.json this needs. */
+export interface PyodideLock {
+    packages: Record<string, { file_name: string; imports?: string[]; depends?: string[]; sha256?: string }>;
+}
+
+export interface OfflinePlan {
+    /** Lock-file package names to embed, with everything they depend on. */
+    packages: string[];
+    /** Files to embed: Pyodide's core files and the packages' wheels. */
+    files: string[];
+    /** Imports that are not Pyodide packages: the standard library, or PyPI packages that need a network. */
+    other: string[];
+    /** True if a cell uses %pip / !pip, which always needs a network. */
+    pip: boolean;
+}
+
+/**
+ * Decide what an offline deck carries: Pyodide itself, micropip (pycells.js
+ * loads it at start), and every Pyodide package the run cells import, with
+ * their dependencies.
+ */
+export function planOfflinePython(markdown: string, lock: PyodideLock): OfflinePlan {
+    const byImport = new Map<string, string>();
+    for (const [name, pkg] of Object.entries(lock.packages)) {
+        for (const imp of pkg.imports ?? []) {
+            byImport.set(imp, name);
+        }
+    }
+    const cells = runCellCode(markdown);
+    const wanted = ['micropip'];
+    const other: string[] = [];
+    for (const imp of new Set(cells.flatMap(pythonImports))) {
+        const pkg = byImport.get(imp) ?? (lock.packages[imp] ? imp : undefined);
+        if (pkg) {
+            wanted.push(pkg);
+        } else {
+            other.push(imp);
+        }
+    }
+    const packages = new Set<string>();
+    const stack = wanted.filter(name => lock.packages[name]);
+    while (stack.length > 0) {
+        const name = stack.pop()!;
+        if (packages.has(name) || !lock.packages[name]) {
+            continue;
+        }
+        packages.add(name);
+        stack.push(...(lock.packages[name].depends ?? []));
+    }
+    const sorted = [...packages].sort();
+    return {
+        packages: sorted,
+        files: [...PYODIDE_CORE_FILES, ...sorted.map(name => lock.packages[name].file_name)],
+        other: other.sort(),
+        pip: cells.some(code => /^\s*[%!]pip\s/m.test(code)),
+    };
+}
+
+// ------------------------------------------------------------ offline check --
+
+/** Modules that come with Python (and Pyodide's own), so importing them needs no download. */
+const BUILTIN_MODULES = new Set((
+    'abc aifc argparse array ast asyncio atexit audioop base64 bdb binascii bisect builtins bz2 cProfile calendar ' +
+    'cgi cgitb chunk cmath cmd code codecs codeop collections colorsys compileall concurrent configparser contextlib ' +
+    'contextvars copy copyreg crypt csv ctypes curses dataclasses datetime dbm decimal difflib dis doctest email ' +
+    'encodings ensurepip enum errno faulthandler fcntl filecmp fileinput fnmatch fractions ftplib functools gc ' +
+    'genericpath getopt getpass gettext glob graphlib grp gzip hashlib heapq hmac html http imaplib imghdr importlib ' +
+    'inspect io ipaddress itertools json keyword linecache locale logging lzma mailbox mailcap marshal math ' +
+    'mimetypes mmap modulefinder multiprocessing netrc numbers opcode operator optparse os pathlib pdb pickle ' +
+    'pickletools pipes pkgutil platform plistlib poplib posixpath pprint profile pstats pty pwd py_compile pyclbr ' +
+    'pydoc queue quopri random re reprlib resource rlcompleter runpy sched secrets select selectors shelve shlex ' +
+    'shutil signal site smtplib socket socketserver sqlite3 ssl stat statistics string stringprep struct ' +
+    'subprocess symtable sys sysconfig tabnanny tarfile tempfile textwrap this threading time timeit token ' +
+    'tokenize tomllib trace traceback tracemalloc tty turtle types typing unicodedata unittest urllib uu uuid ' +
+    'venv warnings wave weakref webbrowser wsgiref xml xmlrpc zipapp zipfile zipimport zlib zoneinfo ' +
+    'js pyodide pyodide_js __future__'
+).split(' '));
+
+/** Something in a deck that needs a network connection (or is missing). */
+export interface DeckIssue {
+    /** 0-based line in the deck's Markdown */
+    line: number;
+    message: string;
+}
+
+export interface OfflineCheck {
+    markdown: string;
+    /** What inlining reported (missing files, remote URLs), if the deck was built */
+    report?: BundleReport;
+    /** The offline Python plan, for a `presenter: offline` deck */
+    plan?: OfflinePlan;
+    /** Why Python could not be prepared for offline use, if it could not */
+    pythonError?: string;
+}
+
+/**
+ * What would not work without an internet connection when the deck is
+ * presented, each tied to the Markdown line it comes from (the front
+ * matter's first line when there is no better place).
+ */
+export function offlineIssues(check: OfflineCheck): DeckIssue[] {
+    const lines = check.markdown.split(/\r?\n/);
+    const issues: DeckIssue[] = [];
+    const lineOf = (pattern: RegExp, fallback = 0): number => {
+        const i = lines.findIndex(line => pattern.test(line));
+        return i >= 0 ? i : fallback;
+    };
+    const escape = (text: string): RegExp => new RegExp(text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
+    const presenterLine = lineOf(/^presenter\s*:/);
+    const themeLine = lineOf(/^theme\s*:/, presenterLine);
+    const cells = runCells(check.markdown);
+    const presenter = lines.slice(0, 40).map(line => line.match(/^presenter\s*:\s*(\S+)/)?.[1]).find(Boolean);
+
+    if (cells.length > 0 && presenterRequested(presenter) && !presenterOffline(presenter)) {
+        issues.push({ line: presenterLine, message: 'Python is downloaded when the deck opens, so the Python cells need an internet connection. Use presenter: offline to include Python in the deck.' });
+    }
+    if (check.pythonError) {
+        issues.push({ line: presenterLine, message: `Python could not be included for offline use: ${check.pythonError}` });
+    }
+    if (check.plan) {
+        const notPyodide = new Set(check.plan.other.filter(name => !BUILTIN_MODULES.has(name)));
+        for (const cell of cells) {
+            cell.code.split('\n').forEach((text, i) => {
+                const line = cell.startLine + 1 + i;
+                if (/^\s*[%!]pip\s/.test(text)) {
+                    issues.push({ line, message: `${text.trim()} downloads from PyPI and needs an internet connection.` });
+                    return;
+                }
+                for (const name of pythonImports(text)) {
+                    if (notPyodide.has(name)) {
+                        issues.push({ line, message: `${name} is not a Pyodide package; it is downloaded from PyPI and needs an internet connection.` });
+                    }
+                }
+            });
+        }
+    }
+    for (const missing of check.report?.missing ?? []) {
+        const ref = missing.split(' (relative to ')[0];
+        issues.push({ line: lineOf(escape(path.basename(ref))), message: `File not found: ${missing}` });
+    }
+    for (const url of check.report?.external ?? []) {
+        const at = lines.findIndex(line => line.includes(url));
+        issues.push(at >= 0
+            ? { line: at, message: `Loaded from the web: ${url}` }
+            : { line: themeLine, message: `Loaded from the web by the theme or a style: ${url}. Without a connection the browser uses a fallback.` });
+    }
+    return issues;
 }

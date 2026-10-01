@@ -31,6 +31,8 @@
  * to another machine, or share them. Loading replaces the current ink; the ink it replaced is
  * kept in localStorage under "<key>:before-load" in case you need it back.
  *
+ * A deck built with `presenter: offline` also carries Pyodide (in <script id="marp-pyodide">), and s keeps it.
+ *
  * Saving as Markdown needs the deck's source; scimax (src/marp/presenterBundle.ts) embeds it as window.__MARP_SOURCE__, and
  * without it `m` asks you to pick the .md file. Ink stored in a saved deck (the JSON block of a
  * standalone copy, or the SVGs of a deck rebuilt from an annotated .md) comes back as editable
@@ -246,6 +248,8 @@
   const NOTES_TAG = "<script type=\"application/json\" class=\"marp-" + "notes\">";   // notes in an annotated .md
   const INK_EMPTY = TAG("application/json", "ink-data") + "{}</script>";
   const SELF_EMPTY = TAG("text/plain", "self") + "</script>";
+  // an offline deck's Pyodide files are not in the copy (they would double its size): take them from this page
+  const PYODIDE_EMPTY = TAG("application/json", "pyodide") + "</script>";
   const selfCopy = () => { const el = document.getElementById("marp-self"); return el && el.textContent.trim(); };
   const b64decode = b64 => new TextDecoder().decode(Uint8Array.from(atob(b64), ch => ch.charCodeAt(0)));
   const b64encode = str => {
@@ -262,7 +266,11 @@
     if (!page.includes(INK_EMPTY) || !page.includes(SELF_EMPTY)) { say("Could not save: the embedded copy of the deck is damaged. Press m or S instead."); return; }
     const inkJson = JSON.stringify({ ink, notes }).replace(/</g, "\\u003c");
     const text = page.replace(INK_EMPTY, () => INK_EMPTY.replace("{}", inkJson))
-                     .replace(SELF_EMPTY, () => SELF_EMPTY.replace("</script>", b64 + "</script>"));
+                     .replace(SELF_EMPTY, () => SELF_EMPTY.replace("</script>", b64 + "</script>"))
+                     .replace(PYODIDE_EMPTY, () => {
+                       const el = document.getElementById("marp-pyodide");
+                       return PYODIDE_EMPTY.replace("</script>", (el ? el.textContent : "") + "</script>");
+                     });
     const name = DECK.replace(/-annotated$/, "") + "-annotated.html";
     await writeFile(text, name, "Web page", "text/html", ".html");
   }

@@ -7,7 +7,7 @@
  */
 
 import { spawn } from 'child_process';
-import { createHash } from 'crypto';
+import { createHash, randomBytes } from 'crypto';
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
@@ -19,11 +19,14 @@ import { currentMarpDeck } from './currentDeck';
 import { marpHtmlEnabled, marpThemeUris } from './marpSettings';
 import {
     buildMarpArgs, buildPandocPptxArgs, describeMarpFailure, localFilesWereBlocked,
-    MARP_FORMATS, MarpExportFormat, marpOutputPath, marpToPandocMarkdown, prepareSlideshowHtml,
+    liveReloadVersionScript, MARP_FORMATS, MarpExportFormat, marpOutputPath, marpToPandocMarkdown, prepareSlideshowHtml,
 } from './marpExport';
 import { parseDeck } from './slideModel';
 import { frontMatterValue } from './marpAuthoring';
-import { bundlePresenterDeck, presenterAssets, presenterRequested } from './presenterBundle';
+import {
+    BundleReport, bundlePresenterDeck, inlineDeck, OfflineCheck, offlineIssues, OfflinePlan, planOfflinePython,
+    presenterAssets, presenterOffline, presenterRequested, pyodideBaseUrl, PyodideLock,
+} from './presenterBundle';
 
 /** Marp CLI major version run through npx. */
 const NPX_PACKAGE = '@marp-team/marp-cli@4';
@@ -283,17 +286,138 @@ async function fetchFontCached(context: vscode.ExtensionContext, url: string): P
     return data;
 }
 
+/** Download a file, failing on an HTTP error. */
+async function download(url: string, timeoutMs: number): Promise<Buffer> {
+    const response = await fetch(url, { signal: AbortSignal.timeout(timeoutMs) });
+    if (!response.ok) {
+        throw new Error(`Could not download ${url}: HTTP ${response.status}`);
+    }
+    return Buffer.from(await response.arrayBuffer());
+}
+
+/**
+ * The Pyodide files an offline deck (`presenter: offline`) embeds: Pyodide
+ * itself and the packages its run cells import. They are downloaded once
+ * into the extension's global storage (wheels checked against the lock
+ * file's sha256), so later builds work without a network.
+ */
+export async function offlinePythonFiles(
+    context: vscode.ExtensionContext,
+    markdown: string
+): Promise<{ files: Record<string, Buffer>; plan: OfflinePlan }> {
+    const pycells = await fs.promises.readFile(context.asAbsolutePath(path.join('media', 'marpPresent', 'pycells.js')), 'utf8');
+    const base = pyodideBaseUrl(pycells);
+    const version = base.match(/\/(v[^/]+)\//)?.[1] ?? 'pyodide';
+    const dir = path.join(context.globalStorageUri.fsPath, 'pyodide', version);
+    await fs.promises.mkdir(dir, { recursive: true });
+
+    const cached = async (name: string, sha256?: string): Promise<Buffer | undefined> => {
+        try {
+            const data = await fs.promises.readFile(path.join(dir, name));
+            if (!sha256 || createHash('sha256').update(data).digest('hex') === sha256) {
+                return data;
+            }
+        } catch {
+            // Not cached yet.
+        }
+        return undefined;
+    };
+    const save = async (name: string, data: Buffer): Promise<void> => {
+        const tmp = path.join(dir, `.${name}.${randomBytes(8).toString('hex')}`);
+        await fs.promises.writeFile(tmp, data);
+        await fs.promises.rename(tmp, path.join(dir, name));
+    };
+
+    let lockData = await cached('pyodide-lock.json');
+    if (!lockData) {
+        lockData = await download(base + 'pyodide-lock.json', 60000);
+        await save('pyodide-lock.json', lockData);
+    }
+    const lock = JSON.parse(lockData.toString('utf8')) as PyodideLock;
+    const plan = planOfflinePython(markdown, lock);
+    const sha = new Map(plan.packages.map(name => [lock.packages[name].file_name, lock.packages[name].sha256]));
+
+    const files: Record<string, Buffer> = {};
+    const missing: string[] = [];
+    for (const name of plan.files) {
+        const data = await cached(name, sha.get(name));
+        if (data) {
+            files[name] = data;
+        } else {
+            missing.push(name);
+        }
+    }
+    if (missing.length > 0) {
+        await vscode.window.withProgress({
+            location: vscode.ProgressLocation.Notification,
+            title: 'Downloading Python for offline slides (once)',
+            cancellable: false,
+        }, async progress => {
+            for (const [i, name] of missing.entries()) {
+                progress.report({ message: `${name} (${i + 1} of ${missing.length})`, increment: 100 / missing.length });
+                const data = await download(base + name, 300000);
+                const expected = sha.get(name);
+                if (expected && createHash('sha256').update(data).digest('hex') !== expected) {
+                    throw new Error(`${name} does not match its checksum in pyodide-lock.json`);
+                }
+                await save(name, data);
+                files[name] = data;
+            }
+        });
+    }
+
+    const size = Object.values(files).reduce((sum, data) => sum + data.length, 0);
+    log().appendLine(`Offline Python: Pyodide ${version} with ${plan.packages.join(', ')} (${(size / 1e6).toFixed(1)} MB before encoding)`);
+    if (plan.other.length > 0) {
+        log().appendLine(`  imports that are not Pyodide packages (the standard library, or downloaded from PyPI when online): ${plan.other.join(', ')}`);
+    }
+    if (plan.pip) {
+        log().appendLine('  %pip install needs a network connection; those cells will not work offline');
+    }
+    return { files, plan };
+}
+
+/** What adding the presenter tools found, for the offline check. */
+interface PresenterBuild {
+    report: BundleReport;
+    plan?: OfflinePlan;
+    pythonError?: string;
+}
+
 /**
  * Turn the Marp HTML at `htmlPath` into a self-contained deck with the
  * presenter tools (pen, laser, notes, save with ink, live Python cells).
- * Returns false (after reporting why) if it failed.
+ * Returns undefined (after reporting why) if it failed. `quiet` leaves out
+ * the warning when offline Python is unavailable (it is still a problem in
+ * the Problems panel).
  */
-async function addPresenterTools(context: vscode.ExtensionContext, document: vscode.TextDocument, htmlPath: string): Promise<boolean> {
+async function addPresenterTools(
+    context: vscode.ExtensionContext,
+    document: vscode.TextDocument,
+    htmlPath: string,
+    quiet = false
+): Promise<PresenterBuild | undefined> {
     try {
         const html = await fs.promises.readFile(htmlPath, 'utf8');
+        const markdown = document.getText();
+        let pyodide: Record<string, Buffer> | undefined;
+        let plan: OfflinePlan | undefined;
+        let pythonError: string | undefined;
+        if (presenterOffline(frontMatterValue(markdown.split(/\r?\n/), 'presenter')) && html.includes('<pre data-run=')) {
+            try {
+                ({ files: pyodide, plan } = await offlinePythonFiles(context, markdown));
+            } catch (error) {
+                pythonError = error instanceof Error ? error.message : String(error);
+                log().appendLine(`Offline Python unavailable: ${pythonError}`);
+                if (!quiet) {
+                    vscode.window.showWarningMessage(`Could not get Python for offline use (${pythonError}); the Python cells will need an internet connection.`);
+                }
+            }
+        }
         const { html: bundled, report } = await bundlePresenterDeck(html, {
             baseDir: path.dirname(document.uri.fsPath),
-            markdown: document.getText(),
+            markdown,
+            pyodide,
             assets: presenterAssets(context.asAbsolutePath(path.join('media', 'marpPresent'))),
             fetchFont: url => fetchFontCached(context, url),
         });
@@ -306,10 +430,86 @@ async function addPresenterTools(context: vscode.ExtensionContext, document: vsc
         if (report.external.length > 0) {
             log().appendLine(`  still loaded from the web:\n    ${report.external.slice(0, 20).join('\n    ')}`);
         }
-        return true;
+        return { report, plan, pythonError };
     } catch (error) {
         vscode.window.showErrorMessage(`Could not add presenter tools: ${error instanceof Error ? error.message : String(error)}`);
-        return false;
+        return undefined;
+    }
+}
+
+// =============================================================================
+// Offline check
+// =============================================================================
+
+let offlineDiagnostics: vscode.DiagnosticCollection | undefined;
+
+/**
+ * Show what in the deck needs a network (or is missing) in the Problems
+ * panel, and return how many problems there are.
+ */
+function showOfflineIssues(document: vscode.TextDocument, check: OfflineCheck): number {
+    offlineDiagnostics ??= vscode.languages.createDiagnosticCollection('scimax-marp-offline');
+    const issues = offlineIssues(check);
+    offlineDiagnostics.set(document.uri, issues.map(issue => {
+        const line = Math.min(issue.line, document.lineCount - 1);
+        const diagnostic = new vscode.Diagnostic(document.lineAt(line).range, issue.message, vscode.DiagnosticSeverity.Warning);
+        diagnostic.source = 'Marp offline';
+        return diagnostic;
+    }));
+    return issues.length;
+}
+
+/** Point to the Problems panel when an offline deck has problems. */
+async function announceOfflineIssues(document: vscode.TextDocument, count: number): Promise<void> {
+    if (count === 0) {
+        return;
+    }
+    const choice = await vscode.window.showWarningMessage(
+        `${count} ${count === 1 ? 'thing' : 'things'} in ${path.basename(document.fileName)} will not work without an internet connection.`,
+        'Show Problems'
+    );
+    if (choice) {
+        await vscode.commands.executeCommand('workbench.actions.view.problems');
+    }
+}
+
+/**
+ * Build the deck as it would be presented and list everything that needs a
+ * network connection (Python packages, %pip, web fonts and images) or is
+ * missing, in the Problems panel.
+ */
+async function checkOffline(context: vscode.ExtensionContext): Promise<void> {
+    const document = await activeDeck();
+    if (!document) {
+        return;
+    }
+    const presenter = presenterEnabled(document);
+    const dir = await fs.promises.mkdtemp(path.join(os.tmpdir(), 'scimax-marp-check-'));
+    try {
+        const htmlPath = path.join(dir, `${path.parse(document.uri.fsPath).name}.html`);
+        if (!(await convertWithMarp(context, document, 'html', htmlPath, `Checking ${path.basename(document.fileName)}`, presenter))) {
+            return;
+        }
+        let check: OfflineCheck;
+        if (presenter) {
+            const build = await addPresenterTools(context, document, htmlPath, true);
+            if (!build) {
+                return;
+            }
+            check = { markdown: document.getText(), ...build };
+        } else {
+            const html = await fs.promises.readFile(htmlPath, 'utf8');
+            const { report } = await inlineDeck(html, path.dirname(document.uri.fsPath), { fetchFont: url => fetchFontCached(context, url) });
+            check = { markdown: document.getText(), report };
+        }
+        const count = showOfflineIssues(document, check);
+        if (count === 0) {
+            vscode.window.showInformationMessage(`${path.basename(document.fileName)} is ready to present without an internet connection.`);
+        } else {
+            await announceOfflineIssues(document, count);
+        }
+    } finally {
+        await fs.promises.rm(dir, { recursive: true, force: true });
     }
 }
 
@@ -348,7 +548,8 @@ async function convertWithMarp(
     format: MarpExportFormat,
     outputPath: string,
     title: string,
-    presenter = false
+    presenter = false,
+    quiet = false
 ): Promise<boolean> {
     const cli = await resolveMarpCli(context);
     if (!cli) {
@@ -375,7 +576,7 @@ async function convertWithMarp(
     let result: RunResult;
     try {
         result = await vscode.window.withProgress(
-            { location: vscode.ProgressLocation.Notification, title, cancellable: true },
+            { location: quiet ? vscode.ProgressLocation.Window : vscode.ProgressLocation.Notification, title, cancellable: !quiet },
             (_progress, token) => run(cli.command, [...cli.prefix, ...args], { cwd: path.dirname(input), env }, token)
         );
     } catch (error) {
@@ -413,10 +614,13 @@ async function exportWithMarp(context: vscode.ExtensionContext, format: MarpExpo
         return;
     }
     if (format === 'html' && presenter) {
-        if (!(await addPresenterTools(context, document, outputPath))) {
+        const build = await addPresenterTools(context, document, outputPath);
+        if (!build) {
             return;
         }
+        const issues = offlineDeck(document) ? showOfflineIssues(document, { markdown: document.getText(), ...build }) : 0;
         await announce(outputPath, `Exported ${path.basename(outputPath)} with presenter tools: a pen, l laser, n note, s save with ink`);
+        await announceOfflineIssues(document, issues);
         return;
     }
 
@@ -570,10 +774,100 @@ function slideUnderCursor(document: vscode.TextDocument): number | undefined {
     return shownBefore + 1;
 }
 
+/** True if the deck asks for offline Python (`presenter: offline`). */
+function offlineDeck(document: vscode.TextDocument): boolean {
+    return presenterOffline(frontMatterValue(document.getText().split(/\r?\n/), 'presenter'));
+}
+
+/** A slideshow that reloads when its deck is saved. */
+interface LiveShow {
+    output: string;
+    presenter: boolean;
+    building: boolean;
+    again: boolean;
+}
+
+/** Open slideshows by deck path, rebuilt on save while the deck is open. */
+const liveShows = new Map<string, LiveShow>();
+
+/**
+ * Build the slideshow of `document` into `output`. With live reload, the page
+ * checks `<output>.version.js` every second and reloads (at `jumpTo`, if
+ * given) when a rebuild writes a new version. Returns false if it failed.
+ */
+async function buildSlideshow(
+    context: vscode.ExtensionContext,
+    document: vscode.TextDocument,
+    output: string,
+    options: { presenter: boolean; startSlide?: number; jumpTo?: number; liveReload: boolean; quiet: boolean }
+): Promise<boolean> {
+    const presenter = options.presenter;
+    // Marp writes a scratch file next to the slideshow; the open page only ever sees a finished one.
+    const scratch = path.join(path.dirname(output), `.${randomBytes(8).toString('hex')}.html`);
+    try {
+        const title = options.quiet ? `Updating slideshow of ${path.basename(document.fileName)}` : `Preparing slideshow of ${path.basename(document.fileName)}`;
+        if (!(await convertWithMarp(context, document, 'html', scratch, title, presenter, options.quiet))) {
+            return false;
+        }
+        if (presenter) {
+            const build = await addPresenterTools(context, document, scratch, options.quiet);
+            if (!build) {
+                return false;
+            }
+            if (offlineDeck(document)) {
+                const issues = showOfflineIssues(document, { markdown: document.getText(), ...build });
+                if (!options.quiet) {
+                    void announceOfflineIssues(document, issues);
+                }
+            }
+        }
+        const version = randomBytes(8).toString('hex');
+        const versionFile = `${output}.version.js`;
+        const reload = options.liveReload ? { url: pathToFileURL(versionFile).href, version } : undefined;
+        const folderUrl = pathToFileURL(path.dirname(document.uri.fsPath) + path.sep).href;
+        const html = await fs.promises.readFile(scratch, 'utf8');
+        await fs.promises.writeFile(scratch, prepareSlideshowHtml(html, folderUrl, options.startSlide, reload), 'utf8');
+        await fs.promises.rename(scratch, output);
+        if (reload) {
+            await fs.promises.writeFile(versionFile, liveReloadVersionScript(version, options.jumpTo), 'utf8');
+        }
+        return true;
+    } finally {
+        await fs.promises.rm(scratch, { force: true });
+    }
+}
+
+/** Rebuild an open slideshow after its deck is saved (one rebuild at a time). */
+async function rebuildLiveShow(context: vscode.ExtensionContext, document: vscode.TextDocument): Promise<void> {
+    const show = liveShows.get(document.uri.fsPath);
+    if (!show || !isMarpText(document.getText())) {
+        return;
+    }
+    if (show.building) {
+        show.again = true;
+        return;
+    }
+    show.building = true;
+    try {
+        do {
+            show.again = false;
+            await buildSlideshow(context, document, show.output, {
+                presenter: show.presenter && presenterRequested(frontMatterValue(document.getText().split(/\r?\n/), 'presenter')),
+                jumpTo: slideUnderCursor(document), liveReload: true, quiet: true,
+            });
+        } while (show.again);
+    } finally {
+        show.building = false;
+    }
+}
+
 /**
  * Present the deck as Marp's HTML slideshow in the browser: F for full
  * screen, P for the presenter view with notes and a timer, arrow keys or
- * clicks to move. The HTML is written to a new private temporary folder.
+ * clicks to move. The HTML goes to a private folder of the extension, the
+ * same one each time for a deck (presenter tools keep ink in the browser's
+ * storage, keyed by the page's path). With `scimax.marp.liveReload`, saving
+ * the deck updates the open slideshow.
  */
 async function present(context: vscode.ExtensionContext, args?: PresentArgs, fromCursor = false): Promise<void> {
     const document = args?.file ? await deckAt(args.file) : await activeDeck();
@@ -581,31 +875,30 @@ async function present(context: vscode.ExtensionContext, args?: PresentArgs, fro
         return;
     }
     const startSlide = args?.slide ?? (fromCursor ? slideUnderCursor(document) : undefined);
-
-    // Presenter tools keep ink in the browser's storage, keyed by the page's path, so
-    // their slideshow goes to the same private folder each time the deck is presented.
-    const presenter = presenterEnabled(document);
-    const dir = presenter
-        ? path.join(context.globalStorageUri.fsPath, 'slideshows',
-            createHash('sha256').update(document.uri.fsPath).digest('hex').slice(0, 16))
-        : await fs.promises.mkdtemp(path.join(os.tmpdir(), 'scimax-marp-'));
-    if (presenter) {
-        await fs.promises.mkdir(dir, { recursive: true, mode: 0o700 });
-    }
+    const dir = path.join(context.globalStorageUri.fsPath, 'slideshows',
+        createHash('sha256').update(document.uri.fsPath).digest('hex').slice(0, 16));
+    await fs.promises.mkdir(dir, { recursive: true, mode: 0o700 });
     const output = path.join(dir, `${path.parse(document.uri.fsPath).name}.html`);
-    if (!(await convertWithMarp(context, document, 'html', output, `Preparing slideshow of ${path.basename(document.fileName)}`, presenter))) {
+    const liveReload = vscode.workspace.getConfiguration('scimax.marp', document.uri).get<boolean>('liveReload', true);
+    const presenter = presenterEnabled(document);
+
+    // A rebuild in progress would overwrite this one's start slide; wait for it.
+    const previous = liveShows.get(document.uri.fsPath);
+    liveShows.delete(document.uri.fsPath);
+    while (previous?.building) {
+        await new Promise(resolve => setTimeout(resolve, 100));
+    }
+    if (!(await buildSlideshow(context, document, output, { presenter, startSlide, liveReload, quiet: false }))) {
         return;
     }
-    if (presenter && !(await addPresenterTools(context, document, output))) {
-        return;
+    if (liveReload) {
+        liveShows.set(document.uri.fsPath, { output, presenter: vscode.workspace.isTrusted, building: false, again: false });
     }
-    const folderUrl = pathToFileURL(path.dirname(document.uri.fsPath) + path.sep).href;
-    const html = await fs.promises.readFile(output, 'utf8');
-    await fs.promises.writeFile(output, prepareSlideshowHtml(html, folderUrl, startSlide), 'utf8');
     await vscode.env.openExternal(vscode.Uri.file(output));
+    const reloadHint = liveReload ? '; saving the deck updates it' : '';
     vscode.window.setStatusBarMessage(presenter
-        ? 'Slideshow opened: F full screen, P presenter view, a pen, l laser, n note, s save with ink'
-        : 'Slideshow opened in the browser: F for full screen, P for presenter view', 6000);
+        ? `Slideshow opened: F full screen, P presenter view, a pen, l laser, n note, s save with ink${reloadHint}`
+        : `Slideshow opened in the browser: F for full screen, P for presenter view${reloadHint}`, 6000);
 }
 
 export function registerMarpExportCommands(context: vscode.ExtensionContext): void {
@@ -625,6 +918,17 @@ export function registerMarpExportCommands(context: vscode.ExtensionContext): vo
         vscode.commands.registerCommand('scimax.marp.exportGoogleSlides', () => exportForGoogleSlides(context)),
         vscode.commands.registerCommand('scimax.marp.exportHtml', () => exportWithMarp(context, 'html')),
         vscode.commands.registerCommand('scimax.marp.exportImages', () => exportWithMarp(context, 'images')),
-        vscode.commands.registerCommand('scimax.marp.exportNotes', () => exportWithMarp(context, 'notes'))
+        vscode.commands.registerCommand('scimax.marp.exportNotes', () => exportWithMarp(context, 'notes')),
+        vscode.commands.registerCommand('scimax.marp.checkOffline', () => checkOffline(context)),
+        vscode.workspace.onDidSaveTextDocument(document => {
+            if (liveShows.has(document.uri.fsPath)) {
+                void rebuildLiveShow(context, document);
+            }
+        }),
+        vscode.workspace.onDidCloseTextDocument(document => {
+            liveShows.delete(document.uri.fsPath);
+            offlineDiagnostics?.delete(document.uri);
+        }),
+        { dispose: () => offlineDiagnostics?.dispose() }
     );
 }

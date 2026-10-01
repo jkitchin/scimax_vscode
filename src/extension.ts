@@ -40,6 +40,7 @@ import { registerTaskCommands } from './markdown/taskCommands';
 import { registerMarpCommands } from './marp/marpCommands';
 import { registerSlideThumbnailView } from './marp/slideThumbnailView';
 import { registerMarpExportCommands } from './marp/marpExportCommands';
+import { registerMarpPythonRunner } from './marp/pythonRunner';
 import { marpPreviewPlugin } from './marp/marpPreviewPlugin';
 import { marpPreviewRenderOptions } from './marp/marpSettings';
 import { mystPreviewPlugin } from './markdown/mystPreview';
@@ -680,6 +681,9 @@ async function activateScimax(context: vscode.ExtensionContext) {
 
     // Register Marp slide export (Marp CLI and Pandoc)
     activationStep('registerMarpExportCommands', () => registerMarpExportCommands(context));
+
+    // Run a Marp deck's live Python cells in a panel (C-c C-c)
+    activationStep('registerMarpPythonRunner', () => registerMarpPythonRunner(context));
 
     // Register Timestamp Commands (shift-arrow to adjust dates)
     activationStep('registerTimestampCommands', () => registerTimestampCommands(context));

@@ -3675,6 +3675,26 @@
         "category": "Scimax Marp"
       },
       {
+        "command": "scimax.marp.runCell",
+        "title": "Run Python Cell",
+        "category": "Scimax Marp"
+      },
+      {
+        "command": "scimax.marp.runAllCells",
+        "title": "Run All Python Cells",
+        "category": "Scimax Marp"
+      },
+      {
+        "command": "scimax.marp.restartPython",
+        "title": "Restart Python",
+        "category": "Scimax Marp"
+      },
+      {
+        "command": "scimax.marp.checkOffline",
+        "title": "Check for Offline Use",
+        "category": "Scimax Marp"
+      },
+      {
         "command": "scimax.marp.insert.table",
         "title": "Table",
         "category": "Scimax Marp"
@@ -4063,6 +4083,12 @@
         "when": "resourceFilename =~ /^\\d{4}-\\d{2}-\\d{2}\\.(org|md)$/"
       },
       {
+        "command": "scimax.marp.runCell",
+        "key": "ctrl+c ctrl+c",
+        "mac": "ctrl+c ctrl+c",
+        "when": "editorTextFocus && editorLangId == 'markdown' && scimax.marp.inRunCell && !terminalFocus"
+      },
+      {
         "command": "scimax.org.executeBlock",
         "key": "ctrl+enter",
         "mac": "cmd+enter",
@@ -4157,7 +4183,7 @@
         "command": "scimax.org.executeBlock",
         "key": "ctrl+c ctrl+c",
         "mac": "ctrl+c ctrl+c",
-        "when": "editorTextFocus && editorLangId == 'markdown' && scimax.inSourceBlock && !terminalFocus"
+        "when": "editorTextFocus && editorLangId == 'markdown' && scimax.inSourceBlock && !scimax.marp.inRunCell && !terminalFocus"
       },
       {
         "command": "scimax.babel.executeInline",
@@ -4283,7 +4309,7 @@
         "command": "scimax.markdown.toggleCheckbox",
         "key": "ctrl+c ctrl+c",
         "mac": "ctrl+c ctrl+c",
-        "when": "editorTextFocus && editorLangId == 'markdown' && !scimax.inSourceBlock && !scimax.onTblfmLine && !scimax.inOrderedList && !scimax.inDynamicBlock && !scimax.inInlineBabelCall && !scimax.inInlineSrc && !scimax.onCallLine && !terminalFocus"
+        "when": "editorTextFocus && editorLangId == 'markdown' && !scimax.inSourceBlock && !scimax.onTblfmLine && !scimax.inOrderedList && !scimax.inDynamicBlock && !scimax.inInlineBabelCall && !scimax.inInlineSrc && !scimax.onCallLine && !scimax.marp.inRunCell && !terminalFocus"
       },
       {
         "command": "scimax.org.updateStatistics",
@@ -7551,6 +7577,11 @@
           "type": "string",
           "default": "biber",
           "description": "Path to biber executable"
+        },
+        "scimax.marp.liveReload": {
+          "type": "boolean",
+          "default": true,
+          "markdownDescription": "While a slideshow from **Present** is open in the browser, saving the deck rebuilds it and the browser reloads at the slide you are editing. Ink drawn with the presenter tools is kept."
         }
       }
     },
@@ -8085,6 +8116,22 @@
           "when": "editorLangId == markdown && scimax.marp.isMarpDocument"
         },
         {
+          "command": "scimax.marp.runCell",
+          "when": "editorLangId == markdown && scimax.marp.isMarpDocument"
+        },
+        {
+          "command": "scimax.marp.runAllCells",
+          "when": "editorLangId == markdown && scimax.marp.isMarpDocument"
+        },
+        {
+          "command": "scimax.marp.restartPython",
+          "when": "editorLangId == markdown && scimax.marp.isMarpDocument"
+        },
+        {
+          "command": "scimax.marp.checkOffline",
+          "when": "editorLangId == markdown && scimax.marp.isMarpDocument"
+        },
+        {
           "command": "scimax.marp.insert.table",
           "when": "editorLangId == markdown && scimax.marp.isMarpDocument"
         },
@@ -8476,6 +8523,18 @@
         {
           "command": "scimax.marp.insert.pythonCell",
           "group": "1@8"
+        },
+        {
+          "command": "scimax.marp.runCell",
+          "group": "2@1"
+        },
+        {
+          "command": "scimax.marp.runAllCells",
+          "group": "2@2"
+        },
+        {
+          "command": "scimax.marp.restartPython",
+          "group": "2@3"
         }
       ],
       "scimax.marp.thisSlideMenu": [
@@ -8552,6 +8611,10 @@
         {
           "command": "scimax.marp.deck.presenter",
           "group": "1@9"
+        },
+        {
+          "command": "scimax.marp.checkOffline",
+          "group": "2@1"
         }
       ],
       "scimax.marp.themeMenu": [
