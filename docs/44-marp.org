@@ -829,13 +829,15 @@ Presenting or exporting HTML (=h=) an offline deck runs the same check and
 says when it found something. The problems are cleared when the deck is
 closed or checked again.
 
-** Notes
+** 👀 Notes
 
 - The tools are added only in a trusted workspace, since the deck's HTML and
   Python run in the browser. In an untrusted workspace Scimax warns and shows
   the plain slideshow.
 - A deck with ~presenter: true~ is built with Marp CLI's ~--html~ option, so raw
-  HTML in its slides is rendered.
+  HTML in its slides is rendered. The slide thumbnails and previews allow all
+  HTML for these decks too (in a trusted workspace), so an ~<iframe>~ widget
+  shows there as well, whatever ~scimax.marp.enableHtml~ says.
 - Scimax passes its own markdown-it engine to Marp CLI (~--engine~), which
   replaces an ~engine~ set in a Marp CLI configuration file for these decks.
 - The fonts for KaTeX math are downloaded once and cached, so ~deck.html~ also
@@ -929,7 +931,7 @@ upload the file (New > File upload), then open it with Google Slides.
 | ~scimax.marp.allowLocalFiles~    | ~true~  | Include local images (~--allow-local-files~), trusted workspaces only |
 | ~scimax.marp.pandocReferenceDoc~ | (empty) | PowerPoint template for the Pandoc export (=d=)                       |
 
-* 👀 Configuration
+* Configuration
 
 | Setting                       | Default   | Effect                                                     |
 |-------------------------------+-----------+------------------------------------------------------------|
@@ -944,7 +946,7 @@ set. A theme file names itself with a ~/* @theme name */~ comment, and a deck
 uses it with ~theme: name~. The export settings are listed under
 [[*Export settings][Export settings]].
 
-** ⚠️ Marp CLI configuration files
+** Marp CLI configuration files
 
 A deck set up for Marp CLI often keeps its themes and options in a
 configuration file beside it rather than in VS Code settings:
@@ -992,7 +994,7 @@ If double-clicking a slide does nothing, this setting is the first thing to
 check. It also turns on VS Code's own (approximate) double-click for ordinary
 Markdown previews.
 
-* ⚠️ How It Works
+* How It Works
 
 ** Slides in the Markdown preview
 
@@ -1025,7 +1027,7 @@ Scimax's handler replaces it for Marp slides only; ordinary Markdown previews
 are unchanged. If the preview's message channel cannot be reached, the
 built-in handler runs as before.
 
-* ⚠️ Related Topics
+* Related Topics
 
 - [[file:30-markdown-compatibility.org][Markdown Compatibility]] - Scimax editing features in Markdown files
 - [[file:45-myst-preview.org][MyST Markdown Preview]] - Jupyter Book directives and roles in the preview

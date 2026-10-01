@@ -16,6 +16,8 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as vscode from 'vscode';
 import { findMarpCliConfig, MarpCliConfig } from './marpConfig';
+import { frontMatterValue } from './marpAuthoring';
+import { presenterRequested } from './presenterBundle';
 
 export type MathTypesetting = 'mathjax' | 'katex' | 'off';
 
@@ -92,8 +94,25 @@ export function marpThemeUris(document: SettingsScope): vscode.Uri[] {
 
 /** Allow all raw HTML in slides (`scimax.marp.enableHtml`, or `html` in `.marprc.yml`). */
 export function marpHtmlEnabled(document: SettingsScope): boolean {
-    return marpSetting<boolean>(document, 'scimax.marp.enableHtml', 'markdown.marp.enableHtml', false,
+    return presenterDeck(document) || marpSetting<boolean>(document, 'scimax.marp.enableHtml', 'markdown.marp.enableHtml', false,
         marpCliConfig(document)?.html);
+}
+
+/**
+ * True for a deck with `presenter: true` (or `offline`) in a trusted workspace.
+ * Its slideshow is built with all HTML allowed (for widgets such as iframes), so
+ * the thumbnails and previews allow it too. The Markdown preview gives only a
+ * URI, so the text is taken from the open document with that URI.
+ */
+function presenterDeck(scope: SettingsScope): boolean {
+    if (!vscode.workspace.isTrusted) {
+        return false;
+    }
+    const withText = scope as SettingsScope & { getText?: () => string };
+    const text = typeof withText.getText === 'function'
+        ? withText.getText()
+        : vscode.workspace.textDocuments.find(doc => doc.uri.toString() === scope.uri.toString())?.getText();
+    return text !== undefined && presenterRequested(frontMatterValue(text.split(/\r?\n/), 'presenter'));
 }
 
 /** Math typesetting for rendered slides (`scimax.marp.mathTypesetting`). */

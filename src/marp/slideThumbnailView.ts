@@ -569,6 +569,8 @@ class SlideWebviewController implements vscode.Disposable {
             `style-src ${webview.cspSource} 'unsafe-inline'`,
             `img-src ${webview.cspSource} https: data:`,
             `font-src ${webview.cspSource} https: data:`,
+            // Widgets in decks that allow HTML (e.g. a presenter deck's iframes).
+            `frame-src ${webview.cspSource} https:`,
             `script-src 'nonce-${nonce}'`,
         ].join('; ');
         const kind = this.surface.kind;
