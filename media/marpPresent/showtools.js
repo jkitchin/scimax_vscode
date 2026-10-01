@@ -211,7 +211,6 @@ svg[data-marpit-svg].mp-zoomed { transition: transform .35s ease; transform-orig
           .sort((a, b) => b.title.toLowerCase().includes(q) - a.title.toLowerCase().includes(q));
       }
       sel = Math.max(0, Math.min(sel, shown.length - 1));
-      if (!q) sel = Math.max(0, shown.findIndex(it => it.n === here));
       list.textContent = "";
       shown.forEach((it, i) => {
         const li = document.createElement("li");
@@ -225,7 +224,7 @@ svg[data-marpit-svg].mp-zoomed { transition: transform .35s ease; transform-orig
       const cur = list.children[sel];
       if (cur) cur.scrollIntoView({ block: "nearest" });
     }
-    input.addEventListener("input", () => { sel = 0; render(); });
+    input.addEventListener("input", () => { sel = input.value.trim() ? 0 : Math.max(0, items.findIndex(it => it.n === here)); render(); });
     input.addEventListener("keydown", e => {
       e.stopPropagation();   // not Marp's keys or ours while typing here
       if (e.key === "Escape") { e.preventDefault(); closePalette(); }
@@ -241,6 +240,7 @@ svg[data-marpit-svg].mp-zoomed { transition: transform .35s ease; transform-orig
     });
     for (const t of ["keyup", "keypress"]) input.addEventListener(t, e => e.stopPropagation());
     input.addEventListener("blur", () => setTimeout(closePalette, 150));
+    sel = Math.max(0, items.findIndex(it => it.n === here));   // start on the current slide
     render();
     input.focus();
   }
