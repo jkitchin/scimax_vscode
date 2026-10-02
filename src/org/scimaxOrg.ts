@@ -41,6 +41,7 @@ import { pushMark } from '../mark/markRing';
 import { extractCiteKeysFromPath } from '../references/citationParser';
 import { marpLinkArgs } from '../marp/marpExport';
 import * as os from 'os';
+import { markdownFencedLineMask } from '../shared/markdownFences';
 
 // Re-export planning line utilities for external use
 export { findPlanningLine, buildPlanningLine, removeClosed };
@@ -68,20 +69,36 @@ function getHeadingChar(document: vscode.TextDocument): string {
     return document.languageId === 'markdown' ? '#' : '*';
 }
 
+// Cache of fenced-code-line masks for markdown documents, keyed by document version
+const fenceMaskCache = new WeakMap<vscode.TextDocument, { version: number; mask: boolean[] }>();
+
+/**
+ * True if the line is inside a markdown fenced code block (where `#` is code, not a heading)
+ */
+function isInMarkdownCodeBlock(document: vscode.TextDocument, lineNumber: number): boolean {
+    if (document.languageId !== 'markdown') return false;
+    let cached = fenceMaskCache.get(document);
+    if (!cached || cached.version !== document.version) {
+        cached = { version: document.version, mask: markdownFencedLineMask(document.getText().split('\n')) };
+        fenceMaskCache.set(document, cached);
+    }
+    return cached.mask[lineNumber] ?? false;
+}
+
 /**
  * Check if a line is a heading and return its level
  */
-function getHeadingLevel(document: vscode.TextDocument, lineText: string): number {
-    const pattern = getHeadingPattern(document);
-    const match = lineText.match(pattern);
+function getHeadingLevel(document: vscode.TextDocument, lineNumber: number): number {
+    if (isInMarkdownCodeBlock(document, lineNumber)) return 0;
+    const match = document.lineAt(lineNumber).text.match(getHeadingPattern(document));
     return match ? match[1].length : 0;
 }
 
 /**
  * Check if a line is a heading
  */
-function isHeadingLine(document: vscode.TextDocument, lineText: string): boolean {
-    return getHeadingLevel(document, lineText) > 0;
+function isHeadingLine(document: vscode.TextDocument, lineNumber: number): boolean {
+    return getHeadingLevel(document, lineNumber) > 0;
 }
 
 // =============================================================================
@@ -1021,7 +1038,7 @@ export async function jumpToHeading(): Promise<void> {
     // Find all headings
     for (let i = 0; i < document.lineCount; i++) {
         const line = document.lineAt(i).text;
-        const match = line.match(headingPattern);
+        const match = isInMarkdownCodeBlock(document, i) ? null : line.match(headingPattern);
         if (match) {
             const level = match[1].length;
             const title = match[2].replace(/\s*:[\w:]+:\s*$/, ''); // Remove tags
@@ -1071,7 +1088,7 @@ export async function nextHeading(): Promise<void> {
     const currentLine = editor.selection.active.line;
 
     for (let i = currentLine + 1; i < document.lineCount; i++) {
-        if (isHeadingLine(document, document.lineAt(i).text)) {
+        if (isHeadingLine(document, i)) {
             const pos = new vscode.Position(i, 0);
             editor.selection = new vscode.Selection(pos, pos);
             editor.revealRange(new vscode.Range(pos, pos), vscode.TextEditorRevealType.InCenter);
@@ -1095,7 +1112,7 @@ export async function previousHeading(): Promise<void> {
     const currentLine = editor.selection.active.line;
 
     for (let i = currentLine - 1; i >= 0; i--) {
-        if (isHeadingLine(document, document.lineAt(i).text)) {
+        if (isHeadingLine(document, i)) {
             const pos = new vscode.Position(i, 0);
             editor.selection = new vscode.Selection(pos, pos);
             editor.revealRange(new vscode.Range(pos, pos), vscode.TextEditorRevealType.InCenter);
@@ -1121,7 +1138,7 @@ export async function parentHeading(): Promise<void> {
     // Find current heading level
     let currentLevel = 0;
     for (let i = currentLine; i >= 0; i--) {
-        const level = getHeadingLevel(document, document.lineAt(i).text);
+        const level = getHeadingLevel(document, i);
         if (level > 0) {
             currentLevel = level;
             break;
@@ -1135,7 +1152,7 @@ export async function parentHeading(): Promise<void> {
 
     // Find parent (heading with lower level)
     for (let i = currentLine - 1; i >= 0; i--) {
-        const level = getHeadingLevel(document, document.lineAt(i).text);
+        const level = getHeadingLevel(document, i);
         if (level > 0 && level < currentLevel) {
             const pos = new vscode.Position(i, 0);
             editor.selection = new vscode.Selection(pos, pos);
@@ -1161,7 +1178,7 @@ export async function promoteHeading(): Promise<void> {
     const document = editor.document;
     const position = editor.selection.active;
     const line = document.lineAt(position.line);
-    const level = getHeadingLevel(document, line.text);
+    const level = getHeadingLevel(document, position.line);
 
     if (level <= 1) {
         vscode.window.showInformationMessage('Cannot promote further');
@@ -1183,7 +1200,7 @@ export async function demoteHeading(): Promise<void> {
     const document = editor.document;
     const position = editor.selection.active;
     const line = document.lineAt(position.line);
-    const level = getHeadingLevel(document, line.text);
+    const level = getHeadingLevel(document, position.line);
 
     if (level === 0) {
         vscode.window.showInformationMessage('Not on a heading');
@@ -1215,7 +1232,7 @@ export async function promoteSubtree(): Promise<void> {
 
     // Check if can promote
     const firstLine = document.lineAt(startLine).text;
-    const level = getHeadingLevel(document, firstLine);
+    const level = getHeadingLevel(document, startLine);
     if (level <= 1) {
         vscode.window.showInformationMessage('Cannot promote further');
         return;
@@ -1224,7 +1241,7 @@ export async function promoteSubtree(): Promise<void> {
     await editor.edit(editBuilder => {
         for (let i = startLine; i <= endLine; i++) {
             const line = document.lineAt(i).text;
-            if (isHeadingLine(document, line)) {
+            if (isHeadingLine(document, i)) {
                 editBuilder.delete(new vscode.Range(i, 0, i, 1));
             }
         }
@@ -1245,7 +1262,7 @@ export async function demoteSubtree(): Promise<void> {
     // Check if any heading would exceed max level (markdown: 6)
     if (document.languageId === 'markdown') {
         for (let i = startLine; i <= endLine; i++) {
-            const level = getHeadingLevel(document, document.lineAt(i).text);
+            const level = getHeadingLevel(document, i);
             if (level >= 6) {
                 vscode.window.showInformationMessage('Cannot demote: subtree contains heading at max level (6)');
                 return;
@@ -1257,7 +1274,7 @@ export async function demoteSubtree(): Promise<void> {
     await editor.edit(editBuilder => {
         for (let i = startLine; i <= endLine; i++) {
             const line = document.lineAt(i).text;
-            if (isHeadingLine(document, line)) {
+            if (isHeadingLine(document, i)) {
                 editBuilder.insert(new vscode.Position(i, 0), headingChar);
             }
         }
@@ -1269,12 +1286,12 @@ export async function demoteSubtree(): Promise<void> {
  */
 function getSubtreeRange(document: vscode.TextDocument, line: number): { startLine: number; endLine: number } {
     const lineText = document.lineAt(line).text;
-    const level = getHeadingLevel(document, lineText);
+    const level = getHeadingLevel(document, line);
 
     if (level === 0) {
         // Not on a heading, find the parent heading
         for (let i = line - 1; i >= 0; i--) {
-            if (isHeadingLine(document, document.lineAt(i).text)) {
+            if (isHeadingLine(document, i)) {
                 return getSubtreeRange(document, i);
             }
         }
@@ -1285,7 +1302,7 @@ function getSubtreeRange(document: vscode.TextDocument, line: number): { startLi
 
     // Find end of subtree (next heading at same or higher level, or end of file)
     for (let i = line + 1; i < document.lineCount; i++) {
-        const nextLevel = getHeadingLevel(document, document.lineAt(i).text);
+        const nextLevel = getHeadingLevel(document, i);
         if (nextLevel > 0 && nextLevel <= level) {
             break;
         }
@@ -1312,12 +1329,12 @@ export async function moveSubtreeUp(): Promise<void> {
     }
 
     // Get the level of current heading
-    const level = getHeadingLevel(document, document.lineAt(current.startLine).text);
+    const level = getHeadingLevel(document, current.startLine);
 
     // Find the previous sibling at the same level
     let prevStart = -1;
     for (let i = current.startLine - 1; i >= 0; i--) {
-        const prevLevel = getHeadingLevel(document, document.lineAt(i).text);
+        const prevLevel = getHeadingLevel(document, i);
         if (prevLevel > 0) {
             if (prevLevel === level) {
                 prevStart = i;
@@ -1385,12 +1402,12 @@ export async function moveSubtreeDown(): Promise<void> {
     }
 
     // Get the level of current heading
-    const level = getHeadingLevel(document, document.lineAt(current.startLine).text);
+    const level = getHeadingLevel(document, current.startLine);
 
     // Find the next sibling at the same level
     let nextStart = -1;
     for (let i = current.endLine + 1; i < document.lineCount; i++) {
-        const nextLevel = getHeadingLevel(document, document.lineAt(i).text);
+        const nextLevel = getHeadingLevel(document, i);
         if (nextLevel > 0) {
             if (nextLevel === level) {
                 nextStart = i;
@@ -1518,7 +1535,7 @@ export async function insertHeading(): Promise<void> {
     // Find the current heading level
     let level = 1;
     for (let i = position.line; i >= 0; i--) {
-        const match = document.lineAt(i).text.match(headingPattern);
+        const match = isInMarkdownCodeBlock(document, i) ? null : document.lineAt(i).text.match(headingPattern);
         if (match) {
             level = match[1].length;
             break;
@@ -1550,7 +1567,7 @@ export async function insertSubheading(): Promise<void> {
     // Find the current heading level
     let level = 1;
     for (let i = position.line; i >= 0; i--) {
-        const match = document.lineAt(i).text.match(headingPattern);
+        const match = isInMarkdownCodeBlock(document, i) ? null : document.lineAt(i).text.match(headingPattern);
         if (match) {
             level = match[1].length + 1;
             break;
@@ -4015,7 +4032,7 @@ function isParagraphBoundary(document: vscode.TextDocument, lineNumber: number):
         return true;
     }
     // Heading (org or markdown)
-    if (isHeadingLine(document, text)) {
+    if (isHeadingLine(document, lineNumber)) {
         return true;
     }
     // Org keywords and blocks (#+)

@@ -4,6 +4,7 @@
  */
 
 import * as vscode from 'vscode';
+import { findMarkdownFencedBlocks, markdownFencedLineMask, FencedBlock } from '../shared/markdownFences';
 
 // =============================================================================
 // Lightweight Headline Structure (no full AST needed)
@@ -56,12 +57,22 @@ function parseLightweight(lines: string[], isMarkdown: boolean = false): { headl
     const headlinePattern = isMarkdown ? /^(#{1,6})\s+(.*)$/ : /^(\*+)\s+(.*)$/;
     const headlineStartPattern = isMarkdown ? /^(#{1,6})\s/ : /^(\*+)\s/;
 
+    // Markdown fenced code blocks: `#` lines inside them are code, not headlines
+    const fencedBlockAt = new Map<number, FencedBlock>();
+    let inFence: boolean[] = [];
+    if (isMarkdown) {
+        for (const block of findMarkdownFencedBlocks(lines)) {
+            fencedBlockAt.set(block.start, block);
+        }
+        inFence = markdownFencedLineMask(lines);
+    }
+
     let i = 0;
     while (i < lines.length) {
         const line = lines[i];
 
         // Check for headline
-        const headlineMatch = line.match(headlinePattern);
+        const headlineMatch = inFence[i] ? null : line.match(headlinePattern);
         if (headlineMatch) {
             const level = headlineMatch[1].length;
             const headline = parseHeadlineLine(headlineMatch[2], level, i, isMarkdown);
@@ -69,7 +80,7 @@ function parseLightweight(lines: string[], isMarkdown: boolean = false): { headl
             // Find end of this headline (next headline of same or higher level)
             let endLine = i + 1;
             while (endLine < lines.length) {
-                const nextMatch = lines[endLine].match(headlineStartPattern);
+                const nextMatch = inFence[endLine] ? null : lines[endLine].match(headlineStartPattern);
                 if (nextMatch && nextMatch[1].length <= level) {
                     break;
                 }
@@ -112,31 +123,17 @@ function parseLightweight(lines: string[], isMarkdown: boolean = false): { headl
         }
 
         // Check for markdown fenced code block (``` or ~~~)
-        if (isMarkdown) {
-            const fenceMatch = line.match(/^(`{3,}|~{3,})(\w*)$/);
-            if (fenceMatch) {
-                const fence = fenceMatch[1];
-                const language = fenceMatch[2] || 'code';
-                const fenceChar = fence[0];
-                const fenceLen = fence.length;
-                let endLine = i + 1;
-                // Find matching closing fence (same char, at least same length)
-                while (endLine < lines.length) {
-                    const closingMatch = lines[endLine].match(new RegExp(`^${fenceChar}{${fenceLen},}\\s*$`));
-                    if (closingMatch) {
-                        break;
-                    }
-                    endLine++;
-                }
-                blocks.push({
-                    type: 'src-block',
-                    language: language,
-                    lineNumber: i,
-                    endLineNumber: endLine,
-                });
-                i = endLine + 1;
-                continue;
-            }
+        const fencedBlock = fencedBlockAt.get(i);
+        if (fencedBlock) {
+            const infoMatch = line.match(/^ {0,3}(?:`{3,}|~{3,})\s*([^\s`{]+)/);
+            blocks.push({
+                type: 'src-block',
+                language: infoMatch?.[1] || 'code',
+                lineNumber: i,
+                endLineNumber: fencedBlock.end,
+            });
+            i = fencedBlock.end + 1;
+            continue;
         }
 
         // Check for table (fast check)

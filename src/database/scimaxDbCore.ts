@@ -28,6 +28,7 @@ import {
 } from '../parser/orgParserAdapter';
 import { extractAnchors, normalizeAnchorText } from '../parser/orgAnchors';
 import { withBaselineExcludes } from '../shared/ignorePatterns';
+import { markdownFencedLineMask } from '../shared/markdownFences';
 // Migration data - inlined here to avoid importing migrations.ts which pulls in vscode via logger.
 // Keep in sync with src/database/migrations.ts.
 
@@ -1498,12 +1499,14 @@ export class ScimaxDbCore {
 
         const statements: { sql: string; args: (string | number | null)[] }[] = [];
         const lines = content.split('\n');
+        // `#` lines inside fenced code blocks are code comments, not headings
+        const inFence = markdownFencedLineMask(lines);
         let charPos = 0;
 
         for (let i = 0; i < lines.length; i++) {
             const line = lines[i];
             const lineNumber = i + 1;
-            const match = line.match(/^(#{1,6})\s+(.*)$/);
+            const match = inFence[i] ? null : line.match(/^(#{1,6})\s+(.*)$/);
             if (match) {
                 const level = match[1].length;
                 let title = match[2];

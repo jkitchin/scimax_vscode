@@ -1,4 +1,5 @@
 import * as vscode from 'vscode';
+import { markdownFencedLineMask } from '../shared/markdownFences';
 
 /**
  * Jump to visible text - avy-style navigation
@@ -366,12 +367,17 @@ function headingsInEditor(editor: vscode.TextEditor): RawMatch[] {
         language === 'latex' ? [/^\s*\\(?:part|chapter|(?:sub)*section|paragraph)\*?[[{]/] :
         [/^(\*+)\s+\S/, /^(#{1,6})\s+\S/];
 
+    // Likewise a "# comment" inside a markdown code fence is code, not a heading
+    const inFence = language === 'markdown'
+        ? markdownFencedLineMask(editor.document.getText().split('\n'))
+        : [];
+
     const matches: RawMatch[] = [];
 
     for (const range of editor.visibleRanges) {
         for (let line = range.start.line; line <= range.end.line; line++) {
             const lineText = editor.document.lineAt(line).text;
-            if (!patterns.some(pattern => pattern.test(lineText))) continue;
+            if (inFence[line] || !patterns.some(pattern => pattern.test(lineText))) continue;
 
             const indent = Math.max(0, lineText.search(/\S/));
             matches.push({

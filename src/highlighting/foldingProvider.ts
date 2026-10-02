@@ -1,5 +1,6 @@
 import * as vscode from 'vscode';
 import { isInTable, nextCell } from '../org/tableProvider';
+import { findMarkdownFencedBlocks, markdownFencedLineMask } from '../shared/markdownFences';
 
 // LaTeX section commands in order of hierarchy (lower index = higher level)
 const LATEX_SECTION_LEVELS: { [key: string]: number } = {
@@ -283,6 +284,15 @@ export class MarkdownFoldingRangeProvider implements vscode.FoldingRangeProvider
         const ranges: vscode.FoldingRange[] = [];
         const lines = document.getText().split('\n');
 
+        // Lines inside fenced code blocks are code, not headings
+        const fencedBlocks = findMarkdownFencedBlocks(lines);
+        const inFence = markdownFencedLineMask(lines);
+        for (const block of fencedBlocks) {
+            if (block.end > block.start) {
+                ranges.push(new vscode.FoldingRange(block.start, block.end, vscode.FoldingRangeKind.Region));
+            }
+        }
+
         // Track heading positions by level
         const headingStack: { level: number; line: number }[] = [];
 
@@ -292,6 +302,9 @@ export class MarkdownFoldingRangeProvider implements vscode.FoldingRangeProvider
             }
 
             const line = lines[i];
+            if (inFence[i]) {
+                continue;
+            }
 
             // Check for ATX headings (# to ######)
             const headingMatch = line.match(/^(#{1,6})\s/);
@@ -318,26 +331,6 @@ export class MarkdownFoldingRangeProvider implements vscode.FoldingRangeProvider
 
                 // Push this heading onto stack
                 headingStack.push({ level, line: i });
-            }
-
-            // Check for fenced code blocks (``` or ~~~)
-            const codeBlockMatch = line.match(/^(`{3,}|~{3,})(\w*)/);
-            if (codeBlockMatch) {
-                const fence = codeBlockMatch[1];
-                const fenceChar = fence[0];
-                const fenceLen = fence.length;
-                // Find matching closing fence
-                for (let j = i + 1; j < lines.length; j++) {
-                    const closingMatch = lines[j].match(new RegExp(`^${fenceChar}{${fenceLen},}\\s*$`));
-                    if (closingMatch) {
-                        ranges.push(new vscode.FoldingRange(
-                            i,
-                            j,
-                            vscode.FoldingRangeKind.Region
-                        ));
-                        break;
-                    }
-                }
             }
 
             // Check for HTML-style collapsible sections (<details> to </details>)
@@ -500,8 +493,15 @@ async function toggleFoldAtCursor(): Promise<void> {
         checkFn = isOrgHeading;
     }
 
+    // In markdown, a `#` line inside a fenced code block is code, not a heading
+    const inFence = langId === 'markdown'
+        ? markdownFencedLineMask(document.getText().split('\n'))
+        : undefined;
+    const isHeadingAt = (lineNum: number, text: string) =>
+        !inFence?.[lineNum] && checkFn(text);
+
     // Check if we're on a foldable element
-    const isFoldable = checkFn(line);
+    const isFoldable = isHeadingAt(position.line, line);
 
     if (isFoldable) {
         // Toggle fold at this line
@@ -512,7 +512,7 @@ async function toggleFoldAtCursor(): Promise<void> {
         // Find the nearest heading/section above and toggle it
         for (let i = position.line - 1; i >= 0; i--) {
             const checkLine = document.lineAt(i).text;
-            if (checkFn(checkLine)) {
+            if (isHeadingAt(i, checkLine)) {
                 // Move cursor to heading/section and toggle
                 const newPosition = new vscode.Position(i, 0);
                 editor.selection = new vscode.Selection(newPosition, newPosition);
