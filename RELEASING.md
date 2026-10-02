@@ -35,11 +35,45 @@ Work top to bottom. Don't tag until every box is checked.
       default value, and the JSON schema in `package.json` matches.
 - [ ] Run the audit script and fix any discrepancies it reports:
       `npx ts-node scripts/audit-keybindings.ts`
-- [ ] `docs/index.org` Topic Index references any new feature docs.
+- [ ] `docs/00-index.org` Topic Index references any new feature docs.
 - [ ] `README.md` "Codebase Statistics" section is refreshed if counts moved
       meaningfully (new modules, large refactors).
 - [ ] Any `⚠️` / `👀` status emoji on new/changed headings have been reviewed
       and promoted to `✅`.
+
+### 2a. Docs site and "Ask the docs" index
+
+The hosted docs (GitHub Pages) and the WebLLM chat's search index
+(`_static/chat-index.json`) are built from `docs/` by `scimax publish`. Only
+pages listed in `docs/_toc.yml` are published *or* indexed for the chat.
+
+- [ ] Every user-facing page in `docs/` is listed in `docs/_toc.yml`. This
+      prints any that are missing (`00-index` is the `root:`; internal files such as
+      `DOCUMENTATION_PLAN`, `index`, `review-agenda` and `sitemap` are expected):
+      ```bash
+      comm -23 <(ls docs/*.org | xargs -n1 basename | sed 's/\.org$//' | sort) \
+               <(grep -o 'file: [^ ]*' docs/_toc.yml | cut -d' ' -f2 | sort)
+      ```
+- [ ] Rebuild the site and chat index locally; every page publishes with
+      `Errors: 0`:
+      ```bash
+      npm run compile && node out/cli/index.js publish --force
+      ```
+- [ ] Check that the index covers every page and the new docs:
+      ```bash
+      node -e "const c=JSON.parse(require('fs').readFileSync('docs-html/_static/chat-index.json')).chunks; console.log(c.length, 'chunks,', new Set(c.map(x => x.page || x.url)).size, 'pages')"
+      ```
+- [ ] Open a page from `docs-html/` (e.g. `python3 -m http.server --directory docs-html`)
+      and ask the chat a question about a feature in this release; the
+      matching section should be in the results.
+- [ ] If the WebLLM / transformers.js versions or model IDs in
+      `book-chat.js` / `themeTypes.ts` were changed, check that the models
+      still download and answer in the browser.
+- [ ] After pushing, confirm the **Build and Deploy Documentation** workflow
+      ran and the live site has the new pages. It runs on pushes to `main`
+      that touch `docs/**`, `_config.yml`, the HTML exporter, the CLI or
+      `src/publishing/**`; otherwise trigger it by hand:
+      `gh workflow run docs.yml`
 
 ### 3. Changelog & version
 

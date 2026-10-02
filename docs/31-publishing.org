@@ -511,6 +511,94 @@ Create `./css/style.css' and reference it:
 }
 #+END_SRC
 
+* ⚠️ Docs Chat (WebLLM)
+
+The book theme can add an "Ask the docs" chat to a published site. It
+finds the sections of the site that best match a question and lists them
+with the matching text. On request, a language model running in the reader's
+browser (WebLLM, on WebGPU) writes an answer from those sections. Nothing the
+reader types leaves their computer, and the site needs no server: it is
+still plain files, so it works on GitHub Pages.
+
+** ⚠️ Turning It On
+
+The chat is off unless =theme.chat.enabled= is true in `_config.yml':
+
+#+BEGIN_SRC yaml
+theme:
+  name: "book"
+  chat:
+    enabled: true
+#+END_SRC
+
+When it is on, =publish=:
+
+- adds a chat button to the page header, next to the dark mode toggle
+- writes `_static/chat-index.json', the text of every page split at its headings
+- copies `book-chat.js', `book-chat-worker.js' and `book-chat.css' to `_static/'
+
+** ⚠️ How Questions Are Answered
+
+1. The question is matched against the sections with BM25 ranking (headings count more than body text, pairs of adjacent words count as phrases, and a dotted name such as =scimax.export.pdf.profile= matches whole or in parts).
+2. The best 30 are reranked by a small cross-encoder model (=ms-marco-MiniLM-L-6-v2=, about 23 MB, run in the browser with transformers.js) that reads the question and each section together. Its order is blended with the BM25 order, so neither one alone decides. If the reranker cannot load, the BM25 order is used.
+3. The top sections, at most two from one page, are listed right away as links, each with the part of its text that matches the question highlighted.
+4. A "Write an answer from these sections" button gives the numbered sections to the model, which answers from them and cites them as [1], [2]. Citations become links to the sections.
+
+A short follow-up ("and for HTML?") is searched together with the question
+before it, and the last two questions and answers are given to the model.
+
+The ranking model loads by itself the first time a reader asks. The first
+time a reader asks for a written answer, the chat asks before downloading the
+language model. The browser keeps both for later visits. In a browser without
+WebGPU, the chat lists the matching sections without the answer button.
+
+** ⚠️ Choosing a Model
+
+Readers pick the model from the menu at the top of the chat panel. The
+smallest is the default; larger ones answer better but take longer to download
+and need more GPU memory. The reader's choice is remembered in the browser.
+
+| Model                 | Download |
+|-----------------------+----------|
+| SmolLM2-360M-Instruct | 380 MB   |
+| Llama-3.2-1B-Instruct | 880 MB   |
+| Qwen2.5-1.5B-Instruct | 1.6 GB   |
+| Llama-3.2-3B-Instruct | 2.3 GB   |
+
+The small models can be wrong, which is why the chat always shows the
+sections it used.
+
+** ⚠️ Chat Options
+
+| Key                 | Default                           | Description                                         |
+|---------------------+-----------------------------------+-----------------------------------------------------|
+| =enabled=           | =false=                           | Add the chat and write the section index            |
+| =model=             | =SmolLM2-360M-Instruct-q4f16_1-MLC= | Model selected until the reader picks another     |
+| =models=            | the four models above             | WebLLM prebuilt model IDs offered in the menu       |
+| =rerank=            | =true=                            | Rerank the search results with the cross-encoder; =false= uses BM25 only |
+| =top_k=             | =5=                               | Sections given to the model with each question      |
+| =max_context_chars= | =6000=                            | Most characters of documentation per question       |
+| =system_prompt=     | built in                          | Replaces the instructions given to the model; ={site}= is the header title |
+| =title=             | =Ask the docs=                    | Title of the chat panel                             |
+
+The model IDs are those of WebLLM 0.2.85, which the chat loads from jsDelivr.
+
+#+BEGIN_SRC yaml
+theme:
+  chat:
+    enabled: true
+    model: "Llama-3.2-1B-Instruct-q4f16_1-MLC"
+    models:
+      - "Llama-3.2-1B-Instruct-q4f16_1-MLC"
+      - "Qwen2.5-3B-Instruct-q4f16_1-MLC"
+    top_k: 4
+#+END_SRC
+
+** ⚠️ Related Topics
+
+- [[file:18-database-search.org][Database and Search]] - full-text and semantic search inside VS Code
+- [[file:30-cli.org][CLI]] - =scimax publish= from the command line
+
 * GitHub Pages Integration
 
 When `githubPages' is enabled:
@@ -642,6 +730,7 @@ Ensure you're using `file:' links to reference other org files:
 
 * Related Topics
 
+- [[*Docs Chat (WebLLM)][Docs Chat (WebLLM)]] - an in-browser model that answers from the published pages
 - [[file:export.org][Export System]] - Single-file export options
 - [[file:source-blocks.org][Source Blocks]] - Code blocks in org files
 - [[file:document-structure.org][Document Structure]] - Headings and organization

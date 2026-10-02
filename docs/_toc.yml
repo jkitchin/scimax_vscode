@@ -8,6 +8,7 @@ parts:
   - caption: Getting Started
     chapters:
       - file: 01-getting-started
+      - file: 01.5-basic-syntax
       - file: 26-configuration
       - file: 24-keybindings
       - file: 25-commands
@@ -18,11 +19,17 @@ parts:
       - file: 21-navigation
       - file: 23-speed-commands
       - file: 05-links
+      - file: 42-granular-addressing
       - file: 04-tables
+      - file: 35-templates
+      - file: 46-org-preview
 
   - caption: Task Management
     chapters:
       - file: 03-todo-items
+      - file: 03.5-task-dependencies
+      - file: 03.6-project-management
+      - file: 03.7-contacts-and-locations
       - file: 13-agenda
       - file: 06-timestamps
       - file: 15-capture
@@ -36,21 +43,42 @@ parts:
   - caption: Export & Publishing
     chapters:
       - file: 10-export
+      - file: 41-export-beamer
+      - file: 31-publishing
       - file: 11-latex-preview
       - file: 12-image-overlays
       - file: 32-excalidraw
 
+  - caption: Markdown & Slides
+    chapters:
+      - file: 30-markdown-compatibility
+      - file: 45-myst-preview
+      - file: 44-marp
+
+  - caption: LaTeX & References
+    chapters:
+      - file: 33-latex-navigation
+      - file: 36-manuscript
+      - file: 19-references
+      - file: 34-bibtex
+
   - caption: Advanced Features
     chapters:
       - file: 18-database-search
-      - file: 19-references
       - file: 14-journal
       - file: 16-notebook
       - file: 17-projectile
+      - file: 37-dired
+      - file: 38-find-file
+      - file: 39-link-graph
+      - file: 43-notes
       - file: 22-hydra-menus
       - file: 20-editmarks
 
   - caption: Reference
     chapters:
+      - file: 30-cli
       - file: 27-org-api
+      - file: extension-points
       - file: 28-non-standard-features
+      - file: 29-unsupported-features

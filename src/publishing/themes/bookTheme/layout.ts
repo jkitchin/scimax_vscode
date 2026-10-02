@@ -4,6 +4,7 @@
  */
 
 import type { PageContext, ProjectContext, ThemeConfig } from '../themeTypes';
+import { DEFAULT_CHAT_CONFIG } from '../themeTypes';
 import { renderLeftSidebar } from './leftSidebar';
 import { renderRightSidebar } from './rightSidebar';
 import { renderHeader } from './header';
@@ -58,6 +59,8 @@ export function renderLayout(content: string, page: PageContext, project: Projec
         customCssLink = `<link rel="stylesheet" href="${pathToRoot}${config.custom_css}" />`;
     }
 
+    const chat = renderChat(config, pathToRoot);
+
     // Primary color CSS variable
     let customColorCss = '';
     if (config.appearance?.primary_color) {
@@ -73,6 +76,7 @@ export function renderLayout(content: string, page: PageContext, project: Projec
     <link rel="stylesheet" href="${pathToRoot}_static/book-theme.css">
     ${customCssLink}
     ${customColorCss}
+    ${chat.head}
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
     <script>hljs.highlightAll();</script>
@@ -105,8 +109,36 @@ export function renderLayout(content: string, page: PageContext, project: Projec
     </div>
 
     <script src="${pathToRoot}_static/book-theme.js"></script>
+    ${chat.body}
 </body>
 </html>`;
+}
+
+/**
+ * The stylesheet, configuration and script of the "Ask the docs" chat, when
+ * it is enabled. The configuration is JSON in a script element, with `<`
+ * escaped so a title or prompt cannot end the element.
+ */
+export function renderChat(config: ThemeConfig, pathToRoot: string): { head: string; body: string } {
+    if (!config.chat?.enabled) {
+        return { head: '', body: '' };
+    }
+    // Options left out of _config.yml are undefined; they keep their defaults
+    const given = Object.fromEntries(Object.entries(config.chat).filter(([, value]) => value !== undefined));
+    const settings = {
+        ...DEFAULT_CHAT_CONFIG,
+        ...given,
+        site: config.header?.title || '',
+        root: pathToRoot,
+    };
+    // The default model is always one of the choices, listed first
+    settings.models = [settings.model, ...settings.models.filter(m => m !== settings.model)];
+    const json = JSON.stringify(settings).replace(/</g, '\\u003c');
+    return {
+        head: `<link rel="stylesheet" href="${pathToRoot}_static/book-chat.css">`,
+        body: `<script type="application/json" id="book-chat-config">${json}</script>
+    <script src="${pathToRoot}_static/book-chat.js"></script>`,
+    };
 }
 
 /**

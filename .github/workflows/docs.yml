@@ -7,6 +7,8 @@ on:
       - 'docs/**'
       - 'src/parser/orgExportHtml.ts'
       - 'src/cli/**'
+      - 'src/publishing/**'
+      - '_config.yml'
       - '.github/workflows/docs.yml'
   workflow_dispatch:
     # Allow manual triggering

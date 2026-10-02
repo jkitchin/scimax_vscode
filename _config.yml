@@ -46,3 +46,7 @@ theme:
 
   search:
     enabled: true
+
+  # "Ask the docs": a model in the reader's browser answers from these pages
+  chat:
+    enabled: true

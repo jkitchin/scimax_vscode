@@ -10,6 +10,10 @@ import type { Theme, PageContext, ProjectContext, PageInfo, ThemeConfig } from '
 import { DEFAULT_BOOK_THEME_CONFIG } from '../themeTypes';
 import { renderLayout } from './layout';
 import { generateSearchIndex as generateSearchIndexFile } from './searchIndex';
+import { generateChatIndex as generateChatIndexFile } from './chatIndex';
+
+/** Chat files copied to _static as they are */
+const CHAT_ASSETS = ['book-chat.js', 'book-chat-worker.js', 'book-chat.css'];
 
 /**
  * Book theme implementation
@@ -44,6 +48,15 @@ export class BookTheme implements Theme {
         // Copy JS
         const jsContent = await this.getThemeJs();
         await fs.promises.writeFile(path.join(staticDir, 'book-theme.js'), jsContent);
+
+        // Copy the chat files (they are only loaded on pages that enable the chat)
+        for (const name of CHAT_ASSETS) {
+            try {
+                await fs.promises.copyFile(path.join(__dirname, 'assets', name), path.join(staticDir, name));
+            } catch {
+                // Not in this build; the chat button is not shown without them.
+            }
+        }
     }
 
     /**
@@ -51,6 +64,13 @@ export class BookTheme implements Theme {
      */
     async generateSearchIndex(pages: PageInfo[], outputDir: string): Promise<void> {
         await generateSearchIndexFile(pages, outputDir);
+    }
+
+    /**
+     * Write the section index the chat retrieves from
+     */
+    async generateChatIndex(pages: PageInfo[], outputDir: string): Promise<void> {
+        await generateChatIndexFile(pages, outputDir);
     }
 
     /**
@@ -79,6 +99,10 @@ export class BookTheme implements Theme {
             search: {
                 ...DEFAULT_BOOK_THEME_CONFIG.search,
                 ...config.search,
+            },
+            chat: {
+                ...DEFAULT_BOOK_THEME_CONFIG.chat,
+                ...config.chat,
             },
         };
     }

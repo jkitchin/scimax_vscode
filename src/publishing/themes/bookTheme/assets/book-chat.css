@@ -1,0 +1,241 @@
+/**
+ * Book Theme: "Ask the docs" chat panel
+ * Uses the colour variables of book-theme.css, so it follows dark mode.
+ */
+
+.chat-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.4rem;
+    margin-right: 0.25rem;
+    border: none;
+    border-radius: 6px;
+    background: transparent;
+    color: var(--text-color);
+    cursor: pointer;
+}
+
+.chat-toggle:hover,
+.chat-toggle[aria-expanded="true"] {
+    background: var(--bg-secondary);
+    color: var(--primary-color);
+}
+
+.book-chat {
+    position: fixed;
+    top: var(--header-height);
+    right: 0;
+    bottom: 0;
+    z-index: 200;
+    display: flex;
+    flex-direction: column;
+    width: min(420px, 100vw);
+    background: var(--bg-color);
+    color: var(--text-color);
+    border-left: 1px solid var(--border-color);
+    box-shadow: -4px 0 16px rgba(0, 0, 0, 0.12);
+    font-size: 0.92rem;
+}
+
+.book-chat[hidden] {
+    display: none;
+}
+
+.book-chat-head {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 0.75rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.book-chat-model {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.4rem 0.75rem;
+    border-bottom: 1px solid var(--border-color);
+    font-size: 0.85rem;
+    color: var(--text-muted, inherit);
+}
+
+.book-chat-model select {
+    flex: 1;
+    min-width: 0;
+    font: inherit;
+    color: var(--text-color, inherit);
+    background: var(--bg-color, transparent);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    padding: 0.15rem 0.3rem;
+}
+
+.book-chat-title {
+    flex: 1;
+    font-weight: 600;
+}
+
+.book-chat-button {
+    padding: 0.25rem 0.6rem;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    background: var(--bg-secondary);
+    color: var(--text-color);
+    font: inherit;
+    cursor: pointer;
+}
+
+.book-chat-close {
+    border: none;
+    background: transparent;
+    font-size: 1.3rem;
+    line-height: 1;
+}
+
+.book-chat-log {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0.75rem;
+}
+
+.book-chat-note {
+    color: var(--text-muted);
+}
+
+.book-chat-note p {
+    margin: 0 0 0.6rem;
+}
+
+.book-chat-msg {
+    margin: 0 0 0.75rem;
+    padding: 0.55rem 0.7rem;
+    border-radius: 8px;
+    overflow-wrap: anywhere;
+}
+
+.book-chat-user {
+    margin-left: 2.5rem;
+    background: var(--primary-color);
+    color: #fff;
+    white-space: pre-wrap;
+}
+
+.book-chat-reply {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+}
+
+.book-chat-answer code {
+    padding: 0.05rem 0.25rem;
+    border-radius: 4px;
+    background: var(--code-bg);
+    font-size: 0.88em;
+}
+
+.book-chat-cite {
+    margin-left: 0.1rem;
+    font-size: 0.85em;
+    text-decoration: none;
+}
+
+.book-chat-page {
+    color: var(--text-muted);
+}
+
+.book-chat-consent p {
+    margin: 0 0 0.6rem;
+}
+
+.book-chat-consent button {
+    margin: 0 0.5rem 0.3rem 0;
+}
+
+.book-chat-status {
+    min-height: 1.2em;
+    padding: 0 0.75rem;
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.book-chat-form {
+    display: flex;
+    gap: 0.5rem;
+    padding: 0.6rem 0.75rem 0.75rem;
+    border-top: 1px solid var(--border-color);
+}
+
+.book-chat-input {
+    flex: 1;
+    resize: none;
+    padding: 0.45rem 0.55rem;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    background: var(--bg-color);
+    color: var(--text-color);
+    font: inherit;
+}
+
+.book-chat-send {
+    align-self: flex-end;
+    padding: 0.45rem 0.9rem;
+    border: none;
+    border-radius: 6px;
+    background: var(--primary-color);
+    color: #fff;
+    font: inherit;
+    cursor: pointer;
+}
+
+@media (max-width: 600px) {
+    .book-chat {
+        width: 100vw;
+        border-left: none;
+    }
+}
+
+/* Search results: numbered sections with the matching part of their text */
+.book-chat-results {
+    margin: 0;
+    padding-left: 1.4rem;
+}
+
+.book-chat-results li {
+    margin-bottom: 0.6rem;
+}
+
+.book-chat-result-title {
+    font-weight: 600;
+}
+
+.book-chat-snippet {
+    margin-top: 0.15rem;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    overflow-wrap: anywhere;
+}
+
+.book-chat-snippet mark {
+    background: color-mix(in srgb, var(--primary-color) 22%, transparent);
+    color: var(--text-color);
+    border-radius: 2px;
+    padding: 0 1px;
+}
+
+.book-chat-answer-box {
+    margin-top: 0.5rem;
+    padding-top: 0.5rem;
+    border-top: 1px solid var(--border-color);
+}
+
+.book-chat-answer-box .book-chat-answer {
+    margin-top: 0.25rem;
+}
+
+.book-chat-note-line {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}

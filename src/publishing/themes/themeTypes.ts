@@ -77,6 +77,37 @@ export interface ThemeSearchConfig {
 }
 
 /**
+ * "Ask the docs" chat: a language model that runs in the reader's browser
+ * (WebLLM, WebGPU) and answers from the sections of the site that best match
+ * the question. Off unless enabled.
+ */
+export interface ThemeChatConfig {
+    /** Add the chat button and write the section index (_static/chat-index.json) */
+    enabled?: boolean;
+
+    /** WebLLM prebuilt model ID used until the reader picks another */
+    model?: string;
+
+    /** WebLLM prebuilt model IDs the reader can pick from */
+    models?: string[];
+
+    /** Reorder the search hits with a small cross-encoder in the browser (about 23 MB, downloaded once) */
+    rerank?: boolean;
+
+    /** Number of sections given to the model with each question */
+    top_k?: number;
+
+    /** Most characters of documentation given to the model with each question */
+    max_context_chars?: number;
+
+    /** Replaces the default instructions given to the model */
+    system_prompt?: string;
+
+    /** Title of the chat panel */
+    title?: string;
+}
+
+/**
  * Complete theme configuration
  */
 export interface ThemeConfig {
@@ -97,6 +128,9 @@ export interface ThemeConfig {
 
     /** Search options */
     search?: ThemeSearchConfig;
+
+    /** "Ask the docs" chat options */
+    chat?: ThemeChatConfig;
 
     /** Path to custom CSS file relative to source directory */
     custom_css?: string;
@@ -158,6 +192,26 @@ export interface PageInfo {
 
     /** Headings with their IDs */
     headings: Array<{ id: string; text: string }>;
+
+    /** The page split at its headings, for the chat index (only when chat is enabled) */
+    sections?: PageSection[];
+}
+
+/**
+ * The text of a page from one heading to the next
+ */
+export interface PageSection {
+    /** Anchor of the heading (none for text before the first heading) */
+    id?: string;
+
+    /** Heading text */
+    heading: string;
+
+    /** Headings above this one, outermost first */
+    path: string[];
+
+    /** Plain text, one line per paragraph, list item or table row */
+    text: string;
 }
 
 /**
@@ -218,6 +272,13 @@ export interface Theme {
      * @param outputDir Output directory path
      */
     generateSearchIndex?(pages: PageInfo[], outputDir: string): Promise<void>;
+
+    /**
+     * Write the section index the chat retrieves from
+     * @param pages Information about all published pages, with their sections
+     * @param outputDir Output directory path
+     */
+    generateChatIndex?(pages: PageInfo[], outputDir: string): Promise<void>;
 }
 
 // =============================================================================
@@ -244,6 +305,24 @@ export const DEFAULT_THEME_CONFIG: ThemeConfig = {
 };
 
 /**
+ * Default chat configuration (the chat is off unless enabled)
+ */
+export const DEFAULT_CHAT_CONFIG: Required<Omit<ThemeChatConfig, 'system_prompt'>> = {
+    enabled: false,
+    model: 'SmolLM2-360M-Instruct-q4f16_1-MLC',
+    models: [
+        'SmolLM2-360M-Instruct-q4f16_1-MLC',
+        'Llama-3.2-1B-Instruct-q4f16_1-MLC',
+        'Qwen2.5-1.5B-Instruct-q4f16_1-MLC',
+        'Llama-3.2-3B-Instruct-q4f16_1-MLC',
+    ],
+    rerank: true,
+    top_k: 5,
+    max_context_chars: 6000,
+    title: 'Ask the docs',
+};
+
+/**
  * Default book theme configuration
  */
 export const DEFAULT_BOOK_THEME_CONFIG: ThemeConfig = {
@@ -267,4 +346,5 @@ export const DEFAULT_BOOK_THEME_CONFIG: ThemeConfig = {
     search: {
         enabled: true,
     },
+    chat: DEFAULT_CHAT_CONFIG,
 };

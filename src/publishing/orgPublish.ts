@@ -42,9 +42,11 @@ import {
     type ProjectContext,
     type PageInfo,
     type PageHeading,
+    type PageSection,
 } from './themes';
 
 import { extractPageHeadings } from './themes/bookTheme/rightSidebar';
+import { splitSections } from './themes/bookTheme/chatIndex';
 
 // =============================================================================
 // Types
@@ -275,6 +277,21 @@ function parseThemeConfig(yaml: Record<string, unknown>): ThemeConfig {
     if (search) {
         theme.search = {
             enabled: search.enabled as boolean | undefined,
+        };
+    }
+
+    // Chat options
+    const chat = yaml.chat as Record<string, unknown> | undefined;
+    if (chat) {
+        theme.chat = {
+            enabled: chat.enabled as boolean | undefined,
+            model: chat.model as string | undefined,
+            models: Array.isArray(chat.models) ? (chat.models as unknown[]).map(String) : undefined,
+            rerank: chat.rerank as boolean | undefined,
+            top_k: chat.top_k as number | undefined,
+            max_context_chars: chat.max_context_chars as number | undefined,
+            system_prompt: chat.system_prompt as string | undefined,
+            title: chat.title as string | undefined,
         };
     }
 
@@ -982,6 +999,8 @@ interface PublishFileResultWithContent extends PublishFileResult {
     plainContent?: string;
     /** Page headings for search indexing */
     headings?: Array<{ id: string; text: string }>;
+    /** The page split at its headings, for the chat index */
+    sections?: PageSection[];
 }
 
 /**
@@ -1072,6 +1091,7 @@ export async function publishFileWithTheme(
             date: metadata.date ? new Date(metadata.date) : undefined,
             plainContent,
             headings: pageHeadings.map(h => ({ id: h.id, text: h.text })),
+            sections: projectContext.config.chat?.enabled ? splitSections(bodyContent) : undefined,
         };
     } catch (error) {
         return {
@@ -1205,6 +1225,21 @@ export async function publishProjectWithTheme(
             }));
 
         await theme.generateSearchIndex(pageInfos, outputDir);
+    }
+
+    // Write the chat index if the chat is enabled
+    if (themeConfig.chat?.enabled && theme.generateChatIndex && !options.dryRun) {
+        const pageInfos: PageInfo[] = results
+            .filter(r => r.success && r.sections)
+            .map(r => ({
+                title: r.title || path.basename(r.outputPath, '.html'),
+                path: path.relative(outputDir, r.outputPath),
+                content: '',
+                headings: r.headings || [],
+                sections: r.sections,
+            }));
+
+        await theme.generateChatIndex(pageInfos, outputDir);
     }
 
     const duration = Date.now() - startTime;

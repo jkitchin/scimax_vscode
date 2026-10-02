@@ -82,6 +82,17 @@ export function renderHeader(
         parts.push('</nav>');
     }
 
+    // "Ask the docs" chat
+    if (config.chat?.enabled) {
+        parts.push(`
+        <button class="chat-toggle" id="chat-toggle" aria-label="${escapeHtml(config.chat.title || 'Ask the docs')}" title="${escapeHtml(config.chat.title || 'Ask the docs')}" aria-controls="book-chat" aria-expanded="false">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+            </svg>
+        </button>
+    `);
+    }
+
     // Dark mode toggle
     if (appearanceConfig.enable_dark_mode !== false) {
         parts.push(renderDarkModeToggle());
