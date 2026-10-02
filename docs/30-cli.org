@@ -423,7 +423,7 @@ Run =scimax task files= to see the candidates with their task counts.
 *** Limitations
 
 - =done= does not write a =CLOSED:= timestamp, and does not regenerate
-  =project-table= or =gantt= dynamic blocks; refresh those in the editor.
+  =project-table= dynamic blocks; refresh those in the editor.
 - =:ORDERED:= sequences direct children only, not deeper descendants.
 - Task ids resolve within one file, so cross-file =:DEPENDS:= is not followed.
 - Effort totals count only =Nd= and =Nh=; anything else is reported as

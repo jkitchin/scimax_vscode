@@ -57,6 +57,20 @@ node_modules/**
 !node_modules/zlibjs/**
 # other runtime deps
 !node_modules/@babel/**
+# jszip (project Gantt Excel export) and dependencies
+!node_modules/jszip/**
+!node_modules/lie/**
+!node_modules/immediate/**
+!node_modules/pako/**
+!node_modules/readable-stream/**
+!node_modules/core-util-is/**
+!node_modules/inherits/**
+!node_modules/isarray/**
+!node_modules/process-nextick-args/**
+!node_modules/safe-buffer/**
+!node_modules/string_decoder/**
+!node_modules/util-deprecate/**
+!node_modules/setimmediate/**
 # handlebars for custom exporters
 !node_modules/handlebars/**
 !node_modules/minimist/**

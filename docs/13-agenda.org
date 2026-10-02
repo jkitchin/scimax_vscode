@@ -553,8 +553,45 @@ Total: 3 items
 The buffer is read-only, so it can never be edited by accident and never
 prompts to save.
 
-*** ✅ Agenda Buffer Keys
-CLOSED: [2026-10-02 Fri 06:56]
+*** ⚠️ Project Agenda Buffer
+
+Choose *Current Project* under *Filter* at the bottom of the =C-c a v= list to
+see only the items from files in the project you are working in, then pick a
+span. The project is the nearest folder above the active file that has a
+project marker (=.git=, =.projectile=, =.scimax=, =package.json=,
+=pyproject.toml= and the like). If none is found, the file's workspace folder
+is used, and with no file open, the only workspace folder.
+
+A project agenda reads the =.org= files under that folder directly (honouring
+=.gitignore=), rather than asking the database, so a new file shows up without
+being indexed. Unsaved edits in open editors are included.
+
+The project buffer opens in its own tab, named after the project (for example
+=Agenda (scimax_vscode).org=), so it can sit beside the full agenda. All the
+keys below work in it, and paging with =f= and =b= keeps the project scope.
+
+*** ⚠️ Filtering by Assignee
+
+Choose *Assignee...* under *Filter* in the =C-c a v= list, or press =@= in any
+agenda buffer ([[cmd:scimax.agenda.buffer.filterAssignee]]), to show only the
+tasks assigned to the people you pick. The list offers the people in your
+people file (see [[file:03.6-project-management.org][Project Management]]), any other handles the project's tasks
+use, and *Unassigned*. Pick several to see their combined tasks, or *Anyone* to
+clear the filter. Assignees are inherited the same way as in the project
+table: a task's own =:ASSIGNEE:= or =@name= tag, else its nearest ancestor's.
+
+=@= changes the buffer in place, so it combines with the project scope: open
+the project agenda, then press =@= to narrow it to one person. The active
+filters are shown under the agenda's title.
+
+*** ⚠️ Blocked Tasks
+
+A task with an unfinished dependency (see [[file:03.5-task-dependencies.org][Task Dependencies]]) is shown with
+🔒 before its title. Set =scimax.org.depend.hideBlockedInAgenda= to hide such
+tasks instead. In a project agenda, blocking is worked out from the project's
+own files; elsewhere it comes from the database.
+
+*** 👀 Agenda Buffer Keys
 
 These keys are active only inside an agenda buffer:
 
@@ -562,6 +599,7 @@ These keys are active only inside an agenda buffer:
 |-------+--------------------------------------+------------------------------|
 | =RET= | [[cmd:scimax.agenda.buffer.goto]]        | Jump to the item's source    |
 | =t=   | [[cmd:scimax.agenda.buffer.cycleTodo]]   | Cycle the item's TODO state  |
+| =@=   | [[cmd:scimax.agenda.buffer.filterAssignee]] | Filter by assignee        |
 | =g=   | [[cmd:scimax.agenda.buffer.refresh]]     | Re-query the database        |
 | =f=   | [[cmd:scimax.agenda.buffer.next]]        | Forward one period           |
 | =b=   | [[cmd:scimax.agenda.buffer.previous]]    | Back one period              |

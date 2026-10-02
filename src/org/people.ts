@@ -88,6 +88,43 @@ export async function getPeople(): Promise<Person[]> {
     return people;
 }
 
+/**
+ * Pick handles to filter a view by. Offers the indexed people plus any other
+ * handles the view already knows about, "Unassigned" (returned as ''), and an
+ * "Anyone" choice that clears the filter (returned as []). Undefined means the
+ * user cancelled.
+ */
+export async function pickAssigneeFilter(
+    knownHandles: string[] = [],
+    current: string[] = []
+): Promise<string[] | undefined> {
+    type Item = vscode.QuickPickItem & { handle?: string; clear?: boolean };
+    const people = await getPeople();
+    const seen = new Set<string>();
+    const items: Item[] = [{ label: '$(clear-all) Anyone', description: 'Clear the assignee filter', clear: true }];
+    for (const p of people) {
+        if (seen.has(p.handle)) continue;
+        seen.add(p.handle);
+        items.push({ label: p.handle, description: p.name + (p.role ? ` · ${p.role}` : ''), handle: p.handle });
+    }
+    for (const h of knownHandles) {
+        if (!h || seen.has(h)) continue;
+        seen.add(h);
+        items.push({ label: h, description: 'not in the people file', handle: h });
+    }
+    items.push({ label: '$(circle-slash) Unassigned', description: 'Tasks with no assignee', handle: '' });
+    for (const item of items) item.picked = item.handle !== undefined && current.includes(item.handle);
+
+    const picked = await vscode.window.showQuickPick(items, {
+        canPickMany: true,
+        placeHolder: 'Show tasks assigned to (pick one or more)',
+        matchOnDescription: true,
+    });
+    if (!picked) return undefined;
+    if (picked.length === 0 || picked.some(i => i.clear)) return [];
+    return picked.map(i => i.handle!).filter(h => h !== undefined);
+}
+
 /** Resolve an assignee handle to a person (by handle, then name slug). */
 export async function resolvePerson(handle: string): Promise<Person | undefined> {
     const key = handle.trim().toLowerCase();

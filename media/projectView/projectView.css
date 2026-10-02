@@ -1,0 +1,252 @@
+/* Project view: Gantt chart. Status colours match the Excel and PDF exports. */
+:root {
+    --row-h: 26px;
+    --label-w: 360px;
+    --header-h: 40px;
+    --done: #70ad47;
+    --blocked: #e15759;
+    --active: #4472c4;
+    --planned: #9dc3e6;
+    --milestone: #ffc000;
+    --grid: var(--vscode-editorWidget-border, rgba(128, 128, 128, 0.25));
+}
+
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    font-family: var(--vscode-font-family);
+    font-size: var(--vscode-font-size);
+    color: var(--vscode-foreground);
+    background: var(--vscode-editor-background);
+}
+
+.toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 12px;
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--grid);
+}
+
+.toolbar label {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.toolbar select,
+.toolbar button {
+    font: inherit;
+    color: var(--vscode-dropdown-foreground);
+    background: var(--vscode-dropdown-background);
+    border: 1px solid var(--vscode-dropdown-border, transparent);
+    border-radius: 2px;
+    padding: 2px 6px;
+}
+
+.toolbar button {
+    color: var(--vscode-button-secondaryForeground, var(--vscode-foreground));
+    background: var(--vscode-button-secondaryBackground, transparent);
+    cursor: pointer;
+}
+
+.toolbar button:hover {
+    background: var(--vscode-button-secondaryHoverBackground, var(--vscode-toolbar-hoverBackground));
+}
+
+.spacer { flex: 1; }
+.muted { opacity: 0.7; }
+
+.legend {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px 6px;
+    padding: 4px 12px 6px;
+    font-size: 0.9em;
+}
+
+.legend .muted { margin-left: 12px; }
+
+.swatch {
+    display: inline-block;
+    width: 12px;
+    height: 10px;
+    border-radius: 2px;
+    margin-left: 8px;
+}
+
+.swatch.done, .bar.done { background: var(--done); }
+.swatch.blocked, .bar.blocked { background: var(--blocked); }
+.swatch.active, .bar.active { background: var(--active); }
+.swatch.planned, .bar.planned { background: var(--planned); }
+.swatch.milestone { background: var(--milestone); transform: rotate(45deg) scale(0.8); width: 10px; }
+
+.chart {
+    flex: 1;
+    overflow: auto;
+    position: relative;
+    outline: none;
+}
+
+.empty {
+    padding: 24px;
+    opacity: 0.8;
+}
+
+.grid {
+    position: relative;
+}
+
+.header {
+    position: sticky;
+    top: 0;
+    z-index: 4;
+    display: flex;
+    height: var(--header-h);
+    background: var(--vscode-editor-background);
+    border-bottom: 1px solid var(--grid);
+}
+
+.corner {
+    position: sticky;
+    left: 0;
+    z-index: 5;
+    flex: none;
+    width: var(--label-w);
+    box-sizing: border-box;
+    padding: 20px 8px 0;
+    font-weight: 600;
+    background: var(--vscode-editor-background);
+    border-right: 1px solid var(--grid);
+}
+
+.scale {
+    position: relative;
+    flex: none;
+}
+
+.scale .month {
+    position: absolute;
+    top: 3px;
+    padding-left: 3px;
+    font-weight: 600;
+    white-space: nowrap;
+    border-left: 1px solid var(--grid);
+}
+
+.scale .day {
+    position: absolute;
+    top: 22px;
+    text-align: center;
+    font-size: 0.8em;
+    opacity: 0.75;
+}
+
+.scale .day.today {
+    opacity: 1;
+    font-weight: 700;
+    color: var(--blocked);
+}
+
+.background {
+    position: absolute;
+    z-index: 0;
+    pointer-events: none;
+}
+
+.background .weekend { fill: var(--vscode-editorWidget-background, rgba(128, 128, 128, 0.08)); opacity: 0.6; }
+.background .today-line { stroke: var(--blocked); stroke-width: 1.5; }
+.background .dependency { fill: none; stroke: var(--vscode-descriptionForeground, #888); stroke-width: 1.2; }
+.background .arrow-head { fill: var(--vscode-descriptionForeground, #888); }
+
+.row {
+    position: absolute;
+    left: 0;
+    z-index: 1;
+    height: var(--row-h);
+    border-bottom: 1px solid var(--grid);
+    box-sizing: border-box;
+}
+
+.row.task:hover .label,
+.row.task:hover { background-color: var(--vscode-list-hoverBackground); }
+
+.row.selected .label,
+.row.selected { background-color: var(--vscode-list-inactiveSelectionBackground); }
+
+.label {
+    position: sticky;
+    left: 0;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    width: var(--label-w);
+    height: 100%;
+    box-sizing: border-box;
+    padding: 0 8px;
+    overflow: hidden;
+    white-space: nowrap;
+    background: var(--vscode-editor-background);
+    border-right: 1px solid var(--grid);
+    cursor: default;
+}
+
+.group .label,
+.row.group {
+    font-weight: 600;
+    background: var(--vscode-sideBarSectionHeader-background, var(--vscode-editorWidget-background));
+}
+
+.label .title {
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.label .todo {
+    flex: none;
+    font-size: 0.8em;
+    font-weight: 600;
+    padding: 0 4px;
+    border-radius: 3px;
+    color: #fff;
+    background: var(--active);
+}
+
+.label .todo.done { background: var(--done); }
+.label .todo.blocked { background: var(--blocked); }
+.label .todo.planned { background: var(--vscode-badge-background, #777); color: var(--vscode-badge-foreground, #fff); }
+
+.label .priority { flex: none; opacity: 0.8; font-size: 0.85em; }
+.label .lock { flex: none; }
+.label .who { flex: none; margin-left: auto; opacity: 0.75; font-size: 0.9em; }
+
+.bar {
+    position: absolute;
+    top: 6px;
+    height: calc(var(--row-h) - 13px);
+    border-radius: 3px;
+    cursor: default;
+}
+
+.bar.crit { outline: 2px solid var(--vscode-editorWarning-foreground, #ed7d31); outline-offset: 1px; }
+.bar.done { opacity: 0.75; }
+
+.row .milestone {
+    position: absolute;
+    top: 6px;
+    width: 12px;
+    height: 12px;
+    background: var(--milestone);
+    transform: rotate(45deg);
+    cursor: default;
+}

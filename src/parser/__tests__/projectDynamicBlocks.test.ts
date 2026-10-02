@@ -12,7 +12,7 @@ vi.mock('vscode', () => ({
 
 import { parseOrg } from '../orgParserUnified';
 import { executeDynamicBlock } from '../orgDynamicBlocks';
-import { slugify, effortToDays } from '../projectTasks';
+import { slugify, effortToDays, getRowAssignees } from '../projectTasks';
 
 describe('projectTasks helpers', () => {
     it('slugify makes handle-safe slugs', () => {
@@ -114,32 +114,72 @@ describe('inherited @tag assignees and ORDERED chaining', () => {
         expect(measureRow).toContain('🔒');
     });
 
-    it('chains ORDERED siblings with "after" in the gantt', () => {
-        const doc = parseOrg(ORDERED_DOC);
-        const res = executeDynamicBlock('gantt', ':sections none', doc, 'x.org');
-        expect(res.content).toMatch(/Run measurement :.*after synth/);
+});
+
+describe('removed gantt block', () => {
+    it('is no longer a dynamic block type', () => {
+        const res = executeDynamicBlock('gantt', '', parseOrg(DOC), 'x.org');
+        expect(res.success).toBe(false);
+        expect(res.error).toMatch(/Unknown dynamic block type/);
     });
 });
 
-describe('gantt dynamic block', () => {
-    it('emits a mermaid gantt with dependencies and effort durations', () => {
-        const doc = parseOrg(DOC);
-        const res = executeDynamicBlock('gantt', ':title Project X :sections none', doc, 'x.org');
-        expect(res.success).toBe(true);
-        expect(res.content).toContain('#+begin_src mermaid');
-        expect(res.content).toContain('gantt');
-        expect(res.content).toContain('dateFormat');
-        // analysis has an explicit scheduled start and 2d effort
-        expect(res.content).toMatch(/Run analysis :.*2026-07-01, 2d/);
-        // figures depends on analysis -> "after analysis"
-        expect(res.content).toMatch(/Make figures :.*after analysis/);
-        // paper is [#A] -> crit, depends on analysis and figures
-        expect(res.content).toMatch(/Write paper :.*crit.*after analysis figures/);
+describe('project scope across files', () => {
+    const MAIN = `* TODO [#A] Write paper
+:PROPERTIES:
+:ID: paper
+:DEPENDS: id:figs
+:END:
+`;
+    const OTHER = `* Figures
+:PROPERTIES:
+:ASSIGNEE: ana
+:END:
+** TODO Make figures
+:PROPERTIES:
+:ID: figs
+:EFFORT: 1d
+:END:
+`;
+    const others = [{ filePath: '/p/sub/figs.org', doc: parseOrg(OTHER, {}) }];
+
+    it('lists tasks from every project file, with a file column', () => {
+        const r = executeDynamicBlock('project-table', ':scope project', parseOrg(MAIN, {}), '/p/main.org', others);
+        expect(r.success).toBe(true);
+        expect(r.content).toContain('File');
+        expect(r.content).toContain('sub/figs.org');
+        expect(r.content).toContain('Make figures');
+        expect(r.content).toContain('ana');
     });
 
-    it('groups into sections by assignee', () => {
-        const doc = parseOrg(DOC);
-        const res = executeDynamicBlock('gantt', ':sections assignee', doc, 'x.org');
-        expect(res.content).toContain('section');
+    it('resolves a dependency on a task in another file as blocking', () => {
+        const r = executeDynamicBlock('project-table', ':scope project :columns task,blocked', parseOrg(MAIN, {}), '/p/main.org', others);
+        const paperRow = r.content.split('\n').find(l => l.includes('Write paper'))!;
+        expect(paperRow).toContain('🔒');
+    });
+
+    it('stays single-file without :scope project', () => {
+        const r = executeDynamicBlock('project-table', '', parseOrg(MAIN, {}), '/p/main.org', others);
+        expect(r.content).not.toContain('Make figures');
+    });
+});
+
+describe('getRowAssignees (indexed headings)', () => {
+    const row = (line: number, level: number, props: Record<string, string> = {}, tags: string[] = []) =>
+        ({ line_number: line, level, properties: JSON.stringify(props), tags: JSON.stringify(tags) });
+
+    it('uses the heading\'s own :ASSIGNEE: and @tags', () => {
+        expect(getRowAssignees(row(5, 2, { ASSIGNEE: 'jrk ana' }, ['@wei']), [])).toEqual(['jrk', 'ana', 'wei']);
+    });
+
+    it('inherits from the nearest ancestor that declares one', () => {
+        const rows = [row(1, 1, { ASSIGNEE: 'jrk' }), row(3, 2, {}, ['@ana']), row(5, 3), row(8, 2)];
+        expect(getRowAssignees(rows[2], rows)).toEqual(['ana']);
+        expect(getRowAssignees(rows[3], rows)).toEqual(['jrk']);
+    });
+
+    it('ignores earlier siblings', () => {
+        const rows = [row(1, 1), row(2, 2, { ASSIGNEE: 'ana' }), row(4, 2)];
+        expect(getRowAssignees(rows[2], rows)).toEqual([]);
     });
 });

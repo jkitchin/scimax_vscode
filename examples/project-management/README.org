@@ -1,7 +1,8 @@
 #+TITLE: Example: Project Management
 
 A small, self-contained science project demonstrating Scimax's project-management
-features: task dependencies, a task table, a Gantt chart, a dependency graph, and
+features: task dependencies, a task table, the project view's Gantt chart, a
+dependency graph, and
 a people database. Open [[file:project.org]] and try the steps below.
 
 Full documentation: [[file:../../docs/03.6-project-management.org][Project Management]] and [[file:../../docs/03.5-task-dependencies.org][Task Dependencies]].
@@ -10,18 +11,21 @@ Full documentation: [[file:../../docs/03.6-project-management.org][Project Manag
 
 - [[file:people.org]] — three people (=:person:= headings with email/nick/role).
 - [[file:locations.org]] — a few places (=:location:= headings with addresses).
+- =.projectile= — an empty marker that makes this folder its own project, so the
+  project view and =:scope project= read only these files.
 - [[file:project.org]] — the project: experiments → analysis → writing → submission,
   with dependencies, assignees, schedules, and effort. It ends with a task-table
-  and a Gantt =#+BEGIN:= block (already generated).
+  =#+BEGIN:= block (already generated).
 
 * Things to try
 
-1. *Regenerate a view.* Put the cursor inside either =#+BEGIN:= block in
-   project.org and press =C-c C-c=. The table / Gantt rebuild from the current
-   task state.
+1. *Regenerate the table.* Put the cursor inside the =#+BEGIN:= block in
+   project.org and press =C-c C-c=. The table rebuilds from the current task
+   state.
 
-2. *Render the Gantt.* Put the cursor in the =#+begin_src mermaid= block and press
-   =C-c C-c= to render it to an image (requires Mermaid).
+2. *Open the Gantt chart.* With project.org open, run =Scimax: Project View
+   (Gantt Chart)=. Double-click a task to jump to it, right-click to change it,
+   and use the toolbar's *Excel* or *PDF* button to export the chart.
 
 3. *See the dependency graph.* Run =Scimax: Show Task Dependency Graph= — tasks are
    colored blue (ready), red (blocked), or green (done); arrows point to
@@ -50,7 +54,8 @@ Full documentation: [[file:../../docs/03.6-project-management.org][Project Manag
 
 * Notes
 
-- The task table and Gantt read this single file; keep a project's tasks together.
+- The task table reads this single file unless you add =:scope project=; the
+  project view reads every org file in the project folder.
 - Cross-file dependencies (a task here depending on a task in another file) still
   drive blocking and appear in the dependency graph.
 - To index these files for the graph and people completion, run =Scimax: Sync

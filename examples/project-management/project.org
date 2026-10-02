@@ -165,7 +165,8 @@
 :UNNUMBERED: notoc
 :END:
 
-Put the cursor inside a block and press =C-c C-c= to (re)generate it.
+Put the cursor inside the block and press =C-c C-c= to (re)generate it. For the
+Gantt chart, run =Scimax: Project View (Gantt Chart)=.
 
 #+BEGIN: project-table :columns task,todo,priority,assignee,deadline,effort,blocked
 | Task                               | State | Pri  | Who   | Deadline   | Effort | Blocked |
@@ -187,35 +188,4 @@ Put the cursor inside a block and press =C-c C-c= to (re)generate it.
 |     Format for journal             | TODO  |      | priya |            | 8h     | 🔒      |
 |     Submit to journal              | TODO  |      | maria | 2026-09-15 |        | 🔒      |
 |     Respond to reviewers           | WAIT  |      | maria |            | 40h    | 🔒      |
-#+END:
-
-#+BEGIN: gantt :title "Perovskite Photocatalyst Screening" :sections parent
-#+begin_src mermaid
-gantt
-  dateFormat  YYYY-MM-DD
-  title  Perovskite Photocatalyst Screening
-  axisFormat  %m-%d
-  section Experiments
-  Design sample matrix :done, design, 2026-06-30, 2d
-  Synthesize perovskite samples :synth, 2026-07-06, 5d
-  XRD characterization :xrd, after synth, 2d
-  UV-Vis spectroscopy :uvvis, after synth, 2d
-  section Photocatalytic activity protocol
-  Calibrate reactor :calibrate, after synth, 1d
-  Run activity measurements :runact, after calibrate, 4d
-  Quantify products :quantify, after runact, 2d
-  section Analysis
-  DFT bandgap calculations :dft, 2026-07-06, 6d
-  Process characterization data :process, after xrd uvvis, 3d
-  Build structure–activity model :model, after process dft quantify, 4d
-  section Writing
-  Draft manuscript :crit, draft, after model, 6d
-  Prepare figures :figures, after model, 3d
-  Internal review :review, after draft figures, 2d
-  Revise manuscript :revise, after review, 3d
-  section Submission
-  Format for journal :format, after revise, 1d
-  Submit to journal :milestone, submit, 2026-09-15, 0d
-  Respond to reviewers :respond, after submit, 5d
-#+end_src
 #+END:

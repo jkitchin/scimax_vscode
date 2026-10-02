@@ -22,6 +22,7 @@ import type {
     PlanningElement,
     DiarySexpElement,
 } from './orgElementTypes';
+import * as path from 'path';
 import { evaluateDiarySexp, getDiarySexpDates } from './orgDiarySexp';
 
 // =============================================================================
@@ -84,6 +85,10 @@ export interface AgendaItem {
     duration?: number;
     /** Repeat interval if present */
     repeater?: string;
+    /** A dependency is not done yet (see Task Dependencies) */
+    blocked?: boolean;
+    /** Assignee handles, own or inherited (set when the agenda filters by them) */
+    assignees?: string[];
 }
 
 /**
@@ -108,6 +113,10 @@ export interface AgendaViewConfig {
     categories?: string[];
     /** Filter by specific files (absolute paths) */
     files?: string[];
+    /** Filter to files under these directories (absolute paths) */
+    directories?: string[];
+    /** Only items assigned to one of these handles ('' matches unassigned items) */
+    assignees?: string[];
     /** Whether to show done items */
     showDone?: boolean;
     /** Whether to show habits */
@@ -361,6 +370,17 @@ function extractDiarySexpItems(
 }
 
 /**
+ * True if file is inside one of the directories. Compares whole path
+ * components, so /a/proj does not match /a/project/x.org.
+ */
+export function isUnderAnyDirectory(file: string, directories: string[]): boolean {
+    return directories.some(dir => {
+        const rel = path.relative(dir, file);
+        return rel !== '' && !rel.startsWith('..') && !path.isAbsolute(rel);
+    });
+}
+
+/**
  * Filter agenda items based on configuration
  */
 function filterAgendaItems(items: AgendaItem[], config: AgendaViewConfig): AgendaItem[] {
@@ -413,6 +433,13 @@ function filterAgendaItems(items: AgendaItem[], config: AgendaViewConfig): Agend
         // Filter by specific files
         if (config.files && config.files.length > 0) {
             if (!config.files.includes(item.file)) {
+                return false;
+            }
+        }
+
+        // Filter by directory
+        if (config.directories && config.directories.length > 0) {
+            if (!isUnderAnyDirectory(item.file, config.directories)) {
                 return false;
             }
         }
@@ -822,8 +849,8 @@ export function formatAgendaItem(item: AgendaItem): string {
         parts.push(`[#${item.priority}]`);
     }
 
-    // Title
-    parts.push(item.title);
+    // Title, flagged when a dependency is unfinished
+    parts.push(item.blocked ? `🔒 ${item.title}` : item.title);
 
     // Tags
     if (item.tags.length > 0) {
@@ -856,6 +883,14 @@ export function renderAgendaBuffer(view: AgendaView): RenderedAgenda {
 
     // Header
     lines.push(`Agenda for ${format(view.dateRange.start, 'MMM d')} - ${format(view.dateRange.end, 'MMM d, yyyy')}`);
+    const filters: string[] = [];
+    if (view.config.directories?.length) {
+        filters.push(`Project: ${view.config.directories.map(d => path.basename(d)).join(', ')}`);
+    }
+    if (view.config.assignees?.length) {
+        filters.push(`Assignee: ${view.config.assignees.map(a => a ? `@${a}` : 'unassigned').join(', ')}`);
+    }
+    if (filters.length) lines.push(filters.join('   '));
     lines.push('='.repeat(70));
     lines.push('');
 

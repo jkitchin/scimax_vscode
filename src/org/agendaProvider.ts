@@ -17,6 +17,9 @@ import {
     AgendaViewConfig,
     TodoListView,
 } from '../parser/orgAgenda';
+import { getRowAssignees } from '../parser/projectTasks';
+import { loadProjectDocuments, loadProjectTasks, collectProjectTasks, taskKey, currentProjectRoot } from './projectData';
+import { pickAssigneeFilter } from './people';
 import type { HeadlineElement } from '../parser/orgElementTypes';
 import {
     AgendaDocumentProvider,
@@ -33,7 +36,7 @@ import {
 } from '../parser/orgClocking';
 import { minimatch } from 'minimatch';
 import { getDatabase } from '../database/lazyDb';
-import type { ScimaxDb, AgendaItem as DbAgendaItem } from '../database/scimaxDb';
+import type { ScimaxDb, AgendaItem as DbAgendaItem, HeadingRecord } from '../database/scimaxDb';
 import { isHeadingBlocked } from './dependencies';
 import { format, addDays, startOfDay, isSameDay, differenceInDays, parse } from 'date-fns';
 
@@ -279,6 +282,12 @@ export class AgendaManager {
      * Generate agenda view with lazy loading and rate limiting
      */
     async getAgendaView(config?: Partial<AgendaViewConfig>): Promise<AgendaView> {
+        // A project agenda reads the project's files directly: the database
+        // only covers its scan roots and files that were opened.
+        if (config?.directories?.length) {
+            return this.getAgendaViewForProject(config.directories, config);
+        }
+
         // The agenda is now a view over the database. If the db isn't ready,
         // return an empty view rather than re-scanning files — the TreeView
         // will surface the "Database not ready" message and the stale-check
@@ -304,6 +313,59 @@ export class AgendaManager {
             totalFiles: 0,
             dateRange: { start: startDate, end: addDays(startDate, days) },
         };
+    }
+
+    /**
+     * Agenda for the org files under the given project roots, parsed from the
+     * files themselves. Items carry blocked state and assignees resolved
+     * against the whole project, and config.assignees filters them.
+     */
+    private async getAgendaViewForProject(
+        roots: string[],
+        config: Partial<AgendaViewConfig>
+    ): Promise<AgendaView> {
+        const docs = (await Promise.all(roots.map(r => loadProjectDocuments(r)))).flat();
+        const headlines: HeadlineElement[] = [];
+        const fileMap = new Map<string, string>();
+        for (const { filePath, doc } of docs) {
+            if (this.isFileExcluded(filePath)) continue;
+            for (const child of doc.children) {
+                if (child.type === 'headline') {
+                    this.collectHeadlinesWithFile(child as HeadlineElement, filePath, headlines, fileMap);
+                }
+            }
+        }
+
+        const view = generateAgendaView(headlines, fileMap, {
+            showDone: this.config.showDone,
+            showHabits: this.config.showHabits,
+            days: this.config.defaultSpan,
+            ...config,
+        }, [], docs.length);
+
+        // Every heading, not only TODOs: a scheduled note can be assigned too.
+        const tasks = new Map(collectProjectTasks(docs, false).map(t => [taskKey(t.file, t.line), t]));
+        for (const item of view.groups.flatMap(g => g.items)) {
+            const task = tasks.get(taskKey(item.file, item.line));
+            item.blocked = task?.blocked ?? false;
+            item.assignees = task?.assignees ?? [];
+        }
+        return this.filterView(view, item =>
+            !(this.hideBlockedInAgenda() && item.blocked) && matchesAssignees(item, config.assignees)
+        );
+    }
+
+    /** Whether scimax.org.depend.hideBlockedInAgenda is in effect. */
+    private hideBlockedInAgenda(): boolean {
+        const dependConfig = vscode.workspace.getConfiguration('scimax.org.depend');
+        return dependConfig.get<boolean>('enabled', true)
+            && dependConfig.get<boolean>('hideBlockedInAgenda', false);
+    }
+
+    /** Keep only the items that pass, recounting the total. */
+    private filterView(view: AgendaView, keep: (item: AgendaItem) => boolean): AgendaView {
+        const groups = view.groups.map(g => ({ ...g, items: g.items.filter(keep) }));
+        return { ...view, groups, totalItems: groups.reduce((n, g) => n + g.items.length, 0) };
     }
 
     /**
@@ -339,11 +401,22 @@ export class AgendaManager {
                 doneStates: this.config.doneStates,
             });
 
-            // Optionally hide tasks blocked by unfinished dependencies so the
-            // agenda shows only actionable ("next") items.
-            const dependConfig = vscode.workspace.getConfiguration('scimax.org.depend');
-            const hideBlocked = dependConfig.get<boolean>('enabled', true)
-                && dependConfig.get<boolean>('hideBlockedInAgenda', false);
+            // Blocked tasks are flagged, or hidden with hideBlockedInAgenda so
+            // the agenda shows only actionable ("next") items.
+            const dependEnabled = vscode.workspace.getConfiguration('scimax.org.depend').get<boolean>('enabled', true);
+            const hideBlocked = this.hideBlockedInAgenda();
+
+            // Assignees inherit from ancestor headings, so filtering needs the
+            // other headings of each file; fetch each file once.
+            const fileRows = new Map<string, HeadingRecord[]>();
+            const rowsFor = async (file: string): Promise<HeadingRecord[]> => {
+                let rows = fileRows.get(file);
+                if (!rows) {
+                    rows = await db.getHeadingsInFile(file);
+                    fileRows.set(file, rows);
+                }
+                return rows;
+            };
 
             // Convert database items to AgendaItem format, filtering excluded files
             const items: AgendaItem[] = [];
@@ -352,15 +425,26 @@ export class AgendaManager {
                 if (this.isFileExcluded(dbItem.heading.file_path)) {
                     continue;
                 }
-                if (hideBlocked) {
+                let blocked = false;
+                if (dependEnabled) {
                     try {
-                        if (await isHeadingBlocked(dbItem.heading)) continue;
+                        blocked = await isHeadingBlocked(dbItem.heading);
                     } catch {
-                        // On resolution error, keep the item (fail open).
+                        // On resolution error, keep the item unflagged (fail open).
                     }
                 }
+                if (hideBlocked && blocked) continue;
+
+                let assignees: string[] | undefined;
+                if (fullConfig.assignees?.length) {
+                    assignees = getRowAssignees(dbItem.heading, await rowsFor(dbItem.heading.file_path));
+                    if (!matchesAssignees({ assignees }, fullConfig.assignees)) continue;
+                }
+
                 const agendaItem = this.convertDbItemToAgendaItem(dbItem, startDate);
                 if (agendaItem) {
+                    agendaItem.blocked = blocked;
+                    agendaItem.assignees = assignees;
                     items.push(agendaItem);
                 }
             }
@@ -815,6 +899,16 @@ class AgendaItemNode extends vscode.TreeItem {
     }
 }
 
+/**
+ * True when no assignee filter is set, or the item has one of the handles.
+ * The empty handle '' stands for "unassigned".
+ */
+function matchesAssignees(item: { assignees?: string[] }, wanted: string[] | undefined): boolean {
+    if (!wanted?.length) return true;
+    const have = item.assignees ?? [];
+    return wanted.some(w => (w === '' ? have.length === 0 : have.includes(w)));
+}
+
 export class AgendaTreeProvider implements vscode.TreeDataProvider<AgendaTreeItem> {
     private _onDidChangeTreeData = new vscode.EventEmitter<AgendaTreeItem | undefined>();
     readonly onDidChangeTreeData = this._onDidChangeTreeData.event;
@@ -1076,11 +1170,66 @@ export function registerAgendaCommands(context: vscode.ExtensionContext): void {
                 { label: 'Fortnight', description: '14 days', days: 14, type: 'fortnight' },
                 { label: 'Month', description: '30 days', days: 30, type: 'month' },
             ];
-            const picked = await vscode.window.showQuickPick(spans, {
-                placeHolder: 'Agenda span',
-            });
+            const projectRoot = currentProjectRoot();
+            const projectItem: vscode.QuickPickItem = {
+                label: '$(folder) Current Project',
+                description: projectRoot ? path.basename(projectRoot) : 'No project for the active file',
+                detail: projectRoot,
+            };
+            const assigneeItem: vscode.QuickPickItem = {
+                label: '$(person) Assignee...',
+                description: 'Tasks assigned to someone (press @ in the buffer to change)',
+            };
+            const picked = await vscode.window.showQuickPick<vscode.QuickPickItem>(
+                [
+                    ...spans,
+                    { label: 'Filter', kind: vscode.QuickPickItemKind.Separator },
+                    projectItem,
+                    assigneeItem,
+                ],
+                { placeHolder: 'Agenda span' }
+            );
             if (!picked) return;
-            await docProvider.open('Agenda', { type: picked.type, days: picked.days }, picked.days);
+
+            if (picked !== projectItem && picked !== assigneeItem) {
+                const span = picked as typeof spans[number];
+                await docProvider.open('Agenda', { type: span.type, days: span.days }, span.days);
+                return;
+            }
+
+            let name: string;
+            const filter: Partial<AgendaViewConfig> = {};
+            if (picked === projectItem) {
+                if (!projectRoot) {
+                    vscode.window.showInformationMessage(
+                        'No project found: open a file inside a project (a folder with .git, .projectile, ...) first.'
+                    );
+                    return;
+                }
+                name = `Agenda (${path.basename(projectRoot)})`;
+                filter.directories = [projectRoot];
+            } else {
+                const assignees = await pickAssigneeFilter();
+                if (!assignees) return;
+                name = 'Agenda (assignee)';
+                filter.assignees = assignees;
+            }
+            const span = await vscode.window.showQuickPick(spans, { placeHolder: `Agenda span for ${name}` });
+            if (!span) return;
+            await docProvider.open(name, { type: span.type, days: span.days, ...filter }, span.days);
+        }),
+
+        vscode.commands.registerCommand('scimax.agenda.buffer.filterAssignee', async () => {
+            const uri = activeBuffer();
+            if (!uri) return;
+            const config = docProvider.getConfig(uri) ?? {};
+            // In a project buffer, offer the handles its tasks actually use.
+            const known = config.directories?.length
+                ? (await Promise.all(config.directories.map(r => loadProjectTasks(r)))).flat().flatMap(t => t.assignees)
+                : [];
+            const assignees = await pickAssigneeFilter(known, config.assignees ?? []);
+            if (!assignees) return;
+            docProvider.updateConfig(uri, { assignees: assignees.length ? assignees : undefined });
         }),
 
         vscode.commands.registerCommand('scimax.agenda.buffer.goto', async () => {

@@ -1,6 +1,6 @@
 /**
- * Commands to insert the project-management dynamic blocks (task table, Gantt).
- * Each inserts a skeleton `#+BEGIN: … #+END:` at the cursor and immediately
+ * Command to insert the project-management task table dynamic block.
+ * It inserts a skeleton `#+BEGIN: … #+END:` at the cursor and immediately
  * populates it via the existing dynamic-block update command.
  */
 import * as vscode from 'vscode';
@@ -29,9 +29,6 @@ export function registerProjectCommands(context: vscode.ExtensionContext): void 
     context.subscriptions.push(
         vscode.commands.registerCommand('scimax.org.insertProjectTable', () =>
             insertBlock('#+BEGIN: project-table :columns task,todo,priority,assignee,deadline,effort,blocked')
-        ),
-        vscode.commands.registerCommand('scimax.org.insertGantt', () =>
-            insertBlock('#+BEGIN: gantt :sections assignee')
         )
     );
 }

@@ -14,6 +14,7 @@ import {
     type AgendaItem,
     type AgendaViewConfig,
     type DiarySexpEntry,
+    isUnderAnyDirectory,
 } from '../orgAgenda';
 import type {
     HeadlineElement,
@@ -1428,5 +1429,20 @@ describe('orgAgenda', () => {
             expect(types).toContain('scheduled');
             expect(types).toContain('deadline');
         });
+    });
+});
+
+describe('isUnderAnyDirectory', () => {
+    it('matches files inside a directory, at any depth', () => {
+        expect(isUnderAnyDirectory('/a/proj/x.org', ['/a/proj'])).toBe(true);
+        expect(isUnderAnyDirectory('/a/proj/sub/y.org', ['/a/proj'])).toBe(true);
+    });
+
+    it('does not match a sibling that shares a name prefix', () => {
+        expect(isUnderAnyDirectory('/a/project/x.org', ['/a/proj'])).toBe(false);
+    });
+
+    it('does not match files outside every directory', () => {
+        expect(isUnderAnyDirectory('/b/x.org', ['/a/proj', '/c'])).toBe(false);
     });
 });

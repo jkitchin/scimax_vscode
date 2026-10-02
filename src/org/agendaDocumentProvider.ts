@@ -146,6 +146,19 @@ export class AgendaDocumentProvider
         this._onDidChange.fire(uri);
     }
 
+    /** The base configuration a buffer was opened with. */
+    getConfig(uri: vscode.Uri): Partial<AgendaViewConfig> | undefined {
+        return this.states.get(uri.toString())?.config;
+    }
+
+    /** Change a buffer's filters in place, keeping its tab and page. */
+    updateConfig(uri: vscode.Uri, patch: Partial<AgendaViewConfig>): void {
+        const state = this.states.get(uri.toString());
+        if (!state) return;
+        state.config = { ...state.config, ...patch };
+        this._onDidChange.fire(uri);
+    }
+
     /** Return to the period containing today. */
     resetToToday(uri: vscode.Uri): void {
         const state = this.states.get(uri.toString());
@@ -200,9 +213,9 @@ export class AgendaDocumentProvider
  * changes state without leaving the agenda; we trade that for correctness.
  */
 export async function runOnSourceHeading(
-    item: AgendaItem,
+    item: Pick<AgendaItem, 'file' | 'line'>,
     command: string,
-    agendaUri: vscode.Uri
+    returnTo: vscode.Uri | (() => Thenable<unknown> | void)
 ): Promise<boolean> {
     let sourceEditor: vscode.TextEditor;
     try {
@@ -236,9 +249,13 @@ export async function runOnSourceHeading(
         await sourceEditor.document.save();
     }
 
-    // Return to the agenda.
-    const agendaDoc = await vscode.workspace.openTextDocument(agendaUri);
-    await vscode.window.showTextDocument(agendaDoc, { preview: false });
+    // Return to where the command was started (the agenda, or a webview).
+    if (returnTo instanceof vscode.Uri) {
+        const agendaDoc = await vscode.workspace.openTextDocument(returnTo);
+        await vscode.window.showTextDocument(agendaDoc, { preview: false });
+    } else {
+        await returnTo();
+    }
     return true;
 }
 

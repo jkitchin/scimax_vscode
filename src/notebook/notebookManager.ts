@@ -55,6 +55,25 @@ const PROJECT_MARKERS = [
 ];
 
 /**
+ * Find the nearest directory at or above startPath that holds a project marker.
+ */
+export function findProjectRoot(startPath: string): string | undefined {
+    let current = startPath;
+    const root = path.parse(current).root;
+
+    while (current !== root) {
+        for (const marker of PROJECT_MARKERS) {
+            if (fs.existsSync(path.join(current, marker))) {
+                return current;
+            }
+        }
+        current = path.dirname(current);
+    }
+
+    return undefined;
+}
+
+/**
  * Notebook Manager - Project-based organization inspired by scimax-notebook
  */
 export class NotebookManager {
@@ -142,20 +161,7 @@ export class NotebookManager {
      * Find project root by looking for markers
      */
     private findProjectRoot(startPath: string): string | undefined {
-        let current = startPath;
-        const root = path.parse(current).root;
-
-        while (current !== root) {
-            for (const marker of PROJECT_MARKERS) {
-                const markerPath = path.join(current, marker);
-                if (fs.existsSync(markerPath)) {
-                    return current;
-                }
-            }
-            current = path.dirname(current);
-        }
-
-        return undefined;
+        return findProjectRoot(startPath);
     }
 
     /**
