@@ -520,6 +520,11 @@ export class OrgLinkProvider implements vscode.DocumentLinkProvider {
  * @param isNewlyOpened - Whether the file was just opened (requires delay for VS Code to restore folds)
  */
 async function unfoldAtLine(editor: vscode.TextEditor, line: number, isNewlyOpened: boolean = false): Promise<void> {
+    // The caller has put the caret on the target. Folding while we wait (the
+    // #+STARTUP visibility of a newly opened file) moves it to the start of the
+    // folded region, so it is put back at the end.
+    const target = editor.selection;
+
     // When a file is newly opened, VS Code restores the previous fold state asynchronously.
     // We need to wait for that restoration to complete before unfolding, otherwise our
     // unfold gets overwritten by the restored state.
@@ -567,10 +572,10 @@ async function unfoldAtLine(editor: vscode.TextEditor, line: number, isNewlyOpen
         levels: 100
     });
 
-    // Re-reveal the target in case unfolding shifted the view
-    const position = new vscode.Position(line, 0);
+    // Restore the caret and re-reveal the target in case folding moved them
+    editor.selection = target;
     editor.revealRange(
-        new vscode.Range(position, position),
+        new vscode.Range(target.active, target.active),
         vscode.TextEditorRevealType.InCenter
     );
 }

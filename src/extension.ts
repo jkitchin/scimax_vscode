@@ -631,13 +631,16 @@ async function activateScimax(context: vscode.ExtensionContext) {
                     // The fold commands act on whatever editor is active when
                     // the timer fires, so bail if the user has moved on.
                     if (active?.document.uri.toString() !== docKey) return;
-                    const applied = await applyStartupVisibility(options);
                     // Startup folding must not hide the caret: when the file
                     // was opened at a specific position (file:line links, go
                     // to definition, search results), unfold around it and
-                    // bring it back into view.
-                    const pos = active.selection.active;
+                    // bring it back into view. Read it before folding, which
+                    // moves a caret inside a folded region to its first line.
+                    const selection = active.selection;
+                    const pos = selection.active;
+                    const applied = await applyStartupVisibility(options);
                     if (!applied || (pos.line === 0 && pos.character === 0)) return;
+                    active.selection = selection;
                     await vscode.commands.executeCommand('editor.unfold', {
                         levels: 10,
                         direction: 'up',
