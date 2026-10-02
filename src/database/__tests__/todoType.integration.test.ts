@@ -8,6 +8,9 @@ import * as os from 'os';
 import * as path from 'path';
 import { ScimaxDbCore } from '../scimaxDbCore';
 
+// Creating and indexing a database can pass vitest's 10 s hook limit on a slow CI runner (Windows)
+const SETUP_TIMEOUT_MS = 60_000;
+
 describe('per-file done keywords (integration)', () => {
     let dir: string;
     let db: ScimaxDbCore;
@@ -40,7 +43,7 @@ describe('per-file done keywords (integration)', () => {
         await db.initialize();
         await db.indexFile(planPath);
         await db.indexFile(plainPath);
-    });
+    }, SETUP_TIMEOUT_MS);
 
     afterAll(async () => {
         await db.close?.();

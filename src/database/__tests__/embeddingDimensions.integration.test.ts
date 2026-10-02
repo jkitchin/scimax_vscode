@@ -12,6 +12,9 @@ import * as os from 'os';
 import * as path from 'path';
 import { ScimaxDbCore, CoreEmbeddingService } from '../scimaxDbCore';
 
+// Creating and indexing a database can pass vitest's 10 s hook limit on a slow CI runner (Windows)
+const SETUP_TIMEOUT_MS = 60_000;
+
 function fakeService(dimensions: number): CoreEmbeddingService {
     const vec = () => Array.from({ length: dimensions }, (_, i) => (i % 7) / 7 + 0.01);
     return {
@@ -32,7 +35,7 @@ describe('embedding dimensions (integration)', () => {
         fs.writeFileSync(file, '* Heading\nSome text about catalysis.\n');
         db = new ScimaxDbCore({ dbPath: path.join(dir, 'test.db') });
         await db.initialize();
-    });
+    }, SETUP_TIMEOUT_MS);
 
     afterEach(async () => {
         await db.close?.();
