@@ -13,6 +13,7 @@ import type {
     ParagraphElement,
     SrcBlockElement,
     ExampleBlockElement,
+    VerseBlockElement,
     QuoteBlockElement,
     ExportBlockElement,
     KeywordElement,
@@ -1422,6 +1423,16 @@ function parseSimpleBlock(state: FastParserState, type: 'example-block' | 'quote
                 value: contentLines.join('\n'),
             },
         } as ExampleBlockElement;
+    } else if (type === 'verse-block') {
+        // The exporters read the raw text to keep the line breaks
+        return {
+            type,
+            range: { start: 0, end: 0 },
+            postBlank: 0,
+            properties: {
+                value: contentLines.join('\n'),
+            },
+        } as VerseBlockElement;
     } else {
         // Quote/verse/center blocks contain parsed content
         return {

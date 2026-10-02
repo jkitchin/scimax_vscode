@@ -15,6 +15,7 @@ vi.mock('vscode', () => ({
 import { HtmlExportBackend, exportToHtml } from '../orgExportHtml';
 import { LatexExportBackend, exportToLatex } from '../orgExportLatex';
 import { parseOrg } from '../orgParserUnified';
+import { parseOrgFast } from '../orgExportParser';
 import type { BibEntry } from '../../references/bibtexParser';
 import {
     createExportState,
@@ -2186,5 +2187,19 @@ Some normal paragraph text here.`;
         expect(latex).toContain('\\textbf{Keywords:}');
         expect(latex).toContain('AI, ML, optimization');
         expect(latex).toContain('Some normal paragraph text here.');
+    });
+});
+
+describe('Verse blocks from the fast export parser', () => {
+    const doc = parseOrgFast('#+BEGIN_VERSE\nRoses are red,\n  a < b\n#+END_VERSE\n');
+
+    it('exports to HTML with line breaks', () => {
+        const html = exportToHtml(doc, { toc: false });
+        expect(html).toContain('<p class="verse">\nRoses are red,<br />\n  a &lt; b</p>');
+    });
+
+    it('exports to LaTeX as a verse environment', () => {
+        const latex = exportToLatex(doc, { toc: false });
+        expect(latex).toContain('\\begin{verse}\nRoses are red, \\\\\n');
     });
 });

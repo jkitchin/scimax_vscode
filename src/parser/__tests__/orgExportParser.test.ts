@@ -280,6 +280,16 @@ Poetry here
             expect(block).toBeDefined();
         });
 
+        it('keeps the raw text of a verse block for the exporters', () => {
+            const content = `#+BEGIN_VERSE
+Roses are red,
+  Violets are blue
+#+END_VERSE`;
+            const doc = parseOrgFast(content);
+            const block = doc.section?.children.find(c => c.type === 'verse-block');
+            expect(getProps(block).value).toBe('Roses are red,\n  Violets are blue');
+        });
+
         it('parses center block', () => {
             const content = `#+BEGIN_CENTER
 Centered text
