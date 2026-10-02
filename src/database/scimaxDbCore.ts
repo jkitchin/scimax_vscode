@@ -1580,15 +1580,25 @@ export class ScimaxDbCore {
 
         try {
             const embeddings = await this.embeddingService.embedBatch(chunks.map(c => c.text));
+            // Embedding can take seconds, and saving the file meanwhile re-indexes
+            // it under a new id (queueing it to be embedded again). Each statement
+            // only writes while fileId is still the file's id, so chunks for an
+            // old version are dropped instead of failing the foreign key, and the
+            // batch replaces the old chunks in one transaction.
+            const current = 'EXISTS (SELECT 1 FROM files WHERE id = ?)';
+            const statements: { sql: string; args: (string | number)[] }[] = [
+                { sql: `DELETE FROM chunks WHERE file_path = ? AND ${current}`, args: [filePath, fileId] }
+            ];
             for (let i = 0; i < chunks.length; i++) {
                 const vectorStr = `[${embeddings[i].join(',')}]`;
-                await this.db.execute({
+                statements.push({
                     sql: `INSERT INTO chunks
                           (file_id, file_path, content, line_start, line_end, embedding)
-                          VALUES (?, ?, ?, ?, ?, vector32(?))`,
-                    args: [fileId, filePath, chunks[i].text, chunks[i].lineStart, chunks[i].lineEnd, vectorStr]
+                          SELECT ?, ?, ?, ?, ?, vector32(?) WHERE ${current}`,
+                    args: [fileId, filePath, chunks[i].text, chunks[i].lineStart, chunks[i].lineEnd, vectorStr, fileId]
                 });
             }
+            await this.db.batch(statements);
         } catch (error: any) {
             this.embeddingFailures++;
             this.lastEmbeddingError = error?.message || String(error);
@@ -1663,7 +1673,7 @@ export class ScimaxDbCore {
                     const fileRecord = await this.getFileByPath(filePath);
                     if (!fileRecord) continue;
                     const content = fs.readFileSync(filePath, 'utf8');
-                    await this.db.execute({ sql: 'DELETE FROM chunks WHERE file_path = ?', args: [filePath] });
+                    // createChunks replaces the old chunks itself
                     await this.createChunks(fileRecord.id, filePath, content);
                 } catch (error) {
                     console.error(`[ScimaxDbCore] Failed to generate embeddings for ${filePath}:`, error);

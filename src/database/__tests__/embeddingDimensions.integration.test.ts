@@ -110,4 +110,31 @@ describe('embedding dimensions (integration)', () => {
         expect(db.getEmbeddingFailures().count).toBe(0);
         expect((await db.getStats()).chunks).toBeGreaterThan(0);
     });
+
+    it('skips stale chunks when the file is re-indexed while embedding', async () => {
+        // Re-indexing gives the file a new id. Before the fix, chunks computed
+        // for the old id were inserted afterwards and failed the foreign key.
+        let release!: () => void;
+        const gate = new Promise<void>(r => { release = r; });
+        const service = fakeService(768);
+        let calls = 0;
+        await db.setEmbeddingService({
+            ...service,
+            embedBatch: async (texts: string[]) => {
+                if (calls++ === 0) await gate;
+                return service.embedBatch(texts);
+            },
+        });
+
+        await db.indexFile(file, { queueEmbeddings: true });
+        await new Promise(r => setTimeout(r, 50)); // the queue is now waiting in embedBatch
+        fs.writeFileSync(file, '* Heading\nEdited text about catalysis.\n');
+        await db.indexFile(file, { queueEmbeddings: true });
+        release();
+        await db.waitForEmbeddings();
+
+        expect(db.getEmbeddingFailures()).toEqual({ count: 0, lastError: null });
+        const rows = await (db as any).db.execute('SELECT content FROM chunks');
+        expect(rows.rows.map((r: any) => r.content)).toEqual(['* Heading\nEdited text about catalysis.']);
+    }, SETUP_TIMEOUT_MS);
 });
