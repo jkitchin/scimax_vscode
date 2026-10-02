@@ -356,9 +356,10 @@ Now that you're set up, explore these topics:
 3. [[file:07-source-blocks.org][Source Code Blocks]] - Execute code in your documents
 4. [[file:24-keybindings.org][Keybindings]] - Learn all keyboard shortcuts
 
-* Troubleshooting
+* ✅ Troubleshooting
+CLOSED: [2026-10-01 Thu 20:01]
 
-** ⚠️ Scimax Commands Not Found
+** Scimax Commands Not Found
 
 If VS Code reports ~command 'scimax.something' not found~ while the extension is
 installed and enabled, the extension host did not finish activating. Activation

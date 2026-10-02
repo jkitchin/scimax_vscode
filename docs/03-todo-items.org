@@ -489,7 +489,7 @@ Tags appear at the end of the headline, enclosed in colons:
 ,* TODO Buy groceries                                         :personal:errands:
 #+END_SRC
 
-** 👀 Tag Commands
+** Tag Commands
 
 | Key/Command                   | Action                                 |
 |-------------------------------+----------------------------------------|
@@ -540,7 +540,7 @@ CLOSED: [2026-01-15 Thu 14:42]
 | urgent    | Priority indicator      |
 | project   | Part of larger project  |
 
-** 👀 Filtering by Tags
+** Filtering by Tags
 
 Use agenda views or search to filter tasks by tag:
 

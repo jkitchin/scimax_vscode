@@ -81,7 +81,7 @@ This email is used for services that offer better access to identified users. Cu
 
 You can also configure this via the command =scimax.ref.configureOpenAlex= which provides a quick pick menu for setting both your email and optional API key.
 
-*** ⚠️ scimax.externalTerminal.app / .command / .args
+*** scimax.externalTerminal.app / .command / .args
 
 These control =Scimax: Open External Terminal Here=, which opens your real
 terminal application in the directory of the current file. It is available on
@@ -184,7 +184,7 @@ database), so valid cross-file anchor links are not flagged. Custom-id
 (=[[#id]]=) and =id:= links are checked by the separate org-lint =broken-link=
 checker. Set this to =false= to turn the warnings off.
 
-** ⚠️ Org Preview
+** Org Preview
 
 Settings for the live org preview (=Cmd+Shift+V= / =Ctrl+Shift+V=). See
 [[file:46-org-preview.org][Org Preview]].
@@ -917,7 +917,7 @@ See [[file:41-export-beamer.org][Beamer Export]] for the full feature reference.
 | scimax.export.beamer.classOptions    | string  | "presentation" | Comma-separated =\documentclass[...]{beamer}= options        |
 | scimax.export.beamer.defaultPreamble | string  | ""             | Extra preamble appended after theme commands                 |
 
-** ⚠️ Custom Exporter Settings
+** Custom Exporter Settings
 
 | Setting                            | Type   | Default | Description                                      |
 |------------------------------------+--------+---------+--------------------------------------------------|
@@ -1389,7 +1389,7 @@ The matching foreground colors for each heading level are exposed as the
 =orgHeading1= ... =orgHeading6= semantic token types and can be themed via
 =editor.semanticTokenColorCustomizations=.
 
-* ⚠️ Jump Navigation Settings
+* Jump Navigation Settings
 
 Configure the avy-style jump commands (=scimax.jump.*=). See
 [[file:21-navigation.org][Navigation]] for how the jump flow works.
@@ -1892,7 +1892,7 @@ Configure the org-capture system for quick note-taking.
 }
 #+end_src
 
-* ⚠️ Markdown Preview Settings
+* Markdown Preview Settings
 
 | Setting                        | Type    | Default | Description                                            |
 |--------------------------------+---------+---------+--------------------------------------------------------|
@@ -1905,7 +1905,7 @@ Related VS Code settings used by the Marp navigation ([[file:44-marp.org][Marp S
 jumps) and ~markdown.preview.scrollPreviewWithEditor~ (must be ~true~ for
 ~scimax.marp.revealInPreview~).
 
-* ⚠️ Marp Slide Settings
+* Marp Slide Settings
 
 | Setting                     | Type    | Default   | Description                                       |
 |-----------------------------+---------+-----------+---------------------------------------------------|
@@ -1917,7 +1917,7 @@ These are used by the slide thumbnails, preview and exports. When one is not
 set, Marp for VS Code's matching ~markdown.marp.*~ setting is used. See
 [[file:44-marp.org::*Configuration][Marp Slides]].
 
-* 👀 Marp Export Settings
+* Marp Export Settings
 
 | Setting                        | Type    | Default | Description                                                 |
 |--------------------------------+---------+---------+-------------------------------------------------------------|

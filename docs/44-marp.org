@@ -5,7 +5,7 @@
 #+OPTIONS: toc:t num:t
 #+TODO: ⚠️ 👀 | ✅
 
-* 👀 Overview
+* Overview
 
 Scimax supports [[https://marp.app/][Marp]] slide decks on its own: a Markdown file whose front
 matter has ~marp: true~. It renders the slides with its own copy of Marp Core,
@@ -59,7 +59,7 @@ If you also have Marp for VS Code, it and Scimax both render decks in the
 Markdown preview; either works. Its ~markdown.marp.*~ settings are used when
 the matching ~scimax.marp.*~ ones are not set.
 
-* 👀 Double-Click in the Markdown Preview
+* Double-Click in the Markdown Preview
 
 VS Code's Markdown preview shows a Marp deck as slides (Scimax renders it;
 Marp for VS Code is not needed). Double-clicking in it jumps to the exact
@@ -91,7 +91,7 @@ position on the page, so it stays accurate in scaled slides.
 
 Links are left alone: double-clicking one does not jump to the source.
 
-* 👀 Reveal the Cursor in the Preview
+* Reveal the Cursor in the Preview
 
 This is for VS Code's Markdown preview (of a deck or any Markdown file); the
 [[*Slide Preview][Slide Preview]] follows the cursor by itself. The other direction: from the ~.md~ editor, run ~Scimax: Reveal Cursor in
@@ -107,7 +107,7 @@ default).
 The command has no default keybinding. To add one, open Keyboard Shortcuts
 and search for ~scimax.marp.revealInPreview~.
 
-* ⚠️ Slide Preview
+* Slide Preview
 
 The slide preview shows the slide under the editor cursor, fitted to its
 tab, and follows the cursor as you move and type. Open it with the preview
@@ -131,7 +131,7 @@ view has the same buttons, so it can be a small preview too.
 
 Hidden slides are shown (dimmed in the grid) so they can still be edited.
 
-* 👀 Slideshow
+* Slideshow
 
 To present, Scimax makes Marp's HTML slideshow of the deck and opens it in the
 browser. Marp CLI builds it (see [[*Marp CLI][Marp CLI]]), and it is written to a private folder
@@ -173,7 +173,7 @@ and live Python cells in the slideshow; see [[*Presenter Tools and Live Python][
 Because each deck always uses the same folder, ink drawn in one slideshow is
 still there the next time.
 
-** ⚠️ Live reload
+** Live reload
 
 While the slideshow is open, saving the deck rebuilds it and the browser
 reloads at the slide you are editing (the one under the cursor when you
@@ -199,7 +199,7 @@ The path is relative to the org file (absolute paths and ~~/~ work too), and
 ~::N~ starts at slide /N/. When the org file is exported, the link becomes an
 ordinary link to the ~.md~ file.
 
-* ⚠️ Directives
+* Directives
 
 Marp directives set a deck's theme, pagination, headers and so on. Global
 directives go in the front matter. Local directives go in the front matter
@@ -222,7 +222,7 @@ shows what a directive does when you hover over it.
 | ~header~, ~footer~, ~color~, ~background*~                                    | Local  | (free text; ~background*~ positions, repeats and sizes are offered) |
 | ~style~, ~lang~, ~title~, ~author~, ~description~, ~keywords~, ~url~, ~image~ | Global | (free text)                                                         |
 
-* ⚠️ Slide Thumbnails
+* Slide Thumbnails
 
 Scimax shows a thumbnail of every slide in the active deck in two places:
 
@@ -288,7 +288,7 @@ The view renders with its own copy of Marp Core and follows these settings
 Run ~Scimax: Refresh Marp Slide Thumbnails~ ([[cmd:scimax.marp.refreshSlides]])
 after editing a theme file, since theme files are not watched.
 
-* ⚠️ Editing Slides
+* Editing Slides
 
 The Marp Slides view and the Slide Sorter can rearrange a deck without
 scrolling through the Markdown. Each change edits the ~.md~ file directly and is a single edit, so
@@ -356,7 +356,7 @@ Copy and Cut put the slides' Markdown on the system clipboard, joined with
 Markdown from the clipboard: text copied from the view comes back as the same
 slides, and any other text becomes one new slide.
 
-** ⚠️ Pasting slides with images
+** Pasting slides with images
 
 Slides often show images by relative path, such as ~![bg](figs/a.png)~, which
 would break in a deck in another folder. So Copy and Cut write every relative
@@ -414,7 +414,7 @@ One side effect: Marp treats comments as presenter notes, so the hidden
 slide's text appears in the notes of the slide before it (for example in the
 presenter view of an HTML export).
 
-* ⚠️ The Marp Menu
+* The Marp Menu
 
 Right-click in a Marp deck for the *Marp* menu. It acts on the slide under
 the cursor, or on every slide the selection touches. Each change is one edit,
@@ -448,7 +448,7 @@ Each adds a slide after the current one, with tab stops to fill in.
 | Table                    | [[cmd:scimax.marp.layout.table]]      | A heading and a table                                                                       |
 | Big Number               | [[cmd:scimax.marp.layout.bigNumber]]  | One large figure with a caption                                                             |
 
-** 👀 Insert
+** Insert
 
 Inserted at the cursor, as its own paragraph.
 
@@ -479,7 +479,7 @@ Each sets a directive for just this slide, ~<!-- _name: value -->~, at the top o
 | Transition...         | [[cmd:scimax.marp.thisSlide.transition]]      | For the HTML slideshow                                           |
 | Scoped Style          | [[cmd:scimax.marp.thisSlide.scopedStyle]]     | A ~<style scoped>~ block for CSS that applies only to this slide |
 
-** 👀 Deck
+** Deck
 
 Each sets a key in the front matter, or removes it.
 
@@ -524,7 +524,7 @@ theme can style.
 The last part of the menu has Present, Present from Current Slide, Slide
 Preview, Slide Sorter, Edit with Claude Code and Export Deck, then Marp Help.
 
-* ⚠️ Editing Slides with Claude Code
+* Editing Slides with Claude Code
 
 With the [[https://marketplace.visualstudio.com/items?itemName=anthropic.claude-code][Claude Code]] extension installed, right-click a thumbnail (or several
 selected ones) and choose *Edit with Claude Code…*. Claude Code opens with a
@@ -557,7 +557,7 @@ after it. Claude Code's link can only fill in a prompt in a new tab, which is
 why an open chat gets the @-mention rather than the full sentence. A chat open
 only in the Claude Code side bar is not detected, so a new tab opens.
 
-* ⚠️ Presenter Tools and Live Python
+* Presenter Tools and Live Python
 
 A deck can opt in to presenter tools in the HTML slideshow: a pen to draw on
 slides, a laser pointer, sticky notes, a spotlight, and Python code cells that
@@ -576,7 +576,7 @@ exported exactly as before. The tools are added when you present (see
 [[*Slideshow][Slideshow]]) and when you export HTML with =h= (see [[*Exporting Slides][Exporting Slides]]).
 ~examples/marp-present/demo.md~ in the Scimax repository shows all of them.
 
-** 👀 Keys in the slideshow
+** Keys in the slideshow
 
 | Key                       | Effect                                                                         |
 |---------------------------+--------------------------------------------------------------------------------|
@@ -608,7 +608,7 @@ on its thumbnail. A
 note's bar drags it; its =●= picks a colour, =–= shrinks it to an icon and
 =×= deletes it.
 
-** ⚠️ Talk timer
+** Talk timer
 
 Give the length of the talk with a ~timer~ key and a small countdown sits in
 the top-right corner of every slide:
@@ -639,7 +639,7 @@ of them).
   hours, or a deck rebuilt with a different ~timer~, starts afresh.
 - It is not printed and is not in PDF, PowerPoint or image exports.
 
-** ⚠️ Exercise countdowns
+** Exercise countdowns
 
 A ~countdown~ fence puts a countdown box on a slide, for an exercise or a
 discussion. The first line is the time, the rest is the label (Markdown):
@@ -663,7 +663,7 @@ adds one and turns on the presenter tools.
 - The Markdown preview and the slide thumbnails show the box; PDF and
   PowerPoint exports show it with its full time.
 
-** ⚠️ Blank, zoom and go to a slide
+** Blank, zoom and go to a slide
 
 - *Blank screen.* =b= turns the audience screen black and =w= white, so the
   room looks at you instead of the slide. Press the key again, =Esc=, or
@@ -680,7 +680,7 @@ adds one and turns on the presenter tools.
   Enter. Without the list, type a slide number and press Enter: =1= =2=
   Enter goes to slide 12.
 
-** ⚠️ Editing slides in the slideshow
+** Editing slides in the slideshow
 
 For last-minute polish just before a talk, =d= lets you fix the slides in
 the slideshow itself: correct a typo, move a heading, make a figure bigger,
@@ -768,7 +768,7 @@ install name~ in a cell installs pure-Python packages from PyPI.
 In PDF, PowerPoint and image exports a ~run~ cell is ordinary highlighted code,
 and a ~run hidden~ cell is left out.
 
-** ⚠️ Running cells in VS Code
+** Running cells in VS Code
 
 Press =C-c C-c= in a ~run~ cell to run it while you write the deck, without
 presenting. The output shows in a /Python/ panel beside the editor, from the
@@ -794,7 +794,7 @@ same Pyodide the slideshow uses, so code that works there works in the talk.
 - =C-c C-c= elsewhere in a Markdown file keeps its usual meaning (run a Babel
   code block, toggle a checkbox).
 
-** ⚠️ Offline Python
+** Offline Python
 
 Set ~presenter: offline~ instead of ~presenter: true~ (or choose "On, with
 offline Python" in Deck → Presenter Tools...) to put Python inside the deck,
@@ -828,7 +828,7 @@ presenter: offline
   a connection while saving, but not afterwards. When you save that copy again
   with =s=, it keeps the ~-offline~ name.
 
-** ⚠️ Checking a deck for offline use
+** Checking a deck for offline use
 
 ~Scimax Marp: Check for Offline Use~ ([[cmd:scimax.marp.checkOffline]], also Deck →
 Check for Offline Use in the Marp menu) builds the deck in a temporary folder
@@ -847,7 +847,7 @@ Presenting or exporting HTML (=h=) an offline deck runs the same check and
 says when it found something. The problems are cleared when the deck is
 closed or checked again.
 
-** 👀 Notes
+** Notes
 
 - The tools are added only in a trusted workspace, since the deck's HTML and
   Python run in the browser. In an untrusted workspace Scimax warns and shows
@@ -864,7 +864,7 @@ closed or checked again.
 - The browser files live in ~media/marpPresent/~ of the extension; the Output
   panel (/Scimax Marp Export/) lists what was inlined and any missing files.
 
-* 👀 Exporting Slides
+* Exporting Slides
 
 Press =C-c C-e= in a Marp deck (or click the export button in the Marp Slides
 view's title bar) for the Marp export menu. In other Markdown files =C-c C-e=

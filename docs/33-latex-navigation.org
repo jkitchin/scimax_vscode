@@ -490,7 +490,7 @@ Configure the compiler via =scimax.latex.compiler= setting:
 - =lualatex=
 - =latexmk=
 
-** 👀 Build Profiles for TeX Files
+** Build Profiles for TeX Files
 
 A single compiler run is not enough when the document needs BibTeX or Biber.
 Build profiles define a named sequence of commands (for example

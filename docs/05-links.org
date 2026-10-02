@@ -310,7 +310,7 @@ Link to images (see also [[file:12-image-overlays.org][Image Overlays]]):
 
 Images are displayed in tooltips or overlays when hovering over the link.
 
-** ⚠️ Marp Slideshow Links
+** Marp Slideshow Links
 
 A ~marp:~ link presents a [[file:44-marp.org][Marp]] slide deck (a Markdown file with ~marp: true~)
 as a slideshow in the browser. Click it, or press =C-c C-o= on it.

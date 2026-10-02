@@ -5,7 +5,7 @@
 #+OPTIONS: toc:t num:t
 #+TODO: ⚠️ 👀 | ✅
 
-* ⚠️ Overview
+* Overview
 
 [[https://mystmd.org/][MyST]] is the Markdown dialect used by Jupyter Book. It adds /directives/
 (fenced blocks such as ~{figure}~ and ~{admonition}~) and /roles/ (inline
@@ -16,7 +16,7 @@ Scimax extends the preview so a MyST file reads roughly as it will in the
 built book. Nothing needs to be run: open the preview as usual
 (~Markdown: Open Preview to the Side~, =Cmd+K V= on macOS, =Ctrl+K V= elsewhere).
 
-* ⚠️ What Is Rendered
+* What Is Rendered
 
 Both fence styles work, with options as ~:key: value~ lines or a ~---~ YAML
 block at the top of the body:
@@ -60,7 +60,7 @@ view of labels, so ~{ref}`intro`~ displays as /intro/ rather than as a link to
 that section. Scroll sync and VS Code's double-click-to-source still work
 inside directives.
 
-* ⚠️ Configuration
+* Configuration
 
 | Setting                        | Default | Effect                                        |
 |--------------------------------+---------+-----------------------------------------------|
@@ -71,7 +71,7 @@ After changing the setting, run ~Markdown: Refresh Preview~.
 Marp slide decks (front matter ~marp: true~) are rendered by the Marp
 extension and are not affected.
 
-* ⚠️ Related Topics
+* Related Topics
 
 - [[file:30-markdown-compatibility.org][Markdown Compatibility]] - Scimax editing features in Markdown files
 - [[file:44-marp.org][Marp Slides]] - navigating between a Marp deck and its preview

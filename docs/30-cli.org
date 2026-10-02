@@ -346,7 +346,7 @@ Projects are pulled fresh from the scimax database each time. The extension regi
 
 When =fzf= is installed, the interactive selection uses fuzzy matching. Otherwise, a numbered list is displayed.
 
-** ⚠️ Tasks
+** Tasks
 
 Project management over org task graphs. Answers "what should I work on
 next", who is overloaded, what is blocked, and what the long pole is.
@@ -550,7 +550,7 @@ Database cleared.
 Run "scimax db sync" to repopulate.
 #+end_example
 
-*** ⚠️ Prune Excluded Files
+*** Prune Excluded Files
 
 Remove database entries that the current exclude rules would reject.
 
@@ -619,7 +619,7 @@ Found 15 org file(s) to index.
 Indexed: 15 file(s)
 #+end_example
 
-**** ⚠️ Scheduling Automatic Syncs
+**** Scheduling Automatic Syncs
 
 Prefer =db sync= over =db scan= for scheduled runs: it covers every configured
 scan root at once, refreshes changed files, and prunes entries whose files are

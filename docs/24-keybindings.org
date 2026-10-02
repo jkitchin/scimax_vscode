@@ -132,7 +132,7 @@ Then restart VS Code.
 Note: Navigation keybindings (C-c C-n, C-c C-p, C-c C-f, C-c C-b, C-c C-j) work in
 org-mode, markdown, and LaTeX files with consistent behavior.
 
-* 👀 Headings
+* Headings
 
 | Key           | Action                         |
 |---------------+--------------------------------|
@@ -242,7 +242,7 @@ org-mode, markdown, and LaTeX files with consistent behavior.
 | C-c C-v i | Execute inline code         |
 | C-c C-v q | Queue block for execution   |
 
-* 👀 Export
+* Export
 
 | Key           | Action                        |
 |---------------+-------------------------------|
@@ -264,7 +264,7 @@ of the Markdown preview; =Cmd+K V= still opens the Markdown preview beside the
 editor. =C-c C-c= in a ~```python run~ cell of a deck runs it in a Python panel
 beside the editor. See [[file:44-marp.org::*Exporting Slides][Exporting Slides]], [[file:44-marp.org::*Slideshow][Slideshow]] and [[file:44-marp.org::*Running cells in VS Code][Running cells in VS Code]].
 
-* ⚠️ Org Preview
+* Org Preview
 
 Like the Markdown preview, but for org files. See [[file:46-org-preview.org][Org Preview]].
 
@@ -417,7 +417,7 @@ CLOSED: [2026-01-24 Sat 17:38]
 | C-c ;   | Go to previous spelling error |
 | C-c S-; | Go to next spelling error     |
 
-* ⚠️ Marp Slides View and Slide Sorter
+* Marp Slides View and Slide Sorter
 
 Keys that work while the Marp Slides view or the Slide Sorter has focus. They
 are handled by the view, so they do not appear in Keyboard Shortcuts. Use
@@ -649,7 +649,7 @@ CLOSED: [2026-01-19 Mon 18:19]
 * ✅ Additional Notes
 CLOSED: [2026-01-19 Mon 18:19]
 
-** 👀 Context-Dependent Keybindings
+** Context-Dependent Keybindings
 
 Many keybindings are context-aware and behave differently depending on cursor position:
 

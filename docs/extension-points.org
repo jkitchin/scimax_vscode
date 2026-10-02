@@ -152,7 +152,7 @@ it has to be =.scimax/exporters/=, or added to
 Run =Scimax: Reload Custom Exporters= after adding or editing one; exporters are
 loaded when the extension starts.
 
-*** ⚠️ When an Exporter Does Not Appear
+*** When an Exporter Does Not Appear
 
 An exporter that fails to load is reported rather than silently skipped:
 =Scimax: Show Custom Exporter Problems= lists each directory that could not be
@@ -195,7 +195,7 @@ shows a =[c !]= entry when something failed. The usual causes are:
 }
 #+END_SRC
 
-*** ⚠️ The Org Header an Exporter Needs
+*** The Org Header an Exporter Needs
 
 An exporter that declares =keywords= needs those keywords in the document
 (=#+TO:=, =#+FROM:=, =#+SUBJECT:= for a memo). You do not have to remember
@@ -225,7 +225,7 @@ That file may use the [[file:35-templates.org][template]] conventions: ={{author
 for text to replace by hand. Without =orgTemplate=, the header is generated from
 the =keywords= in the manifest.
 
-*** ⚠️ Running a Custom Exporter
+*** Running a Custom Exporter
 
 | How                                          | Notes                                  |
 |----------------------------------------------+----------------------------------------|

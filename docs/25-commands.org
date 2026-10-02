@@ -330,7 +330,7 @@ CLOSED: [2026-01-17 Sat 12:27]
 | [[cmd:scimax.org.exportMenu]]      | Export Menu (C-c C-e) | C-c C-e            |
 | [[cmd:scimax.org.previewHtml]]     | Preview HTML          | -                  |
 
-** ⚠️ Org Preview
+** Org Preview
 
 Live rendered preview of an org file. See [[file:46-org-preview.org][Org Preview]].
 
@@ -363,7 +363,7 @@ CLOSED: [2026-01-17 Sat 12:27]
 | [[cmd:scimax.org.viewPdfPanel]]     | View PDF in Panel             | -                  |
 | [[cmd:scimax.org.jumpToPdf]]        | Jump to PDF (forward sync)    | -                  |
 
-** ⚠️ LaTeX Build Profiles
+** LaTeX Build Profiles
 
 Named sequences of build commands (pdflatex+bibtex, lualatex+biber, ...) defined
 in =latex-profiles.json= or settings. See [[file:10-export.org::*Build Profiles][Build Profiles documentation]].
@@ -400,7 +400,7 @@ Export markdown (=.md=) files to other formats via Pandoc. Complements the org-t
 
 Requires Pandoc to be installed on the system.
 
-** 👀 Markdown Preview
+** Markdown Preview
 
 | Command ID                         | Description                            | Default Keybinding |
 |------------------------------------+----------------------------------------+--------------------|
@@ -412,7 +412,7 @@ line. For the other direction, double-click the preview. Refresh re-renders
 the Marp Slides sidebar and the Slide Sorter, for example after editing a
 theme file. See [[file:44-marp.org][Marp Slides]].
 
-*** 👀 Marp Slides and Slideshow
+*** Marp Slides and Slideshow
 
 Preview and present Marp decks. See [[file:44-marp.org][Marp Slides]].
 
@@ -430,7 +430,7 @@ Preview and present Marp decks. See [[file:44-marp.org][Marp Slides]].
 | [[cmd:scimax.marp.restartPython]]       | Restart the Python panel's Python                       | -                            |
 | [[cmd:scimax.marp.checkOffline]]        | List what needs an internet connection (Problems panel) | -                            |
 
-*** 👀 Marp Menu (Editor)
+*** Marp Menu (Editor)
 
 Right-click in a Marp deck > Marp. These act on the slide under the cursor
 or every selected slide. See [[file:44-marp.org::*The Marp Menu][The Marp Menu]].
@@ -486,7 +486,7 @@ or every selected slide. See [[file:44-marp.org::*The Marp Menu][The Marp Menu]]
 | [[cmd:scimax.marp.theme.edit]]                | Edit Current Theme              | -                  |
 | [[cmd:scimax.marp.theme.styleBlock]]          | Add Deck Style Block            | -                  |
 
-*** ⚠️ Marp Slide Export
+*** Marp Slide Export
 
 Export a Marp deck with Marp CLI or Pandoc. =C-c C-e= in a Marp deck opens
 the menu. See [[file:44-marp.org::*Exporting Slides][Exporting Slides]].
@@ -555,7 +555,7 @@ Copy document content to clipboard in various formats for pasting into other app
 | [[cmd:scimax.org.clipboardLatex]]      | Copy as LaTeX                      | -                  |
 | [[cmd:scimax.org.clipboardMarkdown]]   | Copy as Markdown                   | -                  |
 
-** 👀 Custom Exporters
+** Custom Exporters
 CLOSED: [2026-01-24 Sat 17:42]
 
 User-defined export backends using Handlebars templates. See [[file:extension-points.org::*Custom Exporters][Custom Exporters documentation]].
@@ -782,7 +782,7 @@ Commands for debugging issues and reporting problems.
 * ✅ References (org-ref)
 CLOSED: [2026-01-17 Sat 12:46]
 
-** 👀 Citation Management
+** Citation Management
 CLOSED: [2026-01-17 Sat 12:46]
 
 | Command ID                             | Description                 | Default Keybinding   |
@@ -954,7 +954,8 @@ CLOSED: [2026-04-12 Sun 19:53]
 | [[cmd:scimax.fuzzySearchOutline]]      | Fuzzy Search (Outline)           | C-c M-s            |
 | [[cmd:scimax.fuzzySearchRecentFiles]]  | Fuzzy Search (Recent org/md)     | C-x b              |
 
-** 👀 Jump (Avy)
+** ✅ Jump (Avy)
+CLOSED: [2026-10-01 Thu 20:03]
 
 | Command ID                        | Description                  | Default Keybinding    |
 |-----------------------------------+------------------------------+-----------------------|

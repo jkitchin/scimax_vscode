@@ -5,14 +5,14 @@
 #+OPTIONS: toc:t num:t
 #+TODO: ⚠️ 👀 | ✅
 
-* ⚠️ Overview
+* Overview
 
 The org preview shows the rendered document next to (or instead of) the
 source, the way VS Code's Markdown preview does for =.md= files. It uses the
 same engine as HTML export ([[file:10-export.org][Export]]), so what you see is what
 HTML export produces, and it updates as you type.
 
-* ⚠️ Opening the Preview
+* Opening the Preview
 
 | Action                          | macOS         | Windows/Linux  | Command                            |
 |---------------------------------+---------------+----------------+------------------------------------|
@@ -27,7 +27,7 @@ reveals the existing one.
 The older command ~scimax.org.previewHtml~ (/Scimax: Preview HTML/, also
 reachable from the export menu) now opens this live preview to the side.
 
-* ⚠️ What the Preview Does
+* What the Preview Does
 
 - *Live updates*: the preview re-renders shortly after you stop typing (see
   ~scimax.orgPreview.updateDelay~) and when you save. The page is updated in
@@ -45,7 +45,7 @@ reachable from the export menu) now opens this live preview to the side.
   re-read only when the =.bib= file changes.
 - *#+INCLUDE:* directives are expanded.
 
-* ⚠️ Scroll Sync and Navigation
+* Scroll Sync and Navigation
 
 - Scrolling the source editor scrolls the preview to the same place, and
   scrolling the preview scrolls the editor. Each direction can be turned off
@@ -62,7 +62,7 @@ Inside a long element the position is interpolated. After an =#+INCLUDE:=
 directive, the included lines shift the line numbers, so sync can drift
 below the include point.
 
-* ⚠️ Settings
+* Settings
 
 | Setting                                      | Default | Description                                         |
 |----------------------------------------------+---------+-----------------------------------------------------|
@@ -70,7 +70,7 @@ below the include point.
 | ~scimax.orgPreview.scrollPreviewWithEditor~  | ~true~  | Scroll the preview when the source editor scrolls   |
 | ~scimax.orgPreview.scrollEditorWithPreview~  | ~true~  | Scroll the source editor when the preview scrolls   |
 
-* ⚠️ Security
+* Security
 
 Source blocks are never executed by the preview. Scripts in the document
 (for example in =#+HTML:= blocks or =#+HTML_HEAD:=) do not run either: the
@@ -78,7 +78,7 @@ preview only runs its own scripts and MathJax / highlight.js from their CDNs.
 Because those libraries load from the network, math and highlighting need an
 internet connection; the rest of the preview works offline.
 
-* ⚠️ Related Topics
+* Related Topics
 
 - [[file:10-export.org][Export]] - HTML export, which the preview is built on
 - [[file:11-latex-preview.org][LaTeX Preview]] - inline equation previews in the editor

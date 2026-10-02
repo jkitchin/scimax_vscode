@@ -53,7 +53,7 @@ CLOSED: [2026-01-21 Wed 07:14]
 | Literature Review| Paper review with key contributions, methods   |
 | Source Block     | Code block with language selection             |
 
-** ⚠️ Custom Exporter Templates
+** Custom Exporter Templates
 CLOSED: [2026-09-02 Wed]
 
 Every loaded [[file:extension-points.org::*Custom Exporters][custom exporter]] also contributes an org template, listed
@@ -166,7 +166,7 @@ User templates are stored in =~/scimax/templates= by default (under =scimax.dire
     └── thesis-chapter.tex
 #+END_EXAMPLE
 
-** 👀 Template File Format
+** Template File Format
 CLOSED: [2026-01-21 Wed 07:16]
 
 Templates can include metadata in header comments:
