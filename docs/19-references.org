@@ -132,7 +132,7 @@ cite:kitchin-2015-examp-effec,kitchin-2025-beyon-fourt          # Version 2
 cite:&kitchin-2015-examp-effec;&kitchin-2025-beyon-fourt        # Version 3
 
 
-** 👀 Trailing punctuation after a cite: link
+** Trailing punctuation after a cite: link
 CLOSED: [2026-07-14 Tue]
 
 Sentence punctuation immediately after an old-style =cite:= link is *not* absorbed
@@ -147,7 +147,7 @@ colons in a key (e.g. =cite:smith:2020=) are preserved -- only a *trailing* colo
 is treated as punctuation. Run =scimax cite check <file.org>= to catch any key
 that is cited but not present in the =.bib=.
 
-** ⚠️ Citation Links vs. Plain Links (Emacs round-trip)
+** Citation Links vs. Plain Links (Emacs round-trip)
 
 An org-ref citation can be written two ways, and scimax VS Code reads, exports
 and follows both:
@@ -236,8 +236,7 @@ CLOSED: [2026-01-17 Sat 10:16]
 3. Choose citation style (cite, citet, citep, citeauthor, citeyear)
 4. Citation is inserted at cursor
 
-*** 👀 Appending to Existing Citations
-CLOSED: [2026-01-17 Sat 10:16]
+*** Appending to Existing Citations
 
 When cursor is on an existing citation:
 1. Press C-c ]
@@ -339,8 +338,8 @@ Some text discussing machine learning cite:&smith2024machine.
 bibliography:./references.bib
 #+END_SRC
 
-*** 👀 Troubleshooting
-CLOSED: [2026-01-18 Sun 11:44]
+*** ✅ Troubleshooting
+CLOSED: [2026-10-02 Fri 06:53]
 
 | Problem                        | Solution                                              |
 |--------------------------------+-------------------------------------------------------|

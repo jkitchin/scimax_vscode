@@ -524,7 +524,8 @@ AGENDA
    └─ ⚪ TODO Update documentation
 #+END_EXAMPLE
 
-** ⚠️ Agenda Buffer
+** ✅ Agenda Buffer
+CLOSED: [2026-10-02 Fri 06:56]
 
 The agenda buffer is a persistent, refreshable agenda in a full editor tab —
 the closest analogue to Emacs =org-agenda-mode=. Unlike the quick pick, it
@@ -552,7 +553,8 @@ Total: 3 items
 The buffer is read-only, so it can never be edited by accident and never
 prompts to save.
 
-*** ⚠️ Agenda Buffer Keys
+*** ✅ Agenda Buffer Keys
+CLOSED: [2026-10-02 Fri 06:56]
 
 These keys are active only inside an agenda buffer:
 
@@ -569,7 +571,8 @@ These keys are active only inside an agenda buffer:
 Paging with =f= and =b= updates the buffer *in place* rather than opening a
 new tab, so you can walk forward through weeks without accumulating editors.
 
-*** ⚠️ Mouse Interaction
+*** ✅ Mouse Interaction
+CLOSED: [2026-10-02 Fri 06:56]
 
 Every item line is a link. Ctrl+click (Cmd+click on macOS) opens the source
 heading — VS Code reserves plain click for cursor placement, so a modifier is
@@ -761,7 +764,8 @@ Control display of recurring habit tasks:
 |--------------------------+---------+----------------------------|
 | scimax.agenda.showHabits | true    | Show habit items in agenda |
 
-** 👀 States
+** ✅ States
+CLOSED: [2026-10-02 Fri 06:56]
 
 A file's own =#+TODO:= line decides which of its keywords are done. Keywords
 after the =|= are done, and those headings are left out of the agenda and TODO

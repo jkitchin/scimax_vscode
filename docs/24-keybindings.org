@@ -381,7 +381,8 @@ CLOSED: [2026-01-24 Sat 17:38]
 | C-c d t | Show TODOs           |
 | C-c d a | Show agenda          |
 
-** ⚠️ Agenda Buffer
+** ✅ Agenda Buffer
+CLOSED: [2026-10-02 Fri 06:55]
 
 Single keys, active only inside an agenda buffer (see [[file:13-agenda.org][Agenda]]).
 The buffer is read-only, so these keys are never ambiguous with typing.

@@ -75,7 +75,8 @@ Speed commands work in:
 - Org-mode files (`.org')
 - Markdown files (`.md', `.markdown')
 
-* 👀 When Speed Commands are Active
+* ✅ When Speed Commands are Active
+CLOSED: [2026-10-02 Fri 06:54]
 
 Speed commands are only active when *all* of the following conditions are met:
 
@@ -85,7 +86,8 @@ Speed commands are only active when *all* of the following conditions are met:
 4. *No text is selected* (cursor position only, not a selection)
 5. *No jump is in progress* (see below)
 
-** ⚠️ Speed Commands During a Jump
+** ✅ Speed Commands During a Jump
+CLOSED: [2026-10-02 Fri 06:54]
 
 The avy-style jump commands (see [[file:21-navigation.org][Navigation]]) read
 your keystrokes straight from the editor, so a single-key speed command would

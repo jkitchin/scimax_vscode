@@ -93,7 +93,7 @@ CLOSED: [2026-01-15 Thu 15:41]
 | scimax.table.insertColumnLeft  | M-S-Left  | Insert column to the left  |
 | scimax.table.deleteColumn      |                 | Delete current column      |
 
-** 👀 Moving Rows/Columns
+** Moving Rows/Columns
 CLOSED: [2026-01-15 Thu 15:37]
 
 | Command                      | Key Binding      | Action            |
@@ -103,7 +103,7 @@ CLOSED: [2026-01-15 Thu 15:37]
 | scimax.table.moveColumnLeft  | S-left, M-left   | Move column left  |
 | scimax.table.moveColumnRight | S-right, M-right | Move column right |
 
-** ⚠️ Moving a Single Cell
+** Moving a Single Cell
 
 Move just the cell at the cursor, swapping it with the cell it displaces. The
 cursor follows the cell, so you can repeat the key to walk a value across the

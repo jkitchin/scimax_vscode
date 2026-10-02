@@ -420,7 +420,8 @@ Configure the full-text search database and semantic search capabilities.
 }
 #+end_src
 
-*** 👀 scimax.db.exclude
+*** ✅ scimax.db.exclude
+CLOSED: [2026-10-02 Fri 06:58]
 
 - *Type*: array of strings
 - *Default*: =[]=
@@ -762,7 +763,8 @@ Configure bibliography management and citation styles.
 }
 #+end_src
 
-*** ⚠️ scimax.ref.citationSyntax
+*** ✅ scimax.ref.citationSyntax
+CLOSED: [2026-10-02 Fri 06:58]
 
 - *Type*: string (enum)
 - *Default*: `"org-ref-v3"'
@@ -782,7 +784,8 @@ insertion.
 }
 #+end_src
 
-*** ⚠️ scimax.ref.citationLinkStyle
+*** ✅ scimax.ref.citationLinkStyle
+CLOSED: [2026-10-02 Fri 06:58]
 
 - *Type*: string (enum)
 - *Default*: `"plain"'
@@ -924,7 +927,8 @@ See [[file:41-export-beamer.org][Beamer Export]] for the full feature reference.
 | scimax.export.customExporterPaths  | array  | []      | Extra directories to search for custom exporters |
 | scimax.export.latexClassExporters  | object | {}      | Map =#+LATEX_CLASS= to a custom exporter id      |
 
-*** ⚠️ scimax.export.latexClassExporters
+*** ✅ scimax.export.latexClassExporters
+CLOSED: [2026-10-02 Fri 06:58]
 
 - *Type*: object (string → string)
 - *Default*: ={}=
@@ -1035,7 +1039,8 @@ See [[file:extension-points.org][Extension Points]] for how to define custom exp
 - *Default*: `true'
 - *Description*: Clean up auxiliary files (.aux, .bbl, .blg, etc.) after successful compilation
 
-*** ⚠️ scimax.export.pdf.profile
+*** ✅ scimax.export.pdf.profile
+CLOSED: [2026-10-02 Fri 06:58]
 
 - *Type*: string
 - *Default*: =""=
@@ -1050,7 +1055,8 @@ See [[file:extension-points.org][Extension Points]] for how to define custom exp
 }
 #+end_src
 
-*** ⚠️ scimax.export.pdf.profiles
+*** ✅ scimax.export.pdf.profiles
+CLOSED: [2026-10-02 Fri 06:58]
 
 - *Type*: object
 - *Default*: ={}=
@@ -1600,7 +1606,8 @@ indexing setting is set non-default in your config.
 }
 #+end_src
 
-*** 👀 scimax.agenda.doneStates
+*** ✅ scimax.agenda.doneStates
+CLOSED: [2026-10-02 Fri 06:59]
 
 - *Type*: array of strings
 - *Default*: `["DONE", "CANCELLED", "CANCELED"]'

@@ -253,13 +253,14 @@ Icons indicate heading level:
 - $(symbol-class) $(symbol-class) - Second level
 - $(symbol-method) - Functions/methods
 
-* 👀 Jump Navigation (Avy-Style)
+* Jump Navigation (Avy-Style)
 
 Jump navigation provides character-based quick jumps to visible text, inspired
 by Emacs Avy. You specify what to jump to (character, word, line), and each
 match is labeled with a hint character. Type the hint to jump instantly.
 
-** ⚠️ How a Jump Works
+** ✅ How a Jump Works
+CLOSED: [2026-10-02 Fri 06:53]
 
 There is no prompt or picker: while a jump is running, your keystrokes are read
 straight from the editor, exactly as in Avy. The cursor never leaves the buffer
@@ -285,7 +286,7 @@ the single-character labels and the far ones get pairs. When
 =scimax.jump.allVisibleEditors= is on (the default), every visible editor is
 labeled, so a jump can cross a split.
 
-** ⚠️ Jump to Text (Timer)
+** Jump to Text (Timer)
 
 | Command                   | Key Binding | Description                       |
 |---------------------------+-------------+-----------------------------------|
@@ -300,14 +301,15 @@ labels appear over whatever still matches.
 Use it when one or two characters would leave too many candidates on screen.
 Backspacing past the labels returns you to editing the query.
 
-** 👀 Jump to Character
+** Jump to Character
 
 | Command               | Key Binding | Description                  |
 |-----------------------+-------------+------------------------------|
 | scimax.jump.gotoChar  | C-c j c     | Jump to any character        |
 | scimax.jump.gotoChar2 | C-c j j     | Jump to 2-character sequence |
 
-*** 👀 Single Character
+*** ✅ Single Character
+CLOSED: [2026-10-02 Fri 06:53]
 
 1. Invoke scimax.jump.gotoChar
 2. Type a character, e.g. "e"
@@ -329,8 +331,7 @@ For more precision, use scimax.jump.gotoChar2:
 
 This reduces the number of matches, making jumps faster.
 
-** 👀 Jump to Word
-CLOSED: [2026-01-15 Thu 07:51]
+** Jump to Word
 
 | Command              | Key Binding | Description         |
 |----------------------+-------------+---------------------|
@@ -347,7 +348,8 @@ The starting character is required rather than optional. Labeling every word on
 screen at once buries the text under labels, and the first character of the
 word you want is nearly always known.
 
-** ⚠️ Jump to Heading
+** ✅ Jump to Heading
+CLOSED: [2026-10-02 Fri 06:54]
 
 | Command                 | Key Binding | Description                 |
 |-------------------------+-------------+-----------------------------|
@@ -397,7 +399,8 @@ Jumps to structural elements in the visible area:
 
 Only visible symbols are labeled, making it very fast for navigating code structure.
 
-** 👀 Jump to Subword
+** ✅ Jump to Subword
+CLOSED: [2026-10-02 Fri 06:54]
 
 | Command                 | Key Binding | Description                |
 |-------------------------+-------------+----------------------------|
@@ -408,7 +411,8 @@ character the part starts with, in either case: "v" labels the =V= in
 =myVariableName= as well as the =v= in =my_variable_name=. Useful for landing
 inside a long identifier rather than at its start.
 
-** ⚠️ Listing the Jump Commands
+** ✅ Listing the Jump Commands
+CLOSED: [2026-10-02 Fri 06:54]
 
 | Command                  | Key Binding | Description                |
 |--------------------------+-------------+----------------------------|
@@ -432,7 +436,8 @@ Beyond navigation, jump commands can perform actions:
 These commands use the same labeling system but perform actions instead of
 just moving the cursor.
 
-** 👀 Label Characters
+** ✅ Label Characters
+CLOSED: [2026-10-02 Fri 06:54]
 
 Jump labels use home row keys for efficiency, ordered by ease of typing:
 
@@ -444,7 +449,8 @@ two-character labels, so most targets still get a single keystroke. Since
 labels are assigned nearest-first, the two-character labels land on the targets
 furthest from the cursor.
 
-** ⚠️ Jump Settings
+** ✅ Jump Settings
+CLOSED: [2026-10-02 Fri 06:54]
 
 | Setting                          | Default                    | Description                                     |
 |----------------------------------+----------------------------+-------------------------------------------------|

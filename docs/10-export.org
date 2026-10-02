@@ -27,7 +27,7 @@ CLOSED: [2026-01-16 Fri 20:55]
 
 The dispatcher menu is organized into logical groups:
 
-*** 👀 HTML Exports
+*** HTML Exports
 CLOSED: [2026-01-16 Fri 20:55]
 - `[h h]' HTML file - Export to .html file
 - `[h o]' HTML and open - Export to .html and open in browser
@@ -69,7 +69,7 @@ CLOSED: [2026-01-24 Sat 17:34]
 - `[d d]' Word document - Export to .docx file
 - `[d o]' Word and open - Export and open in Microsoft Word
 
-*** ⚠️ Custom Exporters
+*** Custom Exporters
 
 Every loaded [[file:extension-points.org::*Custom Exporters][custom exporter]] is listed by name on a digit key, so a
 user-defined backend is reachable the same way the built-in formats are:
@@ -159,7 +159,7 @@ The default document class is `article'. You can specify alternatives:
 
 Supported classes: `article', `report', `book', `beamer' (for presentations)
 
-*** ⚠️ Custom Exporters by LaTeX Class
+*** Custom Exporters by LaTeX Class
 
 Document classes that need a template (letters, memos, theses) are handled by
 [[file:extension-points.org][custom exporters]]. Map the class to an exporter id once, and the standard
@@ -321,8 +321,7 @@ emit a bare ~tabular~. If a scaled table's text becomes too small, prefer a
 ~tabularx~ table with wrapping ~X~ columns, which keeps the font size and wraps
 long cells instead.
 
-*** ⚠️ Long inline code wraps at separators
-CLOSED: [2026-07-14 Tue]
+*** Long inline code wraps at separators
 
 Inline verbatim (==code==), Emacs command markup (=`command'=), and inline source
 (=src_python{...}=) export to =\texttt{}=, which does not hyphenate. A long dotted
@@ -333,8 +332,7 @@ these wrap naturally across lines. Word-internal characters are not broken, so a
 single very long token with no separators can still overrun; add a natural
 separator or use a display source block for such cases.
 
-*** ⚠️ Literal dollar signs in prose
-CLOSED: [2026-07-14 Tue]
+*** Literal dollar signs in prose
 
 A =$= in text starts inline LaTeX *math mode* on PDF/LaTeX export. A single stray
 =$=, or a pair around currency (=$50,000 ... $273,000=), is silently typeset as
@@ -397,7 +395,7 @@ PDF export requires:
 - LaTeX distribution (TeX Live, MiKTeX, or MacTeX)
 - `latexmk' utility (included with most distributions)
 
-*** ⚠️ Build Profiles
+*** Build Profiles
 
 A single compiler setting cannot express every build. One paper needs
 pdflatex + bibtex, the next needs lualatex + biber, a third needs an extra
@@ -418,7 +416,7 @@ workspace root, checking =.scimax/latex-profiles.json= then
 =latex-profiles.json= at each level. A nearer definition wins, so a profile in
 a manuscript folder overrides the same name defined at the repository root.
 
-**** ⚠️ Built-in profiles
+**** Built-in profiles
 
 | Name               | Sequence                                                   |
 |--------------------+------------------------------------------------------------|
@@ -432,7 +430,7 @@ a manuscript folder overrides the same name defined at the repository root.
 The bibliography step in each is guarded, so a document with no citations
 skips it instead of failing.
 
-**** ⚠️ Choosing a profile
+**** Choosing a profile
 
 Per file, in the org document:
 
@@ -454,7 +452,7 @@ When a document names no profile, the =default= from the nearest
 =#+LATEX_BUILD: none= opts out entirely and restores the plain
 =scimax.export.pdf.compiler= path.
 
-**** ⚠️ The profiles file
+**** The profiles file
 
 Run =Scimax LaTeX: Create Build Profiles File=
 (=scimax.latex.createBuildProfilesFile=) to drop a commented example next to
@@ -478,7 +476,7 @@ your document, or write one by hand:
 }
 #+end_src
 
-**** ⚠️ File name tokens
+**** File name tokens
 
 Steps rarely want the same form of the file name. =bibtex= and =biber= take the
 base name with no extension; the engines take the file name; =-output-directory=
@@ -498,7 +496,7 @@ expanded with these tokens (for =/papers/2026/thesis.tex=):
 =%b= is the one bibliography processors need: =bibtex thesis=, not
 =bibtex thesis.tex=. Unknown tokens are left alone, so a stray =%= is harmless.
 
-**** ⚠️ Step options
+**** Step options
 
 | Key               | Meaning                                                          |
 |-------------------+------------------------------------------------------------------|
@@ -525,7 +523,7 @@ Guards keep conditional passes out of the way:
   "whenFileMatches": { "file": "%b.aux", "pattern": "\\\\citation", "regex": true } }
 #+end_src
 
-**** ⚠️ Security
+**** Security
 
 Profiles name executables to run, so project-local =latex-profiles.json= files
 are only honored in a *trusted* workspace. Built-in and settings-defined
@@ -533,7 +531,7 @@ profiles are always available. Steps are spawned directly with no shell, so
 arguments are never re-parsed - a =;= or =$(...)= inside an argument is passed
 through as text.
 
-**** ⚠️ Compiling .tex files
+**** Compiling .tex files
 
 Profiles are not limited to org export. =scimax.latex.compile= (=C-c C-c= in a
 =.tex= file) uses the profile named by the =% !SCIMAX build= magic comment,
@@ -542,12 +540,12 @@ falling back to =scimax.latex.compiler= when no profile applies. That covers com
 same command. See
 [[file:33-latex-navigation.org::*Build Profiles for TeX Files][Build Profiles for TeX Files]].
 
-**** ⚠️ CLI
+**** CLI
 
 The =scimax export --format pdf= CLI honors the same profiles, resolved from
 the same files relative to the input document.
 
-**** ⚠️ Commands
+**** Commands
 
 | Command                              | Description                          |
 |--------------------------------------+--------------------------------------|
@@ -555,8 +553,8 @@ the same files relative to the input document.
 | =scimax.latex.showBuildProfile=      | Show which profile a document uses   |
 | =scimax.latex.createBuildProfilesFile= | Write an example profiles file     |
 
-*** 👀 SVG Images
-CLOSED: [2026-07-14 Tue]
+*** ✅ SVG Images
+CLOSED: [2026-10-02 Fri 06:49]
 
 LaTeX engines (pdflatex/lualatex/xelatex) cannot embed =.svg= files directly,
 so a figure like =[[file:diagram.svg]]= would otherwise abort the build with
@@ -579,7 +577,8 @@ untouched (so LaTeX will still error on that figure). The generated
 
 /HTML export renders SVG natively and needs no conversion./
 
-*** 👀 Error Handling
+*** ✅ Error Handling
+CLOSED: [2026-10-02 Fri 06:49]
 
 If PDF compilation fails:
 1. The extension offers to open the `.log' file
@@ -589,8 +588,8 @@ If PDF compilation fails:
    - Syntax errors → Check LaTeX syntax in export
    - Image paths → Ensure images exist and paths are correct
 
-**** 👀 CLI failure reporting
-CLOSED: [2026-07-14 Tue]
+**** ✅ CLI failure reporting
+CLOSED: [2026-10-02 Fri 06:49]
 
 When =scimax export --format pdf= fails, it does not fail silently:
 
@@ -606,8 +605,8 @@ When =scimax export --format pdf= fails, it does not fail silently:
 - With =--json=, the failure object includes =latex_error=, =tex_line=, =log_file=,
   and =removed_partial_pdf=.
 
-*** ⚠️ The generated .tex is disposable
-CLOSED: [2026-07-14 Tue]
+*** ✅ The generated .tex is disposable
+CLOSED: [2026-10-02 Fri 06:49]
 
 The *org file is the source of truth*; the =report.tex= produced during PDF export
 is a *disposable build artifact*. Every =scimax export --format pdf= run
@@ -645,8 +644,7 @@ Enable automatic PDF building in settings:
 }
 #+END_SRC
 
-*** ✅ PDF Viewer Panel with Bidirectional Sync
-CLOSED: [2026-01-22 Thu 21:43]
+*** PDF Viewer Panel with Bidirectional Sync
 
 For an Overleaf-like editing experience, use the built-in PDF viewer panel:
 
