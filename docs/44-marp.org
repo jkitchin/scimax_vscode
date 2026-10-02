@@ -574,7 +574,9 @@ or choose Deck → Presenter Tools... in the Marp menu
 ([[cmd:scimax.marp.deck.presenter]]). Decks without the key are presented and
 exported exactly as before. The tools are added when you present (see
 [[*Slideshow][Slideshow]]) and when you export HTML with =h= (see [[*Exporting Slides][Exporting Slides]]).
-~examples/marp-present/demo.md~ in the Scimax repository shows all of them.
+~examples/marp-present/demo.md~ in the Scimax repository shows all of them, along with
+the rest of Scimax's Marp support: builds, transitions, notes, hidden slides,
+layouts, the Slide Sorter, the Marp menu and exports.
 
 ** Keys in the slideshow
 
