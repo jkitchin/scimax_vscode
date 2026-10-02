@@ -22,6 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **Line-start shortcuts expand again** - Typing `ti` at the start of a line now offers `#+TITLE:` (likewise `n`, `ca`, `au`, `da`, `op`, and `plt`, `np`, `pxl`, `pyl`, `pl` in Python blocks). They were only offered for the complete prefix, so after the first letter VS Code showed document words and never asked for them again.
 - **Semantic search gets embeddings again** (#59) - The chunks table was always created for 384-dimension vectors, so with the default `nomic-embed-text` (768) every embedding failed and was only logged to the console. The table (and a vector index that recorded the wrong size) is rebuilt for the configured model, files indexed before a provider was set up get embedded on the next sync, failures are reported instead of "Embeddings complete", and CLI syncs now wait for their embeddings.
 - **`file:` links land on their line in `#+STARTUP: overview` files** - Following a link like `[[file:13-agenda.org::527]]` into a file not yet open put the caret and view on a top-level heading, because the startup folding moved the caret before it was read back. The caret and view now stay on the target.
 - **No more "FOREIGN KEY constraint failed" from embeddings** - Saving a file while its embeddings were being computed re-indexed it under a new id, and the finished embeddings were then stored for the old one. Those are now dropped (the saved version is embedded again), and a file's chunks are replaced in one transaction.

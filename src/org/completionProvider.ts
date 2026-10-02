@@ -147,19 +147,22 @@ export class OrgCompletionProvider implements vscode.CompletionItemProvider {
             items.push(...this.getSnippetCompletions());
         }
 
-        // Line-start keyword shortcuts (ti, n, ca, etc.)
-        if (linePrefix.match(/^\s*(ti|n|ca|au|da|op)$/i)) {
-            items.push(...this.getLineStartKeywordCompletions(linePrefix, position));
+        // Line-start shortcuts (ti, n, ca, ... and Python snippets in Python
+        // blocks). They are offered from the first letter, and the list is
+        // marked incomplete so VS Code asks again on every keystroke. Without
+        // that, VS Code fills the list with document words after "t" and only
+        // filters it when "i" is typed, so "ti" never reaches this provider.
+        let lineStartShortcuts = false;
+        if (/^\s*[a-z]+$/i.test(linePrefix)) {
+            const shortcutItems = [
+                ...this.getLineStartKeywordCompletions(linePrefix, position),
+                ...this.getPythonSnippetCompletions(document, position, linePrefix),
+            ];
+            lineStartShortcuts = shortcutItems.length > 0;
+            items.push(...shortcutItems);
         }
 
-        // Python snippets (only at beginning of line in Python source blocks)
-        const pythonSnippetMatch = linePrefix.match(/^\s*(pxl|pyl|plt|np|pl)$/);
-        if (pythonSnippetMatch) {
-            const pythonCompletions = this.getPythonSnippetCompletions(document, position, linePrefix);
-            items.push(...pythonCompletions);
-        }
-
-        return items;
+        return lineStartShortcuts ? new vscode.CompletionList(items, true) : items;
     }
 
     /**
@@ -375,7 +378,7 @@ export class OrgCompletionProvider implements vscode.CompletionItemProvider {
         const startCol = linePrefix.length - linePrefix.trimStart().length;
 
         return shortcuts
-            .filter(s => s.prefix === typed)
+            .filter(s => s.prefix.startsWith(typed))
             .map(s => {
                 const item = new vscode.CompletionItem(s.prefix, vscode.CompletionItemKind.Snippet);
                 item.insertText = new vscode.SnippetString(`#+${s.keyword}: $0`);
@@ -425,16 +428,17 @@ export class OrgCompletionProvider implements vscode.CompletionItemProvider {
         position: vscode.Position,
         linePrefix: string
     ): vscode.CompletionItem[] {
-        // Only provide completions if we're in a Python source block
-        if (!this.isInPythonSourceBlock(document, position)) {
-            return [];
-        }
-
         const typed = linePrefix.trim().toLowerCase();
         const startCol = linePrefix.length - linePrefix.trimStart().length;
 
-        return PYTHON_SNIPPETS
-            .filter(s => s.prefix === typed)
+        const matches = PYTHON_SNIPPETS.filter(s => s.prefix.startsWith(typed));
+        // Only provide completions if we're in a Python source block. Checked
+        // after matching because it scans the document.
+        if (matches.length === 0 || !this.isInPythonSourceBlock(document, position)) {
+            return [];
+        }
+
+        return matches
             .map(s => {
                 const item = new vscode.CompletionItem(s.prefix, vscode.CompletionItemKind.Snippet);
                 item.insertText = new vscode.SnippetString(s.body);
