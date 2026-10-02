@@ -287,21 +287,54 @@ async function removeProject(manager: ProjectileManager): Promise<void> {
         return;
     }
 
-    const items: (vscode.QuickPickItem & { project: Project })[] = projects.map(p => ({
-        label: p.name,
-        description: p.path,
-        project: p
-    }));
-
-    const selected = await vscode.window.showQuickPick(items, {
-        placeHolder: 'Select project to remove',
-        matchOnDescription: true
+    // Stalest first: never opened, then oldest last-opened.
+    const ordered = [...projects].sort((a, b) => (a.lastOpened || 0) - (b.lastOpened || 0));
+    const now = Date.now();
+    const items: (vscode.QuickPickItem & { project: Project })[] = ordered.map(p => {
+        const missing = !fs.existsSync(p.path);
+        return {
+            label: missing ? `$(warning) ${p.name}` : p.name,
+            description: describeLastOpened(p.lastOpened, now) + (missing ? ' · folder not found' : ''),
+            detail: p.path,
+            project: p
+        };
     });
 
-    if (selected) {
-        await manager.removeProject(selected.project.path);
-        vscode.window.showInformationMessage(`Removed project: ${selected.project.name}`);
+    const selected = await vscode.window.showQuickPick(items, {
+        placeHolder: 'Select projects to remove from the list (stalest first; files are not touched)',
+        canPickMany: true,
+        matchOnDescription: true,
+        matchOnDetail: true
+    });
+
+    if (!selected || selected.length === 0) return;
+
+    if (selected.length > 1) {
+        const confirm = await vscode.window.showWarningMessage(
+            `Remove ${selected.length} projects from the list? Their files are not touched.`,
+            { modal: true },
+            'Remove'
+        );
+        if (confirm !== 'Remove') return;
     }
+
+    await manager.removeProjects(selected.map(s => s.project.path));
+    vscode.window.showInformationMessage(
+        selected.length === 1
+            ? `Removed project: ${selected[0].project.name}`
+            : `Removed ${selected.length} projects`
+    );
+}
+
+/** "last opened 3 months ago", or "never opened". */
+export function describeLastOpened(lastOpened: number | undefined, now: number): string {
+    if (!lastOpened) return 'never opened';
+    const days = Math.floor((now - lastOpened) / 86400000);
+    if (days < 1) return 'last opened today';
+    if (days < 2) return 'last opened yesterday';
+    if (days < 60) return `last opened ${days} days ago`;
+    if (days < 730) return `last opened ${Math.round(days / 30)} months ago`;
+    return `last opened ${Math.round(days / 365)} years ago`;
 }
 
 /**

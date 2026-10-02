@@ -163,6 +163,21 @@ export class ProjectileManager {
     }
 
     /**
+     * Remove several projects from the known projects list at once
+     */
+    async removeProjects(projectPaths: string[]): Promise<void> {
+        for (const p of projectPaths) {
+            const resolved = path.resolve(p);
+            if (this.db) {
+                await this.db.removeProject(resolved);
+            }
+            this.projects.delete(resolved);
+        }
+        await this.saveProjects();
+        this._onProjectsChanged.fire();
+    }
+
+    /**
      * Get all known projects sorted by last opened
      */
     getProjects(): Project[] {

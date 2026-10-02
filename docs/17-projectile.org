@@ -195,16 +195,22 @@ The scanner:
 - Handles permission errors gracefully
 - Shows progress notification
 
-** ✅ Removing Projects
-CLOSED: [2026-01-16 Fri 21:12]
+** 👀 Removing Projects
 
-Remove projects from the list with `Scimax: Remove Project':
+Remove projects from the list with `Scimax: Remove Project'
+([[cmd:scimax.projectile.remove]]):
 
 #+begin_src
 Command: Scimax: Remove Project
 Keybinding: (none)
 Hydra: Projects → r (Remove Project)
 #+end_src
+
+The list shows the stalest projects first: never-opened ones, then the
+longest since last opened, with when each was last opened next to its name.
+Projects whose folder no longer exists are marked with a warning icon. Tick as
+many as you like (Space toggles, Enter removes); removing more than one asks
+for confirmation first.
 
 Notes:
 - This removes the project from the *known projects list only*
@@ -896,16 +902,16 @@ Project doesn't appear in `C-c p p' list.
    Scimax: Cleanup Non-existent Projects
    #+end_src
 
-** Project List Too Long
+** 👀 Project List Too Long
 
 *** Symptom
 `C-c p p' shows dozens of old projects.
 
 *** Solutions
 
-1. Remove unused projects individually:
+1. Remove unused projects, several at once (stalest are listed first):
    #+begin_src
-   Scimax: Remove Project → select each
+   Scimax: Remove Project → tick each → Enter
    #+end_src
 
 2. Clean up non-existent projects:
