@@ -3,23 +3,66 @@
  * Uses the colour variables of book-theme.css, so it follows dark mode.
  */
 
+/* "Ask" pill fixed to the bottom right corner, in the site's primary colour */
 .chat-toggle {
+    position: fixed;
+    right: 1.25rem;
+    bottom: 1.25rem;
+    z-index: 199;
     display: inline-flex;
     align-items: center;
-    justify-content: center;
-    padding: 0.4rem;
-    margin-right: 0.25rem;
-    border: none;
-    border-radius: 6px;
-    background: transparent;
-    color: var(--text-color);
+    gap: 0.45em;
+    padding: 0.6em 1.15em;
+    border: 1px solid var(--primary-color);
+    border-radius: 999px;
+    background: var(--primary-color);
+    color: #fff;
+    font: inherit;
+    font-size: 0.9rem;
+    font-weight: 600;
+    line-height: 1.2;
     cursor: pointer;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.25), 0 8px 24px rgba(0, 0, 0, 0.18);
+    transition: background var(--transition-speed, 0.2s), transform var(--transition-speed, 0.2s),
+        box-shadow var(--transition-speed, 0.2s);
 }
 
-.chat-toggle:hover,
-.chat-toggle[aria-expanded="true"] {
-    background: var(--bg-secondary);
-    color: var(--primary-color);
+.chat-toggle:hover {
+    background: color-mix(in srgb, var(--primary-color) 82%, #000);
+    border-color: color-mix(in srgb, var(--primary-color) 82%, #000);
+    transform: translateY(-1px);
+    box-shadow: 0 5px 14px rgba(0, 0, 0, 0.3), 0 10px 32px rgba(0, 0, 0, 0.22);
+}
+
+.chat-toggle:active {
+    transform: translateY(0);
+}
+
+.chat-toggle:focus-visible {
+    outline: 2px solid var(--text-color);
+    outline-offset: 2px;
+}
+
+.chat-toggle-icon {
+    display: block;
+    flex: none;
+    width: 1.15em;
+    height: 1.15em;
+    fill: currentColor;
+}
+
+body.book-chat-open .chat-toggle {
+    display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .chat-toggle {
+        transition: none;
+    }
+
+    .chat-toggle:hover {
+        transform: none;
+    }
 }
 
 .book-chat {
@@ -194,6 +237,24 @@
     .book-chat {
         width: 100vw;
         border-left: none;
+    }
+
+    .chat-toggle {
+        right: 1rem;
+        bottom: 1rem;
+        width: 2.9rem;
+        height: 2.9rem;
+        padding: 0;
+        justify-content: center;
+    }
+
+    .chat-toggle-label {
+        display: none;
+    }
+
+    .chat-toggle-icon {
+        width: 1.35rem;
+        height: 1.35rem;
     }
 }
 

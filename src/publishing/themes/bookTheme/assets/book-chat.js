@@ -454,6 +454,8 @@
         var open = this.panel.hidden;
         this.panel.hidden = !open;
         this.toggleButton.setAttribute('aria-expanded', String(open));
+        // The open panel covers the button's corner, so the button is hidden
+        document.body.classList.toggle('book-chat-open', open);
         if (open) this.input.focus();
     };
 

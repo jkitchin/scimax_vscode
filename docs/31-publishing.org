@@ -511,7 +511,8 @@ Create `./css/style.css' and reference it:
 }
 #+END_SRC
 
-* ⚠️ Docs Chat (WebLLM)
+* ✅ Docs Chat (WebLLM)
+CLOSED: [2026-10-02 Fri 06:55]
 
 The book theme can add an "Ask the docs" chat to a published site. It
 finds the sections of the site that best match a question and lists them
@@ -520,7 +521,8 @@ browser (WebLLM, on WebGPU) writes an answer from those sections. Nothing the
 reader types leaves their computer, and the site needs no server: it is
 still plain files, so it works on GitHub Pages.
 
-** ⚠️ Turning It On
+** ✅ Turning It On
+CLOSED: [2026-10-02 Fri 06:55]
 
 The chat is off unless =theme.chat.enabled= is true in `_config.yml':
 
@@ -533,11 +535,12 @@ theme:
 
 When it is on, =publish=:
 
-- adds a chat button to the page header, next to the dark mode toggle
+- adds an "Ask" button in the bottom right corner of every page, in the site's =primary_color= (an icon-only circle on narrow screens)
 - writes `_static/chat-index.json', the text of every page split at its headings
 - copies `book-chat.js', `book-chat-worker.js' and `book-chat.css' to `_static/'
 
-** ⚠️ How Questions Are Answered
+** ✅ How Questions Are Answered
+CLOSED: [2026-10-02 Fri 06:56]
 
 1. The question is matched against the sections with BM25 ranking (headings count more than body text, pairs of adjacent words count as phrases, and a dotted name such as =scimax.export.pdf.profile= matches whole or in parts).
 2. The best 30 are reranked by a small cross-encoder model (=ms-marco-MiniLM-L-6-v2=, about 23 MB, run in the browser with transformers.js) that reads the question and each section together. Its order is blended with the BM25 order, so neither one alone decides. If the reranker cannot load, the BM25 order is used.
@@ -552,7 +555,8 @@ time a reader asks for a written answer, the chat asks before downloading the
 language model. The browser keeps both for later visits. In a browser without
 WebGPU, the chat lists the matching sections without the answer button.
 
-** ⚠️ Choosing a Model
+** ✅ Choosing a Model
+CLOSED: [2026-10-02 Fri 06:56]
 
 Readers pick the model from the menu at the top of the chat panel. The
 smallest is the default; larger ones answer better but take longer to download
@@ -568,7 +572,8 @@ and need more GPU memory. The reader's choice is remembered in the browser.
 The small models can be wrong, which is why the chat always shows the
 sections it used.
 
-** ⚠️ Chat Options
+** ✅ Chat Options
+CLOSED: [2026-10-02 Fri 06:56]
 
 | Key                 | Default                           | Description                                         |
 |---------------------+-----------------------------------+-----------------------------------------------------|
@@ -594,7 +599,7 @@ theme:
     top_k: 4
 #+END_SRC
 
-** ⚠️ Related Topics
+** Related Topics
 
 - [[file:18-database-search.org][Database and Search]] - full-text and semantic search inside VS Code
 - [[file:30-cli.org][CLI]] - =scimax publish= from the command line

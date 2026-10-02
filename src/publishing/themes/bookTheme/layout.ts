@@ -134,9 +134,15 @@ export function renderChat(config: ThemeConfig, pathToRoot: string): { head: str
     // The default model is always one of the choices, listed first
     settings.models = [settings.model, ...settings.models.filter(m => m !== settings.model)];
     const json = JSON.stringify(settings).replace(/</g, '\\u003c');
+    const title = escapeHtml(settings.title || 'Ask the docs');
     return {
         head: `<link rel="stylesheet" href="${pathToRoot}_static/book-chat.css">`,
-        body: `<script type="application/json" id="book-chat-config">${json}</script>
+        // A pill fixed to the bottom right corner, hidden while the panel is open
+        body: `<button type="button" class="chat-toggle" id="chat-toggle" title="${title} (runs in your browser)" aria-label="${title}" aria-controls="book-chat" aria-expanded="false">
+        <svg class="chat-toggle-icon" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M8 1.5c-3.9 0-7 2.4-7 5.4 0 1.7 1 3.2 2.6 4.2-.1.8-.5 1.8-1.3 2.6-.2.2 0 .5.2.5 1.6-.1 3-.7 4-1.5.5.1 1 .1 1.5.1 3.9 0 7-2.4 7-5.4S11.9 1.5 8 1.5z"/></svg>
+        <span class="chat-toggle-label">Ask</span>
+    </button>
+    <script type="application/json" id="book-chat-config">${json}</script>
     <script src="${pathToRoot}_static/book-chat.js"></script>`,
     };
 }

@@ -172,7 +172,11 @@ describe('chat configuration and markup', () => {
             model: 'SmolLM2-360M-Instruct-q4f16_1-MLC',
         });
         expect(JSON.parse(json).models[0]).toBe('SmolLM2-360M-Instruct-q4f16_1-MLC');
-        expect(renderHeader(config, {} as ProjectContext, './')).toContain('id="chat-toggle"');
+        expect(body).toContain('id="chat-toggle"');
+        expect(body).toContain('<span class="chat-toggle-label">Ask</span>');
+        expect(body).toContain('aria-label="Ask &lt;/script&gt;"');
+        // The button floats over the page; it is not in the header
+        expect(renderHeader(config, {} as ProjectContext, './')).not.toContain('chat-toggle');
     });
 });
 
