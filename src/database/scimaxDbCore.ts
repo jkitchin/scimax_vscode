@@ -1668,8 +1668,10 @@ export class ScimaxDbCore {
         this.isProcessingEmbeddings = true;
         this.embeddingCancelled = false;
 
+        let done = 0;
         try {
             while (this.embeddingQueue.length > 0 && !this.embeddingCancelled) {
+                this.onEmbeddingProgress(done, done + this.embeddingQueue.length);
                 const filePath = this.embeddingQueue.shift()!;
                 try {
                     if (!fs.existsSync(filePath)) continue;
@@ -1681,12 +1683,18 @@ export class ScimaxDbCore {
                 } catch (error) {
                     console.error(`[ScimaxDbCore] Failed to generate embeddings for ${filePath}:`, error);
                 }
+                done++;
                 const delayMs = this.embeddingQueue.length > 100 ? 500 : 200;
                 await new Promise(r => setTimeout(r, delayMs));
             }
         } finally {
             this.isProcessingEmbeddings = false;
         }
+    }
+
+    /** Called before each file is embedded; `total` grows if files are queued meanwhile. */
+    protected onEmbeddingProgress(_done: number, _total: number): void {
+        // No UI in the core; the VS Code wrapper shows it in the status bar.
     }
 
     public getEmbeddingQueueLength(): number {

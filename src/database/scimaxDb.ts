@@ -58,6 +58,7 @@ export class ScimaxDb extends ScimaxDbCore {
 
     // Status bar for embedding progress
     private embeddingStatusBar: vscode.StatusBarItem | null = null;
+    private embeddingStatusBarHideTimer: ReturnType<typeof setTimeout> | null = null;
 
     // Event emitter for file index completion
     private _onDidIndexFile = new vscode.EventEmitter<string>();
@@ -230,55 +231,67 @@ export class ScimaxDb extends ScimaxDbCore {
         const db = this.getClient();
         if (!db) return;
 
-        // Create status bar item with click-to-cancel
-        this.embeddingStatusBar = vscode.window.createStatusBarItem(
-            vscode.StatusBarAlignment.Right,
-            -10
-        );
-        const remaining = this.getEmbeddingQueueLength();
-        this.embeddingStatusBar.text = `$(sparkle) Embeddings: ${remaining} remaining`;
+        // One status bar item, reused across runs: a run can start before the
+        // previous run's "complete" message has been hidden.
+        if (this.embeddingStatusBarHideTimer) {
+            clearTimeout(this.embeddingStatusBarHideTimer);
+            this.embeddingStatusBarHideTimer = null;
+        }
+        if (!this.embeddingStatusBar) {
+            this.embeddingStatusBar = vscode.window.createStatusBarItem(
+                vscode.StatusBarAlignment.Right,
+                -10
+            );
+        }
+        this.embeddingStatusBar.text = `$(sparkle) Embeddings: 0/${this.getEmbeddingQueueLength()}`;
         this.embeddingStatusBar.tooltip = 'Scimax: Generating embeddings for semantic search (click to cancel)';
         this.embeddingStatusBar.command = 'scimax.db.cancelEmbeddings';
         this.embeddingStatusBar.show();
 
-        // Delegate to the core queue processor
-        const originalProcessing = super.processEmbeddingQueueCore.bind(this);
-
-        // Wrap to update status bar during processing
         try {
-            // We can't easily intercept per-file progress in the base class,
-            // so run the core processor and just show/hide the status bar.
             this.resetEmbeddingFailures();
-            await originalProcessing();
+            await super.processEmbeddingQueueCore();
 
             const failures = this.getEmbeddingFailures();
             if (failures.count > 0) {
                 log.error(`Embeddings failed for ${failures.count} file(s): ${failures.lastError}`);
-                this.embeddingStatusBar?.dispose();
-                this.embeddingStatusBar = null;
+                this.hideEmbeddingStatusBar();
                 vscode.window.showWarningMessage(
                     `Scimax: embeddings failed for ${failures.count} file(s). Last error: ${failures.lastError}`
                 );
             } else if (this.embeddingStatusBar) {
                 this.embeddingStatusBar.text = `$(check) Embeddings complete`;
-                setTimeout(() => {
-                    this.embeddingStatusBar?.dispose();
-                    this.embeddingStatusBar = null;
+                this.embeddingStatusBar.tooltip = 'Scimax: Embeddings for semantic search are up to date';
+                this.embeddingStatusBar.command = undefined;
+                this.embeddingStatusBarHideTimer = setTimeout(() => {
+                    this.embeddingStatusBarHideTimer = null;
+                    this.hideEmbeddingStatusBar();
                 }, 2000);
             }
         } catch (error) {
             log.error('Embedding queue processing failed', error as Error);
-            this.embeddingStatusBar?.dispose();
-            this.embeddingStatusBar = null;
+            this.hideEmbeddingStatusBar();
         }
+    }
+
+    protected onEmbeddingProgress(done: number, total: number): void {
+        if (this.embeddingStatusBar) {
+            this.embeddingStatusBar.text = `$(sparkle) Embeddings: ${done}/${total}`;
+        }
+    }
+
+    private hideEmbeddingStatusBar(): void {
+        if (this.embeddingStatusBarHideTimer) {
+            clearTimeout(this.embeddingStatusBarHideTimer);
+            this.embeddingStatusBarHideTimer = null;
+        }
+        this.embeddingStatusBar?.dispose();
+        this.embeddingStatusBar = null;
     }
 
     public cancelEmbeddingQueue(): void {
         super.cancelEmbeddingQueue();
-        if (this.embeddingStatusBar) {
-            this.embeddingStatusBar.dispose();
-            this.embeddingStatusBar = null;
-        }
+        this.hideEmbeddingStatusBar();
         log.info('Embedding queue cancelled');
     }
 
@@ -657,10 +670,7 @@ export class ScimaxDb extends ScimaxDbCore {
     // ----------------------------------------------------------
 
     public async close(): Promise<void> {
-        if (this.embeddingStatusBar) {
-            this.embeddingStatusBar.dispose();
-            this.embeddingStatusBar = null;
-        }
+        this.hideEmbeddingStatusBar();
         this._onDidIndexFile.dispose();
         this._onDidClear.dispose();
         this._onDidRebuild.dispose();

@@ -137,4 +137,19 @@ describe('embedding dimensions (integration)', () => {
         const rows = await (db as any).db.execute('SELECT content FROM chunks');
         expect(rows.rows.map((r: any) => r.content)).toEqual(['* Heading\nEdited text about catalysis.']);
     }, SETUP_TIMEOUT_MS);
+
+    it('reports progress as done/total, one call per file', async () => {
+        const second = path.join(dir, 'b.org');
+        fs.writeFileSync(second, '* Other\nMore text.\n');
+        const calls: Array<[number, number]> = [];
+        (db as any).onEmbeddingProgress = (done: number, total: number) => calls.push([done, total]);
+        await db.indexFile(file);
+        await db.indexFile(second);
+        await db.setEmbeddingService(fakeService(768));
+        db.queueEmbeddings(file);
+        db.queueEmbeddings(second);
+        await db.waitForEmbeddings();
+        // The first file starts before the second is queued, so the total grows
+        expect(calls).toEqual([[0, 1], [1, 2]]);
+    }, SETUP_TIMEOUT_MS);
 });
