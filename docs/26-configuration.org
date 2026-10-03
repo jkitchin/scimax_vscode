@@ -193,7 +193,7 @@ The counts for a file come from one database query. Set it to =false= to hide
 the lenses; *Find All References* (=Shift+F12=) still lists back-links. See
 [[file:42-granular-addressing.org][Granular Addressing]].
 
-** ⚠️ Editor Defaults for Org Files
+** Editor Defaults for Org Files
 
 scimax sets these VS Code editor settings for org files. Override them in your
 own settings under ="[org]"=.

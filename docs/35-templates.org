@@ -97,10 +97,10 @@ CLOSED: [2026-01-21 Wed 07:14]
 | Figure              | Figure environment with caption       |
 | Table               | Table environment with caption        |
 
-* ⚠️ Snippets
+* Snippets
 
 Short prefixes expand into org syntax when you press =Tab= right after them:
-type =ti= and =Tab= for =#+title:=, or =<py= and =Tab= for a Python source
+type =ti= and =Tab= for =#+TITLE:=, or =<py= and =Tab= for a Python source
 block. Tab stops then move through the parts to fill in (=Tab= to go on,
 =Escape= to finish). The snippets also appear in the suggestion list as you
 type.

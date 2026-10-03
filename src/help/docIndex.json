@@ -1,5 +1,5 @@
 {
-  "buildDate": "2026-10-03T18:58:39.170Z",
+  "buildDate": "2026-10-03T19:19:28.458Z",
   "count": 3644,
   "entries": [
     {
@@ -99938,7 +99938,7 @@
       "level": 1,
       "file": "35-templates.org",
       "line": 100,
-      "content": "Short prefixes expand into org syntax when you press =Tab= right after them: type =ti= and =Tab= for =#+title:=, or =<py= and =Tab= for a Python source block. Tab stops then move through the parts to fill in (=Tab= to go on, =Escape= to finish). The snippets also appear in the suggestion list as you type. Tab expands them because scimax sets ~editor.tabCompletion~ to ~onlySnippets~ for org files: =Tab= expands a word only when it is exactly a snippet's prefix, and inserts a tab otherwise. On a h",
+      "content": "Short prefixes expand into org syntax when you press =Tab= right after them: type =ti= and =Tab= for =#+TITLE:=, or =<py= and =Tab= for a Python source block. Tab stops then move through the parts to fill in (=Tab= to go on, =Escape= to finish). The snippets also appear in the suggestion list as you type. Tab expands them because scimax sets ~editor.tabCompletion~ to ~onlySnippets~ for org files: =Tab= expands a word only when it is exactly a snippet's prefix, and inserts a tab otherwise. On a h",
       "path": [],
       "commands": [],
       "keybindings": [],

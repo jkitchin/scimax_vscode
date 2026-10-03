@@ -46,7 +46,7 @@ reachable from the export menu) now opens this live preview to the side.
   re-read only when the =.bib= file changes.
 - *#+INCLUDE:* directives are expanded.
 
-* 👀 Scroll Sync and Navigation
+* Scroll Sync and Navigation
 
 - Scrolling the source editor scrolls the preview to the same place, and
   scrolling the preview scrolls the editor. Each direction can be turned off

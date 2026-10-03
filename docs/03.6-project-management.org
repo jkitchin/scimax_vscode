@@ -80,7 +80,8 @@ not apply:
 ,#+END:
 #+end_src
 
-** 👀 Project view
+** ✅ Project view
+CLOSED: [2026-10-03 Sat 15:20]
 
 [[cmd:scimax.project.view]] (*Scimax: Project View (Gantt Chart)*) opens a panel
 with every TODO task in the active file's project on a graphical Gantt chart.
@@ -141,7 +142,8 @@ another.
   chosen tags, and the tag filter combines with the assignee filter. A task's
   tags appear in its tooltip.
 
-*** ⚠️ Dragging tasks on the chart
+*** ✅ Dragging tasks on the chart
+CLOSED: [2026-10-03 Sat 15:20]
 
 Unfinished tasks can be moved with the mouse. The bar follows the pointer a
 whole day at a time, and a tip shows the new dates and how many days it moved.

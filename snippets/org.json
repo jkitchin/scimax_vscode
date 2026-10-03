@@ -304,12 +304,12 @@
   },
   "Title": {
     "prefix": "ti",
-    "body": "#+title: $0",
+    "body": "#+TITLE: $0",
     "description": "Document title keyword"
   },
   "Caption": {
     "prefix": "ca",
-    "body": "#+caption: $0",
+    "body": "#+CAPTION: $0",
     "description": "Caption keyword for figures/tables"
   }
 }
