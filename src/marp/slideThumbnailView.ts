@@ -1,6 +1,6 @@
 /**
- * Marp slide thumbnails, in two places: the Marp Slides view in the Explorer
- * sidebar and the Slide Sorter editor tab. Both show the active Marp deck.
+ * Marp slide thumbnails in the Slide Sorter editor tab (also the one-slide
+ * Slide Preview). It shows the active Marp deck.
  *
  * Each renders the deck with marp-core (each slide as an inline SVG, scaled by
  * the webview to a zoomable width) and highlights the slide under the cursor.
@@ -28,14 +28,12 @@ import {
     moveSlides, moveSlidesTo, normalizeSelection, parseDeck, setHidden, slideAtLine, slidesFromText,
 } from './slideModel';
 
-const SIDEBAR_VIEW_TYPE = 'scimax.marp.slides';
-
 const RENDER_DEBOUNCE_MS = 300;
 
-/** Thumbnail widths in pixels. The sidebar default is wider than the view, so it fills it. */
+/** Thumbnail widths in pixels. */
 const ZOOM_MIN = 80;
 const ZOOM_MAX = 640;
-const ZOOM_DEFAULT: Record<SurfaceKind, number> = { sidebar: 640, sorter: 240 };
+const ZOOM_DEFAULT: Record<SurfaceKind, number> = { sorter: 240 };
 
 /** Operations on the selected slides, from the context menu or the keyboard shortcuts. */
 const SLIDE_OPERATIONS = [
@@ -45,7 +43,7 @@ const SLIDE_OPERATIONS = [
 ] as const;
 type SlideOperation = typeof SLIDE_OPERATIONS[number];
 
-type SurfaceKind = 'sidebar' | 'sorter';
+type SurfaceKind = 'sorter';
 
 /** Grid of thumbnails, or one slide fitted to the view (the slide preview). */
 type ViewMode = 'grid' | 'slide';
@@ -79,7 +77,7 @@ function isMarpDocument(document: vscode.TextDocument): boolean {
 }
 
 /**
- * The deck both surfaces show: the Marp document in the active editor. When
+ * The deck the sorter shows: the Marp document in the active editor. When
  * focus moves to something that is not a text editor (the preview, the slide
  * sorter) the current deck is kept.
  */
@@ -128,7 +126,7 @@ class MarpDeckTracker implements vscode.Disposable {
             return;
         }
         const isMarp = isMarpDocument(editor.document);
-        // Shows the sidebar view and the editor-title sorter button while a Marp deck is active.
+        // Shows the editor-title slide buttons while a Marp deck is active.
         void vscode.commands.executeCommand('setContext', 'scimax.marp.isMarpDocument', isMarp);
         if (isMarp && editor.document !== this.document) {
             this.cursorLine = editor.selection.active.line;
@@ -693,64 +691,21 @@ class SlideSorter implements vscode.WebviewPanelSerializer, vscode.Disposable {
     }
 }
 
-/** The Marp Slides view in the Explorer sidebar. */
-class SlideSidebarProvider implements vscode.WebviewViewProvider, vscode.Disposable {
-    public controller?: SlideWebviewController;
-
-    constructor(
-        private readonly extensionUri: vscode.Uri,
-        private readonly globalState: vscode.Memento,
-        private readonly tracker: MarpDeckTracker
-    ) {}
-
-    public resolveWebviewView(view: vscode.WebviewView): void {
-        const controller = new SlideWebviewController(this.extensionUri, this.globalState, this.tracker, {
-            kind: 'sidebar',
-            webview: view.webview,
-            isVisible: () => view.visible,
-            refocus: () => vscode.commands.executeCommand(`${SIDEBAR_VIEW_TYPE}.focus`),
-        });
-        this.controller = controller;
-        view.onDidChangeVisibility(() => {
-            if (view.visible) {
-                controller.onVisible();
-            }
-        });
-        view.onDidDispose(() => {
-            controller.dispose();
-            if (this.controller === controller) {
-                this.controller = undefined;
-            }
-        });
-    }
-
-    public dispose(): void {
-        this.controller?.dispose();
-    }
-}
-
 export function registerSlideThumbnailView(context: vscode.ExtensionContext): void {
     const tracker = new MarpDeckTracker();
     setCurrentDeckSource(() => tracker.document);
-    const sidebar = new SlideSidebarProvider(context.extensionUri, context.globalState, tracker);
     const sorter = new SlideSorter(context.extensionUri, context.globalState, tracker);
 
-    /** Menu commands go to the surface that was right-clicked. */
-    const menu = (operation: SlideOperation) => (arg?: ThumbnailContext) => {
-        const controller = arg?.surface === 'sorter' ? sorter.controller : sidebar.controller;
-        return controller?.runFromMenu(operation, arg);
-    };
+    /** Thumbnail context menu commands act on the sorter. */
+    const menu = (operation: SlideOperation) => (arg?: ThumbnailContext) => sorter.controller?.runFromMenu(operation, arg);
 
     context.subscriptions.push(
         tracker,
-        sidebar,
         sorter,
-        vscode.window.registerWebviewViewProvider(SIDEBAR_VIEW_TYPE, sidebar),
         vscode.window.registerWebviewPanelSerializer('scimax.marp.slideSorter', sorter),
         vscode.commands.registerCommand('scimax.marp.openSlideSorter', () => sorter.open('grid')),
         vscode.commands.registerCommand('scimax.marp.openSlidePreview', () => sorter.open('slide')),
         vscode.commands.registerCommand('scimax.marp.refreshSlides', () => {
-            sidebar.controller?.refresh();
             sorter.controller?.refresh();
         }),
         // Thumbnail context menu (webview/context).

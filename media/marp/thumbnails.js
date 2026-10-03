@@ -1,7 +1,7 @@
 // @ts-check
 /**
- * Scimax Marp slide thumbnails (webview side), for both the Marp Slides
- * sidebar view and the Slide Sorter tab.
+ * Scimax Marp slide thumbnails (webview side), for the Slide Sorter tab and
+ * the Slide Preview.
  *
  * Receives Marp's rendered HTML and CSS from src/marp/slideThumbnailView.ts,
  * wraps each slide's <svg data-marpit-svg> in its own numbered card, lays the
@@ -27,7 +27,7 @@
     const count = /** @type {HTMLElement} */ (document.getElementById('count'));
     const zoomInput = /** @type {HTMLInputElement} */ (document.getElementById('zoom'));
     const isMac = navigator.platform.toUpperCase().includes('MAC');
-    const surface = body.dataset.surface || 'sidebar';
+    const surface = body.dataset.surface || 'sorter';
 
     const ZOOM_MIN = Number(body.dataset.zoomMin) || 80;
     const ZOOM_MAX = Number(body.dataset.zoomMax) || 640;

@@ -5,7 +5,7 @@
 #+OPTIONS: toc:t num:t
 #+TODO: ⚠️ 👀 | ✅
 
-* Overview
+* 👀 Overview
 
 Scimax supports [[https://marp.app/][Marp]] slide decks on its own: a Markdown file whose front
 matter has ~marp: true~. It renders the slides with its own copy of Marp Core,
@@ -14,13 +14,13 @@ so the [[https://marketplace.visualstudio.com/items?itemName=marp-team.marp-vsco
 | Task                             | How                                                                                                                     |
 |----------------------------------+-------------------------------------------------------------------------------------------------------------------------|
 | See one slide as you edit        | Slide preview: the play-preview button in the editor title bar ([[*Slide Preview][Slide Preview]])                      |
-| See and rearrange the whole deck | Slide Sorter and the Marp Slides sidebar ([[*Slide Thumbnails][Slide Thumbnails]], [[*Editing Slides][Editing Slides]]) |
+| See and rearrange the whole deck | Slide Sorter ([[*Slide Thumbnails][Slide Thumbnails]], [[*Editing Slides][Editing Slides]])                         |
 | Present                          | =C-c C-e x=, the play button, or a ~marp:~ link in an org file ([[*Slideshow][Slideshow]])                              |
 | Write directives                 | Completion and hover in the front matter and comments ([[*Directives][Directives]])                                     |
 | Export                           | =C-c C-e= for PDF, PowerPoint, Google Slides, HTML, images ([[*Exporting Slides][Exporting Slides]])                    |
 
 For help, *Scimax: Marp Help* ([[cmd:scimax.marp.help]], also at the bottom of
-the Marp menu, as =C-c C-e ?= and as ? in the Marp Slides view) opens this
+the Marp menu, and as =C-c C-e ?=) opens this
 guide or the online Marp documentation: slide syntax, directives, image
 syntax, fragmented lists, theme CSS, the built-in themes and Marp CLI.
 
@@ -107,7 +107,7 @@ default).
 The command has no default keybinding. To add one, open Keyboard Shortcuts
 and search for ~scimax.marp.revealInPreview~.
 
-* Slide Preview
+* 👀 Slide Preview
 
 The slide preview shows the slide under the editor cursor, fitted to its
 tab, and follows the cursor as you move and type. Open it with the preview
@@ -117,8 +117,7 @@ and leaves the focus in the editor.
 
 The preview is the Slide Sorter tab in /slide/ mode. The two buttons at the
 left of its toolbar switch between one slide and the grid of all slides
-(=V= does too), and the tab remembers the last mode. The Marp Slides sidebar
-view has the same buttons, so it can be a small preview too.
+(=V= does too), and the tab remembers the last mode.
 
 | Key or action                                                     | Effect                                                   |
 |-------------------------------------------------------------------+----------------------------------------------------------|
@@ -222,25 +221,18 @@ shows what a directive does when you hover over it.
 | ~header~, ~footer~, ~color~, ~background*~                                    | Local  | (free text; ~background*~ positions, repeats and sizes are offered) |
 | ~style~, ~lang~, ~title~, ~author~, ~description~, ~keywords~, ~url~, ~image~ | Global | (free text)                                                         |
 
-* Slide Thumbnails
+* 👀 Slide Thumbnails
 
-Scimax shows a thumbnail of every slide in the active deck in two places:
+The *Slide Sorter* is an editor tab that shows a thumbnail of every slide in
+the active deck in a grid, like a slide sorter in PowerPoint or Keynote. Open
+it with =Cmd+Shift+V= (=Ctrl+Shift+V=) in the deck, ~Scimax: Open Marp Slide
+Sorter~ ([[cmd:scimax.marp.openSlideSorter]]), or the layout button in the
+deck's editor title bar. It opens beside the deck, and like any tab it can be
+split, moved or dragged into its own window. It reopens after a reload.
 
-- The *Marp Slides* view in the Explorer sidebar. It appears whenever a
-  Markdown file with ~marp: true~ in its front matter is the active editor.
-  It is often collapsed at the bottom of the Explorer; drag its header to the
-  Secondary Side Bar or the bottom panel for more room.
-- The *Slide Sorter*, an editor tab that lays the thumbnails out in a grid,
-  like a slide sorter in PowerPoint or Keynote. Open it with =Cmd+Shift+V=
-  (=Ctrl+Shift+V=) in the deck, ~Scimax: Open Marp Slide Sorter~
-  ([[cmd:scimax.marp.openSlideSorter]]), or the layout
-  button in the deck's editor title bar or the sidebar view's title bar. It
-  opens beside the deck, and like any tab it can be split, moved or dragged
-  into its own window. It reopens after a reload.
-
-Both follow the active Marp deck and keep showing it while you work in its
-preview or in the sorter. Both do everything described here and in
-[[*Editing Slides][Editing Slides]]; the sorter just has more room.
+The sorter follows the active Marp deck and keeps showing it while you work in
+its preview or in the sorter itself. (Earlier versions also had a Marp Slides
+view in the Explorer sidebar; the sorter replaces it.)
 
 Double-click a thumbnail to jump to the text that defines that slide. The
 editor comes forward with the cursor on the slide's first content line and
@@ -261,13 +253,11 @@ beside the sorter rather than replacing it.
 | Pinch, or =Ctrl= + scroll       | Zoom                                                      |
 | Refresh button                  | Re-renders the deck                                       |
 
-** Zoom
+** 👀 Zoom
 
 The slider in the toolbar at the top sets the thumbnail width, from 80 to 640
-pixels. The thumbnails flow into as many columns as fit, so in the sidebar a
-small zoom gives two or more columns. By default the sidebar fills its width
-with one column and the sorter starts at 240 pixels. Each remembers its own
-zoom. The keys =+= and =-= step the zoom and =0= resets it; they are plain keys
+pixels. The thumbnails flow into as many columns as fit. The default is 240
+pixels, and the sorter remembers the zoom. The keys =+= and =-= step the zoom and =0= resets it; they are plain keys
 because =Cmd+==/=Cmd+-= zoom the whole VS Code window. A trackpad pinch (or
 =Ctrl= + scroll wheel) zooms too.
 
@@ -288,11 +278,11 @@ The view renders with its own copy of Marp Core and follows these settings
 Run ~Scimax: Refresh Marp Slide Thumbnails~ ([[cmd:scimax.marp.refreshSlides]])
 after editing a theme file, since theme files are not watched.
 
-* Editing Slides
+* 👀 Editing Slides
 
-The Marp Slides view and the Slide Sorter can rearrange a deck without
+The Slide Sorter can rearrange a deck without
 scrolling through the Markdown. Each change edits the ~.md~ file directly and is a single edit, so
-one Undo in the editor (or =Cmd+Z= in the view) reverses it. Only the lines
+one Undo in the editor (or =Cmd+Z= in the sorter) reverses it. Only the lines
 that change are rewritten; the rest of the file is left exactly as it was.
 
 ** Selecting slides
@@ -312,8 +302,7 @@ a selected thumbnail moves the whole selection, in order, as one block, even
 when the selected slides were not next to each other. Dropping past the last
 thumbnail moves the slides to the end.
 
-** ✅ The slide menu
-CLOSED: [2026-10-02 Fri 07:30]
+** 👀 The slide menu
 
 Right-click a thumbnail for these commands. They act on all selected slides
 when the clicked slide is part of the selection.
@@ -344,8 +333,8 @@ Export Deck lists every export (see [[*Exporting Slides][Exporting Slides]]); it
 whole deck.
 
 On Windows and Linux use =Ctrl= in place of =Cmd=. =Cmd+Z= and =Cmd+Shift+Z= (or
-=Cmd+Y=) in the view undo and redo in the editor. These keys work only while the Marp
-Slides view has focus. They are handled by the view itself, so they are not
+=Cmd+Y=) in the sorter undo and redo in the editor. These keys work only while the
+Slide Sorter has focus. They are handled by the view itself, so they are not
 listed in Keyboard Shortcuts and cannot be rebound. Right-clicking empty space
 below the slides offers Paste Slide After and Insert New Slide After, which
 add to the end of the deck.
@@ -393,7 +382,7 @@ heading already starts a slide. A slide's own directive comments
 Insert New Slide adds an empty slide (a ~---~ line and a blank line) and moves
 the cursor into it, ready to type.
 
-** Hidden slides
+** 👀 Hidden slides
 
 Marp has no way to skip a slide, so Hide Slide wraps it in a comment that
 Scimax recognizes:
@@ -406,7 +395,7 @@ scimax-hidden -->
 #+end_example
 
 Marp does not render the comment, so the slide is left out of the preview and
-of every export. Its thumbnail stays in the view, dimmed and marked /hidden/,
+of every export. Its thumbnail stays in the sorter, dimmed and marked /hidden/,
 and can be moved, copied or unhidden like any other slide. Any ~-->~ inside
 the hidden slide (such as its own directive comments) is written as ~-\->~
 so it cannot end the comment early, and Unhide restores it.

@@ -412,7 +412,7 @@ Export markdown (=.md=) files to other formats via Pandoc. Complements the org-t
 
 Requires Pandoc to be installed on the system.
 
-** Markdown Preview
+** 👀 Markdown Preview
 
 | Command ID                         | Description                            | Default Keybinding |
 |------------------------------------+----------------------------------------+--------------------|
@@ -422,7 +422,7 @@ Requires Pandoc to be installed on the system.
 
 Reveal scrolls the Markdown preview (opening one if needed) to the cursor
 line. For the other direction, double-click the preview. Refresh re-renders
-the Marp Slides sidebar and the Slide Sorter, for example after editing a
+the Slide Sorter, for example after editing a
 theme file. See [[file:44-marp.org][Marp Slides]].
 
 *** Marp Slides and Slideshow
@@ -517,14 +517,12 @@ the menu. See [[file:44-marp.org::*Exporting Slides][Exporting Slides]].
 | [[cmd:scimax.marp.exportImages]]       | Slides to PNG images                               | -                        |
 | [[cmd:scimax.marp.exportNotes]]        | Presenter notes to text                            | -                        |
 
-*** ✅ Marp Slides View
-CLOSED: [2026-10-02 Fri 06:55]
+*** 👀 Slide Sorter
 
-These commands act on the selected thumbnails in the Marp Slides view or the
-Slide Sorter. They
+These commands act on the selected thumbnails in the Slide Sorter. They
 are in the thumbnails' right-click menu, not the command palette. The keys
-work while the view has focus (=Ctrl= in place of =Cmd= on Windows and Linux)
-and are handled by the view, so they cannot be rebound. See
+work while the sorter has focus (=Ctrl= in place of =Cmd= on Windows and Linux)
+and are handled by the sorter, so they cannot be rebound. See
 [[file:44-marp.org::*Editing Slides][Editing Slides]].
 
 | Command ID                                | Description                     | Key in the view |

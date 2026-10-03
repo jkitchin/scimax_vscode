@@ -122,14 +122,6 @@
       ]
     },
     "views": {
-      "explorer": [
-        {
-          "id": "scimax.marp.slides",
-          "type": "webview",
-          "name": "Marp Slides",
-          "when": "scimax.marp.isMarpDocument"
-        }
-      ],
       "scimax": [
         {
           "id": "scimax.agenda",
@@ -7896,97 +7888,97 @@
         },
         {
           "command": "scimax.marp.slide.editWithClaude",
-          "when": "(webviewId == 'scimax.marp.slides' || webviewId == 'scimax.marp.slideSorter') && webviewSection == 'slide'",
+          "when": "webviewId == 'scimax.marp.slideSorter' && webviewSection == 'slide'",
           "group": "0_claude@1"
         },
         {
           "submenu": "scimax.marp.exportSubmenu",
-          "when": "webviewId == 'scimax.marp.slides' || webviewId == 'scimax.marp.slideSorter'",
+          "when": "webviewId == 'scimax.marp.slideSorter'",
           "group": "8_export"
         },
         {
           "command": "scimax.marp.slide.gotoSource",
-          "when": "(webviewId == 'scimax.marp.slides' || webviewId == 'scimax.marp.slideSorter') && webviewSection == 'slide'",
+          "when": "webviewId == 'scimax.marp.slideSorter' && webviewSection == 'slide'",
           "group": "1_navigate@1"
         },
         {
           "command": "scimax.marp.slide.revealInPreview",
-          "when": "(webviewId == 'scimax.marp.slides' || webviewId == 'scimax.marp.slideSorter') && webviewSection == 'slide'",
+          "when": "webviewId == 'scimax.marp.slideSorter' && webviewSection == 'slide'",
           "group": "1_navigate@2"
         },
         {
           "command": "scimax.marp.slide.present",
-          "when": "(webviewId == 'scimax.marp.slides' || webviewId == 'scimax.marp.slideSorter') && webviewSection == 'slide'",
+          "when": "webviewId == 'scimax.marp.slideSorter' && webviewSection == 'slide'",
           "group": "1_navigate@3"
         },
         {
           "command": "scimax.marp.slide.cut",
-          "when": "(webviewId == 'scimax.marp.slides' || webviewId == 'scimax.marp.slideSorter') && webviewSection == 'slide'",
+          "when": "webviewId == 'scimax.marp.slideSorter' && webviewSection == 'slide'",
           "group": "2_clipboard@1"
         },
         {
           "command": "scimax.marp.slide.copy",
-          "when": "(webviewId == 'scimax.marp.slides' || webviewId == 'scimax.marp.slideSorter') && webviewSection == 'slide'",
+          "when": "webviewId == 'scimax.marp.slideSorter' && webviewSection == 'slide'",
           "group": "2_clipboard@2"
         },
         {
           "command": "scimax.marp.slide.pasteAfter",
-          "when": "(webviewId == 'scimax.marp.slides' || webviewId == 'scimax.marp.slideSorter') && webviewSection == 'slide'",
+          "when": "webviewId == 'scimax.marp.slideSorter' && webviewSection == 'slide'",
           "group": "2_clipboard@3"
         },
         {
           "command": "scimax.marp.slide.pasteBefore",
-          "when": "(webviewId == 'scimax.marp.slides' || webviewId == 'scimax.marp.slideSorter') && webviewSection == 'slide'",
+          "when": "webviewId == 'scimax.marp.slideSorter' && webviewSection == 'slide'",
           "group": "2_clipboard@4"
         },
         {
           "command": "scimax.marp.slide.insertBefore",
-          "when": "(webviewId == 'scimax.marp.slides' || webviewId == 'scimax.marp.slideSorter') && webviewSection == 'slide'",
+          "when": "webviewId == 'scimax.marp.slideSorter' && webviewSection == 'slide'",
           "group": "3_insert@1"
         },
         {
           "command": "scimax.marp.slide.insertAfter",
-          "when": "(webviewId == 'scimax.marp.slides' || webviewId == 'scimax.marp.slideSorter') && webviewSection == 'slide'",
+          "when": "webviewId == 'scimax.marp.slideSorter' && webviewSection == 'slide'",
           "group": "3_insert@2"
         },
         {
           "command": "scimax.marp.slide.duplicate",
-          "when": "(webviewId == 'scimax.marp.slides' || webviewId == 'scimax.marp.slideSorter') && webviewSection == 'slide'",
+          "when": "webviewId == 'scimax.marp.slideSorter' && webviewSection == 'slide'",
           "group": "3_insert@3"
         },
         {
           "command": "scimax.marp.slide.moveUp",
-          "when": "(webviewId == 'scimax.marp.slides' || webviewId == 'scimax.marp.slideSorter') && webviewSection == 'slide'",
+          "when": "webviewId == 'scimax.marp.slideSorter' && webviewSection == 'slide'",
           "group": "4_move@1"
         },
         {
           "command": "scimax.marp.slide.moveDown",
-          "when": "(webviewId == 'scimax.marp.slides' || webviewId == 'scimax.marp.slideSorter') && webviewSection == 'slide'",
+          "when": "webviewId == 'scimax.marp.slideSorter' && webviewSection == 'slide'",
           "group": "4_move@2"
         },
         {
           "command": "scimax.marp.slide.hide",
-          "when": "(webviewId == 'scimax.marp.slides' || webviewId == 'scimax.marp.slideSorter') && webviewSection == 'slide' && !slideHidden",
+          "when": "webviewId == 'scimax.marp.slideSorter' && webviewSection == 'slide' && !slideHidden",
           "group": "5_visibility@1"
         },
         {
           "command": "scimax.marp.slide.unhide",
-          "when": "(webviewId == 'scimax.marp.slides' || webviewId == 'scimax.marp.slideSorter') && webviewSection == 'slide' && slideHidden",
+          "when": "webviewId == 'scimax.marp.slideSorter' && webviewSection == 'slide' && slideHidden",
           "group": "5_visibility@1"
         },
         {
           "command": "scimax.marp.slide.delete",
-          "when": "(webviewId == 'scimax.marp.slides' || webviewId == 'scimax.marp.slideSorter') && webviewSection == 'slide'",
+          "when": "webviewId == 'scimax.marp.slideSorter' && webviewSection == 'slide'",
           "group": "9_delete@1"
         },
         {
           "command": "scimax.marp.slide.pasteAfter",
-          "when": "(webviewId == 'scimax.marp.slides' || webviewId == 'scimax.marp.slideSorter') && webviewSection == 'deck'",
+          "when": "webviewId == 'scimax.marp.slideSorter' && webviewSection == 'deck'",
           "group": "1_deck"
         },
         {
           "command": "scimax.marp.slide.insertAfter",
-          "when": "(webviewId == 'scimax.marp.slides' || webviewId == 'scimax.marp.slideSorter') && webviewSection == 'deck'",
+          "when": "webviewId == 'scimax.marp.slideSorter' && webviewSection == 'deck'",
           "group": "1_deck"
         }
       ],
@@ -8436,21 +8428,6 @@
       ],
       "view/title": [
         {
-          "command": "scimax.marp.openSlideSorter",
-          "when": "view == scimax.marp.slides",
-          "group": "navigation@0"
-        },
-        {
-          "command": "scimax.marp.exportMenu",
-          "when": "view == scimax.marp.slides",
-          "group": "navigation@1"
-        },
-        {
-          "command": "scimax.marp.refreshSlides",
-          "when": "view == scimax.marp.slides",
-          "group": "navigation@2"
-        },
-        {
           "command": "scimax.notes.refresh",
           "when": "view == scimax.notes",
           "group": "navigation"
@@ -8554,11 +8531,6 @@
           "command": "scimax.projectile.scan",
           "when": "view == scimax.projects",
           "group": "2_manage"
-        },
-        {
-          "command": "scimax.marp.help",
-          "when": "view == scimax.marp.slides",
-          "group": "navigation@9"
         }
       ],
       "view/item/context": [

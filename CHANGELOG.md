@@ -63,6 +63,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 
 - **Mermaid Gantt block** - the `#+BEGIN: gantt` dynamic block and *Scimax: Insert Gantt Chart* (`scimax.org.insertGantt`) are gone; the project view's interactive chart, with Excel and PDF export, replaces them. Updating an old `gantt` block now reports "Unknown dynamic block type".
+- **Marp Slides view** - the Explorer sidebar view is gone; the Slide Sorter tab (`Cmd+Shift+V` in a deck) does everything it did, with more room, and the slide preview covers the one-slide case.
 
 ## [0.7.1] - 2026-09-18
 
