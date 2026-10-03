@@ -87,8 +87,18 @@ The CLI checks for this file only if the VS Code global storage database is not 
 ** Help
 
 #+begin_src bash
-scimax --help
-scimax <command> --help
+scimax --help        # or: scimax help
+#+end_src
+
+=--help= (or =-h=) always prints the global help, even after a command name, so
+=scimax db --help= shows the same text as =scimax --help=. Some commands print
+their own usage when given =help= or no subcommand:
+
+#+begin_src bash
+scimax db help
+scimax cite
+scimax task help
+scimax skill
 #+end_src
 
 ** Agenda
@@ -110,6 +120,12 @@ scimax agenda todos --state NEXT
 
 # Overdue items
 scimax agenda overdue
+
+# Cap the number of TODO items (default 500)
+scimax agenda todos --limit 50
+
+# JSON output (any view)
+scimax agenda week --json
 #+end_src
 
 *** Output Example
@@ -131,12 +147,40 @@ Full-text search across all indexed org files.
 # Basic search
 scimax search "machine learning"
 
-# Limit results
+# Limit results (default 20)
 scimax search "catalyst" --limit 10
 
 # JSON output for scripting
-scimax search "python" --format json
+scimax search "python" --json
+
+# Semantic (vector) search
+scimax search "methods for reducing overfitting" --semantic
 #+end_src
+
+=--semantic= embeds the query with the Ollama model from your VS Code settings
+(=scimax.db.embeddingProvider=, =scimax.db.ollamaUrl=, =scimax.db.ollamaModel=)
+and searches the stored embeddings. It fails with a message if the database has
+no embeddings or no Ollama provider is configured.
+
+*** Heading Search
+
+Search heading titles, tags, and TODO states:
+
+#+begin_src bash
+# Headings whose title matches
+scimax search headings "proposal"
+
+# Headings tagged :proposal:
+scimax search headings -t proposal
+
+# All TODO headings
+scimax search headings --todo TODO
+
+# Combine filters (default limit 50)
+scimax search headings -t grant --todo NEXT --limit 20 --json
+#+end_src
+
+At least one of a query, =-t= / =--tag=, or =--todo= is required.
 
 *** Output Example
 
@@ -185,6 +229,15 @@ scimax export paper.org --format html --bib references.bib
 
 # With specific CSL style
 scimax export paper.org --format html --bib refs.bib --csl ieee
+
+# Use a custom exporter
+scimax export memo.org --exporter cmu-memo
+
+# List installed custom exporters (and any manifest problems)
+scimax export --list-exporters
+
+# JSON result (success, input file, output path, or error)
+scimax export paper.org --format pdf --json
 #+end_src
 
 The export command automatically looks for bibliography files in the same directory (=refs.bib=, =references.bib=, or =<filename>.bib=).
@@ -193,6 +246,11 @@ When a PDF compile fails, the CLI prints the first LaTeX error and its =.tex=
 line, points to the full =.log=, and deletes the incomplete PDF so a broken build
 is not mistaken for a good one. Use =--show-log= (or =--verbose= / =-v=) to also
 print the tail of the log. See [[file:10-export.org][Export]] for details.
+
+For =--format latex= and =--format pdf=, a document that names a custom exporter
+with =#+EXPORTER:=, or whose =#+LATEX_CLASS= is mapped in
+=scimax.export.latexClassExporters=, is routed to that exporter, as in the
+editor.
 
 ** ✅ Tangle
 CLOSED: [2026-07-11 Sat 09:08]
@@ -217,7 +275,8 @@ Relative =:tangle= paths are resolved against the directory of the source file, 
 
 ** Citations
 
-Citation-related operations.
+Citation-related operations. =extract=, =check=, and =list= accept =--json= (or
+=--format json=) for structured output.
 
 *** Extract Citations
 
@@ -340,6 +399,15 @@ scimax project --add ~/projects/new-project
 
 # JSON output
 scimax project --json
+
+# Remove projects whose directories no longer exist
+scimax project --cleanup
+
+# Remove one project by path
+scimax project --remove /old/path
+
+# Find and register git/projectile projects under a directory (default: cwd)
+scimax project --scan ~/projects
 #+end_src
 
 Projects are pulled fresh from the scimax database each time. The extension registers projects automatically when you open folders in VS Code.
@@ -449,10 +517,14 @@ Output:
   Root: /home/user/project
 
   Files indexed: 42
-  Headings: 1,234
-  TODO items: 89
+  Headings: 1234
+  Source blocks: 317
   Has embeddings: No
+  Org files: 40
+  Markdown files: 2
 #+end_example
+
+Add =--json= for structured output.
 
 *** Check Integrity
 
@@ -472,11 +544,13 @@ MISSING: deleted-folder/notes.org
 Total files in database: 42
 Missing files: 2
 
-Run =scimax db sync= to bring the index up to date.
+Open VS Code to rebuild the index.
 #+end_example
 
-*** ✅ Sync
-CLOSED: [2026-07-11 Sat 09:08]
+When nothing is missing, the last line is =Database looks good.= Running
+=scimax db sync= also removes the missing entries.
+
+*** Sync
 
 Bring the database into agreement with the configured scan roots and the filesystem in one pass: pick up new files, refresh changed files (mtime-based), refresh in-scope files that are stale, and prune entries for files that no longer exist.
 
@@ -497,6 +571,9 @@ scimax db sync --dry-run
 
 # Show a line per file (in addition to the summary)
 scimax db sync --verbose
+
+# Index without generating embeddings
+scimax db sync --no-embeddings
 #+end_src
 
 Output:
@@ -517,13 +594,51 @@ sync complete in 1.4s
 
 The summary uses these markers:
 
-| Marker | Meaning                                                 |
-|--------+---------------------------------------------------------|
-| =+=    | New file added to the database                          |
-| =~=    | Existing file re-indexed (mtime newer)                  |
-| =*=    | Out-of-scope file refreshed because mtime advanced      |
-| =-=    | File removed from the database (no longer on disk)      |
-| =     | Unchanged                                                |
+| Marker | Meaning                                            |
+|--------+----------------------------------------------------|
+| =+=    | New file added to the database                     |
+| =~=    | Existing file re-indexed (mtime newer)             |
+| =*=    | Out-of-scope file refreshed because mtime advanced |
+| =-=    | File removed from the database (no longer on disk) |
+| ~=~    | Unchanged (=--verbose= only)                       |
+| =.=    | Out-of-scope file, unchanged (=--verbose= only)    |
+
+**** ✅ Embeddings During Sync
+CLOSED: [2026-10-02 Fri 07:34]
+
+Sync uses =scimax.db.embeddingProvider=, =scimax.db.ollamaUrl=, and
+=scimax.db.ollamaModel= from your VS Code =settings.json=. When the provider is
+=ollama=, sync:
+
+1. Tests the connection by embedding a short string and checking the vector has
+   the size expected for the model. If the test fails, sync prints
+   =FAILED (embeddings will be skipped)= and indexes without embeddings.
+2. Queues embeddings for every file it indexes.
+3. After the summary, also queues every indexed file that has no embeddings yet
+   (for example, files indexed before a provider was configured), so you do not
+   need =clear= to add embeddings to an existing database.
+4. Waits for the queue to finish before exiting, then reports
+   =Embeddings complete= or
+   =Embeddings failed for N file(s). Last error: ...=.
+
+#+begin_example
+Testing embedding service connection... OK
+  Provider: ollama, Model: nomic-embed-text
+
+sync complete in 3.2s
+  +12 new
+  ~5 updated
+  -0 removed
+  1834 unchanged
+Generating embeddings (14 file(s) remaining)...
+  Embeddings complete
+#+end_example
+
+=--no-embeddings= skips all of this. The provider defaults to =none=, as in
+VS Code, and =--embeddings= does not enable embeddings when the provider is
+=none=; set =scimax.db.embeddingProvider= to =ollama= instead. Embeddings are not generated in =--dry-run= mode. Embedding a large
+collection for the first time can take a long time; =scimax db scan= accepts the
+same embedding flags.
 
 *** ✅ Clear
 CLOSED: [2026-07-11 Sat 09:08]
@@ -549,6 +664,28 @@ Continue? [y/N] y
 Database cleared.
 Run "scimax db sync" to repopulate.
 #+end_example
+
+*** ✅ Remove and Ignore Files
+CLOSED: [2026-10-02 Fri 07:34]
+
+Remove files from the database by path or glob. Relative paths are resolved
+against the current directory.
+
+#+begin_src bash
+# Remove one file
+scimax db remove notes/scratch.org
+
+# Remove everything matching a glob
+scimax db remove "~/Dropbox/archive/**"
+
+# Remove from the database AND add to scimax.db.exclude in settings.json
+scimax db ignore "~/Dropbox/archive/**"
+#+end_src
+
+=remove= only deletes database entries, so a later sync adds the files back if
+they are under a scan root. =ignore= also appends the pattern (or the absolute
+path) to =scimax.db.exclude= in your VS Code =settings.json=, so sync skips it
+from then on. Both accept =--json=.
 
 *** Prune Excluded Files
 
@@ -746,6 +883,8 @@ Use an absolute path to the binary: cron's =PATH= is minimal and will not find a
 | =scimax db scan <dir>= | Ad-hoc scan of a single directory                         |
 | =scimax db check=      | Read-only integrity report (no changes)                   |
 | =scimax db prune=      | Drop entries the exclude rules now reject                 |
+| =scimax db remove=     | Drop specific files or globs from the database            |
+| =scimax db ignore=     | Drop files and add them to =scimax.db.exclude=            |
 
 - Use *sync* for routine maintenance, including the morning's first pass.
 - Use *scan* for one-off directories outside the configured scan roots.
@@ -754,6 +893,86 @@ Use an absolute path to the binary: cron's =PATH= is minimal and will not find a
   a built-in exclusion.
 
 The =rebuild= and =reindex= subcommands have been removed. Use =sync= (or =clear= + =sync=) instead.
+
+** ✅ Publish
+CLOSED: [2026-10-02 Fri 07:34]
+
+Publish org projects to HTML, using the same configuration as the editor's
+publishing commands (=_config.yml= or =.org-publish.json= in the current
+directory). See [[file:31-publishing.org][Publishing]] for the configuration format.
+
+#+begin_src bash
+# Publish all projects
+scimax publish
+
+# Publish one project
+scimax publish docs
+
+# Republish every file, even if up to date
+scimax publish docs --force
+
+# Show what would be published without writing files
+scimax publish docs --dry-run
+
+# List configured projects
+scimax publish --list
+
+# Structured output (works with --list and publishing)
+scimax publish --json
+#+end_src
+
+Put the project name before any flags. Flags take the following word as their
+value, so =scimax publish --force docs= treats =docs= as the value of =--force=
+and publishes all projects.
+
+If a theme other than =default= is configured (for example =theme: book= in
+=_config.yml=), projects are published with that theme.
+
+*** Initializing a Configuration
+
+=--init= writes a starter configuration to the current directory. It refuses to
+overwrite an existing =_config.yml= or =.org-publish.json= unless =--force= is
+given.
+
+#+begin_src bash
+# .org-publish.json with defaults
+scimax publish --init
+
+# _config.yml instead
+scimax publish --init --yaml
+
+# Custom names and directories
+scimax publish --init --name docs --base ./docs --output ./_build/html
+#+end_src
+
+| Option           | Default         | Description                                |
+|------------------+-----------------+--------------------------------------------|
+| =--name <name>=  | =main=          | Project name                               |
+| =--base <dir>=   | =./=            | Source directory                           |
+| =--output <dir>= | =./_build/html= | Output directory                           |
+| =--yaml=         | off             | Write =_config.yml= instead of JSON        |
+| =--no-github=    | GitHub on       | Disable GitHub Pages support (=.nojekyll=) |
+| =--no-sitemap=   | sitemap on      | Disable automatic sitemap generation       |
+| =--force=        | off             | Overwrite an existing configuration        |
+
+If the source directory has no =_toc.yml=, =--init= prints an example one.
+
+** Skill
+
+Install the scimax skill for Claude Code, which lets Claude use the CLI to
+answer questions about your notes, agenda, citations, and journal.
+
+#+begin_src bash
+scimax skill install     # Install to ~/.claude/skills/scimax/
+scimax skill update      # Overwrite bundled files, keep learnings.md
+scimax skill show        # Print the bundled SKILL.md to stdout
+scimax skill path        # Print the installation directory
+scimax skill uninstall   # Remove ~/.claude/skills/scimax/
+#+end_src
+
+=install= does nothing if the skill is already installed; use =update= to get
+the bundled version. =learnings.md=, where corrections you give Claude are
+recorded, is preserved by =update=.
 
 * Scripting Examples
 
@@ -804,17 +1023,16 @@ scimax search ":research:" --limit 50
 
 The CLI has some limitations compared to the VS Code extension:
 
-1. *Semantic Search*: Requires embeddings which need the embedding service configured in VS Code.
+1. *Semantic Search*: Requires embeddings, which need an Ollama embedding provider configured in your VS Code settings (see [[*Embeddings During Sync][Embeddings During Sync]]).
 
 2. *Live Updates*: The CLI reads a snapshot of the database. Changes made to org files won't be reflected until you run =scimax db sync= or VS Code re-indexes them.
 
 3. *Interactive Features*: No support for interactive features like completion or live preview.
 
-4. *FTS Index*: =scimax db sync= populates the main tables but doesn't rebuild the FTS5 full-text index triggers. For full FTS support, use VS Code to create the initial database.
-
 * Related Topics
 
 - [[file:18-database-search.org][Database & Search]] - How the database indexing works
+- [[file:31-publishing.org][Publishing]] - Publishing projects and the book theme
 - [[file:10-export.org][Export]] - Export options and configuration
 - [[file:19-references.org][References & Citations]] - Citation syntax and bibliography management
 - [[file:13-agenda.org][Agenda]] - Agenda views in VS Code

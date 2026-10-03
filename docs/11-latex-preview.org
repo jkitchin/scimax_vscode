@@ -929,9 +929,15 @@ When sharing documents:
 
 ** Scimax VS Code Documentation
 
-- Export System: `docs/export.org'
-- Source Blocks: `docs/source-blocks.org'
-- Configuration: `docs/configuration.org'
+- [[file:10-export.org][Export System]]
+- [[file:07-source-blocks.org][Source Blocks]]
+- [[file:26-configuration.org][Configuration]]
+
+* Related Topics
+
+- [[file:10-export.org][Export]] - LaTeX and PDF export of the same math
+- [[file:46-org-preview.org][Org Preview]] - math rendered with MathJax in a live preview
+- [[file:33-latex-navigation.org][LaTeX Navigation]] - working in =.tex= files
 
 * Navigation
 

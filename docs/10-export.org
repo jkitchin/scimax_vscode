@@ -101,8 +101,7 @@ CLOSED: [2026-01-16 Fri 20:55]
 
 HTML export generates semantic HTML5 documents with modern styling.
 
-*** ✅ Features
-CLOSED: [2026-01-16 Fri 20:55]
+*** Features
 - Semantic HTML5 structure (`<section>', `<header>', `<nav>')
 - Syntax highlighting via highlight.js
 - MathJax support for mathematical equations
@@ -110,6 +109,11 @@ CLOSED: [2026-01-16 Fri 20:55]
 - Table of contents generation
 - Footnote support
 - Custom CSS and JavaScript support
+- Verse blocks keep their line breaks and indentation
+- Plain and =<...>= web links become links (see [[file:05-links.org][Links]])
+- =code= and ~verbatim~ may contain their own marker when it is not followed by
+  a space or punctuation, so =feral_ordering=metis= is one code span (also in
+  LaTeX export)
 
 *** ✅ MathJax Integration
 CLOSED: [2026-01-17 Sat 15:08]

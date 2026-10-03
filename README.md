@@ -369,6 +369,38 @@ bibliography:~/references.bib
 
 ---
 
+### Live Org Preview
+
+`Cmd+Shift+V` (`Ctrl+Shift+V`) in an org file opens a rendered preview, and `Cmd+K V` opens it to the side. It updates as you type, follows the light/dark theme, shows local images, and scrolls with the editor in both directions. Double-click jumps to the source line. See [docs/46-org-preview.org](docs/46-org-preview.org).
+
+---
+
+### Markdown Preview and MyST
+
+VS Code's Markdown preview renders MyST (Jupyter Book) directives and roles: admonitions, figures, `{code-cell}` and roles like `` {ref}`text <target>` ``. Double-clicking an element lands on its exact source line, and *Scimax: Reveal Cursor in Markdown Preview* scrolls the preview to the cursor. See [docs/45-myst-preview.org](docs/45-myst-preview.org).
+
+---
+
+### Marp Slide Decks
+
+Scimax renders and edits [Marp](https://marp.app/) decks without the Marp extension:
+- **Slide Sorter and thumbnails**: `Cmd+Shift+V` in a deck opens a zoomable grid. You can cut, copy, paste, move, hide and delete slides, and copied slides keep their images.
+- **Marp menu** in the editor's right-click menu: slide operations, layouts, inserting elements, directives and themes.
+- **Present** in the browser from the first or the current slide. The open slideshow reloads when you save.
+- **Export** with `C-c C-e`: PDF, HTML, PNG, notes and PowerPoint through Marp CLI or Pandoc.
+- **Presenter tools** with `presenter: true`: pen, laser, sticky notes, spotlight, talk timer, editing slides in place, saving the annotated deck, and live Python cells (```` ```python run ````) that run in the browser with Pyodide.
+- **Edit slides with Claude Code** from the slide menu.
+
+Try `examples/marp-present/demo.md`. See [docs/44-marp.org](docs/44-marp.org).
+
+---
+
+### Publishing and "Ask the Docs"
+
+`scimax publish` (or the *Publish Project* command) builds a static site from org files, with a book theme driven by `_config.yml` and `_toc.yml`. With `theme.chat.enabled: true`, the site gets an **Ask** button. It finds the best-matching sections and can have a model running in the reader's browser (WebLLM) write an answer that cites them. Nothing runs on a server. See [docs/31-publishing.org](docs/31-publishing.org).
+
+---
+
 ### Capture Templates (org-capture)
 
 Quick note capture with customizable templates, inspired by Emacs org-capture.
@@ -898,10 +930,10 @@ This package almost achieves feature parity with Emacs Scimax. If there are feat
 
 | Metric              | Count    |
 |---------------------|----------|
-| TypeScript files    | 429      |
+| TypeScript files    | 434      |
 | Lines of TypeScript | ~208,000 |
-| Test files          | 126      |
-| Unit tests          | 3480     |
+| Test files          | 130      |
+| Unit tests          | 3492     |
 | Documentation files | 56       |
 | Commands            | 1366     |
 | Keybindings         | 450      |

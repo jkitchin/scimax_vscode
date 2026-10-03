@@ -39,10 +39,11 @@ The caption, with $math$ and `code`.
 | Directive                                                   | Preview                                                        |
 |-------------------------------------------------------------+----------------------------------------------------------------|
 | ~admonition~                                                | Callout titled with the argument; colour from ~:class:~        |
-| ~note~, ~tip~, ~hint~, ~important~, ~warning~, ~caution~, ~danger~, ~error~, ~seealso~, ... | Callout titled with the directive name     |
+| ~note~, ~tip~, ~hint~, ~important~, ~warning~, ~caution~, ~danger~, ~error~, ~seealso~, ... | Callout titled with the directive name; an argument becomes its first paragraph |
 | ~dropdown~, or any admonition with ~:class: dropdown~       | Collapsible callout (add ~:open:~ to start expanded)           |
 | ~figure~, ~image~                                           | The image, with ~:alt:~, ~:width:~ and ~:align:~; caption below |
-| ~code-cell~, ~code-block~, ~code~                           | Highlighted code block in the argument's language              |
+| ~code-cell~, ~code-block~, ~code~, ~sourcecode~, ~eval-rst~, ~raw~ | Highlighted code block in the argument's language       |
+| ~literalinclude~                                            | A code block of its body; the named file is not read           |
 | ~math~                                                      | Display math (when ~markdown.math.enabled~ is on)              |
 | ~margin~, ~sidebar~, ~topic~, ~card~, ...                   | An indented block of Markdown                                  |
 | ~index~, ~toctree~, ~tableofcontents~, ~bibliography~       | Hidden, as in the built book                                   |
@@ -68,8 +69,8 @@ inside directives.
 
 After changing the setting, run ~Markdown: Refresh Preview~.
 
-Marp slide decks (front matter ~marp: true~) are rendered by the Marp
-extension and are not affected.
+Marp slide decks (front matter ~marp: true~) are rendered as slides by
+Scimax's own Marp support (see [[file:44-marp.org][Marp Slides]]); MyST is not applied to them.
 
 * Related Topics
 

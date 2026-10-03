@@ -857,8 +857,7 @@ The database agenda (scimax.db.agenda) offers:
 3. *Semantic search* - Find items by meaning
 4. *Hybrid views* - Combine agenda with search
 
-** ✅ Indexing for Agenda
-CLOSED: [2026-05-03 Sun 08:00]
+** 👀 Indexing for Agenda
 
 Before using the agenda, index your files:
 
@@ -867,9 +866,17 @@ Before using the agenda, index your files:
 | [[cmd:scimax.db.refresh]] | Refresh database incrementally (mtime)     |
 | [[cmd:scimax.db.rebuild]] | Rebuild database from scratch              |
 
-For day-to-day use across machines (e.g. Dropbox sync), run =Refresh=
-on activation when prompted, or any time you want the agenda to pick up
-new edits.
+For day-to-day use across machines (e.g. Dropbox sync), the agenda
+keeps itself current: before it shows the agenda, the TODO list or the
+agenda tree, it re-indexes org files that changed on disk since they
+were indexed, and drops files that were deleted. While it works, the
+status bar shows "Agenda: updating m/n changed files". This takes well
+under a second unless many files changed. Turn it off with
+=scimax.agenda.updateChangedFiles= (see [[file:26-configuration.org::*Agenda Settings][Agenda Settings]]).
+
+Files the database has never seen (a new file created on another
+machine, for example) are not picked up this way; run =Refresh= for
+those.
 
 ** ✅ Database Agenda Commands
 CLOSED: [2026-01-17 Sat 12:33]

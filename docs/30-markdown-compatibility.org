@@ -248,6 +248,21 @@ Markdown headings support folding via the standard VS Code folding mechanism:
 - Press =Shift+Tab= anywhere for global fold cycling
 - Use the fold icons in the gutter
 
+** Markdown Preview
+
+VS Code's Markdown preview (=Cmd+Shift+V=, =Cmd+K V= to the side) gets two
+additions from Scimax:
+
+- *MyST directives and roles* (Jupyter Book) render as callouts, figures and
+  highlighted code instead of raw =:::{...}= text. See [[file:45-myst-preview.org][MyST Preview]].
+- *Reveal Cursor in Markdown Preview* (~scimax.marp.revealInPreview~) scrolls
+  the preview so the element on the cursor line is at its top, opening a
+  preview to the side if none is showing. It relies on
+  ~markdown.preview.scrollPreviewWithEditor~ (on by default).
+
+Files with ~marp: true~ in their front matter are previewed as slides; see
+[[file:44-marp.org][Marp Slides]].
+
 * ✅ Features Not Available in Markdown
 CLOSED: [2026-01-19 Mon 09:40]
 

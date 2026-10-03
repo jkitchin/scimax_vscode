@@ -278,17 +278,38 @@ Scimax uses Ollama for embeddings:
 *** Ollama
 - *Pros*: Free, private, local control, high quality
 - *Cons*: Requires Ollama installed and running
-- *Models*:
-  - `nomic-embed-text' (768 dims, recommended)
-  - `all-minilm' (384 dims, smaller)
-  - `mxbai-embed-large' (1024 dims, larger)
 - *Setup*: Install Ollama, then `ollama pull nomic-embed-text'
+
+Known models and their embedding dimensions:
+
+| Model                    | Dimensions | Notes                |
+|--------------------------+------------+----------------------|
+| `nomic-embed-text'       |        768 | Default, recommended |
+| `all-minilm'             |        384 | Smaller, faster      |
+| `mxbai-embed-large'      |       1024 | Larger               |
+| `snowflake-arctic-embed' |       1024 | Larger               |
+
+Any other model name is assumed to produce 768-dimensional vectors.
+
+*** Changing Models
+
+The vector table is sized for the configured model's dimensions. When you
+switch to a model with a different dimension (for example from
+`nomic-embed-text' to `all-minilm'), Scimax drops the =chunks= table and its
+vector index and recreates them at the new size. This happens when the new
+model takes effect: after `Scimax: Configure Embedding Service', or the next
+time the database is opened.
+All existing embeddings are discarded; run `Scimax: Sync Files'
+(`scimax.db.reindex') to re-embed your files with the new model.
 
 ** ✅ Configuration
 CLOSED: [2026-01-17 Sat 11:59]
 
-*** ✅ Interactive Setup
-CLOSED: [2026-01-17 Sat 11:59]
+*** Interactive Setup
+
+Semantic search is off until you choose a provider: the default
+=scimax.db.embeddingProvider= is =none=, in VS Code and in the CLI.
+
 
 Run `Scimax: Configure Embedding Service' (`scimax.db.configureEmbeddings')
 
@@ -353,13 +374,18 @@ Results include:
 
 ** Syncing for Semantic Search
 
-After configuring an embedding provider, you *must re-sync* your files:
+After configuring an embedding provider, run `Scimax: Sync Files'
+(`scimax.db.reindex'). You do not need to rebuild the database:
 
-1. Run `Scimax: Sync Files' (`scimax.db.reindex').
-   For a full embeddings rebuild, run `Scimax: Rebuild Database (from scratch)' (`scimax.db.rebuild').
-2. Wait for indexing to complete
-3. The database will generate embeddings for all text chunks
-4. Semantic search will now be available
+1. Sync re-indexes changed files as usual, and also queues embeddings for
+   every indexed file that has none (for example, files indexed before a
+   provider was configured).
+2. Embeddings are generated in the background; the status bar shows
+   =Embeddings: N remaining= (click it to cancel).
+3. When the queue finishes, semantic search covers all embedded files.
+
+`Scimax: Rebuild Database (from scratch)' (`scimax.db.rebuild') is only needed
+if you want to discard and regenerate everything.
 
 * Hybrid Search
 
@@ -1214,9 +1240,11 @@ Automatically index workspace on activation. Disable for large workspaces.
 *** `scimax.db.embeddingProvider'
 Type: `enum'
 Values: "none" | "ollama"
-Default: `"ollama"'
+Default: `"none"'
 
-Embedding provider for semantic search.
+Embedding provider for semantic search. With the default =none=, semantic
+search is off; set it to =ollama= (or run `Scimax: Configure Embedding
+Service') to turn it on.
 
 #+BEGIN_SRC json
 {
@@ -1434,13 +1462,28 @@ If vector search is supported but not working:
 
 1. Check embedding provider is configured: `scimax.db.embeddingProvider'
 2. Test connection: Run `Scimax: Configure Embedding Service'
-3. Ensure files are reindexed after configuring embeddings
+3. Run `Scimax: Sync Files' after configuring embeddings (it queues files that have no embeddings)
 4. Check console for errors (`Help: Toggle Developer Tools')
 
-*** Local Provider Issues
-- First use downloads model (~30MB), wait for completion
-- Check extension cache directory has write permissions
-- Try different model if one fails
+*** "Embeddings failed for N file(s)"
+
+When the embedding queue finishes and some files could not be embedded, Scimax
+shows a warning:
+
+#+BEGIN_EXAMPLE
+Scimax: embeddings failed for 3 file(s). Last error: <message>
+#+END_EXAMPLE
+
+The last error usually points at the cause: Ollama not running, the model not
+pulled, or a dimension mismatch. Fix the cause and run `Scimax: Sync Files'
+again; files without embeddings are queued again.
+
+*** Files Saved While Being Embedded
+
+Embedding a file can take a few seconds. If you save the file during that time,
+it is re-indexed and queued for embedding again. The embeddings computed for
+the old version are discarded rather than stored, so the file ends up embedded
+from its latest content. This is expected and not an error.
 
 *** Ollama Issues
 - Ensure Ollama is running: `ollama serve'
@@ -1700,9 +1743,10 @@ Simplified parser:
 - Cell indices tracked for navigation
 - Hashtags from markdown cells
 
-* See Also
+* Related Topics
 
 - [[file:01-getting-started.org][Getting Started]] - Initial setup and first steps
+- [[file:30-cli.org][Command-Line Interface]] - `scimax db sync', `scimax search' and other CLI commands
 - [[file:07-source-blocks.org][Source Blocks]] - Code execution and literate programming
 - [[file:03-todo-items.org][TODO Items]] - Task management features
 - [[file:05-links.org][Links]] - Link types and navigation

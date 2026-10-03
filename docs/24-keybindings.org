@@ -249,6 +249,7 @@ org-mode, markdown, and LaTeX files with consistent behavior.
 | C-c C-e       | Export dispatcher (show menu) |
 | C-c C-e h h   | Export to HTML                |
 | C-c C-e h o   | Export to HTML and open       |
+| C-c C-e h p   | Open the live org preview     |
 | C-c C-e l l   | Export to LaTeX               |
 | C-c C-e l o   | Export to LaTeX and open      |
 | C-c C-e l p   | Export to PDF                 |
@@ -440,7 +441,7 @@ are handled by the view, so they do not appear in Keyboard Shortcuts. Use
 | Alt+Up / Alt+Down          | Move slides up / down (also Alt+Left / Alt+Right)                |
 | H                          | Hide or unhide slides                                            |
 | Delete / Backspace         | Delete slides                                                    |
-| Cmd+Z / Cmd+Shift+Z        | Undo / redo in the editor                                        |
+| Cmd+Z / Cmd+Shift+Z, Cmd+Y | Undo / redo in the editor                                        |
 | + / - / 0                  | Larger / smaller / default thumbnails                            |
 | V                          | Switch between the grid and one slide (the slide preview)        |
 | Left / Right in slide mode | Previous / next slide (also Up / Down, Page Up / Down, Space)    |
@@ -817,6 +818,14 @@ CLOSED: [2026-01-19 Mon 18:20]
 | j         | Jump to heading        |
 | t         | Cycle TODO             |
 | l/r       | Promote/Demote subtree |
+
+* Related Topics
+
+- [[file:25-commands.org][Commands Reference]] - every command, with or without a key
+- [[file:23-speed-commands.org][Speed Commands]] - single keys at the start of a heading
+- [[file:26-configuration.org][Configuration]] - settings that change key behaviour
+- [[file:44-marp.org][Marp Slides]] - Slide Sorter, presenter and export keys
+- [[file:46-org-preview.org][Org Preview]] - the live preview keys
 
 * ✅ Further Help
 CLOSED: [2026-01-19 Mon 18:20]

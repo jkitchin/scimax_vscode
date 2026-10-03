@@ -366,22 +366,31 @@ Configure the full-text search database and semantic search capabilities.
 
 ** Settings Overview
 
-| Setting                     | Type    | Default                   | Description                            |
-|-----------------------------+---------+---------------------------+----------------------------------------|
-| scimax.db.includeJournal    | boolean | true                      | Include journal directory              |
-| scimax.db.includeWorkspace  | boolean | true                      | Include workspace folders              |
-| scimax.db.includeProjects   | boolean | true                      | Include scimax projects                |
-| scimax.db.include           | array   | [ ]                       | Additional directories/files           |
-| scimax.db.exclude           | array   | =[]=                      | Extra patterns/paths to exclude        |
-| scimax.db.autoIndex         | boolean | false                     | Auto-index workspace on activation     |
-| scimax.db.dirsPerSession    | number  | 5                         | Directories scanned per background indexing session |
-| scimax.db.checkStaleOnActivation | boolean | true                 | Prompt to refresh on activation if indexed files changed on disk |
-| scimax.db.embeddingProvider | string  | "ollama"                  | Embedding provider for semantic search |
-| scimax.db.ollamaUrl         | string  | "http://localhost:11434"  | Ollama API URL                         |
-| scimax.db.ollamaModel       | string  | "nomic-embed-text"        | Ollama embedding model                 |
-| scimax.db.queryTimeoutMs    | number  | 30000                     | Query timeout in milliseconds          |
-| scimax.db.maxRetryAttempts  | number  | 3                         | Max retries for transient failures     |
-| scimax.db.maxFileSizeMB     | number  | 10                        | Max file size to index (MB)            |
+| Setting                          | Type    | Default                  | Description                                                      |
+|----------------------------------+---------+--------------------------+------------------------------------------------------------------|
+| scimax.db.includeJournal         | boolean | true                     | Include journal directory                                        |
+| scimax.db.includeWorkspace       | boolean | true                     | Include workspace folders                                        |
+| scimax.db.includeProjects        | boolean | true                     | Include scimax projects                                          |
+| scimax.db.include                | array   | =[]=                     | Additional directories/files                                     |
+| scimax.db.exclude                | array   | =[]=                     | Extra patterns/paths to exclude                                  |
+| scimax.db.autoIndex              | boolean | false                    | Auto-index workspace on activation                               |
+| scimax.db.dirsPerSession         | number  | 5                        | Directories scanned per background indexing session             |
+| scimax.db.autoCheckStale         | boolean | false                    | Find and re-index externally modified files on startup           |
+| scimax.db.checkStaleOnActivation | boolean | true                     | Prompt to refresh on activation if indexed files changed on disk |
+| scimax.db.staleCheckDelayMs      | number  | 5000                     | Delay before the startup stale-file check (ms)                   |
+| scimax.db.maxReindexPerSync      | number  | 50                       | Modified files re-indexed per background sync (0 = unlimited)    |
+| scimax.db.maxNewFilesPerSync     | number  | 50                       | New files indexed per background sync (0 = unlimited)            |
+| scimax.db.reindexBatchSize       | number  | 50                       | Files per batch during Sync Files                                |
+| scimax.db.reindexPauseMs         | number  | 100                      | Pause between Sync Files batches (ms)                            |
+| scimax.db.maxFilesPerReindex     | number  | 0                        | Files per Sync Files run (0 = unlimited)                         |
+| scimax.db.embeddingProvider      | string  | "none"                   | Embedding provider for semantic search                           |
+| scimax.db.ollamaUrl              | string  | "http://localhost:11434" | Ollama API URL                                                   |
+| scimax.db.ollamaModel            | string  | "nomic-embed-text"       | Ollama embedding model                                           |
+| scimax.db.queryTimeoutMs         | number  | 30000                    | Query timeout in milliseconds                                    |
+| scimax.db.maxRetryAttempts       | number  | 3                        | Max retries for transient failures                               |
+| scimax.db.maxFileSizeMB          | number  | 10                       | Max file size to index (MB)                                      |
+| scimax.db.maxFileLines           | number  | 5000                     | Skip files with more lines than this                             |
+| scimax.db.maxParseSizeKB         | number  | 500                      | Skip files larger than this before parsing (KB)                  |
 
 ** Detailed Configuration
 
@@ -468,6 +477,24 @@ CLOSED: [2026-10-02 Fri 06:58]
 }
 #+end_src
 
+*** scimax.db.autoCheckStale
+
+- *Type*: boolean
+- *Default*: =false=
+- *Description*: On startup, check for indexed files that were modified outside
+  VS Code and re-index them in the background, without prompting. Off by
+  default because it can use a lot of memory on large collections; the
+  per-run limits are =scimax.db.maxReindexPerSync= and
+  =scimax.db.maxNewFilesPerSync=. When on, =scimax.db.checkStaleOnActivation=
+  is skipped.
+
+*Example*:
+#+begin_src json
+{
+  "scimax.db.autoCheckStale": true
+}
+#+end_src
+
 *** ✅ scimax.db.checkStaleOnActivation
 CLOSED: [2026-05-03 Sun 07:59]
 
@@ -486,10 +513,78 @@ CLOSED: [2026-05-03 Sun 07:59]
 }
 #+end_src
 
+*** ✅ scimax.db.staleCheckDelayMs
+CLOSED: [2026-10-02 Fri 07:33]
+
+- *Type*: number
+- *Default*: =5000=
+- *Minimum*: 1000
+- *Description*: Milliseconds to wait after activation before the stale-file
+  check starts (both =autoCheckStale= and =checkStaleOnActivation=), so VS Code
+  can finish loading first.
+
+*** ✅ scimax.db.maxReindexPerSync
+CLOSED: [2026-10-02 Fri 07:33]
+
+- *Type*: number
+- *Default*: =50=
+- *Minimum*: 0
+- *Description*: Maximum number of modified files re-indexed per background
+  sync (=autoCheckStale=). =0= means unlimited. Lower values reduce memory use
+  on large collections.
+
+*** ✅ scimax.db.maxNewFilesPerSync
+CLOSED: [2026-10-02 Fri 07:33]
+
+- *Type*: number
+- *Default*: =50=
+- *Minimum*: 0
+- *Description*: Maximum number of new files indexed per background sync
+  (=autoCheckStale=). =0= means unlimited.
+
+*** ✅ scimax.db.reindexBatchSize
+CLOSED: [2026-10-02 Fri 07:33]
+
+- *Type*: number
+- *Default*: =50=
+- *Range*: 1 - 200
+- *Description*: Number of files processed per batch by `Scimax: Sync Files'
+  (=scimax.db.reindex=). After each batch there is a pause for memory cleanup.
+  Higher values are faster but use more memory.
+
+*** ✅ scimax.db.reindexPauseMs
+CLOSED: [2026-10-02 Fri 07:33]
+
+- *Type*: number
+- *Default*: =100=
+- *Range*: 10 - 10000
+- *Description*: Milliseconds to pause between Sync Files batches, to allow
+  garbage collection and keep the UI responsive. Increase it if you see memory
+  problems.
+
+*** ✅ scimax.db.maxFilesPerReindex
+CLOSED: [2026-10-02 Fri 07:33]
+
+- *Type*: number
+- *Default*: =0= (unlimited)
+- *Range*: 0 - 50000
+- *Description*: Maximum number of files indexed by one Sync Files run. Use
+  500-1000 for the first index of a very large collection; run Sync Files again
+  to continue where it stopped.
+
+*Example*:
+#+begin_src json
+{
+  "scimax.db.reindexBatchSize": 25,
+  "scimax.db.reindexPauseMs": 500,
+  "scimax.db.maxFilesPerReindex": 1000
+}
+#+end_src
+
 *** scimax.db.embeddingProvider
 
 - *Type*: string (enum)
-- *Default*: `"ollama"'
+- *Default*: `"none"' (semantic search off)
 - *Options*: `"none"', `"ollama"'
 - *Description*: Embedding provider for semantic/AI-powered search
   - `none': No semantic search (text-only)
@@ -578,6 +673,32 @@ Useful when working with external repositories or collaborator files that may co
 #+begin_src json
 {
   "scimax.db.maxFileSizeMB": 20
+}
+#+end_src
+
+*** ✅ scimax.db.maxFileLines
+CLOSED: [2026-10-02 Fri 07:33]
+
+- *Type*: number
+- *Default*: =5000=
+- *Range*: 500 - 100000
+- *Description*: Files with more lines than this are not indexed, to prevent
+  memory problems while parsing.
+
+*** ✅ scimax.db.maxParseSizeKB
+CLOSED: [2026-10-02 Fri 07:33]
+
+- *Type*: number
+- *Default*: =500=
+- *Range*: 100 - 10000
+- *Description*: Files larger than this (in KB) are skipped before parsing, to
+  prevent running out of memory while building the syntax tree.
+
+*Example*:
+#+begin_src json
+{
+  "scimax.db.maxFileLines": 20000,
+  "scimax.db.maxParseSizeKB": 2000
 }
 #+end_src
 
@@ -1491,21 +1612,23 @@ When enabled, you can use single-key shortcuts (like `n', `p', `u') when the cur
 
 Configure the agenda view and TODO tracking.
 
-** Settings Overview
+** 👀 Settings Overview
 
 The agenda is now a *view over the Scimax database*. Indexing scope
 (what files exist in the database, and therefore what's eligible for
-the agenda) is controlled by =scimax.db.*= settings. The
-=scimax.agenda.*= settings below are display-only.
+the agenda) is controlled by =scimax.db.*= settings. Apart from
+=scimax.agenda.updateChangedFiles=, the =scimax.agenda.*= settings
+below are display-only.
 
-| Setting                   | Type    | Default                           | Description                  |
-|---------------------------+---------+-----------------------------------+------------------------------|
-| scimax.agenda.exclude     | array   | See below                         | Hide from view (still index) |
-| scimax.agenda.defaultSpan | number  | 7                                 | Days to show in agenda       |
-| scimax.agenda.showDone    | boolean | false                             | Show completed items         |
-| scimax.agenda.showHabits  | boolean | true                              | Show habit-tagged items      |
-| scimax.agenda.todoStates  | array   | ["TODO", "NEXT", "WAITING"]       | Active TODO states           |
-| scimax.agenda.doneStates  | array   | ["DONE", "CANCELLED", "CANCELED"] | Completed states             |
+| Setting                          | Type    | Default                           | Description                            |
+|----------------------------------+---------+-----------------------------------+----------------------------------------|
+| scimax.agenda.updateChangedFiles | boolean | true                              | Re-index changed files before showing  |
+| scimax.agenda.exclude            | array   | See below                         | Hide from view (still index)           |
+| scimax.agenda.defaultSpan        | number  | 7                                 | Days to show in agenda                 |
+| scimax.agenda.showDone           | boolean | false                             | Show completed items                   |
+| scimax.agenda.showHabits         | boolean | true                              | Show habit-tagged items                |
+| scimax.agenda.todoStates         | array   | ["TODO", "NEXT", "WAITING"]       | Active TODO states                     |
+| scimax.agenda.doneStates         | array   | ["DONE", "CANCELLED", "CANCELED"] | Completed states                       |
 
 The following =scimax.agenda.*= settings are *deprecated* — they have
 no effect. Use the =scimax.db.*= equivalents instead:
@@ -1524,6 +1647,26 @@ On activation, Scimax shows a one-shot toast if any deprecated agenda
 indexing setting is set non-default in your config.
 
 ** Detailed Configuration
+
+*** ⚠️ scimax.agenda.updateChangedFiles
+
+- *Type*: boolean
+- *Default*: `true'
+- *Description*: Before showing the agenda, the TODO list or the agenda
+  tree, re-index org files that changed on disk since they were indexed
+  (for example, edits Dropbox synced from another machine), and drop
+  files that were deleted. Checking stats every indexed org file in
+  parallel, which takes well under a second even for tens of thousands
+  of files; only the changed files are re-indexed. Checks within five
+  seconds of each other are shared. New files the database has never
+  seen are not picked up; run =Scimax: Refresh Database= for those.
+
+*Example*:
+#+begin_src json
+{
+  "scimax.agenda.updateChangedFiles": false
+}
+#+end_src
 
 *** scimax.agenda.exclude
 

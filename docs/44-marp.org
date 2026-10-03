@@ -312,7 +312,8 @@ a selected thumbnail moves the whole selection, in order, as one block, even
 when the selected slides were not next to each other. Dropping past the last
 thumbnail moves the slides to the end.
 
-** The slide menu
+** ✅ The slide menu
+CLOSED: [2026-10-02 Fri 07:30]
 
 Right-click a thumbnail for these commands. They act on all selected slides
 when the clicked slide is part of the selection.
@@ -342,8 +343,8 @@ Reveal in Preview moves the editor cursor to the slide and opens the
 Export Deck lists every export (see [[*Exporting Slides][Exporting Slides]]); it exports the
 whole deck.
 
-On Windows and Linux use =Ctrl= in place of =Cmd=. =Cmd+Z= and =Cmd+Shift+Z=
-in the view undo and redo in the editor. These keys work only while the Marp
+On Windows and Linux use =Ctrl= in place of =Cmd=. =Cmd+Z= and =Cmd+Shift+Z= (or
+=Cmd+Y=) in the view undo and redo in the editor. These keys work only while the Marp
 Slides view has focus. They are handled by the view itself, so they are not
 listed in Keyboard Shortcuts and cannot be rebound. Right-clicking empty space
 below the slides offers Paste Slide After and Insert New Slide After, which
@@ -479,7 +480,7 @@ Each sets a directive for just this slide, ~<!-- _name: value -->~, at the top o
 | Transition...         | [[cmd:scimax.marp.thisSlide.transition]]      | For the HTML slideshow                                           |
 | Scoped Style          | [[cmd:scimax.marp.thisSlide.scopedStyle]]     | A ~<style scoped>~ block for CSS that applies only to this slide |
 
-** Deck
+** 👀 Deck
 
 Each sets a key in the front matter, or removes it.
 
@@ -494,6 +495,7 @@ Each sets a key in the front matter, or removes it.
 | Title, Author and Description... | [[cmd:scimax.marp.deck.metadata]]       | Also keywords and language; used by exports            |
 | Presenter Tools...               | [[cmd:scimax.marp.deck.presenter]]      | ~true~ or ~offline~: pen, laser, notes, live Python    |
 | Talk Timer...                    | [[cmd:scimax.marp.deck.timer]]          | A countdown on every slide; turns on presenter tools   |
+| Check for Offline Use            | [[cmd:scimax.marp.checkOffline]]        | Lists what the deck would still fetch from the network |
 
 ** Theme
 
@@ -583,14 +585,15 @@ layouts, the Slide Sorter, the Marp menu and exports.
 | Key                       | Effect                                                                         |
 |---------------------------+--------------------------------------------------------------------------------|
 | =a=                       | Turn the pen on or off (widgets cannot be clicked while it is on)              |
-| =1= to =5=                | Pen colour: red, blue, green, black, yellow highlighter                        |
+| =1= to =5=                | Pen colour while the pen is on: red, blue, green, black, yellow highlighter    |
 | =r=                       | Eraser: drag over strokes to remove them; =r= again turns it off               |
 | =z=                       | Undo the last stroke (or the last erase) on this slide                         |
 | =c= / =C=                 | Clear this slide / every slide                                                 |
 | =l=                       | Laser pointer: a red dot that follows the mouse                                |
 | =n=                       | New sticky note at the mouse; type Markdown, click away to render it           |
 | Right-click               | A menu with all of these (Shift+right-click gives the browser's own menu)      |
-| Hold the mouse on a slide | Spotlight: the screen darkens except a circle around the cursor                |
+| Hold the mouse on a slide | Spotlight: the screen darkens except a circle around the cursor (not on        |
+|                           | buttons, links, code cells or widgets, or while the pen or eraser is on)       |
 | =s=                       | Save a standalone copy of the deck with the ink, ~<deck>-annotated.html~       |
 | =m=                       | Save the Markdown source with the ink as SVG, ~<deck>-annotated.md~            |
 | =S=                       | Save only the ink, as JSON                                                     |
@@ -608,7 +611,8 @@ Marp's own keys (=F= full screen, =P= presenter view, arrows) still work, and
 so does its overview button (the four squares): each slide's ink and notes show
 on its thumbnail. A
 note's bar drags it; its =●= picks a colour, =–= shrinks it to an icon and
-=×= deletes it.
+=×= deletes it, and right-clicking a note offers the same three. The
+right-click menu also has Fullscreen (=f=).
 
 ** Talk timer
 
@@ -703,7 +707,7 @@ The edits stay in the HTML; they do not change the Markdown.
 | Delete             | Hide it (it shows faintly while editing); Delete again shows it             |
 | Tab / Shift+Tab    | Select the enclosing block (the list, not the item) / back again            |
 | =0=                | Undo every edit to the selection                                            |
-| =Cmd+Z= / =Ctrl+Z= | Undo (add Shift to redo); the bar also has Undo and Reset slide             |
+| =Cmd+Z= / =Ctrl+Z= | Undo (add Shift, or use =Cmd+Y=, to redo); the bar has Undo and Reset slide |
 | =Esc=              | Clear the selection, then stop editing                                      |
 
 - Edits are kept in the browser's local storage, so a reload keeps them,
@@ -765,7 +769,10 @@ downloaded from the jsdelivr CDN when the deck opens, so *running cells needs
 an internet connection* (the rest of the tools work offline). To present
 without one, use ~presenter: offline~ (see [[*Offline Python][Offline Python]]). Pyodide's packages
 (numpy, scipy, matplotlib, pandas, sympy, ...) load on ~import~, and ~%pip
-install name~ in a cell installs pure-Python packages from PyPI.
+install name~ in a cell installs pure-Python packages from PyPI. An ~import~
+that fails is retried once by installing the package from PyPI (~import
+pycse~ installs pycse). Python starts downloading in the background when the
+deck opens, along with the packages the cells import.
 
 In PDF, PowerPoint and image exports a ~run~ cell is ordinary highlighted code,
 and a ~run hidden~ cell is left out.
@@ -997,7 +1004,7 @@ these files, so if it is installed and renders the Markdown preview, set
 
 ** Double-click in the Markdown preview
 
-Double-click in the Markdown preview (with Marp for VS Code) follows VS
+Double-click in the Markdown preview follows VS
 Code's own setting for double-clicking in the Markdown
 preview. Current VS Code releases turn it off by default, so enable it once in
 your user settings:

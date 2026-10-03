@@ -15,7 +15,7 @@ The publishing system follows a wizard-first approach - most users can get start
 
 ** Step 1: Initialize a Publishing Project
 
-Run the command `Scimax: Initialize Publishing Project' (`C-c C-e p i') to start the 5-step wizard:
+Run the command `Scimax: Initialize Publishing Project' (`scimax.publish.init') from the Command Palette to start the 5-step wizard:
 
 1. *Project name* - A short identifier (e.g., "my-website")
 2. *Source directory* - Where your org files are located (default: `./org')
@@ -45,7 +45,8 @@ Welcome to my project documentation!
 
 ** Step 3: Publish
 
-Run `Scimax: Publish Project' (`C-c C-e p p') to generate HTML files.
+Run `Scimax: Publish Project' (`scimax.publish.project') to generate HTML files,
+or run =scimax publish= from a terminal (see [[file:30-cli.org::*Publish][CLI: Publish]]).
 
 ** Step 4: Deploy to GitHub Pages
 
@@ -57,14 +58,18 @@ Run `Scimax: Publish Project' (`C-c C-e p p') to generate HTML files.
 
 * Commands
 
-| Command                              | Keybinding      | Description                       |
-|--------------------------------------+-----------------+-----------------------------------|
-| =scimax.publish.init=                | =C-c C-e p i=   | Initialize publishing project     |
-| =scimax.publish.project=             | =C-c C-e p p=   | Publish selected project          |
-| =scimax.publish.file=                | =C-c C-e p f=   | Publish current file only         |
-| =scimax.publish.all=                 | =C-c C-e p a=   | Publish all configured projects   |
-| =scimax.publish.preview=             | =C-c C-e p v=   | Preview published site in browser |
-| =scimax.publish.openConfig=          | -               | Open .org-publish.json config     |
+These commands have no default keybindings; run them from the Command Palette.
+The same publishing is available from the command line with =scimax publish=
+(see [[file:30-cli.org::*Publish][CLI: Publish]]).
+
+| Command                     | Keybinding | Description                       |
+|-----------------------------+------------+-----------------------------------|
+| =scimax.publish.init=       | -          | Initialize publishing project     |
+| =scimax.publish.project=    | -          | Publish selected project          |
+| =scimax.publish.file=       | -          | Publish current file only         |
+| =scimax.publish.all=        | -          | Publish all configured projects   |
+| =scimax.publish.preview=    | -          | Preview published site in browser |
+| =scimax.publish.openConfig= | -          | Open .org-publish.json config     |
 
 * Configuration File
 
@@ -76,7 +81,7 @@ The publishing system supports two configuration formats:
 The wizard creates a `.org-publish.json' file by default. You can also create or edit either file manually.
 
 ** ✅ YAML Configuration (`_config.yml')
-CLOSED: [2026-01-17 Sat 15:17]
+CLOSED: [2026-10-02 Fri 07:29]
 
 For Jupyter Book compatibility, create a `_config.yml' in your project root:
 
@@ -99,6 +104,33 @@ html:
 
 github_pages: true
 #+END_SRC
+
+A `_config.yml' defines a single project. Its name is the =title= lowercased,
+with spaces replaced by hyphens (=title: "My Documentation"= gives the project
+=my-documentation=; with no title it is =default=). Pass that name to
+=scimax publish <project>=.
+
+Other keys read from `_config.yml':
+
+| Key                            | Default         | Description                                        |
+|--------------------------------+-----------------+----------------------------------------------------|
+| =publish.base_directory=       | =./=            | Source directory                                   |
+| =publish.publishing_directory= | =./_build/html= | Output directory                                   |
+| =publish.recursive=            | =true=          | Process subdirectories                             |
+| =publish.exclude=              | -               | Glob pattern of files to skip (e.g. ="drafts/*"=)  |
+| =publish.auto_sitemap=         | =true=          | Generate a sitemap page                            |
+| =publish.sitemap_filename=     | =sitemap.org=   | Sitemap file name                                  |
+| =source_directory=             | -               | Top-level alias for =publish.base_directory=       |
+| =publish_directory=            | -               | Top-level alias for =publish.publishing_directory= |
+| =html.use_default_theme=       | =true=          | Include the built-in CSS                           |
+| =html.toc_depth=               | -               | Table of contents depth                            |
+| =html.css_files=               | -               | List of CSS files to include                       |
+| =html.js_files=                | -               | List of JavaScript files to include                |
+| =github_pages=                 | -               | Write =.nojekyll= (and =CNAME=) for GitHub Pages   |
+| =custom_domain=                | -               | Custom domain written to =CNAME=                   |
+| =theme=                        | -               | Site theme; see [[*Book Theme][Book Theme]]        |
+
+=publish.*= keys take precedence over the top-level aliases.
 
 ** JSON Configuration (`.org-publish.json')
 
@@ -511,8 +543,78 @@ Create `./css/style.css' and reference it:
 }
 #+END_SRC
 
-* ✅ Docs Chat (WebLLM)
-CLOSED: [2026-10-02 Fri 06:55]
+* ✅ Book Theme
+CLOSED: [2026-10-02 Fri 07:29]
+
+The =book= theme publishes a Jupyter Book style site: a header bar, a left
+sidebar with the site navigation, a right sidebar with the page's headings,
+prev/next links, client-side search, and a light/dark toggle. Turn it on in
+`_config.yml' with a =theme= section that names it:
+
+#+BEGIN_SRC yaml
+theme:
+  name: "book"
+  layout:
+    show_left_sidebar: true
+    show_right_sidebar: true
+    toc_depth: 3
+  header:
+    logo: "_static/logo.png"
+    title: "My Documentation"
+    navbar_links:
+      - text: "GitHub"
+        url: "https://github.com/user/repo"
+  footer:
+    copyright: "2026 Your Name"
+    links:
+      - text: "Contact"
+        url: "mailto:you@example.com"
+  appearance:
+    primary_color: "#0d6efd"
+    enable_dark_mode: true
+    default_mode: "auto"
+  search:
+    enabled: true
+  custom_css: "_static/custom.css"
+#+END_SRC
+
+=theme: book= on one line is the same as a =theme= section with only
+=name: book=.
+
+** Requirements
+
+Theme publishing requires a `_toc.yml' in the source directory (see
+[[*Explicit Table of Contents (`_toc.yml')][Explicit Table of Contents]]). Without it, publishing fails with
+=Theme-based publishing requires a _toc.yml file=.
+
+A `_static/' folder in the source directory is copied to the output, so put the
+logo and custom CSS there.
+
+** Theme Options
+
+| Option                        | Default           | Description                                                 |
+|-------------------------------+-------------------+-------------------------------------------------------------|
+| =name=                        | =default=         | =book= for this theme; =default= for plain pages            |
+| =layout.show_left_sidebar=    | =true=            | Show the site navigation sidebar                            |
+| =layout.show_right_sidebar=   | =true=            | Show the page headings sidebar (if the page has any)        |
+| =layout.toc_depth=            | =3=               | Deepest heading level in the right sidebar                  |
+| =header.logo=                 | -                 | Logo image path, relative to the site root                  |
+| =header.title=                | ="Documentation"= | Site title in the header                                    |
+| =header.navbar_links=         | -                 | List of =text= / =url= links in the header                  |
+| =footer.copyright=            | current year      | Copyright text                                              |
+| =footer.links=                | -                 | List of =text= / =url= links in the footer                  |
+| =appearance.primary_color=    | ="#0d6efd"=       | Colour of links, buttons, and the chat button               |
+| =appearance.enable_dark_mode= | =true=            | Show the light/dark toggle                                  |
+| =appearance.default_mode=     | ="auto"=          | =light=, =dark=, or =auto= (follow the system)              |
+| =search.enabled=              | =true=            | Build the search index and show the search box              |
+| =custom_css=                  | -                 | Extra stylesheet path, relative to the site root            |
+| =chat.*=                      | off               | "Ask the docs" chat; see [[*Docs Chat (WebLLM)][Docs Chat]] |
+
+The defaults apply to every key you leave out, including keys missing from a
+section you do set: a =header= section with only a =logo= keeps the default
+title.
+
+* Docs Chat (WebLLM)
 
 The book theme can add an "Ask the docs" chat to a published site. It
 finds the sections of the site that best match a question and lists them
@@ -599,10 +701,11 @@ theme:
     top_k: 4
 #+END_SRC
 
-** Related Topics
+** ✅ Related Topics
+CLOSED: [2026-10-02 Fri 07:37]
 
 - [[file:18-database-search.org][Database and Search]] - full-text and semantic search inside VS Code
-- [[file:30-cli.org][CLI]] - =scimax publish= from the command line
+- [[file:30-cli.org::*Publish][CLI: Publish]] - =scimax publish= from the command line
 
 * GitHub Pages Integration
 
@@ -714,7 +817,7 @@ See <a href="other-page.html">the other page</a> for details.
 
 ** "No publishing configuration found"
 
-Run `Scimax: Initialize Publishing Project' (`C-c C-e p i') to create a `.org-publish.json' file.
+Run `Scimax: Initialize Publishing Project' (`scimax.publish.init'), or =scimax publish --init= from a terminal, to create a `.org-publish.json' file.
 
 ** "Base directory does not exist"
 
@@ -736,6 +839,8 @@ Ensure you're using `file:' links to reference other org files:
 * Related Topics
 
 - [[*Docs Chat (WebLLM)][Docs Chat (WebLLM)]] - an in-browser model that answers from the published pages
-- [[file:export.org][Export System]] - Single-file export options
-- [[file:source-blocks.org][Source Blocks]] - Code blocks in org files
-- [[file:document-structure.org][Document Structure]] - Headings and organization
+- [[*Book Theme][Book Theme]] - Jupyter Book style layout and its options
+- [[file:30-cli.org::*Publish][CLI: Publish]] - =scimax publish= from the command line
+- [[file:10-export.org][Export System]] - Single-file export options
+- [[file:07-source-blocks.org][Source Blocks]] - Code blocks in org files
+- [[file:02-document-structure.org][Document Structure]] - Headings and organization

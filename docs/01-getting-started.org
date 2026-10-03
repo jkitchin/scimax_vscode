@@ -46,6 +46,18 @@ software:
 
 - LaTeX distribution with dvipng or dvisvgm
 
+*** For Word (DOCX) Export
+
+- [[https://pandoc.org/installing.html][Pandoc]] installed and in PATH
+
+*** For Marp Slide Export and Slideshows
+
+- [[https://github.com/marp-team/marp-cli][Marp CLI]] 4.3 or later (~npm install -g @marp-team/marp-cli~), or Node.js so
+  Scimax can run it with ~npx~ (see [[file:44-marp.org][Marp Slides]])
+
+The [[file:46-org-preview.org][Org Preview]] loads MathJax and highlight.js from the web, so math and code
+highlighting in it need an internet connection.
+
 * Installation
 
 ** From VS Code Marketplace
@@ -346,6 +358,13 @@ Some advanced Emacs features may not be available:
 - Column view
 - Some specialized agenda views
 - Custom link types (limited set supported)
+
+* Related Topics
+
+- [[file:01.5-basic-syntax.org][Basic Org Syntax]] - the markup used in org files
+- [[file:24-keybindings.org][Keybindings]] - every keyboard shortcut
+- [[file:26-configuration.org][Configuration]] - all settings
+- [[file:46-org-preview.org][Org Preview]] and [[file:44-marp.org][Marp Slides]] - previews and slide decks
 
 * Next Steps
 

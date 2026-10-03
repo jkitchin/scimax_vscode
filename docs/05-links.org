@@ -120,14 +120,19 @@ CLOSED: [2026-01-14 Wed 20:51]
 Simple URLs can be written with angle brackets:
 <https://www.example.com>
 
-** ✅ Plain URLs
-CLOSED: [2026-01-14 Wed 20:51]
+** Plain URLs
 
 Plain URLs are also recognized:
 
 #+BEGIN_SRC org
 Visit https://www.example.com for more info.
 #+END_SRC
+
+In HTML and LaTeX export and the [[file:46-org-preview.org][Org Preview]], plain and angle-bracket
+=http://=, =https://= and =mailto:= URLs become links. A plain URL can contain
+one level of balanced parentheses (as in Wikipedia URLs), and punctuation at
+its end, such as a full stop or comma, is left out of the link. The =//= in a
+URL does not start italics.
 
 * ✅ Following Links
 CLOSED: [2026-01-14 Wed 20:51]

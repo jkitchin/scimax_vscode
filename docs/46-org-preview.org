@@ -21,7 +21,8 @@ HTML export produces, and it updates as you type.
 | Back to the source from preview | =Cmd+Shift+V= | =Ctrl+Shift+V= | ~scimax.org.preview.showSource~    |
 
 The preview icon in the editor title bar of an org file also opens the preview
-to the side. Each org file has at most one preview; running the command again
+to the side, and the preview's own title bar has a button that goes back to the
+source. Each org file has at most one preview; running the command again
 reveals the existing one.
 
 The older command ~scimax.org.previewHtml~ (/Scimax: Preview HTML/, also
@@ -74,7 +75,8 @@ below the include point.
 
 Source blocks are never executed by the preview. Scripts in the document
 (for example in =#+HTML:= blocks or =#+HTML_HEAD:=) do not run either: the
-preview only runs its own scripts and MathJax / highlight.js from their CDNs.
+preview's content security policy allows only its own scripts and the MathJax
+and highlight.js files on their CDNs.
 Because those libraries load from the network, math and highlighting need an
 internet connection; the rest of the preview works offline.
 
