@@ -1874,6 +1874,62 @@ export class ScimaxDbCore {
         return stale;
     }
 
+    /**
+     * Bring indexed org files up to date with the disk: re-index the ones
+     * changed since they were indexed (e.g. synced from another machine) and
+     * drop the ones deleted. Stats every indexed org file in parallel, which
+     * takes well under a second for tens of thousands of files.
+     *
+     * A file is dropped only when its directory still exists, so an unmounted
+     * or not-yet-synced folder does not empty the index.
+     */
+    public async updateChangedOrgFiles(options?: {
+        onProgress?: (current: number, total: number) => void;
+    }): Promise<{ checked: number; reindexed: number; removed: number }> {
+        const result = { checked: 0, reindexed: 0, removed: 0 };
+        if (!this.db) return result;
+        const rows = await this.db.execute(`SELECT path, mtime FROM files WHERE file_type = 'org'`);
+        const changed: string[] = [];
+        const removed: string[] = [];
+        const batchSize = 1000;
+        for (let i = 0; i < rows.rows.length; i += batchSize) {
+            await Promise.all(rows.rows.slice(i, i + batchSize).map(async row => {
+                const filePath = row.path as string;
+                try {
+                    const stats = await fs.promises.stat(filePath);
+                    if (stats.mtimeMs > (row.mtime as number)) changed.push(filePath);
+                } catch (error) {
+                    if ((error as NodeJS.ErrnoException).code === 'ENOENT'
+                        && fs.existsSync(path.dirname(filePath))) {
+                        removed.push(filePath);
+                    }
+                }
+            }));
+        }
+        result.checked = rows.rows.length;
+        const total = changed.length + removed.length;
+        let done = 0;
+        for (const filePath of removed) {
+            try {
+                await this.removeFileData(filePath);
+                result.removed++;
+            } catch (error) {
+                console.error(`[ScimaxDbCore] Error removing deleted file ${filePath}:`, error);
+            }
+            options?.onProgress?.(++done, total);
+        }
+        for (const filePath of changed) {
+            try {
+                await this.indexFile(filePath, { queueEmbeddings: true });
+                result.reindexed++;
+            } catch (error) {
+                console.error(`[ScimaxDbCore] Error reindexing file ${filePath}:`, error);
+            }
+            options?.onProgress?.(++done, total);
+        }
+        return result;
+    }
+
     public async reindexFiles(filePaths: string[], options?: {
         onProgress?: (current: number, total: number) => void;
     }): Promise<number> {

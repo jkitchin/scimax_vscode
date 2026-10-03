@@ -81,6 +81,12 @@ export class AgendaManager {
     private refreshDebounceTimer: NodeJS.Timeout | null = null;
     private static readonly REFRESH_DEBOUNCE_MS = 500;
 
+    // Files changed on disk (e.g. synced from another machine) are re-indexed
+    // before the agenda is read. Calls within this window share one check.
+    private updateInFlight: Promise<void> | null = null;
+    private lastUpdateAt = 0;
+    private static readonly UPDATE_WINDOW_MS = 5000;
+
     constructor(context: vscode.ExtensionContext) {
         this.context = context;
         this.config = this.loadConfig();
@@ -279,6 +285,42 @@ export class AgendaManager {
     }
 
     /**
+     * Re-index org files changed or deleted on disk since they were indexed,
+     * so the agenda shows edits synced from other machines. Off with
+     * scimax.agenda.updateChangedFiles.
+     */
+    async updateChangedFiles(db: ScimaxDb): Promise<void> {
+        if (!vscode.workspace.getConfiguration('scimax.agenda').get<boolean>('updateChangedFiles', true)) return;
+        if (this.updateInFlight) return this.updateInFlight;
+        if (Date.now() - this.lastUpdateAt < AgendaManager.UPDATE_WINDOW_MS) return;
+
+        this.updateInFlight = (async () => {
+            try {
+                const result = await vscode.window.withProgress(
+                    { location: vscode.ProgressLocation.Window, title: 'Agenda' },
+                    progress => {
+                        progress.report({ message: 'checking for changed files' });
+                        return db.updateChangedOrgFiles({
+                            onProgress: (current, total) =>
+                                progress.report({ message: `updating ${current}/${total} changed files` }),
+                        });
+                    }
+                );
+                if (result.reindexed > 0 || result.removed > 0) {
+                    this.log(`Agenda: re-indexed ${result.reindexed} changed and removed ${result.removed} deleted file(s)`);
+                    this.debouncedRefresh();
+                }
+            } catch (error) {
+                this.log(`Agenda: updating changed files failed: ${error}`);
+            } finally {
+                this.lastUpdateAt = Date.now();
+                this.updateInFlight = null;
+            }
+        })();
+        return this.updateInFlight;
+    }
+
+    /**
      * Generate agenda view with lazy loading and rate limiting
      */
     async getAgendaView(config?: Partial<AgendaViewConfig>): Promise<AgendaView> {
@@ -377,6 +419,7 @@ export class AgendaManager {
         if (!db) {
             return null;
         }
+        await this.updateChangedFiles(db);
 
         try {
             const fullConfig: AgendaViewConfig = {
@@ -639,6 +682,7 @@ export class AgendaManager {
         if (!db) {
             return null;
         }
+        await this.updateChangedFiles(db);
 
         try {
             const headings = await db.getTodos();

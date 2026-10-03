@@ -7398,6 +7398,11 @@
           ],
           "description": "Patterns or paths to exclude from agenda (globs like **/archive/** and absolute paths like ~/file.org)"
         },
+        "scimax.agenda.updateChangedFiles": {
+          "type": "boolean",
+          "default": true,
+          "description": "Before showing the agenda or TODO list, re-index org files that changed on disk since they were indexed (for example, synced by Dropbox from another machine) and drop deleted ones. Checking takes well under a second even for tens of thousands of files."
+        },
         "scimax.agenda.defaultSpan": {
           "type": "number",
           "default": 7,
