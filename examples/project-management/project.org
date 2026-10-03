@@ -1,5 +1,6 @@
 #+TITLE: Perovskite Photocatalyst Screening
 #+TODO: TODO NEXT WAIT | DONE CANCELLED
+#+FILETAGS: :perovskite:
 
 # A small example project for Scimax project management.
 #
@@ -9,6 +10,9 @@
 #   - Try to mark "Draft manuscript" DONE (C-c C-t) — it's blocked by its deps.
 #   - Hover an :ASSIGNEE: handle, or type in one to get autocomplete.
 #   - Mark "Synthesize perovskite samples" DONE and watch its dependents unblock.
+#   - In the project view, use Tags to show e.g. only :lab: or :milestone: tasks.
+#     Tags are inherited: every task here has :perovskite: from #+FILETAGS, and
+#     tasks under "Experiments" have :lab:.
 
 * Perovskite Photocatalyst Screening
   :PROPERTIES:
@@ -16,10 +20,10 @@
   :ASSIGNEE: maria
   :END:
 
-** Experiments
+** Experiments                                                         :lab:
 
 *** DONE Design sample matrix
-    CLOSED: [2026-07-02 Thu]
+    CLOSED: [2026-10-02 Fri]
     :PROPERTIES:
     :ID: design
     :EFFORT: 2d
@@ -27,7 +31,7 @@
     :END:
 
 *** NEXT Synthesize perovskite samples
-    SCHEDULED: <2026-07-06 Mon>
+    SCHEDULED: <2026-10-05 Mon>
     :PROPERTIES:
     :ID: synth
     :EFFORT: 5d
@@ -51,6 +55,15 @@
     :DEPENDS: id:synth
     :END:
 
+*** TODO Characterization complete                                 :milestone:
+    DEADLINE: <2026-10-16 Fri>
+    :PROPERTIES:
+    :ID: charmilestone
+    :ASSIGNEE: liam
+    :DEPENDS: id:xrd id:uvvis
+    :END:
+    A milestone: a task with a DEADLINE and no effort is drawn as a diamond.
+
 *** Photocatalytic activity protocol                                  :@priya:
     :PROPERTIES:
     :ID: activity
@@ -61,7 +74,7 @@
      :PROPERTIES:
      :ID: calibrate
      :EFFORT: 1d
-     :DEPENDS: id:synth
+     :DEPENDS: id:synth id:parts
      :END:
 **** TODO Run activity measurements
      :PROPERTIES:
@@ -76,8 +89,8 @@
 
 ** Analysis
 
-*** TODO DFT bandgap calculations
-    SCHEDULED: <2026-07-06 Mon>
+*** TODO DFT bandgap calculations                                :computation:
+    SCHEDULED: <2026-10-05 Mon>
     :PROPERTIES:
     :ID: dft
     :EFFORT: 6d
@@ -92,7 +105,7 @@
     :DEPENDS: id:xrd id:uvvis
     :END:
 
-*** TODO Build structure–activity model
+*** TODO Build structure–activity model                         :computation:
     :PROPERTIES:
     :ID: model
     :EFFORT: 4d
@@ -100,9 +113,9 @@
     :DEPENDS: id:process id:dft id:quantify
     :END:
 
-** Writing
+** Writing                                                         :writing:
 
-*** TODO [#A] Draft manuscript
+*** TODO [#A] Draft manuscript                                         :urgent:
     :PROPERTIES:
     :ID: draft
     :EFFORT: 6d
@@ -144,8 +157,8 @@
     :DEPENDS: id:revise
     :END:
 
-*** TODO Submit to journal
-    DEADLINE: <2026-09-15 Tue>
+*** TODO Submit to journal                                         :milestone:
+    DEADLINE: <2026-12-15 Tue>
     :PROPERTIES:
     :ID: submit
     :ASSIGNEE: maria
@@ -175,6 +188,7 @@ Gantt chart, run =Scimax: Project View (Gantt Chart)=.
 |     Synthesize perovskite samples  | NEXT  |      | liam  |            | 40h    |         |
 |     XRD characterization           | TODO  |      | liam  |            | 16h    | 🔒      |
 |     UV-Vis spectroscopy            | TODO  |      | priya |            | 16h    | 🔒      |
+|     Characterization complete      | TODO  |      | liam  | 2026-10-16 |        | 🔒      |
 |       Calibrate reactor            | TODO  |      | priya |            | 8h     | 🔒      |
 |       Run activity measurements    | TODO  |      | priya |            | 32h    | 🔒      |
 |       Quantify products            | TODO  |      | priya |            | 16h    | 🔒      |
@@ -186,6 +200,6 @@ Gantt chart, run =Scimax: Project View (Gantt Chart)=.
 |     Internal review                | TODO  |      | priya |            | 16h    | 🔒      |
 |     Revise manuscript              | TODO  |      | maria |            | 24h    | 🔒      |
 |     Format for journal             | TODO  |      | priya |            | 8h     | 🔒      |
-|     Submit to journal              | TODO  |      | maria | 2026-09-15 |        | 🔒      |
+|     Submit to journal              | TODO  |      | maria | 2026-12-15 |        | 🔒      |
 |     Respond to reviewers           | WAIT  |      | maria |            | 40h    | 🔒      |
 #+END:

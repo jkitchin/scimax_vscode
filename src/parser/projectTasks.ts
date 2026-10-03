@@ -35,6 +35,8 @@ export interface ProjectTask {
     effortMinutes?: number;
     /** Assignee handles (from :ASSIGNEE: own+inherited and @tags). */
     assignees: string[];
+    /** Tags, own and inherited (ancestors, #+FILETAGS), without @assignee tags. */
+    tags: string[];
     /** Normalized ids this task depends on (from :DEPENDS:). */
     dependsIds: string[];
     /** 1-based line number of the heading. */
@@ -109,6 +111,23 @@ export function getAssignees(doc: OrgDocumentNode, headline: HeadlineElement): s
     return [];
 }
 
+/** Split a #+FILETAGS value (":a:b:" or "a b") into tags. */
+function fileTags(doc: OrgDocumentNode): string[] {
+    const keywords = doc.keywords || {};
+    const key = Object.keys(keywords).find(k => k.toUpperCase() === 'FILETAGS');
+    return key ? keywords[key].split(/[:\s]+/).filter(Boolean) : [];
+}
+
+/**
+ * A headline's tags with org's inheritance: #+FILETAGS, then each ancestor's
+ * tags, then its own. @name tags are assignees, not tags, so they are left out.
+ */
+export function getInheritedTags(doc: OrgDocumentNode, headline: HeadlineElement): string[] {
+    const tags = [...fileTags(doc)];
+    for (const h of getHeadlinePath(doc, headline)) tags.push(...(h.properties.tags || []));
+    return [...new Set(tags.filter(t => !t.startsWith('@')))];
+}
+
 export interface ExtractOptions {
     /** Only include headlines with a TODO keyword (default true). */
     todoOnly?: boolean;
@@ -179,6 +198,7 @@ export function extractProjectTasks(
             deadline: tsToDate(h.planning?.properties?.deadline),
             effortMinutes,
             assignees: getAssignees(doc, h),
+            tags: getInheritedTags(doc, h),
             dependsIds: parseDependsIds(drawerProp(h, DEPENDS_PROPERTY)),
             line: (h.position?.start.line ?? 0) + 1,
             file: options.file,

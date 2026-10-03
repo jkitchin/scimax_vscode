@@ -34,6 +34,7 @@ interface TaskContext {
 /** Options the webview controls; sent back on every change. */
 interface ViewOptions {
     assignee?: string;
+    tags?: string[];
     showDone: boolean;
     groupBy: GanttGroupBy;
 }
@@ -197,6 +198,10 @@ class ProjectView implements vscode.Disposable {
   <strong id="project"></strong>
   <span id="count" class="muted"></span>
   <label>Assignee <select id="assignee"></select></label>
+  <div class="tagFilter">
+    <button id="tagsButton" aria-haspopup="true" aria-expanded="false" title="Show only tasks with any of the chosen tags">Tags: any</button>
+    <div id="tagsMenu" class="tagsMenu" role="menu" hidden></div>
+  </div>
   <label>Group <select id="groupBy">
     <option value="none">None</option>
     <option value="assignee">Assignee</option>

@@ -97,6 +97,35 @@ describe('buildGanttModel', () => {
         expect(groups).toEqual(['ana', 'jrk', 'Unassigned']);
     });
 
+    const TAGGED = `#+FILETAGS: :grant:
+* Writing :paper:
+** TODO Draft :urgent:@ana:
+** TODO Revise
+* TODO Order parts :lab:
+`;
+
+    it('gives tasks their own, inherited and file tags, without @assignee tags', () => {
+        const tags = Object.fromEntries(tasksOf(TAGGED).map(t => [t.title, [...t.tags].sort()]));
+        expect(tags).toEqual({
+            Draft: ['grant', 'paper', 'urgent'],
+            Revise: ['grant', 'paper'],
+            'Order parts': ['grant', 'lab'],
+        });
+        expect(buildGanttModel(tasksOf(TAGGED), {}, TODAY).tags).toEqual(['grant', 'lab', 'paper', 'urgent']);
+    });
+
+    it('filters to tasks with any of the chosen tags', () => {
+        const titles = (tags?: string[]) =>
+            buildGanttModel(tasksOf(TAGGED), { tags }, TODAY).rows.map((r: any) => r.title);
+        expect(titles(['urgent'])).toEqual(['Draft']);
+        expect(titles(['paper'])).toEqual(['Draft', 'Revise']);
+        expect(titles(['urgent', 'lab'])).toEqual(['Draft', 'Order parts']);
+        expect(titles([])).toHaveLength(3);
+        expect(titles(undefined)).toHaveLength(3);
+        // The model still lists every tag, so the menu can offer them all.
+        expect(buildGanttModel(tasksOf(TAGGED), { tags: ['lab'] }, TODAY).tags).toHaveLength(4);
+    });
+
     it('drops arrows to tasks that are filtered out', () => {
         const model = buildGanttModel(tasksOf(MAIN), { assignee: 'ana' }, TODAY);
         expect((model.rows[0] as any).dependsOn).toEqual([]);

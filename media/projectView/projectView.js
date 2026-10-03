@@ -60,6 +60,18 @@
         options.assignee = v === '*' ? undefined : v;
         sendOptions();
     });
+    $('tagsButton').addEventListener('click', e => {
+        e.stopPropagation();
+        showTagsMenu($('tagsMenu').hidden);
+    });
+    $('tagsMenu').addEventListener('click', e => e.stopPropagation());
+    document.addEventListener('click', () => showTagsMenu(false));
+    document.addEventListener('keydown', e => {
+        if (e.key === 'Escape' && !$('tagsMenu').hidden) {
+            showTagsMenu(false);
+            $('tagsButton').focus();
+        }
+    });
     $('groupBy').addEventListener('change', e => { options.groupBy = e.target.value; sendOptions(); });
     $('showDone').addEventListener('change', e => { options.showDone = e.target.checked; sendOptions(); });
     $('zoomIn').addEventListener('click', () => zoom(1.25));
@@ -96,6 +108,51 @@
         for (const a of model.assignees) add(a, '@' + a);
         add('', 'Unassigned');
         select.value = options.assignee === undefined ? '*' : options.assignee;
+    }
+
+    function showTagsMenu(show) {
+        $('tagsMenu').hidden = !show;
+        $('tagsButton').setAttribute('aria-expanded', String(show));
+    }
+
+    function setTags(tags) {
+        options.tags = tags.length ? tags : undefined;
+        sendOptions();
+    }
+
+    // A checklist of the project's tags; a task shows if it has any checked tag.
+    function fillTags() {
+        const chosen = options.tags || [];
+        const button = $('tagsButton');
+        button.textContent = chosen.length === 0 ? 'Tags: any'
+            : chosen.length <= 2 ? 'Tags: ' + chosen.map(t => ':' + t + ':').join(' ')
+            : `Tags: ${chosen.length} chosen`;
+        button.classList.toggle('active', chosen.length > 0);
+        // Keep chosen tags listed even if no task has them any more, so they can be unchecked.
+        const all = [...new Set([...model.tags, ...chosen])].sort((a, b) => a.localeCompare(b));
+        button.disabled = all.length === 0;
+        if (all.length === 0) button.textContent = 'Tags: none in project';
+
+        const menu = $('tagsMenu');
+        menu.textContent = '';
+        const clear = el('button', 'clear', 'Clear');
+        clear.disabled = chosen.length === 0;
+        clear.addEventListener('click', () => setTags([]));
+        menu.appendChild(clear);
+        for (const tag of all) {
+            const label = el('label');
+            const box = document.createElement('input');
+            box.type = 'checkbox';
+            box.checked = chosen.includes(tag);
+            box.addEventListener('change', () => {
+                const now = new Set(options.tags || []);
+                if (box.checked) now.add(tag); else now.delete(tag);
+                setTags(all.filter(t => now.has(t)));
+            });
+            label.appendChild(box);
+            label.appendChild(document.createTextNode(tag));
+            menu.appendChild(label);
+        }
     }
 
     // Drawing -----------------------------------------------------------------
@@ -192,6 +249,7 @@
             const tip = [
                 row.title,
                 [row.todo, row.priority && `[#${row.priority}]`, row.assignees.map(a => '@' + a).join(' ')].filter(Boolean).join('  '),
+                row.tags.length ? ':' + row.tags.join(':') + ':' : '',
                 row.milestone ? `Milestone ${row.start}` : `${row.start} to ${row.end} (end exclusive)`,
                 row.effortMinutes ? `Effort ${hours(row.effortMinutes)}` : '',
                 row.deadline ? `Deadline ${row.deadline}` : '',
@@ -299,6 +357,7 @@
         $('groupBy').value = options.groupBy;
         $('showDone').checked = options.showDone;
         fillAssignees();
+        fillTags();
         if (selected >= model.rows.length) selected = -1;
         render();
     });

@@ -110,13 +110,20 @@ another.
 - The toolbar filters by *Assignee* (or *Unassigned*), groups rows by assignee,
   file or parent heading, shows or hides *Done tasks*, zooms the timeline with
   =-= and =+=, and scrolls to *Today*.
+- *Tags* opens a checklist of the project's tags. Check one or more to show only
+  the tasks that have /any/ of them; *Clear* shows every task again. A task's
+  tags include those it inherits from parent headings and from =#+FILETAGS=, so
+  checking =:paper:= on a parent heading's tag shows all the tasks under it.
+  =@name= tags are assignees and are left out of the list. The button shows the
+  chosen tags, and the tag filter combines with the assignee filter. A task's
+  tags appear in its tooltip.
 
 *** ⚠️ Exporting the chart
 
 The *Excel* and *PDF* buttons in the toolbar, the right-click menu on the chart,
 and the commands [[cmd:scimax.project.exportExcel]] and
 [[cmd:scimax.project.exportPdf]] save the chart as it is shown, with the current
-filter and grouping:
+assignee and tag filters and grouping:
 
 - *Excel* (=.xlsx=): one sheet with the task table (task, file, state, priority,
   assignees, effort in hours, start and end as real dates, blocked) and a
@@ -200,7 +207,7 @@ CLOSED: [2026-07-02 Thu 08:07]
 - [[file:03.5-task-dependencies.org][Task Dependencies]]: the dependency layer this builds on
 - [[file:13-agenda.org][Agenda]]: the project agenda and the assignee filter (=@=)
 - [[file:30-cli.org][CLI]] — =scimax task next/who/path= answers the same questions from the terminal
-- [[file:03-todo-items.org][TODO Items]] — TODO states, priorities, effort
+- [[file:03-todo-items.org][TODO Items]] — TODO states, priorities, effort, tags and =#+FILETAGS=
 - [[file:06-timestamps.org][Timestamps]] — SCHEDULED/DEADLINE and clocking
 - [[file:13-agenda.org][Agenda]] — date-based task views
 - [[file:25-commands.org][Command Reference]] · [[file:26-configuration.org][Configuration]]

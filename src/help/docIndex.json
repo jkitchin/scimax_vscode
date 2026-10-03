@@ -1,5 +1,5 @@
 {
-  "buildDate": "2026-10-03T11:20:01.578Z",
+  "buildDate": "2026-10-03T11:27:20.090Z",
   "count": 3637,
   "entries": [
     {
@@ -1249,7 +1249,7 @@
       "heading": "Quick Start by Use Case",
       "level": 1,
       "file": "00-index.org",
-      "line": 497,
+      "line": 498,
       "content": "",
       "path": [],
       "commands": [],
@@ -1264,7 +1264,7 @@
       "heading": "I want to...",
       "level": 2,
       "file": "00-index.org",
-      "line": 499,
+      "line": 500,
       "content": "",
       "path": [
         "Quick Start by Use Case"
@@ -1279,7 +1279,7 @@
       "heading": "Take notes and organize information",
       "level": 3,
       "file": "00-index.org",
-      "line": 501,
+      "line": 502,
       "content": "- Start with [[file:01-getting-started.org][Getting Started]] - Learn [[file:01.5-basic-syntax.org][Basic Syntax]] for formatting text - Learn [[file:02-document-structure.org][Document Structure]] for headings and organization - Use [[file:15-capture.org][Capture]] for quick note-taking - Search with [[file:18-database-search.org][Database and Search]]",
       "path": [
         "Quick Start by Use Case",
@@ -1314,7 +1314,7 @@
       "heading": "Manage tasks and projects",
       "level": 3,
       "file": "00-index.org",
-      "line": 508,
+      "line": 509,
       "content": "- Set up tasks with [[file:03-todo-items.org][TODO Items]] - Add dates with [[file:06-timestamps.org][Timestamps]] - View agenda with [[file:13-agenda.org][Agenda]] - Organize projects with [[file:17-projectile.org][Projectile]] or [[file:16-notebook.org][Notebook]]",
       "path": [
         "Quick Start by Use Case",
@@ -1348,7 +1348,7 @@
       "heading": "Write scientific documents",
       "level": 3,
       "file": "00-index.org",
-      "line": 514,
+      "line": 515,
       "content": "- Execute code with [[file:07-source-blocks.org][Source Code Blocks]] - Preview math with [[file:11-latex-preview.org][LaTeX Preview]] - Manage citations with [[file:19-references.org][References]] - Export with [[file:10-export.org][Export]]",
       "path": [
         "Quick Start by Use Case",
@@ -1381,7 +1381,7 @@
       "heading": "Keep a journal",
       "level": 3,
       "file": "00-index.org",
-      "line": 520,
+      "line": 521,
       "content": "- Set up with [[file:14-journal.org][Journal]] - Use templates from [[file:15-capture.org][Capture]] - Navigate entries with [[file:21-navigation.org][Navigation]]",
       "path": [
         "Quick Start by Use Case",
@@ -1407,7 +1407,7 @@
       "heading": "Navigate efficiently",
       "level": 3,
       "file": "00-index.org",
-      "line": 525,
+      "line": 526,
       "content": "- Learn [[file:21-navigation.org][Navigation]] techniques - Master [[file:23-speed-commands.org][Speed Commands]] - Use [[file:22-hydra-menus.org][Hydra Menus]] for discovery - Reference [[file:24-keybindings.org][Keybindings]]",
       "path": [
         "Quick Start by Use Case",
@@ -1439,7 +1439,7 @@
       "heading": "Programmatically modify org files",
       "level": 3,
       "file": "00-index.org",
-      "line": 531,
+      "line": 532,
       "content": "CLOSED: [2026-01-16 Fri 20:04] - Use the [[file:27-org-api.org][Org API]] in TypeScript source blocks - Bulk update TODO states, properties, and tags - Extract and transform table data - Automate repetitive org file operations",
       "path": [
         "Quick Start by Use Case",
@@ -1474,7 +1474,7 @@
       "heading": "Configure the extension",
       "level": 3,
       "file": "00-index.org",
-      "line": 538,
+      "line": 539,
       "content": "CLOSED: [2026-01-16 Fri 20:04] - See all options in [[file:26-configuration.org][Configuration]] - Set up keybindings with [[file:24-keybindings.org][Keybindings]] - Customize menus with [[file:22-hydra-menus.org][Hydra Menus]]",
       "path": [
         "Quick Start by Use Case",
@@ -1505,7 +1505,7 @@
       "heading": "Navigation",
       "level": 1,
       "file": "00-index.org",
-      "line": 544,
+      "line": 545,
       "content": "- Index: [[file:00-index.org][Documentation Index]] - Next: [[file:01-getting-started.org][Getting Started]]",
       "path": [],
       "commands": [],
@@ -9111,8 +9111,8 @@
       "heading": "Exporting the chart",
       "level": 3,
       "file": "03.6-project-management.org",
-      "line": 114,
-      "content": "The *Excel* and *PDF* buttons in the toolbar, the right-click menu on the chart, and the commands [[cmd:scimax.project.exportExcel]] and [[cmd:scimax.project.exportPdf]] save the chart as it is shown, with the current filter and grouping: - *Excel* (=.xlsx=): one sheet with the task table (task, file, state, priority, assignees, effort in hours, start and end as real dates, blocked) and a day-by-day timeline to its right, each task's days filled in its status colour, weekends shaded and today hi",
+      "line": 121,
+      "content": "The *Excel* and *PDF* buttons in the toolbar, the right-click menu on the chart, and the commands [[cmd:scimax.project.exportExcel]] and [[cmd:scimax.project.exportPdf]] save the chart as it is shown, with the current assignee and tag filters and grouping: - *Excel* (=.xlsx=): one sheet with the task table (task, file, state, priority, assignees, effort in hours, start and end as real dates, blocked) and a day-by-day timeline to its right, each task's days filled in its status colour, weekends s",
       "path": [
         "Project Management",
         "Project view"
@@ -9136,20 +9136,20 @@
         "save",
         "shown",
         "current",
-        "filter",
+        "assignee",
+        "tag",
+        "filters",
         "grouping",
         "xlsx",
         "one",
-        "sheet",
-        "task",
-        "table"
+        "sheet"
       ]
     },
     {
       "heading": "Dependency graph",
       "level": 2,
       "file": "03.6-project-management.org",
-      "line": 132,
+      "line": 139,
       "content": "CLOSED: [2026-07-02 Thu 08:07] [[cmd:scimax.org.showTaskGraph]] opens an interactive graph (nodes = tasks, arrows = \"depends on\"), colored by status: - 🔵 ready · 🔴 blocked · 🟢 done · ⚪ unresolved id It is seeded from the active file's tasks and expands over the dependency edges to show the connected component. Click a node to jump to that task.",
       "path": [
         "Project Management"
@@ -9185,7 +9185,7 @@
       "heading": "People and assignments",
       "level": 2,
       "file": "03.6-project-management.org",
-      "line": 143,
+      "line": 150,
       "content": "CLOSED: [2026-07-11 Sat 09:05] A *person* is any heading tagged =:person:=, with contact properties: #+begin_src org ,* John Kitchin                              :person: :PROPERTIES: :ID: person-jrk :EMAIL: jkitchin@andrew.cmu.edu :NICK: jrk :ROLE: PI :END: #+end_src - **Assign**: [[cmd:scimax.org.assignTask]] (*Scimax: Assign Task to Person*) lists the indexed =:person:= headings, fuzzy-matches on handle/name/role/email as you type, and sets the current task's =:ASSIGNEE:= property to the pick",
       "path": [
         "Project Management"
@@ -9221,7 +9221,7 @@
       "heading": "Configuration",
       "level": 2,
       "file": "03.6-project-management.org",
-      "line": 174,
+      "line": 181,
       "content": "CLOSED: [2026-07-02 Thu 08:07] | Setting                    | Default | Description                                   | |----------------------------+---------+-----------------------------------------------| | =scimax.org.peopleFile=    | (empty) | Where \"New Person\" appends; empty ⇒ people.org | Task-dependency settings (blocking, promotion, indicators) are documented in [[file:03.5-task-dependencies.org][Task Dependencies]].",
       "path": [
         "Project Management"
@@ -9257,7 +9257,7 @@
       "heading": "Notes and limitations",
       "level": 2,
       "file": "03.6-project-management.org",
-      "line": 184,
+      "line": 191,
       "content": "- Without =:scope=, the task table is computed from a *single file* (or a subtree via =:id=). Use =:scope project= to cover the whole project. - \"Blocked\" and the chart's ordering resolve dependencies within the scope: a dependency on a task outside the project is not counted. The dependency graph and completion blocking ([[file:03.5-task-dependencies.org][Task Dependencies]]) still see every indexed file. - A project is read from disk each time the view or block refreshes. Very large trees are ",
       "path": [
         "Project Management"
@@ -9291,8 +9291,8 @@
       "heading": "Related Topics",
       "level": 2,
       "file": "03.6-project-management.org",
-      "line": 197,
-      "content": "CLOSED: [2026-07-02 Thu 08:07] - [[file:03.5-task-dependencies.org][Task Dependencies]]: the dependency layer this builds on - [[file:13-agenda.org][Agenda]]: the project agenda and the assignee filter (=@=) - [[file:30-cli.org][CLI]] — =scimax task next/who/path= answers the same questions from the terminal - [[file:03-todo-items.org][TODO Items]] — TODO states, priorities, effort - [[file:06-timestamps.org][Timestamps]] — SCHEDULED/DEADLINE and clocking - [[file:13-agenda.org][Agenda]] — date-",
+      "line": 204,
+      "content": "CLOSED: [2026-07-02 Thu 08:07] - [[file:03.5-task-dependencies.org][Task Dependencies]]: the dependency layer this builds on - [[file:13-agenda.org][Agenda]]: the project agenda and the assignee filter (=@=) - [[file:30-cli.org][CLI]] — =scimax task next/who/path= answers the same questions from the terminal - [[file:03-todo-items.org][TODO Items]] — TODO states, priorities, effort, tags and =#+FILETAGS= - [[file:06-timestamps.org][Timestamps]] — SCHEDULED/DEADLINE and clocking - [[file:13-agend",
       "path": [
         "Project Management"
       ],

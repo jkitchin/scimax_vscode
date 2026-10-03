@@ -1,0 +1,47 @@
+#+TITLE: Grant Reporting
+#+TODO: TODO NEXT WAIT | DONE CANCELLED
+#+FILETAGS: :grant:
+
+# A second file in the same project. The project view reads every org file
+# under the project root, so these tasks share the chart with project.org, and
+# dependencies run between the two files in both directions:
+#   - "Calibrate reactor" (project.org) waits for "Order reactor parts" here.
+#   - "Quarterly progress report" here waits for "Process characterization data".
+# Every task here carries :grant: from #+FILETAGS; pick it under Tags in the
+# project view to see only the grant work.
+
+* Grant reporting
+  :PROPERTIES:
+  :ASSIGNEE: maria
+  :END:
+
+** NEXT Order reactor parts                                       :lab:@liam:
+   SCHEDULED: <2026-10-05 Mon>
+   :PROPERTIES:
+   :ID: parts
+   :EFFORT: 3d
+   :END:
+   Assigned with an =@liam= tag instead of an =:ASSIGNEE:= property.
+
+** TODO Quarterly progress report                                  :writing:
+   :PROPERTIES:
+   :ID: qreport
+   :EFFORT: 2d
+   :DEPENDS: id:process
+   :END:
+
+** TODO Q4 report due                                             :milestone:
+   DEADLINE: <2026-11-13 Fri>
+   :PROPERTIES:
+   :ID: qdue
+   :DEPENDS: id:qreport
+   :END:
+
+** TODO [#B] Budget reconciliation                                   :admin:
+   DEADLINE: <2026-12-18 Fri>
+   :PROPERTIES:
+   :ID: budget
+   :EFFORT: 1d
+   :ASSIGNEE: maria priya
+   :END:
+   Two assignees: it shows under both in the Assignee filter and grouping.

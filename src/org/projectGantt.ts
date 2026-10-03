@@ -2,7 +2,7 @@
  * Gantt rows for the project view, and their Excel and PDF exports.
  *
  * The rows are computed once, here, from the project's tasks and the options
- * the view shows (assignee filter, done tasks, grouping). The webview draws
+ * the view shows (assignee and tag filters, done tasks, grouping). The webview draws
  * them and the exporters write them, so an export always matches the screen.
  *
  * No vscode imports: this module is unit tested directly.
@@ -27,6 +27,8 @@ export type GanttStatus = 'done' | 'blocked' | 'active' | 'planned';
 export interface GanttOptions {
     /** Only tasks for this handle; '' means unassigned; undefined means anyone. */
     assignee?: string;
+    /** Only tasks with at least one of these tags; empty or undefined means any. */
+    tags?: string[];
     /** Include DONE/CANCELLED tasks (default false). */
     showDone?: boolean;
     groupBy?: GanttGroupBy;
@@ -40,6 +42,7 @@ export interface GanttTaskRow {
     todo?: string;
     priority?: string;
     assignees: string[];
+    tags: string[];
     /** File relative to the project root. */
     file: string;
     /** Absolute path and 1-based line, for jumping to the task. */
@@ -72,6 +75,8 @@ export interface GanttModel {
     today: string;
     /** Every assignee handle in the project (for the filter menu). */
     assignees: string[];
+    /** Every tag in the project (for the filter menu). */
+    tags: string[];
 }
 
 export function isoDay(d: Date): string {
@@ -120,8 +125,10 @@ export function buildGanttModel(
     const todayDay = shiftDays(today, 0);
     const groupBy = options.groupBy ?? 'none';
 
+    const wantedTags = new Set(options.tags ?? []);
     const shown = tasks.filter(t => {
         if (!options.showDone && t.isDone) return false;
+        if (wantedTags.size && !t.tags.some(tag => wantedTags.has(tag))) return false;
         if (options.assignee === undefined) return true;
         return options.assignee === '' ? t.assignees.length === 0 : t.assignees.includes(options.assignee);
     });
@@ -143,6 +150,7 @@ export function buildGanttModel(
             todo: t.todo,
             priority: t.priority,
             assignees: t.assignees,
+            tags: t.tags,
             file: relFile(t.file, options.root),
             filePath: t.file,
             line: t.line,
@@ -194,12 +202,14 @@ export function buildGanttModel(
     }
 
     const assignees = [...new Set(tasks.flatMap(t => t.assignees))].sort();
+    const tags = [...new Set(tasks.flatMap(t => t.tags))].sort((a, b) => a.localeCompare(b));
     return {
         rows,
         start: isoDay(shiftDays(min, -2)),
         end: isoDay(shiftDays(max, 3)),
         today: isoDay(todayDay),
         assignees,
+        tags,
     };
 }
 

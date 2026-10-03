@@ -1,9 +1,9 @@
 #+TITLE: Example: Project Management
 
 A small, self-contained science project demonstrating Scimax's project-management
-features: task dependencies, a task table, the project view's Gantt chart, a
-dependency graph, and
-a people database. Open [[file:project.org]] and try the steps below.
+features: task dependencies, a task table, the project view's Gantt chart with
+assignee and tag filters, milestones, a dependency graph, and a people database.
+Open [[file:project.org]] and try the steps below.
 
 Full documentation: [[file:../../docs/03.6-project-management.org][Project Management]] and [[file:../../docs/03.5-task-dependencies.org][Task Dependencies]].
 
@@ -14,8 +14,27 @@ Full documentation: [[file:../../docs/03.6-project-management.org][Project Manag
 - =.projectile= — an empty marker that makes this folder its own project, so the
   project view and =:scope project= read only these files.
 - [[file:project.org]] — the project: experiments → analysis → writing → submission,
-  with dependencies, assignees, schedules, and effort. It ends with a task-table
-  =#+BEGIN:= block (already generated).
+  with dependencies, assignees, schedules, effort, tags and milestones. It ends
+  with a task-table =#+BEGIN:= block (already generated).
+- [[file:funding.org]] — grant reporting in a second file: a cross-file dependency
+  each way, an =@liam= tag as an assignee, two assignees on one task, and a
+  milestone.
+
+** Tags in the example
+
+| Tag             | Where it comes from                                     |
+|-----------------+---------------------------------------------------------|
+| =:perovskite:=  | =#+FILETAGS= in project.org, so every task there has it |
+| =:grant:=       | =#+FILETAGS= in funding.org                             |
+| =:lab:=         | "Experiments", inherited by its tasks; "Order parts"    |
+| =:computation:= | the DFT and model tasks                                 |
+| =:writing:=     | the "Writing" heading, and the quarterly report         |
+| =:milestone:=   | the three deadline-only tasks drawn as diamonds         |
+| =:urgent:=      | "Draft manuscript"                                      |
+| =:admin:=       | "Budget reconciliation"                                 |
+
+=@priya= on "Photocatalytic activity protocol" and =@liam= on "Order reactor
+parts" are assignee tags: they assign the tasks and are not in the tag list.
 
 * Things to try
 
@@ -27,27 +46,35 @@ Full documentation: [[file:../../docs/03.6-project-management.org][Project Manag
    (Gantt Chart)=. Double-click a task to jump to it, right-click to change it,
    and use the toolbar's *Excel* or *PDF* button to export the chart.
 
-3. *See the dependency graph.* Run =Scimax: Show Task Dependency Graph= — tasks are
+3. *Filter the chart.* Click *Tags* and check =milestone= to see only the three
+   milestones; add =urgent= to see those plus the manuscript draft (a task shows
+   if it has any checked tag). Check =grant= to see only funding.org's tasks, or
+   =lab= for the experiments, which inherit the tag from their parent heading.
+   Combine with *Assignee* (say, =liam=) and *Group* by file or parent heading.
+   The exports follow the filters.
+
+4. *See the dependency graph.* Run =Scimax: Show Task Dependency Graph= — tasks are
    colored blue (ready), red (blocked), or green (done); arrows point to
    dependencies. Click a node to jump to the task.
 
-4. *Blocking.* Move the cursor onto =Draft manuscript= and press =C-c C-t= to try
+5. *Blocking.* Move the cursor onto =Draft manuscript= and press =C-c C-t= to try
    to mark it DONE. It refuses — it is blocked by upstream work — and offers to
    jump to the blocker.
 
-5. *Triggering.* Mark =Synthesize perovskite samples= DONE (=C-c C-t= until DONE).
-   Its dependents (=XRD=, =UV-Vis=, =Calibrate reactor=) become unblocked and are
-   promoted toward =NEXT=; regenerate the table to see the 🔒 clear.
+6. *Triggering.* Mark =Synthesize perovskite samples= DONE (=C-c C-t= until DONE).
+   Its dependents =XRD= and =UV-Vis= become unblocked and are promoted toward
+   =NEXT=; regenerate the table to see the 🔒 clear. =Calibrate reactor= stays
+   blocked until =Order reactor parts= in funding.org is done too.
 
-6. *ORDERED steps.* Under "Photocatalytic activity protocol" (=:ORDERED: t=), the
+7. *ORDERED steps.* Under "Photocatalytic activity protocol" (=:ORDERED: t=), the
    steps must be completed in order — you cannot finish "Run activity
    measurements" before "Calibrate reactor".
 
-7. *People.* In any task, edit the =:ASSIGNEE:= line and start typing — completion
+8. *People.* In any task, edit the =:ASSIGNEE:= line and start typing — completion
    suggests people from people.org. Hover an assignee handle to see their email.
    Add a new teammate with =Scimax: New Person=.
 
-8. *Entity selector.* Run =Scimax: Pick Entity= → *Contacts* or *Locations* →
+9. *Entity selector.* Run =Scimax: Pick Entity= → *Contacts* or *Locations* →
    pick one → *Insert link*, *Copy field* (email/address), *Email*, or *Open in
    Maps*. Entity types are configurable (=scimax.org.entities=) — add your own
    (reagents, resources, …) with no code.
