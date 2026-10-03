@@ -46,17 +46,28 @@ reachable from the export menu) now opens this live preview to the side.
   re-read only when the =.bib= file changes.
 - *#+INCLUDE:* directives are expanded.
 
-* Scroll Sync and Navigation
+* 👀 Scroll Sync and Navigation
 
 - Scrolling the source editor scrolls the preview to the same place, and
   scrolling the preview scrolls the editor. Each direction can be turned off
-  (see [[*⚠️ Settings][Settings]]).
+  (see [[*Settings][Settings]]).
 - *Double-click* in the preview to move the cursor to that place in the
   source. Collapsed headings, blocks and drawers around that line are
   unfolded so the text is visible.
 - *Links*: =http(s)= and =mailto= links open in the browser; =#= links jump
   within the preview; links to files (including other =.org= files) open in
   the editor.
+- *Links within the document*: =[[#custom-id]]= jumps to the heading with that
+  =CUSTOM_ID=, and =[[*Heading]]= to the heading with that title. Without a
+  description they show the heading's section number (its title when the file
+  has =#+OPTIONS: num:nil=), as Emacs does, so =Section [[#sec:results]]= reads
+  "Section 2".
+- *Back*: after following a link within the preview (a citation to the
+  bibliography, a reference to a section, a footnote), a *← Back* button
+  appears at the top right, and =Cmd+[=, =Cmd+Left= (=Ctrl+[=, =Ctrl+Left=
+  elsewhere) or =Backspace= return to where you were. Each jump is
+  remembered, so you can go back several times. The target is briefly
+  highlighted.
 
 Sync works at the level of headlines, paragraphs, lists, tables and blocks.
 Inside a long element the position is interpolated. After an =#+INCLUDE:=

@@ -1,6 +1,6 @@
 {
-  "buildDate": "2026-10-03T18:10:59.848Z",
-  "count": 3641,
+  "buildDate": "2026-10-03T18:37:39.269Z",
+  "count": 3642,
   "entries": [
     {
       "heading": "Scimax VS Code",
@@ -1249,7 +1249,7 @@
       "heading": "Quick Start by Use Case",
       "level": 1,
       "file": "00-index.org",
-      "line": 500,
+      "line": 501,
       "content": "",
       "path": [],
       "commands": [],
@@ -1264,7 +1264,7 @@
       "heading": "I want to...",
       "level": 2,
       "file": "00-index.org",
-      "line": 502,
+      "line": 503,
       "content": "",
       "path": [
         "Quick Start by Use Case"
@@ -1279,7 +1279,7 @@
       "heading": "Take notes and organize information",
       "level": 3,
       "file": "00-index.org",
-      "line": 504,
+      "line": 505,
       "content": "- Start with [[file:01-getting-started.org][Getting Started]] - Learn [[file:01.5-basic-syntax.org][Basic Syntax]] for formatting text - Learn [[file:02-document-structure.org][Document Structure]] for headings and organization - Use [[file:15-capture.org][Capture]] for quick note-taking - Search with [[file:18-database-search.org][Database and Search]]",
       "path": [
         "Quick Start by Use Case",
@@ -1314,7 +1314,7 @@
       "heading": "Manage tasks and projects",
       "level": 3,
       "file": "00-index.org",
-      "line": 511,
+      "line": 512,
       "content": "- Set up tasks with [[file:03-todo-items.org][TODO Items]] - Add dates with [[file:06-timestamps.org][Timestamps]] - View agenda with [[file:13-agenda.org][Agenda]] - Organize projects with [[file:17-projectile.org][Projectile]] or [[file:16-notebook.org][Notebook]]",
       "path": [
         "Quick Start by Use Case",
@@ -1348,7 +1348,7 @@
       "heading": "Write scientific documents",
       "level": 3,
       "file": "00-index.org",
-      "line": 517,
+      "line": 518,
       "content": "- Execute code with [[file:07-source-blocks.org][Source Code Blocks]] - Preview math with [[file:11-latex-preview.org][LaTeX Preview]] - Manage citations with [[file:19-references.org][References]] - Export with [[file:10-export.org][Export]]",
       "path": [
         "Quick Start by Use Case",
@@ -1381,7 +1381,7 @@
       "heading": "Keep a journal",
       "level": 3,
       "file": "00-index.org",
-      "line": 523,
+      "line": 524,
       "content": "- Set up with [[file:14-journal.org][Journal]] - Use templates from [[file:15-capture.org][Capture]] - Navigate entries with [[file:21-navigation.org][Navigation]]",
       "path": [
         "Quick Start by Use Case",
@@ -1407,7 +1407,7 @@
       "heading": "Navigate efficiently",
       "level": 3,
       "file": "00-index.org",
-      "line": 528,
+      "line": 529,
       "content": "- Learn [[file:21-navigation.org][Navigation]] techniques - Master [[file:23-speed-commands.org][Speed Commands]] - Use [[file:22-hydra-menus.org][Hydra Menus]] for discovery - Reference [[file:24-keybindings.org][Keybindings]]",
       "path": [
         "Quick Start by Use Case",
@@ -1439,7 +1439,7 @@
       "heading": "Programmatically modify org files",
       "level": 3,
       "file": "00-index.org",
-      "line": 534,
+      "line": 535,
       "content": "CLOSED: [2026-01-16 Fri 20:04] - Use the [[file:27-org-api.org][Org API]] in TypeScript source blocks - Bulk update TODO states, properties, and tags - Extract and transform table data - Automate repetitive org file operations",
       "path": [
         "Quick Start by Use Case",
@@ -1474,7 +1474,7 @@
       "heading": "Configure the extension",
       "level": 3,
       "file": "00-index.org",
-      "line": 541,
+      "line": 542,
       "content": "CLOSED: [2026-01-16 Fri 20:04] - See all options in [[file:26-configuration.org][Configuration]] - Set up keybindings with [[file:24-keybindings.org][Keybindings]] - Customize menus with [[file:22-hydra-menus.org][Hydra Menus]]",
       "path": [
         "Quick Start by Use Case",
@@ -1505,7 +1505,7 @@
       "heading": "Navigation",
       "level": 1,
       "file": "00-index.org",
-      "line": 547,
+      "line": 548,
       "content": "- Index: [[file:00-index.org][Documentation Index]] - Next: [[file:01-getting-started.org][Getting Started]]",
       "path": [],
       "commands": [],
@@ -9076,7 +9076,7 @@
       "level": 2,
       "file": "03.6-project-management.org",
       "line": 83,
-      "content": "CLOSED: [2026-10-03 Sat 11:19] [[cmd:scimax.project.view]] (*Scimax: Project View (Gantt Chart)*) opens a panel with every TODO task in the active file's project on a graphical Gantt chart. The tasks come from all the =.org= files under the project root, read the same way as the task table's =:scope project=, and the panel reloads whenever one of them is saved. Each row shows the task's state, priority, a 🔒 when it is blocked, its title and its assignees, with a bar on the timeline coloured by ",
+      "content": "[[cmd:scimax.project.view]] (*Scimax: Project View (Gantt Chart)*) opens a panel with every TODO task in the active file's project on a graphical Gantt chart. The tasks come from all the =.org= files under the project root, read the same way as the task table's =:scope project=, and the panel reloads whenever one of them is saved. Each row shows the task's state, priority, a 🔒 when it is blocked, its title and its assignees, with a bar on the timeline coloured by status: green done, red blocked",
       "path": [
         "Project Management"
       ],
@@ -9087,10 +9087,6 @@
       "keywords": [
         "project",
         "view",
-        "closed",
-        "2026-10-03",
-        "sat",
-        "1119",
         "cmd",
         "scimax",
         "gantt",
@@ -9104,14 +9100,53 @@
         "tasks",
         "come",
         "org",
-        "under"
+        "under",
+        "root",
+        "read",
+        "way",
+        "table"
+      ]
+    },
+    {
+      "heading": "Dragging tasks on the chart",
+      "level": 3,
+      "file": "03.6-project-management.org",
+      "line": 144,
+      "content": "Unfinished tasks can be moved with the mouse. The bar follows the pointer a whole day at a time, and a tip shows the new dates and how many days it moved. Press =Escape= before letting go to put it back. - *Drag the bar* to move the whole task: its =SCHEDULED= and =DEADLINE= dates both move by the same days, keeping times, repeaters and warning periods. A milestone (a task with only a deadline) moves its deadline. A task with neither date gets =SCHEDULED= on the day you drop it. - *Drag the righ",
+      "path": [
+        "Project Management",
+        "Project view"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "dragging",
+        "tasks",
+        "chart",
+        "unfinished",
+        "moved",
+        "mouse",
+        "bar",
+        "follows",
+        "pointer",
+        "whole",
+        "day",
+        "time",
+        "tip",
+        "shows",
+        "new",
+        "dates",
+        "many",
+        "days",
+        "press",
+        "escape"
       ]
     },
     {
       "heading": "Moving a deadline moves the tasks that wait on it",
       "level": 3,
       "file": "03.6-project-management.org",
-      "line": 143,
+      "line": 164,
       "content": "CLOSED: [2026-10-03 Sat 11:19] Changing a task's deadline in the editor offers the same list as the project view: - =C-c C-d= (or the =d= speed command at a heading) sets a new deadline; the list appears right after. - =Shift+Up= / =Shift+Down= (or =Shift+Left= / =Shift+Right=) on a =DEADLINE= date move it a day at a time, so scimax waits until you stop: after a second and a half without another press, or when the cursor leaves the line, it offers to move the waiting tasks by the total. Changing",
       "path": [
         "Project Management",
@@ -9152,7 +9187,7 @@
       "heading": "Exporting the chart",
       "level": 3,
       "file": "03.6-project-management.org",
-      "line": 162,
+      "line": 183,
       "content": "CLOSED: [2026-10-03 Sat 08:59] The *Excel* and *PDF* buttons in the toolbar, the right-click menu on the chart, and the commands [[cmd:scimax.project.exportExcel]] and [[cmd:scimax.project.exportPdf]] save the chart as it is shown, with the current assignee and tag filters and grouping: - *Excel* (=.xlsx=): one sheet with the task table (task, file, state, priority, assignees, effort in hours, start and end as real dates, blocked) and a day-by-day timeline to its right, each task's days filled i",
       "path": [
         "Project Management",
@@ -9190,7 +9225,7 @@
       "heading": "Dependency graph",
       "level": 2,
       "file": "03.6-project-management.org",
-      "line": 181,
+      "line": 202,
       "content": "CLOSED: [2026-07-02 Thu 08:07] [[cmd:scimax.org.showTaskGraph]] opens an interactive graph (nodes = tasks, arrows = \"depends on\"), colored by status: - 🔵 ready · 🔴 blocked · 🟢 done · ⚪ unresolved id It is seeded from the active file's tasks and expands over the dependency edges to show the connected component. Click a node to jump to that task.",
       "path": [
         "Project Management"
@@ -9226,7 +9261,7 @@
       "heading": "People and assignments",
       "level": 2,
       "file": "03.6-project-management.org",
-      "line": 192,
+      "line": 213,
       "content": "CLOSED: [2026-07-11 Sat 09:05] A *person* is any heading tagged =:person:=, with contact properties: #+begin_src org ,* John Kitchin                              :person: :PROPERTIES: :ID: person-jrk :EMAIL: jkitchin@andrew.cmu.edu :NICK: jrk :ROLE: PI :END: #+end_src - **Assign**: [[cmd:scimax.org.assignTask]] (*Scimax: Assign Task to Person*) lists the indexed =:person:= headings, fuzzy-matches on handle/name/role/email as you type, and sets the current task's =:ASSIGNEE:= property to the pick",
       "path": [
         "Project Management"
@@ -9262,7 +9297,7 @@
       "heading": "Configuration",
       "level": 2,
       "file": "03.6-project-management.org",
-      "line": 223,
+      "line": 244,
       "content": "CLOSED: [2026-07-02 Thu 08:07] | Setting                    | Default | Description                                   | |----------------------------+---------+-----------------------------------------------| | =scimax.org.peopleFile=    | (empty) | Where \"New Person\" appends; empty ⇒ people.org | Task-dependency settings (blocking, promotion, indicators) are documented in [[file:03.5-task-dependencies.org][Task Dependencies]].",
       "path": [
         "Project Management"
@@ -9298,7 +9333,7 @@
       "heading": "Notes and limitations",
       "level": 2,
       "file": "03.6-project-management.org",
-      "line": 233,
+      "line": 254,
       "content": "CLOSED: [2026-10-03 Sat 08:59] - Without =:scope=, the task table is computed from a *single file* (or a subtree via =:id=). Use =:scope project= to cover the whole project. - \"Blocked\" and the chart's ordering resolve dependencies within the scope: a dependency on a task outside the project is not counted. The dependency graph and completion blocking ([[file:03.5-task-dependencies.org][Task Dependencies]]) still see every indexed file. - A project is read from disk each time the view or block r",
       "path": [
         "Project Management"
@@ -9332,7 +9367,7 @@
       "heading": "Related Topics",
       "level": 2,
       "file": "03.6-project-management.org",
-      "line": 247,
+      "line": 268,
       "content": "CLOSED: [2026-07-02 Thu 08:07] - [[file:03.5-task-dependencies.org][Task Dependencies]]: the dependency layer this builds on - [[file:13-agenda.org][Agenda]]: the project agenda and the assignee filter (=@=) - [[file:30-cli.org][CLI]] — =scimax task next/who/path= answers the same questions from the terminal - [[file:03-todo-items.org][TODO Items]] — TODO states, priorities, effort, tags and =#+FILETAGS= - [[file:06-timestamps.org][Timestamps]] — SCHEDULED/DEADLINE and clocking - [[file:13-agend",
       "path": [
         "Project Management"
@@ -25981,7 +26016,7 @@
       "level": 3,
       "file": "10-export.org",
       "line": 37,
-      "content": "CLOSED: [2026-01-16 Fri 20:55] - `[l l]' LaTeX file - Export to .tex file - `[l p]' PDF file - Export to PDF via LaTeX compilation - `[l o]' PDF and open - Export to PDF and open with system viewer These three can be routed to a custom exporter based on the document's =#+LATEX_CLASS=, so a memo or report class exports correctly without running a separate command. See [[*⚠️ Custom Exporters by LaTeX Class][Custom Exporters by LaTeX Class]].",
+      "content": "CLOSED: [2026-01-16 Fri 20:55] - `[l l]' LaTeX file - Export to .tex file - `[l p]' PDF file - Export to PDF via LaTeX compilation - `[l o]' PDF and open - Export to PDF and open with system viewer These three can be routed to a custom exporter based on the document's =#+LATEX_CLASS=, so a memo or report class exports correctly without running a separate command. See [[*Custom Exporters by LaTeX Class][Custom Exporters by LaTeX Class]].",
       "path": [
         "Export Dispatcher",
         "Export Dispatcher Menu Structure"
@@ -106576,7 +106611,7 @@
       "level": 1,
       "file": "46-org-preview.org",
       "line": 49,
-      "content": "- Scrolling the source editor scrolls the preview to the same place, and scrolling the preview scrolls the editor. Each direction can be turned off (see [[*⚠️ Settings][Settings]]). - *Double-click* in the preview to move the cursor to that place in the source. Collapsed headings, blocks and drawers around that line are unfolded so the text is visible. - *Links*: =http(s)= and =mailto= links open in the browser; =#= links jump within the preview; links to files (including other =.org= files) ope",
+      "content": "- Scrolling the source editor scrolls the preview to the same place, and scrolling the preview scrolls the editor. Each direction can be turned off (see [[*Settings][Settings]]). - *Double-click* in the preview to move the cursor to that place in the source. Collapsed headings, blocks and drawers around that line are unfolded so the text is visible. - *Links*: =http(s)= and =mailto= links open in the browser; =#= links jump within the preview; links to files (including other =.org= files) open i",
       "path": [],
       "commands": [],
       "keybindings": [],
@@ -106607,7 +106642,7 @@
       "heading": "Settings",
       "level": 1,
       "file": "46-org-preview.org",
-      "line": 66,
+      "line": 77,
       "content": "| Setting                                      | Default | Description                                         | |----------------------------------------------+---------+-----------------------------------------------------| | ~scimax.orgPreview.updateDelay~              | ~300~   | Milliseconds after typing before the preview updates | | ~scimax.orgPreview.scrollPreviewWithEditor~  | ~true~  | Scroll the preview when the source editor scrolls   | | ~scimax.orgPreview.scrollEditorWithPreview~  ",
       "path": [],
       "commands": [
@@ -106640,7 +106675,7 @@
       "heading": "Security",
       "level": 1,
       "file": "46-org-preview.org",
-      "line": 74,
+      "line": 85,
       "content": "Source blocks are never executed by the preview. Scripts in the document (for example in =#+HTML:= blocks or =#+HTML_HEAD:=) do not run either: the preview's content security policy allows only its own scripts and the MathJax and highlight.js files on their CDNs. Because those libraries load from the network, math and highlighting need an internet connection; the rest of the preview works offline.",
       "path": [],
       "commands": [],
@@ -106672,7 +106707,7 @@
       "heading": "Related Topics",
       "level": 1,
       "file": "46-org-preview.org",
-      "line": 83,
+      "line": 94,
       "content": "- [[file:10-export.org][Export]] - HTML export, which the preview is built on - [[file:11-latex-preview.org][LaTeX Preview]] - inline equation previews in the editor - [[file:12-image-overlays.org][Image Overlays]] - inline image thumbnails in the editor - [[file:19-references.org][References]] - citations and bibliographies - [[file:24-keybindings.org][Keybindings]] - all keyboard shortcuts - [[file:26-configuration.org][Configuration]] - all settings - [[file:45-myst-preview.org][MyST Preview]",
       "path": [],
       "commands": [],

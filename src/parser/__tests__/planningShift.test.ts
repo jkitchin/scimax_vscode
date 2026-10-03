@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import {
+    addPlanningDate,
     dayDelta,
     dependentsToShift,
     headingDeadline,
@@ -34,6 +35,25 @@ describe('shiftPlanningLine', () => {
     it('adds a missing day name and leaves CLOSED alone', () => {
         expect(shiftPlanningLine('CLOSED: [2026-10-01 Thu 10:00] SCHEDULED: <2026-10-05>', 1))
             .toBe('CLOSED: [2026-10-01 Thu 10:00] SCHEDULED: <2026-10-06 Tue>');
+    });
+});
+
+describe('shiftPlanningLine with one keyword', () => {
+    it('moves only the DEADLINE', () => {
+        expect(shiftPlanningLine('SCHEDULED: <2026-10-05 Mon> DEADLINE: <2026-10-09 Fri>', 2, 'DEADLINE'))
+            .toBe('SCHEDULED: <2026-10-05 Mon> DEADLINE: <2026-10-11 Sun>');
+    });
+});
+
+describe('addPlanningDate', () => {
+    it('adds a planning line under a heading that has none', () => {
+        expect(addPlanningDate(['* TODO A', 'Body'], 0, 'SCHEDULED', new Date(2026, 9, 5)))
+            .toEqual({ line: 1, text: 'SCHEDULED: <2026-10-05 Mon>', insert: true });
+    });
+
+    it('adds to an existing CLOSED line', () => {
+        expect(addPlanningDate(['* DONE A', 'CLOSED: [2026-10-01 Thu]  '], 0, 'SCHEDULED', new Date(2026, 9, 5)))
+            .toEqual({ line: 1, text: 'CLOSED: [2026-10-01 Thu] SCHEDULED: <2026-10-05 Mon>', insert: false });
     });
 });
 

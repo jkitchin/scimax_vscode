@@ -57,6 +57,8 @@ export interface GanttTaskRow {
     /** ganttIds of the shown tasks this one depends on. */
     dependsOn: string[];
     deadline?: string;
+    /** The bar ends on its DEADLINE, so dragging its end changes the deadline. */
+    endsAtDeadline: boolean;
 }
 
 export interface GanttGroupRow {
@@ -165,6 +167,7 @@ export function buildGanttModel(
                 .map(id => ganttIdOfId.get(id))
                 .filter((g): g is string => !!g && shownGanttIds.has(g)),
             deadline: t.deadline ? isoDay(t.deadline) : undefined,
+            endsAtDeadline: !span.milestone && !!t.deadline && isoDay(shiftDays(t.deadline, 1)) === isoDay(span.end),
         };
     };
 

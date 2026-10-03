@@ -1070,6 +1070,9 @@ function parseHeadline(state: FastParserState): HeadlineElement | null {
             commentedp,
             footnoteSection: false,
             lineNumber: startLine + 1,
+            // As parseOrg does, so the heading's HTML id is its CUSTOM_ID and
+            // [[#custom-id]] links reach it.
+            customId: propertiesDrawer?.CUSTOM_ID || undefined,
         },
         planning,
         propertiesDrawer,

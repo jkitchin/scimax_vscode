@@ -539,8 +539,11 @@ export class HtmlExportBackend implements ExportBackend {
             : '';
         parts.push(`<div id="${id}" class="org-section org-level-${headline.properties.level}"${lineAttr}>`);
 
-        // Headline
-        parts.push(`<h${level}>${title}</h${level}>`);
+        // Headline. A heading whose id is its CUSTOM_ID or ID keeps the
+        // generated id too, which links from other files (file.org::*Heading) use.
+        const slug = generateId(headline.properties.rawValue);
+        const alias = slug !== id ? `<a id="${slug}"></a>` : '';
+        parts.push(`<h${level}>${alias}${title}</h${level}>`);
 
         // Section content
         if (headline.section) {
@@ -916,9 +919,16 @@ export class HtmlExportBackend implements ExportBackend {
         }
 
         let href = path;
-        const description = link.children
+        let description = link.children
             ? exportObjects(link.children, this, state)
             : escapeString(rawLink || path, 'html');
+        // [[#custom-id]] and [[*Heading]] without a description show the
+        // heading's section number, or its title when sections are not
+        // numbered, as Emacs does.
+        if (!link.children && /^[#*]/.test(path) && !/\.(org|md)(::|$)/i.test(path)) {
+            const label = state.headlineLabels?.get(this.internalTargetId(path, state));
+            if (label) description = escapeString(label.number ?? label.title, 'html');
+        }
 
         // Handle different link types
         switch (linkType) {
@@ -934,20 +944,15 @@ export class HtmlExportBackend implements ExportBackend {
                 href = `#${path}`;
                 break;
             case 'custom-id':
-                // Custom ID reference (starts with #)
-                href = path.startsWith('#') ? path : `#${path}`;
-                break;
             case 'headline':
-                // Headline reference (starts with *)
-                const headlineText = path.startsWith('*') ? path.slice(1) : path;
-                href = `#${generateId(headlineText)}`;
+                href = `#${this.internalTargetId(path, state)}`;
                 break;
             case 'internal':
                 // [[other.org::*Heading]] parses as internal (no file: prefix),
                 // but it is really a file link
                 href = /\.(org|md)(::|$)/i.test(path)
                     ? this.exportFileHref(link)
-                    : `#${generateId(path)}`;
+                    : `#${this.internalTargetId(path, state)}`;
                 break;
             case 'mailto':
                 href = `mailto:${path}`;
@@ -987,6 +992,20 @@ export class HtmlExportBackend implements ExportBackend {
         }
 
         return `<a href="${escapeString(href, 'html')}">${description}</a>`;
+    }
+
+    /**
+     * The HTML id an internal link points at: [[#custom-id]] is the heading's
+     * CUSTOM_ID, [[*Heading]] the id of the heading with that title, and
+     * anything else a <<target>>, a heading title or a generated id.
+     */
+    private internalTargetId(path: string, state: ExportState): string {
+        if (path.startsWith('#')) {
+            const customId = path.slice(1);
+            return state.customIds.get(customId) ?? customId;
+        }
+        const text = path.startsWith('*') ? path.slice(1).trim() : path;
+        return state.customIds.get(text) ?? state.targets.get(text) ?? generateId(text);
     }
 
     /**

@@ -126,6 +126,22 @@ describe('buildGanttModel', () => {
         expect(buildGanttModel(tasksOf(TAGGED), { tags: ['lab'] }, TODAY).tags).toHaveLength(4);
     });
 
+    it('marks bars that end on their deadline, so their end can be dragged', () => {
+        const text = `* TODO Write
+SCHEDULED: <2026-07-01 Wed> DEADLINE: <2026-07-03 Fri>
+* TODO Sized
+SCHEDULED: <2026-07-01 Wed> DEADLINE: <2026-07-10 Fri>
+:PROPERTIES:
+:EFFORT: 1d
+:END:
+* TODO Due
+DEADLINE: <2026-07-09 Thu>
+`;
+        const rows = buildGanttModel(tasksOf(text), {}, TODAY).rows;
+        const ends = Object.fromEntries(rows.map(r => r.kind === 'task' ? [r.title, r.endsAtDeadline] : []));
+        expect(ends).toEqual({ Write: true, Sized: false, Due: false });
+    });
+
     it('drops arrows to tasks that are filtered out', () => {
         const model = buildGanttModel(tasksOf(MAIN), { assignee: 'ana' }, TODAY);
         expect((model.rows[0] as any).dependsOn).toEqual([]);

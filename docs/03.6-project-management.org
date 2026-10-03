@@ -80,8 +80,7 @@ not apply:
 ,#+END:
 #+end_src
 
-** ✅ Project view
-CLOSED: [2026-10-03 Sat 11:19]
+** 👀 Project view
 
 [[cmd:scimax.project.view]] (*Scimax: Project View (Gantt Chart)*) opens a panel
 with every TODO task in the active file's project on a graphical Gantt chart.
@@ -104,6 +103,8 @@ another.
 
 - *Double-click* a task (or select it and press =Enter=) to open it beside the
   chart. The arrow keys move the selection.
+- *Drag* a task's bar to move it, or the right end of a bar that ends on its
+  deadline to move just the deadline. See [[*Dragging tasks on the chart]].
 - *Right-click* a task for: Open Task, Cycle TODO State, Assign..., Set
   Priority..., Set Effort..., Schedule..., and Set Deadline.... Each runs the
   ordinary Scimax command on the task's heading (so repeaters, CLOSED
@@ -139,6 +140,26 @@ another.
   =@name= tags are assignees and are left out of the list. The button shows the
   chosen tags, and the tag filter combines with the assignee filter. A task's
   tags appear in its tooltip.
+
+*** ⚠️ Dragging tasks on the chart
+
+Unfinished tasks can be moved with the mouse. The bar follows the pointer a
+whole day at a time, and a tip shows the new dates and how many days it moved.
+Press =Escape= before letting go to put it back.
+
+- *Drag the bar* to move the whole task: its =SCHEDULED= and =DEADLINE= dates
+  both move by the same days, keeping times, repeaters and warning periods. A
+  milestone (a task with only a deadline) moves its deadline. A task with
+  neither date gets =SCHEDULED= on the day you drop it.
+- *Drag the right end* to move only the deadline. Only bars that end on their
+  deadline have this handle: tasks with =SCHEDULED= and =DEADLINE= and no
+  =EFFORT=. A bar whose length comes from =EFFORT= is moved by its middle
+  instead, or by setting its effort.
+
+When you let go, the file is saved and the chart redraws. If other tasks wait on
+the one you moved, the same list as for a moved deadline appears (see below):
+uncheck tasks to leave them alone, or press =Escape= to move none. Done tasks
+cannot be dragged.
 
 *** ✅ Moving a deadline moves the tasks that wait on it
 CLOSED: [2026-10-03 Sat 11:19]

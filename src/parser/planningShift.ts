@@ -51,21 +51,45 @@ export function dayDelta(a: Date, b: Date): number {
 
 const PLANNING_TS = /\b(SCHEDULED|DEADLINE):(\s*)([<[])(\d{4})-(\d{2})-(\d{2})(?: [^\s\d>\]]+)?/g;
 
+function isoWithDay(date: Date): string {
+    const iso = [
+        date.getFullYear(),
+        String(date.getMonth() + 1).padStart(2, '0'),
+        String(date.getDate()).padStart(2, '0'),
+    ].join('-');
+    return `${iso} ${DAY_NAMES_SHORT[date.getDay()]}`;
+}
+
 /**
- * Move the SCHEDULED and DEADLINE dates on a planning line by `days`, keeping
- * times, repeaters and warning periods. CLOSED is left alone. Returns the line
- * unchanged if it has neither.
+ * Move the SCHEDULED and DEADLINE dates on a planning line by `days` (or only
+ * `only`'s), keeping times, repeaters and warning periods. CLOSED is left
+ * alone. Returns the line unchanged if it has neither.
  */
-export function shiftPlanningLine(line: string, days: number): string {
-    return line.replace(PLANNING_TS, (_m, keyword: string, space: string, open: string, y: string, mo: string, d: string) => {
+export function shiftPlanningLine(line: string, days: number, only?: 'SCHEDULED' | 'DEADLINE'): string {
+    return line.replace(PLANNING_TS, (m, keyword: string, space: string, open: string, y: string, mo: string, d: string) => {
+        if (only && keyword !== only) return m;
         const date = new Date(Number(y), Number(mo) - 1, Number(d) + days);
-        const iso = [
-            date.getFullYear(),
-            String(date.getMonth() + 1).padStart(2, '0'),
-            String(date.getDate()).padStart(2, '0'),
-        ].join('-');
-        return `${keyword}:${space}${open}${iso} ${DAY_NAMES_SHORT[date.getDay()]}`;
+        return `${keyword}:${space}${open}${isoWithDay(date)}`;
     });
+}
+
+/**
+ * The edit that gives the heading on 0-based `headingLine` a `keyword` date,
+ * for a heading that has none: added to its planning line if it has one (such
+ * as a CLOSED line), else a new line under the heading.
+ */
+export function addPlanningDate(
+    lines: string[],
+    headingLine: number,
+    keyword: 'SCHEDULED' | 'DEADLINE',
+    date: Date
+): { line: number; text: string; insert: boolean } {
+    const stamp = `${keyword}: <${isoWithDay(date)}>`;
+    const next = lines[headingLine + 1];
+    if (next !== undefined && /^\s*(SCHEDULED|DEADLINE|CLOSED):/.test(next)) {
+        return { line: headingLine + 1, text: `${next.replace(/\s+$/, '')} ${stamp}`, insert: false };
+    }
+    return { line: headingLine + 1, text: stamp, insert: true };
 }
 
 /**

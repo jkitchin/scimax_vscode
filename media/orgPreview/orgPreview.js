@@ -140,10 +140,49 @@
             const id = decodeURIComponent(href.slice(1));
             const target = document.getElementById(id) ||
                 document.querySelector(`[name="${CSS.escape(id)}"]`);
-            if (target) { target.scrollIntoView(); }
+            if (target) { jumpTo(target); }
             return;
         }
         vscode.postMessage({ type: 'openLink', href });
+    }
+
+    // ------------------------------------------------------------------
+    // Jump history: links within the page (citations, references, footnotes)
+    // remember where they were followed from. Back (the button, Cmd+[ or
+    // Cmd+Left, Ctrl+[ or Ctrl+Left elsewhere, or Backspace) returns there.
+    // ------------------------------------------------------------------
+    const jumps = [];
+    let backButton = null;
+
+    function updateBackButton() {
+        if (backButton) { backButton.hidden = jumps.length === 0; }
+    }
+
+    function jumpTo(target) {
+        jumps.push(window.scrollY);
+        if (jumps.length > 100) { jumps.shift(); }
+        target.scrollIntoView();
+        target.classList.remove('org-jump-target');
+        void target.offsetWidth; // restart the highlight animation
+        target.classList.add('org-jump-target');
+        updateBackButton();
+    }
+
+    function goBack() {
+        if (jumps.length === 0) { return false; }
+        window.scrollTo(0, jumps.pop());
+        updateBackButton();
+        return true;
+    }
+
+    function onKeyDown(event) {
+        const mod = event.metaKey || event.ctrlKey;
+        const back = (mod && !event.altKey && !event.shiftKey && (event.key === '[' || event.key === 'ArrowLeft'))
+            || (event.key === 'Backspace' && !mod && !event.altKey && !event.shiftKey);
+        if (back && goBack()) {
+            event.preventDefault();
+            event.stopPropagation();
+        }
     }
 
     function onDoubleClick(event) {
@@ -186,6 +225,17 @@
         highlightCode(root);
         document.addEventListener('click', onClick);
         document.addEventListener('dblclick', onDoubleClick);
+        document.addEventListener('keydown', onKeyDown, true);
+        backButton = document.createElement('button');
+        backButton.className = 'org-back';
+        backButton.textContent = '← Back';
+        backButton.title = 'Back to where you followed the link from (Cmd+[ or Backspace)';
+        backButton.hidden = true;
+        backButton.addEventListener('click', event => {
+            event.stopPropagation();
+            goBack();
+        });
+        document.body.appendChild(backButton);
         window.addEventListener('scroll', onScroll, { passive: true });
         vscode.postMessage({ type: 'ready' });
         // Restore position once layout (and images) have settled

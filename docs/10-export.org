@@ -42,7 +42,7 @@ CLOSED: [2026-01-16 Fri 20:55]
 
 These three can be routed to a custom exporter based on the document's
 =#+LATEX_CLASS=, so a memo or report class exports correctly without running a
-separate command. See [[*⚠️ Custom Exporters by LaTeX Class][Custom Exporters by LaTeX Class]].
+separate command. See [[*Custom Exporters by LaTeX Class][Custom Exporters by LaTeX Class]].
 
 *** Beamer Exports
 - `[s b]' Beamer (LaTeX) - Export to Beamer .tex file

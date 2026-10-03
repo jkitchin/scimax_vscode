@@ -5,7 +5,8 @@
  * and the rows are built by projectGantt.ts, which the Excel and PDF exports
  * share, so an export matches the screen.
  *
- * Interaction: double-click a task to jump to it; right-click for VS Code's own
+ * Interaction: double-click a task to jump to it; drag a bar to move the task
+ * (or its right end to move the deadline); right-click for VS Code's own
  * context menu (webview/context in package.json), whose commands run the
  * ordinary editing commands on the task's heading and come back here. The view
  * reloads when an org file in the project is saved.
@@ -26,6 +27,8 @@ import {
 } from './projectGantt';
 import { runOnSourceHeading } from './agendaDocumentProvider';
 import { addDependencyBetween, removeDependencies } from './dependencyCommands';
+import { addPlanningDate, planningLines, shiftPlanningLine } from '../parser/planningShift';
+import { chooseAndShiftDependents } from './shiftDependents';
 
 /** What VS Code passes to a webview/context command: the row's data-vscode-context. */
 interface TaskContext {
@@ -46,7 +49,8 @@ type FromWebview =
     | { type: 'refresh' }
     | { type: 'options'; options: ViewOptions }
     | { type: 'open'; filePath: string; line: number }
-    | { type: 'export'; format: 'xlsx' | 'pdf' };
+    | { type: 'export'; format: 'xlsx' | 'pdf' }
+    | { type: 'move'; filePath: string; line: number; days: number; edge: 'move' | 'end'; start: string };
 
 class ProjectView implements vscode.Disposable {
     private panel: vscode.WebviewPanel | undefined;
@@ -136,6 +140,9 @@ class ProjectView implements vscode.Disposable {
             case 'export':
                 await this.export(message.format);
                 break;
+            case 'move':
+                await this.moveTask(message.filePath, message.line, message.days, message.edge, message.start);
+                break;
         }
     }
 
@@ -148,6 +155,62 @@ class ProjectView implements vscode.Disposable {
             () => this.panel?.reveal()
         );
         if (changed) await this.reload();
+    }
+
+    /**
+     * A bar was dragged `days` days. `move` moves the whole task: its
+     * SCHEDULED and DEADLINE dates, or, for a task with neither, a new
+     * SCHEDULED on `start` (the bar's new first day). `end` moves only the
+     * DEADLINE. Then offers to move the tasks that wait on it by the same days.
+     */
+    async moveTask(filePath: string, line: number, days: number, edge: 'move' | 'end', start: string): Promise<void> {
+        const task = this.tasks.find(t => t.file === filePath && t.line === line);
+        if (!task || days === 0 || !this.root) {
+            await this.reload();
+            return;
+        }
+        const doc = await vscode.workspace.openTextDocument(vscode.Uri.file(filePath));
+        const lines = doc.getText().split(/\r?\n/);
+        const heading = lines[line - 1] ?? '';
+        if (!/^\*+\s/.test(heading) || !heading.includes(task.title)) {
+            vscode.window.showWarningMessage('The project view is out of date: refresh it and try again.');
+            await this.reload();
+            return;
+        }
+
+        const edit = new vscode.WorkspaceEdit();
+        const dated = planningLines(lines, line - 1);
+        if (edge === 'end' && !task.deadline) {
+            await this.reload();
+            return;
+        }
+        if (dated.length) {
+            for (const i of dated) {
+                const shifted = shiftPlanningLine(lines[i], days, edge === 'end' ? 'DEADLINE' : undefined);
+                if (shifted !== lines[i]) edit.replace(doc.uri, doc.lineAt(i).range, shifted);
+            }
+        } else {
+            const [y, m, d] = start.split('-').map(Number);
+            const add = addPlanningDate(lines, line - 1, 'SCHEDULED', new Date(y, m - 1, d));
+            if (add.insert) edit.insert(doc.uri, new vscode.Position(add.line, 0), add.text + '\n');
+            else edit.replace(doc.uri, doc.lineAt(add.line).range, add.text);
+        }
+        if (!(await vscode.workspace.applyEdit(edit))) {
+            vscode.window.showErrorMessage(`Could not move "${task.title}".`);
+            await this.reload();
+            return;
+        }
+        await doc.save();
+
+        // Read the project again: adding a SCHEDULED line moves the lines below it.
+        this.tasks = await loadProjectTasks(this.root);
+        this.post();
+        const moved = this.tasks.find(t => t.file === filePath && t.line === line);
+        if (moved) {
+            const subject = edge === 'end' ? `The deadline of "${task.title}"` : `"${task.title}"`;
+            const shifted = await chooseAndShiftDependents(this.root, moved, this.tasks, days, subject);
+            if (shifted) await this.reload();
+        }
     }
 
     /**

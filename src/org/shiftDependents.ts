@@ -49,6 +49,25 @@ export async function offerShiftDependents(
     const tasks = await loadProjectTasks(root);
     const task = tasks.find(t => t.file === document.uri.fsPath && t.line === headingLine + 1);
     if (!task) return 0;
+    return chooseAndShiftDependents(root, task, tasks, days, `The deadline of "${task.title}"`, document);
+}
+
+/**
+ * `task` (one of the project `tasks` under `root`) moved `days` days: list the
+ * unfinished tasks that wait on it and move the ones the user keeps checked by
+ * the same days. `subject` names what moved, for the prompt. Changed files are
+ * saved, except `keepUnsaved` (the document the user is editing). Returns how
+ * many tasks moved.
+ */
+export async function chooseAndShiftDependents(
+    root: string,
+    task: ProjectTaskInfo,
+    tasks: ProjectTaskInfo[],
+    days: number,
+    subject: string,
+    keepUnsaved?: vscode.TextDocument
+): Promise<number> {
+    if (days === 0) return 0;
     const dependents = dependentsToShift(task, tasks);
     if (dependents.length === 0) return 0;
 
@@ -65,7 +84,7 @@ export async function offerShiftDependents(
         task: t,
     }));
     const picked = await vscode.window.showQuickPick(items, {
-        title: `The deadline of "${task.title}" moved ${amount}. Move the tasks that depend on it too?`,
+        title: `${subject} moved ${amount}. Move the tasks that depend on it too?`,
         placeHolder: 'Uncheck tasks to leave alone; Escape moves none',
         canPickMany: true,
         matchOnDetail: true,
@@ -88,7 +107,7 @@ export async function offerShiftDependents(
             }
             moved++;
         }
-        if (await vscode.workspace.applyEdit(edit) && doc.isDirty && doc !== document) await doc.save();
+        if (await vscode.workspace.applyEdit(edit) && doc.isDirty && doc !== keepUnsaved) await doc.save();
     }
     vscode.window.showInformationMessage(`Moved ${moved} dependent task${moved === 1 ? '' : 's'} ${amount}.`);
     return moved;

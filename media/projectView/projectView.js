@@ -1,10 +1,11 @@
 // Project view webview: draws the Gantt rows the extension sends.
 //
 // Messages in:  { type: 'model', model, options, project, taskCount }
-// Messages out: ready | refresh | options | open | export
+// Messages out: ready | refresh | options | open | export | move
 //
 // The extension owns filtering and layout (projectGantt.ts), so the chart and
-// its exports agree; this script only draws, scrolls and zooms. Each task row
+// its exports agree; this script only draws, scrolls, zooms and lets bars be
+// dragged (the extension edits the dates and sends a new model). Each task row
 // carries data-vscode-context, which is what VS Code hands to the right-click
 // menu commands declared under webview/context in package.json.
 (function () {
@@ -43,6 +44,14 @@
         const e = document.createElementNS(SVG, tag);
         for (const k in attrs) e.setAttribute(k, attrs[k]);
         return e;
+    }
+    function addDays(s, n) {
+        const d = parseDay(s);
+        d.setDate(d.getDate() + n);
+        return [d.getFullYear(), String(d.getMonth() + 1).padStart(2, '0'), String(d.getDate()).padStart(2, '0')].join('-');
+    }
+    function shortDay(s) {
+        return parseDay(s).toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' });
     }
     function hours(min) {
         if (!min) return '';
@@ -268,7 +277,15 @@
                 bar.style.width = `${Math.max(3, (e - s) * dayW - 2)}px`;
                 bars.set(row.ganttId, { x1: s * dayW, x2: e * dayW - 2, y: index * ROW_H + ROW_H / 2 });
             }
-            bar.title = tip;
+            // Unfinished tasks can be dragged; a bar that ends on its deadline
+            // also has a handle on its right end to move just the deadline.
+            if (row.status !== 'done') {
+                bar.classList.add('draggable');
+                bar.title = tip + '\n\nDrag to move' + (row.endsAtDeadline ? '; drag the right end to move the deadline' : '');
+                if (row.endsAtDeadline) bar.appendChild(el('div', 'handle'));
+            } else {
+                bar.title = tip;
+            }
             label.title = tip;
             r.appendChild(bar);
             grid.appendChild(r);
@@ -329,8 +346,106 @@
         if (row && row.kind === 'task') vscode.postMessage({ type: 'open', filePath: row.filePath, line: row.line });
     }
 
-    chart.addEventListener('click', e => select(rowIndexOf(e.target)));
-    chart.addEventListener('dblclick', e => openRow(rowIndexOf(e.target)));
+    // Dragging bars -------------------------------------------------------------
+    // The bar follows the pointer in whole days; on release the extension moves
+    // the task's dates and offers to move the tasks that wait on it.
+    let drag = null;
+    let suppressClick = false;
+    const tipBox = el('div', 'dragTip');
+    tipBox.hidden = true;
+    document.body.appendChild(tipBox);
+
+    function dragText(d) {
+        const sign = d.days > 0 ? '+' : '';
+        const by = `${sign}${d.days} day${Math.abs(d.days) === 1 ? '' : 's'}`;
+        if (d.edge === 'end') return `Deadline ${shortDay(addDays(d.row.deadline, d.days))} (${by})`;
+        if (d.row.milestone) return `${shortDay(addDays(d.row.start, d.days))} (${by})`;
+        return `${shortDay(addDays(d.row.start, d.days))} to ${shortDay(addDays(d.row.end, d.days - 1))} (${by})`;
+    }
+    function endDrag(apply) {
+        if (!drag) return;
+        const d = drag;
+        drag = null;
+        tipBox.hidden = true;
+        chart.classList.remove('dragging');
+        d.bar.classList.remove('moving');
+        if (apply && d.days !== 0) {
+            d.bar.classList.add('pending');
+            vscode.postMessage({
+                type: 'move',
+                filePath: d.row.filePath,
+                line: d.row.line,
+                days: d.days,
+                edge: d.edge,
+                start: addDays(d.row.start, d.days),
+            });
+        } else {
+            d.bar.style.left = `${d.left0}px`;
+            if (d.edge === 'end') d.bar.style.width = `${d.width0}px`;
+        }
+    }
+
+    chart.addEventListener('pointerdown', e => {
+        if (e.button !== 0 || !model) return;
+        const bar = e.target.closest && e.target.closest('.draggable');
+        if (!bar) return;
+        const index = rowIndexOf(bar);
+        const row = model.rows[index];
+        if (!row || row.kind !== 'task') return;
+        drag = {
+            bar, row, index,
+            edge: e.target.classList.contains('handle') ? 'end' : 'move',
+            x0: e.clientX,
+            left0: parseFloat(bar.style.left),
+            width0: parseFloat(bar.style.width) || 0,
+            days: 0,
+            started: false,
+        };
+        bar.setPointerCapture(e.pointerId);
+        select(index);
+    });
+    chart.addEventListener('pointermove', e => {
+        if (!drag) return;
+        const dx = e.clientX - drag.x0;
+        if (!drag.started && Math.abs(dx) < 4) return;
+        if (!drag.started) {
+            drag.started = true;
+            chart.classList.add('dragging');
+            drag.bar.classList.add('moving');
+        }
+        let n = Math.round(dx / dayW);
+        if (drag.edge === 'end') {
+            // Keep at least one day.
+            const lengthDays = Math.round((drag.width0 + 2) / dayW);
+            n = Math.max(n, 1 - lengthDays);
+            drag.bar.style.width = `${Math.max(3, drag.width0 + n * dayW)}px`;
+        } else {
+            drag.bar.style.left = `${drag.left0 + n * dayW}px`;
+        }
+        drag.days = n;
+        tipBox.textContent = dragText(drag);
+        tipBox.hidden = false;
+        tipBox.style.left = `${e.clientX + 12}px`;
+        tipBox.style.top = `${e.clientY + 16}px`;
+    });
+    chart.addEventListener('pointerup', () => {
+        if (!drag) return;
+        if (drag.started) {
+            suppressClick = true;
+            setTimeout(() => { suppressClick = false; }, 0);
+        }
+        endDrag(drag.started);
+    });
+    chart.addEventListener('pointercancel', () => endDrag(false));
+    document.addEventListener('keydown', e => {
+        if (e.key === 'Escape' && drag) {
+            endDrag(false);
+            e.stopPropagation();
+        }
+    }, true);
+
+    chart.addEventListener('click', e => { if (!suppressClick) select(rowIndexOf(e.target)); });
+    chart.addEventListener('dblclick', e => { if (!suppressClick) openRow(rowIndexOf(e.target)); });
     // Select on right-click too, so the highlighted row is the one the menu acts on.
     chart.addEventListener('contextmenu', e => select(rowIndexOf(e.target)));
     chart.addEventListener('keydown', e => {

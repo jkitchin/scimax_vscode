@@ -84,3 +84,29 @@ body.vscode-dark .citation:target {
 #postamble {
     display: none;
 }
+
+/* Back button after following a link within the page */
+.org-back {
+    position: fixed;
+    top: 12px;
+    right: 16px;
+    z-index: 10;
+    padding: 4px 10px;
+    font: inherit;
+    font-size: 0.9em;
+    color: var(--vscode-button-foreground);
+    background: var(--vscode-button-background);
+    border: none;
+    border-radius: 2px;
+    cursor: pointer;
+    box-shadow: 0 2px 6px var(--vscode-widget-shadow, rgba(0, 0, 0, 0.3));
+}
+.org-back:hover { background: var(--vscode-button-hoverBackground); }
+.org-back[hidden] { display: none; }
+
+/* Briefly highlight the target of a followed link */
+@keyframes org-jump-flash {
+    from { background-color: var(--vscode-editor-findMatchHighlightBackground, rgba(255, 200, 0, 0.35)); }
+    to { background-color: transparent; }
+}
+.org-jump-target { animation: org-jump-flash 1.5s ease-out; }

@@ -291,3 +291,31 @@ body {
     transform: rotate(45deg);
     cursor: default;
 }
+
+/* Dragging bars to move tasks (and their right end to move the deadline). */
+.bar.draggable, .row .milestone.draggable { cursor: grab; touch-action: none; }
+.bar .handle {
+    position: absolute;
+    top: -2px;
+    right: -4px;
+    bottom: -2px;
+    width: 8px;
+    cursor: ew-resize;
+}
+.bar.moving, .row .milestone.moving { cursor: grabbing; opacity: 0.85; box-shadow: 0 2px 6px var(--vscode-widget-shadow, rgba(0, 0, 0, 0.35)); z-index: 2; }
+.bar.pending, .row .milestone.pending { opacity: 0.6; }
+.chart.dragging, .dragging * { cursor: grabbing !important; user-select: none; }
+.dragging .dependency { opacity: 0.3; }
+.dragTip {
+    position: fixed;
+    z-index: 10;
+    padding: 2px 6px;
+    pointer-events: none;
+    white-space: nowrap;
+    font-size: 0.9em;
+    color: var(--vscode-editorHoverWidget-foreground, var(--vscode-foreground));
+    background: var(--vscode-editorHoverWidget-background, var(--vscode-editor-background));
+    border: 1px solid var(--vscode-editorHoverWidget-border, var(--grid));
+    border-radius: 3px;
+}
+.dragTip[hidden] { display: none; }

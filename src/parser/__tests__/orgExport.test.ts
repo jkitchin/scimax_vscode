@@ -2203,3 +2203,40 @@ describe('Verse blocks from the fast export parser', () => {
         expect(latex).toContain('\\begin{verse}\nRoses are red, \\\\\n');
     });
 });
+
+describe('Links to headings within the document', () => {
+    const text = [
+        '* Intro',
+        'See Section [[#sec:reflux-result]], [[#sec:reflux-result][the results]] and [[*Results]].',
+        '* Hidden :noexport:',
+        '* Results',
+        ':PROPERTIES:',
+        ':CUSTOM_ID: sec:reflux-result',
+        ':END:',
+        '* Discussion',
+        'Back to [[*Intro]].',
+        '',
+    ].join('\n');
+
+    for (const [name, parse] of [['parseOrg', (t: string) => parseOrg(t, {})], ['parseOrgFast', parseOrgFast]] as const) {
+        it(`point at the heading's id and show its number (${name})`, () => {
+            const html = exportToHtml(parse(text), { toc: false });
+            expect(html).toContain('id="sec:reflux-result"');
+            expect(html).toContain('See Section <a href="#sec:reflux-result">2</a>, <a href="#sec:reflux-result">the results</a> and <a href="#sec:reflux-result">2</a>.');
+            expect(html).toContain('Back to <a href="#org-intro">1</a>.');
+        });
+    }
+
+    it('show the heading title when sections are not numbered', () => {
+        const html = exportToHtml(parseOrg(text, {}), { toc: false, sectionNumbers: false });
+        expect(html).toContain('See Section <a href="#sec:reflux-result">Results</a>');
+    });
+});
+
+describe('Headings with a CUSTOM_ID', () => {
+    it('keep the generated id as an anchor for links from other files', () => {
+        const html = exportToHtml(parseOrgFast('* Results\n:PROPERTIES:\n:CUSTOM_ID: sec:r\n:END:\n'), { toc: false });
+        expect(html).toContain('<div id="sec:r"');
+        expect(html).toContain('<a id="org-results"></a>');
+    });
+});

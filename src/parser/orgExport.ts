@@ -428,6 +428,11 @@ export interface ExportState {
      * resolves here to a numbered \ref rather than a generated headline id.
      */
     namedElements: Map<string, string>;
+    /**
+     * Exported headlines by their HTML id: the section number (when sections
+     * are numbered) and title, for the text of a link without a description.
+     */
+    headlineLabels?: Map<string, { number?: string; title: string }>;
     /** Section numbering state */
     sectionNumbers: number[];
     /** Options for the export */
@@ -461,6 +466,7 @@ export function createExportState(options: Partial<ExportOptions> = {}): ExportS
         tocEntries: [],
         customIds: new Map(),
         namedElements: new Map(),
+        headlineLabels: new Map(),
         sectionNumbers: [],
         options: { ...DEFAULT_EXPORT_OPTIONS, ...options },
     };
@@ -587,11 +593,27 @@ export function collectTargets(doc: OrgDocumentNode, state: ExportState): void {
         }
     };
 
-    const processHeadline = (headline: HeadlineElement) => {
+    // Section numbers counted as exportHeadline counts them, so links can
+    // show a heading's number before the heading itself is exported.
+    const numbers: number[] = [];
+    const processHeadline = (headline: HeadlineElement, parentExported = true) => {
         // Generate an ID for this headline - must match exportHeadline
         const id = headline.properties.customId ||
             headline.properties.id ||
             generateId(headline.properties.rawValue);
+
+        const exported = parentExported && shouldExport(headline, state.options);
+        if (exported) {
+            let number: string | undefined;
+            if (state.options.sectionNumbers) {
+                const level = headline.properties.level;
+                numbers.length = Math.max(numbers.length, level);
+                numbers[level - 1] = (numbers[level - 1] || 0) + 1;
+                numbers.length = level;
+                number = Array.from(numbers, n => n || 0).join('.');
+            }
+            state.headlineLabels?.set(id, { number, title: headline.properties.rawValue });
+        }
 
         if (headline.properties.customId) {
             state.customIds.set(headline.properties.customId, id);
@@ -621,7 +643,7 @@ export function collectTargets(doc: OrgDocumentNode, state: ExportState): void {
         }
 
         // Process children
-        headline.children.forEach((child) => processHeadline(child));
+        headline.children.forEach((child) => processHeadline(child, exported));
     };
 
     // Record #+NAME:-labeled elements anywhere in the tree (tables, figures,
