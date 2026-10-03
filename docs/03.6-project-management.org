@@ -131,8 +131,8 @@ another.
   that had no deadline before has nothing to measure from, so nothing is
   offered.
 - The toolbar filters by *Assignee* (or *Unassigned*), groups rows by assignee,
-  file or parent heading, shows or hides *Done tasks*, zooms the timeline with
-  =-= and =+=, and scrolls to *Today*.
+  file or parent heading, shows or hides *Done tasks*, undoes and redoes drags,
+  zooms the timeline with =-= and =+=, and scrolls to *Today*.
 - *Tags* opens a checklist of the project's tags. Check one or more to show only
   the tasks that have /any/ of them; *Clear* shows every task again. A task's
   tags include those it inherits from parent headings and from =#+FILETAGS=, so
@@ -160,6 +160,13 @@ When you let go, the file is saved and the chart redraws. If other tasks wait on
 the one you moved, the same list as for a moved deadline appears (see below):
 uncheck tasks to leave them alone, or press =Escape= to move none. Done tasks
 cannot be dragged.
+
+*Undo* in the toolbar (or =Cmd+Z= / =Ctrl+Z= in the chart) puts the last drag
+back, together with the tasks that moved with it, and saves the files; *Redo*
+(=Shift+Cmd+Z=, =Shift+Ctrl+Z= or =Ctrl+Y=) moves them again. Hover over either
+button to see which move it acts on. The view remembers the last 50 drags while
+it is open. If a changed line was edited since, the undo is refused with a
+message rather than overwriting the edit.
 
 *** ✅ Moving a deadline moves the tasks that wait on it
 CLOSED: [2026-10-03 Sat 11:19]

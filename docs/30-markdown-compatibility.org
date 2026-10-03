@@ -248,9 +248,9 @@ Markdown headings support folding via the standard VS Code folding mechanism:
 - Press =Shift+Tab= anywhere for global fold cycling
 - Use the fold icons in the gutter
 
-** Markdown Preview
+** 👀 Markdown Preview
 
-VS Code's Markdown preview (=Cmd+Shift+V=, =Cmd+K V= to the side) gets two
+VS Code's Markdown preview (=Cmd+Shift+V=, =Cmd+K V= to the side) gets these
 additions from Scimax:
 
 - *MyST directives and roles* (Jupyter Book) render as callouts, figures and
@@ -259,6 +259,15 @@ additions from Scimax:
   the preview so the element on the cursor line is at its top, opening a
   preview to the side if none is showing. It relies on
   ~markdown.preview.scrollPreviewWithEditor~ (on by default).
+- *Export to PDF*: the export button in the preview's title bar
+  (~scimax.markdown.preview.exportPdf~, also in the Command Palette while the
+  preview has focus) saves the previewed file as =name.pdf= next to it and
+  opens it. It uses Pandoc and LaTeX, like *Markdown → PDF* (see
+  [[file:25-commands.org::*Markdown File Export][Markdown File Export]]), so the PDF is typeset
+  rather than a copy of the preview's look; unsaved changes are included. A Marp
+  deck exports its slides with Marp instead, as =p= in the Marp export menu
+  does. The other markdown export commands and the export menu also work from
+  the preview.
 
 Files with ~marp: true~ in their front matter are previewed as slides; see
 [[file:44-marp.org][Marp Slides]].
@@ -345,6 +354,7 @@ org-mode.
 
 - [[file:45-myst-preview.org][MyST Markdown Preview]] - Jupyter Book directives and roles in the preview
 - [[file:44-marp.org][Marp Slides]] - jump from a Marp slide preview to its source
+- [[file:25-commands.org][Commands]] - Markdown File Export commands (Pandoc)
 - [[file:02-document-structure.org][Document Structure]] - Full org-mode structure documentation
 - [[file:23-speed-commands.org][Speed Commands]] - Complete speed command reference
 - [[file:07-source-blocks.org][Source Blocks]] - Code execution details

@@ -6,28 +6,29 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 import { exportMarkdown, MarkdownExportFormat } from './markdownExport';
 import { isMarpText } from '../marp/slideRenderer';
+import { previewedMarkdownDocument } from './previewSource';
 
 /**
- * Get the active markdown editor content and file path.
- * Returns undefined if no markdown file is active.
+ * Get the content and file path of the active markdown editor, or of the file
+ * shown in the active Markdown preview. Returns undefined if there is neither.
  */
-function getActiveMarkdown(): { content: string; filePath: string } | undefined {
-    const editor = vscode.window.activeTextEditor;
-    if (!editor) {
+async function getActiveMarkdown(): Promise<{ content: string; filePath: string } | undefined> {
+    const document = vscode.window.activeTextEditor?.document ?? await previewedMarkdownDocument();
+    if (!document) {
         vscode.window.showWarningMessage('No active editor');
         return undefined;
     }
-    if (editor.document.languageId !== 'markdown') {
+    if (document.languageId !== 'markdown') {
         vscode.window.showWarningMessage('Active file is not a Markdown document');
         return undefined;
     }
-    if (editor.document.isUntitled) {
+    if (document.isUntitled) {
         vscode.window.showWarningMessage('Please save the file before exporting');
         return undefined;
     }
     return {
-        content: editor.document.getText(),
-        filePath: editor.document.uri.fsPath,
+        content: document.getText(),
+        filePath: document.uri.fsPath,
     };
 }
 
@@ -35,7 +36,7 @@ function getActiveMarkdown(): { content: string; filePath: string } | undefined 
  * Export the active markdown file to the given format and optionally open the result.
  */
 async function doExport(format: MarkdownExportFormat, open: boolean): Promise<void> {
-    const md = getActiveMarkdown();
+    const md = await getActiveMarkdown();
     if (!md) {
         return;
     }
@@ -74,9 +75,17 @@ export function registerMarkdownExportCommands(context: vscode.ExtensionContext)
         vscode.commands.registerCommand('scimax.markdown.exportDocxOpen', () => doExport('docx', true)),
         vscode.commands.registerCommand('scimax.markdown.exportLatex', () => doExport('latex', false)),
         vscode.commands.registerCommand('scimax.markdown.exportLatexOpen', () => doExport('latex', true)),
-        vscode.commands.registerCommand('scimax.markdown.exportMenu', () => {
+        // The PDF button on the Markdown preview: a Marp deck exports its slides.
+        vscode.commands.registerCommand('scimax.markdown.preview.exportPdf', async () => {
+            const document = await previewedMarkdownDocument() ?? vscode.window.activeTextEditor?.document;
+            if (document && isMarpText(document.getText())) {
+                return vscode.commands.executeCommand('scimax.marp.exportPdf');
+            }
+            return doExport('pdf', true);
+        }),
+        vscode.commands.registerCommand('scimax.markdown.exportMenu', async () => {
             // Marp decks get the slide export menu, which links back to this one.
-            const document = vscode.window.activeTextEditor?.document;
+            const document = vscode.window.activeTextEditor?.document ?? await previewedMarkdownDocument();
             const menu = document && isMarpText(document.getText()) ? 'scimax.marp.export' : 'scimax.markdown.export';
             return vscode.commands.executeCommand('scimax.hydra.show', menu);
         }),

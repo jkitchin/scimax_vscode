@@ -911,7 +911,8 @@
         }
       },
       "[org]": {
-        "editor.wordWrap": "on"
+        "editor.wordWrap": "on",
+        "editor.tabCompletion": "onlySnippets"
       },
       "[latex]": {
         "editor.wordWrap": "on"
@@ -1249,6 +1250,11 @@
       {
         "command": "scimax.markdown.exportPdfOpen",
         "title": "Scimax: Export Markdown to PDF and Open"
+      },
+      {
+        "command": "scimax.markdown.preview.exportPdf",
+        "title": "Scimax: Export Previewed Markdown to PDF",
+        "icon": "$(export)"
       },
       {
         "command": "scimax.markdown.exportDocx",
@@ -7986,6 +7992,11 @@
       ],
       "editor/title": [
         {
+          "command": "scimax.markdown.preview.exportPdf",
+          "when": "activeWebviewPanelId == 'markdown.preview'",
+          "group": "navigation@1"
+        },
+        {
           "command": "scimax.org.preview.openToSide",
           "when": "resourceLangId == org",
           "group": "navigation@0"
@@ -8022,6 +8033,10 @@
         }
       ],
       "commandPalette": [
+        {
+          "command": "scimax.markdown.preview.exportPdf",
+          "when": "activeWebviewPanelId == 'markdown.preview'"
+        },
         {
           "command": "scimax.project.task.open",
           "when": "false"

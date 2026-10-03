@@ -8,8 +8,9 @@
  * Interaction: double-click a task to jump to it; drag a bar to move the task
  * (or its right end to move the deadline); right-click for VS Code's own
  * context menu (webview/context in package.json), whose commands run the
- * ordinary editing commands on the task's heading and come back here. The view
- * reloads when an org file in the project is saved.
+ * ordinary editing commands on the task's heading and come back here. Drags
+ * (with the dependents they moved) can be undone and redone from the view. The
+ * view reloads when an org file in the project is saved.
  */
 
 import * as vscode from 'vscode';
@@ -29,6 +30,7 @@ import { runOnSourceHeading } from './agendaDocumentProvider';
 import { addDependencyBetween, removeDependencies } from './dependencyCommands';
 import { addPlanningDate, planningLines, shiftPlanningLine } from '../parser/planningShift';
 import { chooseAndShiftDependents } from './shiftDependents';
+import { redoOps, undoOps, type LineChange, type LineOp } from './lineChanges';
 
 /** What VS Code passes to a webview/context command: the row's data-vscode-context. */
 interface TaskContext {
@@ -50,7 +52,17 @@ type FromWebview =
     | { type: 'options'; options: ViewOptions }
     | { type: 'open'; filePath: string; line: number }
     | { type: 'export'; format: 'xlsx' | 'pdf' }
-    | { type: 'move'; filePath: string; line: number; days: number; edge: 'move' | 'end'; start: string };
+    | { type: 'move'; filePath: string; line: number; days: number; edge: 'move' | 'end'; start: string }
+    | { type: 'undo' }
+    | { type: 'redo' };
+
+/** A drag that can be undone: what it was called and the lines it changed. */
+interface MoveRecord {
+    label: string;
+    changes: LineChange[];
+}
+
+const MAX_UNDO = 50;
 
 class ProjectView implements vscode.Disposable {
     private panel: vscode.WebviewPanel | undefined;
@@ -58,6 +70,8 @@ class ProjectView implements vscode.Disposable {
     private tasks: ProjectTaskInfo[] = [];
     private options: ViewOptions = { showDone: false, groupBy: 'none' };
     private reloadTimer: NodeJS.Timeout | undefined;
+    private undoStack: MoveRecord[] = [];
+    private redoStack: MoveRecord[] = [];
     private readonly disposables: vscode.Disposable[] = [];
 
     constructor(private readonly extensionUri: vscode.Uri) {
@@ -121,6 +135,8 @@ class ProjectView implements vscode.Disposable {
             options: this.options,
             project: path.basename(this.root),
             taskCount: this.tasks.length,
+            undo: this.undoStack.at(-1)?.label,
+            redo: this.redoStack.at(-1)?.label,
         });
     }
 
@@ -142,6 +158,12 @@ class ProjectView implements vscode.Disposable {
                 break;
             case 'move':
                 await this.moveTask(message.filePath, message.line, message.days, message.edge, message.start);
+                break;
+            case 'undo':
+                await this.undoOrRedo('undo');
+                break;
+            case 'redo':
+                await this.undoOrRedo('redo');
                 break;
         }
     }
@@ -179,6 +201,7 @@ class ProjectView implements vscode.Disposable {
         }
 
         const edit = new vscode.WorkspaceEdit();
+        const changes: LineChange[] = [];
         const dated = planningLines(lines, line - 1);
         if (edge === 'end' && !task.deadline) {
             await this.reload();
@@ -187,13 +210,16 @@ class ProjectView implements vscode.Disposable {
         if (dated.length) {
             for (const i of dated) {
                 const shifted = shiftPlanningLine(lines[i], days, edge === 'end' ? 'DEADLINE' : undefined);
-                if (shifted !== lines[i]) edit.replace(doc.uri, doc.lineAt(i).range, shifted);
+                if (shifted === lines[i]) continue;
+                edit.replace(doc.uri, doc.lineAt(i).range, shifted);
+                changes.push({ file: filePath, line: i, before: lines[i], after: shifted });
             }
         } else {
             const [y, m, d] = start.split('-').map(Number);
             const add = addPlanningDate(lines, line - 1, 'SCHEDULED', new Date(y, m - 1, d));
             if (add.insert) edit.insert(doc.uri, new vscode.Position(add.line, 0), add.text + '\n');
             else edit.replace(doc.uri, doc.lineAt(add.line).range, add.text);
+            changes.push({ file: filePath, line: add.line, before: add.insert ? undefined : lines[add.line], after: add.text });
         }
         if (!(await vscode.workspace.applyEdit(edit))) {
             vscode.window.showErrorMessage(`Could not move "${task.title}".`);
@@ -201,6 +227,10 @@ class ProjectView implements vscode.Disposable {
             return;
         }
         await doc.save();
+        const label = edge === 'end' ? `Move the deadline of "${task.title}"` : `Move "${task.title}"`;
+        this.undoStack.push({ label, changes });
+        if (this.undoStack.length > MAX_UNDO) this.undoStack.shift();
+        this.redoStack = [];
 
         // Read the project again: adding a SCHEDULED line moves the lines below it.
         this.tasks = await loadProjectTasks(this.root);
@@ -208,9 +238,52 @@ class ProjectView implements vscode.Disposable {
         const moved = this.tasks.find(t => t.file === filePath && t.line === line);
         if (moved) {
             const subject = edge === 'end' ? `The deadline of "${task.title}"` : `"${task.title}"`;
-            const shifted = await chooseAndShiftDependents(this.root, moved, this.tasks, days, subject);
+            // The dependents join the same record, so one undo puts everything back.
+            const shifted = await chooseAndShiftDependents(this.root, moved, this.tasks, days, subject, undefined, changes);
             if (shifted) await this.reload();
         }
+    }
+
+    /**
+     * Undo the last drag (with the dependents it moved), or redo the last
+     * undone one. Nothing changes if any of its lines were edited since.
+     */
+    async undoOrRedo(which: 'undo' | 'redo'): Promise<void> {
+        const from = which === 'undo' ? this.undoStack : this.redoStack;
+        const to = which === 'undo' ? this.redoStack : this.undoStack;
+        const record = from.at(-1);
+        if (!record) return;
+
+        const byFile = new Map<string, LineChange[]>();
+        for (const c of record.changes) byFile.set(c.file, [...(byFile.get(c.file) ?? []), c]);
+        const edit = new vscode.WorkspaceEdit();
+        const docs: vscode.TextDocument[] = [];
+        for (const [file, changes] of byFile) {
+            let doc: vscode.TextDocument;
+            try {
+                doc = await vscode.workspace.openTextDocument(vscode.Uri.file(file));
+            } catch {
+                return this.cannot(which, record, `${path.basename(file)} could not be opened`);
+            }
+            const lines = doc.getText().split(/\r?\n/);
+            const ops = which === 'undo' ? undoOps(lines, changes) : redoOps(lines, changes);
+            if (!ops) return this.cannot(which, record, `${path.basename(file)} was changed since`);
+            for (const op of ops) addOp(edit, doc, op);
+            docs.push(doc);
+        }
+        if (!(await vscode.workspace.applyEdit(edit))) return this.cannot(which, record, 'the edit failed');
+        for (const doc of docs) if (doc.isDirty) await doc.save();
+        from.pop();
+        to.push(record);
+        vscode.window.setStatusBarMessage(`${which === 'undo' ? 'Undid' : 'Redid'}: ${record.label}`, 3000);
+        await this.reload();
+    }
+
+    /** Report an undo or redo that cannot be made; it is dropped so the next one can run. */
+    private async cannot(which: 'undo' | 'redo', record: MoveRecord, why: string): Promise<void> {
+        (which === 'undo' ? this.undoStack : this.redoStack).pop();
+        vscode.window.showWarningMessage(`Cannot ${which} "${record.label}": ${why}.`);
+        await this.reload();
     }
 
     /**
@@ -379,6 +452,8 @@ class ProjectView implements vscode.Disposable {
   </select></label>
   <label><input type="checkbox" id="showDone"> Done tasks</label>
   <span class="spacer"></span>
+  <button id="undo" title="Nothing to undo" disabled>Undo</button>
+  <button id="redo" title="Nothing to redo" disabled>Redo</button>
   <button id="zoomOut" title="Narrower days">&minus;</button>
   <button id="zoomIn" title="Wider days">+</button>
   <button id="today" title="Scroll to today">Today</button>
@@ -468,4 +543,15 @@ export function registerProjectView(context: vscode.ExtensionContext): void {
         vscode.commands.registerCommand('scimax.project.task.deadline', (arg?: TaskContext) =>
             view.runOnTask(arg, 'scimax.speed.deadline')),
     );
+}
+
+/** Add one line operation to `edit`; the ranges refer to `doc` as it is now. */
+function addOp(edit: vscode.WorkspaceEdit, doc: vscode.TextDocument, op: LineOp): void {
+    if (op.kind === 'replace') {
+        edit.replace(doc.uri, doc.lineAt(op.line).range, op.text);
+    } else if (op.kind === 'insert') {
+        edit.insert(doc.uri, new vscode.Position(op.line, 0), op.text + '\n');
+    } else {
+        edit.delete(doc.uri, doc.lineAt(op.line).rangeIncludingLineBreak);
+    }
 }

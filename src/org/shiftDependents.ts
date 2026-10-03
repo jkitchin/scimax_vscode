@@ -19,6 +19,7 @@ import {
     shiftPlanningLine,
 } from '../parser/planningShift';
 import { isoDay } from './projectGantt';
+import type { LineChange } from './lineChanges';
 
 function linesOf(document: vscode.TextDocument): string[] {
     return document.getText().split(/\r?\n/);
@@ -56,8 +57,9 @@ export async function offerShiftDependents(
  * `task` (one of the project `tasks` under `root`) moved `days` days: list the
  * unfinished tasks that wait on it and move the ones the user keeps checked by
  * the same days. `subject` names what moved, for the prompt. Changed files are
- * saved, except `keepUnsaved` (the document the user is editing). Returns how
- * many tasks moved.
+ * saved, except `keepUnsaved` (the document the user is editing). The changed
+ * lines are added to `record`, when given, so the move can be undone. Returns
+ * how many tasks moved.
  */
 export async function chooseAndShiftDependents(
     root: string,
@@ -65,7 +67,8 @@ export async function chooseAndShiftDependents(
     tasks: ProjectTaskInfo[],
     days: number,
     subject: string,
-    keepUnsaved?: vscode.TextDocument
+    keepUnsaved?: vscode.TextDocument,
+    record?: LineChange[]
 ): Promise<number> {
     if (days === 0) return 0;
     const dependents = dependentsToShift(task, tasks);
@@ -100,14 +103,19 @@ export async function chooseAndShiftDependents(
         const doc = await vscode.workspace.openTextDocument(vscode.Uri.file(file));
         const lines = linesOf(doc);
         const edit = new vscode.WorkspaceEdit();
+        const changes: LineChange[] = [];
         for (const t of fileTasks) {
             for (const i of planningLines(lines, t.line - 1)) {
                 const shifted = shiftPlanningLine(lines[i], days);
-                if (shifted !== lines[i]) edit.replace(doc.uri, doc.lineAt(i).range, shifted);
+                if (shifted === lines[i]) continue;
+                edit.replace(doc.uri, doc.lineAt(i).range, shifted);
+                changes.push({ file, line: i, before: lines[i], after: shifted });
             }
             moved++;
         }
-        if (await vscode.workspace.applyEdit(edit) && doc.isDirty && doc !== keepUnsaved) await doc.save();
+        if (!(await vscode.workspace.applyEdit(edit))) continue;
+        record?.push(...changes);
+        if (doc.isDirty && doc !== keepUnsaved) await doc.save();
     }
     vscode.window.showInformationMessage(`Moved ${moved} dependent task${moved === 1 ? '' : 's'} ${amount}.`);
     return moved;

@@ -15,6 +15,7 @@ import { pathToFileURL } from 'url';
 import * as vscode from 'vscode';
 import { checkPandoc } from '../markdown/markdownExport';
 import { isMarpText, slideStarts } from './slideRenderer';
+import { previewedMarkdownDocument } from '../markdown/previewSource';
 import { currentMarpDeck } from './currentDeck';
 import { marpHtmlEnabled, marpThemeUris } from './marpSettings';
 import {
@@ -229,12 +230,18 @@ function run(
 }
 
 /**
- * The Marp deck to export: the active editor, else a visible Marp editor,
- * else the deck the slide thumbnails show (when run from their menu).
+ * The Marp deck to export: the active editor, else the deck in the active
+ * Markdown preview, else a visible Marp editor, else the deck the slide
+ * thumbnails show (when run from their menu).
  */
 async function activeDeck(): Promise<vscode.TextDocument | undefined> {
     const isDeck = (d: vscode.TextDocument) => d.languageId === 'markdown' && isMarpText(d.getText());
-    const document = [vscode.window.activeTextEditor?.document, ...vscode.window.visibleTextEditors.map(e => e.document), currentMarpDeck()]
+    const document = [
+        vscode.window.activeTextEditor?.document,
+        await previewedMarkdownDocument(),
+        ...vscode.window.visibleTextEditors.map(e => e.document),
+        currentMarpDeck(),
+    ]
         .find((d): d is vscode.TextDocument => d !== undefined && isDeck(d));
     if (!document) {
         vscode.window.showWarningMessage('Open a Marp deck (a Markdown file with marp: true in its front matter) to export it.');

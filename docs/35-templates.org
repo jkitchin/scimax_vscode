@@ -97,6 +97,67 @@ CLOSED: [2026-01-21 Wed 07:14]
 | Figure              | Figure environment with caption       |
 | Table               | Table environment with caption        |
 
+* ⚠️ Snippets
+
+Short prefixes expand into org syntax when you press =Tab= right after them:
+type =ti= and =Tab= for =#+title:=, or =<py= and =Tab= for a Python source
+block. Tab stops then move through the parts to fill in (=Tab= to go on,
+=Escape= to finish). The snippets also appear in the suggestion list as you
+type.
+
+Tab expands them because scimax sets ~editor.tabCompletion~ to
+~onlySnippets~ for org files: =Tab= expands a word only when it is exactly a
+snippet's prefix, and inserts a tab otherwise. On a heading, list item or table,
+=Tab= keeps its org meaning (fold, indent, next cell). To turn expansion on
+Tab off, add this to your settings:
+
+#+begin_src json
+"[org]": { "editor.tabCompletion": "off" }
+#+end_src
+
+| Prefix     | Inserts                            |
+|------------+------------------------------------|
+| =<sh=      | Shell source block                 |
+| =<bash=    | Bash source block                  |
+| =<p=       | Python source block                |
+| =<py=      | Python source block                |
+| =<jp=      | Jupyter Python source block        |
+| =<jj=      | Jupyter Julia source block         |
+| =<jr=      | Jupyter R source block             |
+| =<js=      | JavaScript source block            |
+| =<ts=      | TypeScript source block            |
+| =<el=      | Emacs Lisp source block            |
+| =<elisp=   | Emacs Lisp source block            |
+| =<rb=      | Ruby source block                  |
+| =<r=       | R source block                     |
+| =<jl=      | Julia source block                 |
+| =<sql=     | SQL source block                   |
+| =<l=       | LaTeX source block                 |
+| =<c=       | C source block                     |
+| =<cpp=     | C++ source block                   |
+| =<java=    | Java source block                  |
+| =<go=      | Go source block                    |
+| =<rs=      | Rust source block                  |
+| =<s=       | Source block with language prompt  |
+| =<e=       | Example block                      |
+| =<q=       | Quote block                        |
+| =<center=  | Center block                       |
+| =<comment= | Comment block                      |
+| =<v=       | Verse block                        |
+| =<html=    | HTML export block                  |
+| =<latex=   | LaTeX export block                 |
+| =<note=    | Note block                         |
+| =<warning= | Warning block                      |
+| =<tip=     | Tip block                          |
+| =<prop=    | Property drawer                    |
+| =<i=       | Inline source code                 |
+| =ti=       | Document title keyword             |
+| =ca=       | Caption keyword for figures/tables |
+
+The snippets live in =snippets/org.json= in the extension. To add your own, run
+*Snippets: Configure Snippets* (=Preferences: Configure Snippets=) and choose
+=org=.
+
 * ✅ Template Syntax
 CLOSED: [2026-01-21 Wed 07:14]
 
@@ -363,4 +424,5 @@ CLOSED: [2026-01-21 Wed 07:18]
 - [[file:15-capture.org][Capture]] - Quick note capture system
 - [[file:14-journal.org][Journal]] - Date-based journaling (uses templates)
 - [[file:07-source-blocks.org][Source Blocks]] - Code execution in org-mode
+- [[file:26-configuration.org][Configuration]] - Editor defaults scimax sets for org files
 - [[file:22-hydra-menus.org][Hydra Menus]] - Menu system navigation

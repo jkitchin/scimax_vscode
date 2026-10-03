@@ -417,6 +417,7 @@ Requires Pandoc to be installed on the system.
 | Command ID                         | Description                            | Default Keybinding |
 |------------------------------------+----------------------------------------+--------------------|
 | [[cmd:scimax.marp.revealInPreview]] | Reveal Cursor in Markdown Preview      | -                  |
+| [[cmd:scimax.markdown.preview.exportPdf]] | Export Previewed Markdown to PDF (title-bar button) | -  |
 | [[cmd:scimax.marp.refreshSlides]]   | Refresh Marp Slide Thumbnails          | -                  |
 
 Reveal scrolls the Markdown preview (opening one if needed) to the cursor

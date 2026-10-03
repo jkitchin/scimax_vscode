@@ -103,6 +103,12 @@ body {
     background: var(--vscode-button-secondaryHoverBackground, var(--vscode-toolbar-hoverBackground));
 }
 
+.toolbar button:disabled {
+    opacity: 0.5;
+    cursor: default;
+    background: var(--vscode-button-secondaryBackground, transparent);
+}
+
 .spacer { flex: 1; }
 .muted { opacity: 0.7; }
 

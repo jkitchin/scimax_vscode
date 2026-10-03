@@ -1,7 +1,7 @@
 // Project view webview: draws the Gantt rows the extension sends.
 //
-// Messages in:  { type: 'model', model, options, project, taskCount }
-// Messages out: ready | refresh | options | open | export | move
+// Messages in:  { type: 'model', model, options, project, taskCount, undo?, redo? }
+// Messages out: ready | refresh | options | open | export | move | undo | redo
 //
 // The extension owns filtering and layout (projectGantt.ts), so the chart and
 // its exports agree; this script only draws, scrolls, zooms and lets bars be
@@ -87,6 +87,24 @@
     $('zoomOut').addEventListener('click', () => zoom(0.8));
     $('today').addEventListener('click', () => scrollToToday(true));
     $('refresh').addEventListener('click', () => vscode.postMessage({ type: 'refresh' }));
+    $('undo').addEventListener('click', () => vscode.postMessage({ type: 'undo' }));
+    $('redo').addEventListener('click', () => vscode.postMessage({ type: 'redo' }));
+    // Cmd/Ctrl+Z undoes a drag, Shift+Cmd/Ctrl+Z or Ctrl+Y redoes it.
+    document.addEventListener('keydown', e => {
+        if (!(e.metaKey || e.ctrlKey) || e.altKey || drag) return;
+        if (e.target instanceof HTMLInputElement || e.target instanceof HTMLSelectElement) return;
+        const key = e.key.toLowerCase();
+        const which = key === 'z' ? (e.shiftKey ? 'redo' : 'undo') : key === 'y' && !e.shiftKey ? 'redo' : null;
+        if (!which || $(which).disabled) return;
+        vscode.postMessage({ type: which });
+        e.preventDefault();
+        e.stopPropagation();
+    });
+    function setUndo(which, label) {
+        const b = $(which);
+        b.disabled = !label;
+        b.title = label ? `${which === 'undo' ? 'Undo' : 'Redo'}: ${label}` : `Nothing to ${which}`;
+    }
     $('exportXlsx').addEventListener('click', () => vscode.postMessage({ type: 'export', format: 'xlsx' }));
     $('exportPdf').addEventListener('click', () => vscode.postMessage({ type: 'export', format: 'pdf' }));
 
@@ -466,6 +484,8 @@
         if (msg.type !== 'model') return;
         model = msg.model;
         options = msg.options;
+        setUndo('undo', msg.undo);
+        setUndo('redo', msg.redo);
         $('project').textContent = msg.project;
         const shown = model.rows.filter(r => r.kind === 'task').length;
         $('count').textContent = `${shown} of ${msg.taskCount} tasks`;

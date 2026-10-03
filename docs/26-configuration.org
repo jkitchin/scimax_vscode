@@ -193,6 +193,18 @@ The counts for a file come from one database query. Set it to =false= to hide
 the lenses; *Find All References* (=Shift+F12=) still lists back-links. See
 [[file:42-granular-addressing.org][Granular Addressing]].
 
+** ⚠️ Editor Defaults for Org Files
+
+scimax sets these VS Code editor settings for org files. Override them in your
+own settings under ="[org]"=.
+
+| Setting                   | Default          | Description                                                  |
+|---------------------------+------------------+--------------------------------------------------------------|
+| ~editor.wordWrap~         | ~on~             | Wrap long lines                                              |
+| ~editor.tabCompletion~    | ~onlySnippets~   | =Tab= after a snippet prefix (=ti=, =<py=, ...) expands it   |
+
+See [[file:35-templates.org::*Snippets][Snippets]].
+
 ** Org Preview
 
 Settings for the live org preview (=Cmd+Shift+V= / =Ctrl+Shift+V=). See
