@@ -195,7 +195,8 @@ The scanner:
 - Handles permission errors gracefully
 - Shows progress notification
 
-** 👀 Removing Projects
+** ✅ Removing Projects
+CLOSED: [2026-10-03 Sat 09:00]
 
 Remove projects from the list with `Scimax: Remove Project'
 ([[cmd:scimax.projectile.remove]]):
@@ -902,7 +903,8 @@ Project doesn't appear in `C-c p p' list.
    Scimax: Cleanup Non-existent Projects
    #+end_src
 
-** 👀 Project List Too Long
+** ✅ Project List Too Long
+CLOSED: [2026-10-03 Sat 09:01]
 
 *** Symptom
 `C-c p p' shows dozens of old projects.

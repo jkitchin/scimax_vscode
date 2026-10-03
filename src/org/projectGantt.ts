@@ -8,7 +8,6 @@
  * No vscode imports: this module is unit tested directly.
  */
 
-import JSZip from 'jszip';
 import * as path from 'path';
 import {
     scheduleProjectTasks,
@@ -111,8 +110,10 @@ function groupLabel(t: GanttTaskInput, groupBy: GanttGroupBy, root?: string): st
     }
 }
 
+/** File relative to the project root, with / separators on every system. */
 function relFile(file: string, root?: string): string {
-    return root ? path.relative(root, file) || path.basename(file) : path.basename(file);
+    const rel = root ? path.relative(root, file) || path.basename(file) : path.basename(file);
+    return rel.split(path.sep).join('/');
 }
 
 /** Build the rows the view shows for these tasks and options. */
@@ -378,6 +379,8 @@ export async function ganttToXlsx(model: GanttModel, title = 'Project'): Promise
 <sheetData>${rowsXml.join('\n')}</sheetData>
 </worksheet>`;
 
+    // Loaded here rather than with the extension: only the Excel export needs it.
+    const { default: JSZip } = await import('jszip');
     const zip = new JSZip();
     zip.file('[Content_Types].xml', XML_HEADER + `<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">
 <Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>

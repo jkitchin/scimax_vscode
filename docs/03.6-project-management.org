@@ -1,7 +1,7 @@
 #+TITLE: Project Management
 #+TODO: ⚠️ 👀 | ✅
 
-* 👀 Project Management
+* Project Management
 
 Building on [[file:03.5-task-dependencies.org][task dependencies]], Scimax turns a set of org TODO tasks into
 a small project-management view: a **task table**, a **project view** with a
@@ -43,7 +43,8 @@ CLOSED: [2026-07-02 Thu 08:07]
 - =:ASSIGNEE:= holds one or more handles; it is *inherited* from ancestor
   subtrees, and =@name= tags count as assignees too.
 
-** 👀 Task table
+** ✅ Task table
+CLOSED: [2026-10-03 Sat 08:59]
 
 Insert a table with [[cmd:scimax.org.insertProjectTable]], or write the dynamic
 block yourself and refresh it with =C-c C-c=:
@@ -79,7 +80,8 @@ not apply:
 ,#+END:
 #+end_src
 
-** ⚠️ Project view
+** ✅ Project view
+CLOSED: [2026-10-03 Sat 11:19]
 
 [[cmd:scimax.project.view]] (*Scimax: Project View (Gantt Chart)*) opens a panel
 with every TODO task in the active file's project on a graphical Gantt chart.
@@ -107,6 +109,26 @@ another.
   ordinary Scimax command on the task's heading (so repeaters, CLOSED
   timestamps and dependency blocking behave as usual), saves the file, and
   comes back to the chart.
+- *Depends On...* in the right-click menu lists the project's other tasks (not
+  done first, with their dates and files). Pick the task that must be done
+  first: it is added to this task's =:DEPENDS:=, both headings get an =:ID:= if
+  they lack one, both files are saved, and the chart redraws with the new
+  arrow. The target can be in another file of the project. Tasks that already
+  wait on this one, directly or through others, are not offered, so a cycle
+  cannot be made.
+- *Remove Dependency...* lists the task's dependencies; check the ones to
+  drop. They are taken out of its =:DEPENDS:= (the property goes when none are
+  left), the file is saved, and the arrows disappear from the chart.
+- When *Set Deadline...* moves a task's deadline (here or in the editor, see
+  [[*Moving a deadline moves the tasks that wait on it]]), scimax offers to move the
+  tasks that wait on it, directly or through other tasks, by the same number of
+  days, so the gaps between them stay the same. The list shows each task's
+  dates with every task checked: uncheck the ones to leave alone, or press
+  =Escape= to move none. Their =SCHEDULED= and =DEADLINE= dates move, keeping
+  times, repeaters and warning periods. Done tasks and tasks with no dates are
+  not listed; an undated task already starts when its dependencies end. A task
+  that had no deadline before has nothing to measure from, so nothing is
+  offered.
 - The toolbar filters by *Assignee* (or *Unassigned*), groups rows by assignee,
   file or parent heading, shows or hides *Done tasks*, zooms the timeline with
   =-= and =+=, and scrolls to *Today*.
@@ -118,7 +140,27 @@ another.
   chosen tags, and the tag filter combines with the assignee filter. A task's
   tags appear in its tooltip.
 
-*** ⚠️ Exporting the chart
+*** ✅ Moving a deadline moves the tasks that wait on it
+CLOSED: [2026-10-03 Sat 11:19]
+
+Changing a task's deadline in the editor offers the same list as the project
+view:
+
+- =C-c C-d= (or the =d= speed command at a heading) sets a new deadline; the
+  list appears right after.
+- =Shift+Up= / =Shift+Down= (or =Shift+Left= / =Shift+Right=) on a =DEADLINE=
+  date move it a day at a time, so scimax waits until you stop: after a second
+  and a half without another press, or when the cursor leaves the line, it
+  offers to move the waiting tasks by the total. Changing only the time moves
+  nothing.
+
+The tasks come from the file's project, so tasks in other project files that
+depend on this one are listed too. Tasks in other files are saved after they
+move; edits in the file you are in are left for you to save. Typing a new date
+by hand does not trigger it.
+
+*** ✅ Exporting the chart
+CLOSED: [2026-10-03 Sat 08:59]
 
 The *Excel* and *PDF* buttons in the toolbar, the right-click menu on the chart,
 and the commands [[cmd:scimax.project.exportExcel]] and
@@ -188,7 +230,8 @@ CLOSED: [2026-07-02 Thu 08:07]
 Task-dependency settings (blocking, promotion, indicators) are documented in
 [[file:03.5-task-dependencies.org][Task Dependencies]].
 
-** 👀 Notes and limitations
+** ✅ Notes and limitations
+CLOSED: [2026-10-03 Sat 08:59]
 
 - Without =:scope=, the task table is computed from a *single file* (or a
   subtree via =:id=). Use =:scope project= to cover the whole project.

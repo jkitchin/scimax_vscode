@@ -4,6 +4,7 @@
  */
 
 import * as vscode from 'vscode';
+import { setContextKey, trackEditorContext } from '../utils/contextKeys';
 import * as path from 'path';
 import {
     getTodoWorkflowForDocument,
@@ -2750,38 +2751,35 @@ export async function renumberList(): Promise<void> {
  * Setup list context tracking
  */
 export function setupListContext(context: vscode.ExtensionContext): void {
-    context.subscriptions.push(
-        vscode.window.onDidChangeTextEditorSelection(e => {
-            const editor = e.textEditor;
-            const langId = editor.document.languageId;
+    trackEditorContext(context, editor => {
+        const langId = editor?.document.languageId;
 
-            // Only track for org and markdown files
-            if (!['org', 'markdown'].includes(langId)) {
-                vscode.commands.executeCommand('setContext', 'scimax.inOrderedList', false);
-                vscode.commands.executeCommand('setContext', 'scimax.onListItem', false);
-                return;
-            }
+        // Only track for org and markdown files
+        if (!editor || (langId !== 'org' && langId !== 'markdown')) {
+            setContextKey('scimax.inOrderedList', false);
+            setContextKey('scimax.onListItem', false);
+            return;
+        }
 
-            const position = editor.selection.active;
-            const line = editor.document.lineAt(position.line).text;
+        const position = editor.selection.active;
+        const line = editor.document.lineAt(position.line).text;
 
-            // Check if on any list item (unordered: - + * or ordered: 1. 1))
-            // But not on a heading (org: * at start, markdown: # at start)
-            const isOrgHeading = langId === 'org' && /^\*+\s/.test(line);
-            const isMdHeading = langId === 'markdown' && /^#+\s/.test(line);
-            const listMatch = /^(\s*)([-+*]|\d+[.)])\s+/.test(line);
-            const onListItem = listMatch && !isOrgHeading && !isMdHeading;
-            vscode.commands.executeCommand('setContext', 'scimax.onListItem', onListItem);
+        // Check if on any list item (unordered: - + * or ordered: 1. 1))
+        // But not on a heading (org: * at start, markdown: # at start)
+        const isOrgHeading = langId === 'org' && /^\*+\s/.test(line);
+        const isMdHeading = langId === 'markdown' && /^#+\s/.test(line);
+        const listMatch = /^(\s*)([-+*]|\d+[.)])\s+/.test(line);
+        const onListItem = listMatch && !isOrgHeading && !isMdHeading;
+        setContextKey('scimax.onListItem', onListItem);
 
-            // Also track ordered list for org files
-            if (langId === 'org') {
-                const onOrderedList = isOnOrderedListItem(editor.document, position.line);
-                vscode.commands.executeCommand('setContext', 'scimax.inOrderedList', onOrderedList);
-            } else {
-                vscode.commands.executeCommand('setContext', 'scimax.inOrderedList', false);
-            }
-        })
-    );
+        // Also track ordered list for org files
+        if (langId === 'org') {
+            const onOrderedList = isOnOrderedListItem(editor.document, position.line);
+            setContextKey('scimax.inOrderedList', onOrderedList);
+        } else {
+            setContextKey('scimax.inOrderedList', false);
+        }
+    });
 }
 
 /**
@@ -2850,19 +2848,16 @@ export async function cycleListOutdent(): Promise<void> {
  * Setup dynamic block context tracking
  */
 export function setupDynamicBlockContext(context: vscode.ExtensionContext): void {
-    context.subscriptions.push(
-        vscode.window.onDidChangeTextEditorSelection(e => {
-            const editor = e.textEditor;
-            if (editor.document.languageId !== 'org') {
-                vscode.commands.executeCommand('setContext', 'scimax.inDynamicBlock', false);
-                return;
-            }
+    trackEditorContext(context, editor => {
+        if (!editor || editor.document.languageId !== 'org') {
+            setContextKey('scimax.inDynamicBlock', false);
+            return;
+        }
 
-            const position = editor.selection.active;
-            const inBlock = isInDynamicBlock(editor.document, position);
-            vscode.commands.executeCommand('setContext', 'scimax.inDynamicBlock', inBlock);
-        })
-    );
+        const position = editor.selection.active;
+        const inBlock = isInDynamicBlock(editor.document, position);
+        setContextKey('scimax.inDynamicBlock', inBlock);
+    });
 }
 
 // =============================================================================
@@ -3660,22 +3655,17 @@ export async function addIdToHeading(): Promise<void> {
  * Setup link context tracking
  */
 export function setupLinkContext(context: vscode.ExtensionContext): void {
-    context.subscriptions.push(
-        vscode.window.onDidChangeTextEditorSelection(e => {
-            const editor = e.textEditor;
-            const document = editor.document;
+    trackEditorContext(context, editor => {
+        // Only check for org/markdown files
+        if (!editor || !['org', 'markdown'].includes(editor.document.languageId)) {
+            setContextKey('scimax.onLink', false);
+            return;
+        }
 
-            // Only check for org/markdown files
-            if (!['org', 'markdown'].includes(document.languageId)) {
-                vscode.commands.executeCommand('setContext', 'scimax.onLink', false);
-                return;
-            }
-
-            const position = editor.selection.active;
-            const onLink = isOnLink(document, position);
-            vscode.commands.executeCommand('setContext', 'scimax.onLink', onLink);
-        })
-    );
+        const position = editor.selection.active;
+        const onLink = isOnLink(editor.document, position);
+        setContextKey('scimax.onLink', onLink);
+    });
 }
 
 /**
@@ -3703,12 +3693,12 @@ function isOnHeading(document: vscode.TextDocument, position: vscode.Position): 
  */
 function updateHeadingContexts(editor: vscode.TextEditor | undefined): void {
     if (!editor) {
-        vscode.commands.executeCommand('setContext', 'scimax.onHeading', false);
-        vscode.commands.executeCommand('setContext', 'scimax.onResults', false);
-        vscode.commands.executeCommand('setContext', 'scimax.onDrawer', false);
-        vscode.commands.executeCommand('setContext', 'scimax.onStatisticsCookie', false);
-        vscode.commands.executeCommand('setContext', 'scimax.onLatexBegin', false);
-        vscode.commands.executeCommand('setContext', 'scimax.onBlockBegin', false);
+        setContextKey('scimax.onHeading', false);
+        setContextKey('scimax.onResults', false);
+        setContextKey('scimax.onDrawer', false);
+        setContextKey('scimax.onStatisticsCookie', false);
+        setContextKey('scimax.onLatexBegin', false);
+        setContextKey('scimax.onBlockBegin', false);
         return;
     }
 
@@ -3716,12 +3706,12 @@ function updateHeadingContexts(editor: vscode.TextEditor | undefined): void {
 
     // Only check for supported file types
     if (!['org', 'markdown', 'latex'].includes(document.languageId)) {
-        vscode.commands.executeCommand('setContext', 'scimax.onHeading', false);
-        vscode.commands.executeCommand('setContext', 'scimax.onResults', false);
-        vscode.commands.executeCommand('setContext', 'scimax.onDrawer', false);
-        vscode.commands.executeCommand('setContext', 'scimax.onStatisticsCookie', false);
-        vscode.commands.executeCommand('setContext', 'scimax.onLatexBegin', false);
-        vscode.commands.executeCommand('setContext', 'scimax.onBlockBegin', false);
+        setContextKey('scimax.onHeading', false);
+        setContextKey('scimax.onResults', false);
+        setContextKey('scimax.onDrawer', false);
+        setContextKey('scimax.onStatisticsCookie', false);
+        setContextKey('scimax.onLatexBegin', false);
+        setContextKey('scimax.onBlockBegin', false);
         return;
     }
 
@@ -3729,51 +3719,36 @@ function updateHeadingContexts(editor: vscode.TextEditor | undefined): void {
     const line = document.lineAt(position.line).text;
 
     const onHeading = isOnHeading(document, position);
-    vscode.commands.executeCommand('setContext', 'scimax.onHeading', onHeading);
+    setContextKey('scimax.onHeading', onHeading);
 
     // Check if on results line (#+RESULTS: or :RESULTS: drawer)
     const onResults = /^\s*#\+RESULTS(\[.*\])?:/i.test(line) || /^\s*:RESULTS:\s*$/i.test(line);
-    vscode.commands.executeCommand('setContext', 'scimax.onResults', onResults);
+    setContextKey('scimax.onResults', onResults);
 
     // Check if on drawer line (:NAME: but not :END:)
     const onDrawer = /^\s*:([A-Za-z][A-Za-z0-9_-]*):\s*$/.test(line) && !/^\s*:END:\s*$/i.test(line);
-    vscode.commands.executeCommand('setContext', 'scimax.onDrawer', onDrawer);
+    setContextKey('scimax.onDrawer', onDrawer);
 
     // Check if on heading with statistics cookie [n/m] or [n%]
     const onStatisticsCookie = /^(\*+)\s+/.test(line) && /\[(\d+)\/(\d+)\]|\[(\d+)%\]/.test(line);
-    vscode.commands.executeCommand('setContext', 'scimax.onStatisticsCookie', onStatisticsCookie);
+    setContextKey('scimax.onStatisticsCookie', onStatisticsCookie);
 
     // Check if on LaTeX \begin{...} line
     const onLatexBegin = document.languageId === 'latex' && /^\s*\\begin\{/.test(line);
-    vscode.commands.executeCommand('setContext', 'scimax.onLatexBegin', onLatexBegin);
+    setContextKey('scimax.onLatexBegin', onLatexBegin);
 
     // Check if on a block begin line (#+BEGIN_SRC, #+BEGIN_EXAMPLE, etc.) so Tab
     // can fold the block. Matches the line check in toggleFoldAtCursor.
     const onBlockBegin = (document.languageId === 'org' || document.languageId === 'markdown')
         && /^\s*#\+BEGIN_/i.test(line);
-    vscode.commands.executeCommand('setContext', 'scimax.onBlockBegin', onBlockBegin);
+    setContextKey('scimax.onBlockBegin', onBlockBegin);
 }
 
 /**
  * Setup heading context tracking for Tab folding
  */
 export function setupHeadingContext(context: vscode.ExtensionContext): void {
-    // Update contexts on selection change
-    context.subscriptions.push(
-        vscode.window.onDidChangeTextEditorSelection(e => {
-            updateHeadingContexts(e.textEditor);
-        })
-    );
-
-    // Update contexts when switching editors
-    context.subscriptions.push(
-        vscode.window.onDidChangeActiveTextEditor(editor => {
-            updateHeadingContexts(editor);
-        })
-    );
-
-    // Initialize contexts for the current editor
-    updateHeadingContexts(vscode.window.activeTextEditor);
+    trackEditorContext(context, updateHeadingContexts);
 }
 
 // =============================================================================

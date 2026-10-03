@@ -164,6 +164,8 @@ Task tables, a project view with a Gantt chart, a dependency graph, and a people
 | [[cmd:scimax.project.task.cycleTodo]]  | Cycle TODO State (project view menu) | -        |
 | [[cmd:scimax.project.task.assign]]     | Assign... (project view menu) | -               |
 | [[cmd:scimax.project.task.priority]]   | Set Priority... (project view menu) | -         |
+| [[cmd:scimax.project.task.addDependency]] | Depends On... (project view menu) | -          |
+| [[cmd:scimax.project.task.removeDependency]] | Remove Dependency... (project view menu) | - |
 | [[cmd:scimax.project.task.effort]]     | Set Effort... (project view menu) | -           |
 | [[cmd:scimax.project.task.schedule]]   | Schedule... (project view menu) | -             |
 | [[cmd:scimax.project.task.deadline]]   | Set Deadline... (project view menu) | -         |

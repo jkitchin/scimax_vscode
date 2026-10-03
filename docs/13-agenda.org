@@ -553,7 +553,8 @@ Total: 3 items
 The buffer is read-only, so it can never be edited by accident and never
 prompts to save.
 
-*** ⚠️ Project Agenda Buffer
+*** ✅ Project Agenda Buffer
+CLOSED: [2026-10-03 Sat 09:00]
 
 Choose *Current Project* under *Filter* at the bottom of the =C-c a v= list to
 see only the items from files in the project you are working in, then pick a
@@ -570,7 +571,8 @@ The project buffer opens in its own tab, named after the project (for example
 =Agenda (scimax_vscode).org=), so it can sit beside the full agenda. All the
 keys below work in it, and paging with =f= and =b= keeps the project scope.
 
-*** ⚠️ Filtering by Assignee
+*** ✅ Filtering by Assignee
+CLOSED: [2026-10-03 Sat 09:00]
 
 Choose *Assignee...* under *Filter* in the =C-c a v= list, or press =@= in any
 agenda buffer ([[cmd:scimax.agenda.buffer.filterAssignee]]), to show only the
@@ -584,14 +586,16 @@ table: a task's own =:ASSIGNEE:= or =@name= tag, else its nearest ancestor's.
 the project agenda, then press =@= to narrow it to one person. The active
 filters are shown under the agenda's title.
 
-*** ⚠️ Blocked Tasks
+*** ✅ Blocked Tasks
+CLOSED: [2026-10-03 Sat 09:00]
 
 A task with an unfinished dependency (see [[file:03.5-task-dependencies.org][Task Dependencies]]) is shown with
 🔒 before its title. Set =scimax.org.depend.hideBlockedInAgenda= to hide such
 tasks instead. In a project agenda, blocking is worked out from the project's
 own files; elsewhere it comes from the database.
 
-*** 👀 Agenda Buffer Keys
+*** ✅ Agenda Buffer Keys
+CLOSED: [2026-10-03 Sat 09:00]
 
 These keys are active only inside an agenda buffer:
 
@@ -857,7 +861,8 @@ The database agenda (scimax.db.agenda) offers:
 3. *Semantic search* - Find items by meaning
 4. *Hybrid views* - Combine agenda with search
 
-** 👀 Indexing for Agenda
+** ✅ Indexing for Agenda
+CLOSED: [2026-10-03 Sat 09:00]
 
 Before using the agenda, index your files:
 

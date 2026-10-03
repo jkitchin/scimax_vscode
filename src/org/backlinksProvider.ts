@@ -12,23 +12,16 @@
  *     Results are memoized per document version to avoid re-querying on scroll.
  *
  * Back-links come from the database index, which refreshes on save, so results
- * reflect the last saved state.
+ * reflect the last saved state. The lenses for a whole file come from one
+ * batched lookup; scimax.org.backlinks.codeLens turns them off.
  */
 import * as vscode from 'vscode';
 import { getDatabase } from '../database/lazyDb';
+import type { BacklinkRow, BacklinkTarget } from '../database/scimaxDbCore';
 import { extractAnchors } from '../parser/orgAnchors';
 import { getTodoStatesFromText, extractHeadingTitle } from './todoStates';
 
-type Target =
-    | { kind: 'anchor'; text: string }
-    | { kind: 'heading'; title?: string; customId?: string; id?: string };
-
-interface BacklinkRow {
-    file_path: string;
-    line_number: number;
-    description: string | null;
-    heading_title: string | null;
-}
+type Target = BacklinkTarget;
 
 function isOrg(doc: vscode.TextDocument): boolean {
     return doc.languageId === 'org' || doc.fileName.endsWith('.org');
@@ -125,6 +118,7 @@ class BacklinksCodeLensProvider implements vscode.CodeLensProvider {
 
     async provideCodeLenses(document: vscode.TextDocument): Promise<vscode.CodeLens[]> {
         if (!isOrg(document)) return [];
+        if (!vscode.workspace.getConfiguration('scimax.org.backlinks').get<boolean>('codeLens', true)) return [];
 
         const key = document.uri.toString();
         const cached = this.cache.get(key);
@@ -156,25 +150,32 @@ class BacklinksCodeLensProvider implements vscode.CodeLensProvider {
 
         // Resolve counts up front and emit a lens only when there is at least
         // one back-link. A lens left without a command would render as VS Code's
-        // "no commands" placeholder rather than disappearing. Identical targets
-        // share a single query.
-        const countCache = new Map<string, Promise<BacklinkRow[]>>();
-        const queryOnce = (target: Target): Promise<BacklinkRow[]> => {
-            const tk = JSON.stringify(target);
-            let p = countCache.get(tk);
-            if (!p) { p = queryBacklinks(target).catch(() => []); countCache.set(tk, p); }
-            return p;
-        };
+        // "no commands" placeholder rather than disappearing. All targets go to
+        // the database in one batch, identical targets once.
+        const unique = new Map<string, Target>();
+        for (const c of candidates) unique.set(JSON.stringify(c.target), c.target);
+        const keys = [...unique.keys()];
+        let rowsByTarget = new Map<string, BacklinkRow[]>();
+        try {
+            const db = await getDatabase();
+            if (db) {
+                const results = await db.getBacklinksBatch([...unique.values()]);
+                rowsByTarget = new Map(keys.map((k, i) => [k, results[i]]));
+            }
+        } catch {
+            // No back-links rather than a failed lens request.
+        }
 
-        const lenses = (await Promise.all(candidates.map(async (c): Promise<vscode.CodeLens | undefined> => {
-            const rows = await queryOnce(c.target);
-            if (rows.length === 0) return undefined;
-            return new vscode.CodeLens(c.range, {
+        const lenses: vscode.CodeLens[] = [];
+        for (const c of candidates) {
+            const rows = rowsByTarget.get(JSON.stringify(c.target)) ?? [];
+            if (rows.length === 0) continue;
+            lenses.push(new vscode.CodeLens(c.range, {
                 title: `← ${rows.length} reference${rows.length === 1 ? '' : 's'}`,
                 command: 'editor.action.showReferences',
                 arguments: [document.uri, c.anchorPos, toLocations(rows)],
-            });
-        }))).filter((l): l is vscode.CodeLens => l !== undefined);
+            }));
+        }
 
         this.cache.set(key, { version: document.version, lenses });
         return lenses;
@@ -199,6 +200,9 @@ export function registerBacklinksProvider(context: vscode.ExtensionContext): voi
         // on save — so save is the invalidation point. Refreshing on editor
         // activation would re-run one DB query per heading on every tab
         // switch for nothing.
-        vscode.workspace.onDidSaveTextDocument(doc => { if (isOrg(doc)) codeLens.refresh(); })
+        vscode.workspace.onDidSaveTextDocument(doc => { if (isOrg(doc)) codeLens.refresh(); }),
+        vscode.workspace.onDidChangeConfiguration(e => {
+            if (e.affectsConfiguration('scimax.org.backlinks.codeLens')) codeLens.refresh();
+        })
     );
 }

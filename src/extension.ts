@@ -1,4 +1,5 @@
 import * as vscode from 'vscode';
+import { setContextKey, trackEditorContext } from './utils/contextKeys';
 import * as path from 'path';
 import * as fs from 'fs';
 import { resolveExternalTerminal, launchExternalTerminal } from './utils/externalTerminal';
@@ -852,24 +853,20 @@ async function activateScimax(context: vscode.ExtensionContext) {
 
     // Track cursor position to set context for keybinding differentiation
     // This enables different keybindings when cursor is in a table vs on a heading
-    context.subscriptions.push(
-        vscode.window.onDidChangeTextEditorSelection(e => {
-            const editor = e.textEditor;
-            const document = editor.document;
-            const position = editor.selection.active;
+    trackEditorContext(context, editor => {
+        const document = editor?.document;
+        if (!editor || !document || (document.languageId !== 'org' && document.languageId !== 'markdown')) {
+            setContextKey('scimax.inTable', false);
+            setContextKey('scimax.onTblfmLine', false);
+            return;
+        }
+        const position = editor.selection.active;
+        setContextKey('scimax.inTable', isInTable(document, position));
 
-            // Only check for org/markdown files
-            if (document.languageId === 'org' || document.languageId === 'markdown') {
-                const inTable = isInTable(document, position);
-                vscode.commands.executeCommand('setContext', 'scimax.inTable', inTable);
-
-                // Check if on a #+TBLFM line
-                const lineText = document.lineAt(position.line).text;
-                const onTblfmLine = /^\s*#\+TBLFM:/i.test(lineText);
-                vscode.commands.executeCommand('setContext', 'scimax.onTblfmLine', onTblfmLine);
-            }
-        })
-    );
+        // Check if on a #+TBLFM line
+        const lineText = document.lineAt(position.line).text;
+        setContextKey('scimax.onTblfmLine', /^\s*#\+TBLFM:/i.test(lineText));
+    });
 
     // Register Bibliography Code Lens Provider
     context.subscriptions.push(

@@ -9,6 +9,7 @@
  * This module has no VS Code dependency so it can be unit tested directly.
  */
 
+import * as fs from 'fs';
 import * as path from 'path';
 import type { Marp, MarpOptions } from '@marp-team/marp-core';
 
@@ -49,9 +50,12 @@ let presenterEngine: ((args: { marp: Marp }) => Marp) | null | undefined;
 function loadPresenterEngine(): ((args: { marp: Marp }) => Marp) | null {
     if (presenterEngine === undefined) {
         try {
-            // out/marp or src/marp -> media/marpPresent
+            // out/marp or src/marp (or out/, bundled) -> media/marpPresent
+            const engine = [path.join(__dirname, '..', '..'), path.join(__dirname, '..')]
+                .map(root => path.join(root, 'media', 'marpPresent', 'engine.cjs'))
+                .find(file => fs.existsSync(file));
             // eslint-disable-next-line @typescript-eslint/no-var-requires
-            presenterEngine = require(path.join(__dirname, '..', '..', 'media', 'marpPresent', 'engine.cjs'));
+            presenterEngine = engine ? require(engine) : null;
         } catch {
             presenterEngine = null;
         }

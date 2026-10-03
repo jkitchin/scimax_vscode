@@ -10,6 +10,7 @@ import * as readline from 'readline';
 import { minimatch } from 'minimatch';
 import { createCliDatabase, createCliEmbeddingService, testCliEmbeddingService } from '../database';
 import type { ScimaxDbCore } from '../database';
+import { describeOptimize } from '../../database/scimaxDbCore';
 import {
     loadSettings,
     expandPath,
@@ -50,6 +51,9 @@ export async function dbCommand(config: CliConfig, args: ParsedArgs): Promise<vo
         case 'check':
             await checkDatabase(config);
             break;
+        case 'optimize':
+            await optimizeDatabase(config);
+            break;
         case 'remove':
             await removeFile(config, args);
             break;
@@ -76,6 +80,8 @@ USAGE:
     scimax db clear                Wipe the database (requires --yes or confirm)
     scimax db scan <dir>           Scan a specific directory and add to database
     scimax db check                Check for stale/missing entries
+    scimax db optimize             Remove missing files, shrink a bloated vector
+                                   index, and VACUUM (close VS Code first)
     scimax db remove <file|glob>   Remove file(s) from the database
     scimax db ignore <file|glob>   Remove file(s) from DB and add to exclude list
     scimax db prune                Remove already-indexed files that the current
@@ -538,6 +544,20 @@ async function checkDatabase(config: CliConfig): Promise<void> {
         } else {
             console.log('\nDatabase looks good.');
         }
+    } finally {
+        await db.close();
+    }
+}
+
+async function optimizeDatabase(config: CliConfig): Promise<void> {
+    if (!fs.existsSync(config.dbPath)) {
+        console.log('Database not found:', config.dbPath);
+        return;
+    }
+    const db = await createCliDatabase(config.dbPath);
+    try {
+        console.log('Optimizing database (VACUUM rewrites the file; this can take a while)...');
+        console.log(describeOptimize(await db.optimize()));
     } finally {
         await db.close();
     }

@@ -18,7 +18,7 @@
 
 import * as fs from 'fs';
 import * as path from 'path';
-import * as Handlebars from 'handlebars';
+import type * as Handlebars from 'handlebars';
 import type { OrgDocumentNode } from '../parser/orgElementTypes';
 import { parseOrgFast } from '../parser/orgExportParser';
 import { exportToLatex, LatexExportOptions } from '../parser/orgExportLatex';
@@ -148,7 +148,8 @@ export interface TemplateContext {
  * Using a factory function allows each exporter to have isolated partials
  */
 function createHandlebarsInstance(): typeof Handlebars {
-    const hbs = Handlebars.create();
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const hbs = (require('handlebars') as typeof Handlebars).create();
 
     // Escape for LaTeX: {{latex value}}
     hbs.registerHelper('latex', (text: unknown) => {
@@ -226,14 +227,18 @@ function createHandlebarsInstance(): typeof Handlebars {
     return hbs;
 }
 
-// Global Handlebars instance with helpers registered
-const handlebars = createHandlebarsInstance();
+// Global Handlebars instance with helpers registered, made on first use so
+// handlebars isn't loaded with the extension.
+let handlebarsInstance: typeof Handlebars | undefined;
+function getHandlebars(): typeof Handlebars {
+    return handlebarsInstance ??= createHandlebarsInstance();
+}
 
 /**
  * Compile a Handlebars template
  */
 export function compileTemplate(templateSource: string): Handlebars.TemplateDelegate {
-    return handlebars.compile(templateSource, {
+    return getHandlebars().compile(templateSource, {
         strict: false, // Don't throw on missing fields
         noEscape: true, // Don't auto-escape (templates handle their own escaping)
     });
@@ -243,7 +248,7 @@ export function compileTemplate(templateSource: string): Handlebars.TemplateDele
  * Register a partial template
  */
 export function registerPartial(name: string, content: string): void {
-    handlebars.registerPartial(name, content);
+    getHandlebars().registerPartial(name, content);
 }
 
 /**

@@ -8,7 +8,9 @@ import { createCliDatabase, CliDatabase } from '../database';
 import type { ScimaxDbCore, AgendaItem, HeadingRecord } from '../../database/scimaxDbCore';
 import { loadSettings, AgendaSettings } from '../settings';
 import { vscodeLinkAt } from '../links';
-import { format, addDays } from 'date-fns';
+// Per-function imports: the package index loads all of date-fns.
+import format from 'date-fns/format';
+import addDays from 'date-fns/addDays';
 
 interface CliConfig {
     dbPath: string;

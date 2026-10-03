@@ -526,6 +526,25 @@ Output:
 
 Add =--json= for structured output.
 
+*** Optimize
+
+Remove entries for missing files, shrink a bloated vector index, and VACUUM:
+
+#+begin_src bash
+scimax db optimize
+#+end_src
+
+Close VS Code first: VACUUM needs the database to itself. It rewrites the file,
+so it needs free disk space about the size of the database. The output reports
+the size before and after:
+
+#+begin_example
+Database optimized: 58.6 GB -> 1.9 GB; rebuilt the vector index
+#+end_example
+
+The same as *Scimax: Optimize Database* in VS Code. See
+[[file:18-database-search.org][Database Search]].
+
 *** Check Integrity
 
 Check for missing or stale files:
@@ -885,6 +904,7 @@ Use an absolute path to the binary: cron's =PATH= is minimal and will not find a
 | =scimax db prune=      | Drop entries the exclude rules now reject                 |
 | =scimax db remove=     | Drop specific files or globs from the database            |
 | =scimax db ignore=     | Drop files and add them to =scimax.db.exclude=            |
+| =scimax db optimize=   | Shrink the database file (VS Code closed)                 |
 
 - Use *sync* for routine maintenance, including the morning's first pass.
 - Use *scan* for one-off directories outside the configured scan roots.

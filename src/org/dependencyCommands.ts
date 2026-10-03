@@ -89,16 +89,19 @@ export async function ensureHeadingId(document: vscode.TextDocument, headingLine
     return ok ? id : undefined;
 }
 
-/** Add `targetId` to the heading's `:DEPENDS:` list (creating the drawer/property as needed). */
+/**
+ * Add `targetId` to the heading's `:DEPENDS:` list (creating the drawer/property
+ * as needed). False if it was already there.
+ */
 async function appendDependency(
     document: vscode.TextDocument,
     headingLine: number,
     targetId: string
-): Promise<void> {
+): Promise<boolean> {
     const existing = parseDepends(readHeadingProperty(document, headingLine, DEPENDS_PROPERTY));
     if (existing.includes(targetId)) {
         vscode.window.showInformationMessage('Dependency already present.');
-        return;
+        return false;
     }
     const newValue = [...existing, targetId].map(id => `id:${id}`).join(' ');
 
@@ -115,7 +118,68 @@ async function appendDependency(
             `:PROPERTIES:\n:${DEPENDS_PROPERTY}: ${newValue}\n:END:\n`
         );
     }
-    await vscode.workspace.applyEdit(edit);
+    return vscode.workspace.applyEdit(edit);
+}
+
+/** A heading by file and 1-based line. */
+export interface HeadingRef {
+    file: string;
+    line: number;
+}
+
+/**
+ * Make `dependent` depend on `target`, without an editor: give both headings
+ * an :ID: and add the target's to the dependent's :DEPENDS:, then save both
+ * files. True if the dependency was added.
+ */
+export async function addDependencyBetween(dependent: HeadingRef, target: HeadingRef): Promise<boolean> {
+    const targetDoc = await vscode.workspace.openTextDocument(vscode.Uri.file(target.file));
+    const document = await vscode.workspace.openTextDocument(vscode.Uri.file(dependent.file));
+    let headingLine = dependent.line - 1;
+
+    // Writing the target's id above the dependent in the same file moves it down.
+    const linesBefore = document.lineCount;
+    const targetId = await ensureHeadingId(targetDoc, target.line - 1);
+    if (!targetId) {
+        vscode.window.showErrorMessage('Could not assign an ID to the target heading.');
+        return false;
+    }
+    if (targetDoc === document && target.line < dependent.line) {
+        headingLine += document.lineCount - linesBefore;
+    }
+
+    // The dependent needs an id too, for triggers; it goes below the heading.
+    await ensureHeadingId(document, headingLine);
+    const added = await appendDependency(document, headingLine, targetId);
+    if (targetDoc.isDirty) await targetDoc.save();
+    if (document.isDirty) await document.save();
+    return added;
+}
+
+/**
+ * Take `targetIds` out of the heading's :DEPENDS:, deleting the property when
+ * none are left, and save the file. True if anything was removed.
+ */
+export async function removeDependencies(dependent: HeadingRef, targetIds: string[]): Promise<boolean> {
+    const document = await vscode.workspace.openTextDocument(vscode.Uri.file(dependent.file));
+    const headingLine = dependent.line - 1;
+    const drawer = findDrawer(document, headingLine, DEPENDS_PROPERTY);
+    if (drawer.existingLine === -1) return false;
+
+    const existing = parseDepends(readHeadingProperty(document, headingLine, DEPENDS_PROPERTY));
+    const kept = existing.filter(id => !targetIds.includes(id));
+    if (kept.length === existing.length) return false;
+
+    const edit = new vscode.WorkspaceEdit();
+    const line = document.lineAt(drawer.existingLine);
+    if (kept.length) {
+        edit.replace(document.uri, line.range, `:${DEPENDS_PROPERTY}: ${kept.map(id => `id:${id}`).join(' ')}`);
+    } else {
+        edit.delete(document.uri, line.rangeIncludingLineBreak);
+    }
+    if (!await vscode.workspace.applyEdit(edit)) return false;
+    if (document.isDirty) await document.save();
+    return true;
 }
 
 async function addDependencyCommand(): Promise<void> {

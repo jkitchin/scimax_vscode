@@ -212,3 +212,15 @@ export function parseRelativeDate(input: string): Date | null {
 export function getDateExpressionExamples(): string {
     return 'Examples: today, tomorrow, friday, next friday, this monday, +2d, +1w, jan 15';
 }
+
+/**
+ * Parse "yyyy-MM-dd" as local midnight (new Date('2024-01-27') would be UTC).
+ * Same result as date-fns parse(s, 'yyyy-MM-dd', ...), Invalid Date included,
+ * without loading date-fns's parser, which takes ~40 ms at startup.
+ */
+export function parseLocalYmd(s: string): Date {
+    const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(s);
+    if (!m) return new Date(NaN);
+    const date = new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]));
+    return date.getDate() === Number(m[3]) ? date : new Date(NaN);
+}

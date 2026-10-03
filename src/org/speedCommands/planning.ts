@@ -157,6 +157,10 @@ async function addPlanningTimestamp(keyword: 'SCHEDULED' | 'DEADLINE'): Promise<
         }
     }
 
+    // A moved deadline can move the tasks that wait on it (shiftDependents.ts).
+    const shiftDependents = keyword === 'DEADLINE' ? await import('../shiftDependents') : undefined;
+    const deadlineBefore = shiftDependents?.deadlineAt(document, headingLine);
+
     // Prompt for date
     const date = await promptForDate(`Set ${keyword}`);
     if (!date) return;
@@ -231,6 +235,8 @@ async function addPlanningTimestamp(keyword: 'SCHEDULED' | 'DEADLINE'): Promise<
             }
         });
     }
+
+    await shiftDependents?.offerShiftDependents(activeEditor.document, headingLine, deadlineBefore);
 }
 
 /**

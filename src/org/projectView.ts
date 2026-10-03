@@ -19,11 +19,13 @@ import { currentProjectRoot, loadProjectTasks, type ProjectTaskInfo } from './pr
 import {
     buildGanttModel,
     ganttToPdf,
+    isoDay,
     ganttToXlsx,
     type GanttGroupBy,
     type GanttOptions,
 } from './projectGantt';
 import { runOnSourceHeading } from './agendaDocumentProvider';
+import { addDependencyBetween, removeDependencies } from './dependencyCommands';
 
 /** What VS Code passes to a webview/context command: the row's data-vscode-context. */
 interface TaskContext {
@@ -146,6 +148,110 @@ class ProjectView implements vscode.Disposable {
             () => this.panel?.reveal()
         );
         if (changed) await this.reload();
+    }
+
+    /**
+     * Pick another project task that this one waits on, add it to the task's
+     * :DEPENDS:, and redraw. Tasks that already depend on this one, directly
+     * or through others, are left out so no cycle can be made.
+     */
+    async addDependency(arg: TaskContext | undefined): Promise<void> {
+        if (!arg?.filePath || !arg.line) return;
+        const task = this.tasks.find(t => t.file === arg.filePath && t.line === arg.line);
+        if (!task) {
+            vscode.window.showWarningMessage('The project view is out of date: refresh it and try again.');
+            return;
+        }
+
+        const byId = new Map(this.tasks.filter(t => t.id).map(t => [t.id!, t]));
+        const waitsOnTask = (t: ProjectTaskInfo, seen = new Set<string>()): boolean =>
+            t.dependsIds.some(id => {
+                if (id === task.id) return true;
+                if (seen.has(id)) return false;
+                seen.add(id);
+                const next = byId.get(id);
+                return next ? waitsOnTask(next, seen) : false;
+            });
+
+        interface Item extends vscode.QuickPickItem { target: ProjectTaskInfo }
+        const items: Item[] = this.tasks
+            .filter(t => t !== task && !(t.id && task.dependsIds.includes(t.id)) && !(task.id && waitsOnTask(t)))
+            .sort((a, b) => Number(a.isDone) - Number(b.isDone))
+            .map(t => ({
+                label: [t.todo, t.title].filter(Boolean).join(' '),
+                description: [
+                    t.scheduled ? `scheduled ${isoDay(t.scheduled)}` : '',
+                    t.deadline ? `deadline ${isoDay(t.deadline)}` : '',
+                ].filter(Boolean).join(', '),
+                detail: `${path.relative(this.root ?? '', t.file)}:${t.line}`,
+                target: t,
+            }));
+        if (items.length === 0) {
+            vscode.window.showInformationMessage(`No other task in the project can be a dependency of "${task.title}".`);
+            return;
+        }
+
+        const picked = await vscode.window.showQuickPick(items, {
+            title: `"${task.title}" depends on...`,
+            placeHolder: 'A task that must be done first',
+            matchOnDescription: true,
+            matchOnDetail: true,
+        });
+        if (!picked) return;
+
+        const added = await addDependencyBetween(
+            { file: task.file, line: task.line },
+            { file: picked.target.file, line: picked.target.line }
+        );
+        await this.reload();
+        if (added) {
+            vscode.window.showInformationMessage(`"${task.title}" now depends on "${picked.target.title}".`);
+        }
+    }
+
+    /** Pick some of a task's dependencies, take them out of :DEPENDS:, and redraw. */
+    async removeDependency(arg: TaskContext | undefined): Promise<void> {
+        if (!arg?.filePath || !arg.line) return;
+        const task = this.tasks.find(t => t.file === arg.filePath && t.line === arg.line);
+        if (!task) {
+            vscode.window.showWarningMessage('The project view is out of date: refresh it and try again.');
+            return;
+        }
+        if (task.dependsIds.length === 0) {
+            vscode.window.showInformationMessage(`"${task.title}" has no dependencies.`);
+            return;
+        }
+
+        interface Item extends vscode.QuickPickItem { id: string }
+        const items: Item[] = task.dependsIds.map(id => {
+            const t = this.tasks.find(x => x.id === id);
+            return t
+                ? {
+                    label: [t.todo, t.title].filter(Boolean).join(' '),
+                    detail: `${path.relative(this.root ?? '', t.file)}:${t.line}`,
+                    id,
+                }
+                : { label: `id:${id}`, description: 'not found in this project', id };
+        });
+
+        // One dependency: no need to choose.
+        const picked = items.length === 1
+            ? await vscode.window.showQuickPick(items, { title: `Remove "${task.title}"'s dependency on...` })
+                .then(i => (i ? [i] : undefined))
+            : await vscode.window.showQuickPick(items, {
+                title: `Remove "${task.title}"'s dependencies on...`,
+                placeHolder: 'Check the dependencies to remove',
+                canPickMany: true,
+                matchOnDetail: true,
+            });
+        if (!picked?.length) return;
+
+        const removed = await removeDependencies({ file: task.file, line: task.line }, picked.map(i => i.id));
+        await this.reload();
+        if (removed) {
+            const names = picked.map(i => `"${i.label}"`).join(', ');
+            vscode.window.showInformationMessage(`"${task.title}" no longer depends on ${names}.`);
+        }
     }
 
     async export(format: 'xlsx' | 'pdf'): Promise<void> {
@@ -288,6 +394,10 @@ export function registerProjectView(context: vscode.ExtensionContext): void {
         vscode.commands.registerCommand('scimax.project.task.assign', (arg?: TaskContext) =>
             view.runOnTask(arg, 'scimax.org.assignTask')),
         vscode.commands.registerCommand('scimax.project.task.priority', priority),
+        vscode.commands.registerCommand('scimax.project.task.addDependency', (arg?: TaskContext) =>
+            view.addDependency(arg)),
+        vscode.commands.registerCommand('scimax.project.task.removeDependency', (arg?: TaskContext) =>
+            view.removeDependency(arg)),
         vscode.commands.registerCommand('scimax.project.task.effort', (arg?: TaskContext) =>
             view.runOnTask(arg, 'scimax.speed.setEffort')),
         vscode.commands.registerCommand('scimax.project.task.schedule', (arg?: TaskContext) =>

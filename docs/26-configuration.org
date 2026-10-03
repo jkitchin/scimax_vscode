@@ -130,6 +130,7 @@ CLOSED: [2026-01-24 Sat 17:41]
 | scimax.org.logRepeat               | string (enum)        | "false"  | Enable progress logging           |
 | scimax.org.logIntoDrawer           | boolean or string    | false    | Where to log state changes        |
 | scimax.org.diagnostics.orphanLinks | boolean              | true     | Warn on unresolved internal links |
+| scimax.org.backlinks.codeLens      | boolean              | true     | Show "← N references" lenses      |
 | scimax.org.notes.excludeFromExport | boolean              | true     | Strip dialog notes from exports   |
 | scimax.org.notes.labelPrefix       | string               | "note-"  | Footnote label prefix for notes   |
 | scimax.org.notes.author            | string               | ""       | Author recorded on new notes      |
@@ -183,6 +184,14 @@ anchors/headings/text first, then a workspace-wide anchor lookup in the
 database), so valid cross-file anchor links are not flagged. Custom-id
 (=[[#id]]=) and =id:= links are checked by the separate org-lint =broken-link=
 checker. Set this to =false= to turn the warnings off.
+
+** Back-link CodeLens
+
+When =scimax.org.backlinks.codeLens= is enabled (the default), a *← N
+references* lens appears above headings and anchors that other files link to.
+The counts for a file come from one database query. Set it to =false= to hide
+the lenses; *Find All References* (=Shift+F12=) still lists back-links. See
+[[file:42-granular-addressing.org][Granular Addressing]].
 
 ** Org Preview
 
@@ -1612,7 +1621,8 @@ When enabled, you can use single-key shortcuts (like `n', `p', `u') when the cur
 
 Configure the agenda view and TODO tracking.
 
-** 👀 Settings Overview
+** ✅ Settings Overview
+CLOSED: [2026-10-03 Sat 09:01]
 
 The agenda is now a *view over the Scimax database*. Indexing scope
 (what files exist in the database, and therefore what's eligible for
@@ -1648,7 +1658,8 @@ indexing setting is set non-default in your config.
 
 ** Detailed Configuration
 
-*** ⚠️ scimax.agenda.updateChangedFiles
+*** ✅ scimax.agenda.updateChangedFiles
+CLOSED: [2026-10-03 Sat 09:02]
 
 - *Type*: boolean
 - *Default*: `true'

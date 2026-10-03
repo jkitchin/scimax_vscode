@@ -134,7 +134,10 @@ is no extra panel to manage. Put the cursor on an anchor (=<<name>>=,
   =CUSTOM_ID=, =ID=, or title.
 - A *← N references* CodeLens appears above anchored lines and headings that have
   back-links; click it to open the same peek. Lines with no back-links show no
-  lens.
+  lens. The counts for a whole file come from one indexed database query, so
+  large files with many headings open quickly. Set
+  =scimax.org.backlinks.codeLens= to =false= to turn the lenses off; Find All
+  References still works.
 
 This is /object-level/ back-linking: it resolves links to the specific anchor or
 heading they target, not merely file-to-file. Back-links come from the database

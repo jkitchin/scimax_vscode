@@ -11,7 +11,7 @@ import * as os from 'os';
 import * as crypto from 'crypto';
 import { spawn } from 'child_process';
 import { createLogger } from '../utils/logger';
-import Tesseract from 'tesseract.js';
+import type { Worker as OcrWorker } from 'tesseract.js';
 
 const log = createLogger('Screenshot');
 
@@ -20,16 +20,17 @@ const log = createLogger('Screenshot');
 // =============================================================================
 
 // Lazy-initialized worker for performance (reused across calls)
-let ocrWorker: Tesseract.Worker | null = null;
+let ocrWorker: OcrWorker | null = null;
 
 /**
  * Get or create the OCR worker (lazy initialization)
  * First call takes ~2-3 seconds, subsequent calls reuse the worker
  */
-async function getOcrWorker(): Promise<Tesseract.Worker> {
+async function getOcrWorker(): Promise<OcrWorker> {
     if (!ocrWorker) {
         log.info('Initializing OCR worker...');
-        ocrWorker = await Tesseract.createWorker('eng');
+        const { createWorker } = await import('tesseract.js');
+        ocrWorker = await createWorker('eng');
         log.info('OCR worker initialized');
     }
     return ocrWorker;

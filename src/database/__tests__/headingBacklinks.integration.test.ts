@@ -79,6 +79,34 @@ describe('heading back-links (integration)', () => {
         expect(back.every(b => b.file_path === bPath)).toBe(true);
     });
 
+    it('batches anchors and headings, one result list per target, like the single lookups', async () => {
+        const targets = [
+            { kind: 'heading' as const, customId: 'storage' },
+            { kind: 'heading' as const, title: 'Storage layer' },
+            { kind: 'heading' as const, title: 'Nonexistent' },
+            { kind: 'anchor' as const, text: 'nothing here' },
+        ];
+        const batch = await db.getBacklinksBatch(targets);
+        expect(batch).toHaveLength(4);
+        expect(batch[0]).toEqual(await db.getHeadingBacklinks({ customId: 'storage' }));
+        expect(batch[1]).toEqual(await db.getHeadingBacklinks({ title: 'Storage layer' }));
+        expect(batch[1].map(b => b.line_number)).toEqual([3]);
+        expect(batch[2]).toEqual([]);
+        expect(batch[3]).toEqual([]);
+        expect(await db.getBacklinksBatch([])).toEqual([]);
+    });
+
+    it('looks link targets up by index rather than scanning the links table', async () => {
+        // A scan per heading made opening a long org file stall the extension host.
+        const client = (db as any).db;
+        const plan = async (where: string) => (await client.execute({
+            sql: `EXPLAIN QUERY PLAN SELECT l.id FROM links l WHERE ${where}`, args: ['x'],
+        })).rows.map((r: any) => r.detail).join(' ');
+        expect(await plan('lower(trim(l.raw_target)) IN (?)')).toContain('idx_links_target_key');
+        expect(await plan(`instr(l.raw_target, '::') > 0 AND lower(trim(substr(l.raw_target, instr(l.raw_target, '::') + 2))) IN (?)`))
+            .toContain('idx_links_target_suffix');
+    });
+
     it('returns nothing for an unknown heading', async () => {
         const back = await db.getHeadingBacklinks({ title: 'Nonexistent', customId: 'nope' });
         expect(back).toEqual([]);

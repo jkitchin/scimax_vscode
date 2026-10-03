@@ -504,10 +504,15 @@ function gatherBlockTasks(
     return { tasks, multiFile: true };
 }
 
-/** A task's file relative to the block's document, for display. */
+/**
+ * A task's file relative to the block's document, for display. Always with /
+ * separators: the table is saved in the file, which may be shared between
+ * Windows and other systems.
+ */
 function relativeFile(task: ProjectTask, documentPath: string | undefined): string {
     if (!task.file) return '';
-    return documentPath ? path.relative(path.dirname(documentPath), task.file) || path.basename(task.file) : task.file;
+    const rel = documentPath ? path.relative(path.dirname(documentPath), task.file) || path.basename(task.file) : task.file;
+    return rel.split(path.sep).join('/');
 }
 
 function fmtDate(d?: Date): string {

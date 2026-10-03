@@ -1031,9 +1031,23 @@ CLOSED: [2026-01-17 Sat 12:08]
 
 *** Operations
 - Removes entries for deleted files
+- Rebuilds the vector index when it holds far more entries than there are
+  embedded chunks. Old versions could leave most of the index behind as files
+  were re-indexed; a database with no embeddings at all could still hold
+  gigabytes of it.
 - Runs VACUUM to reclaim space
-- Rebuilds indexes for performance
+- Reports the file size before and after, for example
+  =Database optimized: 58.6 GB -> 1.9 GB; rebuilt the vector index=
 - Should be run periodically (monthly)
+
+VACUUM rewrites the whole file, so a large database needs free disk space about
+its own size and can take minutes. The CLI equivalent is =scimax db optimize=
+(close VS Code first). See [[file:30-cli.org][CLI]].
+
+*** Link indexes
+Migration 8 adds indexes on the link targets, so back-link lookups (the
+CodeLens counts and Find All References) use an index instead of scanning every
+link. It runs automatically on startup.
 
 ** Clearing Database
 

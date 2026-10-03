@@ -33,6 +33,8 @@ export interface Migration {
  * - v4: Add heading_id to links table for contextual filtering and graph queries
  * - v5: Add anchors table for granular addressing and raw_target on links
  * - v6: Add dependencies edge table for TODO task dependencies (org-depend style)
+ * - v7: Add todo_type to headings
+ * - v8: Expression indexes on link targets for back-link lookups
  */
 export const migrations: Migration[] = [
     {
@@ -247,6 +249,18 @@ export const migrations: Migration[] = [
                 WHEN todo_state IN ('DONE', 'CANCELLED', 'CANCELED') THEN 'done'
                 ELSE 'todo' END`,
             `UPDATE files SET mtime = 0 WHERE file_type = 'org'`
+        ]
+    },
+    {
+        version: 8,
+        description: 'Index link targets for back-link lookups',
+        up: [
+            // Back-links match raw targets case- and space-insensitively, and
+            // ::-suffixed targets by the text after the ::. Without these
+            // expression indexes every lookup scanned the whole links table
+            // (one scan per heading when a file's CodeLenses were computed).
+            `CREATE INDEX IF NOT EXISTS idx_links_target_key ON links(lower(trim(raw_target)))`,
+            `CREATE INDEX IF NOT EXISTS idx_links_target_suffix ON links(lower(trim(substr(raw_target, instr(raw_target, '::') + 2)))) WHERE instr(raw_target, '::') > 0`
         ]
     }
 ];

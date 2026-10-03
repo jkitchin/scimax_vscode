@@ -62,11 +62,10 @@ export class JournalStatusBar {
         const editor = vscode.window.activeTextEditor;
 
         if (editor && this.manager.isJournalFile(editor.document.uri.fsPath)) {
-            // Show detailed info for journal file (this is fast, no async needed)
+            // Show detailed info for the journal file, from the editor's text
             const date = this.manager.getDateFromPath(editor.document.uri.fsPath);
             if (date) {
-                const entry = this.manager.getEntry(date);
-                const stats = this.manager.getEntryStats(entry);
+                const stats = this.manager.getContentStats(editor.document.getText());
 
                 const weekday = DAY_NAMES_SHORT[date.getDay()];
 
@@ -100,7 +99,8 @@ export class JournalStatusBar {
             this.statusBarItem.text = '$(notebook) Journal';
 
             try {
-                const totalStats = await this.manager.getTotalStatsAsync();
+                // Dates only: total words would read every entry on disk.
+                const totalStats = await this.manager.getBasicStatsAsync();
 
                 let text = '$(notebook) Journal';
 
@@ -109,7 +109,7 @@ export class JournalStatusBar {
                 }
 
                 this.statusBarItem.text = text;
-                this.statusBarItem.tooltip = `${totalStats.entryCount} entries | ${totalStats.totalWords} total words | Click to open today's journal`;
+                this.statusBarItem.tooltip = `${totalStats.entryCount} entries | Click to open today's journal`;
             } catch {
                 // Keep basic text on error
                 this.statusBarItem.tooltip = 'Click to open today\'s journal';

@@ -296,9 +296,10 @@ describe('manifest consistency: when-clause contexts exist', () => {
     it('every scimax.* token in a when clause is a setContext key, view id, or config key', () => {
         // Context keys set via commands.executeCommand('setContext', 'key', ...)
         const setContextKeys = new Set<string>();
-        const scRe = /setContext'\s*,\s*'([^']+)'|setContext"\s*,\s*"([^"]+)"/g;
+        // ...and via setContextKey('key', ...) (utils/contextKeys.ts)
+        const scRe = /setContext'\s*,\s*'([^']+)'|setContext"\s*,\s*"([^"]+)"|setContextKey\(\s*'([^']+)'/g;
         let sm: RegExpExecArray | null;
-        while ((sm = scRe.exec(allSrc))) setContextKeys.add(sm[1] ?? sm[2]);
+        while ((sm = scRe.exec(allSrc))) setContextKeys.add(sm[1] ?? sm[2] ?? sm[3]);
 
         // Webview panel types, matched by `webviewId` / `activeWebviewPanelId` clauses.
         const panelTypes = new Set<string>();

@@ -22,6 +22,7 @@ import {
     formatDuration,
 } from '../parser/orgClocking';
 import { parseOrg } from '../parser/orgParserUnified';
+import { noteDeadlineShiftStart, registerDeadlineShiftTracking } from './shiftDependents';
 import { resolveLoggingConfig, combineEditsForRepeatLogging } from './progressLogging';
 
 /**
@@ -686,6 +687,7 @@ async function shiftTimestampUp(): Promise<void> {
         const line = document.lineAt(position.line).text;
         const component = getTimestampComponent(line, position.character, ts);
         const { newTimestamp } = adjustTimestamp(ts, component, 1);
+        noteDeadlineShiftStart(document, position.line, position.character);
 
         await editor.edit(editBuilder => {
             const range = new vscode.Range(
@@ -741,6 +743,7 @@ async function shiftTimestampDown(): Promise<void> {
         const line = document.lineAt(position.line).text;
         const component = getTimestampComponent(line, position.character, ts);
         const { newTimestamp } = adjustTimestamp(ts, component, -1);
+        noteDeadlineShiftStart(document, position.line, position.character);
 
         await editor.edit(editBuilder => {
             const range = new vscode.Range(
@@ -965,6 +968,7 @@ async function shiftTimestampLeft(): Promise<void> {
     date.setDate(date.getDate() - 1);
 
     const newTimestamp = formatTimestamp(ts, date);
+    noteDeadlineShiftStart(document, position.line, position.character);
 
     await editor.edit(editBuilder => {
         const range = new vscode.Range(
@@ -1007,6 +1011,7 @@ async function shiftTimestampRight(): Promise<void> {
     date.setDate(date.getDate() + 1);
 
     const newTimestamp = formatTimestamp(ts, date);
+    noteDeadlineShiftStart(document, position.line, position.character);
 
     await editor.edit(editBuilder => {
         const range = new vscode.Range(
@@ -1220,6 +1225,7 @@ async function generateClockTableCommand(): Promise<void> {
  * Register timestamp commands
  */
 export function registerTimestampCommands(context: vscode.ExtensionContext): void {
+    registerDeadlineShiftTracking(context);
     context.subscriptions.push(
         vscode.commands.registerCommand('scimax.org.shiftTimestampUp', shiftTimestampUp),
         vscode.commands.registerCommand('scimax.org.shiftTimestampDown', shiftTimestampDown),

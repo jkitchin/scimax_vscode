@@ -2414,6 +2414,14 @@
         "title": "Set Priority..."
       },
       {
+        "command": "scimax.project.task.addDependency",
+        "title": "Depends On..."
+      },
+      {
+        "command": "scimax.project.task.removeDependency",
+        "title": "Remove Dependency..."
+      },
+      {
         "command": "scimax.project.task.effort",
         "title": "Set Effort..."
       },
@@ -7572,6 +7580,11 @@
           "default": true,
           "description": "Warn when an internal link ([[name]] or [[*Heading]]) resolves to no anchor, heading, or text. Anchors come from <<targets>>, <<<radio targets>>>, and #+NAME, indexed across the workspace (granular addressing)."
         },
+        "scimax.org.backlinks.codeLens": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show a \"← N references\" CodeLens above headings and anchors that other indexed files link to. Find All References (Shift+F12) works either way."
+        },
         "scimax.org.notes.excludeFromExport": {
           "type": "boolean",
           "default": true,
@@ -7836,19 +7849,29 @@
           "group": "2_edit@3"
         },
         {
-          "command": "scimax.project.task.effort",
+          "command": "scimax.project.task.addDependency",
           "when": "webviewId == 'scimax.projectView' && webviewSection == 'task'",
           "group": "3_plan@1"
         },
         {
-          "command": "scimax.project.task.schedule",
+          "command": "scimax.project.task.removeDependency",
           "when": "webviewId == 'scimax.projectView' && webviewSection == 'task'",
           "group": "3_plan@2"
         },
         {
-          "command": "scimax.project.task.deadline",
+          "command": "scimax.project.task.effort",
           "when": "webviewId == 'scimax.projectView' && webviewSection == 'task'",
           "group": "3_plan@3"
+        },
+        {
+          "command": "scimax.project.task.schedule",
+          "when": "webviewId == 'scimax.projectView' && webviewSection == 'task'",
+          "group": "3_plan@4"
+        },
+        {
+          "command": "scimax.project.task.deadline",
+          "when": "webviewId == 'scimax.projectView' && webviewSection == 'task'",
+          "group": "3_plan@5"
         },
         {
           "command": "scimax.project.refresh",
@@ -8013,6 +8036,14 @@
         },
         {
           "command": "scimax.project.task.priority",
+          "when": "false"
+        },
+        {
+          "command": "scimax.project.task.addDependency",
+          "when": "false"
+        },
+        {
+          "command": "scimax.project.task.removeDependency",
           "when": "false"
         },
         {
@@ -8803,7 +8834,8 @@
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
-    "compile": "npm run build-doc-index && tsc -p ./ && npm run copy-assets",
+    "compile": "npm run build-doc-index && tsc -p ./ && npm run bundle && npm run copy-assets",
+    "bundle": "esbuild src/extension.ts --bundle --platform=node --format=cjs --target=node18 --packages=external --external:vscode --outfile=out/extension.js --log-level=warning",
     "build-doc-index": "npx ts-node scripts/build-doc-index.ts",
     "copy-assets": "shx cp src/help/docIndex.json out/help/ && shx mkdir -p out/publishing/themes/bookTheme/assets && shx cp -r src/publishing/themes/bookTheme/assets/* out/publishing/themes/bookTheme/assets/ && shx mkdir -p out/cli/assets && shx cp src/cli/assets/* out/cli/assets/",
     "watch": "tsc -watch -p ./",
@@ -8822,6 +8854,7 @@
     "@typescript-eslint/eslint-plugin": "^6.13.0",
     "@typescript-eslint/parser": "^6.13.0",
     "@vscode/vsce": "^2.22.0",
+    "esbuild": "^0.27.7",
     "eslint": "^8.55.0",
     "shx": "^0.4.0",
     "typescript": "^5.3.0",

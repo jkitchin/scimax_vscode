@@ -16,7 +16,7 @@
 
 import * as fs from 'fs';
 import * as path from 'path';
-import * as yaml from 'js-yaml';
+import type * as yaml from 'js-yaml';
 
 /** The parts of a Marp CLI configuration that affect rendering. */
 export interface MarpCliConfig {
@@ -80,7 +80,9 @@ export function parseMarpCliConfig(file: string, text: string): MarpCliConfig | 
     try {
         data = path.basename(file) === 'package.json'
             ? (JSON.parse(text) as { marp?: unknown }).marp
-            : yaml.load(text); // JSON is also YAML.
+            // js-yaml loads on first use, not with the extension. JSON is also YAML.
+            // eslint-disable-next-line @typescript-eslint/no-var-requires
+            : (require('js-yaml') as typeof yaml).load(text);
     } catch {
         return undefined;
     }

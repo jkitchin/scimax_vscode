@@ -3,14 +3,19 @@
  * Supports CSL (Citation Style Language) styles for consistent formatting
  */
 
-import { Cite } from '@citation-js/core';
-import '@citation-js/plugin-bibtex';
-import '@citation-js/plugin-csl';
+import type { Cite } from '@citation-js/core';
 
 import type { BibEntry } from './bibtexParser';
 import type { ParsedCitation, CitationReference } from './citationTypes';
 import { getNormalizedStyle } from './citationParser';
-import { parseAuthors as parseAuthorsFromBibtex, getDisplayLastName, type CSLAuthor } from './authorUtils';
+import { parseAuthors as parseAuthorsFromBibtex, getDisplayLastName, loadCite, type CSLAuthor } from './authorUtils';
+
+/** citation-js with the CSL plugin as well, loaded on first use. */
+function loadCiteWithCsl(): typeof Cite {
+    const cite = loadCite();
+    require('@citation-js/plugin-csl');
+    return cite;
+}
 
 /**
  * CSL-JSON entry type (simplified)
@@ -262,7 +267,7 @@ export class CitationProcessor {
         }
 
         try {
-            const cite = new Cite(cslEntries);
+            const cite = new (loadCiteWithCsl())(cslEntries);
 
             // Format based on style
             let html: string;
@@ -339,7 +344,7 @@ export class CitationProcessor {
         }
 
         try {
-            const cite = new Cite(cslEntries);
+            const cite = new (loadCiteWithCsl())(cslEntries);
 
             let html: string;
             let text: string;
@@ -408,7 +413,7 @@ export class CitationProcessor {
         };
 
         try {
-            const cite = new Cite(cslEntries);
+            const cite = new (loadCiteWithCsl())(cslEntries);
             let html = cite.format('bibliography', {
                 format: 'html',
                 template: this.style,

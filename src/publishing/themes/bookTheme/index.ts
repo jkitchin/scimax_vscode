@@ -8,6 +8,17 @@ import * as path from 'path';
 
 import type { Theme, PageContext, ProjectContext, PageInfo, ThemeConfig } from '../themeTypes';
 import { DEFAULT_BOOK_THEME_CONFIG } from '../themeTypes';
+
+/**
+ * The theme's asset files: next to this module in the tsc output (and the
+ * CLI), under publishing/themes/bookTheme in the bundled out/extension.js.
+ */
+function assetsDir(): string {
+    return [
+        path.join(__dirname, 'assets'),
+        path.join(__dirname, 'publishing', 'themes', 'bookTheme', 'assets'),
+    ].find(dir => fs.existsSync(dir)) ?? path.join(__dirname, 'assets');
+}
 import { renderLayout } from './layout';
 import { generateSearchIndex as generateSearchIndexFile } from './searchIndex';
 import { generateChatIndex as generateChatIndexFile } from './chatIndex';
@@ -52,7 +63,7 @@ export class BookTheme implements Theme {
         // Copy the chat files (they are only loaded on pages that enable the chat)
         for (const name of CHAT_ASSETS) {
             try {
-                await fs.promises.copyFile(path.join(__dirname, 'assets', name), path.join(staticDir, name));
+                await fs.promises.copyFile(path.join(assetsDir(), name), path.join(staticDir, name));
             } catch {
                 // Not in this build; the chat button is not shown without them.
             }
@@ -112,8 +123,8 @@ export class BookTheme implements Theme {
      */
     private async getThemeCss(): Promise<string> {
         // Read from bundled assets
-        const assetsDir = path.join(__dirname, 'assets');
-        const cssPath = path.join(assetsDir, 'book-theme.css');
+        const assets = assetsDir();
+        const cssPath = path.join(assets, 'book-theme.css');
 
         try {
             return await fs.promises.readFile(cssPath, 'utf-8');
@@ -128,8 +139,8 @@ export class BookTheme implements Theme {
      */
     private async getThemeJs(): Promise<string> {
         // Read from bundled assets
-        const assetsDir = path.join(__dirname, 'assets');
-        const jsPath = path.join(assetsDir, 'book-theme.js');
+        const assets = assetsDir();
+        const jsPath = path.join(assets, 'book-theme.js');
 
         try {
             return await fs.promises.readFile(jsPath, 'utf-8');

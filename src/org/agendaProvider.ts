@@ -38,7 +38,13 @@ import { minimatch } from 'minimatch';
 import { getDatabase } from '../database/lazyDb';
 import type { ScimaxDb, AgendaItem as DbAgendaItem, HeadingRecord } from '../database/scimaxDb';
 import { isHeadingBlocked } from './dependencies';
-import { format, addDays, startOfDay, isSameDay, differenceInDays, parse } from 'date-fns';
+// Per-function imports: the package index loads all of date-fns.
+import format from 'date-fns/format';
+import addDays from 'date-fns/addDays';
+import startOfDay from 'date-fns/startOfDay';
+import isSameDay from 'date-fns/isSameDay';
+import differenceInDays from 'date-fns/differenceInDays';
+import { parseLocalYmd } from '../utils/dateParser';
 
 // =============================================================================
 // Types
@@ -515,15 +521,14 @@ export class AgendaManager {
         const heading = dbItem.heading;
 
         // Parse the date string to a Date object
-        // Use date-fns parse() to create a LOCAL date, not UTC
+        // Parse as a LOCAL date, not UTC
         // new Date('2024-01-27') creates UTC midnight which is the previous evening in local time!
         let itemDate: Date | undefined;
         if (dbItem.date) {
             // Date format from DB: "2024-01-15" or "2024-01-15 Mon 10:00"
             const dateMatch = dbItem.date.match(/(\d{4}-\d{2}-\d{2})/);
             if (dateMatch) {
-                // parse() creates a date in local timezone
-                itemDate = parse(dateMatch[1], 'yyyy-MM-dd', new Date());
+                itemDate = parseLocalYmd(dateMatch[1]);
             }
         }
 

@@ -32,7 +32,7 @@ export class JournalManager {
     // Entry cache for performance
     private entriesCache: JournalEntry[] | null = null;
     private cacheTimestamp: number = 0;
-    private readonly CACHE_TTL = 30000; // 30 seconds cache TTL
+    private readonly CACHE_TTL = 5 * 60000; // the file watcher invalidates on change
     private cachePromise: Promise<JournalEntry[]> | null = null;
     private fileWatcher: vscode.FileSystemWatcher | null = null;
     private _onDidChangeEntries = new vscode.EventEmitter<void>();
@@ -41,7 +41,7 @@ export class JournalManager {
     // Cached stats for status bar
     private statsCache: { entryCount: number; totalWords: number; streak: number; longestStreak: number } | null = null;
     private statsCacheTimestamp: number = 0;
-    private readonly STATS_CACHE_TTL = 60000; // 1 minute for stats
+    private readonly STATS_CACHE_TTL = 5 * 60000;
 
     constructor(context: vscode.ExtensionContext) {
         this.context = context;
@@ -688,6 +688,13 @@ export class JournalManager {
         } catch {
             return { wordCount: 0, lineCount: 0, taskCount: 0, doneCount: 0 };
         }
+    }
+
+    /**
+     * Statistics for an entry's text, e.g. an open editor's, without reading the file.
+     */
+    public getContentStats(content: string): { wordCount: number; lineCount: number; taskCount: number; doneCount: number } {
+        return this.computeContentStats(content);
     }
 
     /**

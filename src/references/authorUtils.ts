@@ -8,8 +8,22 @@
  * - Multiple author formats ("Last, First", "First Last")
  */
 
-import { Cite } from '@citation-js/core';
-import '@citation-js/plugin-bibtex';
+import type { Cite } from '@citation-js/core';
+
+let citeClass: typeof Cite | undefined;
+
+/**
+ * citation-js with its BibTeX plugin, loaded on first use: loading it with the
+ * extension adds ~100 ms before any file can open.
+ */
+export function loadCite(): typeof Cite {
+    if (!citeClass) {
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
+        citeClass = (require('@citation-js/core') as typeof import('@citation-js/core')).Cite;
+        require('@citation-js/plugin-bibtex');
+    }
+    return citeClass;
+}
 
 /**
  * CSL author type (matches citation-js output)
@@ -52,7 +66,7 @@ export function parseAuthors(authorStr: string): CSLAuthor[] {
         // Create minimal BibTeX for citation-js to parse
         // Use a temporary key and escape braces in the author string
         const bibtex = `@misc{temp, author = {${authorStr}}}`;
-        const cite = new Cite(bibtex);
+        const cite = new (loadCite())(bibtex);
 
         // Get the parsed data in CSL-JSON format
         const csl = cite.get({ format: 'real', type: 'json' }) as Array<{ author?: CSLAuthor[] }>;

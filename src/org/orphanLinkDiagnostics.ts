@@ -208,7 +208,8 @@ export function registerOrphanLinkDiagnostics(context: vscode.ExtensionContext):
         vscode.workspace.onDidChangeTextDocument(e => {
             if (vscode.window.activeTextEditor?.document === e.document) scheduleRefresh(e.document);
         }),
-        vscode.workspace.onDidOpenTextDocument(doc => void refresh(doc)),
+        // Debounced too, so a file's first keystrokes don't wait for the scan.
+        vscode.workspace.onDidOpenTextDocument(doc => scheduleRefresh(doc)),
         vscode.workspace.onDidSaveTextDocument(doc => void refresh(doc, true)),
         vscode.workspace.onDidCloseTextDocument(doc => {
             collection.delete(doc.uri);
@@ -222,5 +223,5 @@ export function registerOrphanLinkDiagnostics(context: vscode.ExtensionContext):
     );
 
     // Initial pass over the active editor.
-    if (vscode.window.activeTextEditor) void refresh(vscode.window.activeTextEditor.document);
+    if (vscode.window.activeTextEditor) scheduleRefresh(vscode.window.activeTextEditor.document);
 }

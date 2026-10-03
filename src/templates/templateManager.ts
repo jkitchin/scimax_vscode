@@ -12,7 +12,8 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
 import * as fs from 'fs';
-import { format } from 'date-fns';
+// Per-function imports: the package index loads all of date-fns.
+import format from 'date-fns/format';
 import { resolveScimaxPath, expandTilde } from '../utils/pathResolver';
 import { ExporterRegistry, buildExporterOrgTemplate } from '../export/customExporter';
 

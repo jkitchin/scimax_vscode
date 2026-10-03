@@ -480,7 +480,8 @@ Each sets a directive for just this slide, ~<!-- _name: value -->~, at the top o
 | Transition...         | [[cmd:scimax.marp.thisSlide.transition]]      | For the HTML slideshow                                           |
 | Scoped Style          | [[cmd:scimax.marp.thisSlide.scopedStyle]]     | A ~<style scoped>~ block for CSS that applies only to this slide |
 
-** 👀 Deck
+** ✅ Deck
+CLOSED: [2026-10-03 Sat 09:02]
 
 Each sets a key in the front matter, or removes it.
 

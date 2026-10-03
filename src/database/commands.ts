@@ -13,6 +13,7 @@ import {
     OllamaEmbeddingService
 } from './embeddingService';
 import { getDatabase, cancelStaleFileCheck } from './lazyDb';
+import { describeOptimize } from './scimaxDbCore';
 import { databaseLogger as log } from '../utils/logger';
 import { showFuzzyQuickPick } from '../utils/fuzzyQuickPick';
 
@@ -1234,14 +1235,12 @@ export function registerDbCommands(
             const db = await requireDatabase();
             if (!db) return;
 
-            await vscode.window.withProgress({
+            const result = await vscode.window.withProgress({
                 location: vscode.ProgressLocation.Notification,
                 title: 'Optimizing database...',
                 cancellable: false
-            }, async () => {
-                await db.optimize();
-            });
-            vscode.window.showInformationMessage('Database optimized');
+            }, () => db.optimize());
+            vscode.window.showInformationMessage(describeOptimize(result));
         })
     );
 

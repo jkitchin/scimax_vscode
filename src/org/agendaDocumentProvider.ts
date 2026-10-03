@@ -16,7 +16,9 @@
  */
 
 import * as vscode from 'vscode';
-import { addDays, startOfDay } from 'date-fns';
+// Per-function imports: the package index loads all of date-fns.
+import addDays from 'date-fns/addDays';
+import startOfDay from 'date-fns/startOfDay';
 import {
     renderAgendaBuffer,
     type AgendaItem,

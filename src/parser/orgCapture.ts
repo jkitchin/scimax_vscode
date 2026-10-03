@@ -3,7 +3,8 @@
  * Provides templates and infrastructure for quickly capturing notes, tasks, etc.
  */
 
-import { format } from 'date-fns';
+// Per-function imports: the package index loads all of date-fns.
+import format from 'date-fns/format';
 import { DAY_NAMES_SHORT } from '../utils/dateConstants';
 
 // =============================================================================

@@ -214,8 +214,7 @@ For common cases:
 * ✅ Modifying Timestamps
 CLOSED: [2026-01-15 Thu 15:03]
 
-** ✅ Adjusting Dates with Keyboard
-CLOSED: [2026-01-15 Thu 15:03]
+** Adjusting Dates with Keyboard
 
 Place cursor on a timestamp component and use:
 
@@ -244,6 +243,10 @@ The cursor position determines what changes:
 - On day: S-<up>/Down or S-<left>/Right changes day
 - On hour: S-<up>/Down changes hour
 - On minute: S-<up>/Down changes minute
+
+On a task's =DEADLINE= date, once you stop pressing, scimax offers to move the
+tasks that depend on it by the same number of days. See
+[[file:03.6-project-management.org::*Moving a deadline moves the tasks that wait on it][Moving a deadline]].
 
 ** ✅ Quick Date Adjustment Examples
 CLOSED: [2026-01-15 Thu 15:03]

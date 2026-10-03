@@ -3,19 +3,18 @@
  * Provides agenda, todo list, and scheduled item views
  */
 
-import {
-    format,
-    startOfDay,
-    endOfDay,
-    startOfWeek,
-    endOfWeek,
-    addDays,
-    isBefore,
-    isAfter,
-    isSameDay,
-    differenceInDays,
-    parseISO,
-} from 'date-fns';
+// Per-function imports: the package index loads all of date-fns.
+import format from 'date-fns/format';
+import startOfDay from 'date-fns/startOfDay';
+import endOfDay from 'date-fns/endOfDay';
+import startOfWeek from 'date-fns/startOfWeek';
+import endOfWeek from 'date-fns/endOfWeek';
+import addDays from 'date-fns/addDays';
+import isBefore from 'date-fns/isBefore';
+import isAfter from 'date-fns/isAfter';
+import isSameDay from 'date-fns/isSameDay';
+import differenceInDays from 'date-fns/differenceInDays';
+import parseISO from 'date-fns/parseISO';
 import type {
     HeadlineElement,
     TimestampObject,

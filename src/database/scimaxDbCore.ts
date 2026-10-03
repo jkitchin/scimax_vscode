@@ -15,7 +15,7 @@ import * as fs from 'fs';
 import * as crypto from 'crypto';
 import type { Client } from '@libsql/client';
 import { loadLibsqlClient } from './libsqlLoader';
-import { parse as parseDate } from 'date-fns';
+import { parseLocalYmd } from '../utils/dateParser';
 import { minimatch } from 'minimatch';
 import {
     parseMarkdownCodeBlocks,
@@ -211,11 +211,80 @@ const coreMigrations: CoreMigration[] = [
                 ELSE 'todo' END`,
             `UPDATE files SET mtime = 0 WHERE file_type = 'org'`
         ]
+    },
+    {
+        version: 8,
+        description: 'Index link targets for back-link lookups',
+        up: [
+            `CREATE INDEX IF NOT EXISTS idx_links_target_key ON links(lower(trim(raw_target)))`,
+            `CREATE INDEX IF NOT EXISTS idx_links_target_suffix ON links(lower(trim(substr(raw_target, instr(raw_target, '::') + 2)))) WHERE instr(raw_target, '::') > 0`
+        ]
     }
 ];
 
 function coreGetLatestVersion(): number {
     return coreMigrations.length > 0 ? coreMigrations[coreMigrations.length - 1].version : 0;
+}
+
+/** A link that points at an anchor or heading, as the back-link queries return it. */
+export interface BacklinkRow {
+    file_path: string;
+    line_number: number;
+    description: string | null;
+    heading_title: string | null;
+}
+
+/** What a back-link points at: an anchor's text, or a heading's title, CUSTOM_ID or ID. */
+export type BacklinkTarget =
+    | { kind: 'anchor'; text: string }
+    | { kind: 'heading'; title?: string; customId?: string; id?: string };
+
+/** Indexed expressions (migration 8); queries must repeat them exactly. */
+const LINK_TARGET_KEY = 'lower(trim(l.raw_target))';
+const LINK_SUFFIX_KEY = `lower(trim(substr(l.raw_target, instr(l.raw_target, '::') + 2)))`;
+
+/** Keys per IN (...) list, well under SQLite's bound-parameter limit. */
+const BACKLINK_KEYS_PER_QUERY = 500;
+
+const INTERNAL_TYPES = new Set(['internal', 'fuzzy']);
+const ANCHOR_TYPES = new Set(['internal', 'file', 'fuzzy']);
+
+/**
+ * The lower-cased raw targets a back-link target matches, and the test a
+ * link must pass: its type, lower(trim(raw_target)) (k) and, for links with
+ * a ::, the lower-cased text after it (sk).
+ */
+function backlinkMatcher(target: BacklinkTarget): {
+    exact: string[];
+    suffix: string[];
+    matches: (type: string, k: string, sk: string | null) => boolean;
+} {
+    if (target.kind === 'anchor') {
+        const key = normalizeAnchorText(target.text);
+        if (!key) return { exact: [], suffix: [], matches: () => false };
+        return {
+            exact: [key],
+            suffix: [key],
+            matches: (type, k, sk) => ANCHOR_TYPES.has(type) && (k === key || sk === key),
+        };
+    }
+    // CUSTOM_ID links ([[#id]]) are internal links whose raw_target keeps the
+    // leading '#'; ID links ([[id:uuid]]) have type 'id' and the bare uuid;
+    // fuzzy title links ([[Title]] / [[*Title]]) are internal links whose
+    // raw_target is the title, optionally prefixed with '*'.
+    const customId = target.customId ? '#' + target.customId.trim().toLowerCase() : undefined;
+    const id = target.id ? target.id.trim().toLowerCase() : undefined;
+    const title = target.title ? target.title.trim().toLowerCase() : undefined;
+    const exact = [customId, id, title, title !== undefined ? '*' + title : undefined]
+        .filter((k): k is string => k !== undefined);
+    return {
+        exact,
+        suffix: [],
+        matches: (type, k) =>
+            (customId !== undefined && INTERNAL_TYPES.has(type) && k === customId) ||
+            (id !== undefined && type === 'id' && k === id) ||
+            (title !== undefined && INTERNAL_TYPES.has(type) && (k === title || k === '*' + title)),
+    };
 }
 
 /**
@@ -345,6 +414,33 @@ export interface SearchScope {
     type: 'all' | 'directory' | 'project';
     path?: string;
     keyword?: string;
+}
+
+export interface OptimizeResult {
+    /** Indexed files that no longer exist on disk */
+    removedFiles: number;
+    /** True if a bloated vector index was dropped and recreated */
+    vectorIndexRebuilt: boolean;
+    sizeBefore?: number;
+    sizeAfter?: number;
+}
+
+function formatDbBytes(bytes: number): string {
+    const units = ['B', 'KB', 'MB', 'GB', 'TB'];
+    let i = 0;
+    while (bytes >= 1024 && i < units.length - 1) { bytes /= 1024; i++; }
+    return `${bytes.toFixed(i === 0 ? 0 : 1)} ${units[i]}`;
+}
+
+/** One line for the optimize result, e.g. "Database optimized: 54.6 GB -> 3.1 GB; ..." */
+export function describeOptimize(result: OptimizeResult): string {
+    const parts: string[] = [];
+    if (result.sizeBefore !== undefined && result.sizeAfter !== undefined) {
+        parts.push(`${formatDbBytes(result.sizeBefore)} -> ${formatDbBytes(result.sizeAfter)}`);
+    }
+    if (result.removedFiles) parts.push(`removed ${result.removedFiles} missing file(s)`);
+    if (result.vectorIndexRebuilt) parts.push('rebuilt the vector index');
+    return parts.length ? `Database optimized: ${parts.join('; ')}` : 'Database optimized';
 }
 
 export interface DbStats {
@@ -1349,28 +1445,8 @@ export class ScimaxDbCore {
      * Note: matching is by anchor text, so a same-named anchor in another file
      * can appear; this is the documented uniqueness limitation for v1.
      */
-    public async getAnchorBacklinks(
-        text: string
-    ): Promise<Array<{ file_path: string; line_number: number; description: string | null; heading_title: string | null }>> {
-        if (!this.db) return [];
-        const key = normalizeAnchorText(text);
-        if (!key) return [];
-
-        const result = await this.db.execute({
-            sql: `SELECT l.file_path, l.line_number, l.description, h.title AS heading_title
-                  FROM links l
-                  LEFT JOIN headings h ON l.heading_id = h.id
-                  WHERE l.link_type IN ('internal', 'file', 'fuzzy')
-                    AND (lower(trim(l.raw_target)) = ? OR lower(trim(l.raw_target)) LIKE '%::' || ?)
-                  ORDER BY l.file_path, l.line_number`,
-            args: [key, key]
-        });
-        return result.rows.map(r => ({
-            file_path: r.file_path as string,
-            line_number: r.line_number as number,
-            description: (r.description as string) ?? null,
-            heading_title: (r.heading_title as string) ?? null
-        }));
+    public async getAnchorBacklinks(text: string): Promise<BacklinkRow[]> {
+        return (await this.getBacklinksBatch([{ kind: 'anchor', text }]))[0];
     }
 
     /**
@@ -1381,46 +1457,76 @@ export class ScimaxDbCore {
      */
     public async getHeadingBacklinks(
         target: { title?: string; customId?: string; id?: string }
-    ): Promise<Array<{ file_path: string; line_number: number; description: string | null; heading_title: string | null }>> {
-        if (!this.db) return [];
-        const clauses: string[] = [];
-        const args: string[] = [];
-        // CUSTOM_ID links ([[#id]]) are stored as internal links whose raw_target
-        // keeps the leading '#'.
-        if (target.customId) {
-            const c = target.customId.trim().toLowerCase();
-            clauses.push(`(l.link_type IN ('internal', 'fuzzy') AND lower(trim(l.raw_target)) = ?)`);
-            args.push('#' + c);
-        }
-        // ID links ([[id:uuid]]) are stored with link_type 'id' and the bare uuid.
-        if (target.id) {
-            const i = target.id.trim().toLowerCase();
-            clauses.push(`(l.link_type = 'id' AND lower(trim(l.raw_target)) = ?)`);
-            args.push(i);
-        }
-        // Fuzzy title links ([[Title]] / [[*Title]]) are internal links whose
-        // raw_target is the title (optionally prefixed with '*').
-        if (target.title) {
-            const t = target.title.trim().toLowerCase();
-            clauses.push(`(l.link_type IN ('internal', 'fuzzy') AND lower(trim(l.raw_target)) IN (?, ?))`);
-            args.push(t, '*' + t);
-        }
-        if (clauses.length === 0) return [];
+    ): Promise<BacklinkRow[]> {
+        return (await this.getBacklinksBatch([{ kind: 'heading', ...target }]))[0];
+    }
 
-        const result = await this.db.execute({
-            sql: `SELECT l.file_path, l.line_number, l.description, h.title AS heading_title
-                  FROM links l
-                  LEFT JOIN headings h ON l.heading_id = h.id
-                  WHERE ${clauses.join(' OR ')}
-                  ORDER BY l.file_path, l.line_number`,
-            args
+    /**
+     * Back-links for many anchors and headings at once (one result list per
+     * target, in order), as getAnchorBacklinks / getHeadingBacklinks would
+     * return them. A file's CodeLenses need every heading's count, and one
+     * query per heading made opening a long file stall the extension host.
+     *
+     * The WHERE clauses repeat the expressions of the indexes from migration 8
+     * verbatim: SQLite only uses an expression index for the same expression,
+     * and without one each lookup scans the whole links table.
+     */
+    public async getBacklinksBatch(targets: BacklinkTarget[]): Promise<BacklinkRow[][]> {
+        const results: BacklinkRow[][] = targets.map(() => []);
+        if (!this.db || targets.length === 0) return results;
+
+        // The lower-cased raw_target values (and ::suffixes) each target matches.
+        const exactKeys = new Set<string>();
+        const suffixKeys = new Set<string>();
+        const matchers = targets.map(t => backlinkMatcher(t));
+        for (const m of matchers) {
+            for (const k of m.exact) exactKeys.add(k);
+            for (const k of m.suffix) suffixKeys.add(k);
+        }
+
+        type Row = BacklinkRow & { id: number; link_type: string; k: string; sk: string | null };
+        const rows = new Map<number, Row>();
+        const select = `SELECT l.id, l.file_path, l.line_number, l.description, l.link_type,
+                               h.title AS heading_title,
+                               ${LINK_TARGET_KEY} AS k,
+                               CASE WHEN instr(l.raw_target, '::') > 0 THEN ${LINK_SUFFIX_KEY} END AS sk
+                        FROM links l
+                        LEFT JOIN headings h ON l.heading_id = h.id`;
+        const run = async (keys: Set<string>, where: (placeholders: string) => string) => {
+            const all = [...keys];
+            for (let i = 0; i < all.length; i += BACKLINK_KEYS_PER_QUERY) {
+                const chunk = all.slice(i, i + BACKLINK_KEYS_PER_QUERY);
+                const result = await this.db!.execute({
+                    sql: `${select} WHERE ${where(chunk.map(() => '?').join(', '))}`,
+                    args: chunk
+                });
+                for (const r of result.rows) {
+                    rows.set(r.id as number, {
+                        id: r.id as number,
+                        file_path: r.file_path as string,
+                        line_number: r.line_number as number,
+                        description: (r.description as string) ?? null,
+                        heading_title: (r.heading_title as string) ?? null,
+                        link_type: r.link_type as string,
+                        k: r.k as string,
+                        sk: (r.sk as string) ?? null,
+                    });
+                }
+            }
+        };
+        await run(exactKeys, ph => `${LINK_TARGET_KEY} IN (${ph})`);
+        await run(suffixKeys, ph => `instr(l.raw_target, '::') > 0 AND ${LINK_SUFFIX_KEY} IN (${ph})`);
+        if (rows.size === 0) return results;
+
+        const sorted = [...rows.values()].sort((a, b) =>
+            a.file_path < b.file_path ? -1 : a.file_path > b.file_path ? 1 : a.line_number - b.line_number);
+        matchers.forEach((m, i) => {
+            results[i] = sorted
+                .filter(r => m.matches(r.link_type, r.k, r.sk))
+                .map(({ file_path, line_number, description, heading_title }) =>
+                    ({ file_path, line_number, description, heading_title }));
         });
-        return result.rows.map(r => ({
-            file_path: r.file_path as string,
-            line_number: r.line_number as number,
-            description: (r.description as string) ?? null,
-            heading_title: (r.heading_title as string) ?? null
-        }));
+        return results;
     }
 
     private async indexLinks(
@@ -2256,7 +2362,7 @@ export class ScimaxDbCore {
         });
         for (const row of deadlines.rows) {
             const heading = row as unknown as HeadingRecord;
-            const deadlineDate = parseDate(heading.deadline!.split(' ')[0], 'yyyy-MM-dd', new Date());
+            const deadlineDate = parseLocalYmd(heading.deadline!.split(' ')[0]);
             const daysUntil = Math.floor((deadlineDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
             if (!beforeDate || deadlineDate <= beforeDate) {
                 items.push({ type: 'deadline', heading, date: heading.deadline!, days_until: daysUntil, overdue: daysUntil < 0 });
@@ -2269,7 +2375,7 @@ export class ScimaxDbCore {
         });
         for (const row of scheduled.rows) {
             const heading = row as unknown as HeadingRecord;
-            const scheduledDate = parseDate(heading.scheduled!.split(' ')[0], 'yyyy-MM-dd', new Date());
+            const scheduledDate = parseLocalYmd(heading.scheduled!.split(' ')[0]);
             const daysUntil = Math.floor((scheduledDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
             if (!beforeDate || scheduledDate <= beforeDate) {
                 items.push({ type: 'scheduled', heading, date: heading.scheduled!, days_until: daysUntil, overdue: daysUntil < 0 });
@@ -2405,7 +2511,8 @@ export class ScimaxDbCore {
                 this.db!.execute('SELECT COUNT(*) as count FROM headings'),
                 this.db!.execute('SELECT COUNT(*) as count FROM source_blocks'),
                 this.db!.execute('SELECT COUNT(*) as count FROM chunks'),
-                this.db!.execute('SELECT COUNT(*) as count FROM chunks WHERE embedding IS NOT NULL'),
+                // EXISTS stops at the first embedding; COUNT read every vector (~10 s on a large DB).
+                this.db!.execute('SELECT EXISTS(SELECT 1 FROM chunks WHERE embedding IS NOT NULL) as count'),
                 this.db!.execute("SELECT COUNT(*) as count FROM files WHERE file_type = 'org'"),
                 this.db!.execute("SELECT COUNT(*) as count FROM files WHERE file_type = 'md'")
             ]),
@@ -2469,6 +2576,9 @@ export class ScimaxDbCore {
         if (!this.db) return;
         await this.withWriteLock(async () => {
             await this.db!.batch([
+                // Dropping the vector index and recreating it empty is faster
+                // than deleting its nodes one chunk at a time.
+                'DROP INDEX IF EXISTS idx_chunks_embedding',
                 'DELETE FROM chunks',
                 'DELETE FROM fts_content',
                 'DELETE FROM hashtags',
@@ -2478,16 +2588,67 @@ export class ScimaxDbCore {
                 'DELETE FROM headings',
                 'DELETE FROM files'
             ]);
+            await this.testVectorSupport();
         });
     }
 
-    public async optimize(): Promise<void> {
-        if (!this.db) return;
+    /**
+     * Remove files that no longer exist, rebuild a bloated vector index and
+     * VACUUM. Returns what was done and the file size before and after.
+     */
+    public async optimize(): Promise<OptimizeResult> {
+        const result: OptimizeResult = { removedFiles: 0, vectorIndexRebuilt: false };
+        if (!this.db) return result;
+        result.sizeBefore = await this.fileSize();
         const files = await this.getFiles();
         for (const file of files) {
-            if (!fs.existsSync(file.path)) await this.removeFileData(file.path);
+            if (!fs.existsSync(file.path)) {
+                await this.removeFileData(file.path);
+                result.removedFiles++;
+            }
         }
+        result.vectorIndexRebuilt = await this.rebuildStaleVectorIndex();
         await this.db.execute('VACUUM');
+        result.sizeAfter = await this.fileSize();
+        return result;
+    }
+
+    private async fileSize(): Promise<number | undefined> {
+        try {
+            return (await fs.promises.stat(this.options.dbPath)).size;
+        } catch {
+            return undefined;
+        }
+    }
+
+    /**
+     * Drop and recreate the vector index when it holds far more nodes than
+     * there are chunks. Databases from earlier versions can carry nodes for
+     * long-deleted chunks (seen: 0 chunks, 343k nodes, 55 GB).
+     * Returns true if the index was rebuilt.
+     */
+    /** Extra index nodes tolerated before optimize() rebuilds the index. */
+    private staleIndexSlack = 1000;
+
+    private async rebuildStaleVectorIndex(): Promise<boolean> {
+        if (!this.db) return false;
+        let nodes: number;
+        try {
+            const r = await this.db.execute('SELECT COUNT(*) as count FROM idx_chunks_embedding_shadow');
+            nodes = Number(r.rows[0].count);
+        } catch {
+            return false; // no vector index
+        }
+        const chunks = Number((await this.db.execute(
+            'SELECT COUNT(*) as count FROM chunks WHERE embedding IS NOT NULL'
+        )).rows[0].count);
+        if (nodes <= 2 * chunks + this.staleIndexSlack) return false;
+        console.error(`[ScimaxDbCore] Rebuilding vector index: ${nodes} nodes for ${chunks} embedded chunks`);
+        await this.withWriteLock(async () => {
+            await this.db!.execute('DROP INDEX IF EXISTS idx_chunks_embedding');
+            await this.testVectorSupport();
+        });
+        return true;
     }
 
     public async verify(): Promise<{
