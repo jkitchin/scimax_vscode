@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.8.0] - 2026-10-03
+
 ### Added
 
 - **The agenda keeps itself current** - Before showing the agenda, the TODO list or the agenda tree, Scimax re-indexes org files that changed on disk since they were indexed (such as edits Dropbox synced from another machine) and drops deleted ones. Checking takes well under a second even for tens of thousands of files. Turn it off with `scimax.agenda.updateChangedFiles`.
