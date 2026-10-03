@@ -297,8 +297,8 @@ async function initPublishConfig(workspaceRoot: string, args: ParsedArgs): Promi
     const name = typeof args.flags.name === 'string' ? args.flags.name : 'main';
     const baseDir = typeof args.flags.base === 'string' ? args.flags.base : './';
     const outputDir = typeof args.flags.output === 'string' ? args.flags.output : './_build/html';
-    const useGitHub = args.flags.github !== false;
-    const useSitemap = args.flags.sitemap !== false;
+    const useGitHub = !args.flags['no-github'];
+    const useSitemap = !args.flags['no-sitemap'];
     const useYaml = !!args.flags.yaml;
 
     // Create configuration

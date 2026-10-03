@@ -147,7 +147,9 @@ export function buildPreviewPage(opts: PreviewPageOptions): string {
         `media-src ${cspSource} https: data:`,
         `style-src ${cspSource} 'unsafe-inline' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net`,
         `font-src ${cspSource} https://cdn.jsdelivr.net https://cdnjs.cloudflare.com data:`,
-        `script-src 'nonce-${nonce}' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com`,
+        // Only the MathJax and highlight.js paths: the bare CDN hosts would also
+        // run any npm package named in a #+HTML: <script src>.
+        `script-src 'nonce-${nonce}' https://cdn.jsdelivr.net/npm/mathjax@3/ ${HLJS_URL}/`,
     ].join('; ');
     const stateJson = escapeHtml(JSON.stringify(state));
 

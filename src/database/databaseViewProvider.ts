@@ -227,7 +227,7 @@ export class DatabaseViewProvider implements vscode.TreeDataProvider<DatabaseTre
     private getSearchItems(): DatabaseTreeItem[] {
         const items: DatabaseTreeItem[] = [];
         const config = vscode.workspace.getConfiguration('scimax.db');
-        const provider = config.get<string>('embeddingProvider', 'ollama');
+        const provider = config.get<string>('embeddingProvider', 'none');
 
         // Full-text search
         items.push(new DatabaseActionItem(

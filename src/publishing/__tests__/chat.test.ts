@@ -145,6 +145,28 @@ describe('chat configuration and markup', () => {
         });
     });
 
+    it('leaves keys a theme section does not set to the defaults', async () => {
+        fs.writeFileSync(path.join(dir, '_config.yml'), [
+            'title: "Docs"',
+            'theme:',
+            '  name: "book"',
+            '  header:',
+            '    logo: "logo.png"',
+            '  chat:',
+            '    enabled: true',
+            '',
+        ].join('\n'));
+        const config = await loadConfig(dir);
+        expect(config?.theme?.header).toStrictEqual({ logo: 'logo.png' });
+        expect(Object.keys(config?.theme?.chat ?? {})).toEqual(['enabled']);
+    });
+
+    it('reads theme: book on one line as the theme name', async () => {
+        fs.writeFileSync(path.join(dir, '_config.yml'), 'title: "Docs"\ntheme: book\n');
+        const config = await loadConfig(dir);
+        expect(config?.theme?.name).toBe('book');
+    });
+
     it('adds nothing when the chat is off', () => {
         expect(renderChat({ name: 'book' }, './')).toEqual({ head: '', body: '' });
         const header = renderHeader({ name: 'book' }, {} as ProjectContext, './');

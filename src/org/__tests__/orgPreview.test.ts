@@ -97,6 +97,10 @@ describe('buildPreviewPage', () => {
         });
         expect(page).toMatch(/script-src 'nonce-abc123'/);
         expect(page).not.toMatch(/script-src[^;]*'unsafe-inline'/);
+        const scriptSrc = page.match(/script-src[^;"]*/)![0];
+        expect(scriptSrc).not.toMatch(/https:\/\/cdn\.jsdelivr\.net(\s|$)/);
+        expect(scriptSrc).not.toMatch(/https:\/\/cdnjs\.cloudflare\.com(\s|$)/);
+        expect(scriptSrc).toContain('https://cdn.jsdelivr.net/npm/mathjax@3/');
         expect(page).toContain('<p>body</p>');
         expect(page).toContain('<style>.x{}</style>');
         expect(page).toContain('&quot;line&quot;:7');

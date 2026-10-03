@@ -6780,8 +6780,8 @@
             "ollama",
             "none"
           ],
-          "default": "ollama",
-          "description": "Embedding provider for semantic search. 'ollama' (default) uses local Ollama server for free, private embeddings. Set to 'none' to disable semantic search."
+          "default": "none",
+          "description": "Embedding provider for semantic search. 'none' (default) turns semantic search off. 'ollama' uses a local Ollama server for free, private embeddings; run 'Scimax: Configure Embedding Service' to set it up."
         },
         "scimax.db.ollamaUrl": {
           "type": "string",

@@ -124,7 +124,17 @@ export class OllamaEmbeddingService implements EmbeddingService {
                 reject(new Error('Ollama embedding request timeout (30s)'));
             });
 
-            req.on('error', reject);
+            req.on('error', (error: NodeJS.ErrnoException) => {
+                // With both IPv4 and IPv6 refused, Node raises an AggregateError
+                // whose message is empty; report the underlying code instead.
+                const inner = (error as unknown as { errors?: NodeJS.ErrnoException[] }).errors?.[0];
+                const code = error.code || inner?.code;
+                if (code === 'ECONNREFUSED') {
+                    reject(new Error(`Cannot connect to Ollama at ${this.baseUrl} (connection refused). Is Ollama running?`));
+                } else {
+                    reject(new Error(`Ollama request to ${this.baseUrl} failed: ${error.message || inner?.message || code || String(error)}`));
+                }
+            });
             req.write(JSON.stringify(body));
             req.end();
         });

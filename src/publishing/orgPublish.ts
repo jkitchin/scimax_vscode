@@ -196,7 +196,10 @@ function parseConfigYaml(content: string): PublishConfig {
     if (yaml.custom_domain) config.customDomain = yaml.custom_domain as string;
 
     // Theme configuration
-    const themeYaml = yaml.theme as Record<string, unknown> | undefined;
+    // `theme: book` on one line is shorthand for a section with only a name.
+    const themeYaml = typeof yaml.theme === 'string'
+        ? { name: yaml.theme }
+        : yaml.theme as Record<string, unknown> | undefined;
     if (themeYaml) {
         config.theme = parseThemeConfig(themeYaml);
     }
@@ -298,6 +301,18 @@ function parseThemeConfig(yaml: Record<string, unknown>): ThemeConfig {
     // Custom CSS
     if (yaml.custom_css) {
         theme.custom_css = yaml.custom_css as string;
+    }
+
+    // Drop keys the YAML did not set, so the theme's defaults fill them in
+    // when the sections are spread over DEFAULT_BOOK_THEME_CONFIG.
+    for (const section of Object.values(theme)) {
+        if (section && typeof section === 'object' && !Array.isArray(section)) {
+            for (const [key, value] of Object.entries(section)) {
+                if (value === undefined) {
+                    delete (section as Record<string, unknown>)[key];
+                }
+            }
+        }
     }
 
     return theme;
