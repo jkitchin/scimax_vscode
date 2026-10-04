@@ -7,11 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Fixed
-
-- **Markdown → PDF handles Unicode characters** - PDF export failed with "Unicode character ′ (U+2032) not set up for use with LaTeX" when the text contained characters such as `′`, `→` or Greek letters, because Pandoc ran pdflatex. It now uses xelatex, with Arial Unicode MS as the body font on macOS. Choose the engine and font with `scimax.markdown.export.pdfEngine` and `scimax.markdown.export.mainFont`; a `mainfont` in the YAML front matter takes precedence. If the font lacks some characters, a warning names them.
-
-## [0.8.0] - 2026-10-03
+## [0.8.0] - 2026-10-04
 
 ### Added
 
@@ -63,6 +59,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Book theme settings keep their defaults** - A `_config.yml` theme section that set only some of its keys (for example a `header` with just a `logo`) blanked the others, such as the site title, instead of keeping their defaults. `theme: book` on one line now selects the book theme too; before, it was ignored.
 - **Org preview runs only its own scripts** - The preview's content security policy allowed any script from cdn.jsdelivr.net and cdnjs.cloudflare.com, so a `<script src>` in an `#+HTML:` block could load any npm package. It now allows only the MathJax and highlight.js files the preview uses.
 - **`# comments` in Markdown code blocks are no longer headings** - A `# comment` line inside a fenced code block was taken for a heading, so it got its own fold, broke visibility cycling, and showed up in the outline, heading navigation and jumps, and the database index; promote/demote could even edit it. Fenced blocks are now recognised with CommonMark's rules everywhere Markdown headings are found.
+- **Marp HTML setting** - when `scimax.marp.enableHtml` is not set, Marp for VS Code's current `markdown.marp.html` (`"all"` / `"off"`) is now honored, not only the deprecated `markdown.marp.enableHtml` that makes that extension warn on every start.
+- **Markdown → PDF handles Unicode characters** - PDF export failed with "Unicode character ′ (U+2032) not set up for use with LaTeX" when the text contained characters such as `′`, `→` or Greek letters, because Pandoc ran pdflatex. It now uses xelatex, with Arial Unicode MS as the body font on macOS. Choose the engine and font with `scimax.markdown.export.pdfEngine` and `scimax.markdown.export.mainFont`; a `mainfont` in the YAML front matter takes precedence. If the font lacks some characters, a warning names them.
 
 ### Removed
 

@@ -6336,7 +6336,7 @@
         "scimax.marp.enableHtml": {
           "type": "boolean",
           "default": false,
-          "markdownDescription": "Allow all raw HTML in Marp slides. When off, Marp's allowlist of safe elements applies. When not set, `markdown.marp.enableHtml` (Marp for VS Code) is used."
+          "markdownDescription": "Allow all raw HTML in Marp slides. When off, Marp's allowlist of safe elements applies. When not set, `markdown.marp.html` (or the older `markdown.marp.enableHtml`) of Marp for VS Code is used."
         },
         "scimax.marp.mathTypesetting": {
           "type": "string",

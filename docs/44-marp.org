@@ -5,7 +5,7 @@
 #+OPTIONS: toc:t num:t
 #+TODO: ⚠️ 👀 | ✅
 
-* 👀 Overview
+* Overview
 
 Scimax supports [[https://marp.app/][Marp]] slide decks on its own: a Markdown file whose front
 matter has ~marp: true~. It renders the slides with its own copy of Marp Core,
@@ -107,7 +107,7 @@ default).
 The command has no default keybinding. To add one, open Keyboard Shortcuts
 and search for ~scimax.marp.revealInPreview~.
 
-* 👀 Slide Preview
+* Slide Preview
 
 The slide preview shows the slide under the editor cursor, fitted to its
 tab, and follows the cursor as you move and type. Open it with the preview
@@ -221,7 +221,7 @@ shows what a directive does when you hover over it.
 | ~header~, ~footer~, ~color~, ~background*~                                    | Local  | (free text; ~background*~ positions, repeats and sizes are offered) |
 | ~style~, ~lang~, ~title~, ~author~, ~description~, ~keywords~, ~url~, ~image~ | Global | (free text)                                                         |
 
-* 👀 Slide Thumbnails
+* Slide Thumbnails
 
 The *Slide Sorter* is an editor tab that shows a thumbnail of every slide in
 the active deck in a grid, like a slide sorter in PowerPoint or Keynote. Open
@@ -253,7 +253,7 @@ beside the sorter rather than replacing it.
 | Pinch, or =Ctrl= + scroll       | Zoom                                                      |
 | Refresh button                  | Re-renders the deck                                       |
 
-** 👀 Zoom
+** Zoom
 
 The slider in the toolbar at the top sets the thumbnail width, from 80 to 640
 pixels. The thumbnails flow into as many columns as fit. The default is 240
@@ -278,7 +278,7 @@ The view renders with its own copy of Marp Core and follows these settings
 Run ~Scimax: Refresh Marp Slide Thumbnails~ ([[cmd:scimax.marp.refreshSlides]])
 after editing a theme file, since theme files are not watched.
 
-* 👀 Editing Slides
+* Editing Slides
 
 The Slide Sorter can rearrange a deck without
 scrolling through the Markdown. Each change edits the ~.md~ file directly and is a single edit, so
@@ -302,7 +302,7 @@ a selected thumbnail moves the whole selection, in order, as one block, even
 when the selected slides were not next to each other. Dropping past the last
 thumbnail moves the slides to the end.
 
-** 👀 The slide menu
+** The slide menu
 
 Right-click a thumbnail for these commands. They act on all selected slides
 when the clicked slide is part of the selection.
@@ -382,7 +382,7 @@ heading already starts a slide. A slide's own directive comments
 Insert New Slide adds an empty slide (a ~---~ line and a blank line) and moves
 the cursor into it, ready to type.
 
-** 👀 Hidden slides
+** Hidden slides
 
 Marp has no way to skip a slide, so Hide Slide wraps it in a comment that
 Scimax recognizes:
@@ -958,8 +958,10 @@ upload the file (New > File upload), then open it with Google Slides.
 | ~scimax.marp.liveReload~      | ~true~    | Reload an open slideshow when the deck is saved            |
 
 Each falls back to Marp for VS Code's ~markdown.marp.themes~,
-~markdown.marp.enableHtml~ or ~markdown.marp.mathTypesetting~ when it is not
-set. A theme file names itself with a ~/* @theme name */~ comment, and a deck
+~markdown.marp.html~ or ~markdown.marp.mathTypesetting~ when it is not set
+(~html: "all"~ allows HTML, ~"off"~ does not; the older
+~markdown.marp.enableHtml~ is read too, but Marp for VS Code now warns about it,
+so use ~markdown.marp.html~). A theme file names itself with a ~/* @theme name */~ comment, and a deck
 uses it with ~theme: name~. The export settings are listed under
 [[*Export settings][Export settings]].
 

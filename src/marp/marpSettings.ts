@@ -94,8 +94,16 @@ export function marpThemeUris(document: SettingsScope): vscode.Uri[] {
 
 /** Allow all raw HTML in slides (`scimax.marp.enableHtml`, or `html` in `.marprc.yml`). */
 export function marpHtmlEnabled(document: SettingsScope): boolean {
-    return presenterDeck(document) || marpSetting<boolean>(document, 'scimax.marp.enableHtml', 'markdown.marp.enableHtml', false,
+    if (presenterDeck(document)) {
+        return true;
+    }
+    // Marp for VS Code replaced `enableHtml` with `html` ('all', 'default' or 'off').
+    const marp = vscode.workspace.getConfiguration('markdown.marp', document.uri);
+    const html = isSet<string>(marp, 'html') ? marp.get<string>('html') : undefined;
+    const marpKey = html === 'all' || html === 'off' ? 'markdown.marp.html' : 'markdown.marp.enableHtml';
+    const value = marpSetting<boolean | string>(document, 'scimax.marp.enableHtml', marpKey, false,
         marpCliConfig(document)?.html);
+    return value === true || value === 'all';
 }
 
 /**

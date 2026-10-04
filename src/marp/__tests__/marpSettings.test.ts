@@ -1,12 +1,20 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-const state = vi.hoisted(() => ({ trusted: true, openDocs: [] as Array<{ uri: { toString(): string }; getText(): string }> }));
+const state = vi.hoisted(() => ({
+    trusted: true,
+    openDocs: [] as Array<{ uri: { toString(): string }; getText(): string }>,
+    /** User settings by full key, e.g. 'markdown.marp.html'. */
+    settings: {} as Record<string, unknown>,
+}));
 
 vi.mock('vscode', () => ({
     workspace: {
         get isTrusted() { return state.trusted; },
         get textDocuments() { return state.openDocs; },
-        getConfiguration: () => ({ inspect: () => undefined, get: (_key: string, fallback: unknown) => fallback }),
+        getConfiguration: (section: string) => ({
+            inspect: (key: string) => (`${section}.${key}` in state.settings ? { globalValue: state.settings[`${section}.${key}`] } : undefined),
+            get: (key: string, fallback: unknown) => (`${section}.${key}` in state.settings ? state.settings[`${section}.${key}`] : fallback),
+        }),
         getWorkspaceFolder: () => undefined,
     },
 }));
@@ -22,6 +30,7 @@ describe('marpHtmlEnabled', () => {
     beforeEach(() => {
         state.trusted = true;
         state.openDocs = [];
+        state.settings = {};
     });
 
     it('allows HTML in a presenter deck, as its slideshow does', () => {
@@ -39,5 +48,17 @@ describe('marpHtmlEnabled', () => {
     it('does not allow HTML for a presenter deck in an untrusted workspace', () => {
         state.trusted = false;
         expect(marpHtmlEnabled(doc('a.md', PRESENTER) as never)).toBe(false);
+    });
+
+    it('falls back to Marp for VS Code\'s html setting, or its deprecated enableHtml', () => {
+        const plain = doc('c.md', PLAIN) as never;
+        state.settings = { 'markdown.marp.html': 'all' };
+        expect(marpHtmlEnabled(plain)).toBe(true);
+        state.settings = { 'markdown.marp.html': 'off', 'markdown.marp.enableHtml': true };
+        expect(marpHtmlEnabled(plain)).toBe(false);
+        state.settings = { 'markdown.marp.enableHtml': true };
+        expect(marpHtmlEnabled(plain)).toBe(true);
+        state.settings = { 'markdown.marp.html': 'all', 'scimax.marp.enableHtml': false };
+        expect(marpHtmlEnabled(plain)).toBe(false);
     });
 });

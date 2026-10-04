@@ -2078,6 +2078,30 @@ Related VS Code settings used by the Marp navigation ([[file:44-marp.org][Marp S
 jumps) and ~markdown.preview.scrollPreviewWithEditor~ (must be ~true~ for
 ~scimax.marp.revealInPreview~).
 
+* Markdown Export Settings
+
+| Setting                          | Type   | Default   | Description                                          |
+|----------------------------------+--------+-----------+------------------------------------------------------|
+| scimax.markdown.export.pdfEngine | string | "xelatex" | LaTeX engine Pandoc uses for Markdown → PDF          |
+| scimax.markdown.export.mainFont  | string | ""        | Body font for xelatex or lualatex (empty: see below) |
+
+~xelatex~ (the default) and ~lualatex~ typeset Unicode characters such as ′,
+→ or Greek letters typed in the text; ~pdflatex~ stops on them. xelatex names
+any character the font lacks in a warning; lualatex leaves it out silently.
+With ~mainFont~ empty, macOS uses Arial Unicode MS and other systems use
+Pandoc's default font. A ~mainfont~ in the document's YAML front matter takes
+precedence.
+
+*Example*:
+#+begin_src json
+{
+  "scimax.markdown.export.pdfEngine": "xelatex",
+  "scimax.markdown.export.mainFont": "Times New Roman"
+}
+#+end_src
+
+See [[file:30-markdown-compatibility.org][Markdown Compatibility]] and [[file:25-commands.org][Commands]].
+
 * Marp Slide Settings
 
 | Setting                     | Type    | Default   | Description                                       |
@@ -2087,7 +2111,9 @@ jumps) and ~markdown.preview.scrollPreviewWithEditor~ (must be ~true~ for
 | scimax.marp.mathTypesetting | string  | "mathjax" | Math in thumbnails and preview: mathjax, katex, off |
 
 These are used by the slide thumbnails, preview and exports. When one is not
-set, Marp for VS Code's matching ~markdown.marp.*~ setting is used. See
+set, Marp for VS Code's matching ~markdown.marp.*~ setting is used
+(~markdown.marp.html~, or the older ~markdown.marp.enableHtml~, for
+~enableHtml~). See
 [[file:44-marp.org::*Configuration][Marp Slides]].
 
 * Marp Export Settings

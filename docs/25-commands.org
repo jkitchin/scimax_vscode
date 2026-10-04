@@ -421,7 +421,7 @@ Pandoc's default font elsewhere. A =mainfont:= in the document's YAML front
 matter takes precedence. If the font lacks some characters, the PDF is still
 written without them, and a warning names them.
 
-** 👀 Markdown Preview
+** Markdown Preview
 
 | Command ID                         | Description                            | Default Keybinding |
 |------------------------------------+----------------------------------------+--------------------|
@@ -526,7 +526,7 @@ the menu. See [[file:44-marp.org::*Exporting Slides][Exporting Slides]].
 | [[cmd:scimax.marp.exportImages]]       | Slides to PNG images                               | -                        |
 | [[cmd:scimax.marp.exportNotes]]        | Presenter notes to text                            | -                        |
 
-*** 👀 Slide Sorter
+*** Slide Sorter
 
 These commands act on the selected thumbnails in the Slide Sorter. They
 are in the thumbnails' right-click menu, not the command palette. The keys
