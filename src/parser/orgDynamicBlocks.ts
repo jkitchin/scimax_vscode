@@ -726,7 +726,7 @@ export function findDynamicBlockAtCursor(
 
     for (let i = line; i >= 0; i--) {
         const text = document.lineAt(i).text;
-        const beginMatch = text.match(/^\s*#\+BEGIN:\s*(\w+)\s*(.*)?$/i);
+        const beginMatch = text.match(/^\s*#\+BEGIN:\s*(\S+)\s*(.*)?$/i);
         if (beginMatch) {
             startLine = i;
             blockName = beginMatch[1];

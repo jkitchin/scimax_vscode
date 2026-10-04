@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **`C-c C-c` on a `project-table` block** - it reported "Unknown dynamic block type: project", because the block name was cut at the hyphen. Hyphenated block names are now read whole.
+
 ## [0.8.0] - 2026-10-04
 
 ### Added

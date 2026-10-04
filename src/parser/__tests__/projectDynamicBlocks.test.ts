@@ -11,7 +11,7 @@ vi.mock('vscode', () => ({
 }));
 
 import { parseOrg } from '../orgParserUnified';
-import { executeDynamicBlock } from '../orgDynamicBlocks';
+import { executeDynamicBlock, findDynamicBlockAtCursor } from '../orgDynamicBlocks';
 import { slugify, effortToDays, getRowAssignees } from '../projectTasks';
 
 describe('projectTasks helpers', () => {
@@ -181,5 +181,20 @@ describe('getRowAssignees (indexed headings)', () => {
     it('ignores earlier siblings', () => {
         const rows = [row(1, 1), row(2, 2, { ASSIGNEE: 'ana' }), row(4, 2)];
         expect(getRowAssignees(rows[2], rows)).toEqual([]);
+    });
+});
+
+describe('findDynamicBlockAtCursor', () => {
+    const lines = ['* Tasks', '#+BEGIN: project-table :columns task,todo', '| Task |', '#+END:', 'after'];
+    const document = { lineCount: lines.length, lineAt: (i: number) => ({ text: lines[i] }) };
+
+    it('reads a hyphenated block name whole, so C-c C-c runs project-table', () => {
+        const block = findDynamicBlockAtCursor(document as never, { line: 2 } as never);
+        expect(block).toEqual({ startLine: 1, endLine: 3, name: 'project-table', args: ':columns task,todo' });
+        expect(executeDynamicBlock(block!.name, block!.args, parseOrg(DOC)).error).toBeUndefined();
+    });
+
+    it('finds nothing outside a block', () => {
+        expect(findDynamicBlockAtCursor(document as never, { line: 4 } as never)).toBeNull();
     });
 });
