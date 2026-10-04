@@ -412,6 +412,15 @@ Export markdown (=.md=) files to other formats via Pandoc. Complements the org-t
 
 Requires Pandoc to be installed on the system.
 
+PDF export uses xelatex by default (~scimax.markdown.export.pdfEngine~), so
+characters typed directly in the text, such as =′=, =→= or Greek letters, are
+typeset rather than stopping pdflatex with "Unicode character not set up for
+use with LaTeX". The body font is ~scimax.markdown.export.mainFont~; left
+empty, it is Arial Unicode MS on macOS, which has these characters, and
+Pandoc's default font elsewhere. A =mainfont:= in the document's YAML front
+matter takes precedence. If the font lacks some characters, the PDF is still
+written without them, and a warning names them.
+
 ** 👀 Markdown Preview
 
 | Command ID                         | Description                            | Default Keybinding |

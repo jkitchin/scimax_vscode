@@ -4,7 +4,7 @@
 
 import * as vscode from 'vscode';
 import * as path from 'path';
-import { exportMarkdown, MarkdownExportFormat } from './markdownExport';
+import { exportMarkdown, MarkdownExportFormat, PdfEngine, PdfExportOptions } from './markdownExport';
 import { isMarpText } from '../marp/slideRenderer';
 import { previewedMarkdownDocument } from './previewSource';
 
@@ -33,6 +33,17 @@ async function getActiveMarkdown(): Promise<{ content: string; filePath: string 
 }
 
 /**
+ * Read the PDF engine and body font from the scimax.markdown.export settings.
+ */
+function loadPdfOptions(): PdfExportOptions {
+    const config = vscode.workspace.getConfiguration('scimax.markdown.export');
+    return {
+        engine: config.get<PdfEngine>('pdfEngine', 'xelatex'),
+        mainFont: config.get<string>('mainFont', ''),
+    };
+}
+
+/**
  * Export the active markdown file to the given format and optionally open the result.
  */
 async function doExport(format: MarkdownExportFormat, open: boolean): Promise<void> {
@@ -42,9 +53,16 @@ async function doExport(format: MarkdownExportFormat, open: boolean): Promise<vo
     }
 
     try {
-        const outPath = await exportMarkdown(md.content, md.filePath, format);
+        const { outPath, missingCharacters } = await exportMarkdown(
+            md.content, md.filePath, format, undefined, loadPdfOptions());
         const basename = path.basename(outPath);
-        vscode.window.showInformationMessage(`Exported to ${basename}`);
+        if (missingCharacters.length > 0) {
+            vscode.window.showWarningMessage(
+                `Exported to ${basename}, but the font has no ${missingCharacters.join(' ')}, ` +
+                'so they are missing from the PDF. Choose a font that has them in scimax.markdown.export.mainFont.');
+        } else {
+            vscode.window.showInformationMessage(`Exported to ${basename}`);
+        }
 
         if (open) {
             const uri = vscode.Uri.file(outPath);

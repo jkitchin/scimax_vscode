@@ -6373,6 +6373,26 @@
           "default": "",
           "markdownDescription": "PowerPoint file whose layouts and styles Pandoc uses for **Editable PowerPoint (Pandoc)** (`--reference-doc`). Relative paths are resolved against the workspace folder. When empty, Pandoc's default look is used."
         },
+        "scimax.markdown.export.pdfEngine": {
+          "type": "string",
+          "enum": [
+            "xelatex",
+            "lualatex",
+            "pdflatex"
+          ],
+          "enumDescriptions": [
+            "Handles Unicode text and system fonts, and reports characters the font lacks",
+            "Handles Unicode text and system fonts, but leaves out characters the font lacks without a warning",
+            "Fails on characters such as ′, → or Greek letters typed directly in the text"
+          ],
+          "default": "xelatex",
+          "markdownDescription": "LaTeX engine Pandoc uses for **Markdown → PDF**."
+        },
+        "scimax.markdown.export.mainFont": {
+          "type": "string",
+          "default": "",
+          "markdownDescription": "Body font for **Markdown → PDF** with xelatex or lualatex, such as `Times New Roman`. Leave empty to use Arial Unicode MS on macOS, which has arrows, primes, Greek and math symbols, and Pandoc's default font elsewhere. A `mainfont` in the document's YAML front matter takes precedence."
+        },
         "scimax.markdown.myst.enabled": {
           "type": "boolean",
           "default": true,

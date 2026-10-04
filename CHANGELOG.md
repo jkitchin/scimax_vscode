@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **Markdown → PDF handles Unicode characters** - PDF export failed with "Unicode character ′ (U+2032) not set up for use with LaTeX" when the text contained characters such as `′`, `→` or Greek letters, because Pandoc ran pdflatex. It now uses xelatex, with Arial Unicode MS as the body font on macOS. Choose the engine and font with `scimax.markdown.export.pdfEngine` and `scimax.markdown.export.mainFont`; a `mainfont` in the YAML front matter takes precedence. If the font lacks some characters, a warning names them.
+
 ## [0.8.0] - 2026-10-03
 
 ### Added
