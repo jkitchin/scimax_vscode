@@ -16,7 +16,7 @@ Thank you for your interest in contributing to Scimax VS Code! This document pro
 
 ### Prerequisites
 
-- Node.js 18+
+- Node.js 22+
 - npm
 - VS Code 1.85+
 

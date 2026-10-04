@@ -38,7 +38,7 @@ Then install the generated `.vsix` file.
 ### Dependencies
 
 - VS Code 1.85.0 or later
-- Node.js 18+ (for development)
+- Node.js 22+ (for development)
 
 ---
 
