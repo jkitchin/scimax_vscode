@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.8.2] - 2026-10-05
+
 ### Fixed
 
 - **Dragging a task in the project view is much faster** - The "Move dependents?" prompt took 5-10 seconds to appear: the drag saved the file first, and the database indexing that a save starts held up the view. The file is now saved after the prompt.
