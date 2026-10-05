@@ -657,13 +657,18 @@ Add an EFFORT property:
 |-----------+---------------------|
 | e         | Set effort estimate |
 
-** ✅ Effort Format
-CLOSED: [2026-01-15 Thu 14:41]
+** Effort Format
 
-Use H:MM format:
-- 0:30 - 30 minutes
-- 1:00 - 1 hour
+Any of these formats work, in the property and in the Set effort prompt
+(speed key =e=, or Set Effort... in the project view):
+- 0:30 - 30 minutes (H:MM)
 - 2:30 - 2 hours 30 minutes
+- 3h or 1.5h - hours
+- 45m - minutes
+- 2d - 2 days; a day counts as 8 hours
+
+The Set effort list offers common values (0:15 to 8:00, 2d, 5d); choose
+Custom... to type another one.
 
 * ✅ Agenda Integration
 CLOSED: [2026-01-15 Thu 14:41]

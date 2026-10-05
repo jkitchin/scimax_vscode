@@ -226,22 +226,25 @@ class ProjectView implements vscode.Disposable {
             await this.reload();
             return;
         }
-        await doc.save();
         const label = edge === 'end' ? `Move the deadline of "${task.title}"` : `Move "${task.title}"`;
         this.undoStack.push({ label, changes });
         if (this.undoStack.length > MAX_UNDO) this.undoStack.shift();
         this.redoStack = [];
 
         // Read the project again: adding a SCHEDULED line moves the lines below it.
+        // The unsaved text is read, and the file is saved after the prompt:
+        // saving starts the database indexing, which would delay the prompt.
         this.tasks = await loadProjectTasks(this.root);
         this.post();
         const moved = this.tasks.find(t => t.file === filePath && t.line === line);
+        let shifted = 0;
         if (moved) {
             const subject = edge === 'end' ? `The deadline of "${task.title}"` : `"${task.title}"`;
             // The dependents join the same record, so one undo puts everything back.
-            const shifted = await chooseAndShiftDependents(this.root, moved, this.tasks, days, subject, undefined, changes);
-            if (shifted) await this.reload();
+            shifted = await chooseAndShiftDependents(this.root, moved, this.tasks, days, subject, doc, changes);
         }
+        if (doc.isDirty) await doc.save();
+        if (shifted) await this.reload();
     }
 
     /**

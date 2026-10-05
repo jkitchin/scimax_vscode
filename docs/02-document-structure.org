@@ -315,8 +315,7 @@ Properties appear in a :PROPERTIES: drawer immediately after the headline:
 :END:
 #+END_SRC
 
-** ✅ Special Properties
-CLOSED: [2026-01-15 Thu 14:33]
+** Special Properties
 
 Certain properties have special meaning:
 
@@ -325,7 +324,7 @@ Certain properties have special meaning:
 | ID         | Globally unique identifier (UUID)        |
 | CUSTOM_ID  | Document-unique identifier for linking   |
 | CATEGORY   | Category for agenda views                |
-| EFFORT     | Estimated time (H:MM format)             |
+| EFFORT     | Estimated time (1:30, 3h, 45m or 2d)     |
 | COLUMNS    | Column view format specification         |
 | VISIBILITY | Initial visibility (folded, children, all)|
 

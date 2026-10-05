@@ -9,6 +9,7 @@ import { getHeadingLevel } from './context';
 import { extractTags, formatTags, removeTagsFromLine, similarTags } from './utils';
 import { getDatabase } from '../../database/lazyDb';
 import { getPropCaseInsensitive } from '../../database/scimaxDbCore';
+import { parseEffort } from '../../parser/orgClocking';
 
 /** Property names offered even when not yet used anywhere. */
 const COMMON_PROPERTIES = [
@@ -325,6 +326,8 @@ export async function setEffort(): Promise<void> {
         { label: '2:00', description: '2 hours', value: '2:00' },
         { label: '4:00', description: '4 hours (half day)', value: '4:00' },
         { label: '8:00', description: '8 hours (full day)', value: '8:00' },
+        { label: '2d', description: '2 days (8 hours each)', value: '2d' },
+        { label: '5d', description: '5 days (a work week)', value: '5d' },
         { label: 'Custom...', description: 'Enter custom effort', value: '' },
     ];
 
@@ -337,18 +340,18 @@ export async function setEffort(): Promise<void> {
     let effort = selected.value;
     if (!effort) {
         const custom = await vscode.window.showInputBox({
-            prompt: 'Enter effort (H:MM format)',
-            placeHolder: '1:30',
+            prompt: 'Enter effort: H:MM, hours, minutes or days (a day is 8 hours)',
+            placeHolder: '1:30, 3h, 45m or 2d',
             validateInput: (value) => {
-                if (!value) return null;
-                if (!/^\d+:\d{2}$/.test(value)) {
-                    return 'Use H:MM format (e.g., 1:30)';
+                if (!value.trim()) return null;
+                if (parseEffort(value.trim()) <= 0) {
+                    return 'Use H:MM (1:30), hours (3h), minutes (45m) or days (2d)';
                 }
                 return null;
             }
         });
-        if (!custom) return;
-        effort = custom;
+        if (!custom?.trim()) return;
+        effort = custom.trim();
     }
 
     await setPropertyValue(editor, headingLine, 'Effort', effort);

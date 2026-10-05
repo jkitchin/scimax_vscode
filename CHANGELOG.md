@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **Dragging a task in the project view is much faster** - The "Move dependents?" prompt took 5-10 seconds to appear: the drag saved the file first, and the database indexing that a save starts held up the view. The file is now saved after the prompt.
+- **Saving an indexed file is faster in a large database** - Re-indexing a file deletes its old rows by file path, which scanned whole tables. A new migration indexes `file_path` on headings, source blocks, anchors, dependencies, hashtags and chunks.
+- **Set effort accepts days, hours and minutes** - The custom effort prompt accepted only `H:MM`. It now takes anything the Effort property does (`1:30`, `3h`, `45m`, `2d`), and the list offers `2d` and `5d`.
+
 ## [0.8.1] - 2026-10-04
 
 ### Fixed

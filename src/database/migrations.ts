@@ -262,6 +262,19 @@ export const migrations: Migration[] = [
             `CREATE INDEX IF NOT EXISTS idx_links_target_key ON links(lower(trim(raw_target)))`,
             `CREATE INDEX IF NOT EXISTS idx_links_target_suffix ON links(lower(trim(substr(raw_target, instr(raw_target, '::') + 2)))) WHERE instr(raw_target, '::') > 0`
         ]
+    },
+    {
+        version: 9,
+        description: 'Index file_path for deleting a file\'s rows when it is reindexed',
+        up: [
+            // Reindexing a file first deletes its old rows by file_path; without
+            // these each delete scanned the whole table, on every save.
+            `CREATE INDEX IF NOT EXISTS idx_headings_file_path ON headings(file_path)`,
+            `CREATE INDEX IF NOT EXISTS idx_blocks_file_path ON source_blocks(file_path)`,
+            `CREATE INDEX IF NOT EXISTS idx_anchors_file_path ON anchors(file_path)`,
+            `CREATE INDEX IF NOT EXISTS idx_dependencies_file_path ON dependencies(file_path)`,
+            `CREATE INDEX IF NOT EXISTS idx_hashtags_file_path ON hashtags(file_path)`
+        ]
     }
 ];
 

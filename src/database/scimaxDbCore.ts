@@ -219,6 +219,17 @@ const coreMigrations: CoreMigration[] = [
             `CREATE INDEX IF NOT EXISTS idx_links_target_key ON links(lower(trim(raw_target)))`,
             `CREATE INDEX IF NOT EXISTS idx_links_target_suffix ON links(lower(trim(substr(raw_target, instr(raw_target, '::') + 2)))) WHERE instr(raw_target, '::') > 0`
         ]
+    },
+    {
+        version: 9,
+        description: 'Index file_path for deleting a file\'s rows when it is reindexed',
+        up: [
+            `CREATE INDEX IF NOT EXISTS idx_headings_file_path ON headings(file_path)`,
+            `CREATE INDEX IF NOT EXISTS idx_blocks_file_path ON source_blocks(file_path)`,
+            `CREATE INDEX IF NOT EXISTS idx_anchors_file_path ON anchors(file_path)`,
+            `CREATE INDEX IF NOT EXISTS idx_dependencies_file_path ON dependencies(file_path)`,
+            `CREATE INDEX IF NOT EXISTS idx_hashtags_file_path ON hashtags(file_path)`
+        ]
     }
 ];
 
@@ -810,6 +821,7 @@ export class ScimaxDbCore {
             )
         `);
         await this.db.execute('CREATE INDEX IF NOT EXISTS idx_chunks_file ON chunks(file_id)');
+        await this.db.execute('CREATE INDEX IF NOT EXISTS idx_chunks_file_path ON chunks(file_path)');
 
         // The vector index keeps its own dimension in libsql metadata, and it
         // can disagree with the table (seen after a 384 -> 768 rebuild). Every
