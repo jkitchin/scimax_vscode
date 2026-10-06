@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
 import { JournalManager } from './journalManager';
 import { DAY_NAMES_SHORT } from '../utils/dateConstants';
+import { showCalendarDatePicker, dateKey } from '../org/calendarDatePicker';
 
 export function registerJournalCommands(
     context: vscode.ExtensionContext,
@@ -87,36 +88,19 @@ export function registerJournalCommands(
         })
     );
 
-    // Go to a specific date
+    // Go to a specific date (calendar picker; days with entries are marked)
     context.subscriptions.push(
         vscode.commands.registerCommand('scimax.journal.goto', async () => {
-            const entries = manager.getAllEntries();
+            const markedDates = new Set(manager.getAllEntries().map(e => dateKey(e.date)));
 
-            if (entries.length === 0) {
-                vscode.window.showInformationMessage('No journal entries found');
-                return;
-            }
-
-            // Create quick pick items from entries
-            const items = entries.reverse().map(entry => {
-                const date = entry.date;
-                const weekday = DAY_NAMES_SHORT[date.getDay()];
-                const dateStr = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
-
-                return {
-                    label: `$(calendar) ${dateStr}`,
-                    description: weekday,
-                    date: entry.date
-                };
+            const date = await showCalendarDatePicker(context.extensionUri, 'Go to Journal Date', {
+                markedDates,
+                markedTooltip: 'Has journal entry',
+                weekStartsOn: manager.getConfig().weekStartsOn
             });
 
-            const selected = await vscode.window.showQuickPick(items, {
-                placeHolder: 'Select a journal entry',
-                matchOnDescription: true
-            });
-
-            if (selected) {
-                await manager.openEntry(selected.date);
+            if (date) {
+                await manager.openEntry(date);
             }
         })
     );

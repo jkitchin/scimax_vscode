@@ -393,22 +393,16 @@ When viewing a journal entry:
 
 These shortcuts only work when the current file is a journal entry (filename matches YYYY-MM-DD.org or .md).
 
-** ✅ Go to Specific Date
-CLOSED: [2026-01-17 Sat 14:05]
+** 👀 Go to Specific Date
 
-Run Scimax: Go to Journal Date to see a list of all your entries: [[cmd:scimax.journal.goto]]
+Run Scimax: Go to Journal Date to open a calendar picker: [[cmd:scimax.journal.goto]]
 
-#+begin_example
-> Scimax: Go to Journal Date
-
-  📅 2026-01-14    Tue
-  📅 2026-01-13    Mon
-  📅 2026-01-12    Sun
-  📅 2026-01-10    Fri
-  ...
-#+end_example
-
-Use arrow keys or type to filter, then press Enter to open.
+- Days that already have a journal entry are shown in bold with a dot underneath
+- Months containing entries are bold in the month picker (click the month name)
+- Click any day to open its entry, or create one if it does not exist yet
+- Type a date expression (=yesterday=, =-3d=, =jan 15=, =last friday=) and press Enter
+- The grid follows the =scimax.journal.weekStartsOn= setting
+- Press Escape (in the text box) or Cancel to close without jumping
 
 ** ✅ Calendar View
 CLOSED: [2026-01-17 Sat 14:06]

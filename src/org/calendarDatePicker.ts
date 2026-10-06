@@ -8,12 +8,30 @@
 import * as vscode from 'vscode';
 import { parseRelativeDate } from '../utils/dateParser';
 
+export interface CalendarDatePickerOptions {
+    /** Dates (YYYY-MM-DD) to mark with a dot, e.g. days with journal entries */
+    markedDates?: Set<string>;
+    /** Tooltip for marked days */
+    markedTooltip?: string;
+    /** First day of the week in the grid (default: sunday) */
+    weekStartsOn?: 'sunday' | 'monday';
+}
+
+/** Format a date as YYYY-MM-DD in local time (the key format for markedDates) */
+export function dateKey(date: Date): string {
+    const y = date.getFullYear();
+    const m = (date.getMonth() + 1).toString().padStart(2, '0');
+    const d = date.getDate().toString().padStart(2, '0');
+    return `${y}-${m}-${d}`;
+}
+
 /**
  * Show a calendar date picker and return the selected date
  */
 export async function showCalendarDatePicker(
     extensionUri: vscode.Uri,
-    title: string = 'Select Date'
+    title: string = 'Select Date',
+    options: CalendarDatePickerOptions = {}
 ): Promise<Date | null> {
     return new Promise((resolve) => {
         const panel = vscode.window.createWebviewPanel(
@@ -32,7 +50,7 @@ export async function showCalendarDatePicker(
         let currentMonth = today.getMonth();
 
         function updateContent() {
-            panel.webview.html = getCalendarHtml(currentYear, currentMonth, today, title);
+            panel.webview.html = getCalendarHtml(currentYear, currentMonth, today, title, options);
         }
 
         updateContent();
@@ -112,7 +130,17 @@ export async function showCalendarDatePicker(
     });
 }
 
-function getCalendarHtml(year: number, month: number, today: Date, title: string): string {
+export function getCalendarHtml(
+    year: number,
+    month: number,
+    today: Date,
+    title: string,
+    options: CalendarDatePickerOptions = {}
+): string {
+    const marked = options.markedDates ?? new Set<string>();
+    const markedTooltip = options.markedTooltip ?? '';
+    const mondayStart = options.weekStartsOn === 'monday';
+
     const monthNames = [
         'January', 'February', 'March', 'April', 'May', 'June',
         'July', 'August', 'September', 'October', 'November', 'December'
@@ -132,7 +160,9 @@ function getCalendarHtml(year: number, month: number, today: Date, title: string
     let calendarHtml = '';
 
     // Header row (weekdays)
-    const dayHeaders = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
+    const dayHeaders = mondayStart
+        ? ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su']
+        : ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
 
     calendarHtml += '<div class="calendar-header">';
     for (const day of dayHeaders) {
@@ -144,7 +174,8 @@ function getCalendarHtml(year: number, month: number, today: Date, title: string
     calendarHtml += '<div class="calendar-grid">';
 
     // Empty cells before first day
-    for (let i = 0; i < startDayOfWeek; i++) {
+    const leadingBlanks = mondayStart ? (startDayOfWeek + 6) % 7 : startDayOfWeek;
+    for (let i = 0; i < leadingBlanks; i++) {
         calendarHtml += '<div class="day empty"></div>';
     }
 
@@ -153,12 +184,15 @@ function getCalendarHtml(year: number, month: number, today: Date, title: string
         const isToday = isCurrentMonth && day === today.getDate();
         const date = new Date(year, month, day);
         const isPast = date < today && !isToday;
+        const isMarked = marked.has(dateKey(date));
 
         let classes = 'day';
         if (isToday) classes += ' today';
-        if (isPast) classes += ' past';
+        if (isMarked) classes += ' marked';
+        else if (isPast) classes += ' past';
 
-        calendarHtml += `<div class="${classes}" onclick="selectDate(${year}, ${month}, ${day})">${day}</div>`;
+        const tooltip = isMarked && markedTooltip ? ` title="${markedTooltip}"` : '';
+        calendarHtml += `<div class="${classes}"${tooltip} onclick="selectDate(${year}, ${month}, ${day})">${day}</div>`;
     }
 
     calendarHtml += '</div>';
@@ -167,8 +201,11 @@ function getCalendarHtml(year: number, month: number, today: Date, title: string
     let monthPickerHtml = '<div class="month-picker">';
     for (let m = 0; m < 12; m++) {
         const isActive = m === month;
+        const monthPrefix = `${year}-${(m + 1).toString().padStart(2, '0')}-`;
+        const hasMarked = [...marked].some(k => k.startsWith(monthPrefix));
         let mClass = 'month-btn';
         if (isActive) mClass += ' active';
+        if (hasMarked) mClass += ' has-marked';
         monthPickerHtml += `<button class="${mClass}" onclick="goToMonth(${m})">${monthNamesShort[m]}</button>`;
     }
     monthPickerHtml += '</div>';
@@ -395,6 +432,26 @@ function getCalendarHtml(year: number, month: number, today: Date, title: string
 
         .day.past {
             opacity: 0.5;
+        }
+
+        .day.marked {
+            font-weight: bold;
+            color: var(--vscode-textLink-foreground);
+            padding-bottom: 4px;
+        }
+
+        .day.marked::after {
+            content: '';
+            display: block;
+            width: 5px;
+            height: 5px;
+            background: var(--vscode-textLink-foreground);
+            border-radius: 50%;
+            margin: 3px auto 0;
+        }
+
+        .month-btn.has-marked {
+            font-weight: bold;
         }
 
         .cancel-btn {
