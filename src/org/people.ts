@@ -286,6 +286,38 @@ function currentAssignees(document: vscode.TextDocument, headingLine: number): S
  * headings (fuzzy match on handle, name, role, or email), then set the heading's
  * :ASSIGNEE: property to the chosen handles.
  */
+/**
+ * Multi-select people picker. Enter takes the checked people plus, when a
+ * filter is typed, the highlighted match, so typing down to one person and
+ * pressing Enter assigns them without ticking the box. With nothing typed,
+ * Enter takes exactly the checked people (none clears the assignee).
+ * Undefined means cancelled.
+ */
+function pickAssignees<T extends vscode.QuickPickItem & { picked?: boolean }>(items: T[]): Promise<T[] | undefined> {
+    return new Promise(resolve => {
+        const qp = vscode.window.createQuickPick<T>();
+        qp.canSelectMany = true;
+        qp.matchOnDescription = true;
+        qp.matchOnDetail = true;
+        qp.placeholder = 'Assign to… (fuzzy-match handle, name, role, or email; Enter takes the highlighted match)';
+        qp.items = items;
+        qp.selectedItems = items.filter(i => i.picked);
+        let result: T[] | undefined;
+        qp.onDidAccept(() => {
+            const chosen = [...qp.selectedItems];
+            const active = qp.activeItems[0];
+            if (qp.value.trim() && active && !chosen.includes(active)) chosen.push(active);
+            result = chosen;
+            qp.hide();
+        });
+        qp.onDidHide(() => {
+            qp.dispose();
+            resolve(result);
+        });
+        qp.show();
+    });
+}
+
 async function assignTaskCommand(): Promise<void> {
     const editor = vscode.window.activeTextEditor;
     if (!editor) return;
@@ -314,8 +346,15 @@ async function assignTaskCommand(): Promise<void> {
     }
 
     const current = currentAssignees(document, headingLine);
+    // One entry per handle, as in pickAssigneeFilter: a person can have more
+    // than one :person: heading (e.g. in several project files).
+    const seen = new Set<string>();
     const items = people
-        .slice()
+        .filter(p => {
+            if (seen.has(p.handle)) return false;
+            seen.add(p.handle);
+            return true;
+        })
         .sort((a, b) => a.name.localeCompare(b.name))
         .map(p => ({
             label: p.handle,
@@ -324,12 +363,7 @@ async function assignTaskCommand(): Promise<void> {
             picked: current.has(p.handle.toLowerCase()),
         }));
 
-    const picked = await vscode.window.showQuickPick(items, {
-        canPickMany: true,
-        matchOnDescription: true,
-        matchOnDetail: true,
-        placeHolder: 'Assign to… (fuzzy-match handle, name, role, or email; pick one or more)',
-    });
+    const picked = await pickAssignees(items);
     if (!picked) return; // cancelled
 
     const handles = picked.map(i => i.label).join(' ');
