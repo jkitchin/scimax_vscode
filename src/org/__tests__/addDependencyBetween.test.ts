@@ -111,6 +111,27 @@ describe('addDependencyBetween', () => {
         expect(b.saved).toBe(1);
     });
 
+    it('uses the drawer after a SCHEDULED/DEADLINE line instead of adding another', async () => {
+        const doc = addFile('/p/a.org', [
+            '* TODO Write', 'SCHEDULED: <2026-10-06 Tue> DEADLINE: <2026-10-09 Fri>',
+            ':PROPERTIES:', ':ID: write', ':END:', '* TODO Data',
+        ].join('\n'));
+        expect(await addDependencyBetween({ file: '/p/a.org', line: 1 }, { file: '/p/a.org', line: 6 })).toBe(true);
+        expect(doc.lines).toEqual([
+            '* TODO Write', 'SCHEDULED: <2026-10-06 Tue> DEADLINE: <2026-10-09 Fri>',
+            ':PROPERTIES:', ':ID: write', ':DEPENDS: id:data', ':END:',
+            '* TODO Data', ':PROPERTIES:', ':ID: data', ':END:',
+        ]);
+    });
+
+    it('puts a new drawer after the planning line', async () => {
+        const doc = addFile('/p/a.org', ['* TODO Write', 'DEADLINE: <2026-10-09 Fri>', '* DONE Data', ':PROPERTIES:', ':ID: data', ':END:'].join('\n'));
+        expect(await addDependencyBetween({ file: '/p/a.org', line: 1 }, { file: '/p/a.org', line: 3 })).toBe(true);
+        expect(doc.lines.slice(0, 6)).toEqual([
+            '* TODO Write', 'DEADLINE: <2026-10-09 Fri>', ':PROPERTIES:', ':ID: write', ':DEPENDS: id:data', ':END:',
+        ]);
+    });
+
     it('reports an existing dependency without duplicating it', async () => {
         const a = addFile('/p/a.org', ['* TODO Write', ':PROPERTIES:', ':ID: write', ':DEPENDS: id:data', ':END:', '* Data', ':PROPERTIES:', ':ID: data', ':END:'].join('\n'));
         expect(await addDependencyBetween({ file: '/p/a.org', line: 1 }, { file: '/p/a.org', line: 6 })).toBe(false);

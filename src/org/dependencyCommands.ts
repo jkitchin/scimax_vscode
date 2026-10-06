@@ -50,24 +50,29 @@ async function uniqueSlugId(base: string, document: vscode.TextDocument): Promis
     return cand;
 }
 
+/** A planning line (`SCHEDULED:`, `DEADLINE:`, `CLOSED:`), which comes before the drawer. */
+const PLANNING_RE = /^\s*(SCHEDULED|DEADLINE|CLOSED):/;
+
 /**
  * Locate the `:PROPERTIES:`/`:END:` span (and any existing line for `property`)
- * directly under a heading. Line numbers are 0-based; -1 means "not present".
+ * directly under a heading, after any planning line. Line numbers are 0-based;
+ * -1 means "not present". `insertAt` is where a new drawer belongs.
  */
 export function findDrawer(document: vscode.TextDocument, headingLine: number, property: string): {
-    start: number; end: number; existingLine: number;
+    start: number; end: number; existingLine: number; insertAt: number;
 } {
-    let start = -1, end = -1, existingLine = -1;
+    let start = -1, end = -1, existingLine = -1, insertAt = headingLine + 1;
     const propRe = new RegExp(`^\\s*:${property}:\\s*`, 'i');
     for (let i = headingLine + 1; i < document.lineCount; i++) {
         const line = document.lineAt(i).text;
         if (/^\*+\s/.test(line)) break;
+        if (start === -1 && PLANNING_RE.test(line)) { insertAt = i + 1; continue; }
         if (/^\s*:PROPERTIES:\s*$/i.test(line)) { start = i; continue; }
         if (start !== -1 && /^\s*:END:\s*$/i.test(line)) { end = i; break; }
         if (start !== -1 && propRe.test(line)) existingLine = i;
         if (start === -1 && line.trim() !== '' && !line.match(/^\s*:/)) break;
     }
-    return { start, end, existingLine };
+    return { start, end, existingLine, insertAt };
 }
 
 /** Return the heading's `:ID:`, minting a readable, unique slug id if it has none. */
@@ -84,7 +89,7 @@ export async function ensureHeadingId(document: vscode.TextDocument, headingLine
     if (drawer.start !== -1 && drawer.end !== -1) {
         edit.insert(document.uri, new vscode.Position(drawer.end, 0), `:ID: ${id}\n`);
     } else {
-        edit.insert(document.uri, new vscode.Position(headingLine + 1, 0), `:PROPERTIES:\n:ID: ${id}\n:END:\n`);
+        edit.insert(document.uri, new vscode.Position(drawer.insertAt, 0), `:PROPERTIES:\n:ID: ${id}\n:END:\n`);
     }
     const ok = await vscode.workspace.applyEdit(edit);
     return ok ? id : undefined;
@@ -115,7 +120,7 @@ async function appendDependency(
     } else {
         edit.insert(
             document.uri,
-            new vscode.Position(headingLine + 1, 0),
+            new vscode.Position(drawer.insertAt, 0),
             `:PROPERTIES:\n:${DEPENDS_PROPERTY}: ${newValue}\n:END:\n`
         );
     }
@@ -203,7 +208,7 @@ async function addDependencyCommand(): Promise<void> {
     }
 
     interface Candidate { file_path: string; line_number: number; title: string; }
-    interface PickItem extends vscode.QuickPickItem { heading: Candidate; }
+    interface PickItem extends vscode.QuickPickItem { heading: Candidate; search?: string; }
 
     // Current-file headings come from the LIVE buffer so they're always offered
     // (even before the file is saved/indexed) and never stale.
@@ -219,6 +224,8 @@ async function addDependencyCommand(): Promise<void> {
             description: '(this file)',
             detail: `${vscode.workspace.asRelativePath(thisFile)}:${i + 1}`,
             heading: { file_path: thisFile, line_number: i + 1, title: extractHeadingTitle(text, todoStates) },
+            // Match the whole heading line (TODO keyword, tags), as the index search does.
+            search: `${text} ${vscode.workspace.asRelativePath(thisFile)}`.toLowerCase(),
         });
     }
 
@@ -235,8 +242,7 @@ async function addDependencyCommand(): Promise<void> {
         const terms = value.toLowerCase().split(/\s+/).filter(t => t.length > 0);
         return liveItems
             .filter(item => {
-                const text = `${item.label} ${item.detail}`.toLowerCase();
-                return terms.every(t => text.includes(t));
+                return terms.every(t => item.search!.includes(t));
             })
             .map(item => ({ ...item, alwaysShow: true }));
     };
@@ -246,6 +252,10 @@ async function addDependencyCommand(): Promise<void> {
         qp.placeholder = 'Select a task this one depends on (must be DONE before this can complete); type to search all files';
         qp.matchOnDescription = false;
         qp.matchOnDetail = false;
+        // Keep this file's headings first, then the index's most recent; without
+        // this VS Code re-sorts by label match each time the results arrive.
+        // (sortByLabel exists at runtime but predates our @types/vscode.)
+        (qp as unknown as { sortByLabel: boolean }).sortByLabel = false;
         qp.items = filterLive('');
 
         // Only the latest query's results are shown; slower earlier ones are dropped
