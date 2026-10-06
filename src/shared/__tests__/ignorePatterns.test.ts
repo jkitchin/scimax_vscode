@@ -18,7 +18,8 @@ import {
     withBaselineExcludes,
     loadIgnorePatterns,
     shouldIgnore,
-    mergePatterns
+    mergePatterns,
+    isExcludedPath
 } from '../ignorePatterns';
 
 describe('DEFAULT_IGNORE_PATTERNS', () => {
@@ -202,5 +203,21 @@ describe('withBaselineExcludes', () => {
 
     it("excludes VS Code's local history, which duplicates every edited file", () => {
         expect(BASELINE_DB_EXCLUDE).toContain('**/Code/User/History/**');
+    });
+});
+
+describe('isExcludedPath', () => {
+    it('excludes VS Code local history even when nothing is configured', () => {
+        expect(isExcludedPath('/Users/x/Library/Application Support/Code/User/History/71b2593d/Mjes.org', undefined)).toBe(true);
+        expect(isExcludedPath('/Users/x/notes/people.org', undefined)).toBe(false);
+        expect(isExcludedPath('/Users/x/Library/Application Support/Claude/local-agent-mode-sessions/a/README.md', undefined)).toBe(true);
+    });
+
+    it('adds configured globs, exact paths and ~ to the baseline', () => {
+        const home = process.env.HOME || '';
+        expect(isExcludedPath('/a/archive/old.org', ['**/archive/**'])).toBe(true);
+        expect(isExcludedPath('/a/skip.org', ['/a/skip.org'])).toBe(true);
+        expect(isExcludedPath(`${home}/tmp/x.org`, ['~/tmp/**'])).toBe(true);
+        expect(isExcludedPath('/Users/x/Library/Application Support/Code/User/History/a/b.org', ['**/archive/**'])).toBe(true);
     });
 });

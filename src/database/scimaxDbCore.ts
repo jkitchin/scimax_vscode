@@ -16,7 +16,6 @@ import * as crypto from 'crypto';
 import type { Client } from '@libsql/client';
 import { loadLibsqlClient } from './libsqlLoader';
 import { parseLocalYmd } from '../utils/dateParser';
-import { minimatch } from 'minimatch';
 import {
     parseMarkdownCodeBlocks,
     extractHashtags,
@@ -27,7 +26,7 @@ import {
     LegacyHeading,
 } from '../parser/orgParserAdapter';
 import { extractAnchors, normalizeAnchorText } from '../parser/orgAnchors';
-import { withBaselineExcludes } from '../shared/ignorePatterns';
+import { isExcludedPath } from '../shared/ignorePatterns';
 import { markdownFencedLineMask } from '../shared/markdownFences';
 // Migration data - inlined here to avoid importing migrations.ts which pulls in vscode via logger.
 // Keep in sync with src/database/migrations.ts.
@@ -960,22 +959,11 @@ export class ScimaxDbCore {
     // Ignore patterns / file filtering
     // ----------------------------------------------------------
 
-    private shouldIgnore(filePath: string): boolean {
+    /** True when the exclude patterns (baseline plus configured) rule the file out of the index. */
+    public isExcluded(filePath: string): boolean {
         // The baseline is unconditional: a configured exclude list adds to it,
         // it never replaces it. See BASELINE_DB_EXCLUDE for why.
-        const patterns = withBaselineExcludes(this.options.ignorePatterns);
-        for (const pattern of patterns) {
-            let expandedPattern = pattern;
-            if (pattern.startsWith('~')) {
-                expandedPattern = pattern.replace(/^~/, process.env.HOME || '');
-            }
-            if (pattern.includes('*')) {
-                if (minimatch(filePath, expandedPattern, { matchBase: true })) return true;
-            } else {
-                if (filePath === expandedPattern) return true;
-            }
-        }
-        return false;
+        return isExcludedPath(filePath, this.options.ignorePatterns);
     }
 
     // ----------------------------------------------------------
@@ -997,7 +985,7 @@ export class ScimaxDbCore {
                     if (itemsProcessed % 50 === 0) {
                         await new Promise(r => setTimeout(r, 0));
                     }
-                    if (this.shouldIgnore(fullPath)) continue;
+                    if (this.isExcluded(fullPath)) continue;
                     if (item.isDirectory() && !item.name.startsWith('.')) {
                         stack.push(fullPath);
                     } else if (item.isFile()) {
@@ -1014,7 +1002,7 @@ export class ScimaxDbCore {
                     // Entry is a single file (e.g. added to scimax.db.include
                     // via "Add file to agenda"), not a directory.
                     const ext = path.extname(dir).toLowerCase();
-                    if ((ext === '.org' || ext === '.md') && !this.shouldIgnore(dir)) {
+                    if ((ext === '.org' || ext === '.md') && !this.isExcluded(dir)) {
                         yield dir;
                     }
                 } else if (error?.code !== 'EACCES' && error?.code !== 'ENOENT') {
@@ -1089,6 +1077,13 @@ export class ScimaxDbCore {
 
     public async indexFile(filePath: string, options?: { queueEmbeddings?: boolean }): Promise<void> {
         if (!this.db) return;
+        // Saves and file-watcher events arrive here directly, not through the
+        // directory walk, so check the excludes here too (VS Code's local
+        // history, for one, is a folder of `.org` copies of every edit).
+        if (this.isExcluded(filePath)) {
+            await this.removeFileData(filePath);
+            return;
+        }
 
         try {
             console.error(`[ScimaxDbCore] INDEX_START ${filePath}`);

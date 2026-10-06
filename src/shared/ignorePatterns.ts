@@ -75,7 +75,9 @@ export const BASELINE_DB_EXCLUDE: string[] = [
     '**/VSCodium/User/History/**',
     '**/Cursor/User/History/**',
     '**/.vscode/extensions/**',
-    '**/.vscode-insiders/extensions/**'
+    '**/.vscode-insiders/extensions/**',
+    // Claude desktop app state (agent sessions, plugin checkouts).
+    '**/Library/Application Support/Claude/**'
 ];
 
 /**
@@ -84,6 +86,23 @@ export const BASELINE_DB_EXCLUDE: string[] = [
  */
 export function withBaselineExcludes(configured: string[] | undefined): string[] {
     return mergePatterns(BASELINE_DB_EXCLUDE, configured ?? []);
+}
+
+/**
+ * True when `filePath` matches one of the database exclude patterns (the
+ * baseline plus `configured`). Glob patterns match with minimatch; others
+ * must equal the path. A leading `~` is the home directory.
+ */
+export function isExcludedPath(filePath: string, configured: string[] | undefined): boolean {
+    for (const pattern of withBaselineExcludes(configured)) {
+        const expanded = pattern.startsWith('~') ? pattern.replace(/^~/, process.env.HOME || '') : pattern;
+        if (expanded.includes('*')
+            ? minimatch(filePath, expanded, { matchBase: true })
+            : filePath === expanded) {
+            return true;
+        }
+    }
+    return false;
 }
 
 /**
