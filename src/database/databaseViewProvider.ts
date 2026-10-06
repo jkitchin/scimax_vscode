@@ -89,8 +89,12 @@ export class DatabaseViewProvider implements vscode.TreeDataProvider<DatabaseTre
     readonly onDidChangeTreeData = this._onDidChangeTreeData.event;
 
     private stats: DbStats | null = null;
+    private embeddingProgress: { done: number; total: number } | null = null;
     private treeView: vscode.TreeView<DatabaseTreeItem> | null = null;
     private refreshInProgress: boolean = false;
+    private embeddingListener: vscode.Disposable | null = null;
+    // Set when embeddings change while the view is hidden
+    private staleWhileHidden: boolean = false;
 
     constructor() {}
 
@@ -113,7 +117,9 @@ export class DatabaseViewProvider implements vscode.TreeDataProvider<DatabaseTre
         try {
             const db = await getDatabase();
             if (db) {
+                this.watchEmbeddings(db);
                 this.stats = await db.getStats();
+                this.embeddingProgress = db.getEmbeddingProgress();
 
                 // Update tree view description
                 if (this.treeView) {
@@ -141,6 +147,31 @@ export class DatabaseViewProvider implements vscode.TreeDataProvider<DatabaseTre
         }
 
         this._onDidChangeTreeData.fire(undefined);
+    }
+
+    /** Refresh when embeddings start, progress, or finish. */
+    private watchEmbeddings(db: ScimaxDb): void {
+        if (this.embeddingListener) return;
+        this.embeddingListener = db.onDidChangeEmbeddings(() => {
+            if (this.treeView && !this.treeView.visible) {
+                this.staleWhileHidden = true;
+                return;
+            }
+            void this.refresh();
+        });
+    }
+
+    /** Called when the view becomes visible: catch up on changes missed while hidden. */
+    refreshIfStale(): void {
+        if (this.staleWhileHidden) {
+            this.staleWhileHidden = false;
+            void this.refresh();
+        }
+    }
+
+    dispose(): void {
+        this.embeddingListener?.dispose();
+        this._onDidChangeTreeData.dispose();
     }
 
     getTreeItem(element: DatabaseTreeItem): vscode.TreeItem {
@@ -238,6 +269,15 @@ export class DatabaseViewProvider implements vscode.TreeDataProvider<DatabaseTre
             'Search using keywords with BM25 ranking'
         ));
 
+        // Shown while the embedding queue runs, in place of "Reindex required"
+        const progress = this.embeddingProgress;
+        const embeddingItem = progress && new DatabaseStatItem(
+            'Embeddings',
+            `Generating ${progress.done}/${progress.total}`,
+            'Embeddings are being generated in the background. Semantic search covers the files embedded so far.',
+            'sync~spin'
+        );
+
         // Semantic search status
         if (provider === 'none') {
             // Provider disabled
@@ -264,6 +304,11 @@ export class DatabaseViewProvider implements vscode.TreeDataProvider<DatabaseTre
                 'combine',
                 'Combined keyword and semantic search'
             ));
+            if (embeddingItem) {
+                items.push(embeddingItem);
+            }
+        } else if (embeddingItem && this.stats?.vector_search_supported) {
+            items.push(embeddingItem);
         } else if (this.stats?.chunks === 0 || !this.stats?.has_embeddings) {
             // Provider configured but no embeddings yet
             items.push(new DatabaseActionItem(
@@ -391,7 +436,7 @@ export function registerDatabaseView(context: vscode.ExtensionContext): Database
 
     provider.setTreeView(treeView);
 
-    context.subscriptions.push(treeView);
+    context.subscriptions.push(treeView, provider);
 
     // Refresh command
     context.subscriptions.push(
@@ -407,6 +452,8 @@ export function registerDatabaseView(context: vscode.ExtensionContext): Database
             if (e.visible && !initialized) {
                 initialized = true;
                 provider.refresh();
+            } else if (e.visible) {
+                provider.refreshIfStale();
             }
         })
     );

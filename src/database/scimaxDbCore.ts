@@ -1798,8 +1798,10 @@ export class ScimaxDbCore {
                     console.error(`[ScimaxDbCore] Failed to generate embeddings for ${filePath}:`, error);
                 }
                 done++;
-                const delayMs = this.embeddingQueue.length > 100 ? 500 : 200;
-                await new Promise(r => setTimeout(r, delayMs));
+                // A short yield lets GC and other work run between files. Each
+                // file's text and vectors are released here, so a longer wait
+                // only slows large queues (500 ms/file added ~20 min per 2500 files).
+                await new Promise(r => setTimeout(r, 50));
             }
         } finally {
             this.isProcessingEmbeddings = false;

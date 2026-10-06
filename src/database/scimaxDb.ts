@@ -76,6 +76,12 @@ export class ScimaxDb extends ScimaxDbCore {
     private _onDidRebuild = new vscode.EventEmitter<{ filesIndexed: number; errors: number }>();
     readonly onDidRebuild = this._onDidRebuild.event;
 
+    // Fires when an embedding run starts, every few files while it runs, and
+    // when it ends, so views can show progress and pick up new embeddings.
+    private _onDidChangeEmbeddings = new vscode.EventEmitter<void>();
+    readonly onDidChangeEmbeddings = this._onDidChangeEmbeddings.event;
+    private embeddingProgress: { done: number; total: number } | null = null;
+
     // Advanced search engine
     private advancedSearchEngine: AdvancedSearchEngine | null = null;
 
@@ -248,6 +254,9 @@ export class ScimaxDb extends ScimaxDbCore {
         this.embeddingStatusBar.command = 'scimax.db.cancelEmbeddings';
         this.embeddingStatusBar.show();
 
+        this.embeddingProgress = { done: 0, total: this.getEmbeddingQueueLength() };
+        this._onDidChangeEmbeddings.fire();
+
         try {
             this.resetEmbeddingFailures();
             await super.processEmbeddingQueueCore();
@@ -271,6 +280,9 @@ export class ScimaxDb extends ScimaxDbCore {
         } catch (error) {
             log.error('Embedding queue processing failed', error as Error);
             this.hideEmbeddingStatusBar();
+        } finally {
+            this.embeddingProgress = null;
+            this._onDidChangeEmbeddings.fire();
         }
     }
 
@@ -278,6 +290,15 @@ export class ScimaxDb extends ScimaxDbCore {
         if (this.embeddingStatusBar) {
             this.embeddingStatusBar.text = `$(sparkle) Embeddings: ${done}/${total}`;
         }
+        this.embeddingProgress = { done, total };
+        if (done > 0 && done % 25 === 0) {
+            this._onDidChangeEmbeddings.fire();
+        }
+    }
+
+    /** Progress of the running embedding queue, or null when idle. */
+    public getEmbeddingProgress(): { done: number; total: number } | null {
+        return this.embeddingProgress;
     }
 
     private hideEmbeddingStatusBar(): void {
@@ -674,6 +695,7 @@ export class ScimaxDb extends ScimaxDbCore {
         this._onDidIndexFile.dispose();
         this._onDidClear.dispose();
         this._onDidRebuild.dispose();
+        this._onDidChangeEmbeddings.dispose();
         await super.close();
     }
 }

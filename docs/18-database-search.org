@@ -377,7 +377,7 @@ Results include:
 - Cosine distance (lower is more similar)
 - Up to 20 results by default
 
-** Syncing for Semantic Search
+** 👀 Syncing for Semantic Search
 
 After configuring an embedding provider, run `Scimax: Sync Files'
 (`scimax.db.reindex'). You do not need to rebuild the database:
@@ -385,9 +385,13 @@ After configuring an embedding provider, run `Scimax: Sync Files'
 1. Sync re-indexes changed files as usual, and also queues embeddings for
    every indexed file that has none (for example, files indexed before a
    provider was configured).
-2. Embeddings are generated in the background; the status bar shows
-   =Embeddings: N remaining= (click it to cancel).
-3. When the queue finishes, semantic search covers all embedded files.
+2. Embeddings are generated in the background. The status bar shows
+   =Embeddings: done/total= (click it to cancel), and the Database view shows
+   =Embeddings: Generating done/total= under Search, updating as it goes.
+   Expect roughly one to a few files per second, depending on the provider.
+   You do not need to run Sync again while this runs.
+3. Semantic search works on the files embedded so far while the queue runs,
+   and covers all files when it finishes.
 
 `Scimax: Rebuild Database (from scratch)' (`scimax.db.rebuild') is only needed
 if you want to discard and regenerate everything.
