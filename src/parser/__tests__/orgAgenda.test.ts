@@ -352,6 +352,37 @@ describe('orgAgenda', () => {
             expect(items[0].time).toBe('10:00');
         });
 
+        it('shows a later deadline whose warning period reaches into the view, on today', () => {
+            const today = startOfDay(new Date());
+            const due = addDays(today, 20);
+            const deadline = createTimestamp(due.getFullYear(), due.getMonth() + 1, due.getDate());
+            deadline.properties.warningType = '-';
+            deadline.properties.warningValue = 3;
+            deadline.properties.warningUnit = 'w';
+            const headline = createHeadline({ title: 'Grant report', todoKeyword: 'TODO', planning: createPlanning({ deadline }) });
+            const view = generateAgendaView([headline], createFilesMap([headline]), { startDate: today, days: 7 });
+
+            expect(view.totalItems).toBe(1);
+            const todayGroup = view.groups.find(g => g.key === format(today, 'yyyy-MM-dd'))!;
+            expect(todayGroup.items.map(i => i.title)).toEqual(['Grant report']);
+            expect(todayGroup.items[0].daysUntil).toBe(20);
+        });
+
+        it('does not show a later deadline without a warning, or with one that starts after the view', () => {
+            const today = startOfDay(new Date());
+            const due = addDays(today, 20);
+            const plain = createTimestamp(due.getFullYear(), due.getMonth() + 1, due.getDate());
+            const short = createTimestamp(due.getFullYear(), due.getMonth() + 1, due.getDate());
+            short.properties.warningValue = 1;
+            short.properties.warningUnit = 'w';
+            const headlines = [
+                createHeadline({ title: 'Plain', todoKeyword: 'TODO', planning: createPlanning({ deadline: plain }) }),
+                createHeadline({ title: 'Short warning', todoKeyword: 'TODO', planning: createPlanning({ deadline: short }) }),
+            ];
+            const view = generateAgendaView(headlines, createFilesMap(headlines), { startDate: today, days: 7 });
+            expect(view.totalItems).toBe(0);
+        });
+
         it('extracts deadline items within date range', () => {
             const deadline = createTimestamp(2024, 6, 5);
             const headline = createHeadline({

@@ -15,6 +15,7 @@ import isAfter from 'date-fns/isAfter';
 import isSameDay from 'date-fns/isSameDay';
 import differenceInDays from 'date-fns/differenceInDays';
 import parseISO from 'date-fns/parseISO';
+import { deadlineInWindow, warningDisplayDay, warningStart } from './deadlineWarning';
 import type {
     HeadlineElement,
     TimestampObject,
@@ -70,6 +71,8 @@ export interface AgendaItem {
     timestamp?: Date;
     /** Days until deadline (negative = overdue) */
     daysUntil?: number;
+    /** First day a deadline with a warning period (`-2w`) shows */
+    warningStart?: Date;
     /** Whether item is overdue */
     overdue?: boolean;
     /** Category (from CATEGORY property or file) */
@@ -277,9 +280,15 @@ function extractAgendaItems(
             if (date) {
                 const daysUntil = differenceInDays(date, startOfDay(new Date()));
                 const overdue = daysUntil < 0;
+                const { warningValue, warningUnit } = headline.planning.properties.deadline.properties;
+                const warnFrom = warningValue !== undefined && warningUnit
+                    ? warningStart(date, { value: warningValue, unit: warningUnit })
+                    : undefined;
 
-                // Show deadlines in range, or overdue deadlines
-                if (isInRange(date, startDate, endDate) || overdue) {
+                // Show deadlines in range, overdue, or due later with a
+                // warning period that reaches into the range.
+                if (isInRange(date, startDate, endDate) || overdue
+                    || (warnFrom && deadlineInWindow(date, warnFrom, startDate, addDays(startOfDay(endDate), 1)))) {
                     items.push({
                         ...baseItem,
                         deadline: date,
@@ -287,6 +296,7 @@ function extractAgendaItems(
                         time: getTimeString(headline.planning.properties.deadline),
                         daysUntil,
                         overdue,
+                        warningStart: warnFrom,
                         repeater: getRepeaterString(headline.planning.properties.deadline),
                     });
                 }
@@ -488,6 +498,21 @@ function sortAgendaItems(
 }
 
 /**
+ * List deadlines that are due after the window, but whose warning period
+ * reaches into it, on today's group (or the first warned day). Groups are one
+ * per day from `startDate`, keyed yyyy-MM-dd.
+ */
+export function placeWarnedDeadlines(items: AgendaItem[], groups: AgendaGroup[], startDate: Date, days: number): void {
+    const end = addDays(startOfDay(startDate), days);
+    for (const item of items) {
+        if (!item.deadline || !item.warningStart || item.overdue || isBefore(item.deadline, end)) continue;
+        const key = format(warningDisplayDay(item.warningStart, startDate, end), 'yyyy-MM-dd');
+        const group = groups.find(g => g.key === key);
+        if (group && !group.items.includes(item)) group.items.push(item);
+    }
+}
+
+/**
  * Group agenda items
  */
 function groupAgendaItems(
@@ -517,6 +542,8 @@ function groupAgendaItems(
                     items: dayItems,
                 });
             }
+
+            placeWarnedDeadlines(items, groups, startDate, days);
 
             // Add overdue items to today
             const overdueItems = items.filter(item => item.overdue);

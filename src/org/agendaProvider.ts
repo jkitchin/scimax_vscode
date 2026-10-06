@@ -10,6 +10,7 @@ import * as fs from 'fs';
 import { parseOrg } from '../parser/orgParserUnified';
 import {
     generateAgendaView,
+    placeWarnedDeadlines,
     formatAgendaItem,
     AgendaItem,
     AgendaView,
@@ -17,6 +18,7 @@ import {
     AgendaViewConfig,
     TodoListView,
 } from '../parser/orgAgenda';
+import { parseWarning, warningStart } from '../parser/deadlineWarning';
 import { getRowAssignees } from '../parser/projectTasks';
 import { loadProjectDocuments, loadProjectTasks, collectProjectTasks, taskKey, currentProjectRoot } from './projectData';
 import { pickAssigneeFilter } from './people';
@@ -575,6 +577,9 @@ export class AgendaManager {
             line: heading.line_number,
             scheduled: agendaType === 'scheduled' ? itemDate : undefined,
             deadline: agendaType === 'deadline' ? itemDate : undefined,
+            warningStart: agendaType === 'deadline' && itemDate && parseWarning(dbItem.date)
+                ? warningStart(itemDate, parseWarning(dbItem.date))
+                : undefined,
             daysUntil: dbItem.days_until,
             overdue: dbItem.overdue,
             category: heading.file_path.split('/').pop()?.replace('.org', ''),
@@ -606,6 +611,8 @@ export class AgendaManager {
                 items: dayItems,
             });
         }
+
+        placeWarnedDeadlines(items, groups, startDate, days);
 
         // Add overdue items to today's group
         const overdueItems = items.filter(item => item.overdue);

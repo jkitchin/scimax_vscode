@@ -27,6 +27,7 @@ import {
 } from '../parser/orgParserAdapter';
 import { extractAnchors, normalizeAnchorText } from '../parser/orgAnchors';
 import { isExcludedPath } from '../shared/ignorePatterns';
+import { parseWarning, warningStart } from '../parser/deadlineWarning';
 import { markdownFencedLineMask } from '../shared/markdownFences';
 // Migration data - inlined here to avoid importing migrations.ts which pulls in vscode via logger.
 // Keep in sync with src/database/migrations.ts.
@@ -2397,7 +2398,9 @@ export class ScimaxDbCore {
             const heading = row as unknown as HeadingRecord;
             const deadlineDate = parseLocalYmd(heading.deadline!.split(' ')[0]);
             const daysUntil = Math.floor((deadlineDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
-            if (!beforeDate || deadlineDate <= beforeDate) {
+            // A warning period (`-2w`) brings a later deadline into the window.
+            const showFrom = warningStart(deadlineDate, parseWarning(heading.deadline!));
+            if (!beforeDate || showFrom <= beforeDate) {
                 items.push({ type: 'deadline', heading, date: heading.deadline!, days_until: daysUntil, overdue: daysUntil < 0 });
             }
         }

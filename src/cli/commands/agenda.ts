@@ -11,6 +11,8 @@ import { vscodeLinkAt } from '../links';
 // Per-function imports: the package index loads all of date-fns.
 import format from 'date-fns/format';
 import addDays from 'date-fns/addDays';
+import startOfDay from 'date-fns/startOfDay';
+import { deadlineInWindow, parseWarning, warningStart } from '../../parser/deadlineWarning';
 
 interface CliConfig {
     dbPath: string;
@@ -96,10 +98,16 @@ function filterAgendaItems(items: AgendaItem[], settings: AgendaSettings): Agend
  * "today" view reports thousands of stale items.
  */
 function windowAgendaItems(items: AgendaItem[], days: number): AgendaItem[] {
+    const today = startOfDay(new Date());
     return items.filter(item => {
         // An item with no resolvable date can't be placed in a day window.
         if (item.days_until === undefined || item.days_until === null) return false;
-        return item.days_until >= 0 && item.days_until < days;
+        if (item.days_until >= 0 && item.days_until < days) return true;
+        // A later deadline whose warning period (`-2w`) reaches into the window.
+        const warning = item.type === 'deadline' ? parseWarning(item.date) : undefined;
+        if (!warning || item.days_until < 0) return false;
+        const due = addDays(today, item.days_until);
+        return deadlineInWindow(due, warningStart(due, warning), today, addDays(today, days));
     });
 }
 

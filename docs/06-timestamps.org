@@ -490,26 +490,36 @@ DEADLINE: <2026-04-15 Tue -7d>
 Due April 15, start warning 7 days early.
 #+END_SRC
 
-* ✅ Warning Periods
+* 👀 Warning Periods
 CLOSED: [2026-01-17 Sat 08:40]
 
-Warning periods display deadlines in the agenda before they're due.
+An agenda view covers the window you pick (day, week, fortnight, month), and a
+deadline shows in it when its date falls inside the window; an overdue deadline
+always shows on today. A warning period extends this: a deadline with =-2w=
+also shows in any window that includes one of the two weeks before it is due.
+It is listed on today's line (or, for a window that does not include today, on
+its first warned day) as =In N d.:=, and on its own date if that is in the
+window too.
 
-** ✅ Warning Period Syntax
+** 👀 Warning Period Syntax
 CLOSED: [2026-01-17 Sat 08:40]
 
-Add -Nd to a deadline where N is days:
+Add =-N= and a unit to a deadline: =d= days, =w= weeks, =m= months, =y= years
+(or =h= hours):
 
 #+BEGIN_SRC org
 DEADLINE: <2026-01-25 Sat -7d>
 #+END_SRC
 
-This appears in the agenda 7 days before January 25.
+A week view that includes any day from January 18 on shows this deadline.
 
-** ✅ Default Warning Period
+** 👀 No Default Warning Period
 CLOSED: [2026-01-17 Sat 08:41]
 
-Without a warning period specified, deadlines show 14 days in advance.
+There is no default warning period (Emacs uses ~org-deadline-warning-days~, 14
+days). The window you choose already sets how far ahead you look, so a deadline
+without a warning appears only when its date is inside the window, or once it
+is overdue.
 
 ** ✅ Setting Custom Warnings
 CLOSED: [2026-01-17 Sat 08:41]
@@ -520,9 +530,9 @@ CLOSED: [2026-01-17 Sat 08:41]
 | -1w     | Warn 1 week before        |
 | -2w     | Warn 2 weeks before       |
 | -1m     | Warn 1 month before       |
-| -0d     | Show only on deadline day |
+| -0d     | Same as no warning        |
 
-** ✅ Warning Period Examples
+** 👀 Warning Period Examples
 CLOSED: [2026-01-17 Sat 08:41]
 
 #+BEGIN_SRC org
@@ -536,12 +546,13 @@ DEADLINE: <2026-02-15 Sun -14d>
 
 ,* TODO Pay rent
 DEADLINE: <2026-02-01 Sun -0d>
-; Show only on the day it's due
-
-,* TODO Annual review meeting
-SCHEDULED: <2026-12-15 Tue -7d>
-; Even SCHEDULED can have warnings for preparation
+; Only in a window that contains the day it's due
 #+END_SRC
+
+Warnings apply to deadlines. On a =SCHEDULED= timestamp, org-mode reads =-7d=
+as a /delay/ (keep the item out of the agenda until 7 days after the scheduled
+date), not a warning. Scimax does not apply delays: a scheduled item shows on
+its scheduled date.
 
 ** ✅ Combining Repeaters and Warnings
 CLOSED: [2026-01-17 Sat 08:41]
