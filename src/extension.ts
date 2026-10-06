@@ -85,7 +85,7 @@ import { registerEntitySelector } from './org/entitySelector';
 // Jupyter commands imported dynamically to handle zeromq errors gracefully
 // import { registerJupyterCommands } from './jupyter/commands';
 import { ProjectileManager, Project } from './projectile/projectileManager';
-import { registerProjectileCommands, checkPendingFilePicker } from './projectile/commands';
+import { registerProjectileCommands, checkPendingFilePicker, checkPendingOpenFile } from './projectile/commands';
 import { ProjectTreeProvider, ProjectItem } from './projectile/projectTreeProvider';
 import { registerFuzzySearchCommands } from './fuzzySearch/commands';
 import { registerJumpCommands } from './jump/commands';
@@ -1166,6 +1166,7 @@ async function activateScimax(context: vscode.ExtensionContext) {
             // Check if we were opened with a pending file picker request
             // (from project switch [f] action in another window)
             await checkPendingFilePicker(context);
+            await checkPendingOpenFile(context);
         } catch (error) {
             console.error('Scimax: Failed to initialize Projectile manager:', error);
         }

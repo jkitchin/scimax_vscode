@@ -301,6 +301,25 @@ Example workflow:
 5. Click to navigate to each match
 #+end_example
 
+** ⚠️ Switching to the Current File's Project
+
+When you open a file that belongs to another project (from the agenda, a link
+or a search), the window still has the original project, so the Explorer and
+=C-c p f= show the wrong files. =Scimax: Switch to Current File's Project=
+(=C-c p .=) switches the window to the file's project:
+
+#+begin_src
+Command: scimax.projectile.switchToFileProject
+Keybinding: C-c p .
+#+end_src
+
+The project is the nearest directory above the file that has a =.git= or
+=.projectile=, or is a known project; it is added to the known projects if it
+is new. The window reloads with that folder, VS Code restores that project's
+open editors, and the file reopens at the same line, revealed in the Explorer.
+If the window already has the project, the file is just revealed. VS Code asks
+about unsaved changes before it switches. To go back, switch with =C-c p p=.
+
 ** ✅ Opening Project Root
 CLOSED: [2026-01-16 Fri 21:12]
 
@@ -454,6 +473,7 @@ CLOSED: [2026-01-16 Fri 21:13]
 | =Scimax: Find File in Known Projects=      | =C-c p F=   |           | Find file across all projects      |
 | =Scimax: Search in Project=                | =C-c p s=   | g         | Search text in project             |
 | =Scimax: Open Project Root=                | =C-c p d=   |           | Reveal project root in explorer    |
+| =Scimax: Switch to Current File's Project= | =C-c p .=   |           | Switch to the file's project       |
 | =Scimax: Add Project=                      | =C-c p a=   | a         | Add folder to project list         |
 | =Scimax: Remove Project=                   |             | r         | Remove project from list           |
 | =Scimax: Scan Directory for Projects=      |             | s         | Find projects in directory         |

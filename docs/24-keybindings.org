@@ -358,6 +358,7 @@ viewport. Moving the cursor resets the cycle to center.
 | Key       | Action                          |
 |-----------+---------------------------------|
 | C-c p p   | Switch project                  |
+| C-c p .   | Switch to this file's project   |
 | C-c p f   | Find file in project            |
 | C-c p s   | Search in project               |
 | C-c p d   | Open project root directory     |

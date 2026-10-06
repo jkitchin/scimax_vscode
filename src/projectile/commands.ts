@@ -212,6 +212,77 @@ function formatRelativeTime(timestamp: number): string {
 }
 
 /**
+ * The project a file belongs to: the nearest directory at or above it that
+ * has a .git or .projectile, or is a known project. Undefined if none.
+ */
+export function findProjectRootFor(filePath: string, knownProjects: string[]): string | undefined {
+    const known = new Set(knownProjects.map(p => path.resolve(p)));
+    for (let dir = path.dirname(path.resolve(filePath)); ; dir = path.dirname(dir)) {
+        if (known.has(dir) || fs.existsSync(path.join(dir, '.git')) || fs.existsSync(path.join(dir, '.projectile'))) {
+            return dir;
+        }
+        if (path.dirname(dir) === dir) return undefined;
+    }
+}
+
+/** globalState key: a file to reopen once the window has switched to its project. */
+const PENDING_OPEN_FILE = 'scimax.pendingOpenFile';
+
+/**
+ * Switch the window to the project of the file in the active editor (C-c p .),
+ * and reopen the file there at the same line. If the window already has that
+ * project, reveal the file in the Explorer instead.
+ */
+async function switchToFileProject(manager: ProjectileManager): Promise<void> {
+    const editor = vscode.window.activeTextEditor;
+    if (!editor || editor.document.uri.scheme !== 'file') {
+        vscode.window.showInformationMessage('Switch to file\'s project: the current editor is not a file.');
+        return;
+    }
+    const filePath = editor.document.uri.fsPath;
+    const root = findProjectRootFor(filePath, manager.getProjects().map(p => p.path));
+    if (!root) {
+        vscode.window.showInformationMessage(
+            `${path.basename(filePath)} is not in a project (no .git or .projectile above it).`);
+        return;
+    }
+
+    const folders = vscode.workspace.workspaceFolders || [];
+    if (folders.some(f => path.resolve(f.uri.fsPath) === root)) {
+        await vscode.commands.executeCommand('revealInExplorer', editor.document.uri);
+        vscode.window.showInformationMessage(`Already in project ${path.basename(root)}.`);
+        return;
+    }
+
+    if (!manager.getProject(root)) await manager.addProject(root);
+    await manager.touchProject(root);
+    await manager.getContext().globalState.update(PENDING_OPEN_FILE, {
+        root, file: filePath, line: editor.selection.active.line,
+    });
+    await vscode.commands.executeCommand('vscode.openFolder', vscode.Uri.file(root), { forceNewWindow: false });
+}
+
+/**
+ * Reopen the file that C-c p . switched projects for. Call after activation in
+ * the reloaded window.
+ */
+export async function checkPendingOpenFile(context: vscode.ExtensionContext): Promise<void> {
+    const pending = context.globalState.get<{ root: string; file: string; line: number }>(PENDING_OPEN_FILE);
+    if (!pending) return;
+    await context.globalState.update(PENDING_OPEN_FILE, undefined);
+    const folders = vscode.workspace.workspaceFolders || [];
+    if (!folders.some(f => path.resolve(f.uri.fsPath) === pending.root)) return;
+    try {
+        const uri = vscode.Uri.file(pending.file);
+        const position = new vscode.Position(pending.line, 0);
+        await vscode.window.showTextDocument(uri, { selection: new vscode.Range(position, position) });
+        await vscode.commands.executeCommand('revealInExplorer', uri);
+    } catch {
+        // The file may have moved or been deleted in the meantime.
+    }
+}
+
+/**
  * Open a project
  */
 async function openProject(manager: ProjectileManager, project: Project): Promise<void> {
@@ -642,6 +713,9 @@ export function registerProjectileCommands(
 
         // Search in project (C-c p s)
         vscode.commands.registerCommand('scimax.projectile.search', searchInProject),
+
+        // Switch to the project of the current file (C-c p .)
+        vscode.commands.registerCommand('scimax.projectile.switchToFileProject', () => switchToFileProject(manager)),
 
         // Open project root (C-c p d)
         vscode.commands.registerCommand('scimax.projectile.root', openProjectRoot),

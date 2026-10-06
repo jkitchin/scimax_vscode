@@ -1976,6 +1976,10 @@
         "title": "Scimax: Open Project Root"
       },
       {
+        "command": "scimax.projectile.switchToFileProject",
+        "title": "Scimax: Switch to Current File's Project"
+      },
+      {
         "command": "scimax.projectile.add",
         "title": "Scimax: Add Project",
         "icon": "$(add)"
@@ -4607,6 +4611,12 @@
         "command": "scimax.projectile.switch",
         "key": "ctrl+c p p",
         "mac": "ctrl+c p p",
+        "when": "!terminalFocus"
+      },
+      {
+        "command": "scimax.projectile.switchToFileProject",
+        "key": "ctrl+c p .",
+        "mac": "ctrl+c p .",
         "when": "!terminalFocus"
       },
       {

@@ -1,6 +1,6 @@
 {
-  "buildDate": "2026-10-06T14:57:48.667Z",
-  "count": 3645,
+  "buildDate": "2026-10-06T16:52:25.384Z",
+  "count": 3646,
   "entries": [
     {
       "heading": "Scimax VS Code",
@@ -51073,10 +51073,48 @@
       ]
     },
     {
-      "heading": "Opening Project Root",
+      "heading": "Switching to the Current File's Project",
       "level": 2,
       "file": "17-projectile.org",
       "line": 304,
+      "content": "When you open a file that belongs to another project (from the agenda, a link or a search), the window still has the original project, so the Explorer and =C-c p f= show the wrong files. =Scimax: Switch to Current File's Project= (=C-c p .=) switches the window to the file's project: #+begin_src Command: scimax.projectile.switchToFileProject Keybinding: C-c p . #+end_src The project is the nearest directory above the file that has a =.git= or =.projectile=, or is a known project; it is added to ",
+      "path": [
+        "Project Operations"
+      ],
+      "commands": [
+        "scimax.projectile.switchToFileProject"
+      ],
+      "keybindings": [
+        "C-c"
+      ],
+      "keywords": [
+        "switching",
+        "current",
+        "project",
+        "open",
+        "belongs",
+        "another",
+        "agenda",
+        "link",
+        "search",
+        "window",
+        "still",
+        "original",
+        "explorer",
+        "c-c",
+        "show",
+        "wrong",
+        "scimax",
+        "switch",
+        "switches",
+        "beginsrc"
+      ]
+    },
+    {
+      "heading": "Opening Project Root",
+      "level": 2,
+      "file": "17-projectile.org",
+      "line": 323,
       "content": "CLOSED: [2026-01-16 Fri 21:12] Navigate to the project root in the file explorer with `Scimax: Open Project Root' (`C-c p d'): #+begin_src Command: Scimax: Open Project Root Keybinding: C-c p d Hydra: (none) #+end_src For multi-root workspaces, you'll be asked to select which project root to reveal.",
       "path": [
         "Project Operations"
@@ -51112,7 +51150,7 @@
       "heading": "Project Information",
       "level": 2,
       "file": "17-projectile.org",
-      "line": 317,
+      "line": 336,
       "content": "CLOSED: [2026-01-16 Fri 21:12] View details about the current project with `Scimax: Project Info': #+begin_src Command: Scimax: Project Info Keybinding: (none) #+end_src Displays: - Project name - Full path - Project type (git, projectile, manual) - Last opened timestamp - Whether it's tracked by projectile Example output: #+begin_example Name: scimax_vscode Path: /home/user/scimax_vscode Type: git Last opened: 2026-01-13 14:32:15 #+end_example",
       "path": [
         "Project Operations"
@@ -51146,7 +51184,7 @@
       "heading": "Projects Tree View",
       "level": 1,
       "file": "17-projectile.org",
-      "line": 343,
+      "line": 362,
       "content": "CLOSED: [2026-01-16 Fri 21:12]",
       "path": [],
       "commands": [],
@@ -51165,7 +51203,7 @@
       "heading": "Sidebar Panel",
       "level": 2,
       "file": "17-projectile.org",
-      "line": 346,
+      "line": 365,
       "content": "CLOSED: [2026-01-16 Fri 21:13] The Projects tree view appears in the Scimax sidebar, showing all known projects. To open the sidebar: #+begin_src View → Open View... → Scimax Projects #+end_src",
       "path": [
         "Projects Tree View"
@@ -51195,7 +51233,7 @@
       "heading": "Tree View Elements",
       "level": 2,
       "file": "17-projectile.org",
-      "line": 357,
+      "line": 376,
       "content": "CLOSED: [2026-01-16 Fri 21:13] Each project in the tree shows: - *Icon*: - 🟢 Open folder icon (green) = currently open project - Git branch icon = git repository - File icon = projectile-marked project - Folder icon = manual project - *Name*: Project directory name - *Description*: - \"● current\" for the active project - Relative time (e.g., \"2h ago\", \"3d ago\") for recent projects - Empty for never-opened projects",
       "path": [
         "Projects Tree View"
@@ -51229,7 +51267,7 @@
       "heading": "Tree Interactions",
       "level": 2,
       "file": "17-projectile.org",
-      "line": 375,
+      "line": 394,
       "content": "CLOSED: [2026-01-16 Fri 21:13] Click a project to open it: - Same behavior as `C-c p p' (Switch Project) - Choose New Window, Current Window, or Add to Workspace Right-click (context menu) actions: - Refresh tree view - Remove project - Show project info",
       "path": [
         "Projects Tree View"
@@ -51265,7 +51303,7 @@
       "heading": "Refreshing the Tree",
       "level": 2,
       "file": "17-projectile.org",
-      "line": 387,
+      "line": 406,
       "content": "CLOSED: [2026-01-16 Fri 21:13] The tree auto-refreshes when: - Projects are added or removed - Workspace folders change - Projects are accessed (last opened time updates) Manual refresh: #+begin_src Command: Scimax: Refresh Projects Icon: Refresh button in tree view toolbar #+end_src",
       "path": [
         "Projects Tree View"
@@ -51299,7 +51337,7 @@
       "heading": "Recent Projects",
       "level": 1,
       "file": "17-projectile.org",
-      "line": 402,
+      "line": 421,
       "content": "CLOSED: [2026-01-16 Fri 21:13]",
       "path": [],
       "commands": [],
@@ -51317,7 +51355,7 @@
       "heading": "Sorting by Last Access",
       "level": 2,
       "file": "17-projectile.org",
-      "line": 405,
+      "line": 424,
       "content": "CLOSED: [2026-01-16 Fri 21:13] Projects are sorted by last opened time, with the most recently accessed appearing first: #+begin_example Project List: 1. scimax_vscode        (just now)     # ← Currently open 2. my-research          (2h ago)       # ← Recently used 3. client-website       (3d ago) 4. old-notes            (2024-11-15)   # ← Long time ago #+end_example This ordering makes it quick to switch back to recently used projects.",
       "path": [
         "Recent Projects"
@@ -51351,7 +51389,7 @@
       "heading": "Automatic Time Tracking",
       "level": 2,
       "file": "17-projectile.org",
-      "line": 420,
+      "line": 439,
       "content": "CLOSED: [2026-01-16 Fri 21:13] Last opened time is updated automatically when: - Opening a project via `C-c p p' (Switch Project) - Clicking a project in the tree view - Opening a workspace folder that's a known project The timestamp is stored in VS Code's global state, persisting across sessions.",
       "path": [
         "Recent Projects"
@@ -51387,7 +51425,7 @@
       "heading": "Time Format",
       "level": 2,
       "file": "17-projectile.org",
-      "line": 431,
+      "line": 450,
       "content": "CLOSED: [2026-01-16 Fri 21:13] Relative times are shown for recent access: | Time Difference | Format         | Example    | |-----------------+----------------+------------| | < 1 minute      | \"just now\"     | just now   | | < 60 minutes    | minutes ago    | 23m ago    | | < 24 hours      | hours ago      | 5h ago     | | < 30 days       | days ago       | 12d ago    | | ≥ 30 days       | date           | 11/23/2024 |",
       "path": [
         "Recent Projects"
@@ -51421,7 +51459,7 @@
       "heading": "Commands Reference",
       "level": 1,
       "file": "17-projectile.org",
-      "line": 444,
+      "line": 463,
       "content": "CLOSED: [2026-01-16 Fri 21:13]",
       "path": [],
       "commands": [],
@@ -51439,7 +51477,7 @@
       "heading": "All Projectile Commands",
       "level": 2,
       "file": "17-projectile.org",
-      "line": 447,
+      "line": 466,
       "content": "CLOSED: [2026-01-16 Fri 21:13] | Command                                    | Keybinding  | Hydra Key | Description                        | |--------------------------------------------+-------------+-----------+------------------------------------| | =Scimax: Switch Project=                   | =C-c p p=   | p         | Switch to another project          | | =Scimax: Find File in Project=             | =C-c p f=   | f         | Find file in current project       | | =Scimax: Find File in Known",
       "path": [
         "Commands Reference"
@@ -51475,7 +51513,7 @@
       "heading": "Keybindings",
       "level": 2,
       "file": "17-projectile.org",
-      "line": 464,
+      "line": 484,
       "content": "CLOSED: [2026-01-16 Fri 21:13] All projectile keybindings use the =C-c p= prefix, matching Emacs Projectile conventions: #+begin_src C-c p p    Switch project C-c p f    Find file in current project C-c p F    Find file in all known projects C-c p s    Search in project C-c p d    Open project root (directory) C-c p a    Add project #+end_src These bindings work in all editors, regardless of file type.",
       "path": [
         "Commands Reference"
@@ -51511,7 +51549,7 @@
       "heading": "Hydra Menu Access",
       "level": 2,
       "file": "17-projectile.org",
-      "line": 480,
+      "line": 500,
       "content": "CLOSED: [2026-01-16 Fri 21:13] Open the Projects hydra menu: #+begin_src 1. Open main hydra: C-c m (or Command Palette → Scimax: Hydra Menu) 2. Press 'p' for Projects #+end_src The hydra shows all projectile commands with single-key access: #+begin_example ┌─────────────────────────────────────┐ │ Projects (Projectile)               │ ├─────────────────────────────────────┤ │ Switch                              │ │  p  Switch Project                  │ │                                     │ │ M",
       "path": [
         "Commands Reference"
@@ -51547,7 +51585,7 @@
       "heading": "Integration with Notebook System",
       "level": 1,
       "file": "17-projectile.org",
-      "line": 510,
+      "line": 530,
       "content": "CLOSED: [2026-01-16 Fri 21:14]",
       "path": [],
       "commands": [],
@@ -51566,7 +51604,7 @@
       "heading": "Notebook-Projectile Relationship",
       "level": 2,
       "file": "17-projectile.org",
-      "line": 513,
+      "line": 533,
       "content": "CLOSED: [2026-01-16 Fri 21:14] The notebook and projectile systems work together: - *Notebooks are projects*: Creating a notebook automatically creates a `.projectile' marker - *Projects can be notebooks*: Any project can have a `.scimax/' directory to become a notebook - *Shared markers*: Both systems recognize `.projectile' files - *Unified workflow*: Switch projects with projectile, manage research structure with notebooks",
       "path": [
         "Integration with Notebook System"
@@ -51600,7 +51638,7 @@
       "heading": "Creating Projectile-Enabled Notebooks",
       "level": 2,
       "file": "17-projectile.org",
-      "line": 523,
+      "line": 543,
       "content": "CLOSED: [2026-01-16 Fri 21:14] When you create a notebook with `Scimax: New Notebook': #+begin_src org my-notebook/ ├── .scimax/ │   └── config.json        # Notebook metadata ├── .projectile            # ← Projectile marker (auto-created) ├── .git/                  # Optional: if \"Initialize Git\" was checked └── README.org #+end_src The notebook is automatically: 1. Added to the projectile projects list 2. Detected as type \"projectile\" (or \"git\" if git was initialized) 3. Available via `C-c p p",
       "path": [
         "Integration with Notebook System"
@@ -51636,7 +51674,7 @@
       "heading": "Converting Projects to Notebooks",
       "level": 2,
       "file": "17-projectile.org",
-      "line": 542,
+      "line": 562,
       "content": "CLOSED: [2026-01-16 Fri 21:14] Convert any existing project into a notebook: #+begin_src 1. Open the project 2. Run: Scimax: New Notebook 3. Choose the project directory as the location → Adds .scimax/ configuration → Project becomes a full notebook with metadata #+end_src The project remains in your projectile list and gains notebook features: - Master file tracking - Collaborator management - Notebook-scoped agenda - Archive capabilities",
       "path": [
         "Integration with Notebook System"
@@ -51670,7 +51708,7 @@
       "heading": "Notebook Metadata in Projects",
       "level": 2,
       "file": "17-projectile.org",
-      "line": 561,
+      "line": 581,
       "content": "CLOSED: [2026-01-16 Fri 21:14] Notebooks store additional metadata in `.scimax/config.json': #+begin_src json { \"name\": \"Research Project\", \"description\": \"My research on topic X\", \"masterFile\": \"README.org\", \"collaborators\": [ { \"name\": \"Jane Doe\", \"email\": \"jane@example.com\", \"role\": \"lead\" } ], \"keywords\": [\"research\", \"machine-learning\"], \"custom\": { \"grant\": \"NSF-12345\" } } #+end_src This metadata is available to both systems: - Projectile shows the project in its list",
       "path": [
         "Integration with Notebook System"
@@ -51704,7 +51742,7 @@
       "heading": "Workflow Example: Research Projects",
       "level": 2,
       "file": "17-projectile.org",
-      "line": 589,
+      "line": 609,
       "content": "CLOSED: [2026-01-16 Fri 21:14] Typical workflow for managing multiple research projects: #+begin_example # Create notebooks for each research topic Scimax: New Notebook → \"ml-experiments\" Scimax: New Notebook → \"paper-writing\" Scimax: New Notebook → \"data-analysis\" # Each is now in projectile list C-c p p → Shows all three projects # Quick switching between research C-c p p → ml-experiments → open README.org (run experiments, update notes) C-c p p → paper-writing → edit paper.org (write, cite re",
       "path": [
         "Integration with Notebook System"
@@ -51740,7 +51778,7 @@
       "heading": "Best Practices",
       "level": 1,
       "file": "17-projectile.org",
-      "line": 621,
+      "line": 641,
       "content": "CLOSED: [2026-01-16 Fri 21:14]",
       "path": [],
       "commands": [],
@@ -51758,7 +51796,7 @@
       "heading": "Project Organization",
       "level": 2,
       "file": "17-projectile.org",
-      "line": 624,
+      "line": 644,
       "content": "CLOSED: [2026-01-16 Fri 21:14]",
       "path": [
         "Best Practices"
@@ -51778,7 +51816,7 @@
       "heading": "Use Consistent Markers",
       "level": 3,
       "file": "17-projectile.org",
-      "line": 627,
+      "line": 647,
       "content": "CLOSED: [2026-01-16 Fri 21:14] Choose one marker style per project: - Git projects: Let `.git/' serve as the marker - Non-git projects: Add `.projectile' explicitly - Notebooks: Use notebook creation (adds both `.projectile' and `.scimax/')",
       "path": [
         "Best Practices",
@@ -51813,7 +51851,7 @@
       "heading": "Project Naming",
       "level": 3,
       "file": "17-projectile.org",
-      "line": 636,
+      "line": 656,
       "content": "CLOSED: [2026-01-16 Fri 21:14] Use descriptive, scannable directory names: #+begin_example Good: my-research-project/ client-website-2024/ ml-experiments/ Less good: proj1/ tmp/ stuff/ #+end_example Project names appear in the quick pick list, so clarity helps with quick selection.",
       "path": [
         "Best Practices",
@@ -51848,7 +51886,7 @@
       "heading": "Directory Structure",
       "level": 3,
       "file": "17-projectile.org",
-      "line": 655,
+      "line": 675,
       "content": "CLOSED: [2026-01-16 Fri 21:14] Organize related projects together: #+begin_example ~/projects/ ├── research/ │   ├── ml-experiments/ │   ├── data-analysis/ │   └── paper-writing/ ├── work/ │   ├── client-a/ │   └── client-b/ └── personal/ ├── blog/ └── dotfiles/ #+end_example Use `Scimax: Scan Directory for Projects' on parent directories to bulk-add.",
       "path": [
         "Best Practices",
@@ -51883,7 +51921,7 @@
       "heading": "Efficient Workflows",
       "level": 2,
       "file": "17-projectile.org",
-      "line": 676,
+      "line": 696,
       "content": "CLOSED: [2026-01-16 Fri 21:14]",
       "path": [
         "Best Practices"
@@ -51903,7 +51941,7 @@
       "heading": "Quick Switching Pattern",
       "level": 3,
       "file": "17-projectile.org",
-      "line": 679,
+      "line": 699,
       "content": "CLOSED: [2026-01-16 Fri 21:14] Develop muscle memory for `C-c p p': #+begin_example C-c p p → type few chars → Enter → choose window option # Takes ~2 seconds to switch projects #+end_example This is faster than: - File → Open Folder → navigate → select - Clicking through GUI menus",
       "path": [
         "Best Practices",
@@ -51940,7 +51978,7 @@
       "heading": "Recent Project Access",
       "level": 3,
       "file": "17-projectile.org",
-      "line": 693,
+      "line": 713,
       "content": "The most recent 3-5 projects appear at the top of the list. Use this for: #+begin_example Morning: Open project A (becomes #1) Afternoon: Switch to project B (becomes #1, A becomes #2) Evening: Back to A (already #2, quick to select) #+end_example",
       "path": [
         "Best Practices",
@@ -51975,7 +52013,7 @@
       "heading": "Search Before Switching",
       "level": 3,
       "file": "17-projectile.org",
-      "line": 703,
+      "line": 723,
       "content": "If you know what file you need: #+begin_example 1. C-c p p → select project 2. C-c p f → find file 3. Start working # Faster than navigating manually #+end_example",
       "path": [
         "Best Practices",
@@ -52008,7 +52046,7 @@
       "heading": "Maintenance",
       "level": 2,
       "file": "17-projectile.org",
-      "line": 715,
+      "line": 735,
       "content": "",
       "path": [
         "Best Practices"
@@ -52023,7 +52061,7 @@
       "heading": "Regular Cleanup",
       "level": 3,
       "file": "17-projectile.org",
-      "line": 717,
+      "line": 737,
       "content": "Run cleanup monthly: #+begin_src Scimax: Cleanup Non-existent Projects #+end_src This prevents clutter from: - Deleted temporary projects - Moved directories - External drive projects (when unmounted)",
       "path": [
         "Best Practices",
@@ -52056,7 +52094,7 @@
       "heading": "Curate Your List",
       "level": 3,
       "file": "17-projectile.org",
-      "line": 730,
+      "line": 750,
       "content": "Remove projects you no longer use: - Old experiments - Completed client work - Temporary test projects A smaller project list means faster selection in `C-c p p'.",
       "path": [
         "Best Practices",
@@ -52091,7 +52129,7 @@
       "heading": "Backup Project List",
       "level": 3,
       "file": "17-projectile.org",
-      "line": 740,
+      "line": 760,
       "content": "The project list is stored in VS Code's global state. To backup: #+begin_src sh # Find VS Code's storage location # Linux: ~/.config/Code/User/globalStorage/ # macOS: ~/Library/Application Support/Code/User/globalStorage/ # Windows: %APPDATA%\\Code\\User\\globalStorage\\ # Project list is in state.vscdb # Backup this file to preserve project list #+end_src",
       "path": [
         "Best Practices",
@@ -52126,7 +52164,7 @@
       "heading": "Multi-Root Workspaces",
       "level": 2,
       "file": "17-projectile.org",
-      "line": 754,
+      "line": 774,
       "content": "",
       "path": [
         "Best Practices"
@@ -52142,7 +52180,7 @@
       "heading": "When to Use Multi-Root",
       "level": 3,
       "file": "17-projectile.org",
-      "line": 756,
+      "line": 776,
       "content": "Use multi-root workspaces for: - Related projects that share context - Monorepo management - Cross-project refactoring Example: #+begin_example Workspace: \"Full Stack App\" Folders: - frontend/  (React app) - backend/   (Node API) - shared/    (TypeScript types) Benefits: - Search across all three - Shared settings - Unified git operations #+end_example",
       "path": [
         "Best Practices",
@@ -52177,7 +52215,7 @@
       "heading": "When to Use Separate Windows",
       "level": 3,
       "file": "17-projectile.org",
-      "line": 779,
+      "line": 799,
       "content": "Use separate windows for: - Unrelated projects - Context switching between different work modes - Performance with large projects Example: #+begin_example Window 1: Research project (Jupyter, org files) Window 2: Client website (HTML, CSS, JS) Window 3: Personal blog (Markdown, static site) Benefits: - Mental separation - Independent configurations - Clearer taskbar #+end_example",
       "path": [
         "Best Practices",
@@ -52212,7 +52250,7 @@
       "heading": "Advanced Usage",
       "level": 1,
       "file": "17-projectile.org",
-      "line": 800,
+      "line": 820,
       "content": "",
       "path": [],
       "commands": [],
@@ -52226,7 +52264,7 @@
       "heading": "Custom Project Markers",
       "level": 2,
       "file": "17-projectile.org",
-      "line": 802,
+      "line": 822,
       "content": "While `.projectile' is the standard marker, you can manually add any directory: #+begin_src Scimax: Add Project → select any folder #+end_src Use this for: - Projects without version control - Shared network directories - Temporary project workspaces",
       "path": [
         "Advanced Usage"
@@ -52260,7 +52298,7 @@
       "heading": "Scanning Large Directories",
       "level": 2,
       "file": "17-projectile.org",
-      "line": 815,
+      "line": 835,
       "content": "When scanning directories with many subdirectories: #+begin_example Directory: ~/dev/ (contains 100+ repos) Max depth: 1 # Only scans immediate children # Fast, finds top-level projects #+end_example #+begin_example Directory: ~/dev/ Max depth: 3 # Scans deeper # Slower, finds nested projects # Useful for monorepos or organized hierarchies #+end_example Balance depth vs. speed based on your directory structure.",
       "path": [
         "Advanced Usage"
@@ -52294,7 +52332,7 @@
       "heading": "Project Type Prioritization",
       "level": 2,
       "file": "17-projectile.org",
-      "line": 838,
+      "line": 858,
       "content": "If a directory has multiple markers: #+begin_example my-project/ ├── .git/          # Git marker └── .projectile    # Projectile marker Type: git (git takes priority) #+end_example Priority order: 1. `.git/' → type \"git\" 2. `.projectile' → type \"projectile\" 3. Manual add → type \"manual\" This ensures git projects are recognized as such, even if they also have `.projectile' markers.",
       "path": [
         "Advanced Usage"
@@ -52328,7 +52366,7 @@
       "heading": "Programmatic Access",
       "level": 2,
       "file": "17-projectile.org",
-      "line": 857,
+      "line": 877,
       "content": "Other extensions can access the projectile manager: #+begin_src typescript // Get the projectile manager from extension context const scimaxExt = vscode.extensions.getExtension('scimax.scimax-vscode'); if (scimaxExt?.isActive) { const api = scimaxExt.exports; const projects = api.projectileManager.getProjects(); // Use project list... } #+end_src This enables: - Custom project selection UIs - Integration with external tools - Automated project management",
       "path": [
         "Advanced Usage"
@@ -52364,7 +52402,7 @@
       "heading": "Troubleshooting",
       "level": 1,
       "file": "17-projectile.org",
-      "line": 876,
+      "line": 896,
       "content": "",
       "path": [],
       "commands": [],
@@ -52377,7 +52415,7 @@
       "heading": "Projects Not Appearing",
       "level": 2,
       "file": "17-projectile.org",
-      "line": 878,
+      "line": 898,
       "content": "",
       "path": [
         "Troubleshooting"
@@ -52393,7 +52431,7 @@
       "heading": "Symptom",
       "level": 3,
       "file": "17-projectile.org",
-      "line": 880,
+      "line": 900,
       "content": "Project doesn't appear in `C-c p p' list.",
       "path": [
         "Troubleshooting",
@@ -52416,7 +52454,7 @@
       "heading": "Solutions",
       "level": 3,
       "file": "17-projectile.org",
-      "line": 883,
+      "line": 903,
       "content": "1. Check if directory exists: #+begin_src sh ls -la /path/to/project #+end_src 2. Manually add the project: #+begin_src Scimax: Add Project → select directory #+end_src 3. Check for markers: #+begin_src sh cd /path/to/project ls -la | grep -E '\\.git|\\.projectile' #+end_src 4. Run cleanup to remove stale entries: #+begin_src Scimax: Cleanup Non-existent Projects #+end_src",
       "path": [
         "Troubleshooting",
@@ -52451,7 +52489,7 @@
       "heading": "Project List Too Long",
       "level": 2,
       "file": "17-projectile.org",
-      "line": 906,
+      "line": 926,
       "content": "CLOSED: [2026-10-03 Sat 09:01]",
       "path": [
         "Troubleshooting"
@@ -52472,7 +52510,7 @@
       "heading": "Symptom",
       "level": 3,
       "file": "17-projectile.org",
-      "line": 909,
+      "line": 929,
       "content": "`C-c p p' shows dozens of old projects.",
       "path": [
         "Troubleshooting",
@@ -52495,7 +52533,7 @@
       "heading": "Solutions",
       "level": 3,
       "file": "17-projectile.org",
-      "line": 912,
+      "line": 932,
       "content": "1. Remove unused projects, several at once (stalest are listed first): #+begin_src Scimax: Remove Project → tick each → Enter #+end_src 2. Clean up non-existent projects: #+begin_src Scimax: Cleanup Non-existent Projects #+end_src 3. Start fresh: #+begin_src # Clear global state (requires extension reload) # Open VS Code settings JSON # Remove scimax.projects entry #+end_src",
       "path": [
         "Troubleshooting",
@@ -52532,7 +52570,7 @@
       "heading": "Tree View Not Updating",
       "level": 2,
       "file": "17-projectile.org",
-      "line": 931,
+      "line": 951,
       "content": "",
       "path": [
         "Troubleshooting"
@@ -52549,7 +52587,7 @@
       "heading": "Symptom",
       "level": 3,
       "file": "17-projectile.org",
-      "line": 933,
+      "line": 953,
       "content": "Projects tree shows outdated information.",
       "path": [
         "Troubleshooting",
@@ -52570,7 +52608,7 @@
       "heading": "Solutions",
       "level": 3,
       "file": "17-projectile.org",
-      "line": 936,
+      "line": 956,
       "content": "1. Manual refresh: #+begin_src Scimax: Refresh Projects # Or click refresh icon in tree view toolbar #+end_src 2. Close and reopen sidebar: #+begin_src View → Close Sidebar View → Open View → Scimax Projects #+end_src 3. Reload window: #+begin_src Developer: Reload Window #+end_src",
       "path": [
         "Troubleshooting",
@@ -52604,7 +52642,7 @@
       "heading": "Scanning Not Finding Projects",
       "level": 2,
       "file": "17-projectile.org",
-      "line": 955,
+      "line": 975,
       "content": "",
       "path": [
         "Troubleshooting"
@@ -52621,7 +52659,7 @@
       "heading": "Symptom",
       "level": 3,
       "file": "17-projectile.org",
-      "line": 957,
+      "line": 977,
       "content": "`Scimax: Scan Directory for Projects' reports \"Found 0 projects\".",
       "path": [
         "Troubleshooting",
@@ -52643,7 +52681,7 @@
       "heading": "Solutions",
       "level": 3,
       "file": "17-projectile.org",
-      "line": 960,
+      "line": 980,
       "content": "1. Increase scan depth: #+begin_example Try depth 2, 3, or 4 #+end_example 2. Check directory structure: #+begin_src sh # Find git repos manually find /path/to/scan -name .git -type d #+end_src 3. Manually add projects: #+begin_src Scimax: Add Project #+end_src 4. Verify permissions: #+begin_src sh # Ensure you have read access to directories ls -la /path/to/scan #+end_src",
       "path": [
         "Troubleshooting",
@@ -52678,7 +52716,7 @@
       "heading": "Slow Project Operations",
       "level": 2,
       "file": "17-projectile.org",
-      "line": 984,
+      "line": 1004,
       "content": "",
       "path": [
         "Troubleshooting"
@@ -52695,7 +52733,7 @@
       "heading": "Symptom",
       "level": 3,
       "file": "17-projectile.org",
-      "line": 986,
+      "line": 1006,
       "content": "`C-c p p' or tree view is slow to load.",
       "path": [
         "Troubleshooting",
@@ -52718,7 +52756,7 @@
       "heading": "Causes & Solutions",
       "level": 3,
       "file": "17-projectile.org",
-      "line": 989,
+      "line": 1009,
       "content": "1. *Too many projects*: - Remove unused projects - Run cleanup command 2. *Network drives*: - Projects on network shares are slower - Consider removing or using local copies 3. *Deep scanning*: - Reduce max depth when scanning - Use depth 1-2 for most use cases 4. *Large project count*: - Keep project list under 50-100 entries - Archive old projects",
       "path": [
         "Troubleshooting",
@@ -52753,7 +52791,7 @@
       "heading": "Comparison with Emacs Projectile",
       "level": 1,
       "file": "17-projectile.org",
-      "line": 1007,
+      "line": 1027,
       "content": "For users familiar with Emacs Projectile:",
       "path": [],
       "commands": [],
@@ -52770,7 +52808,7 @@
       "heading": "Similarities",
       "level": 2,
       "file": "17-projectile.org",
-      "line": 1011,
+      "line": 1031,
       "content": "| Emacs Projectile           | Scimax VS Code          | Notes                           | |----------------------------+-------------------------+---------------------------------| | =C-c p p= switch           | =C-c p p= switch        | Same keybinding                 | | =C-c p f= find file        | =C-c p f= find file     | Delegates to VS Code picker     | | =C-c p s= search           | =C-c p s= search        | Opens VS Code search panel      | | =.projectile= marker       | =.projectile= ",
       "path": [
         "Comparison with Emacs Projectile"
@@ -52803,7 +52841,7 @@
       "heading": "Differences",
       "level": 2,
       "file": "17-projectile.org",
-      "line": 1023,
+      "line": 1043,
       "content": "",
       "path": [
         "Comparison with Emacs Projectile"
@@ -52818,7 +52856,7 @@
       "heading": "File Finding",
       "level": 3,
       "file": "17-projectile.org",
-      "line": 1025,
+      "line": 1045,
       "content": "- *Emacs*: Custom projectile completion - *VS Code*: Uses built-in Quick Open (`C-p') - *Advantage*: VS Code's picker is faster and more familiar",
       "path": [
         "Comparison with Emacs Projectile",
@@ -52850,7 +52888,7 @@
       "heading": "Search",
       "level": 3,
       "file": "17-projectile.org",
-      "line": 1030,
+      "line": 1050,
       "content": "- *Emacs*: helm-projectile or ivy integration - *VS Code*: Uses built-in Search panel - *Advantage*: VS Code's search is more visual with inline results",
       "path": [
         "Comparison with Emacs Projectile",
@@ -52878,7 +52916,7 @@
       "heading": "Project Caching",
       "level": 3,
       "file": "17-projectile.org",
-      "line": 1035,
+      "line": 1055,
       "content": "- *Emacs*: Caches project file lists - *VS Code*: Uses VS Code's file indexing - *Advantage*: Automatic, no manual cache management",
       "path": [
         "Comparison with Emacs Projectile",
@@ -52906,7 +52944,7 @@
       "heading": "Buffer Management",
       "level": 3,
       "file": "17-projectile.org",
-      "line": 1040,
+      "line": 1060,
       "content": "- *Emacs*: `C-c C-p b' switch buffer within project - *VS Code*: Not needed (tabs and Quick Open serve this role)",
       "path": [
         "Comparison with Emacs Projectile",
@@ -52938,7 +52976,7 @@
       "heading": "Project Commands",
       "level": 3,
       "file": "17-projectile.org",
-      "line": 1044,
+      "line": 1064,
       "content": "- *Emacs*: Many specialized commands (`C-c C-p c' compile, `C-c C-p t' test) - *VS Code*: Fewer commands, uses VS Code's task system instead",
       "path": [
         "Comparison with Emacs Projectile",
@@ -52970,7 +53008,7 @@
       "heading": "Migration Tips",
       "level": 2,
       "file": "17-projectile.org",
-      "line": 1048,
+      "line": 1068,
       "content": "If migrating from Emacs Projectile: 1. *Muscle memory*: Core keybindings (`C-c p p', `C-c p f', `C-c p s') are the same 2. *Markers*: Your `.projectile' files work without changes 3. *Workflows*: File finding and search feel similar but use VS Code UI 4. *Project list*: Use `Scimax: Scan Directory for Projects' to import existing projects 5. *Customization*: VS Code settings replace most projectile variables",
       "path": [
         "Comparison with Emacs Projectile"
@@ -53006,7 +53044,7 @@
       "heading": "Configuration",
       "level": 1,
       "file": "17-projectile.org",
-      "line": 1058,
+      "line": 1078,
       "content": "Projectile settings in VS Code settings (`settings.json'):",
       "path": [],
       "commands": [],
@@ -53023,7 +53061,7 @@
       "heading": "No Configuration Required",
       "level": 2,
       "file": "17-projectile.org",
-      "line": 1062,
+      "line": 1082,
       "content": "Projectile works out-of-the-box with no configuration. The extension: - Automatically detects current workspace folders - Persists project list in global state - Uses sensible defaults for all operations",
       "path": [
         "Configuration"
@@ -53057,7 +53095,7 @@
       "heading": "Future Configuration Options",
       "level": 2,
       "file": "17-projectile.org",
-      "line": 1070,
+      "line": 1090,
       "content": "Potential future settings (not currently implemented): #+begin_src json { // Default depth for scanning directories \"scimax.projectile.scanDepth\": 2, // Auto-scan directories on startup \"scimax.projectile.autoScan\": false, // Paths to scan for projects \"scimax.projectile.scanPaths\": [ \"~/projects/\", \"~/dev/\" ], // Max number of recent projects to show \"scimax.projectile.maxRecentProjects\": 50 } #+end_src Note: These settings are planned but not yet available. Check extension documentation for cu",
       "path": [
         "Configuration"
@@ -53096,7 +53134,7 @@
       "heading": "Conclusion",
       "level": 1,
       "file": "17-projectile.org",
-      "line": 1095,
+      "line": 1115,
       "content": "The Scimax projectile system brings Emacs-style project management to VS Code, enabling: - Fast switching between projects with familiar keybindings - Intelligent automatic detection of git repos and marked directories - Project-scoped file finding and text search - Integration with the notebook system for research workflows - Visual project management through the tree view sidebar Whether you're managing multiple research projects, client work, or personal repositories, projectile streamlines y",
       "path": [],
       "commands": [],
@@ -53128,7 +53166,7 @@
       "heading": "Next Steps",
       "level": 2,
       "file": "17-projectile.org",
-      "line": 1107,
+      "line": 1127,
       "content": "- Create a `.projectile' marker in your important projects - Use `C-c p p' to build muscle memory for project switching - Scan your development directory to populate the project list - Explore integration with notebooks for research projects - Set up keybindings for your most-used projectile commands",
       "path": [
         "Conclusion"
@@ -53164,7 +53202,7 @@
       "heading": "Related Documentation",
       "level": 2,
       "file": "17-projectile.org",
-      "line": 1115,
+      "line": 1135,
       "content": "- [[file:16-notebook.org][Notebook (Project Organization)]] - Research project structure with notebooks - [[file:24-keybindings.org][Keybindings]] - Complete keybinding reference - [[file:26-configuration.org][Configuration]] - Extension settings and customization",
       "path": [
         "Conclusion"
@@ -53197,7 +53235,7 @@
       "heading": "Feedback",
       "level": 2,
       "file": "17-projectile.org",
-      "line": 1121,
+      "line": 1141,
       "content": "If you encounter issues or have feature requests for projectile: - GitHub Issues: [[https://github.com/your-repo/scimax-vscode/issues]] - Discussion: [[https://github.com/your-repo/scimax-vscode/discussions]]",
       "path": [
         "Conclusion"
@@ -53221,7 +53259,7 @@
       "heading": "Navigation",
       "level": 1,
       "file": "17-projectile.org",
-      "line": 1128,
+      "line": 1148,
       "content": "- Previous: [[file:16-notebook.org][Notebook]] - Index: [[file:00-index.org][Documentation Index]] - Next: [[file:18-database-search.org][Database and Search]]",
       "path": [],
       "commands": [],
@@ -73947,7 +73985,7 @@
       "level": 2,
       "file": "24-keybindings.org",
       "line": 356,
-      "content": "| Key       | Action                          | |-----------+---------------------------------| | C-c p p   | Switch project                  | | C-c p f   | Find file in project            | | C-c p s   | Search in project               | | C-c p d   | Open project root directory     | | C-c p a   | Add project                     | | C-c p S-f | Find file in all known projects |",
+      "content": "| Key       | Action                          | |-----------+---------------------------------| | C-c p p   | Switch project                  | | C-c p .   | Switch to this file's project   | | C-c p f   | Find file in project            | | C-c p s   | Search in project               | | C-c p d   | Open project root directory     | | C-c p a   | Add project                     | | C-c p S-f | Find file in all known projects |",
       "path": [
         "Search & Navigation"
       ],
@@ -73978,7 +74016,7 @@
       "heading": "Database and Agenda",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 367,
+      "line": 368,
       "content": "CLOSED: [2026-01-24 Sat 17:38] | Key     | Action               | |---------+----------------------| | C-c a a | Agenda menu          | | C-c a v | Agenda buffer        | | C-c a w | Week agenda          | | C-c a m | Month agenda         | | C-c a t | TODO list            | | C-c a d | Deadlines            | | C-c d   | Database hydra menu  | | C-c d f | Browse indexed files | | C-c d s | Search database      | | C-c d h | Search headings      | | C-c d t | Show TODOs           | | C-c d a | Sh",
       "path": [
         "Search & Navigation"
@@ -74014,7 +74052,7 @@
       "heading": "Agenda Buffer",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 385,
+      "line": 386,
       "content": "CLOSED: [2026-10-03 Sat 09:01] Single keys, active only inside an agenda buffer (see [[file:13-agenda.org][Agenda]]). The buffer is read-only, so these keys are never ambiguous with typing. | Key | Action                       | |-----+------------------------------| | RET | Jump to the item's source    | | t   | Cycle the item's TODO state  | | @   | Filter by assignee           | | g   | Refresh                      | | f   | Forward one period           | | b   | Back one period              ",
       "path": [
         "Search & Navigation"
@@ -74048,7 +74086,7 @@
       "heading": "Templates",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 405,
+      "line": 406,
       "content": "CLOSED: [2026-01-24 Sat 17:38] | Key       | Action                         | |-----------+--------------------------------| | C-c C-t i | Quick insert template          | | C-c C-t n | New file from template         | | C-c C-t l | List templates                 | | C-c C-t s | Create template from selection |",
       "path": [
         "Search & Navigation"
@@ -74081,7 +74119,7 @@
       "heading": "Spelling",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 415,
+      "line": 416,
       "content": "CLOSED: [2026-01-24 Sat 17:38] | Key     | Action                        | |---------+-------------------------------| | C-c ;   | Go to previous spelling error | | C-c S-; | Go to next spelling error     |",
       "path": [
         "Search & Navigation"
@@ -74109,7 +74147,7 @@
       "heading": "Slide Sorter",
       "level": 1,
       "file": "24-keybindings.org",
-      "line": 423,
+      "line": 424,
       "content": "Keys that work while the Slide Sorter has focus. They are handled by the sorter, so they do not appear in Keyboard Shortcuts. Use =Ctrl= in place of =Cmd= on Windows and Linux. See [[file:44-marp.org::*Editing Slides][Editing Slides]]. | Key                        | Action                                                           | |----------------------------+------------------------------------------------------------------| | Left / Right               | Select previous / next slide         ",
       "path": [],
       "commands": [],
@@ -74141,7 +74179,7 @@
       "heading": "Edit Marks (Track Changes)",
       "level": 1,
       "file": "24-keybindings.org",
-      "line": 450,
+      "line": 451,
       "content": "| Key     | Action                  | |---------+-------------------------| | C-c e i | Mark insertion          | | C-c e d | Mark deletion           | | C-c e c | Add comment             | | C-c e t | Mark typo               | | C-c e a | Accept edit mark        | | C-c e r | Reject edit mark        | | C-c e ] | Next edit mark          | | C-c e [ | Previous edit mark      | | C-c e s | Show edit marks summary |",
       "path": [],
       "commands": [],
@@ -74175,7 +74213,7 @@
       "heading": "Mark Ring (Emacs-style)",
       "level": 1,
       "file": "24-keybindings.org",
-      "line": 464,
+      "line": 465,
       "content": "CLOSED: [2026-01-24 Sat 17:38] Emacs-style mark and region commands. | Key               | Action                     | |-------------------+----------------------------| | C-Space           | Set mark at point          | | C-g               | Cancel selection           | | C-c Space         | Push mark to ring          | | C-u C-Space       | Pop mark from local ring   | | Ctrl+U Ctrl+Space | Pop from local ring (alt)  | | C-x C-Space       | Pop mark from global ring  | | Ctrl+X Ctrl+Space | P",
       "path": [],
       "commands": [],
@@ -74216,7 +74254,7 @@
       "heading": "Rectangle Commands (Emacs-style)",
       "level": 1,
       "file": "24-keybindings.org",
-      "line": 481,
+      "line": 482,
       "content": "Emacs-style rectangle editing commands. A rectangle is defined by the column range and line range of the current selection. | Key         | Action                                | |-------------+---------------------------------------| | C-x r k     | Kill rectangle (save to rect clip)    | | C-x r M-w   | Copy rectangle (no delete)            | | C-x r d     | Delete rectangle (no save)            | | C-x r y     | Yank rectangle at point               | | C-x r o     | Open rectangle (insert b",
       "path": [],
       "commands": [],
@@ -74251,7 +74289,7 @@
       "heading": "Speed Commands",
       "level": 1,
       "file": "24-keybindings.org",
-      "line": 498,
+      "line": 499,
       "content": "Speed commands are single-key shortcuts available when the cursor is at the *beginning* of a heading (the first character of the heading line). They must be enabled in settings (scimax.speedCommands.enabled).",
       "path": [],
       "commands": [
@@ -74279,7 +74317,7 @@
       "heading": "Navigation Speed Commands",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 502,
+      "line": 503,
       "content": "| Key | Action                            | |-----+-----------------------------------| | n   | Next heading (same level)         | | p   | Previous heading (same level)     | | f   | Next sibling heading              | | b   | Previous sibling heading          | | u   | Parent heading (up one level)     | | j   | Jump to heading (quick picker)    | | g   | Goto menu (additional navigation) |",
       "path": [
         "Speed Commands"
@@ -74312,7 +74350,7 @@
       "heading": "Visibility Speed Commands",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 514,
+      "line": 515,
       "content": "| Key   | Action                            | |-------+-----------------------------------| | <tab> | Toggle fold (same as regular tab) | | c     | Cycle global fold                 | | C     | Show children only                | | o     | Overview (collapse all)           | | 1     | Show level 1 headings             | | 2     | Show level 2 headings             | | 3     | Show level 3 headings             | | 0     | Show all headings                 | | N     | Narrow to subtree             ",
       "path": [
         "Speed Commands"
@@ -74346,7 +74384,7 @@
       "heading": "Structure Editing Speed Commands",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 528,
+      "line": 529,
       "content": "| Key | Action               | |-----+----------------------| | l   | Promote heading only | | r   | Demote heading only  | | L   | Promote subtree      | | R   | Demote subtree       | | U   | Move subtree up      | | D   | Move subtree down    |",
       "path": [
         "Speed Commands"
@@ -74373,7 +74411,7 @@
       "heading": "\"TODO\" & Content Speed Commands",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 539,
+      "line": 540,
       "content": "| Key | Action                 | |-----+------------------------| | t   | Cycle TODO state       | | d   | Insert DEADLINE        | | s   | Insert SCHEDULED       | | e   | Set effort estimate    | | :   | Set tags               | | P   | Set property           | | I   | Clock in               | | O   | Clock out              |",
       "path": [
         "Speed Commands"
@@ -74406,7 +74444,7 @@
       "heading": "Editing Speed Commands",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 552,
+      "line": 553,
       "content": "| Key | Action                  | |-----+-------------------------| | k   | Kill (cut) subtree      | | y   | Yank (paste) subtree    | | w   | Refile subtree          | | W   | Clone subtree           | | m   | Mark (select) subtree   | | @   | Mark subtree (alt)      | | ^   | Sort entries            | | a   | Archive subtree         | | A   | Toggle archive tag      | | $   | Archive to sibling      |",
       "path": [
         "Speed Commands"
@@ -74440,7 +74478,7 @@
       "heading": "Other Speed Commands",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 567,
+      "line": 568,
       "content": "| Key | Action                   | |-----+--------------------------| | ?   | Show speed commands help | | /   | Show speed commands help |",
       "path": [
         "Speed Commands"
@@ -74461,7 +74499,7 @@
       "heading": "BibTeX Speed Commands",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 574,
+      "line": 575,
       "content": "CLOSED: [2026-01-19 Mon 18:18] Speed commands for BibTeX files, active at column 0 of @entry lines (e.g., =@article{=, =@book{=).",
       "path": [
         "Speed Commands"
@@ -74488,7 +74526,7 @@
       "heading": "Navigation",
       "level": 3,
       "file": "24-keybindings.org",
-      "line": 579,
+      "line": 580,
       "content": "CLOSED: [2026-01-19 Mon 18:18] | Key | Action         | |-----+----------------| | n   | Next entry     | | p   | Previous entry | | j   | Jump to entry  |",
       "path": [
         "Speed Commands",
@@ -74515,7 +74553,7 @@
       "heading": "Formatting",
       "level": 3,
       "file": "24-keybindings.org",
-      "line": 588,
+      "line": 589,
       "content": "CLOSED: [2026-01-19 Mon 18:18] | Key | Action              | |-----+---------------------| | s   | Sort fields         | | d   | Downcase entry      | | t   | Title case title    | | S   | Sentence case title | | c   | Clean/format entry  |",
       "path": [
         "Speed Commands",
@@ -74546,7 +74584,7 @@
       "heading": "Wrap/Strip Braces (Case Protection)",
       "level": 4,
       "file": "24-keybindings.org",
-      "line": 599,
+      "line": 600,
       "content": "CLOSED: [2026-01-21 Wed 08:02] | Key         | Action                                      | |-------------+---------------------------------------------| | C-S-]       | Wrap selection or word at cursor in braces  | | C-S-[       | Strip braces from selection or word         | Wraps text in ={}= for case protection in BibTeX titles (e.g., ={NASA}=, ={Python}=). Works anywhere in the file, not just at entry start.",
       "path": [
         "Speed Commands",
@@ -74584,7 +74622,7 @@
       "heading": "Access",
       "level": 3,
       "file": "24-keybindings.org",
-      "line": 609,
+      "line": 610,
       "content": "CLOSED: [2026-01-19 Mon 18:18] | Key | Action               | |-----+----------------------| | o   | Open PDF             | | u   | Open URL/DOI         | | N   | Open notes           | | g   | Google Scholar       | | x   | CrossRef             | | w   | Web of Science       |",
       "path": [
         "Speed Commands",
@@ -74616,7 +74654,7 @@
       "heading": "OpenAlex Integration",
       "level": 3,
       "file": "24-keybindings.org",
-      "line": 621,
+      "line": 622,
       "content": "CLOSED: [2026-01-19 Mon 18:18] | Key | Action                        | |-----+-------------------------------| | C   | Show citing works (OpenAlex)  | | R   | Show related works (OpenAlex) | | r   | Show references (OpenAlex)    |",
       "path": [
         "Speed Commands",
@@ -74645,7 +74683,7 @@
       "heading": "Actions",
       "level": 3,
       "file": "24-keybindings.org",
-      "line": 630,
+      "line": 631,
       "content": "CLOSED: [2026-01-19 Mon 18:18] | Key | Action                    | |-----+---------------------------| | y   | Copy citation key         | | b   | Copy BibTeX entry         | | B   | Strip braces from entry   | | k   | Delete entry              | | K   | Generate citation key     | | U   | Update from web           | | N   | Open notes for entry      | | A   | Toggle journal abbreviation | | ?   | Show help                 |",
       "path": [
         "Speed Commands",
@@ -74680,7 +74718,7 @@
       "heading": "Toggle Speed Commands",
       "level": 1,
       "file": "24-keybindings.org",
-      "line": 645,
+      "line": 646,
       "content": "CLOSED: [2026-01-19 Mon 18:19] | Key       | Action                       | |-----------+------------------------------| | C-c C-x s | Toggle speed commands on/off |",
       "path": [],
       "commands": [],
@@ -74707,7 +74745,7 @@
       "heading": "Additional Notes",
       "level": 1,
       "file": "24-keybindings.org",
-      "line": 652,
+      "line": 653,
       "content": "CLOSED: [2026-01-19 Mon 18:19]",
       "path": [],
       "commands": [],
@@ -74725,7 +74763,7 @@
       "heading": "Context-Dependent Keybindings",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 655,
+      "line": 656,
       "content": "Many keybindings are context-aware and behave differently depending on cursor position: - C-c C-c toggles checkboxes normally, executes source blocks inside code blocks, recalculates tables on TBLFM lines, and runs a Marp deck's ~```python run~ cell in the Python panel - S-<arrow> keys modify timestamps normally, but transpose/sort citations when on a citation - M-S-<left>/M-S-<right> promote/demote subtrees normally, but delete/insert columns when in a table - <return> opens links when cursor i",
       "path": [
         "Additional Notes"
@@ -74762,7 +74800,7 @@
       "heading": "When Conditions",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 664,
+      "line": 665,
       "content": "CLOSED: [2026-01-19 Mon 18:19] Some keybindings only work in specific contexts: - Org-mode/Markdown files: Most document structure commands - On headings: Folding, promotion, demotion - In tables: Table-specific commands - In source blocks: Block execution - At heading start: Speed commands",
       "path": [
         "Additional Notes"
@@ -74796,7 +74834,7 @@
       "heading": "Mac vs Windows/Linux",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 674,
+      "line": 675,
       "content": "CLOSED: [2026-01-19 Mon 18:19] Most keybindings use C- (Ctrl) on all platforms to match Emacs conventions. Exceptions where Mac uses s- (Cmd): - s-S-j (journal) - s-<return> (execute/insert heading) - s-S-k (delete citation) - s-S-r (reload window) - C-s-v (database menu)",
       "path": [
         "Additional Notes"
@@ -74832,7 +74870,7 @@
       "heading": "LaTeX Navigation",
       "level": 1,
       "file": "24-keybindings.org",
-      "line": 684,
+      "line": 685,
       "content": "CLOSED: [2026-01-19 Mon 18:20] These keybindings are active in LaTeX files (=.tex=):",
       "path": [],
       "commands": [],
@@ -74853,7 +74891,7 @@
       "heading": "Section Navigation",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 689,
+      "line": 690,
       "content": "CLOSED: [2026-01-19 Mon 18:19] | Key         | Action                       | |-------------+------------------------------| | C-c C-n     | Next section                 | | C-c C-p     | Previous section             | | C-c C-u     | Parent section               | | C-c C-f     | Next sibling section         | | C-c C-b     | Previous sibling section     | | C-c C-j     | Jump to any section          | | C-c j       | Jump to any section (alt)    |",
       "path": [
         "LaTeX Navigation"
@@ -74895,7 +74933,7 @@
       "heading": "Structure Editing",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 702,
+      "line": 703,
       "content": "CLOSED: [2026-01-19 Mon 18:20] | Key              | Action                     | |------------------+----------------------------| | Alt+Left         | Promote section            | | Alt+Right        | Demote section             | | Alt+Shift+Left   | Promote subtree            | | Alt+Shift+Right  | Demote subtree             | | Alt+Up           | Move section up            | | Alt+Down         | Move section down          | | C-c @            | Mark (select) section      |",
       "path": [
         "LaTeX Navigation"
@@ -74937,7 +74975,7 @@
       "heading": "Environment Commands",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 715,
+      "line": 716,
       "content": "CLOSED: [2026-01-19 Mon 18:20] | Key       | Action                          | |-----------+---------------------------------| | C-c C-e   | Select environment              | | C-c e     | Change environment type         | | C-c w     | Wrap selection in environment   | | C-c *     | Toggle starred variant          | | C-c %     | Jump to matching begin/end      | | C-c l     | Jump to label                   | | C-c C-l   | Add label to environment        |",
       "path": [
         "LaTeX Navigation"
@@ -74975,7 +75013,7 @@
       "heading": "Folding",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 728,
+      "line": 729,
       "content": "CLOSED: [2026-01-19 Mon 18:20] | Key       | Action            | |-----------+-------------------| | Tab       | Toggle fold       | | Shift+Tab | Cycle global fold |",
       "path": [
         "LaTeX Navigation"
@@ -75005,7 +75043,7 @@
       "heading": "Compile and Preview",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 736,
+      "line": 737,
       "content": "CLOSED: [2026-01-19 Mon 18:20] | Key       | Action                      | |-----------+-----------------------------| | C-c C-c   | Compile document            | | C-c v     | View PDF (built-in panel)   | | C-c C-v   | View PDF (external viewer)  | | C-c C-a   | Compile and view PDF        | | C-c g     | SyncTeX forward search      | | C-c C-k   | Clean auxiliary files       | See [[file:33-latex-navigation.org][LaTeX Navigation and Structure]] for complete documentation.",
       "path": [
         "LaTeX Navigation"
@@ -75045,7 +75083,7 @@
       "heading": "LaTeX Speed Commands",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 750,
+      "line": 751,
       "content": "CLOSED: [2026-01-24 Sat 17:39] Speed commands active at the start of =\\section=, =\\subsection=, or =\\begin{}= lines:",
       "path": [
         "LaTeX Navigation"
@@ -75072,7 +75110,7 @@
       "heading": "Section Speed Commands",
       "level": 3,
       "file": "24-keybindings.org",
-      "line": 755,
+      "line": 756,
       "content": "| Key | Action             | |-----+--------------------| | n   | Next section       | | p   | Previous section   | | f   | Forward sibling    | | b   | Backward sibling   | | u   | Up to parent       | | j   | Jump to section    | | U   | Move section up    | | D   | Move section down  | | <   | Promote section    | | >   | Demote section     | | I   | Insert section     | | N   | Narrow to section  | | W   | Widen (show all)   | | /   | Show help          |",
       "path": [
         "LaTeX Navigation",
@@ -75107,7 +75145,7 @@
       "heading": "Environment Speed Commands",
       "level": 3,
       "file": "24-keybindings.org",
-      "line": 774,
+      "line": 775,
       "content": "| Key | Action                  | |-----+-------------------------| | n   | Next environment        | | p   | Previous environment    | | j   | Jump to environment     | | s   | Select environment      | | c   | Change environment      | | k   | Kill environment        | | w   | Wrap in environment     | | u   | Unwrap environment      | | *   | Toggle starred variant  | | l   | Add label               | | C   | Add caption             | | i   | Environment info        | | /   | Show help       ",
       "path": [
         "LaTeX Navigation",
@@ -75142,7 +75180,7 @@
       "heading": "Quick Reference Card",
       "level": 1,
       "file": "24-keybindings.org",
-      "line": 792,
+      "line": 793,
       "content": "CLOSED: [2026-01-19 Mon 18:20]",
       "path": [],
       "commands": [],
@@ -75161,7 +75199,7 @@
       "heading": "Most Common Commands",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 795,
+      "line": 796,
       "content": "CLOSED: [2026-01-19 Mon 18:20] | Command            | Keybinding   | |--------------------+--------------| | Open journal       | C-S-j        | | Execute code block | C-<return>   | | Cycle TODO         | C-c C-t      | | Insert timestamp   | C-c .        | | Insert link        | C-c C-l      | | Insert citation    | C-c ]        | | Export dispatcher  | C-c C-e      | | Jump to heading    | C-c C-j      | | Fuzzy search       | C-c s        | | Hydra menu         | C-c m        |",
       "path": [
         "Quick Reference Card"
@@ -75202,7 +75240,7 @@
       "heading": "Most Common Speed Commands",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 811,
+      "line": 812,
       "content": "CLOSED: [2026-01-19 Mon 18:20] | Speed Key | Action                 | |-----------+------------------------| | n/p       | Next/Previous heading  | | f/b       | Forward/Back sibling   | | u         | Up to parent           | | j         | Jump to heading        | | t         | Cycle TODO             | | l/r       | Promote/Demote subtree |",
       "path": [
         "Quick Reference Card"
@@ -75236,7 +75274,7 @@
       "heading": "Related Topics",
       "level": 1,
       "file": "24-keybindings.org",
-      "line": 823,
+      "line": 824,
       "content": "- [[file:25-commands.org][Commands Reference]] - every command, with or without a key - [[file:23-speed-commands.org][Speed Commands]] - single keys at the start of a heading - [[file:26-configuration.org][Configuration]] - settings that change key behaviour - [[file:44-marp.org][Marp Slides]] - Slide Sorter, presenter and export keys - [[file:46-org-preview.org][Org Preview]] - the live preview keys",
       "path": [],
       "commands": [],
@@ -75268,7 +75306,7 @@
       "heading": "Further Help",
       "level": 1,
       "file": "24-keybindings.org",
-      "line": 831,
+      "line": 832,
       "content": "CLOSED: [2026-01-19 Mon 18:20] - Use C-c m to open the Hydra menu for guided command discovery - Use M-x to search all commands by name - Enable speed commands help with ? when at heading start - See [[file:00-index.org][Documentation Index]] for comprehensive guides",
       "path": [],
       "commands": [],
@@ -75303,7 +75341,7 @@
       "heading": "Navigation",
       "level": 1,
       "file": "24-keybindings.org",
-      "line": 839,
+      "line": 840,
       "content": "CLOSED: [2026-01-19 Mon 18:20] - Previous: [[file:23-speed-commands.org][Speed Commands]] - Index: [[file:00-index.org][Documentation Index]] - Next: [[file:25-commands.org][Commands]]",
       "path": [],
       "commands": [],
@@ -77972,7 +78010,7 @@
       "heading": "Editmarks",
       "level": 1,
       "file": "25-commands.org",
-      "line": 1033,
+      "line": 1034,
       "content": "CLOSED: [2026-01-17 Sat 12:47]",
       "path": [],
       "commands": [],
@@ -77989,7 +78027,7 @@
       "heading": "Mark Edits",
       "level": 2,
       "file": "25-commands.org",
-      "line": 1036,
+      "line": 1037,
       "content": "CLOSED: [2026-01-17 Sat 12:47] | Command ID                         | Description          | Default Keybinding | |------------------------------------+----------------------+--------------------| | [[cmd:scimax.editmarks.insertion]] | Mark Insertion       | C-c e i            | | [[cmd:scimax.editmarks.deletion]]  | Mark Deletion        | C-c e d            | | [[cmd:scimax.editmarks.comment]]   | Insert Edit Comment  | C-c e c            | | [[cmd:scimax.editmarks.typo]]      | Mark Typo Corre",
       "path": [
         "Editmarks"
@@ -78030,7 +78068,7 @@
       "heading": "Review Edits",
       "level": 2,
       "file": "25-commands.org",
-      "line": 1046,
+      "line": 1047,
       "content": "CLOSED: [2026-01-17 Sat 12:47] | Command ID                         | Description             | Default Keybinding | |------------------------------------+-------------------------+--------------------| | [[cmd:scimax.editmarks.accept]]    | Accept Edit Mark        | C-c e a            | | [[cmd:scimax.editmarks.reject]]    | Reject Edit Mark        | C-c e r            | | [[cmd:scimax.editmarks.acceptAll]] | Accept All Edit Marks   | -                  | | [[cmd:scimax.editmarks.rejectAll]] | ",
       "path": [
         "Editmarks"
@@ -78069,7 +78107,7 @@
       "heading": "Hydra",
       "level": 1,
       "file": "25-commands.org",
-      "line": 1059,
+      "line": 1060,
       "content": "CLOSED: [2026-01-17 Sat 12:47] | Command ID                      | Description      | Default Keybinding | |---------------------------------+------------------+--------------------| | [[cmd:scimax.hydra.show]]       | Show Hydra Menu  | -                  | | [[cmd:scimax.hydra.hide]]       | Hide Hydra Menu  | -                  | | [[cmd:scimax.hydra.back]]       | Hydra Menu Back  | -                  | | [[cmd:scimax.hydra.main]]       | Main Menu        | C-c m              | | [[cmd:scima",
       "path": [],
       "commands": [
@@ -78106,7 +78144,7 @@
       "heading": "Markup",
       "level": 1,
       "file": "25-commands.org",
-      "line": 1071,
+      "line": 1072,
       "content": "CLOSED: [2026-01-17 Sat 12:48] | Command ID                             | Description                 | Default Keybinding | |----------------------------------------+-----------------------------+--------------------| | [[cmd:scimax.markup.bold]]             | Bold (Markup)               | C-c b              | | [[cmd:scimax.markup.italic]]           | Italic (Markup)             | C-c i              | | [[cmd:scimax.markup.underline]]        | Underline (Markup)          | C-c _              |",
       "path": [],
       "commands": [
@@ -78139,7 +78177,7 @@
       "heading": "Word Case & Navigation",
       "level": 1,
       "file": "25-commands.org",
-      "line": 1088,
+      "line": 1089,
       "content": "| Command ID                        | Description                   | Default Keybinding | |-----------------------------------+-------------------------------+--------------------| | [[cmd:scimax.capitalizeWord]]     | Capitalize Word and Move Next | M-c                | | [[cmd:scimax.lowercaseWord]]      | Lowercase Word and Move Next  | M-l                | | [[cmd:scimax.uppercaseWord]]      | Uppercase Word and Move Next  | M-u                | | [[cmd:scimax.beginningOfBuffer]]  | Beginni",
       "path": [],
       "commands": [
@@ -78178,7 +78216,7 @@
       "heading": "Speed Commands",
       "level": 1,
       "file": "25-commands.org",
-      "line": 1100,
+      "line": 1101,
       "content": "CLOSED: [2026-01-17 Sat 12:48] Speed commands are single-key commands available when cursor is at the beginning of a heading line (with scimax.speedCommandsEnabled).",
       "path": [],
       "commands": [
@@ -78204,7 +78242,7 @@
       "heading": "Navigation",
       "level": 2,
       "file": "25-commands.org",
-      "line": 1105,
+      "line": 1106,
       "content": "CLOSED: [2026-01-17 Sat 12:48] | Command ID                           | Description          | Speed Key | |--------------------------------------+----------------------+-----------| | [[cmd:scimax.speed.nextSibling]]     | Next Sibling Heading | f         | | [[cmd:scimax.speed.previousSibling]] | Previous Sibling     | b         | | [[cmd:scimax.org.nextHeading]]       | Next Heading         | n         | | [[cmd:scimax.org.previousHeading]]   | Previous Heading     | p         | | [[cmd:scima",
       "path": [
         "Speed Commands"
@@ -78239,7 +78277,7 @@
       "heading": "Visibility",
       "level": 2,
       "file": "25-commands.org",
-      "line": 1120,
+      "line": 1121,
       "content": "CLOSED: [2026-01-17 Sat 12:48] | Command ID                         | Description         | Speed Key | |------------------------------------+---------------------+-----------| | [[cmd:scimax.org.cycleGlobalFold]] | Cycle Global Fold   | c         | | [[cmd:scimax.speed.showChildren]]  | Show All Children   | C (S-c)   | | [[cmd:scimax.speed.overview]]      | Overview (Fold All) | o         |",
       "path": [
         "Speed Commands"
@@ -78275,7 +78313,7 @@
       "heading": "Structure Editing",
       "level": 2,
       "file": "25-commands.org",
-      "line": 1129,
+      "line": 1130,
       "content": "CLOSED: [2026-01-17 Sat 12:48] | Command ID                            | Description          | Speed Key | |---------------------------------------+----------------------+-----------| | [[cmd:scimax.heading.moveUp]]         | Move Heading Up      | U (S-u)   | | [[cmd:scimax.heading.moveDown]]       | Move Heading Down    | D (S-d)   | | [[cmd:scimax.heading.demote]]         | Demote Heading       | r         | | [[cmd:scimax.heading.promote]]        | Promote Heading      | l         | | [[cmd",
       "path": [
         "Speed Commands"
@@ -78313,7 +78351,7 @@
       "heading": "TODO and Tags",
       "level": 2,
       "file": "25-commands.org",
-      "line": 1147,
+      "line": 1148,
       "content": "CLOSED: [2026-01-17 Sat 12:48] | Command ID                        | Description      | Speed Key | |-----------------------------------+------------------+-----------| | [[cmd:scimax.org.cycleTodo]]      | Cycle TODO State | t         | | [[cmd:scimax.speed.setTags]]      | Set Tags         | : (S-;)   | | [[cmd:scimax.speed.priorityA]]    | Set Priority A   | 1         | | [[cmd:scimax.speed.priorityB]]    | Set Priority B   | 2         | | [[cmd:scimax.speed.priorityC]]    | Set Priority C   ",
       "path": [
         "Speed Commands"
@@ -78349,7 +78387,7 @@
       "heading": "Scheduling and Timestamps",
       "level": 2,
       "file": "25-commands.org",
-      "line": 1159,
+      "line": 1160,
       "content": "CLOSED: [2026-01-17 Sat 12:48] | Command ID                          | Description        | Speed Key | |-------------------------------------+--------------------+-----------| | [[cmd:scimax.speed.schedule]]       | Add/Edit SCHEDULED | s         | | [[cmd:scimax.speed.deadline]]       | Add/Edit DEADLINE  | d         | | [[cmd:scimax.org.insertTimestamp]]  | Insert Timestamp   | .         | | [[cmd:scimax.org.shiftTimestampUp]] | Shift Timestamp Up | ,         |",
       "path": [
         "Speed Commands"
@@ -78386,7 +78424,7 @@
       "heading": "Properties and Clocking",
       "level": 2,
       "file": "25-commands.org",
-      "line": 1169,
+      "line": 1170,
       "content": "CLOSED: [2026-01-17 Sat 12:48] | Command ID                       | Description  | Speed Key | |----------------------------------+--------------+-----------| | [[cmd:scimax.speed.setProperty]] | Set Property | P (S-p)   | | [[cmd:scimax.speed.setEffort]]   | Set Effort   | e         | | [[cmd:scimax.speed.clockIn]]     | Clock In     | I (S-i)   | | [[cmd:scimax.speed.clockOut]]    | Clock Out    | O (S-o)   |",
       "path": [
         "Speed Commands"
@@ -78425,7 +78463,7 @@
       "heading": "Archiving",
       "level": 2,
       "file": "25-commands.org",
-      "line": 1179,
+      "line": 1180,
       "content": "CLOSED: [2026-01-17 Sat 12:48] | Command ID                            | Description        | Speed Key | |---------------------------------------+--------------------+-----------| | [[cmd:scimax.speed.archiveSubtree]]   | Archive Subtree    | a         | | [[cmd:scimax.speed.toggleArchiveTag]] | Toggle Archive Tag | A (S-a)   | | [[cmd:scimax.speed.archiveToSibling]] | Archive to Sibling | $ (S-4)   |",
       "path": [
         "Speed Commands"
@@ -78461,7 +78499,7 @@
       "heading": "Help",
       "level": 2,
       "file": "25-commands.org",
-      "line": 1188,
+      "line": 1189,
       "content": "CLOSED: [2026-01-17 Sat 12:49] | Command ID                  | Description           | Speed Key | |-----------------------------+-----------------------+-----------| | [[cmd:scimax.speed.help]]   | Speed Commands Help   | ? (S-/)   | | [[cmd:scimax.speed.toggle]] | Toggle Speed Commands | C-c C-x s |",
       "path": [
         "Speed Commands"
@@ -78495,7 +78533,7 @@
       "heading": "LaTeX",
       "level": 1,
       "file": "25-commands.org",
-      "line": 1196,
+      "line": 1197,
       "content": "CLOSED: [2026-01-21 Wed 11:33] Comprehensive LaTeX editing support with structural navigation, environment manipulation, and compilation.",
       "path": [],
       "commands": [],
@@ -78520,7 +78558,7 @@
       "heading": "Section Navigation",
       "level": 2,
       "file": "25-commands.org",
-      "line": 1201,
+      "line": 1202,
       "content": "CLOSED: [2026-01-21 Wed 11:33] | Command ID                                  | Description              | Default Keybinding | |---------------------------------------------+--------------------------+--------------------| | [[cmd:scimax.latex.nextSection]]            | Next Section             | C-c C-n            | | [[cmd:scimax.latex.previousSection]]        | Previous Section         | C-c C-p            | | [[cmd:scimax.latex.parentSection]]          | Parent Section           | C-c C-u   ",
       "path": [
         "LaTeX"
@@ -78561,7 +78599,7 @@
       "heading": "Environment Navigation",
       "level": 2,
       "file": "25-commands.org",
-      "line": 1215,
+      "line": 1216,
       "content": "CLOSED: [2026-01-21 Wed 11:33] | Command ID                                     | Description                | Default Keybinding | |------------------------------------------------+----------------------------+--------------------| | [[cmd:scimax.latex.nextEnvironment]]           | Next Environment           | -                  | | [[cmd:scimax.latex.previousEnvironment]]       | Previous Environment       | -                  | | [[cmd:scimax.latex.jumpToEnvironment]]         | Jump to Enviro",
       "path": [
         "LaTeX"
@@ -78595,7 +78633,7 @@
       "heading": "Structure Editing",
       "level": 2,
       "file": "25-commands.org",
-      "line": 1226,
+      "line": 1227,
       "content": "CLOSED: [2026-01-21 Wed 11:33] | Command ID                              | Description        | Default Keybinding | |-----------------------------------------+--------------------+--------------------| | [[cmd:scimax.latex.promoteSection]]     | Promote Section    | M-LEFT             | | [[cmd:scimax.latex.demoteSection]]      | Demote Section     | M-RIGHT            | | [[cmd:scimax.latex.promoteSubtree]]     | Promote Subtree    | M-S-LEFT           | | [[cmd:scimax.latex.demoteSubtree]]   ",
       "path": [
         "LaTeX"
@@ -78637,7 +78675,7 @@
       "heading": "Environment Manipulation",
       "level": 2,
       "file": "25-commands.org",
-      "line": 1245,
+      "line": 1246,
       "content": "CLOSED: [2026-01-21 Wed 11:33] | Command ID                                    | Description                | Default Keybinding | |-----------------------------------------------+----------------------------+--------------------| | [[cmd:scimax.latex.selectEnvironment]]        | Select Environment         | C-c C-e            | | [[cmd:scimax.latex.selectEnvironmentContent]] | Select Environment Content | -                  | | [[cmd:scimax.latex.changeEnvironment]]        | Change Environment ",
       "path": [
         "LaTeX"
@@ -78674,7 +78712,7 @@
       "heading": "Compilation and PDF Viewing",
       "level": 2,
       "file": "25-commands.org",
-      "line": 1261,
+      "line": 1262,
       "content": "CLOSED: [2026-01-21 Wed 11:33] | Command ID                               | Description                        | Default Keybinding | |------------------------------------------+------------------------------------+--------------------| | [[cmd:scimax.latex.compile]]             | Compile Document                   | C-c C-c            | | [[cmd:scimax.latex.viewPdf]]             | View PDF (External)                | C-c C-v            | | [[cmd:scimax.latex.viewPdfPanel]]        | View PDF (Bu",
       "path": [
         "LaTeX"
@@ -78714,7 +78752,7 @@
       "heading": "Error Navigation",
       "level": 2,
       "file": "25-commands.org",
-      "line": 1280,
+      "line": 1281,
       "content": "CLOSED: [2026-01-21 Wed 11:33] | Command ID                         | Description          | Default Keybinding | |------------------------------------+----------------------+--------------------| | [[cmd:scimax.latex.nextError]]     | Go to Next Error     | C-c `              | | [[cmd:scimax.latex.previousError]] | Go to Previous Error | C-c S-`            | | [[cmd:scimax.latex.showErrors]]    | Show All Errors      | C-c !              |",
       "path": [
         "LaTeX"
@@ -78751,7 +78789,7 @@
       "heading": "Insertion Commands",
       "level": 2,
       "file": "25-commands.org",
-      "line": 1289,
+      "line": 1290,
       "content": "CLOSED: [2026-01-21 Wed 11:34] | Command ID                          | Description     | Default Keybinding | |-------------------------------------+-----------------+--------------------| | [[cmd:scimax.latex.insertFigure]]   | Insert Figure   | -                  | | [[cmd:scimax.latex.insertTable]]    | Insert Table    | -                  | | [[cmd:scimax.latex.insertEquation]] | Insert Equation | -                  |",
       "path": [
         "LaTeX"
@@ -78785,7 +78823,7 @@
       "heading": "Utilities",
       "level": 2,
       "file": "25-commands.org",
-      "line": 1298,
+      "line": 1299,
       "content": "CLOSED: [2026-01-21 Wed 11:34] | Command ID                                     | Description                  | Default Keybinding | |------------------------------------------------+------------------------------+--------------------| | [[cmd:scimax.latex.format]]                    | Format Document              | C-c C-q            | | [[cmd:scimax.latex.wordCount]]                 | Word Count                   | -                  | | [[cmd:scimax.latex.addToDictionary]]           | Add Wo",
       "path": [
         "LaTeX"
@@ -78823,7 +78861,7 @@
       "heading": "Speed Commands",
       "level": 2,
       "file": "25-commands.org",
-      "line": 1308,
+      "line": 1309,
       "content": "CLOSED: [2026-01-21 Wed 11:34] Speed commands are available when cursor is at the beginning of a section line. | Command ID                            | Description        | Speed Key | |---------------------------------------+--------------------+-----------| | [[cmd:scimax.latex.speedCommandHelp]] | Speed Command Help | ?         | Section speed commands (at \\section, \\subsection, etc.): - n :: Next section - p :: Previous section - f :: Next sibling - b :: Previous sibling - u :: Parent secti",
       "path": [
         "LaTeX"
@@ -78859,7 +78897,7 @@
       "heading": "Environment Speed Commands",
       "level": 2,
       "file": "25-commands.org",
-      "line": 1334,
+      "line": 1335,
       "content": "CLOSED: [2026-01-21 Wed 11:36] Environment speed commands available at \\begin{...} lines. | Command ID                               | Description               | Speed Key | |------------------------------------------+---------------------------+-----------| | [[cmd:scimax.latex.envSpeedCommand]]     | Environment Speed Command | -         | | [[cmd:scimax.latex.envSpeedCommandHelp]] | Environment Speed Help    | ?         | Environment speed command keys: - n :: Next environment - p :: Previou",
       "path": [
         "LaTeX"
@@ -78895,7 +78933,7 @@
       "heading": "LaTeX Cache Management",
       "level": 2,
       "file": "25-commands.org",
-      "line": 1358,
+      "line": 1359,
       "content": "CLOSED: [2026-01-21 Wed 11:36] | Command ID                     | Description                     | Default Keybinding | |--------------------------------+---------------------------------+--------------------| | [[cmd:scimax.clearLatexCache]] | Clear LaTeX Preview Cache       | -                  | | [[cmd:scimax.checkLatexTools]] | Check LaTeX Tools Availability  | -                  | | [[cmd:scimax.latexCacheStats]] | Show LaTeX Cache Statistics     | -                  |",
       "path": [
         "LaTeX"
@@ -78933,7 +78971,7 @@
       "heading": "Capture",
       "level": 1,
       "file": "25-commands.org",
-      "line": 1367,
+      "line": 1368,
       "content": "CLOSED: [2026-01-17 Sat 12:50] | Command ID                            | Description                 | Default Keybinding | |---------------------------------------+-----------------------------+--------------------| | [[cmd:scimax.capture]]                | Capture                     | C-c c              | | [[cmd:scimax.captureByKey]]           | Capture by Key              | -                  | | [[cmd:scimax.capture.todo]]           | Quick Capture TODO          | C-c t              | | [[",
       "path": [],
       "commands": [
@@ -78966,7 +79004,7 @@
       "heading": "Templates",
       "level": 1,
       "file": "25-commands.org",
-      "line": 1380,
+      "line": 1381,
       "content": "CLOSED: [2026-01-21 Wed 11:36] :PROPERTIES: :CUSTOM_ID: templates :END: Insert and manage file templates for org, markdown, and LaTeX files.",
       "path": [],
       "commands": [],
@@ -78991,7 +79029,7 @@
       "heading": "Insert Templates",
       "level": 2,
       "file": "25-commands.org",
-      "line": 1388,
+      "line": 1389,
       "content": "CLOSED: [2026-01-21 Wed 11:36] | Command ID                               | Description               | Default Keybinding | |------------------------------------------+---------------------------+--------------------| | [[cmd:scimax.templates.insert]]          | Insert Template           | -                  | | [[cmd:scimax.templates.insertOrg]]       | Insert Org Template       | -                  | | [[cmd:scimax.templates.insertMarkdown]]  | Insert Markdown Template  | -                  |",
       "path": [
         "Templates"
@@ -79024,7 +79062,7 @@
       "heading": "New Files from Templates",
       "level": 2,
       "file": "25-commands.org",
-      "line": 1399,
+      "line": 1400,
       "content": "CLOSED: [2026-01-21 Wed 11:36] | Command ID                               | Description                  | Default Keybinding | |------------------------------------------+------------------------------+--------------------| | [[cmd:scimax.templates.newFile]]         | New File from Template       | C-c C-t i          | | [[cmd:scimax.templates.newOrgFile]]      | New Org File from Template   | -                  | | [[cmd:scimax.templates.newMarkdownFile]] | New Markdown from Template   | -    ",
       "path": [
         "Templates"
@@ -79061,7 +79099,7 @@
       "heading": "Template Management",
       "level": 2,
       "file": "25-commands.org",
-      "line": 1409,
+      "line": 1410,
       "content": "CLOSED: [2026-01-21 Wed 11:36] | Command ID                                  | Description                    | Default Keybinding | |---------------------------------------------+--------------------------------+--------------------| | [[cmd:scimax.templates.createFromSelection]]| Create Template from Selection | -                  | | [[cmd:scimax.templates.openDirectory]]      | Open Templates Directory       | -                  | | [[cmd:scimax.templates.editTemplates]]      | Edit User Tem",
       "path": [
         "Templates"
@@ -79099,7 +79137,7 @@
       "heading": "Manuscript",
       "level": 1,
       "file": "25-commands.org",
-      "line": 1420,
+      "line": 1421,
       "content": "CLOSED: [2026-01-21 Wed 11:36] :PROPERTIES: :CUSTOM_ID: manuscript :END: Commands for preparing LaTeX manuscripts for journal submission by flattening includes. | Command ID                                | Description                       | Default Keybinding | |-------------------------------------------+-----------------------------------+--------------------| | [[cmd:scimax.manuscript.flatten]]         | Flatten Manuscript for Submission | -                  | | [[cmd:scimax.manuscript.prev",
       "path": [],
       "commands": [
@@ -79134,7 +79172,7 @@
       "heading": "Image Overlays",
       "level": 1,
       "file": "25-commands.org",
-      "line": 1439,
+      "line": 1440,
       "content": "CLOSED: [2026-01-17 Sat 12:50] | Command ID                                     | Description                            | Default Keybinding | |------------------------------------------------+----------------------------------------+--------------------| | [[cmd:scimax.imageOverlays.toggle]]            | Toggle Image Overlays                  | -                  | | [[cmd:scimax.imageOverlays.toggleCurrentFile]] | Toggle Image Overlays for Current File | -                  | | [[cmd:scimax.im",
       "path": [],
       "commands": [
@@ -79164,7 +79202,7 @@
       "heading": "Spelling",
       "level": 1,
       "file": "25-commands.org",
-      "line": 1453,
+      "line": 1454,
       "content": "CLOSED: [2026-01-24 Sat 17:41] Commands for navigating spelling errors. Requires VS Code spell-checking extension. | Command ID                            | Description                   | Default Keybinding | |---------------------------------------+-------------------------------+--------------------| | [[cmd:scimax.spelling.nextError]]     | Go to Next Spelling Error     | -                  | | [[cmd:scimax.spelling.previousError]] | Go to Previous Spelling Error | -                  |",
       "path": [],
       "commands": [
@@ -79199,7 +79237,7 @@
       "heading": "Jupyter",
       "level": 1,
       "file": "25-commands.org",
-      "line": 1463,
+      "line": 1464,
       "content": "CLOSED: [2026-01-17 Sat 12:50]",
       "path": [],
       "commands": [],
@@ -79216,7 +79254,7 @@
       "heading": "Kernel Management",
       "level": 2,
       "file": "25-commands.org",
-      "line": 1466,
+      "line": 1467,
       "content": "CLOSED: [2026-01-17 Sat 12:50] | Command ID                             | Description                    | Default Keybinding | |----------------------------------------+--------------------------------+--------------------| | [[cmd:scimax.jupyter.showKernels]]     | Show Available Jupyter Kernels | -                  | | [[cmd:scimax.jupyter.showRunning]]     | Show Running Kernels           | -                  | | [[cmd:scimax.jupyter.startKernel]]     | Start Jupyter Kernel           | -    ",
       "path": [
         "Jupyter"
@@ -79252,7 +79290,7 @@
       "heading": "Appendix: Keybinding Quick Reference",
       "level": 1,
       "file": "25-commands.org",
-      "line": 1480,
+      "line": 1481,
       "content": "CLOSED: [2026-01-17 Sat 12:50]",
       "path": [],
       "commands": [],
@@ -79272,7 +79310,7 @@
       "heading": "Most Common Keybindings",
       "level": 2,
       "file": "25-commands.org",
-      "line": 1483,
+      "line": 1484,
       "content": "CLOSED: [2026-01-17 Sat 12:50] | Keybinding   | Command                             | |--------------+-------------------------------------| | C-RET        | Execute code block / Insert heading | | C-c C-e      | Export dispatcher                   | | C-c C-j      | Jump to heading                     | | C-c C-t      | Cycle TODO state                    | | C-c C-l      | Insert link                         | | C-c C-o      | Open link                           | | C-c ]        | Insert citat",
       "path": [
         "Appendix: Keybinding Quick Reference"
@@ -79314,7 +79352,7 @@
       "heading": "Export Keybindings",
       "level": 2,
       "file": "25-commands.org",
-      "line": 1505,
+      "line": 1506,
       "content": "CLOSED: [2026-01-17 Sat 12:50] | Keybinding  | Export Target      | |-------------+--------------------| | C-c C-e h h | HTML               | | C-c C-e h o | HTML and open      | | C-c C-e l l | LaTeX              | | C-c C-e l p | PDF                | | C-c C-e l o | PDF and open       | | C-c C-e l v | LaTeX live preview | | C-c C-e m m | Markdown           |",
       "path": [
         "Appendix: Keybinding Quick Reference"
@@ -79348,7 +79386,7 @@
       "heading": "Babel/Source Block Keybindings",
       "level": 2,
       "file": "25-commands.org",
-      "line": 1518,
+      "line": 1519,
       "content": "CLOSED: [2026-01-17 Sat 12:51] | Keybinding | Action                 | |------------+------------------------| | C-RET      | Execute block          | | C-c C-c    | Execute block (in src) | | S-RET      | Execute and next       | | C-c C-v t  | Tangle                 | | C-c C-v p  | Execute to point       | | C-c C-v i  | Execute inline         | | C-c C-v q  | Queue block            | | C-DOWN     | Next source block      | | C-UP       | Previous source block  | | C-c C-n    | Insert block b",
       "path": [
         "Appendix: Keybinding Quick Reference"
@@ -79389,8 +79427,8 @@
       "heading": "Project and Navigation Keybindings",
       "level": 2,
       "file": "25-commands.org",
-      "line": 1535,
-      "content": "CLOSED: [2026-01-17 Sat 12:51] | Keybinding | Action                    | |------------+---------------------------| | C-c p p    | Switch project            | | C-c p f    | Find file in project      | | C-c p s    | Search in project         | | C-c p d    | Open project root         | | C-c p a    | Add project               | | C-c s      | Fuzzy search (current)    | | C-c S-s    | Fuzzy search (open files) | | C-c M-s    | Fuzzy search (outline)    | | C-c j c    | Jump to character       ",
+      "line": 1536,
+      "content": "CLOSED: [2026-01-17 Sat 12:51] | Keybinding | Action                    | |------------+---------------------------| | C-c p p    | Switch project            | | C-c p .    | Switch to file's project  | | C-c p f    | Find file in project      | | C-c p s    | Search in project         | | C-c p d    | Open project root         | | C-c p a    | Add project               | | C-c s      | Fuzzy search (current)    | | C-c S-s    | Fuzzy search (open files) | | C-c M-s    | Fuzzy search (outline)  ",
       "path": [
         "Appendix: Keybinding Quick Reference"
       ],
@@ -79426,7 +79464,7 @@
       "heading": "Help System",
       "level": 1,
       "file": "25-commands.org",
-      "line": 1552,
+      "line": 1554,
       "content": "CLOSED: [2026-01-18 Sun 09:59] :PROPERTIES: :CUSTOM_ID: help-system :END: Commands for discovering keybindings and command functionality. | Command ID                           | Description            | Default Keybinding | |--------------------------------------+------------------------+--------------------| | [[cmd:scimax.help.describeCommand]]  | Describe Command       | C-h f              | | [[cmd:scimax.help.describeKey]]      | Describe Key           | C-h k              | | [[cmd:scimax",
       "path": [],
       "commands": [
@@ -79463,7 +79501,7 @@
       "heading": "scimax.help.describeCommand",
       "level": 2,
       "file": "25-commands.org",
-      "line": 1569,
+      "line": 1571,
       "content": "Shows the keybindings for a specific command. Useful for learning keyboard shortcuts.",
       "path": [
         "Help System"
@@ -79487,7 +79525,7 @@
       "heading": "scimax.help.describeKey",
       "level": 2,
       "file": "25-commands.org",
-      "line": 1573,
+      "line": 1575,
       "content": "Describes what a specific key combination does. Enter the key sequence to see its bound command.",
       "path": [
         "Help System"
@@ -79511,7 +79549,7 @@
       "heading": "scimax.help.listKeybindings",
       "level": 2,
       "file": "25-commands.org",
-      "line": 1577,
+      "line": 1579,
       "content": "Lists all keybindings defined by the extension. Opens a quick pick to browse available shortcuts.",
       "path": [
         "Help System"
@@ -79537,7 +79575,7 @@
       "heading": "scimax.help.describeVariable",
       "level": 2,
       "file": "25-commands.org",
-      "line": 1581,
+      "line": 1583,
       "content": "Browse all scimax settings with completion. Shows the setting type, default value, current value, and description. Select a setting to open VS Code Settings.",
       "path": [
         "Help System"
@@ -79567,7 +79605,7 @@
       "heading": "scimax.help.apropos",
       "level": 2,
       "file": "25-commands.org",
-      "line": 1585,
+      "line": 1587,
       "content": "Search the documentation for keywords. Enter search terms to find relevant documentation sections. Results are ranked by relevance (headings, commands, keybindings, content). Select a result to view details or open the documentation file.",
       "path": [
         "Help System"
@@ -79603,7 +79641,7 @@
       "heading": "scimax.update",
       "level": 2,
       "file": "25-commands.org",
-      "line": 1589,
+      "line": 1591,
       "content": "CLOSED: [2026-01-24 Sat 17:41] Update Scimax VS Code from GitHub releases. This command: 1. Fetches the latest release from the [[https://github.com/jkitchin/scimax_vscode][GitHub repository]] 2. Shows the current version vs. the latest available version 3. Downloads the VSIX file with progress indication 4. Installs it using VS Code's extension manager 5. Offers to reload VS Code to activate the new version This provides an easy way to update without leaving VS Code. Requires the repository to ",
       "path": [
         "Help System"
@@ -79639,7 +79677,7 @@
       "heading": "Linting",
       "level": 1,
       "file": "25-commands.org",
-      "line": 1602,
+      "line": 1604,
       "content": "CLOSED: [2026-01-18 Sun 09:59] :PROPERTIES: :CUSTOM_ID: linting :END: Commands for checking org-mode document quality. | Command ID                     | Description        | Default Keybinding | |--------------------------------+--------------------+--------------------| | [[cmd:scimax.org.lint]]        | Run Linter         | -                  | | [[cmd:scimax.org.lintCheckers]]| Show Lint Checkers | -                  |",
       "path": [],
       "commands": [
@@ -79674,7 +79712,7 @@
       "heading": "scimax.org.lint",
       "level": 2,
       "file": "25-commands.org",
-      "line": 1615,
+      "line": 1617,
       "content": "Runs the org-mode linter on the current document. The linter checks for: - Duplicate IDs - Broken internal links - Missing TODO keywords in sequences - Unbalanced brackets and quotes - Invalid timestamps - Missing required properties - And more Results appear in the Problems panel.",
       "path": [
         "Linting"
@@ -79710,7 +79748,7 @@
       "heading": "scimax.org.lintCheckers",
       "level": 2,
       "file": "25-commands.org",
-      "line": 1628,
+      "line": 1630,
       "content": "Shows available lint checkers and allows enabling/disabling specific checks.",
       "path": [
         "Linting"
@@ -79734,7 +79772,7 @@
       "heading": "Mark Ring",
       "level": 1,
       "file": "25-commands.org",
-      "line": 1632,
+      "line": 1634,
       "content": ":PROPERTIES: :CUSTOM_ID: mark-ring :END: Emacs-style mark ring for navigation and selection. Save cursor positions (marks) and return to them later. Each document has its own mark ring, plus there's a global mark ring that tracks positions across all documents. | Command ID                       | Description               | Default Keybinding | |----------------------------------+---------------------------+--------------------| | [[cmd:scimax.mark.set]]          | Set Mark (for selection)  | C",
       "path": [],
       "commands": [
@@ -79768,7 +79806,7 @@
       "heading": "Mark Ring Concepts",
       "level": 2,
       "file": "25-commands.org",
-      "line": 1652,
+      "line": 1654,
       "content": "- **Mark**: A saved cursor position that you can return to - **Point**: The current cursor position - **Mark Ring**: A stack of marks (per-document), most recent first (default size: 16) - **Global Mark Ring**: A cross-file stack of marks for navigating between documents - **Selection Mode**: When mark is set, cursor movement extends the selection from the mark",
       "path": [
         "Mark Ring"
@@ -79802,7 +79840,7 @@
       "heading": "Common Workflows",
       "level": 2,
       "file": "25-commands.org",
-      "line": 1660,
+      "line": 1662,
       "content": "",
       "path": [
         "Mark Ring"
@@ -79818,7 +79856,7 @@
       "heading": "Setting a Mark for Selection",
       "level": 3,
       "file": "25-commands.org",
-      "line": 1662,
+      "line": 1664,
       "content": "1. Press =C-SPC= to set mark at current position (line flashes briefly as feedback) 2. Move cursor to end of desired selection - the region automatically expands 3. Press =C-SPC= again to deactivate selection mode (toggle behavior) 4. Press =C-g= to cancel selection and collapse to cursor position",
       "path": [
         "Mark Ring",
@@ -79856,7 +79894,7 @@
       "heading": "Returning to Previous Positions",
       "level": 3,
       "file": "25-commands.org",
-      "line": 1668,
+      "line": 1670,
       "content": "1. Press =C-SPC C-SPC= to push mark without activating selection mode 2. Navigate elsewhere in the file 3. Press =C-u C-SPC= to pop the most recent mark and jump to it 4. Current position is saved before jumping, so you can return with another pop",
       "path": [
         "Mark Ring",
@@ -79894,7 +79932,7 @@
       "heading": "Cross-file Navigation",
       "level": 3,
       "file": "25-commands.org",
-      "line": 1674,
+      "line": 1676,
       "content": "1. Marks are automatically pushed to the global ring when set 2. Press =C-x C-SPC= to pop from global mark ring and jump (can cross files) 3. Use =C-x C-x= to exchange point and mark (swap current position with last mark)",
       "path": [
         "Mark Ring",
@@ -79932,7 +79970,7 @@
       "heading": "Viewing the Mark Ring",
       "level": 3,
       "file": "25-commands.org",
-      "line": 1679,
+      "line": 1681,
       "content": "1. Run =scimax.mark.show= from command palette 2. Quick pick shows local marks and global marks with line previews 3. Select an entry to jump to that position 4. Timestamps show how long ago each mark was set",
       "path": [
         "Mark Ring",
@@ -79969,7 +80007,7 @@
       "heading": "Rectangle",
       "level": 1,
       "file": "25-commands.org",
-      "line": 1685,
+      "line": 1687,
       "content": "CLOSED: [2026-04-12 Sun 19:47] :PROPERTIES: :CUSTOM_ID: rectangle :END: Emacs-style rectangle editing commands. A rectangle is a column-aligned block of text defined by two corners of the current selection. These commands operate on the rectangular region rather than contiguous text. | Command ID                              | Description                    | Default Keybinding | |-----------------------------------------+--------------------------------+--------------------| | [[cmd:scimax.rect",
       "path": [],
       "commands": [
@@ -80003,7 +80041,7 @@
       "heading": "Rectangle Concepts",
       "level": 2,
       "file": "25-commands.org",
-      "line": 1706,
+      "line": 1708,
       "content": "CLOSED: [2026-04-12 Sun 19:48] - **Rectangle**: A column-aligned region of text defined by two corners (the selection's anchor and active positions) - **Rectangle Clipboard**: A separate clipboard (not the system clipboard) that stores the last killed/copied rectangle. This matches Emacs behavior. - **Kill**: Delete the rectangle and save it to the rectangle clipboard - **Yank**: Insert the rectangle clipboard contents at the cursor position",
       "path": [
         "Rectangle"
@@ -80037,7 +80075,7 @@
       "heading": "Common Workflows",
       "level": 2,
       "file": "25-commands.org",
-      "line": 1714,
+      "line": 1716,
       "content": "CLOSED: [2026-04-12 Sun 19:48]",
       "path": [
         "Rectangle"
@@ -80057,7 +80095,7 @@
       "heading": "Cut and Paste a Column",
       "level": 3,
       "file": "25-commands.org",
-      "line": 1717,
+      "line": 1719,
       "content": "1. Select the rectangular region (anchor at one corner, cursor at the opposite corner) 2. Press =C-x r k= to kill the rectangle 3. Move cursor to the insertion point 4. Press =C-x r y= to yank the rectangle",
       "path": [
         "Rectangle",
@@ -80093,7 +80131,7 @@
       "heading": "Add a Prefix to Multiple Lines",
       "level": 3,
       "file": "25-commands.org",
-      "line": 1723,
+      "line": 1725,
       "content": "1. Place cursor at column 0 of the first line, select down to the last line (zero-width selection at column 0) 2. Press =C-x r t= and enter the prefix string (e.g. =// = for comments) 3. The string is inserted at column 0 on each line",
       "path": [
         "Rectangle",
@@ -80130,7 +80168,7 @@
       "heading": "Number a List",
       "level": 3,
       "file": "25-commands.org",
-      "line": 1728,
+      "line": 1730,
       "content": "1. Select the rectangular region where numbers should be inserted 2. Press =C-x r S-n= 3. Enter the starting number (default 1) and optional format string 4. Line numbers are inserted, replacing the rectangle content",
       "path": [
         "Rectangle",
@@ -80167,7 +80205,7 @@
       "heading": "Remove a Column of Text",
       "level": 3,
       "file": "25-commands.org",
-      "line": 1734,
+      "line": 1736,
       "content": "1. Select the rectangular region to remove 2. Press =C-x r d= to delete without saving, or =C-x r k= to save for later yanking",
       "path": [
         "Rectangle",
@@ -80198,7 +80236,7 @@
       "heading": "Related Topics",
       "level": 2,
       "file": "25-commands.org",
-      "line": 1738,
+      "line": 1740,
       "content": "CLOSED: [2026-04-12 Sun 19:48] - [[file:24-keybindings.org::*Rectangle Commands (Emacs-style)][Keybinding Reference: Rectangle Commands]] - [[file:22-hydra-menus.org][Hydra Menus]] - Rectangle commands are available in the Hydra menu system",
       "path": [
         "Rectangle"
@@ -80230,7 +80268,7 @@
       "heading": "Publishing",
       "level": 1,
       "file": "25-commands.org",
-      "line": 1744,
+      "line": 1746,
       "content": "CLOSED: [2026-01-18 Sun 10:02] :PROPERTIES: :CUSTOM_ID: publishing :END: Commands for publishing org files to HTML, creating static sites similar to Emacs org-publish. | Command ID                        | Description                   | Default Keybinding | |-----------------------------------+-------------------------------+--------------------| | [[cmd:scimax.publish.init]]       | Initialize Publishing Project | -                  | | [[cmd:scimax.publish.project]]    | Publish Project      ",
       "path": [],
       "commands": [
@@ -80265,7 +80303,7 @@
       "heading": "Setting Up a Publishing Project",
       "level": 2,
       "file": "25-commands.org",
-      "line": 1761,
+      "line": 1763,
       "content": "1. Run =scimax.publish.init= to create a publishing configuration 2. Configure the project in the generated =.org-publish.json= file 3. Use =scimax.publish.project= to publish the configured project",
       "path": [
         "Publishing"
@@ -80293,7 +80331,7 @@
       "heading": "Publishing Configuration",
       "level": 2,
       "file": "25-commands.org",
-      "line": 1767,
+      "line": 1769,
       "content": "The =.org-publish.json= file configures: - Source directory for org files - Output directory for HTML - Include/exclude patterns - HTML template settings - Asset handling (CSS, images)",
       "path": [
         "Publishing"
@@ -80324,7 +80362,7 @@
       "heading": "Query Replace",
       "level": 1,
       "file": "25-commands.org",
-      "line": 1776,
+      "line": 1778,
       "content": "CLOSED: [2026-01-18 Sun 10:02] :PROPERTIES: :CUSTOM_ID: query-replace :END: Interactive search and replace. | Command ID                  | Description   | Default Keybinding | |-----------------------------+---------------+--------------------| | [[cmd:scimax.queryReplace]] | Query Replace | M-%                | Provides Emacs-style interactive query-replace with confirmation for each replacement.",
       "path": [],
       "commands": [
@@ -80358,7 +80396,7 @@
       "heading": "Utilities",
       "level": 1,
       "file": "25-commands.org",
-      "line": 1791,
+      "line": 1793,
       "content": "CLOSED: [2026-01-21 Wed 13:21] :PROPERTIES: :CUSTOM_ID: utilities :END: Miscellaneous utility commands. | Command ID                         | Description                           | Default Keybinding | |------------------------------------+---------------------------------------+--------------------| | [[cmd:scimax.findFile]]            | Find File                             | C-x C-f            | | [[cmd:scimax.findFileHome]]        | Find File in Home Directory           | -                ",
       "path": [],
       "commands": [
@@ -80395,7 +80433,7 @@
       "heading": "Dired Commands",
       "level": 2,
       "file": "25-commands.org",
-      "line": 1817,
+      "line": 1819,
       "content": "Dired (Directory Editor) provides Emacs-style file management. Open with =C-x d= and use these keys in the dired panel: - Navigation: =n/p= (next/prev), =RET= (open), =^= (parent), =g= (refresh) - Marking: =m= (mark), =u= (unmark), =U= (unmark all), =t= (toggle marks) - Operations: =D= (delete), =C= (copy), =R= (rename/move), =+= (create directory) - WDired: =C-x C-q= (enter edit mode), =C-c C-c= (commit), =C-c C-k= (cancel) See [[file:37-dired.org][Dired documentation]] for full details.",
       "path": [
         "Utilities"
@@ -80434,7 +80472,7 @@
       "heading": "scimax.replaceNonAscii",
       "level": 2,
       "file": "25-commands.org",
-      "line": 1828,
+      "line": 1830,
       "content": "Replaces common non-ASCII characters (smart quotes, em-dashes, etc.) with their ASCII equivalents. Useful for preparing documents for systems that don't handle Unicode well.",
       "path": [
         "Utilities"
@@ -80468,7 +80506,7 @@
       "heading": "scimax.showDebugInfo",
       "level": 2,
       "file": "25-commands.org",
-      "line": 1832,
+      "line": 1834,
       "content": "Displays diagnostic information about the scimax extension, including version, enabled features, and configuration state. Useful for troubleshooting.",
       "path": [
         "Utilities"
@@ -80498,7 +80536,7 @@
       "heading": "Index",
       "level": 1,
       "file": "25-commands.org",
-      "line": 1836,
+      "line": 1838,
       "content": "CLOSED: [2026-01-17 Sat 12:51] This document contains [[*Introduction][310+ commands]] organized into [[*Document Structure][27 categories]] with their keybindings and descriptions. For configuration options, see the VS Code settings under scimax.*. For more information about the Scimax VS Code extension, visit the project repository.",
       "path": [],
       "commands": [],
@@ -80530,7 +80568,7 @@
       "heading": "Navigation",
       "level": 1,
       "file": "25-commands.org",
-      "line": 1845,
+      "line": 1847,
       "content": "- Previous: [[file:24-keybindings.org][Keybindings]] - Index: [[file:00-index.org][Documentation Index]] - Next: [[file:26-configuration.org][Configuration]]",
       "path": [],
       "commands": [],

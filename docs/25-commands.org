@@ -1018,6 +1018,7 @@ CLOSED: [2026-01-17 Sat 12:47]
 | [[cmd:scimax.projectile.findFileInKnownProjects]] | Find File in Known Projects | -        |
 | [[cmd:scimax.projectile.search]]      | Search in Project             | C-c p s            |
 | [[cmd:scimax.projectile.root]]        | Open Project Root             | C-c p d            |
+| [[cmd:scimax.projectile.switchToFileProject]] | Switch to Current File's Project | C-c p . |
 | [[cmd:scimax.projectile.add]]         | Add Project                   | C-c p a            |
 | [[cmd:scimax.projectile.remove]]      | Remove Project                | -                  |
 | [[cmd:scimax.projectile.scan]]        | Scan Directory for Projects   | -                  |
@@ -1538,6 +1539,7 @@ CLOSED: [2026-01-17 Sat 12:51]
 | Keybinding | Action                    |
 |------------+---------------------------|
 | C-c p p    | Switch project            |
+| C-c p .    | Switch to file's project  |
 | C-c p f    | Find file in project      |
 | C-c p s    | Search in project         |
 | C-c p d    | Open project root         |
