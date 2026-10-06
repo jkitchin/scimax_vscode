@@ -3,6 +3,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import * as os from 'os';
 import * as path from 'path';
 
 // Mock fs module
@@ -19,7 +20,8 @@ import {
     loadIgnorePatterns,
     shouldIgnore,
     mergePatterns,
-    isExcludedPath
+    isExcludedPath,
+    expandHome
 } from '../ignorePatterns';
 
 describe('DEFAULT_IGNORE_PATTERNS', () => {
@@ -214,10 +216,18 @@ describe('isExcludedPath', () => {
     });
 
     it('adds configured globs, exact paths and ~ to the baseline', () => {
-        const home = process.env.HOME || '';
+        const home = os.homedir();
         expect(isExcludedPath('/a/archive/old.org', ['**/archive/**'])).toBe(true);
         expect(isExcludedPath('/a/skip.org', ['/a/skip.org'])).toBe(true);
-        expect(isExcludedPath(`${home}/tmp/x.org`, ['~/tmp/**'])).toBe(true);
+        expect(isExcludedPath(path.join(home, 'tmp', 'x.org'), ['~/tmp/**'])).toBe(true);
         expect(isExcludedPath('/Users/x/Library/Application Support/Code/User/History/a/b.org', ['**/archive/**'])).toBe(true);
+    });
+});
+
+describe('expandHome', () => {
+    it('writes a Windows home with forward slashes, so the glob has no escapes', () => {
+        expect(expandHome('~/tmp/**', 'C:\\Users\\me')).toBe('C:/Users/me/tmp/**');
+        expect(expandHome('~/tmp/**', '/Users/me')).toBe('/Users/me/tmp/**');
+        expect(expandHome('**/node_modules/**', '/Users/me')).toBe('**/node_modules/**');
     });
 });

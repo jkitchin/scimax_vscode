@@ -4,6 +4,7 @@
  */
 
 import * as fs from 'fs';
+import * as os from 'os';
 import * as path from 'path';
 import { minimatch } from 'minimatch';
 
@@ -94,15 +95,26 @@ export function withBaselineExcludes(configured: string[] | undefined): string[]
  * must equal the path. A leading `~` is the home directory.
  */
 export function isExcludedPath(filePath: string, configured: string[] | undefined): boolean {
+    // minimatch matches a Windows path by its / form; do the same for exact paths.
+    const target = process.platform === 'win32' ? filePath.replace(/\\/g, '/') : filePath;
     for (const pattern of withBaselineExcludes(configured)) {
-        const expanded = pattern.startsWith('~') ? pattern.replace(/^~/, process.env.HOME || '') : pattern;
+        const expanded = expandHome(pattern);
         if (expanded.includes('*')
             ? minimatch(filePath, expanded, { matchBase: true })
-            : filePath === expanded) {
+            : target === (process.platform === 'win32' ? expanded.replace(/\\/g, '/') : expanded)) {
             return true;
         }
     }
     return false;
+}
+
+/**
+ * Expand a leading `~` to the home directory, written with forward slashes:
+ * a Windows home (C:\Users\me) would otherwise put backslashes into the glob,
+ * where minimatch reads them as escapes and the pattern never matches.
+ */
+export function expandHome(pattern: string, home: string = os.homedir()): string {
+    return pattern.startsWith('~') ? home.replace(/\\/g, '/') + pattern.slice(1) : pattern;
 }
 
 /**
