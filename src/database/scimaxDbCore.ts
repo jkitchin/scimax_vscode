@@ -2252,6 +2252,32 @@ export class ScimaxDbCore {
     }
 
     /**
+     * Ivy-style heading search for interactive pickers: the query is split on
+     * whitespace and every term must appear (case-insensitive substring) in the
+     * heading's title, TODO state, tags, or file path. Runs in SQL so the whole
+     * index is searched rather than a preloaded slice. Results come from the
+     * most recently modified files first; an empty query returns those files'
+     * headings.
+     */
+    public async searchHeadingsByTerms(query: string, options?: { limit?: number }): Promise<HeadingRecord[]> {
+        if (!this.db) return [];
+        const limit = options?.limit || 200;
+        const scope = this.getScopeClause('h.file_path');
+        const terms = query.split(/\s+/).filter(t => t.length > 0);
+        const haystack = `(h.title || ' ' || COALESCE(h.todo_state, '') || ' ' || COALESCE(h.tags, '') || ' ' || h.file_path)`;
+        let sql = `SELECT h.* FROM headings h JOIN files f ON f.id = h.file_id WHERE 1=1${scope.sql}`;
+        const args: any[] = [...scope.args];
+        for (const term of terms) {
+            sql += ` AND ${haystack} LIKE ? ESCAPE '\\'`;
+            args.push(`%${term.replace(/[\\%_]/g, c => '\\' + c)}%`);
+        }
+        sql += ' ORDER BY f.mtime DESC, h.file_path, h.line_number LIMIT ?';
+        args.push(limit);
+        const result = await this.db.execute({ sql, args });
+        return result.rows as unknown as HeadingRecord[];
+    }
+
+    /**
      * Every heading in one file, in document order. Task tooling needs the
      * full outline (not just matches) to reconstruct parent/child structure,
      * which is how `:ORDERED:` sequencing is derived.
@@ -2461,6 +2487,21 @@ export class ScimaxDbCore {
             args: scope.args
         });
         return result.rows.map(r => ({ tag: r.tag as string, count: Number(r.count) }));
+    }
+
+    /** Distinct heading property names (the keys of each `properties` drawer) across the index. */
+    public async getAllPropertyNames(): Promise<string[]> {
+        if (!this.db) return [];
+        const scope = this.getScopeClause('h.file_path');
+        const result = await this.db.execute({
+            sql: `SELECT DISTINCT p.key AS name
+                  FROM headings h, json_each(h.properties) p
+                  WHERE h.properties IS NOT NULL AND h.properties != '{}'
+                    AND json_valid(h.properties)${scope.sql}
+                  ORDER BY p.key COLLATE NOCASE`,
+            args: scope.args
+        });
+        return result.rows.map(r => r.name as string);
     }
 
     public async getAllTodoStates(): Promise<string[]> {

@@ -718,54 +718,49 @@ export function registerDbCommands(
         })
     );
 
-    // Search headings (ivy-style: load all, filter locally with fuzzy matching)
+    // Search headings (ivy-style: every space-separated term must match).
+    // Queries the database on each (debounced) keystroke so the whole index is
+    // searched, not just a preloaded slice.
     context.subscriptions.push(
         vscode.commands.registerCommand('scimax.db.searchHeadings', async () => {
             const db = await requireDatabase();
             if (!db) return;
 
-            // Load all headings upfront for ivy-style filtering
-            const quickPick = vscode.window.createQuickPick<vscode.QuickPickItem & { heading: HeadingRecord }>();
-            quickPick.placeholder = 'Type to filter headings (space-separated terms)...';
-            // Disable VS Code's built-in filtering - we'll do our own fuzzy matching
+            type HeadingItem = vscode.QuickPickItem & { heading: HeadingRecord };
+            const quickPick = vscode.window.createQuickPick<HeadingItem>();
+            quickPick.placeholder = 'Type to search headings (space-separated terms; title, TODO, tags, file path)...';
+            // The database does the matching; don't let VS Code filter again
             quickPick.matchOnDescription = false;
             quickPick.matchOnDetail = false;
-            quickPick.busy = true;
 
-            type HeadingItem = vscode.QuickPickItem & { heading: HeadingRecord; searchText: string };
-            let allItems: HeadingItem[] = [];
-
-            // Fuzzy filter function: split query by spaces, all parts must match
-            const fuzzyFilter = (items: HeadingItem[], query: string): HeadingItem[] => {
-                if (!query.trim()) return items;
-                const parts = query.toLowerCase().split(/\s+/).filter(p => p.length > 0);
-                return items
-                    .filter(item => parts.every(part => item.searchText.includes(part)))
-                    .map(item => ({ ...item, alwaysShow: true })); // Bypass VS Code's filtering
-            };
-
-            // Load headings in background
-            db.searchHeadings('', { limit: 5000 }).then(headings => {
-                allItems = headings.map(heading => {
-                    const label = `${'  '.repeat(heading.level - 1)}${getHeadingIcon(heading)} ${heading.title}`;
-                    const description = formatHeadingDescription(heading);
-                    const detail = `${path.basename(heading.file_path)}:${heading.line_number}`;
-                    return {
-                        label,
-                        description,
-                        detail,
-                        heading,
-                        // Pre-compute lowercase search text for faster filtering
-                        searchText: `${label} ${description} ${detail}`.toLowerCase()
-                    };
-                });
-                quickPick.items = allItems;
-                quickPick.busy = false;
+            const toItem = (heading: HeadingRecord): HeadingItem => ({
+                label: `${'  '.repeat(heading.level - 1)}${getHeadingIcon(heading)} ${heading.title}`,
+                description: formatHeadingDescription(heading),
+                detail: `${path.basename(heading.file_path)}:${heading.line_number}`,
+                alwaysShow: true,
+                heading
             });
 
-            // Custom filtering on value change
+            // Only the latest query's results are shown; slower earlier ones are dropped
+            let requestId = 0;
+            let debounceTimer: ReturnType<typeof setTimeout> | undefined;
+            const runSearch = async (value: string) => {
+                const id = ++requestId;
+                quickPick.busy = true;
+                try {
+                    const headings = await db.searchHeadingsByTerms(value, { limit: 200 });
+                    if (id !== requestId) return;
+                    quickPick.items = headings.map(toItem);
+                } catch (error) {
+                    log.error('Heading search failed', error as Error);
+                } finally {
+                    if (id === requestId) quickPick.busy = false;
+                }
+            };
+
             quickPick.onDidChangeValue(value => {
-                quickPick.items = fuzzyFilter(allItems, value);
+                if (debounceTimer) clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(() => runSearch(value), 150);
             });
 
             quickPick.onDidAccept(async () => {
@@ -776,8 +771,12 @@ export function registerDbCommands(
                 }
             });
 
-            quickPick.onDidHide(() => quickPick.dispose());
+            quickPick.onDidHide(() => {
+                if (debounceTimer) clearTimeout(debounceTimer);
+                quickPick.dispose();
+            });
             quickPick.show();
+            void runSearch('');
         })
     );
 

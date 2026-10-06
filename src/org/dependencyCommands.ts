@@ -7,6 +7,7 @@
  */
 import * as vscode from 'vscode';
 import { getDatabase } from '../database/lazyDb';
+import type { HeadingRecord } from '../database/scimaxDb';
 import { getTodoWorkflowForDocument, getTodoStatesFromText, extractHeadingTitle } from './todoStates';
 import { slugify } from '../parser/projectTasks';
 import {
@@ -221,26 +222,67 @@ async function addDependencyCommand(): Promise<void> {
         });
     }
 
-    // Other files come from the DB index.
-    const dbHeadings = await db.searchHeadings('', { limit: 1000 });
-    const dbItems: PickItem[] = dbHeadings
-        .filter(h => h.file_path !== thisFile)
-        .map(h => ({
-            label: h.title,
-            description: h.todo_state ? `[${h.todo_state}]` : '',
-            detail: `${vscode.workspace.asRelativePath(h.file_path)}:${h.line_number}`,
-            heading: { file_path: h.file_path, line_number: h.line_number, title: h.title },
-        }));
+    // Other files come from the DB index, searched as the user types (every
+    // space-separated term must match) so the whole index is reachable.
+    const toDbItem = (h: HeadingRecord): PickItem => ({
+        label: h.title,
+        description: h.todo_state ? `[${h.todo_state}]` : '',
+        detail: `${vscode.workspace.asRelativePath(h.file_path)}:${h.line_number}`,
+        alwaysShow: true,
+        heading: { file_path: h.file_path, line_number: h.line_number, title: h.title },
+    });
+    const filterLive = (value: string): PickItem[] => {
+        const terms = value.toLowerCase().split(/\s+/).filter(t => t.length > 0);
+        return liveItems
+            .filter(item => {
+                const text = `${item.label} ${item.detail}`.toLowerCase();
+                return terms.every(t => text.includes(t));
+            })
+            .map(item => ({ ...item, alwaysShow: true }));
+    };
 
-    const items = [...liveItems, ...dbItems];
-    if (items.length === 0) {
-        vscode.window.showWarningMessage('No headings found to depend on.');
-        return;
-    }
+    const picked = await new Promise<PickItem | undefined>(resolve => {
+        const qp = vscode.window.createQuickPick<PickItem>();
+        qp.placeholder = 'Select a task this one depends on (must be DONE before this can complete); type to search all files';
+        qp.matchOnDescription = false;
+        qp.matchOnDetail = false;
+        qp.items = filterLive('');
 
-    const picked = await vscode.window.showQuickPick(items, {
-        placeHolder: 'Select a task this one depends on (must be DONE before this can complete)',
-        matchOnDetail: true,
+        // Only the latest query's results are shown; slower earlier ones are dropped
+        let requestId = 0;
+        let debounceTimer: ReturnType<typeof setTimeout> | undefined;
+        let accepted = false;
+        const runSearch = async (value: string) => {
+            const id = ++requestId;
+            qp.busy = true;
+            try {
+                const rows = await db.searchHeadingsByTerms(value, { limit: 200 });
+                if (id !== requestId) return;
+                qp.items = [...filterLive(value), ...rows.filter(h => h.file_path !== thisFile).map(toDbItem)];
+            } catch {
+                if (id === requestId) qp.items = filterLive(value);
+            } finally {
+                if (id === requestId) qp.busy = false;
+            }
+        };
+
+        qp.onDidChangeValue(value => {
+            qp.items = filterLive(value);
+            if (debounceTimer) clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(() => runSearch(value), 150);
+        });
+        qp.onDidAccept(() => {
+            accepted = true;
+            resolve(qp.selectedItems[0]);
+            qp.hide();
+        });
+        qp.onDidHide(() => {
+            if (debounceTimer) clearTimeout(debounceTimer);
+            if (!accepted) resolve(undefined);
+            qp.dispose();
+        });
+        qp.show();
+        void runSearch('');
     });
     if (!picked) return;
 

@@ -66,10 +66,7 @@ async function collectPropertyNames(document: vscode.TextDocument): Promise<stri
     try {
         const db = await getDatabase();
         if (db) {
-            const rows = await db.searchHeadings('', { limit: 2000 });
-            for (const h of rows) {
-                try { for (const k of Object.keys(JSON.parse(h.properties || '{}'))) names.add(k); } catch { /* ignore */ }
-            }
+            for (const name of await db.getAllPropertyNames()) names.add(name);
         }
     } catch { /* index optional */ }
     return [...names].sort((a, b) => a.localeCompare(b));

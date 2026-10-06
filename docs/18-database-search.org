@@ -657,29 +657,37 @@ To enable query expansion and reranking with Ollama:
 
 Beyond free-text search, the database supports structured queries for specific content types.
 
-** Heading Search
+** 👀 Heading Search
 
-Search specifically in headings, with optional filtering:
+Jump to any indexed heading by typing a few words from it:
 
 *** Command
-`Scimax: Search Headings' (`scimax.db.searchHeadings')
+`Scimax: Search Headings' (`scimax.db.searchHeadings') — =C-c d h=
 
 *** Features
-- Search by heading text
-- Filter by TODO state
-- Filter by tag
-- Shows heading level, tags, TODO state
-- Displays deadlines and scheduled dates
+- Type space-separated terms; every term must match (case-insensitive substring)
+- Terms match the heading title, TODO state, tags, or file path, so =todo budget=
+  finds TODO headings about budgets and =efrc aims= finds "aims" headings in files
+  under an =efrc= directory
+- Searches the whole database as you type (up to 200 results shown), so every
+  indexed heading is reachable
+- Headings from the most recently modified files are listed first
+- An empty query lists headings from your most recently modified files
+- Shows heading level, tags, TODO state, priority, deadlines and scheduled dates
+- Respects the directory search scope, if one is set
 
 *** Example Use Cases
 #+BEGIN_SRC org
 # Find all headings about Python
 python
 
-# Find TODOs with specific tag (use Tag Search)
-:work:
+# TODO headings mentioning a grant
+todo grant
 
-# Browse document structure
+# Headings in a particular project directory
+proposals catalysis
+
+# Recently edited headings
 <empty query>
 #+END_SRC
 

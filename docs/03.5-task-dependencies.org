@@ -16,7 +16,7 @@ You declare what a task /depends on/, and two behaviors follow automatically:
 - *Triggering* — when a task becomes DONE, any task that depended on it and is
   now fully unblocked is surfaced (and optionally promoted to a "ready" state).
 
-** ✅ Declaring a dependency
+** 👀 Declaring a dependency
 CLOSED: [2026-07-02 Thu 08:06]
 
 A dependency is one =:DEPENDS:= property holding whitespace-separated =id:=
@@ -42,6 +42,11 @@ The easiest way to add one is the *Add Dependency* command
 ([[cmd:scimax.org.addDependency]]): place the cursor on a task, run the command,
 and pick the task it should depend on. Scimax ensures both tasks have an
 =:ID:= (generating one if needed) and appends the =id:= to =:DEPENDS:=.
+
+The picker lists the headings in the current file first. Type space-separated
+terms to search every indexed heading in the database as well (each term must
+match the title, TODO state, tags, or file path), so tasks in any indexed file
+can be chosen.
 
 ** ✅ Blocking
 CLOSED: [2026-07-02 Thu 08:06]
