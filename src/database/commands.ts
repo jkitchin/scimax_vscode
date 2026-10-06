@@ -732,11 +732,15 @@ export function registerDbCommands(
             // The database does the matching; don't let VS Code filter again
             quickPick.matchOnDescription = false;
             quickPick.matchOnDetail = false;
+            // Keep the database's most-recently-modified order; without this
+            // VS Code re-sorts the items by label match score as you type.
+            // (sortByLabel exists at runtime but predates our @types/vscode.)
+            (quickPick as unknown as { sortByLabel: boolean }).sortByLabel = false;
 
             const toItem = (heading: HeadingRecord): HeadingItem => ({
                 label: `${'  '.repeat(heading.level - 1)}${getHeadingIcon(heading)} ${heading.title}`,
                 description: formatHeadingDescription(heading),
-                detail: `${path.basename(heading.file_path)}:${heading.line_number}`,
+                detail: `${heading.file_path}:${heading.line_number}`,
                 alwaysShow: true,
                 heading
             });
