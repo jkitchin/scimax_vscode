@@ -69,7 +69,7 @@ Search the documentation for keywords. Enter one or more search terms to find re
 
 Select a result to see details or open the documentation file at that location.
 
-* Emacs-Style Editor Keybindings
+* 👀 Emacs-Style Editor Keybindings
 
 | Key             | Action                         |
 |-----------------+--------------------------------|
@@ -82,7 +82,7 @@ Select a result to see details or open the documentation file at that location.
 | C-x b           | Fuzzy-pick recent org/md file  |
 | C-x 3           | Split editor right             |
 | C-x 2           | Split editor down              |
-| C-x 1           | Close other editors in group   |
+| C-x 1           | Make this the only window      |
 | C-x 0           | Close all editors              |
 | C-x o           | Focus next editor group        |
 | C-x <left>      | Previous editor                |
