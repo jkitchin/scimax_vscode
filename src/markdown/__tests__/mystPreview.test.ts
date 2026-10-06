@@ -1,6 +1,9 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const MarkdownIt = require('markdown-it');
+import * as fs from 'fs';
+import * as os from 'os';
+import * as path from 'path';
 import { mystPreviewPlugin } from '../mystPreview';
 
 function render(src: string, enabled = true): string {
@@ -117,5 +120,155 @@ describe('MyST preview plugin', () => {
         const html = render(':::{note}\nText\n:::', false);
         expect(html).toContain(':::{note}');
         expect(html).not.toContain('myst-');
+    });
+
+    it('fills an empty [](#label) link with the labelled section title', () => {
+        const html = render([
+            'We answer it at the end of [](#seci1-log).',
+            '',
+            '(seci1-log)=',
+            '## Read the log',
+        ].join('\n'));
+        expect(html).toContain('<a href="#seci1-log">Read the log</a>');
+        expect(html).toContain('<a id="seci1-log"></a>');
+        expect(html).not.toContain('(seci1-log)=');
+    });
+
+    it('fills an empty link with a labelled directive title or figure caption', () => {
+        const html = render([
+            'See [](#prop-qp), [](#prop-bare) and [](#fig-x).',
+            '',
+            ':::{prf:proposition} QPs are LCPs',
+            ':label: prop-qp',
+            'Body.',
+            ':::',
+            '',
+            ':::{prf:proposition}',
+            ':label: prop-bare',
+            'Body.',
+            ':::',
+            '',
+            '```{figure} x.png',
+            ':name: fig-x',
+            'A caption',
+            '```',
+        ].join('\n'));
+        expect(html).toContain('<a href="#prop-qp">QPs are LCPs</a>');
+        expect(html).toContain('<a href="#prop-bare">Proposition</a>');
+        expect(html).toContain('<a href="#fig-x">A caption</a>');
+    });
+
+    it('resolves targets parsed by the MyST Highlight extension\'s own myst_target rule', () => {
+        // That extension's rule runs first and stores the label in `content`, with no meta.
+        const md = new MarkdownIt({ html: true });
+        md.block.ruler.before('hr', 'myst_target', (state: any, line: number, _end: number, silent: boolean) => {
+            const m = /^\((.+)\)=\s*$/.exec(state.src.slice(state.bMarks[line] + state.tShift[line], state.eMarks[line]));
+            if (!m) return false;
+            if (silent) return true;
+            const token = state.push('myst_target', '', 0);
+            token.content = m[1];
+            token.map = [line, line + 1];
+            state.line = line + 1;
+            return true;
+        });
+        md.renderer.rules.myst_target = () => '<div class="myst-target">visible</div>';
+        mystPreviewPlugin(md);
+        const html = md.render('See [](#sec-a).\n\n(sec-a)=\n## Section A\n');
+        expect(html).toContain('<a href="#sec-a">Section A</a>');
+        expect(html).toContain('<a id="sec-a"></a>');
+    });
+
+    it('shows the label for an empty link to a target in another file, and leaves text links alone', () => {
+        const html = render('See [](#elsewhere) and [Setup](#setup).');
+        expect(html).toContain('<a href="#elsewhere">elsewhere</a>');
+        expect(html).toContain('<a href="#setup">Setup</a>');
+    });
+    describe('citations and equation references', () => {
+        let dir: string;
+        let doc: string;
+        const renderDoc = (src: string, math = false) => {
+            const md = new MarkdownIt({ html: true });
+            if (math) {
+                // Stand-in for VS Code's math plugin: $$ blocks and inline math.
+                md.block.ruler.before('fence', 'math_block', (state: any, start: number, end: number, silent: boolean) => {
+                    const line = (n: number) => state.src.slice(state.bMarks[n] + state.tShift[n], state.eMarks[n]);
+                    if (line(start) !== '$$') return false;
+                    let close = start + 1;
+                    while (close < end && !line(close).startsWith('$$')) close++;
+                    if (silent) return true;
+                    const token = state.push('math_block', 'math', 0);
+                    token.content = state.getLines(start + 1, close, 0, true);
+                    token.map = [start, close + 1];
+                    state.line = close + 1;
+                    return true;
+                });
+                md.renderer.rules.math_block = (t: any, i: number) => `<div class="math">${t[i].content}</div>`;
+                md.renderer.rules.math_inline = (t: any, i: number) => `<span class="math">${t[i].content}</span>`;
+            }
+            mystPreviewPlugin(md);
+            return md.render(src, { currentDocument: { fsPath: doc } });
+        };
+
+        beforeAll(() => {
+            dir = fs.mkdtempSync(path.join(os.tmpdir(), 'myst-cite-'));
+            fs.writeFileSync(path.join(dir, 'myst.yml'), 'version: 1\nproject:\n  bibliography: [refs.bib]\n');
+            fs.writeFileSync(path.join(dir, 'refs.bib'), [
+                '@article{grant2006disciplined,',
+                '  author = {Grant, Michael and Boyd, Stephen and Ye, Yinyu},',
+                '  title = {Disciplined convex programming},',
+                '  journal = {Global Optimization},',
+                '  year = {2006}',
+                '}',
+                '',
+                '@book{boyd2004convex,',
+                '  author = {Boyd, Stephen and Vandenberghe, Lieven},',
+                '  title = {Convex Optimization},',
+                '  year = {2004}',
+                '}',
+                '',
+            ].join('\n'));
+            fs.mkdirSync(path.join(dir, 'content'));
+            doc = path.join(dir, 'content', 'ch1.md');
+        });
+        afterAll(() => fs.rmSync(dir, { recursive: true, force: true }));
+
+        it('renders [@key] as an author-year citation with the full reference as tooltip', () => {
+            const html = renderDoc('Disciplined convex programming [@grant2006disciplined].');
+            expect(html).toMatch(/\(<span class="scimax-cite" title="[^"]*Disciplined convex programming[^"]*">Grant et al\., 2006<\/span>\)/);
+        });
+
+        it('handles several keys, prefixes and locators', () => {
+            const html = renderDoc('[see @grant2006disciplined, p. 3; @boyd2004convex]');
+            expect(html).toContain('(see <span');
+            expect(html).toContain('>Grant et al., 2006, p. 3</span>; <span');
+            expect(html).toContain('>Boyd and Vandenberghe, 2004</span>)');
+        });
+
+        it('renders MyST cite roles and bare @key, but leaves unknown handles and e-mail alone', () => {
+            const html = renderDoc('{cite:t}`boyd2004convex` and {cite:p}`grant2006disciplined`; @boyd2004convex; @nobody; a@b.org');
+            expect(html).toContain('>Boyd and Vandenberghe (2004)</span>');
+            expect(html).toContain('(<span class="scimax-cite"');
+            expect(html).toContain('@nobody');
+            expect(html).toContain('a@b.org');
+        });
+
+        it('marks a missing key', () => {
+            expect(renderDoc('[@missing2020]')).toContain('scimax-cite-missing');
+        });
+
+        it('leaves links whose text starts with @ alone', () => {
+            expect(renderDoc('[@handle](https://example.com)')).toContain('<a href="https://example.com">@handle</a>');
+        });
+
+        it('links {eq} to its equation, with the equation as a hover tip', () => {
+            const html = renderDoc('$$\nx^2 \\le 1\n$$ (eq-a)\n\nBy {eq}`eq-a`, and {ref}`sec-b`.\n\n(sec-b)=\n## Section B\n', true);
+            expect(html).toContain('<a id="eq-a"></a>');
+            expect(html).toContain('<a class="myst-xref" href="#eq-a">(eq-a)<span class="myst-eq-tip"><span class="math">\\displaystyle x^2 \\le 1</span></span></a>');
+            expect(html).toContain('<a class="myst-xref" href="#sec-b">Section B</a>');
+        });
+    });
+
+    it('highlights code cells whose argument is a Jupyter kernel name', () => {
+        expect(render('```{code-cell} ipython3\nprint(1)\n```')).toContain('language-python');
     });
 });

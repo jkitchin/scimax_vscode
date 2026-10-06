@@ -100,3 +100,35 @@ details.myst-admonition:not([open]) > summary.myst-admonition-title {
 pre.myst-math {
     font-family: var(--vscode-editor-font-family, monospace);
 }
+
+/* Citations: author-year text, full reference in the title tooltip. */
+.scimax-cite {
+    border-bottom: 1px dotted currentColor;
+    cursor: help;
+}
+.scimax-cite-missing {
+    color: var(--vscode-errorForeground, #d33);
+}
+
+/* {eq} references: the equation appears on hover. */
+.myst-xref-eq,
+a.myst-xref:has(.myst-eq-tip) {
+    position: relative;
+}
+.myst-eq-tip {
+    display: none;
+    position: absolute;
+    left: 0;
+    top: 1.4em;
+    z-index: 10;
+    padding: 0.5em 0.8em;
+    white-space: nowrap;
+    color: var(--vscode-editorHoverWidget-foreground, inherit);
+    background: var(--vscode-editorHoverWidget-background, #f6f6f6);
+    border: 1px solid var(--vscode-editorHoverWidget-border, #ccc);
+    border-radius: 4px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+}
+a.myst-xref:hover .myst-eq-tip {
+    display: block;
+}

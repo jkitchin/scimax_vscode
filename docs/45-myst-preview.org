@@ -16,7 +16,7 @@ Scimax extends the preview so a MyST file reads roughly as it will in the
 built book. Nothing needs to be run: open the preview as usual
 (~Markdown: Open Preview to the Side~, =Cmd+K V= on macOS, =Ctrl+K V= elsewhere).
 
-* What Is Rendered
+* 👀 What Is Rendered
 
 Both fence styles work, with options as ~:key: value~ lines or a ~---~ YAML
 block at the top of the body:
@@ -42,7 +42,7 @@ The caption, with $math$ and `code`.
 | ~note~, ~tip~, ~hint~, ~important~, ~warning~, ~caution~, ~danger~, ~error~, ~seealso~, ... | Callout titled with the directive name; an argument becomes its first paragraph |
 | ~dropdown~, or any admonition with ~:class: dropdown~       | Collapsible callout (add ~:open:~ to start expanded)           |
 | ~figure~, ~image~                                           | The image, with ~:alt:~, ~:width:~ and ~:align:~; caption below |
-| ~code-cell~, ~code-block~, ~code~, ~sourcecode~, ~eval-rst~, ~raw~ | Highlighted code block in the argument's language       |
+| ~code-cell~, ~code-block~, ~code~, ~sourcecode~, ~eval-rst~, ~raw~ | Highlighted code block in the argument's language (a kernel name such as ~ipython3~ highlights as Python) |
 | ~literalinclude~                                            | A code block of its body; the named file is not read           |
 | ~math~                                                      | Display math (when ~markdown.math.enabled~ is on)              |
 | ~margin~, ~sidebar~, ~topic~, ~card~, ...                   | An indented block of Markdown                                  |
@@ -51,15 +51,52 @@ The caption, with $math$ and `code`.
 
 | Role                                        | Preview                                                   |
 |---------------------------------------------+-----------------------------------------------------------|
-| ~{ref}~, ~{doc}~, ~{term}~, ~{numref}~, ... | The link text (or the target), dotted underline; hover for the target |
+| ~{ref}~, ~{numref}~, ~{prf:ref}~            | A link to the target when it is in the same file, titled like ~[](#label)~ below |
+| ~{eq}~                                      | A link to the labelled equation; hovering shows the equation |
+| ~{cite:t}~, ~{cite:p}~, ~{cite:alp}~, ...   | An author-year citation; hover for the full reference      |
+| ~{doc}~, ~{term}~, other roles              | The link text (or the target), dotted underline; hover for the target |
 | ~{index}~                                   | The plain text                                            |
 | ~{math}~                                    | Inline math                                               |
 | ~{sub}~, ~{sup}~, ~{kbd}~, ~{abbr}~         | Subscript, superscript, key, abbreviation                 |
 
-Cross-references are shown, not resolved: the preview has no project-wide
-view of labels, so ~{ref}`intro`~ displays as /intro/ rather than as a link to
-that section. Scroll sync and VS Code's double-click-to-source still work
+Roles are shown, not resolved: the preview has no project-wide view of
+labels, so ~{ref}`intro`~ displays as /intro/ rather than as a link to that
+section.
+
+An empty Markdown link to a label, ~[](#seci1-log)~, takes its text from the
+target as in the built book: the heading after a ~(seci1-log)=~ target line,
+or the title of a directive with ~:label:~ (or ~:name:~), or a figure's
+caption; a directive with no title shows its kind (/Proposition/). The
+~(label)=~ line itself is hidden and becomes an anchor, so clicking the link
+jumps to the section. A label defined in another file shows as the label. Scroll sync and VS Code's double-click-to-source still work
 inside directives.
+
+* ⚠️ Citations and Equation References
+
+Citations render as author-year text, with the full reference as a tooltip:
+
+| Markdown                                 | Preview                                     |
+|------------------------------------------+---------------------------------------------|
+| ~[@grant2006disciplined]~                | (Grant et al., 2006)                        |
+| ~[see @grant2006disciplined, p. 3; @boyd2004convex]~ | (see Grant et al., 2006, p. 3; Boyd and Vandenberghe, 2004) |
+| ~{cite:p}`grant2006disciplined`~         | (Grant et al., 2006)                        |
+| ~{cite:t}`grant2006disciplined`~ or ~@grant2006disciplined~ | Grant et al. (2006)       |
+| ~{cite:alp}`grant2006disciplined`~       | Grant et al., 2006                          |
+
+The bibliography is the ~bibliography:~ key in the file's front matter, or
+~project.bibliography~ in the nearest ~myst.yml~ above the file, or
+~bibtex_bibfiles~ in a Jupyter Book ~_config.yml~. A key that is not in it is
+shown in red. A bare ~@word~ is only treated as a citation when the word is a
+key, so handles and e-mail addresses are left alone.
+
+A labelled display equation, ~$$ ... $$ (eq-label)~ or a ~{math}~ directive
+with ~:label:~, gets an anchor. ~{eq}`eq-label`~ becomes a link to it, and
+hovering over the link shows the equation (with ~markdown.math.enabled~ on).
+Equations in other files show as plain text.
+
+The MyST Highlight extension (~executablebookproject.myst-highlight~) also
+adds preview rules for ~(label)=~ lines; Scimax takes those over so they are
+hidden, as in the built book.
 
 * Configuration
 

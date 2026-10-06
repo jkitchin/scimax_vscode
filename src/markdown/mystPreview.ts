@@ -8,9 +8,15 @@
  * directive a labelled box, so a MyST file reads in the preview roughly as it
  * will in the built book.
  *
- * It is a preview aid, not a MyST implementation: cross-references are shown
- * as their text rather than resolved, and index entries are hidden.
+ * It is a preview aid, not a MyST implementation: roles such as {ref} are
+ * shown as their text rather than resolved, empty `[](#label)` links take the
+ * title of a target in the same file (the label itself otherwise), and index
+ * entries are hidden.
  */
+
+import {
+    bibliographyPaths, CitationMode, frontMatterBibliography, parseCitationItems, renderCitation,
+} from './citationPreview';
 
 /* eslint-disable @typescript-eslint/no-explicit-any -- markdown-it ships no types here */
 type MarkdownIt = any;
@@ -41,12 +47,36 @@ const PLAIN_CONTAINERS = new Set(['margin', 'sidebar', 'div', 'container', 'card
 
 const OPEN_FENCE = /^(`{3,}|~{3,}|:{3,})\{([\w:.+-]+)\}[ \t]*(.*)$/;
 const OPTION_LINE = /^:([\w-]+):[ \t]*(.*)$/;
-const CSS_LENGTH = /^\d+(\.\d+)?(px|%|em|rem|vw|pt|cm|mm|in)?$/;
+const EQUATION_LABEL = /\$\$\s*\(([\w:.-]+)\)\s*$/;
+/** Roles that point at a labelled section, figure or directive. */
+const REF_ROLES = new Set(['ref', 'numref', 'prf:ref', 'doc']);
+/** MyST {cite:...} role suffix to citation style. */
+const CITE_MODES: Record<string, CitationMode> = {
+    cite: 'p', 'cite:p': 'p', 'cite:ps': 'p', 'cite:t': 't', 'cite:ts': 't',
+    'cite:alp': 'alp', 'cite:alps': 'alp', 'cite:author': 'author', 'cite:year': 'year',
+};
+const TARGET_LINE = /^\(([\w:.-]+)\)=\s*$/;
+const CSS_LENGTH =/^\d+(\.\d+)?(px|%|em|rem|vw|pt|cm|mm|in)?$/;
 
 interface Directive {
     name: string;
     arg: string;
     options: Record<string, string>;
+}
+
+/**
+ * The highlighter's language for a code-cell argument, which is often a
+ * Jupyter kernel name (`ipython3`, `ir`, `julia-1.10`) rather than a language.
+ */
+function highlightLanguage(arg: string): string {
+    const lang = arg.trim().split(/\s+/)[0] || '';
+    if (/^i?python\d*$/i.test(lang)) {
+        return 'python';
+    }
+    if (/^julia-[\d.]+$/i.test(lang)) {
+        return 'julia';
+    }
+    return lang.toLowerCase() === 'ir' ? 'r' : lang;
 }
 
 function capitalize(text: string): string {
@@ -168,10 +198,11 @@ export function mystPreviewPlugin(md: MarkdownIt, options: MystPreviewOptions = 
 
         if (CODE_DIRECTIVES.has(name) || name === 'math') {
             const token = state.push(name === 'math' ? 'myst_math' : 'fence', name === 'math' ? 'div' : 'code', 0);
-            token.info = name === 'math' ? '' : directive.arg;
+            token.info = name === 'math' ? '' : highlightLanguage(directive.arg);
             token.content = bodyText(state, bodyStart, close, indent);
             token.markup = fence;
             token.map = map;
+            token.meta = directive;
             return true;
         }
 
@@ -231,14 +262,176 @@ export function mystPreviewPlugin(md: MarkdownIt, options: MystPreviewOptions = 
         return true;
     }
 
+    /** A `(label)=` target line, which names the block after it. */
+    function targetRule(state: any, startLine: number, _endLine: number, silent: boolean): boolean {
+        if (state.sCount[startLine] - state.blkIndent >= 4 || !enabled()) {
+            return false;
+        }
+        const m = TARGET_LINE.exec(lineText(state, startLine));
+        if (!m) {
+            return false;
+        }
+        if (!silent) {
+            const token = state.push('scimax_myst_target', '', 0);
+            token.meta = { label: m[1] };
+            token.map = [startLine, startLine + 1];
+            token.block = true;
+        }
+        state.line = startLine + 1;
+        return true;
+    }
+
+    /** The first line of text in the figure caption after token `from`. */
+    function captionText(tokens: Token[], from: number): string {
+        let inCaption = false;
+        for (let i = from; i < tokens.length && tokens[i].type !== 'myst_directive_close'; i++) {
+            if (tokens[i].type === 'myst_caption_open') {
+                inCaption = true;
+            } else if (inCaption && tokens[i].type === 'inline') {
+                return tokens[i].content;
+            }
+        }
+        return '';
+    }
+
+    /**
+     * Fill empty `[](#label)` links with the target's title, as MyST does:
+     * a section's heading, or a labelled directive's title (a figure's
+     * caption). Labels from other files show as the label itself.
+     */
+    function resolveReferences(state: any): void {
+        if (!enabled()) {
+            return;
+        }
+        const tokens: Token[] = state.tokens;
+        const titles = new Map<string, string>();
+        const equations = new Map<string, string>();
+        const anchors: { index: number; label: string }[] = [];
+        let srcLines: string[] | undefined;
+        tokens.forEach((token, i) => {
+            // Labelled display math: `$$ ... $$ (label)` or {math} with :label:.
+            let eqLabel: string | undefined;
+            if (token.type === 'math_block' && token.map) {
+                srcLines ??= state.src.split(/\r?\n/);
+                eqLabel = EQUATION_LABEL.exec(srcLines![token.map[1] - 1] || '')?.[1];
+            } else if (token.type === 'myst_math') {
+                eqLabel = token.meta?.options?.label || token.meta?.options?.name;
+            }
+            if (eqLabel) {
+                equations.set(eqLabel, token.content.trim());
+                anchors.push({ index: i, label: eqLabel });
+            }
+
+            // The MyST Highlight extension may claim the line first: its
+            // `myst_target` token keeps the label in `content`, with no meta.
+            // Take it over so it renders as our hidden anchor.
+            if (token.type === 'myst_target' && !token.meta && token.content) {
+                token.type = 'scimax_myst_target';
+                token.meta = { label: token.content };
+            }
+            if (token.type === 'scimax_myst_target') {
+                const next = tokens[i + 1];
+                titles.set(token.meta.label, next?.type === 'heading_open' ? tokens[i + 2].content : '');
+            } else if (token.type === 'myst_directive_open') {
+                const { name, arg, options: opts } = token.meta as Directive;
+                const label = opts.label || opts.name;
+                if (label) {
+                    const caption = name === 'figure' ? captionText(tokens, i + 1) : '';
+                    titles.set(label, caption || arg || capitalize(name.replace(/^\w+:/, '')));
+                }
+            }
+        });
+
+        // Anchors so {eq} links can jump to their equation.
+        for (const { index, label } of anchors.reverse()) {
+            const anchor = new state.Token('scimax_myst_target', '', 0);
+            anchor.meta = { label };
+            anchor.block = true;
+            tokens.splice(index, 0, anchor);
+        }
+
+        const frontBibs = frontMatterBibliography(state.src);
+        for (const token of tokens) {
+            if (token.type !== 'inline' || !token.children) {
+                continue;
+            }
+            const children: Token[] = token.children;
+            for (const child of children) {
+                if (child.type === 'scimax_cite') {
+                    child.meta.frontBibs = frontBibs;
+                } else if (child.type === 'myst_role') {
+                    const meta = child.meta;
+                    meta.frontBibs = frontBibs;
+                    const { text, target } = roleDisplay(meta.content);
+                    const explicit = text !== target;
+                    if (meta.name === 'eq' && equations.has(target)) {
+                        meta.xref = { href: target, text: explicit ? text : `(${target})`, tex: equations.get(target) };
+                    } else if (REF_ROLES.has(meta.name) && titles.has(target)) {
+                        meta.xref = { href: target, text: explicit ? text : (titles.get(target) || target) };
+                    }
+                }
+            }
+            for (let i = children.length - 2; i >= 0; i--) {
+                const href = children[i].type === 'link_open' ? children[i].attrGet('href') : null;
+                if (!href || !href.startsWith('#') || children[i + 1].type !== 'link_close') {
+                    continue;
+                }
+                const label = decodeURIComponent(href.slice(1));
+                const text = new state.Token('text', '', 0);
+                text.content = titles.get(label) || label;
+                children.splice(i + 1, 0, text);
+            }
+        }
+    }
+
+    /** `[@key]`, `[see @a, p. 3; @b]`: a bracketed citation that is not a link. */
+    function bracketCitationRule(state: any, silent: boolean): boolean {
+        if (state.src.charCodeAt(state.pos) !== 0x5b /* [ */ || !enabled()) {
+            return false;
+        }
+        const m = /^\[([^[\]\n]*@[^[\]\n]*)\](?![([:])/.exec(state.src.slice(state.pos));
+        const items = m && parseCitationItems(m[1]);
+        if (!m || !items) {
+            return false;
+        }
+        if (!silent) {
+            state.push('scimax_cite', '', 0).meta = { items, mode: 'p' };
+        }
+        state.pos += m[0].length;
+        return true;
+    }
+
+    /** A bare `@key`, rendered as a narrative citation when the key is in the bibliography. */
+    function bareCitationRule(state: any, silent: boolean): boolean {
+        if (state.src.charCodeAt(state.pos) !== 0x40 /* @ */ || !enabled()) {
+            return false;
+        }
+        if (state.pos > 0 && /[\w.@]/.test(state.src[state.pos - 1])) {
+            return false; // an e-mail address or similar
+        }
+        const m = /^@([A-Za-z][\w:./-]*\w)/.exec(state.src.slice(state.pos));
+        if (!m) {
+            return false;
+        }
+        if (!silent) {
+            state.push('scimax_cite', '', 0).meta = { items: [{ key: m[1] }], mode: 't', bare: true };
+        }
+        state.pos += m[0].length;
+        return true;
+    }
+
     md.block.ruler.before('fence', 'myst_directive', directiveRule, {
         alt: ['paragraph', 'reference', 'blockquote', 'list'],
     });
+    md.block.ruler.before('paragraph', 'scimax_myst_target', targetRule);
     md.inline.ruler.before('backticks', 'myst_role', roleRule);
+    md.inline.ruler.before('link', 'scimax_cite', bracketCitationRule);
+    md.inline.ruler.push('scimax_cite_bare', bareCitationRule);
+    md.core.ruler.push('myst_references', resolveReferences);
 
     const rules = md.renderer.rules;
 
-    rules.myst_directive_open = (tokens: Token[], idx: number) => {
+    rules.myst_directive_open = (tokens: Token[], idx: number, _opts: any, env: any) => {
         const token = tokens[idx];
         const { name, arg, options: opts } = token.meta as Directive;
         const classes = safeClasses(opts.class);
@@ -261,7 +454,7 @@ export function mystPreviewPlugin(md: MarkdownIt, options: MystPreviewOptions = 
             const title = name === 'admonition' || name === 'dropdown'
                 ? (arg || capitalize(kind))
                 : capitalize(name);
-            const titleHtml = md.renderInline(title);
+            const titleHtml = md.renderInline(title, env);
             const cls = `code-line myst-admonition myst-${kind} ${classes.join(' ')}`;
             if (name === 'dropdown' || classes.includes('dropdown')) {
                 const open = 'open' in opts ? ' open' : '';
@@ -290,7 +483,11 @@ export function mystPreviewPlugin(md: MarkdownIt, options: MystPreviewOptions = 
         return '</div>\n';
     };
 
-    rules.myst_caption_open = () => '<figcaption>\n';
+    // An anchor, so the preview can jump to the target from a `[](#label)` link.
+    rules.scimax_myst_target = (tokens: Token[], idx: number) =>
+        `<a id="${escape(tokens[idx].meta.label)}"></a>\n`;
+
+    rules.myst_caption_open =() => '<figcaption>\n';
     rules.myst_caption_close = () => '</figcaption>\n';
 
     rules.myst_math = (tokens: Token[], idx: number, opts: any, env: any, self: any) => {
@@ -302,8 +499,53 @@ export function mystPreviewPlugin(md: MarkdownIt, options: MystPreviewOptions = 
             + `${escape(tokens[idx].content)}</pre>\n`;
     };
 
+    /** Bibliography files for the previewed document, found once per render. */
+    function bibFiles(env: any, frontBibs: string[] = []): string[] {
+        const docPath: string | undefined = env?.currentDocument?.fsPath;
+        if (!docPath) {
+            return [];
+        }
+        const memo = env.scimaxBibFiles ??= new Map<string, string[]>();
+        const key = frontBibs.join('\n');
+        if (!memo.has(key)) {
+            memo.set(key, bibliographyPaths(docPath, frontBibs));
+        }
+        return memo.get(key);
+    }
+
+    rules.scimax_cite = (tokens: Token[], idx: number, _opts: any, env: any) => {
+        const { items, mode, bare, frontBibs } = tokens[idx].meta;
+        const files = bibFiles(env, frontBibs);
+        if (bare && !files.length) {
+            return escape(`@${items[0].key}`);
+        }
+        const html = renderCitation(items, mode, files, escape);
+        // A bare @word that is not a key stays as typed (e.g. a handle).
+        return bare && html.includes('scimax-cite-missing') ? escape(`@${items[0].key}`) : html;
+    };
+
+    /** A {eq} or {ref} link; an equation shows itself on hover. */
+    function renderXref(xref: { href: string; text: string; tex?: string }, opts: any, env: any, self: any): string {
+        const link = `<a class="myst-xref" href="#${escape(xref.href)}">${escape(xref.text)}`;
+        if (xref.tex === undefined) {
+            return `${link}</a>`;
+        }
+        const math = { type: 'math_inline', content: `\\displaystyle ${xref.tex}` };
+        const rendered = self.rules.math_inline
+            ? self.rules.math_inline([math], 0, opts, env, self)
+            : `<code>${escape(xref.tex)}</code>`;
+        return `${link}<span class="myst-eq-tip">${rendered}</span></a>`;
+    }
+
     rules.myst_role = (tokens: Token[], idx: number, opts: any, env: any, self: any) => {
-        const { name, content } = tokens[idx].meta as { name: string; content: string };
+        const { name, content, xref, frontBibs } = tokens[idx].meta;
+        if (xref) {
+            return renderXref(xref, opts, env, self);
+        }
+        if (CITE_MODES[name]) {
+            const items = content.split(',').map((key: string) => ({ key: key.trim() })).filter((i: { key: string }) => i.key);
+            return renderCitation(items, CITE_MODES[name], bibFiles(env, frontBibs), escape);
+        }
         switch (name) {
             case 'math':
                 return self.rules.math_inline
