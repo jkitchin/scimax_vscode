@@ -18,6 +18,8 @@ import * as vscode from 'vscode';
 import { extractAnchors, normalizeAnchorText } from '../parser/orgAnchors';
 import { getDatabase } from '../database/lazyDb';
 import { getTodoStatesFromText, extractHeadingTitle } from './todoStates';
+import { linkTypeRegistry } from '../parser/orgLinkTypes';
+import { ALL_CITATION_COMMANDS } from '../references/citationTypes';
 
 const SETTING_KEY = 'scimax.org.diagnostics.orphanLinks';
 
@@ -27,6 +29,23 @@ const FILE_EXT_RE = /\.(org|md|markdown|png|jpe?g|gif|pdf|svg|txt|html?|csv|tsv|
 const BLOCK_BEGIN_RE = /^[ \t]*#\+BEGIN_/i;
 const BLOCK_END_RE = /^[ \t]*#\+END_/i;
 const LINK_RE = /\[\[([^\]]+?)(?:\]\[[^\]]*)?\]\]/g;
+
+/** org-ref cross-reference link types (ref:label, eqref:label, ...). */
+const REF_LINK_TYPES = ['ref', 'eqref', 'pageref', 'nameref', 'autoref', 'cref', 'Cref', 'label'];
+
+/**
+ * True for a typed link such as [[ref:eq-1]], [[citep:&key]] or [[marp:deck.md]]:
+ * its prefix is a registered link type, a citation command or an org-ref
+ * reference. Those are resolved by their own handlers, not as fuzzy targets.
+ */
+function isTypedLink(raw: string): boolean {
+    const m = /^([A-Za-z][\w-]*):/.exec(raw);
+    if (!m) return false;
+    const type = m[1];
+    return linkTypeRegistry.hasType(type)
+        || ALL_CITATION_COMMANDS.includes(type)
+        || REF_LINK_TYPES.includes(type);
+}
 
 export interface OrphanLink {
     /** Absolute character offset where the target text begins (after `[[`). */
@@ -91,6 +110,7 @@ export async function computeOrphanLinks(
             const raw = m[1].trim();
             if (!raw) continue;
             if (EXTERNAL_SCHEME_RE.test(raw)) continue;  // external / handled elsewhere
+            if (isTypedLink(raw)) continue;               // ref:, cite:, marp: ... have their own handlers
             if (raw.startsWith('#')) continue;            // custom-id -> broken-link checker
             if (raw.includes('::')) continue;             // cross-file fragment -> v1 lenient
             if (raw.includes('/') || FILE_EXT_RE.test(raw)) continue; // file link

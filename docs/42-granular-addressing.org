@@ -170,7 +170,7 @@ heading that contains it. The index is:
 Anchors inside =#+BEGIN_SRC=, =#+BEGIN_EXAMPLE=, and similar blocks are ignored,
 so =<<...>>= in code is not treated as an anchor.
 
-* Orphan link diagnostics
+* 👀 Orphan link diagnostics
 
 When the setting =scimax.org.diagnostics.orphanLinks= is enabled (the default),
 scimax warns when an internal link resolves to nothing. A link is flagged only
@@ -187,8 +187,11 @@ diagnostic never contradicts navigation. The typical trigger is deleting an
 anchor while a link to it remains: you see a yellow warning on the link target,
 "Unresolved link: ... The target may have been deleted."
 
-Custom-id (=[[#id]]=) and =id:= links are validated by the separate org-lint
-=broken-link= checker. Cross-file fragment links (=[[file.org::name]]=) are not
+Typed links are not fuzzy links and are not checked here: org-ref references
+(=[[ref:eq-1]]=, =eqref:=, =cref:=, ...), citations (=cite:=, =citep:=, ...)
+and any other registered link type (=marp:=, =doi:=, ...) resolve through
+their own handlers. Custom-id (=[[#id]]=) and =id:= links are validated by the
+separate org-lint =broken-link= checker. Cross-file fragment links (=[[file.org::name]]=) are not
 checked in this version.
 
 To turn the warnings off, set in your settings:

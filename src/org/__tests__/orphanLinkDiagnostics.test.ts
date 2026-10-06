@@ -33,6 +33,20 @@ describe('computeOrphanLinks', () => {
         expect(orphans[0].target).toBe('why-sqlite');
     });
 
+    it('leaves typed links (org-ref refs, citations, registered types) alone', async () => {
+        const text = [
+            'Eq. [[ref:eq-arrhenius]] and [[eqref:eq-arrhenius]], Table [[Cref:tab-params]].',
+            'See [[cite:&grant2006]] and [[citep:&boyd2004]], the deck [[marp:talk.md]].',
+            '\\label{eq-arrhenius}',
+        ].join('\n');
+        expect(await computeOrphanLinks(text, never)).toEqual([]);
+    });
+
+    it('still checks a fuzzy link whose prefix is not a link type', async () => {
+        const orphans = await computeOrphanLinks('See [[Note: missing target]].', never);
+        expect(orphans.map(o => o.target)).toEqual(['Note: missing target']);
+    });
+
     it('does not flag when a cross-file anchor resolves in the database', async () => {
         const text = 'See [[why-sqlite]] for the rationale.';
         expect(await computeOrphanLinks(text, always)).toEqual([]);

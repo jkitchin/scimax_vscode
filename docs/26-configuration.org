@@ -172,7 +172,7 @@ Fields: =name= (required), =tag=/=property=/=value= (selection), =display=
 (shown in the picker), =email=/=address=/=url= (properties powering the
 mailto/maps/open-link actions). See [[file:03.7-contacts-and-locations.org][Contacts, Locations & Entity Selector]].
 
-** ✅ Orphan Link Diagnostics
+** 👀 Orphan Link Diagnostics
 CLOSED: [2026-07-02 Thu 08:05]
 
 When =scimax.org.diagnostics.orphanLinks= is enabled (the default), scimax
@@ -181,7 +181,9 @@ no =<<target>>= / =<<<radio target>>>= / =#+NAME= anchor, no heading, and no
 matching text. This catches the case where an anchor was deleted but a link to
 it remains. Resolution mirrors what following the link actually does (in-file
 anchors/headings/text first, then a workspace-wide anchor lookup in the
-database), so valid cross-file anchor links are not flagged. Custom-id
+database), so valid cross-file anchor links are not flagged. Typed links such
+as =[[ref:eq-1]]=, =[[citep:&key]]= or =[[marp:deck.md]]= are resolved by their
+own handlers and are not checked here. Custom-id
 (=[[#id]]=) and =id:= links are checked by the separate org-lint =broken-link=
 checker. Set this to =false= to turn the warnings off.
 
