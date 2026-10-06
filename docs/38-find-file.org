@@ -1,17 +1,19 @@
 #+TITLE: Find File - Emacs-style File Navigation
 #+STARTUP: showall
+#+TODO: ⚠️ 👀 | ✅
 
 * Find File (C-x C-f)
 
 Find File provides Emacs-style file navigation in VS Code. It displays a filterable directory listing in a webview panel where you can quickly navigate directories, open files, and perform actions like inserting file paths or org-links.
 
-** Opening Find File
+** 👀 Opening Find File
 
-| Keybinding | Command                    | Description                                         |
-|------------+----------------------------+-----------------------------------------------------|
-| ~C-x C-f~  | =scimax.findFile=          | Open find-file (starts in current file's directory) |
-|            | =scimax.findFileHome=      | Open find-file in home directory                    |
-|            | =scimax.findFileWorkspace= | Open find-file in workspace root                    |
+| Keybinding | Command                      | Description                                         |
+|------------+------------------------------+-----------------------------------------------------|
+| ~C-x C-f~  | =scimax.findFile=            | Open find-file (starts in current file's directory) |
+| ~C-x 5 f~  | =scimax.findFileOtherWindow= | Same, but Enter opens the file in a new window      |
+|            | =scimax.findFileHome=        | Open find-file in home directory                    |
+|            | =scimax.findFileWorkspace=   | Open find-file in workspace root                    |
 
 ** Navigation
 
@@ -43,7 +45,7 @@ Simply type to filter the file list. The filter uses fuzzy matching - characters
 
 Only works when filter is empty.
 
-** Actions Menu (M-o)
+** 👀 Actions Menu (M-o)
 
 Press ~M-o~ (Option+O on Mac) to open the actions menu. Then press a speed key to execute the action, or click on an action.
 
@@ -51,6 +53,7 @@ Press ~M-o~ (Option+O on Mac) to open the actions menu. Then press a speed key t
 |-----+-----------------------------------------|
 | ~o~ | Open file (default)                     |
 | ~j~ | Open in split (side-by-side)            |
+| ~w~ | Open in a new window                    |
 | ~p~ | Insert relative path at original cursor |
 | ~P~ | Insert absolute path at original cursor |
 | ~l~ | Insert org-link with relative path      |
@@ -63,6 +66,22 @@ Press ~M-o~ (Option+O on Mac) to open the actions menu. Then press a speed key t
 | ~D~ | Delete file                             |
 
 Press ~M-o~ or ~Esc~ to cancel the actions menu.
+
+** ⚠️ New Windows (C-x 5)
+
+The Emacs frame commands open VS Code /floating editor windows/: separate OS
+windows that belong to the same VS Code window, so they keep the project,
+sidebar and extensions.
+
+| Key       | Command                                  | Emacs                   | Action                                   |
+|-----------+------------------------------------------+-------------------------+------------------------------------------|
+| ~C-x 5 f~ | =scimax.findFileOtherWindow=             | ~find-file-other-frame~ | Find a file and open it in a new window  |
+| ~C-x 5 2~ | =workbench.action.copyEditorToNewWindow= | ~make-frame-command~    | Show the current file in a new window    |
+| ~C-x 5 0~ | =workbench.action.closeWindow=           | ~delete-frame~          | Close the window you are in              |
+| ~C-x 5 o~ | =workbench.action.switchWindow=          | ~other-frame~           | Pick an open window to switch to         |
+
+~C-x 5 0~ in the main window closes the whole VS Code window, as
+~delete-frame~ does for the last frame.
 
 ** Path Insertion
 

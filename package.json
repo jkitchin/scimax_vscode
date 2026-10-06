@@ -1944,6 +1944,10 @@
         "icon": "$(file)"
       },
       {
+        "command": "scimax.findFileOtherWindow",
+        "title": "Scimax: Find File in New Window (C-x 5 f)"
+      },
+      {
         "command": "scimax.findFileHome",
         "title": "Scimax: Find File in Home Directory"
       },
@@ -3987,6 +3991,30 @@
         "command": "scimax.findFile",
         "key": "ctrl+x ctrl+f",
         "mac": "ctrl+x ctrl+f"
+      },
+      {
+        "command": "scimax.findFileOtherWindow",
+        "key": "ctrl+x 5 f",
+        "mac": "ctrl+x 5 f",
+        "when": "!terminalFocus"
+      },
+      {
+        "command": "workbench.action.copyEditorToNewWindow",
+        "key": "ctrl+x 5 2",
+        "mac": "ctrl+x 5 2",
+        "when": "!terminalFocus"
+      },
+      {
+        "command": "workbench.action.closeWindow",
+        "key": "ctrl+x 5 0",
+        "mac": "ctrl+x 5 0",
+        "when": "!terminalFocus"
+      },
+      {
+        "command": "workbench.action.switchWindow",
+        "key": "ctrl+x 5 o",
+        "mac": "ctrl+x 5 o",
+        "when": "!terminalFocus"
       },
       {
         "command": "workbench.action.navigateBack",

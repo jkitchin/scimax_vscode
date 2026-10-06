@@ -29,7 +29,8 @@ export class FindFilePanel {
         panel: vscode.WebviewPanel,
         extensionUri: vscode.Uri,
         initialDirectory?: string,
-        originalPosition?: OriginalPosition | null
+        originalPosition?: OriginalPosition | null,
+        private readonly openInNewWindow = false
     ) {
         this.panel = panel;
         this.extensionUri = extensionUri;
@@ -55,7 +56,8 @@ export class FindFilePanel {
     public static createOrShow(
         extensionUri: vscode.Uri,
         directory?: string,
-        originalPosition?: OriginalPosition | null
+        originalPosition?: OriginalPosition | null,
+        openInNewWindow = false
     ): FindFilePanel {
         const column = vscode.ViewColumn.Active;
 
@@ -68,7 +70,7 @@ export class FindFilePanel {
         // Create a new panel
         const panel = vscode.window.createWebviewPanel(
             FindFilePanel.viewType,
-            'Find File',
+            openInNewWindow ? 'Find File (new window)' : 'Find File',
             column,
             {
                 enableScripts: true,
@@ -77,7 +79,7 @@ export class FindFilePanel {
             }
         );
 
-        FindFilePanel.currentPanel = new FindFilePanel(panel, extensionUri, directory, originalPosition);
+        FindFilePanel.currentPanel = new FindFilePanel(panel, extensionUri, directory, originalPosition, openInNewWindow);
         return FindFilePanel.currentPanel;
     }
 
@@ -168,7 +170,7 @@ export class FindFilePanel {
                     const filePath = await this.manager.createFile();
                     if (filePath) {
                         this.dispose();
-                        await vscode.window.showTextDocument(vscode.Uri.file(filePath));
+                        await this.openFile(filePath, this.openInNewWindow);
                         return;
                     }
                 } catch (error: any) {
@@ -195,7 +197,23 @@ export class FindFilePanel {
         } else {
             // Open file in editor and close panel
             this.dispose();
-            await vscode.window.showTextDocument(vscode.Uri.file(entry.path));
+            await this.openFile(entry.path, this.openInNewWindow);
+        }
+    }
+
+    /**
+     * Open a file in the editor, or in a new floating window (C-x 5 f, or
+     * the w action): it opens in the current group and then moves out.
+     */
+    private async openFile(filePath: string, newWindow: boolean): Promise<void> {
+        await vscode.window.showTextDocument(vscode.Uri.file(filePath));
+        if (newWindow) {
+            try {
+                await vscode.commands.executeCommand('workbench.action.moveEditorToNewWindow');
+            } catch {
+                // Floating editor windows need a newer VS Code; the file stays open here.
+                vscode.window.showInformationMessage('This VS Code cannot open editors in a new window.');
+            }
         }
     }
 
@@ -316,6 +334,15 @@ export class FindFilePanel {
                     vscode.Uri.file(entry.path),
                     { viewColumn: vscode.ViewColumn.Beside }
                 );
+                break;
+
+            case 'openWindow':
+                if (entry.isDirectory) {
+                    this.sendMessage({ command: 'info', message: 'Select a file to open in a new window' });
+                    break;
+                }
+                this.dispose();
+                await this.openFile(entry.path, true);
                 break;
         }
     }
@@ -653,6 +680,7 @@ export class FindFilePanel {
             <div class="actions-grid">
                 <div class="action-item" data-action="open"><span class="action-key">o</span><span class="action-desc">open (default)</span></div>
                 <div class="action-item" data-action="openSplit"><span class="action-key">j</span><span class="action-desc">open in split</span></div>
+                <div class="action-item" data-action="openWindow"><span class="action-key">w</span><span class="action-desc">open in new window</span></div>
                 <div class="action-item" data-action="insertRelative"><span class="action-key">p</span><span class="action-desc">insert relative path</span></div>
                 <div class="action-item" data-action="insertAbsolute"><span class="action-key">P</span><span class="action-desc">insert absolute path</span></div>
                 <div class="action-item" data-action="orgLinkRelative"><span class="action-key">l</span><span class="action-desc">insert org-link (rel)</span></div>
@@ -701,6 +729,7 @@ export class FindFilePanel {
         const actionKeys = {
             'o': 'open',
             'j': 'openSplit',
+            'w': 'openWindow',
             'p': 'insertRelative',
             'P': 'insertAbsolute',
             'l': 'orgLinkRelative',

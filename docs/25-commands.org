@@ -1007,7 +1007,7 @@ stays put cycles the cursor line through three scroll positions: center on the
 first press, top on the second, bottom on the third, then back to center.
 Moving the cursor or switching editors resets the cycle to center.
 
-* ✅ Projectile
+* 👀 Projectile
 CLOSED: [2026-01-17 Sat 12:47]
 
 | Command ID                            | Description                   | Default Keybinding |
@@ -1790,7 +1790,7 @@ Interactive search and replace.
 
 Provides Emacs-style interactive query-replace with confirmation for each replacement.
 
-* ✅ Utilities
+* 👀 Utilities
 CLOSED: [2026-01-21 Wed 13:21]
 :PROPERTIES:
 :CUSTOM_ID: utilities
@@ -1801,6 +1801,7 @@ Miscellaneous utility commands.
 | Command ID                         | Description                           | Default Keybinding |
 |------------------------------------+---------------------------------------+--------------------|
 | [[cmd:scimax.findFile]]            | Find File                             | C-x C-f            |
+| [[cmd:scimax.findFileOtherWindow]] | Find File in New Window               | C-x 5 f            |
 | [[cmd:scimax.findFileHome]]        | Find File in Home Directory           | -                  |
 | [[cmd:scimax.findFileWorkspace]]   | Find File in Workspace                | -                  |
 | [[cmd:scimax.insertFile]]          | Insert File Contents                  | C-x i              |

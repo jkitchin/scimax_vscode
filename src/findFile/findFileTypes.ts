@@ -114,7 +114,8 @@ export type FindFileAction =
     | 'openDired'
     | 'delete'
     | 'rename'
-    | 'openSplit';
+    | 'openSplit'
+    | 'openWindow';
 
 /**
  * Format file size for display

@@ -41,6 +41,25 @@ export function registerFindFileCommands(context: vscode.ExtensionContext): void
         })
     );
 
+    // Find file and open it in a new floating window (C-x 5 f)
+    context.subscriptions.push(
+        vscode.commands.registerCommand('scimax.findFileOtherWindow', async () => {
+            const editor = vscode.window.activeTextEditor;
+            const originalPosition: OriginalPosition | null = editor
+                ? { uri: editor.document.uri, position: editor.selection.active }
+                : null;
+            let startDir: string;
+            if (editor && editor.document.uri.scheme === 'file') {
+                startDir = path.dirname(editor.document.uri.fsPath);
+            } else if (vscode.workspace.workspaceFolders && vscode.workspace.workspaceFolders.length > 0) {
+                startDir = vscode.workspace.workspaceFolders[0].uri.fsPath;
+            } else {
+                startDir = os.homedir();
+            }
+            FindFilePanel.createOrShow(context.extensionUri, startDir, originalPosition, true);
+        })
+    );
+
     // Find file in home directory
     context.subscriptions.push(
         vscode.commands.registerCommand('scimax.findFileHome', async () => {

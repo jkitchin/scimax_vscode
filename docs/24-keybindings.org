@@ -85,6 +85,10 @@ Select a result to see details or open the documentation file at that location.
 | C-x 1           | Make this the only window      |
 | C-x 0           | Close all editors              |
 | C-x o           | Focus next editor group        |
+| C-x 5 f         | Find file in a new window      |
+| C-x 5 2         | Current file in a new window   |
+| C-x 5 0         | Close this window              |
+| C-x 5 o         | Switch to another window       |
 | C-x <left>      | Previous editor                |
 | C-x <right>     | Next editor                    |
 | C-x C-<left>    | Navigate back                  |
@@ -353,7 +357,7 @@ Emacs-style =recenter-top-bottom=. Press =C-l= repeatedly while the cursor
 stays put to cycle the cursor line through center, top, and bottom of the
 viewport. Moving the cursor resets the cycle to center.
 
-** Projectile
+** 👀 Projectile
 
 | Key       | Action                          |
 |-----------+---------------------------------|
