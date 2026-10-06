@@ -184,7 +184,7 @@ The page checks for a new build once a second by loading a small
 ~<name>.html.version.js~ file written next to it, so it needs no server. Turn it
 off with ~scimax.marp.liveReload~.
 
-** Presenting from an org file
+** 👀 Presenting from an org file
 
 A ~marp:~ link in an org file launches the slideshow when clicked (or with
 =C-c C-o= on it):
@@ -197,6 +197,12 @@ A ~marp:~ link in an org file launches the slideshow when clicked (or with
 The path is relative to the org file (absolute paths and ~~/~ work too), and
 ~::N~ starts at slide /N/. When the org file is exported, the link becomes an
 ordinary link to the ~.md~ file.
+
+Hovering over the link shows a picture of the deck's first slide, the number
+of slides, and links to *Edit* the ~.md~ file, open its *Preview* beside the
+editor, or *Present* the slideshow (from slide /N/ for a ~::N~ link). The
+picture uses the deck's theme and inlines local images; remote images and web
+fonts are not loaded, so those may look different from the slideshow.
 
 * Directives
 

@@ -315,7 +315,7 @@ Link to images (see also [[file:12-image-overlays.org][Image Overlays]]):
 
 Images are displayed in tooltips or overlays when hovering over the link.
 
-** Marp Slideshow Links
+** 👀 Marp Slideshow Links
 
 A ~marp:~ link presents a [[file:44-marp.org][Marp]] slide deck (a Markdown file with ~marp: true~)
 as a slideshow in the browser. Click it, or press =C-c C-o= on it.
@@ -328,6 +328,12 @@ as a slideshow in the browser. Click it, or press =C-c C-o= on it.
 The path is relative to the org file; absolute paths and ~~/~ work too. ~::N~
 starts at slide /N/. In exported HTML or LaTeX the link points to the ~.md~
 file. See [[file:44-marp.org::*Slideshow][Slideshow]].
+
+Hovering over the link shows a picture of the deck's first slide, the number
+of slides, and links to *Edit* the ~.md~ file, open its *Preview* beside the
+editor, or *Present* the slideshow (from slide /N/ for a ~::N~ link). The
+picture uses the deck's theme and inlines local images; remote images and web
+fonts are not loaded, so those may look different from the slideshow.
 
 ** ✅ Excalidraw Drawing Links
 

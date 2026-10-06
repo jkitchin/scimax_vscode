@@ -21,6 +21,7 @@ import {
     parseEffort,
 } from '../parser/orgClocking';
 import { getHelpSystem } from '../help';
+import { getMarpLinkHover } from '../marp/marpLinkHover';
 
 // Entity lookup map for fast access
 const ENTITY_MAP = new Map<string, { utf8: string; latex: string; html: string }>();
@@ -323,6 +324,10 @@ export class OrgHoverProvider implements vscode.HoverProvider {
 
         // Check for various hover contexts
         let hover: vscode.Hover | null = null;
+
+        // Marp link hover (first slide preview, edit/preview/present links)
+        hover = getMarpLinkHover(line, position, document);
+        if (hover) return hover;
 
         // Excalidraw link hover (show drawing preview) - check before image hover
         hover = this.getExcalidrawHover(line, position, document);
