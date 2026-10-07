@@ -28,6 +28,12 @@ export class HydraManager {
     };
     private config: HydraConfig;
     private quickPick: vscode.QuickPick<HydraQuickPickItem> | null = null;
+    /**
+     * Pickers this manager hid itself (to open a submenu, run an item or go
+     * back). VS Code reports onDidHide later, asynchronously; for these it must
+     * not be taken for the user's Escape, which goes back to the parent menu.
+     */
+    private closedByManager = new WeakSet<vscode.QuickPick<HydraQuickPickItem>>();
     private keyBuffer: string = '';
     private keyBufferTimeout: NodeJS.Timeout | null = null;
 
@@ -132,11 +138,7 @@ export class HydraManager {
      * Hide the current menu
      */
     public hide(): void {
-        if (this.quickPick) {
-            this.quickPick.hide();
-            this.quickPick.dispose();
-            this.quickPick = null;
-        }
+        this.closeQuickPick();
 
         const previousState = { ...this.state };
         this.state.activeMenuId = null;
@@ -169,11 +171,7 @@ export class HydraManager {
         });
 
         // Close current and show parent
-        if (this.quickPick) {
-            this.quickPick.hide();
-            this.quickPick.dispose();
-            this.quickPick = null;
-        }
+        this.closeQuickPick();
 
         await this.show(parentId);
     }
@@ -185,11 +183,7 @@ export class HydraManager {
         const currentMenuId = this.state.activeMenuId;
 
         // Close current menu
-        if (this.quickPick) {
-            this.quickPick.hide();
-            this.quickPick.dispose();
-            this.quickPick = null;
-        }
+        this.closeQuickPick();
 
         // Show submenu with current menu as parent
         await this.show(submenuId, {
@@ -202,32 +196,32 @@ export class HydraManager {
         options: HydraShowOptions
     ): Promise<void> {
         // Dispose any existing quick pick
-        if (this.quickPick) {
-            this.quickPick.dispose();
-        }
+        this.closeQuickPick();
 
-        this.quickPick = vscode.window.createQuickPick<HydraQuickPickItem>();
-        this.quickPick.title = options.title || menu.title;
-        this.quickPick.placeholder = menu.hint || 'Press a key to select an action';
-        this.quickPick.matchOnDescription = true;
-        this.quickPick.matchOnDetail = true;
+        const qp = vscode.window.createQuickPick<HydraQuickPickItem>();
+        this.quickPick = qp;
+        qp.title = options.title || menu.title;
+        qp.placeholder = menu.hint || 'Press a key to select an action';
+        qp.matchOnDescription = true;
+        qp.matchOnDetail = true;
 
         // Build items from menu definition
         const items = await this.buildQuickPickItems(menu);
 
-        // Check if quickPick was disposed during async item building (race condition)
-        if (!this.quickPick) {
+        // Check if quickPick was replaced or closed during async item building (race condition)
+        if (this.quickPick !== qp) {
+            qp.dispose();
             return;
         }
 
-        this.quickPick.items = items;
+        qp.items = items;
 
         // Reset key buffer
         this.keyBuffer = '';
 
         // Handle keyboard input for single-key selection
         if (this.config.singleKeySelection) {
-            this.quickPick.onDidChangeValue(async (value) => {
+            qp.onDidChangeValue(async (value) => {
                 if (!value) {
                     this.keyBuffer = '';
                     return;
@@ -241,7 +235,7 @@ export class HydraManager {
 
                 if (matchingItem) {
                     // Clear the input and execute
-                    this.quickPick!.value = '';
+                    qp.value = '';
                     await this.executeItem(matchingItem.menuItem, menu);
                 } else {
                     // Let the filter work normally
@@ -251,8 +245,8 @@ export class HydraManager {
         }
 
         // Handle selection via Enter or click
-        this.quickPick.onDidAccept(async () => {
-            const selected = this.quickPick?.selectedItems[0];
+        qp.onDidAccept(async () => {
+            const selected = qp.selectedItems[0];
             if (selected) {
                 await this.executeItem(selected.menuItem, menu);
             }
@@ -260,13 +254,18 @@ export class HydraManager {
 
         // Handle hide (Escape key or clicking outside)
         // If there's a parent menu, go back instead of closing
-        this.quickPick.onDidHide(async () => {
+        qp.onDidHide(async () => {
             if (menu.onHide) {
                 await menu.onHide();
             }
 
-            if (this.quickPick) {
-                this.quickPick.dispose();
+            // Hidden by the manager itself (submenu, item run, back): nothing to undo.
+            if (this.closedByManager.has(qp)) {
+                return;
+            }
+
+            if (this.quickPick === qp) {
+                qp.dispose();
                 this.quickPick = null;
             }
 
@@ -289,7 +288,17 @@ export class HydraManager {
             });
         });
 
-        this.quickPick.show();
+        qp.show();
+    }
+
+    /** Hide and dispose the current picker, marking it as closed by the manager. */
+    private closeQuickPick(): void {
+        const qp = this.quickPick;
+        if (!qp) return;
+        this.quickPick = null;
+        this.closedByManager.add(qp);
+        qp.hide();
+        qp.dispose();
     }
 
     private async buildQuickPickItems(menu: HydraMenuDefinition): Promise<HydraQuickPickItem[]> {
