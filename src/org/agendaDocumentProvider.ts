@@ -16,6 +16,7 @@
  */
 
 import * as vscode from 'vscode';
+import * as fs from 'fs';
 // Per-function imports: the package index loads all of date-fns.
 import addDays from 'date-fns/addDays';
 import startOfDay from 'date-fns/startOfDay';
@@ -29,6 +30,29 @@ import type { AgendaManager } from './agendaProvider';
 /** URI scheme for agenda buffers. Matches `resourceScheme` in when-clauses. */
 export const AGENDA_SCHEME = 'org-agenda';
 
+/**
+ * Names an agenda line from outside the buffer's cursor, e.g. a hover link.
+ * The buffer commands take this as an optional argument and fall back to the
+ * cursor line without it.
+ */
+export interface AgendaLineRef {
+    /** The agenda buffer's URI, as a string */
+    uri: string;
+    /** 0-based line in the agenda buffer */
+    line: number;
+}
+
+/** Body lines shown under the heading in an item's hover. */
+const HOVER_BODY_LINES = 6;
+
+/** Commands the hover links may run; nothing else is trusted. */
+const HOVER_COMMANDS = [
+    'scimax.agenda.buffer.goto',
+    'scimax.agenda.buffer.openToSide',
+    'scimax.agenda.buffer.cycleTodo',
+    'scimax.agenda.buffer.ignoreFile',
+];
+
 /** State backing one open agenda buffer. */
 interface ViewState {
     /** Base configuration, as requested when the buffer was opened */
@@ -40,7 +64,10 @@ interface ViewState {
 }
 
 export class AgendaDocumentProvider
-    implements vscode.TextDocumentContentProvider, vscode.DocumentLinkProvider
+    implements
+        vscode.TextDocumentContentProvider,
+        vscode.DocumentLinkProvider,
+        vscode.HoverProvider
 {
     private readonly _onDidChange = new vscode.EventEmitter<vscode.Uri>();
     readonly onDidChange = this._onDidChange.event;
@@ -117,10 +144,67 @@ export class AgendaDocumentProvider
                 new vscode.Range(lineNumber, start, lineNumber, end),
                 target
             );
-            link.tooltip = `${item.file}:${item.line}`;
             links.push(link);
         }
         return links;
+    }
+
+    /**
+     * Hover an item to see where it lives, the start of its entry, and links
+     * that act on it. The file path is in the hover, so the link has no
+     * tooltip of its own.
+     */
+    async provideHover(
+        document: vscode.TextDocument,
+        position: vscode.Position
+    ): Promise<vscode.Hover | undefined> {
+        const item = this.itemAtLine(document.uri, position.line);
+        if (!item) return undefined;
+
+        const ref: AgendaLineRef = { uri: document.uri.toString(), line: position.line };
+        const link = (label: string, command: string, title: string) =>
+            `[${label}](command:${command}?${encodeURIComponent(JSON.stringify([ref]))} "${title}")`;
+
+        const md = new vscode.MarkdownString();
+        md.isTrusted = { enabledCommands: HOVER_COMMANDS };
+        md.supportThemeIcons = true;
+
+        md.appendMarkdown(`$(file) \`${item.file}:${item.line}\`\n\n`);
+
+        const snippet = await readEntrySnippet(item.file, item.line);
+        if (snippet) {
+            md.appendCodeblock(snippet, 'org');
+        } else {
+            md.appendText(item.title);
+            md.appendMarkdown('\n\n');
+        }
+
+        md.appendMarkdown(
+            [
+                link('$(go-to-file) Open', 'scimax.agenda.buffer.goto', 'Jump to the heading (RET)'),
+                link('$(split-horizontal) Open to Side', 'scimax.agenda.buffer.openToSide', 'Open beside the agenda'),
+                link('$(sync) Cycle TODO', 'scimax.agenda.buffer.cycleTodo', 'Cycle the TODO state (t)'),
+                link('$(eye-closed) Ignore File', 'scimax.agenda.buffer.ignoreFile', 'Exclude this file from the agenda'),
+            ].join(' &nbsp;|&nbsp; ')
+        );
+        return new vscode.Hover(md);
+    }
+
+    /** Resolve a hover-link reference, or the cursor line of the active buffer. */
+    resolveLine(ref?: AgendaLineRef): { uri: vscode.Uri; item: AgendaItem } | undefined {
+        let uri: vscode.Uri | undefined;
+        let line: number | undefined;
+        if (ref) {
+            uri = vscode.Uri.parse(ref.uri);
+            line = ref.line;
+        } else {
+            const editor = vscode.window.activeTextEditor;
+            uri = editor?.document.uri;
+            line = editor?.selection.active.line;
+        }
+        if (!uri || line === undefined || !this.owns(uri)) return undefined;
+        const item = this.itemAtLine(uri, line);
+        return item ? { uri, item } : undefined;
     }
 
     /** True if this provider is backing the given document. */
@@ -203,6 +287,46 @@ export class AgendaDocumentProvider
 }
 
 /**
+ * The heading at a 1-based line and the first few lines of its entry, with
+ * property drawers left out. Reads an open editor's text when there is one, so
+ * unsaved edits show; otherwise reads the file.
+ */
+async function readEntrySnippet(file: string, line: number): Promise<string | undefined> {
+    let lines: string[];
+    const open = vscode.workspace.textDocuments.find(d => d.uri.fsPath === file);
+    if (open) {
+        lines = open.getText().split(/\r?\n/);
+    } else {
+        try {
+            lines = (await fs.promises.readFile(file, 'utf8')).split(/\r?\n/);
+        } catch {
+            return undefined;
+        }
+    }
+
+    const start = line - 1;
+    if (start < 0 || start >= lines.length) return undefined;
+
+    const out = [lines[start]];
+    let inDrawer = false;
+    for (let i = start + 1; i < lines.length && out.length <= HOVER_BODY_LINES; i++) {
+        const text = lines[i];
+        if (/^\*+\s/.test(text)) break;
+        if (/^\s*:PROPERTIES:\s*$/i.test(text)) {
+            inDrawer = true;
+            continue;
+        }
+        if (inDrawer) {
+            if (/^\s*:END:\s*$/i.test(text)) inDrawer = false;
+            continue;
+        }
+        out.push(text.length > 200 ? `${text.slice(0, 200)}...` : text);
+    }
+    while (out.length > 1 && out[out.length - 1].trim() === '') out.pop();
+    return out.join('\n');
+}
+
+/**
  * Run a command against an item's source heading, then return to the agenda.
  *
  * The editing commands (TODO cycling and friends) all operate on the active
@@ -262,12 +386,13 @@ export async function runOnSourceHeading(
 }
 
 /** Jump to the source heading behind an agenda line. */
-export async function revealAgendaItem(item: AgendaItem): Promise<void> {
+export async function revealAgendaItem(
+    item: AgendaItem,
+    viewColumn: vscode.ViewColumn = vscode.ViewColumn.Active
+): Promise<void> {
     try {
         const doc = await vscode.workspace.openTextDocument(item.file);
-        const editor = await vscode.window.showTextDocument(doc, {
-            viewColumn: vscode.ViewColumn.Active,
-        });
+        const editor = await vscode.window.showTextDocument(doc, { viewColumn });
         const position = new vscode.Position(Math.max(0, item.line - 1), 0);
         editor.selection = new vscode.Selection(position, position);
         editor.revealRange(

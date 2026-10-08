@@ -618,13 +618,20 @@ These keys are active only inside an agenda buffer:
 Paging with =f= and =b= updates the buffer *in place* rather than opening a
 new tab, so you can walk forward through weeks without accumulating editors.
 
-*** ✅ Mouse Interaction
+*** 👀 Mouse Interaction
 CLOSED: [2026-10-02 Fri 06:56]
 
 Every item line is a link. Ctrl+click (Cmd+click on macOS) opens the source
 heading — VS Code reserves plain click for cursor placement, so a modifier is
 required. Right-click gives a context menu with the same actions as the keys
-above.
+above, plus *Open Item to the Side* ([[cmd:scimax.agenda.buffer.openToSide]]) and
+*Ignore Item's File* ([[cmd:scimax.agenda.buffer.ignoreFile]]).
+
+Hovering an item shows the path and line of its source file, the heading with
+the first few lines of its entry (property drawers are left out), and links to
+*Open*, *Open to Side*, *Cycle TODO* and *Ignore File*. The links act on the
+hovered item, not the line the cursor is on. *Ignore File* adds the file to
+=scimax.agenda.exclude=; undo it with [[cmd:scimax.agenda.unignoreFile]].
 
 Cycling a TODO state briefly switches to the source file to make the edit, then
 returns to the agenda and refreshes it. This is deliberate: it reuses the real

@@ -28,6 +28,7 @@ import {
     AGENDA_SCHEME,
     revealAgendaItem,
     runOnSourceHeading,
+    type AgendaLineRef,
 } from './agendaDocumentProvider';
 import { parseHeadingTags } from './agendaTags';
 import {
@@ -1207,6 +1208,7 @@ export function registerAgendaCommands(context: vscode.ExtensionContext): void {
     context.subscriptions.push(
         vscode.workspace.registerTextDocumentContentProvider(AGENDA_SCHEME, docProvider),
         vscode.languages.registerDocumentLinkProvider({ scheme: AGENDA_SCHEME }, docProvider),
+        vscode.languages.registerHoverProvider({ scheme: AGENDA_SCHEME }, docProvider),
         { dispose: () => docProvider.dispose() },
         // Keep open buffers in step with the db, exactly as the tree view is.
         manager.onDidRefresh(() => docProvider.refreshAll())
@@ -1288,14 +1290,26 @@ export function registerAgendaCommands(context: vscode.ExtensionContext): void {
             docProvider.updateConfig(uri, { assignees: assignees.length ? assignees : undefined });
         }),
 
-        vscode.commands.registerCommand('scimax.agenda.buffer.goto', async () => {
-            const editor = vscode.window.activeTextEditor;
-            const uri = activeBuffer();
-            if (!editor || !uri) return;
-            const item = docProvider.itemAtLine(uri, editor.selection.active.line);
-            if (item) {
-                await revealAgendaItem(item);
-            }
+        // These take an optional AgendaLineRef so hover links can name the
+        // line they were shown for; keys and menus act on the cursor line.
+        vscode.commands.registerCommand('scimax.agenda.buffer.goto', async (ref?: AgendaLineRef) => {
+            const target = docProvider.resolveLine(ref);
+            if (target) await revealAgendaItem(target.item);
+        }),
+
+        vscode.commands.registerCommand('scimax.agenda.buffer.openToSide', async (ref?: AgendaLineRef) => {
+            const target = docProvider.resolveLine(ref);
+            if (target) await revealAgendaItem(target.item, vscode.ViewColumn.Beside);
+        }),
+
+        vscode.commands.registerCommand('scimax.agenda.buffer.ignoreFile', async (ref?: AgendaLineRef) => {
+            const target = docProvider.resolveLine(ref);
+            if (!target) return;
+            await manager.excludeFile(target.item.file);
+            vscode.window.showInformationMessage(
+                `Added to agenda exclude list: ${path.basename(target.item.file)}`
+            );
+            // excludeFile fires onDidRefresh, which re-renders the buffers.
         }),
 
         vscode.commands.registerCommand('scimax.agenda.buffer.refresh', async () => {
@@ -1320,17 +1334,14 @@ export function registerAgendaCommands(context: vscode.ExtensionContext): void {
             if (uri) docProvider.resetToToday(uri);
         }),
 
-        vscode.commands.registerCommand('scimax.agenda.buffer.cycleTodo', async () => {
-            const editor = vscode.window.activeTextEditor;
-            const uri = activeBuffer();
-            if (!editor || !uri) return;
-            const item = docProvider.itemAtLine(uri, editor.selection.active.line);
-            if (!item) return;
+        vscode.commands.registerCommand('scimax.agenda.buffer.cycleTodo', async (ref?: AgendaLineRef) => {
+            const target = docProvider.resolveLine(ref);
+            if (!target) return;
 
-            const changed = await runOnSourceHeading(item, 'scimax.org.cycleTodo', uri);
+            const changed = await runOnSourceHeading(target.item, 'scimax.org.cycleTodo', target.uri);
             if (changed) {
                 await manager.refresh();
-                docProvider.refresh(uri);
+                docProvider.refresh(target.uri);
             }
         })
     );

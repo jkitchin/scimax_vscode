@@ -2973,6 +2973,14 @@
         "title": "Scimax: Agenda Buffer - Filter by Assignee"
       },
       {
+        "command": "scimax.agenda.buffer.openToSide",
+        "title": "Scimax: Agenda Buffer - Open Item to the Side"
+      },
+      {
+        "command": "scimax.agenda.buffer.ignoreFile",
+        "title": "Scimax: Agenda Buffer - Ignore Item's File"
+      },
+      {
         "command": "scimax.agenda.toggleVerbose",
         "title": "Scimax: Toggle Agenda Verbose Logging"
       },
@@ -7815,9 +7823,19 @@
           "group": "agendaBuffer@1"
         },
         {
+          "command": "scimax.agenda.buffer.openToSide",
+          "when": "resourceScheme == org-agenda",
+          "group": "agendaBuffer@1"
+        },
+        {
           "command": "scimax.agenda.buffer.cycleTodo",
           "when": "resourceScheme == org-agenda",
           "group": "agendaBuffer@2"
+        },
+        {
+          "command": "scimax.agenda.buffer.ignoreFile",
+          "when": "resourceScheme == org-agenda",
+          "group": "agendaBuffer@5"
         },
         {
           "command": "scimax.agenda.buffer.refresh",
