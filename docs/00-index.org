@@ -450,6 +450,7 @@ Quick reference to find specific features across documentation.
 | Marp blank screen     | [[file:44-marp.org][Marp Slides]]                            | =b= / =w= blacks or whites the audience screen                                                                             |
 | Marp zoom             | [[file:44-marp.org][Marp Slides]]                            | =x= magnifies part of a slide during the slideshow                                                                         |
 | Marp go to slide      | [[file:44-marp.org][Marp Slides]]                            | =g= slide list, or a slide number then Enter                                                                               |
+| Marp editing toolbar  | [[file:44-marp.org][Marp Slides]]                            | Insert text, images and tables; font, size, colour; copy and paste in the slideshow                                        |
 | Marp slide editing    | [[file:44-marp.org][Marp Slides]]                            | =d= edits text and layout in the slideshow, saved with =s=                                                                 |
 | Markdown export       | [[file:10-export.org][Export]]                               | Pandoc-backed export of `.md` to HTML, LaTeX, PDF, DOCX                                                                    |
 | Markdown PDF engine   | [[file:26-configuration.org][Configuration]]                 | xelatex by default so Unicode typesets; ~scimax.markdown.export.mainFont~ sets the font                                    |

@@ -682,29 +682,34 @@ adds one and turns on the presenter tools.
   Enter. Without the list, type a slide number and press Enter: =1= =2=
   Enter goes to slide 12.
 
-** Editing slides in the slideshow
+** 👀 Editing slides in the slideshow
 
 For last-minute polish just before a talk, =d= lets you fix the slides in
 the slideshow itself: correct a typo, move a heading, make a figure bigger,
 or hide a line. A bar at the top says what is selected and what you can do.
 The edits stay in the HTML; they do not change the Markdown.
 
-| Key or action      | Effect                                                                      |
-|--------------------+-----------------------------------------------------------------------------|
-| =d=                | Start or stop editing (also in the right-click menu)                        |
-| Double-click slide | Start editing there: type in the text, or select an image, table, ...       |
-| Click              | Select a heading, paragraph, list item, image, table, code or widget        |
-| Drag               | Move it (hold Shift to keep it level or upright)                            |
-| Double-click       | Edit its text; Enter or a click elsewhere finishes, Shift+Enter breaks line |
-| Enter              | Edit the selected text                                                      |
-| Arrows             | Nudge the selection (Shift: 10 px); with nothing selected, change slide     |
-| =+= / =-=          | Bigger / smaller: text size, or the width of an image, table or code        |
-| Corner handle      | Drag to resize                                                              |
-| Delete             | Hide it (it shows faintly while editing); Delete again shows it             |
-| Tab / Shift+Tab    | Select the enclosing block (the list, not the item) / back again            |
-| =0=                | Undo every edit to the selection                                            |
-| =Cmd+Z= / =Ctrl+Z= | Undo (add Shift, or use =Cmd+Y=, to redo); the bar has Undo and Reset slide |
-| =Esc=              | Clear the selection, then stop editing                                      |
+| Key or action       | Effect                                                                      |
+|---------------------+-----------------------------------------------------------------------------|
+| =d=                 | Start or stop editing (also in the right-click menu)                        |
+| Double-click slide  | Start editing there: type in the text, or select an image, table, ...       |
+| Click               | Select a heading, paragraph, list item, image, table, code or widget        |
+| Drag                | Move it (hold Shift to keep it level or upright)                            |
+| Double-click        | Edit its text; Enter or a click elsewhere finishes, Shift+Enter breaks line |
+| Enter               | Edit the selected text                                                      |
+| Arrows              | Nudge the selection (Shift: 10 px); with nothing selected, change slide     |
+| =+= / =-=           | Bigger / smaller: text size, or the width of an image, table or code        |
+| Corner handle       | Drag to resize                                                              |
+| Delete              | Hide it (it shows faintly while editing); Delete again shows it             |
+| Tab / Shift+Tab     | Select the enclosing block (the list, not the item) / back again            |
+| =0=                 | Undo every edit to the selection                                            |
+| =Cmd+Z= / =Ctrl+Z=  | Undo (add Shift, or use =Cmd+Y=, to redo); the bar has Undo and Reset slide |
+| =Esc=               | Clear the selection, then stop editing                                      |
+| =t=                 | A new text box                                                              |
+| =Cmd+B= / =I= / =U= | Bold, italic, underline (=Ctrl= on Windows and Linux)                       |
+| =Cmd+/=             | Strikethrough                                                               |
+| =Cmd+C= / =Cmd+X=   | Copy / cut the selection (cut hides it, or removes an inserted element)     |
+| =Cmd+V=             | Paste a copied element, an image, or text (as a new text box)               |
 
 - Edits are kept in the browser's local storage, so a reload keeps them,
   and Marp's presenter view shows them as you make them. You edit in the
@@ -716,12 +721,39 @@ The edits stay in the HTML; they do not change the Markdown.
   Markdown and the slideshow reloads, that slide's edits are set aside
   rather than put in the wrong place, and a message says so. Slides you did
   not change keep theirs, even if they moved.
-- Text you type or paste is plain text; maths in a paragraph stays as it
-  is. Code cells, countdowns and widgets can be moved and resized but not
-  typed in.
+- Text you paste while typing is plain text; maths in a paragraph stays
+  as it is. Code cells, countdowns and widgets can be moved and resized but
+  not typed in.
 - Printing (=Cmd+P=) shows the slides as edited.
 
 To keep a change for good, make it in the Markdown too.
+
+*** ⚠️ The editing toolbar
+
+The bar at the top of the slide while you edit also adds things and styles
+text. *+ Text* puts a text box in the middle of the slide, ready to type in
+(or press =t=). *+ Image* opens a file picker; you can also paste an image
+from the clipboard with =Cmd+V=. Pictures larger than 1920 pixels are scaled
+down so the deck stays small. *+ Table* shows a grid: pick the number of rows
+and columns and start typing. In a table, Tab and Shift+Tab move between
+cells, and Tab in the last cell adds a row. Inserted elements can be moved,
+resized and styled like anything else on the slide, and Delete removes them.
+
+The font menu, size box (in slide pixels), *B*, /I/, _U_, +S+ and the colour
+swatch act on the words you have selected while typing, or else on the whole
+selected heading, paragraph or text box. When you select words while typing,
+the same controls also appear in a small bar just above them.
+
+Copy (=Cmd+C=) a selected element and paste it (=Cmd+V=) on this slide or any
+other: the copy keeps its text, size and style and lands where the original
+was (offset a little on the same slide). A list item or table cell is pasted
+as a paragraph. Cut (=Cmd+X=) does the same but hides a slide's own element
+(Delete shows it again) or removes an inserted one.
+
+Images are kept in the browser's local storage with the other edits. That
+storage is limited (a few megabytes for all decks opened from files), so if
+it fills up, a message says so; press =s= to save the deck with its edits
+before reloading.
 
 ** Keeping the ink
 

@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **Editing toolbar in the Marp slideshow** - While editing a presenter deck (`d`), the bar inserts a text box, an image (from a file or pasted) or a table, and sets the font, size, bold, italic, underline, strikethrough and colour of the selected words or element. Selecting words while typing shows the same controls just above them. `Cmd/Ctrl+B`, `I`, `U` and `/` toggle bold, italic, underline and strikethrough, and `Cmd/Ctrl+C`, `X` and `V` copy, cut and paste elements between slides.
+
 ## [0.8.2] - 2026-10-05
 
 ### Fixed
