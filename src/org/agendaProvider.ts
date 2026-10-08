@@ -30,6 +30,7 @@ import {
     runOnSourceHeading,
     type AgendaLineRef,
 } from './agendaDocumentProvider';
+import type { EntryLinkRef } from './agendaHover';
 import { parseHeadingTags } from './agendaTags';
 import {
     collectAllClockEntries,
@@ -1300,6 +1301,24 @@ export function registerAgendaCommands(context: vscode.ExtensionContext): void {
         vscode.commands.registerCommand('scimax.agenda.buffer.openToSide', async (ref?: AgendaLineRef) => {
             const target = docProvider.resolveLine(ref);
             if (target) await revealAgendaItem(target.item, vscode.ViewColumn.Beside);
+        }),
+
+        // A link in a hover's entry preview. Following it from the source
+        // file, as C-c C-o does, resolves relative paths and internal links
+        // exactly as they would be there.
+        vscode.commands.registerCommand('scimax.agenda.buffer.openEntryLink', async (ref?: EntryLinkRef) => {
+            if (!ref) return;
+            try {
+                const doc = await vscode.workspace.openTextDocument(ref.file);
+                const editor = await vscode.window.showTextDocument(doc, { preview: true });
+                const position = new vscode.Position(Math.max(0, ref.line - 1), ref.column + 1);
+                editor.selection = new vscode.Selection(position, position);
+                editor.revealRange(new vscode.Range(position, position), vscode.TextEditorRevealType.InCenter);
+            } catch {
+                vscode.window.showErrorMessage(`Could not open file: ${ref.file}`);
+                return;
+            }
+            await vscode.commands.executeCommand('scimax.org.openLink');
         }),
 
         vscode.commands.registerCommand('scimax.agenda.buffer.ignoreFile', async (ref?: AgendaLineRef) => {

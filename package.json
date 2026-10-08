@@ -2981,6 +2981,10 @@
         "title": "Scimax: Agenda Buffer - Ignore Item's File"
       },
       {
+        "command": "scimax.agenda.buffer.openEntryLink",
+        "title": "Scimax: Agenda Buffer - Open Link in Item Preview"
+      },
+      {
         "command": "scimax.agenda.toggleVerbose",
         "title": "Scimax: Toggle Agenda Verbose Logging"
       },
@@ -8101,6 +8105,10 @@
         }
       ],
       "commandPalette": [
+        {
+          "command": "scimax.agenda.buffer.openEntryLink",
+          "when": "false"
+        },
         {
           "command": "scimax.markdown.preview.exportPdf",
           "when": "activeWebviewPanelId == 'markdown.preview'"

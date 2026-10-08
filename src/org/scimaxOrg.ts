@@ -42,6 +42,7 @@ import { pushMark } from '../mark/markRing';
 import { extractCiteKeysFromPath } from '../references/citationParser';
 import { marpLinkArgs } from '../marp/marpExport';
 import * as os from 'os';
+import { expandTilde } from '../utils/pathResolver';
 import { markdownFencedLineMask } from '../shared/markdownFences';
 
 // Re-export planning line utilities for external use
@@ -3251,8 +3252,18 @@ export async function openLinkAtPoint(): Promise<void> {
         await openFileLink(url, document);
     } else {
         // Treat as relative file path or internal link (fuzzy match)
-        const currentDir = vscode.Uri.joinPath(document.uri, '..');
-        const targetUri = vscode.Uri.joinPath(currentDir, url);
+        const targetUri = resolveLinkPath(url, document);
+
+        // An existing directory opens in dired, with or without an extension
+        try {
+            const stat = await vscode.workspace.fs.stat(targetUri);
+            if (stat.type & vscode.FileType.Directory) {
+                await vscode.commands.executeCommand('scimax.dired.open', targetUri.fsPath);
+                return;
+            }
+        } catch {
+            // Not there: fall through to create it or search for a target
+        }
 
         // Check if it looks like a file path (has extension)
         const hasExtension = /\.[a-zA-Z0-9]+$/.test(url);
@@ -3281,6 +3292,18 @@ export async function openLinkAtPoint(): Promise<void> {
 }
 
 /**
+ * Resolve a link's path: ~ is the home directory, and a relative path is
+ * relative to the linking document's directory.
+ */
+function resolveLinkPath(linkPath: string, document: vscode.TextDocument): vscode.Uri {
+    const expanded = expandTilde(linkPath);
+    if (path.isAbsolute(expanded)) {
+        return vscode.Uri.file(expanded);
+    }
+    return vscode.Uri.joinPath(document.uri, '..', expanded);
+}
+
+/**
  * Open a file: link, handling :: search syntax
  * Supports: file:name.org::123 (line), file:name.org::c456 (char offset),
  *           file:name.org::*Heading, file:name.org::#custom-id
@@ -3293,21 +3316,16 @@ async function openFileLink(url: string, currentDocument: vscode.TextDocument): 
     const filePath = parts[0];
     const searchPart = parts[1];
 
-    // Resolve the file path
-    let targetUri: vscode.Uri;
-    if (filePath.startsWith('/')) {
-        targetUri = vscode.Uri.file(filePath);
-    } else if (filePath) {
-        const currentDir = vscode.Uri.joinPath(currentDocument.uri, '..');
-        targetUri = vscode.Uri.joinPath(currentDir, filePath);
-    } else {
-        // Empty file path means current file
-        targetUri = currentDocument.uri;
-    }
+    // Resolve the file path; an empty one means the current file
+    const targetUri = filePath ? resolveLinkPath(filePath, currentDocument) : currentDocument.uri;
 
-    // Create the file if it doesn't exist
+    // Create the file if it doesn't exist; a directory opens in dired
     try {
-        await vscode.workspace.fs.stat(targetUri);
+        const stat = await vscode.workspace.fs.stat(targetUri);
+        if (stat.type & vscode.FileType.Directory) {
+            await vscode.commands.executeCommand('scimax.dired.open', targetUri.fsPath);
+            return;
+        }
     } catch {
         // File doesn't exist - create parent directories and the file
         try {

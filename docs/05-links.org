@@ -149,7 +149,7 @@ Click on a link or use this command to:
 - Open files in VS Code (or associated application)
 - Jump to internal targets
 
-** ✅ Link Behavior by Type
+** 👀 Link Behavior by Type
 CLOSED: [2026-01-15 Thu 19:40]
 
 | Link Type    | Behavior                              |
@@ -157,6 +157,7 @@ CLOSED: [2026-01-15 Thu 19:40]
 | https://     | Opens in default browser              |
 | http://      | Opens in default browser              |
 | file:        | Opens in VS Code or associated app    |
+| file: (dir)  | Opens the directory in dired          |
 | mailto:      | Opens default email client            |
 | #custom-id   | Jumps to heading with CUSTOM_ID       |
 | *Heading     | Jumps to heading with that title      |
@@ -245,10 +246,15 @@ ID links work across files:
 * ✅ File Links
 CLOSED: [2026-01-14 Wed 20:54]
 
-** ✅ Basic File Links
+** 👀 Basic File Links
 CLOSED: [2026-01-17 Sat 19:53]
 
 [[14-journal.org]]
+
+A link to a directory, such as =[[file:../src/]]=, opens the directory in
+dired ([[cmd:scimax.dired.open]]) instead of the "this is a directory" page VS
+Code would otherwise show. This works for Ctrl+click, =C-c C-o=, and links in
+the agenda hover preview.
 
 ** ✅ File Links with Line Numbers
 CLOSED: [2026-01-15 Thu 19:32]
@@ -681,6 +687,7 @@ CLOSED: [2026-01-15 Thu 19:53]
 - [[file:10-export.org][Export]] - How links appear in exports
 - [[file:12-image-overlays.org][Image Overlays]] - Displaying linked images
 - [[file:39-link-graph.org][Link Graph]] - Visualize file connections through links
+- [[file:37-dired.org][Dired]] - Where directory links open
 
 * Navigation
 

@@ -6,6 +6,7 @@ import { slugifyAnchor } from '../parser/orgAnchors';
 import { extractCiteKeysFromPath } from '../references/citationParser';
 import { marpLinkArgs } from '../marp/marpExport';
 import * as os from 'os';
+import { expandTilde } from '../utils/pathResolver';
 
 /**
  * Path of a citation written as an org link, e.g. `cite:&key` in [[cite:&key]].
@@ -382,15 +383,12 @@ export class OrgLinkProvider implements vscode.DocumentLinkProvider {
             filePath = filePart;
         }
 
+        // Expand ~ first: resolving against docDir would bury it in the path
+        filePath = expandTilde(filePath);
+
         // Resolve relative paths
         if (!path.isAbsolute(filePath)) {
             filePath = path.resolve(docDir, filePath);
-        }
-
-        // Expand ~ to home directory
-        if (filePath.startsWith('~')) {
-            const homeDir = process.env.HOME || process.env.USERPROFILE || '';
-            filePath = path.join(homeDir, filePath.slice(1));
         }
 
         // If there's a heading search, use command
@@ -1010,6 +1008,13 @@ export function registerOrgLinkCommands(context: vscode.ExtensionContext): void 
             try {
                 const uri = vscode.Uri.file(file);
                 const ext = path.extname(file).toLowerCase();
+
+                // A link to a directory opens it in dired, as in Emacs. VS
+                // Code itself can only show a "this is a directory" page.
+                if (fs.existsSync(file) && fs.statSync(file).isDirectory()) {
+                    await vscode.commands.executeCommand('scimax.dired.open', file);
+                    return;
+                }
 
                 // Create the file if it doesn't exist
                 if (!fs.existsSync(file)) {

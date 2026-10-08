@@ -25,6 +25,7 @@ import {
     type AgendaItem,
     type AgendaViewConfig,
 } from '../parser/orgAgenda';
+import { renderSnippetMarkdown, type SnippetLine } from './agendaHover';
 import type { AgendaManager } from './agendaProvider';
 
 /** URI scheme for agenda buffers. Matches `resourceScheme` in when-clauses. */
@@ -51,6 +52,7 @@ const HOVER_COMMANDS = [
     'scimax.agenda.buffer.openToSide',
     'scimax.agenda.buffer.cycleTodo',
     'scimax.agenda.buffer.ignoreFile',
+    'scimax.agenda.buffer.openEntryLink',
 ];
 
 /** State backing one open agenda buffer. */
@@ -173,7 +175,10 @@ export class AgendaDocumentProvider
 
         const snippet = await readEntrySnippet(item.file, item.line);
         if (snippet) {
-            md.appendCodeblock(snippet, 'org');
+            const entryLink = (target: unknown) =>
+                `command:scimax.agenda.buffer.openEntryLink?${encodeURIComponent(JSON.stringify([target]))}`;
+            md.appendMarkdown(renderSnippetMarkdown(item.file, snippet, entryLink));
+            md.appendMarkdown('\n\n---\n\n');
         } else {
             md.appendText(item.title);
             md.appendMarkdown('\n\n');
@@ -291,7 +296,7 @@ export class AgendaDocumentProvider
  * property drawers left out. Reads an open editor's text when there is one, so
  * unsaved edits show; otherwise reads the file.
  */
-async function readEntrySnippet(file: string, line: number): Promise<string | undefined> {
+async function readEntrySnippet(file: string, line: number): Promise<SnippetLine[] | undefined> {
     let lines: string[];
     const open = vscode.workspace.textDocuments.find(d => d.uri.fsPath === file);
     if (open) {
@@ -307,7 +312,7 @@ async function readEntrySnippet(file: string, line: number): Promise<string | un
     const start = line - 1;
     if (start < 0 || start >= lines.length) return undefined;
 
-    const out = [lines[start]];
+    const out: SnippetLine[] = [{ text: lines[start], line }];
     let inDrawer = false;
     for (let i = start + 1; i < lines.length && out.length <= HOVER_BODY_LINES; i++) {
         const text = lines[i];
@@ -320,10 +325,9 @@ async function readEntrySnippet(file: string, line: number): Promise<string | un
             if (/^\s*:END:\s*$/i.test(text)) inDrawer = false;
             continue;
         }
-        out.push(text.length > 200 ? `${text.slice(0, 200)}...` : text);
+        out.push({ text: text.length > 200 ? `${text.slice(0, 200)}...` : text, line: i + 1 });
     }
-    while (out.length > 1 && out[out.length - 1].trim() === '') out.pop();
-    return out.join('\n');
+    return out;
 }
 
 /**

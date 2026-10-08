@@ -630,7 +630,10 @@ above, plus *Open Item to the Side* ([[cmd:scimax.agenda.buffer.openToSide]]) an
 Hovering an item shows the path and line of its source file, the heading with
 the first few lines of its entry (property drawers are left out), and links to
 *Open*, *Open to Side*, *Cycle TODO* and *Ignore File*. The links act on the
-hovered item, not the line the cursor is on. *Ignore File* adds the file to
+hovered item, not the line the cursor is on. Links in the preview are clickable:
+web links open in the browser, and any other link (=file:=, =id:=, citations,
+headings) is followed from the source file, exactly as =C-c C-o= would there
+([[cmd:scimax.agenda.buffer.openEntryLink]]). *Ignore File* adds the file to
 =scimax.agenda.exclude=; undo it with [[cmd:scimax.agenda.unignoreFile]].
 
 Cycling a TODO state briefly switches to the source file to make the edit, then
