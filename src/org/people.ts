@@ -28,6 +28,7 @@ import { getPropCaseInsensitive } from '../database/scimaxDbCore';
 import { slugify, ASSIGNEE_PROPERTY } from '../parser/projectTasks';
 import { getHeadingLevel } from './speedCommands/context';
 import { setPropertyValue } from './speedCommands/metadata';
+import { soleMatch } from './quickPickMatch';
 
 export const PERSON_TAG = 'person';
 
@@ -288,10 +289,11 @@ function currentAssignees(document: vscode.TextDocument, headingLine: number): S
  */
 /**
  * Multi-select people picker. Enter takes the checked people plus, when a
- * filter is typed, the highlighted match, so typing down to one person and
- * pressing Enter assigns them without ticking the box. With nothing typed,
- * Enter takes exactly the checked people (none clears the assignee).
- * Undefined means cancelled.
+ * filter is typed, the highlighted match, or the only match left if none is
+ * highlighted: a multi-select picker does not highlight the first match as you
+ * type, so typing down to one person and pressing Enter must find that person
+ * itself. With nothing typed, Enter takes exactly the checked people (none
+ * clears the assignee). Undefined means cancelled.
  */
 function pickAssignees<T extends vscode.QuickPickItem & { picked?: boolean }>(items: T[]): Promise<T[] | undefined> {
     return new Promise(resolve => {
@@ -305,7 +307,7 @@ function pickAssignees<T extends vscode.QuickPickItem & { picked?: boolean }>(it
         let result: T[] | undefined;
         qp.onDidAccept(() => {
             const chosen = [...qp.selectedItems];
-            const active = qp.activeItems[0];
+            const active = qp.activeItems[0] ?? soleMatch(items, qp.value);
             if (qp.value.trim() && active && !chosen.includes(active)) chosen.push(active);
             result = chosen;
             qp.hide();

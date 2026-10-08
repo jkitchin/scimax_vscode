@@ -238,10 +238,11 @@ A *person* is any heading tagged =:person:=, with contact properties:
   the indexed =:person:= headings, fuzzy-matches on handle/name/role/email as you
   type, and sets the current task's =:ASSIGNEE:= property to the picked handle(s).
   Run it from anywhere inside the entry; pick more than one for a shared task.
-  Existing assignees are pre-selected. Enter also takes the highlighted match
-  when you have typed a filter, so typing down to one person and pressing Enter
-  assigns them without ticking the box; with nothing typed, clearing every box
-  unassigns.
+  Existing assignees are pre-selected. When you have typed a filter, Enter also
+  takes the highlighted match, or, if none is highlighted, the only person the
+  filter leaves, so typing down to one person and pressing Enter assigns them
+  without ticking the box. If the filter leaves several people, arrow to one or
+  tick it. With nothing typed, clearing every box unassigns.
 - **Autocomplete**: while editing an =:ASSIGNEE:= value, completion suggests
   known people (name + email) and inserts their handle (=:NICK:=, or a slug of
   the name).
