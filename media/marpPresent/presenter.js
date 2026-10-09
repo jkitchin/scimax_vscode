@@ -6,7 +6,7 @@
  *   z        undo the last stroke on this slide
  *   r        toggle the eraser: drag over strokes to remove them (z puts them back)
  *   c        clear this slide        shift+C  clear every slide
- *   l        toggle the laser pointer (a red dot that follows the mouse, also over widgets)
+ *   l        toggle the laser pointer (a red dot with a fading tail that follows the mouse, also over widgets)
  *   n        new sticky note at the mouse: type Markdown, click away to render it; drag its bar
  *            to move it, ● picks a colour (yellow, pink, blue, green, orange), – shrinks it to a
  *            📝 icon (click to reopen), × deletes it; right-click a note for the same options
@@ -88,6 +88,10 @@
     background: "radial-gradient(circle, #fff 0 18%, #ff2030 32%, rgba(255,32,48,.55) 60%, rgba(255,32,48,0) 72%)",
     boxShadow: "0 0 14px 6px rgba(255,32,48,.45)",
   });
+  const trail = document.createElement("canvas");     // the laser's fading tail
+  Object.assign(trail.style, {
+    position: "fixed", inset: "0", zIndex: "100000", pointerEvents: "none", display: "none",
+  });
   const toast = document.createElement("div");
   Object.assign(toast.style, {
     position: "fixed", left: "50%", top: "18px", transform: "translateX(-50%)", zIndex: "100002",
@@ -100,9 +104,9 @@
     position: "fixed", inset: "0", zIndex: "99998", pointerEvents: "none",
     opacity: "0", transition: "opacity .15s ease-out", visibility: "hidden",
   });
-  canvas.className = badge.className = laser.className = toast.className = spot.className = "annotate-layer";
+  canvas.className = badge.className = laser.className = trail.className = toast.className = spot.className = "annotate-layer";
   document.head.appendChild(style);
-  document.body.append(spot, canvas, badge, laser, toast);
+  document.body.append(spot, canvas, badge, trail, laser, toast);
   let toastTimer = null;
   const say = msg => {
     toast.textContent = msg; toast.style.opacity = "1";
@@ -734,13 +738,40 @@
 
   // ---- laser pointer ----
   const iframes = () => [...document.querySelectorAll("iframe")];
-  const moveLaser = (x, y) => { laser.style.transform = `translate(${x}px, ${y}px)`; };
+  // The tail is the pointer's recent path, drawn as a stroke that thins and fades with age.
+  const TRAIL_MS = 350, tctx = trail.getContext("2d");
+  let tail = [], tailFrame = 0;
+  function drawTail() {
+    tailFrame = 0;
+    const now = performance.now(), scale = window.devicePixelRatio || 1;
+    tail = tail.filter(p => now - p.t < TRAIL_MS);
+    const w = Math.round(innerWidth * scale), h = Math.round(innerHeight * scale);
+    if (trail.width !== w || trail.height !== h) { trail.width = w; trail.height = h; }
+    tctx.setTransform(scale, 0, 0, scale, 0, 0);
+    tctx.clearRect(0, 0, innerWidth, innerHeight);
+    tctx.lineCap = "round";
+    tctx.shadowColor = "rgba(255,32,48,.6)"; tctx.shadowBlur = 10;
+    for (let i = 1; i < tail.length; i++) {
+      const life = 1 - (now - tail[i].t) / TRAIL_MS;
+      tctx.strokeStyle = `rgba(255,32,48,${(0.85 * life).toFixed(3)})`;
+      tctx.lineWidth = 2 + 8 * life;
+      tctx.beginPath(); tctx.moveTo(tail[i - 1].x, tail[i - 1].y); tctx.lineTo(tail[i].x, tail[i].y); tctx.stroke();
+    }
+    if (tail.length) tailFrame = requestAnimationFrame(drawTail);
+  }
+  const moveLaser = (x, y) => {
+    laser.style.transform = `translate(${x}px, ${y}px)`;
+    if (!laserOn) return;
+    tail.push({ x, y, t: performance.now() });
+    if (!tailFrame) tailFrame = requestAnimationFrame(drawTail);
+  };
   addEventListener("pointermove", e => moveLaser(e.clientX, e.clientY), true);
-  document.documentElement.addEventListener("mouseleave", () => { laser.style.visibility = "hidden"; });
+  document.documentElement.addEventListener("mouseleave", () => { laser.style.visibility = "hidden"; tail = []; });
   document.documentElement.addEventListener("mouseenter", () => { laser.style.visibility = "visible"; });
   function setLaser(on) {
     laserOn = on;
-    laser.style.display = on ? "block" : "none";
+    laser.style.display = trail.style.display = on ? "block" : "none";
+    if (!on) { tail = []; tctx.clearRect(0, 0, trail.width, trail.height); }
     document.documentElement.classList.toggle("laser-on", on);
     iframes().forEach(f => { try { f.contentDocument.documentElement.classList.toggle("laser-on", on); } catch (e) { /* cross-origin */ } });
   }
