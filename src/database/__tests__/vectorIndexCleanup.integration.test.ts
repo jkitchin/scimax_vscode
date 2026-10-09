@@ -1,8 +1,10 @@
 /**
- * The vector index must not keep nodes for deleted chunks.
+ * The chunks table must not carry a libsql vector index.
  *
- * A database from earlier versions had a 55 GB vector index for zero chunks.
- * optimize() rebuilds an index like that, and clear() recreates it empty.
+ * Earlier versions created one that semantic search never used. Every write
+ * updated it, and on a real database it grew to 47 GB for 296k chunks, which
+ * made the full-scan semantic search take over a minute. initialize() now
+ * drops it, and semantic search works without it.
  */
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import * as fs from 'fs';
@@ -22,28 +24,31 @@ function fakeService(dimensions: number): CoreEmbeddingService {
     };
 }
 
-describe('vector index cleanup (integration)', () => {
+describe('vector index removal (integration)', () => {
     let dir: string;
+    let dbPath: string;
     let files: string[];
     let db: ScimaxDbCore;
 
-    const indexNodes = async (): Promise<number> => {
-        const r = await (db as any).db.execute('SELECT COUNT(*) as count FROM idx_chunks_embedding_shadow');
-        return Number(r.rows[0].count);
+    const hasVectorIndex = async (): Promise<boolean> => {
+        const r = await (db as any).db.execute(
+            "SELECT name FROM sqlite_master WHERE name = 'idx_chunks_embedding'"
+        );
+        return r.rows.length > 0;
     };
 
     beforeEach(async () => {
         dir = fs.mkdtempSync(path.join(os.tmpdir(), 'scimax-vecidx-'));
+        dbPath = path.join(dir, 'test.db');
         files = [1, 2, 3].map(i => {
             const file = path.join(dir, `f${i}.org`);
             fs.writeFileSync(file, `* Heading ${i}\nSome text about catalysis number ${i}.\n`);
             return file;
         });
-        db = new ScimaxDbCore({ dbPath: path.join(dir, 'test.db') });
+        db = new ScimaxDbCore({ dbPath });
         await db.initialize();
         await db.setEmbeddingService(fakeService(8));
         for (const file of files) await db.indexFile(file);
-        expect(await indexNodes()).toBeGreaterThan(0);
     }, SETUP_TIMEOUT_MS);
 
     afterEach(async () => {
@@ -55,32 +60,36 @@ describe('vector index cleanup (integration)', () => {
         }
     });
 
-    it('clear() leaves no index nodes behind, and embedding works again after', async () => {
+    it('indexes and searches embeddings without a vector index', async () => {
+        expect(await hasVectorIndex()).toBe(false);
+        expect(db.getEmbeddingFailures().count).toBe(0);
+        expect((await db.getStats()).vector_search_supported).toBe(true);
+
+        const results = await db.searchSemantic('catalysis');
+        expect(results.length).toBe(3);
+    });
+
+    it('drops a vector index left by an earlier version', async () => {
+        await (db as any).db.execute(
+            "CREATE INDEX idx_chunks_embedding ON chunks(libsql_vector_idx(embedding, 'metric=cosine'))"
+        );
+        expect(await hasVectorIndex()).toBe(true);
+        await db.close();
+
+        db = new ScimaxDbCore({ dbPath });
+        await db.initialize();
+        await db.setEmbeddingService(fakeService(8));
+        expect(await hasVectorIndex()).toBe(false);
+        expect((await db.searchSemantic('catalysis')).length).toBe(3);
+    });
+
+    it('clear() empties the chunks, and embedding works again after', async () => {
         await db.clear();
-        expect(await indexNodes()).toBe(0);
+        expect((await db.getStats()).chunks).toBe(0);
 
         await db.indexFile(files[0]);
         expect(db.getEmbeddingFailures().count).toBe(0);
         expect((await db.getStats()).has_embeddings).toBe(true);
-    });
-
-    it('optimize() rebuilds an index with far more nodes than chunks', async () => {
-        // Leave stale nodes behind: without foreign keys a bare DELETE
-        // truncates the table without visiting the index.
-        await (db as any).db.execute('PRAGMA foreign_keys = OFF');
-        await (db as any).db.execute('DELETE FROM chunks');
-        await (db as any).db.execute('PRAGMA foreign_keys = ON');
-        expect(await indexNodes()).toBeGreaterThan(0);
-
-        (db as any).staleIndexSlack = 0;
-        const result = await db.optimize();
-        expect(result.vectorIndexRebuilt).toBe(true);
-        expect(await indexNodes()).toBe(0);
-        expect(describeOptimize(result)).toContain('rebuilt the vector index');
-
-        // A healthy index is left alone.
-        await db.indexFile(files[0]);
-        expect((await db.optimize()).vectorIndexRebuilt).toBe(false);
     });
 
     it('optimize() removes indexed files that no longer exist', async () => {

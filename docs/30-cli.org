@@ -526,9 +526,9 @@ Output:
 
 Add =--json= for structured output.
 
-*** Optimize
+*** 👀 Optimize
 
-Remove entries for missing files, shrink a bloated vector index, and VACUUM:
+Remove entries for missing files and VACUUM:
 
 #+begin_src bash
 scimax db optimize
@@ -539,7 +539,7 @@ so it needs free disk space about the size of the database. The output reports
 the size before and after:
 
 #+begin_example
-Database optimized: 58.6 GB -> 1.9 GB; rebuilt the vector index
+Database optimized: 47.0 GB -> 1.9 GB
 #+end_example
 
 The same as *Scimax: Optimize Database* in VS Code. See

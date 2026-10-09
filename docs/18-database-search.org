@@ -300,8 +300,8 @@ Any other model name is assumed to produce 768-dimensional vectors.
 
 The vector table is sized for the configured model's dimensions. When you
 switch to a model with a different dimension (for example from
-`nomic-embed-text' to `all-minilm'), Scimax drops the =chunks= table and its
-vector index and recreates them at the new size. This happens when the new
+`nomic-embed-text' to `all-minilm'), Scimax drops the =chunks= table and
+recreates it at the new size. This happens when the new
 model takes effect: after `Scimax: Configure Embedding Service', or the next
 time the database is opened.
 All existing embeddings are discarded; run `Scimax: Sync Files'
@@ -1046,15 +1046,17 @@ CLOSED: [2026-01-17 Sat 12:08]
 
 `Scimax: Optimize Database' (`scimax.db.optimize'). [[cmd:scimax.db.optimize]]
 
-*** Operations
+*** 👀 Operations
 - Removes entries for deleted files
-- Rebuilds the vector index when it holds far more entries than there are
-  embedded chunks. Old versions could leave most of the index behind as files
-  were re-indexed; a database with no embeddings at all could still hold
-  gigabytes of it.
 - Runs VACUUM to reclaim space
 - Reports the file size before and after, for example
-  =Database optimized: 58.6 GB -> 1.9 GB; rebuilt the vector index=
+  =Database optimized: 47.0 GB -> 1.9 GB=
+
+Earlier versions kept a vector index on the embeddings that semantic search
+never used. It could grow to tens of gigabytes and made semantic search take
+over a minute. The database now drops it when it is opened, which can take a
+few minutes once on a large database; run optimize afterwards to give the space
+back.
 - Should be run periodically (monthly)
 
 VACUUM rewrites the whole file, so a large database needs free disk space about
@@ -1463,10 +1465,15 @@ See [[file:17-projectile.org][Projectile]] for project management commands.
 
 * Troubleshooting
 
-** Semantic Search Not Working
+** 👀 Semantic Search Not Working
 
 *** Problem
 Semantic search returns no results, shows "unavailable", or displays an error.
+
+If it works but is very slow (tens of seconds) or times out, check the
+database's size in `Scimax: Show Database Stats'. A file far larger than your
+notes is most likely the old vector index (see [[*Optimization][Optimization]]); open the database
+with this version, then run `Scimax: Optimize Database'.
 
 *** First: Check Vector Search Support
 
@@ -1482,8 +1489,8 @@ Run `Scimax: Show Database Stats' (`scimax.db.stats') to see the semantic search
 
 If you see "Semantic search: Unavailable", the libsql database doesn't support vector operations. This can happen if:
 
-- The libsql version doesn't include vector support
-- The vector index failed to create
+- The libsql version doesn't include the vector functions
+  (=vector32=, =vector_distance_cos=)
 
 *Workaround*: Use full-text search (`scimax.db.search') instead. FTS5 is always available and fast.
 
@@ -1740,16 +1747,16 @@ Performance indexes on:
 - `headings.deadline', `headings.scheduled'
 - `source_blocks.language'
 - `hashtags.tag'
-- `chunks.embedding' (vector index with cosine metric)
 - `files.file_type'
 
-** Vector Search
+** 👀 Vector Search
 
-Using libsql's vector extension:
+Using libsql's vector functions:
 - Cosine similarity metric
 - F32_BLOB storage format
-- HNSW-like index structure
-- Efficient nearest neighbor queries
+- No vector index: each query ranks every chunk with =vector_distance_cos=.
+  An exact scan of a few hundred thousand chunks is fast enough, and an index
+  costs far more in disk space and write time than it saves.
 
 ** Parsers
 

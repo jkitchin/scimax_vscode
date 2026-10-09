@@ -430,8 +430,6 @@ export interface SearchScope {
 export interface OptimizeResult {
     /** Indexed files that no longer exist on disk */
     removedFiles: number;
-    /** True if a bloated vector index was dropped and recreated */
-    vectorIndexRebuilt: boolean;
     sizeBefore?: number;
     sizeAfter?: number;
 }
@@ -450,7 +448,6 @@ export function describeOptimize(result: OptimizeResult): string {
         parts.push(`${formatDbBytes(result.sizeBefore)} -> ${formatDbBytes(result.sizeAfter)}`);
     }
     if (result.removedFiles) parts.push(`removed ${result.removedFiles} missing file(s)`);
-    if (result.vectorIndexRebuilt) parts.push('rebuilt the vector index');
     return parts.length ? `Database optimized: ${parts.join('; ')}` : 'Database optimized';
 }
 
@@ -763,30 +760,6 @@ export class ScimaxDbCore {
     }
 
     /**
-     * Dimension recorded in idx_chunks_embedding's libsql metadata, or null if
-     * the index (or libsql's metadata table) doesn't exist. The metadata blob is
-     * a sequence of 9-byte records: a 1-byte key and a little-endian u64 value;
-     * key 4 is the vector dimension.
-     */
-    private async getVectorIndexDimensions(): Promise<number | null> {
-        if (!this.db) return null;
-        try {
-            const result = await this.db.execute(
-                "SELECT metadata FROM libsql_vector_meta_shadow WHERE name = 'idx_chunks_embedding'"
-            );
-            if (result.rows.length === 0) return null;
-            const blob = new Uint8Array((result.rows[0] as any).metadata as ArrayBuffer);
-            const view = new DataView(blob.buffer, blob.byteOffset, blob.byteLength);
-            for (let i = 0; i + 9 <= blob.length; i += 9) {
-                if (blob[i] === 4) return Number(view.getBigUint64(i + 1, true));
-            }
-            return null;
-        } catch {
-            return null;
-        }
-    }
-
-    /**
      * Create the chunks table sized for the current embedding dimensions.
      *
      * The table is created during initialize(), usually before an embedding
@@ -803,7 +776,6 @@ export class ScimaxDbCore {
             console.error(
                 `[ScimaxDbCore] Rebuilding chunks table: ${existing} -> ${this.embeddingDimensions} dimensions`
             );
-            await this.db.execute('DROP INDEX IF EXISTS idx_chunks_embedding');
             await this.db.execute('DROP TABLE chunks');
         }
 
@@ -823,29 +795,23 @@ export class ScimaxDbCore {
         await this.db.execute('CREATE INDEX IF NOT EXISTS idx_chunks_file ON chunks(file_id)');
         await this.db.execute('CREATE INDEX IF NOT EXISTS idx_chunks_file_path ON chunks(file_path)');
 
-        // The vector index keeps its own dimension in libsql metadata, and it
-        // can disagree with the table (seen after a 384 -> 768 rebuild). Every
-        // insert then fails, so drop the index and let testVectorSupport()
-        // recreate it from the table's declared size.
-        const tableDims = await this.getChunksTableDimensions();
-        const indexDims = await this.getVectorIndexDimensions();
-        if (tableDims !== null && indexDims !== null && tableDims !== indexDims) {
-            console.error(
-                `[ScimaxDbCore] Rebuilding vector index: ${indexDims} -> ${tableDims} dimensions`
-            );
-            await this.db.execute('DROP INDEX IF EXISTS idx_chunks_embedding');
-        }
+        // Earlier versions kept a libsql vector index on chunks.embedding.
+        // searchSemantic() never used it (it ranks every chunk by
+        // vector_distance_cos), but every write updated it, and it grew to
+        // 30x the size of the chunks themselves (seen: 47 GB for 296k
+        // chunks), which made the full scan crawl. Drop it; run optimize()
+        // (VACUUM) afterwards to give the space back. A one-time cost on
+        // databases that still have it.
+        await this.db.execute('DROP INDEX IF EXISTS idx_chunks_embedding');
 
         await this.testVectorSupport();
     }
 
+    /** Check that this libsql build has the vector functions semantic search uses. */
     private async testVectorSupport(): Promise<void> {
         if (!this.db) return;
         try {
-            await this.db.execute(`
-                CREATE INDEX IF NOT EXISTS idx_chunks_embedding
-                ON chunks(libsql_vector_idx(embedding, 'metric=cosine'))
-            `);
+            await this.db.execute("SELECT vector_distance_cos(vector32('[1,0]'), vector32('[0,1]'))");
             this.vectorSearchSupported = true;
             console.error('[ScimaxDbCore] Vector search is supported');
         } catch (e: any) {
@@ -2629,9 +2595,6 @@ export class ScimaxDbCore {
         if (!this.db) return;
         await this.withWriteLock(async () => {
             await this.db!.batch([
-                // Dropping the vector index and recreating it empty is faster
-                // than deleting its nodes one chunk at a time.
-                'DROP INDEX IF EXISTS idx_chunks_embedding',
                 'DELETE FROM chunks',
                 'DELETE FROM fts_content',
                 'DELETE FROM hashtags',
@@ -2641,16 +2604,14 @@ export class ScimaxDbCore {
                 'DELETE FROM headings',
                 'DELETE FROM files'
             ]);
-            await this.testVectorSupport();
         });
     }
 
     /**
-     * Remove files that no longer exist, rebuild a bloated vector index and
-     * VACUUM. Returns what was done and the file size before and after.
+     * Remove files that no longer exist and VACUUM. Returns what was done and the file size before and after.
      */
     public async optimize(): Promise<OptimizeResult> {
-        const result: OptimizeResult = { removedFiles: 0, vectorIndexRebuilt: false };
+        const result: OptimizeResult = { removedFiles: 0 };
         if (!this.db) return result;
         result.sizeBefore = await this.fileSize();
         const files = await this.getFiles();
@@ -2660,7 +2621,6 @@ export class ScimaxDbCore {
                 result.removedFiles++;
             }
         }
-        result.vectorIndexRebuilt = await this.rebuildStaleVectorIndex();
         await this.db.execute('VACUUM');
         result.sizeAfter = await this.fileSize();
         return result;
@@ -2672,36 +2632,6 @@ export class ScimaxDbCore {
         } catch {
             return undefined;
         }
-    }
-
-    /**
-     * Drop and recreate the vector index when it holds far more nodes than
-     * there are chunks. Databases from earlier versions can carry nodes for
-     * long-deleted chunks (seen: 0 chunks, 343k nodes, 55 GB).
-     * Returns true if the index was rebuilt.
-     */
-    /** Extra index nodes tolerated before optimize() rebuilds the index. */
-    private staleIndexSlack = 1000;
-
-    private async rebuildStaleVectorIndex(): Promise<boolean> {
-        if (!this.db) return false;
-        let nodes: number;
-        try {
-            const r = await this.db.execute('SELECT COUNT(*) as count FROM idx_chunks_embedding_shadow');
-            nodes = Number(r.rows[0].count);
-        } catch {
-            return false; // no vector index
-        }
-        const chunks = Number((await this.db.execute(
-            'SELECT COUNT(*) as count FROM chunks WHERE embedding IS NOT NULL'
-        )).rows[0].count);
-        if (nodes <= 2 * chunks + this.staleIndexSlack) return false;
-        console.error(`[ScimaxDbCore] Rebuilding vector index: ${nodes} nodes for ${chunks} embedded chunks`);
-        await this.withWriteLock(async () => {
-            await this.db!.execute('DROP INDEX IF EXISTS idx_chunks_embedding');
-            await this.testVectorSupport();
-        });
-        return true;
     }
 
     public async verify(): Promise<{
