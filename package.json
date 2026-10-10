@@ -4425,7 +4425,13 @@
         "command": "scimax.org.toggleCheckbox",
         "key": "ctrl+c ctrl+c",
         "mac": "ctrl+c ctrl+c",
-        "when": "editorTextFocus && editorLangId == 'org' && !scimax.inSourceBlock && !scimax.onTblfmLine && !scimax.inOrderedList && !scimax.inDynamicBlock && !scimax.inInlineBabelCall && !scimax.inInlineSrc && !scimax.onCallLine && !scimax.onStatisticsCookie && !terminalFocus"
+        "when": "editorTextFocus && editorLangId == 'org' && !scimax.inSourceBlock && !scimax.onTblfmLine && !scimax.inOrderedList && !scimax.inDynamicBlock && !scimax.inInlineBabelCall && !scimax.inInlineSrc && !scimax.onCallLine && !scimax.onStatisticsCookie && !scimax.onHeading && !terminalFocus"
+      },
+      {
+        "command": "scimax.speed.setTags",
+        "key": "ctrl+c ctrl+c",
+        "mac": "ctrl+c ctrl+c",
+        "when": "editorTextFocus && editorLangId == 'org' && scimax.onHeading && !scimax.inSourceBlock && !scimax.inInlineBabelCall && !scimax.inInlineSrc && !scimax.onStatisticsCookie && !terminalFocus"
       },
       {
         "command": "scimax.markdown.insertDueDate",

@@ -136,7 +136,7 @@ Then restart VS Code.
 Note: Navigation keybindings (C-c C-n, C-c C-p, C-c C-f, C-c C-b, C-c C-j) work in
 org-mode, markdown, and LaTeX files with consistent behavior.
 
-* Headings
+* 👀 Headings
 
 | Key           | Action                         |
 |---------------+--------------------------------|
@@ -153,6 +153,7 @@ org-mode, markdown, and LaTeX files with consistent behavior.
 | C-c C-x i     | Add ID to heading              |
 | C-c x p       | Set property (fuzzy-match name/value) |
 | C-c C-q       | Set tags (pick from tags in use)      |
+| C-c C-c       | Set tags (on the headline line)       |
 | C-c C-w       | Refile subtree to target       |
 | C-c M-w       | Copy subtree to refile target  |
 
@@ -657,11 +658,11 @@ CLOSED: [2026-01-19 Mon 18:19]
 * ✅ Additional Notes
 CLOSED: [2026-01-19 Mon 18:19]
 
-** Context-Dependent Keybindings
+** 👀 Context-Dependent Keybindings
 
 Many keybindings are context-aware and behave differently depending on cursor position:
 
-- C-c C-c toggles checkboxes normally, executes source blocks inside code blocks, recalculates tables on TBLFM lines, and runs a Marp deck's ~```python run~ cell in the Python panel
+- C-c C-c toggles checkboxes normally, sets tags on a headline line (like C-c C-q; on a statistics cookie it updates the cookie instead), executes source blocks inside code blocks, recalculates tables on TBLFM lines, and runs a Marp deck's ~```python run~ cell in the Python panel
 - S-<arrow> keys modify timestamps normally, but transpose/sort citations when on a citation
 - M-S-<left>/M-S-<right> promote/demote subtrees normally, but delete/insert columns when in a table
 - <return> opens links when cursor is on a link

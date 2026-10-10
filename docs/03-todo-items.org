@@ -489,12 +489,13 @@ Tags appear at the end of the headline, enclosed in colons:
 ,* TODO Buy groceries                                         :personal:errands:
 #+END_SRC
 
-** Tag Commands
+** 👀 Tag Commands
 
 | Key/Command                   | Action                                 |
 |-------------------------------+----------------------------------------|
 | Speed key =:= (S-;)           | Set tags on the heading                |
 | C-c C-q                       | Set tags on the heading (org files)    |
+| C-c C-c (on the headline)     | Set tags on the heading (org files)    |
 | [[cmd:scimax.speed.setTags]]  | Set tags via command                   |
 | [[cmd:scimax.db.searchByTag]] | List all tags in use, jump to headings |
 
@@ -502,6 +503,16 @@ Setting tags opens a multi-select list of every tag already in use: the tags
 in the current file and its =#+TAGS:= / =#+FILETAGS:= lines, plus every
 heading tag in the database, each with how many headings carry it. Check or
 uncheck tags and press =Enter=. The heading's current tags start out checked.
+
+You don't have to tick the box: as you type, the best matching tag is
+highlighted (the tag typed in full, else the first tag starting with the
+text, else the first one containing it), and =Enter= adds it along with any
+checked tags. Use the arrow keys to highlight a different one first. The
+"new tag" entry is highlighted only when no existing tag contains what you
+typed, so =proj= =Enter= adds =:project:=; to make =:proj:= as well, arrow
+down to its "new tag" entry before pressing =Enter=. With nothing typed,
+=Enter= applies exactly the checked tags, so unchecking all of them removes
+the heading's tags.
 
 To add a tag nobody has used yet, type it. It shows up at the top as a
 "new tag". If it looks like an existing tag (a plural, a typo, or a

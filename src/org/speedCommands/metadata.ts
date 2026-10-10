@@ -126,14 +126,34 @@ async function collectTags(document: vscode.TextDocument): Promise<Map<string, n
 interface TagItem extends vscode.QuickPickItem { tag: string; isNew?: boolean }
 
 /**
- * Multi-select picker over known tags. Typing a tag that doesn't exist yet
- * offers it as a new entry and warns about similar existing tags.
+ * The tags a typed filter matches, best first: the tag typed in full, then
+ * tags starting with it, then tags containing it (ties keep their order). The
+ * first is the one the picker highlights. Looser in-order matches are left
+ * out: VS Code's filter may hide them, and a hidden tag must not be taken.
+ */
+export function rankTags(typed: string, tags: string[]): string[] {
+    const exact = typed.trim().replace(/^:+|:+$/g, '');
+    const q = exact.toLowerCase();
+    if (!q) return [];
+    const rank = (t: string): number => {
+        const l = t.toLowerCase();
+        return t === exact ? 0 : l === q ? 1 : l.startsWith(q) ? 2 : l.includes(q) ? 3 : 4;
+    };
+    return tags.map(t => ({ t, r: rank(t) })).filter(x => x.r < 4).sort((a, b) => a.r - b.r).map(x => x.t);
+}
+
+/**
+ * Multi-select picker over known tags. As you type, the best matching tag is
+ * highlighted and Enter adds it along with the checked ones; arrow to another
+ * to take that instead. Typing a tag that doesn't exist yet offers it as a
+ * new entry, warning about similar existing tags; it is highlighted only once
+ * no existing tag matches.
  */
 function pickTags(known: Map<string, number | undefined>, current: string[]): Promise<string[] | undefined> {
     return new Promise(resolve => {
         const qp = vscode.window.createQuickPick<TagItem>();
         qp.canSelectMany = true;
-        qp.placeholder = 'Check tags to apply; type to filter or to add a new tag';
+        qp.placeholder = 'Type to filter (Enter adds the highlighted tag) or to add a new tag; check tags to apply';
         const names = [...new Set([...known.keys(), ...current])]
             .sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }));
         const base: TagItem[] = names.map(tag => {
@@ -167,17 +187,26 @@ function pickTags(known: Map<string, number | undefined>, current: string[]): Pr
             for (const s of selected) {
                 if (s.isNew && !added.some(a => a.tag === s.tag)) added.push(s);
             }
+            const existing = [...added, ...base];
+            const best = rankTags(v, existing.map(i => i.tag))[0];
             const candidate = newItemFor(v);
-            qp.items = candidate ? [candidate, ...added, ...base] : [...added, ...base];
+            qp.items = candidate ? [...existing, candidate] : existing;
             qp.selectedItems = qp.items.filter(i => selected.some(s => s.tag === i.tag));
+            // Highlight the best existing match; the new tag only when none is left.
+            const active = existing.find(i => i.tag === best) ?? candidate;
+            qp.activeItems = active ? [active] : [];
         });
 
         let done = false;
         qp.onDidAccept(() => {
             const result = new Set(qp.selectedItems.map(i => i.tag));
-            // Enter with a new tag typed but not checked: take it too
-            const candidate = newItemFor(qp.value);
-            if (candidate) result.add(candidate.tag);
+            // With a filter typed, Enter also takes the highlighted tag.
+            if (qp.value.trim()) {
+                const tag = qp.activeItems[0]?.tag
+                    ?? rankTags(qp.value, [...added, ...base].map(i => i.tag))[0]
+                    ?? newItemFor(qp.value)?.tag;
+                if (tag) result.add(tag);
+            }
             done = true;
             qp.hide();
             // Keep the heading's existing order, append newcomers
