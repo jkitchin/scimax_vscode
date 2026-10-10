@@ -17,10 +17,21 @@ import { parseEffort } from './orgClocking';
 
 /** Done states recognized regardless of a file's #+TODO: line. */
 const DEFAULT_DONE_STATES = new Set(['DONE', 'CANCELLED', 'CANCELED']);
+/** Done states that mean the work was dropped, not finished. */
+const CANCELLED_STATES = new Set(['CANCELLED', 'CANCELED']);
 
 export const ASSIGNEE_PROPERTY = 'ASSIGNEE';
 export const DEPENDS_PROPERTY = 'DEPENDS';
 export const PERSON_TAG = 'person';
+export const PROGRESS_PROPERTY = 'PROGRESS';
+
+/** A heading above a task (TODO or not), for outlines and rollups. */
+export interface TaskAncestor {
+    title: string;
+    /** 1-based line number of the heading. */
+    line: number;
+    level: number;
+}
 
 export interface ProjectTask {
     /** The heading's :ID:, if any. */
@@ -29,6 +40,10 @@ export interface ProjectTask {
     level: number;
     todo?: string;
     isDone: boolean;
+    /** Closed as CANCELLED: left out of progress rollups. */
+    cancelled?: boolean;
+    /** Percent complete (0-100) from :PROGRESS:, if set and valid. */
+    progress?: number;
     priority?: string;
     scheduled?: Date;
     deadline?: Date;
@@ -45,6 +60,8 @@ export interface ProjectTask {
     file?: string;
     /** Title of the nearest ancestor heading, if any. */
     parentTitle?: string;
+    /** Headings above this one, outermost first. */
+    ancestors?: TaskAncestor[];
     /** Stable id for the task in a chart (own id or a generated token). */
     ganttId: string;
 }
@@ -62,6 +79,20 @@ function parseDependsIds(value: string | undefined): string[] {
 /** A url/handle-safe slug of a name, used as a fallback assignee handle. */
 export function slugify(name: string): string {
     return name.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+}
+
+/** A :PROGRESS: value ("50" or "50%") as 0-100; anything else is ignored. */
+export function parseProgress(value: string | undefined): number | undefined {
+    const m = value?.trim().match(/^(\d+(?:\.\d+)?)\s*%?$/);
+    if (!m) return undefined;
+    const n = parseFloat(m[1]);
+    return n >= 0 && n <= 100 ? n : undefined;
+}
+
+function headlineTitle(h: HeadlineElement): string {
+    // rawValue normally excludes the priority cookie, but strip a stray
+    // leading [#A] defensively so it never leaks into tables or chart labels.
+    return (h.properties.rawValue || '').replace(/^\[#[A-Za-z0-9]\]\s*/, '').trim();
 }
 
 function tsToDate(ts: any): Date | undefined {
@@ -187,12 +218,12 @@ export function extractProjectTasks(
 
         tasks.push({
             id,
-            // rawValue normally excludes the priority cookie, but strip a stray
-            // leading [#A] defensively so it never leaks into tables or chart labels.
-            title: (h.properties.rawValue || '').replace(/^\[#[A-Za-z0-9]\]\s*/, '').trim(),
+            title: headlineTitle(h),
             level: h.properties.level,
             todo,
             isDone: todo ? doneStates.has(todo) : false,
+            cancelled: todo ? CANCELLED_STATES.has(todo) : false,
+            progress: parseProgress(drawerProp(h, PROGRESS_PROPERTY)),
             priority: h.properties.priority || undefined,
             scheduled: tsToDate(h.planning?.properties?.scheduled),
             deadline: tsToDate(h.planning?.properties?.deadline),
@@ -203,6 +234,11 @@ export function extractProjectTasks(
             line: (h.position?.start.line ?? 0) + 1,
             file: options.file,
             parentTitle: parent ? (parent.properties.rawValue || '').trim() || undefined : undefined,
+            ancestors: ancestors.slice(0, -1).map(a => ({
+                title: headlineTitle(a),
+                line: (a.position?.start.line ?? 0) + 1,
+                level: a.properties.level,
+            })),
             ganttId,
         });
         taskHeadline.push(h);

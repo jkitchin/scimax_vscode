@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import JSZip from 'jszip';
 import { parseOrg } from '../../parser/orgParserUnified';
 import { org } from '../../parser/orgModify';
-import { extractProjectTasks, isTaskBlocked, scheduleProjectTasks, type ProjectTask } from '../../parser/projectTasks';
+import { extractProjectTasks, isTaskBlocked, parseProgress, scheduleProjectTasks, type ProjectTask } from '../../parser/projectTasks';
 import { buildGanttModel, columnName, ganttToPdf, ganttToXlsx, type GanttTaskInput } from '../projectGantt';
 
 const TODAY = new Date(2026, 6, 1); // Wed 2026-07-01
@@ -142,6 +142,30 @@ DEADLINE: <2026-07-09 Thu>
         expect(ends).toEqual({ Write: true, Sized: false, Due: false });
     });
 
+    it('puts tasks with a deadline first, then the rest, each by start', () => {
+        const text = `* TODO Early, no deadline
+SCHEDULED: <2026-07-01 Wed>
+* TODO Late due
+SCHEDULED: <2026-07-08 Wed> DEADLINE: <2026-07-10 Fri>
+* TODO Undated
+* TODO Soon due
+DEADLINE: <2026-07-03 Fri>
+`;
+        const titles = (groupBy?: 'assignee') => buildGanttModel(tasksOf(text), { groupBy }, TODAY).rows
+            .filter(r => r.kind === 'task').map(r => r.title);
+        const expected = ['Soon due', 'Late due', 'Early, no deadline', 'Undated'];
+        expect(titles()).toEqual(expected);
+        expect(titles('assignee')).toEqual(expected);
+    });
+
+    it('leaves out the tasks of hidden files, still listing every file', () => {
+        const tasks = [...tasksOf(MAIN, '/p/main.org'), ...tasksOf('* TODO Other\n', '/p/sub/other.org')];
+        const model = buildGanttModel(tasks, { root: '/p', hiddenFiles: ['sub/other.org'] }, TODAY);
+        expect(model.files).toEqual(['main.org', 'sub/other.org']);
+        expect(model.rows.map(r => r.kind === 'task' && r.file)).not.toContain('sub/other.org');
+        expect(model.shownTasks).toBe(3);
+    });
+
     it('drops arrows to tasks that are filtered out', () => {
         const model = buildGanttModel(tasksOf(MAIN), { assignee: 'ana' }, TODAY);
         expect((model.rows[0] as any).dependsOn).toEqual([]);
@@ -181,5 +205,217 @@ describe('exports', () => {
         expect(text.slice(xrefAt, xrefAt + 4)).toBe('xref');
         const offsets = [...text.slice(xrefAt).matchAll(/^(\d{10}) 00000 n $/gm)].map(m => Number(m[1]));
         offsets.forEach((o, i) => expect(text.slice(o).startsWith(`${i + 1} 0 obj`)).toBe(true));
+    });
+});
+
+const AIMS = `* Aim 1
+** TODO Synthesis
+SCHEDULED: <2026-06-22 Mon>
+*** DONE Make catalyst A
+:PROPERTIES:
+:EFFORT: 2d
+:END:
+*** TODO Make catalyst B
+:PROPERTIES:
+:EFFORT: 2d
+:PROGRESS: 50
+:END:
+*** TODO Characterize
+:PROPERTIES:
+:EFFORT: 4d
+:END:
+*** CANCELLED Old route
+:PROPERTIES:
+:EFFORT: 10d
+:END:
+* Aim 2
+** TODO Model
+SCHEDULED: <2026-07-06 Mon>
+`;
+
+const rowsOf = (model: ReturnType<typeof buildGanttModel>) => model.rows as any[];
+const find = (model: ReturnType<typeof buildGanttModel>, title: string) =>
+    rowsOf(model).find(r => (r.title ?? r.label) === title);
+
+describe('parseProgress', () => {
+    it('reads 0-100 with or without %, and ignores anything else', () => {
+        expect(parseProgress('50')).toBe(50);
+        expect(parseProgress(' 12.5% ')).toBe(12.5);
+        expect(parseProgress('0')).toBe(0);
+        expect(parseProgress('100%')).toBe(100);
+        expect(parseProgress('150')).toBeUndefined();
+        expect(parseProgress('half')).toBeUndefined();
+        expect(parseProgress(undefined)).toBeUndefined();
+    });
+});
+
+describe('progress', () => {
+    it('is off by default, leaving rows as they were', () => {
+        const model = buildGanttModel(tasksOf(AIMS), { groupBy: 'outline' }, TODAY);
+        expect(model.progress).toBe(false);
+        expect(rowsOf(model).every(r => !r.progress && !r.behind && !r.summary)).toBe(true);
+        expect(find(model, 'Aim 1').start).toBeUndefined();
+    });
+
+    it('lays out an outline: headings above their tasks, by depth', () => {
+        const model = buildGanttModel(tasksOf(AIMS), { groupBy: 'outline' }, TODAY);
+        expect(rowsOf(model).map(r => [r.title ?? r.label, r.depth])).toEqual([
+            ['Aim 1', 1], ['Synthesis', 2], ['Make catalyst B', 3], ['Characterize', 3],
+            ['Aim 2', 1], ['Model', 2],
+        ]);
+        expect(find(model, 'Aim 1').line).toBe(1);
+    });
+
+    it('weights by effort, counts done tasks hidden from view, and drops CANCELLED', () => {
+        const model = buildGanttModel(tasksOf(AIMS), { groupBy: 'outline', showProgress: true }, TODAY);
+        expect(model.progressMethod).toBe('effort');
+        // A (2d) done + B (2d) half done, of 8d; the cancelled 10d is left out.
+        const synthesis = find(model, 'Synthesis');
+        expect(synthesis.summary).toBe(true);
+        expect(synthesis.progress).toMatchObject({ percent: 37.5, method: 'effort', tasks: 3, done: 1, unestimated: 0 });
+        expect(find(model, 'Aim 1').progress.percent).toBe(37.5);
+        // Summary bar spans its subtasks, not the cancelled one.
+        expect(synthesis.start).toBe('2026-06-22');
+        expect(synthesis.end).toBe('2026-06-26');
+        expect(find(model, 'Aim 1').end).toBe('2026-06-26');
+    });
+
+    it('counts tasks when asked, or when most tasks have no effort', () => {
+        const counted = buildGanttModel(tasksOf(AIMS), { groupBy: 'outline', showProgress: true, progressWeighting: 'count' }, TODAY);
+        expect(find(counted, 'Synthesis').progress.percent).toBe(50);
+
+        const sparse = `* TODO Parent
+** DONE a
+** TODO b
+** TODO c
+:PROPERTIES:
+:EFFORT: 3d
+:END:
+`;
+        const auto = buildGanttModel(tasksOf(sparse), { showProgress: true }, TODAY);
+        expect(auto.progressMethod).toBe('count');
+        expect(find(auto, 'Parent').progress.percent).toBeCloseTo(100 / 3);
+
+        const effort = buildGanttModel(tasksOf(sparse), { showProgress: true, progressWeighting: 'effort', defaultEffortMinutes: 8 * 60 }, TODAY);
+        // a and b weigh the default 1d each: 1d done of 5d.
+        expect(find(effort, 'Parent').progress).toMatchObject({ percent: 20, unestimated: 2 });
+    });
+
+    it("gives a leaf its own :PROGRESS:, ignored on parents and overridden by DONE", () => {
+        const text = `* TODO Parent
+:PROPERTIES:
+:PROGRESS: 90
+:END:
+** TODO Child
+:PROPERTIES:
+:PROGRESS: 20
+:END:
+* DONE Finished
+:PROPERTIES:
+:PROGRESS: 10
+:END:
+* TODO Plain
+`;
+        const model = buildGanttModel(tasksOf(text), { showProgress: true, showDone: true }, TODAY);
+        expect(find(model, 'Parent').progress.percent).toBe(20);
+        expect(find(model, 'Child').progress).toMatchObject({ percent: 20, method: 'own' });
+        expect(find(model, 'Finished').progress).toBeUndefined();
+        expect(find(model, 'Plain').progress).toBeUndefined();
+    });
+
+    it('flags a row behind when it trails the elapsed share by more than the tolerance', () => {
+        const at = (pct: number) => `* TODO Work
+SCHEDULED: <2026-06-29 Mon>
+:PROPERTIES:
+:EFFORT: 4d
+:PROGRESS: ${pct}
+:END:
+`;
+        // 2 of 4 days gone on 2026-07-01: expected 50%.
+        const behind = find(buildGanttModel(tasksOf(at(30)), { showProgress: true }, TODAY), 'Work');
+        expect(behind.progress.expected).toBe(50);
+        expect(behind.behind).toBe(true);
+        expect(find(buildGanttModel(tasksOf(at(45)), { showProgress: true }, TODAY), 'Work').behind).toBe(false);
+        expect(find(buildGanttModel(tasksOf(at(45)), { showProgress: true, behindTolerance: 0 }, TODAY), 'Work').behind).toBe(true);
+        // A span that has ended with work left is behind; one not started is not.
+        const model = buildGanttModel(tasksOf(AIMS), { groupBy: 'outline', showProgress: true }, TODAY);
+        expect(find(model, 'Synthesis').behind).toBe(true);
+        expect(model.behindCount).toBe(3); // Aim 1, Synthesis, Make catalyst B
+        expect(find(model, 'Model').behind).toBe(false);
+    });
+
+    it('rolls up group headers over the group, counting done tasks that are hidden', () => {
+        const text = `* TODO a
+:PROPERTIES:
+:ASSIGNEE: jrk
+:END:
+* DONE b
+:PROPERTIES:
+:ASSIGNEE: jrk
+:END:
+* TODO c
+:PROPERTIES:
+:ASSIGNEE: ana
+:END:
+`;
+        const model = buildGanttModel(tasksOf(text), { groupBy: 'assignee', showProgress: true }, TODAY);
+        expect(find(model, 'jrk').progress.percent).toBe(50);
+        expect(find(model, 'ana').progress.percent).toBe(0);
+        expect(find(model, 'jrk').start).toBeDefined();
+        // The assignee filter narrows rollups too.
+        const mine = buildGanttModel(tasksOf(AIMS + text), { groupBy: 'none', showProgress: true, assignee: 'jrk' }, TODAY);
+        expect(rowsOf(mine).map(r => r.title)).toEqual(['a']);
+    });
+
+    it('collapses to a depth, folds rows, and shows only behind rows with context', () => {
+        const opts = { groupBy: 'outline' as const, showProgress: true };
+        const top = buildGanttModel(tasksOf(AIMS), { ...opts, maxDepth: 1 }, TODAY);
+        expect(rowsOf(top).map(r => r.label)).toEqual(['Aim 1', 'Aim 2']);
+        expect(find(top, 'Aim 1')).toMatchObject({ collapsed: true, collapsible: false });
+
+        const folded = buildGanttModel(tasksOf(AIMS), { ...opts, collapsed: ['/p/main.org:2'] }, TODAY);
+        expect(rowsOf(folded).map(r => r.title ?? r.label)).toEqual(['Aim 1', 'Synthesis', 'Aim 2', 'Model']);
+        expect(find(folded, 'Synthesis')).toMatchObject({ collapsed: true, collapsible: true });
+        expect(find(folded, 'Aim 1')).toMatchObject({ collapsed: false, collapsible: true });
+
+        const late = buildGanttModel(tasksOf(AIMS), { ...opts, behindOnly: true, progressWeighting: 'count' }, TODAY);
+        expect(rowsOf(late).map(r => r.title ?? r.label)).toEqual(['Aim 1', 'Synthesis', 'Make catalyst B']);
+    });
+
+    it('adds a file row per file to an outline of several files', () => {
+        const model = buildGanttModel([...tasksOf(AIMS, '/p/a.org'), ...tasksOf(MAIN, '/p/b.org')],
+            { groupBy: 'outline', showProgress: true, root: '/p' }, TODAY);
+        const files = rowsOf(model).filter(r => r.depth === 0);
+        expect(files.map(r => r.label)).toEqual(['a.org', 'b.org']);
+        // Aim 1's 3d done of 8d, plus Aim 2's unestimated Model at the default 1d.
+        expect(files[0].progress).toMatchObject({ tasks: 4, unestimated: 1 });
+        expect(files[0].progress.percent).toBeCloseTo(100 / 3);
+    });
+
+    it('exports progress: % done and Status columns, hatched cells, and the PDF hatch', async () => {
+        const model = buildGanttModel(tasksOf(AIMS), { groupBy: 'outline', showProgress: true }, TODAY);
+        const zip = await JSZip.loadAsync(await ganttToXlsx(model, 'Aims'));
+        const sheet = await zip.file('xl/worksheets/sheet1.xml')!.async('string');
+        const styles = await zip.file('xl/styles.xml')!.async('string');
+        expect(sheet).toContain('% done');
+        expect(sheet).toContain('>behind<');
+        expect(sheet).toContain('<v>0.38</v>');      // Synthesis, 37.5% rounded
+        expect(sheet).toContain('   Make catalyst B'); // outline indent
+        expect(sheet).toMatch(/ s="17"/);              // a hatched summary day
+        expect(styles).toContain('patternType="darkUp"');
+        expect(styles.match(/<xf /g)!.length - 1).toBe(Number(styles.match(/<cellXfs count="(\d+)"/)![1]));
+        expect(styles.match(/<fill>/g)!.length).toBe(Number(styles.match(/<fills count="(\d+)"/)![1]));
+
+        const pdf = ganttToPdf(model, 'Aims').toString('latin1');
+        expect(pdf).toContain('(38%)');
+        expect(pdf).toContain('re W n');               // the hatch's clip
+        expect(pdf).toContain('(behind schedule)');
+    });
+
+    it('leaves the exports as they were with progress off', async () => {
+        const model = buildGanttModel(tasksOf(AIMS), { groupBy: 'outline' }, TODAY);
+        const sheet = await (await JSZip.loadAsync(await ganttToXlsx(model))).file('xl/worksheets/sheet1.xml')!.async('string');
+        expect(sheet).not.toContain('% done');
+        expect(ganttToPdf(model).toString('latin1')).not.toContain('re W n');
     });
 });

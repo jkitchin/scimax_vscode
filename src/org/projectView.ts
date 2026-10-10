@@ -25,7 +25,9 @@ import {
     ganttToXlsx,
     type GanttGroupBy,
     type GanttOptions,
+    type ProgressWeighting,
 } from './projectGantt';
+import { parseEffort } from '../parser/orgClocking';
 import { runOnSourceHeading } from './agendaDocumentProvider';
 import { addDependencyBetween, removeDependencies } from './dependencyCommands';
 import { addPlanningDate, planningLines, shiftPlanningLine } from '../parser/planningShift';
@@ -42,8 +44,13 @@ interface TaskContext {
 interface ViewOptions {
     assignee?: string;
     tags?: string[];
+    hiddenFiles?: string[];
     showDone: boolean;
     groupBy: GanttGroupBy;
+    showProgress?: boolean;
+    maxDepth?: number;
+    collapsed?: string[];
+    behindOnly?: boolean;
 }
 
 type FromWebview =
@@ -64,6 +71,9 @@ interface MoveRecord {
 
 const MAX_UNDO = 50;
 
+/** globalState key holding a project's hidden files, so they stay hidden. */
+const hiddenFilesKey = (root: string) => `scimax.projectView.hiddenFiles:${root}`;
+
 class ProjectView implements vscode.Disposable {
     private panel: vscode.WebviewPanel | undefined;
     private root: string | undefined;
@@ -74,12 +84,15 @@ class ProjectView implements vscode.Disposable {
     private redoStack: MoveRecord[] = [];
     private readonly disposables: vscode.Disposable[] = [];
 
-    constructor(private readonly extensionUri: vscode.Uri) {
+    constructor(private readonly extensionUri: vscode.Uri, private readonly state: vscode.Memento) {
         this.disposables.push(
             vscode.workspace.onDidSaveTextDocument(doc => {
                 if (this.panel && this.root && doc.fileName.endsWith('.org') && isInside(doc.fileName, this.root)) {
                     this.scheduleReload();
                 }
+            }),
+            vscode.workspace.onDidChangeConfiguration(e => {
+                if (e.affectsConfiguration('scimax.project')) this.post();
             })
         );
     }
@@ -91,6 +104,10 @@ class ProjectView implements vscode.Disposable {
                 'No project found: open a file inside a project (a folder with .git, .projectile, ...) first.'
             );
             return;
+        }
+        if (root !== this.root) {
+            const hidden = this.state.get<string[]>(hiddenFilesKey(root));
+            this.options = { ...this.options, hiddenFiles: hidden?.length ? hidden : undefined };
         }
         this.root = root;
         if (this.panel) {
@@ -122,8 +139,8 @@ class ProjectView implements vscode.Disposable {
         this.reloadTimer = setTimeout(() => void this.reload(), 300);
     }
 
-    private ganttOptions(): GanttOptions {
-        return { ...this.options, root: this.root };
+    private ganttOptions(root = this.root): GanttOptions {
+        return { ...this.options, ...progressSettings(), root };
     }
 
     private post(): void {
@@ -148,6 +165,7 @@ class ProjectView implements vscode.Disposable {
                 break;
             case 'options':
                 this.options = message.options;
+                if (this.root) void this.state.update(hiddenFilesKey(this.root), message.options.hiddenFiles);
                 this.post();
                 break;
             case 'open':
@@ -411,7 +429,7 @@ class ProjectView implements vscode.Disposable {
         });
         if (!target) return;
 
-        const model = buildGanttModel(tasks, { ...this.options, root });
+        const model = buildGanttModel(tasks, this.ganttOptions(root));
         const data = format === 'xlsx' ? await ganttToXlsx(model, name) : ganttToPdf(model, name);
         await fs.promises.writeFile(target.fsPath, data);
         const choice = await vscode.window.showInformationMessage(
@@ -447,18 +465,37 @@ class ProjectView implements vscode.Disposable {
     <button id="tagsButton" aria-haspopup="true" aria-expanded="false" title="Show only tasks with any of the chosen tags">Tags: any</button>
     <div id="tagsMenu" class="tagsMenu" role="menu" hidden></div>
   </div>
+  <div class="tagFilter">
+    <button id="filesButton" aria-haspopup="true" aria-expanded="false" title="Choose which files' tasks are shown">Files: all</button>
+    <div id="filesMenu" class="tagsMenu" role="menu" hidden></div>
+  </div>
   <label>Group <select id="groupBy">
     <option value="none">None</option>
     <option value="assignee">Assignee</option>
     <option value="file">File</option>
     <option value="parent">Parent heading</option>
+    <option value="outline">Outline</option>
+  </select></label>
+  <label title="Show rows down to this depth">Depth <select id="maxDepth">
+    <option value="0">All</option>
+    <option value="1">1</option>
+    <option value="2">2</option>
+    <option value="3">3</option>
   </select></label>
   <label><input type="checkbox" id="showDone"> Done tasks</label>
+  <label title="Hatch the done share of rows with subtasks (and tasks with :PROGRESS:), and flag rows behind schedule"><input type="checkbox" id="showProgress"> Progress</label>
+  <span id="behindTools" class="behindTools" hidden>
+    <button id="behindPrev" title="Previous row behind schedule (p)">&lsaquo;</button>
+    <button id="behindCount" title="Next row behind schedule (n)"></button>
+    <button id="behindNext" title="Next row behind schedule (n)">&rsaquo;</button>
+    <label title="Show only rows behind schedule, with the rows above them"><input type="checkbox" id="behindOnly"> Behind only</label>
+  </span>
   <span class="spacer"></span>
   <button id="undo" title="Nothing to undo" disabled>Undo</button>
   <button id="redo" title="Nothing to redo" disabled>Redo</button>
   <button id="zoomOut" title="Narrower days">&minus;</button>
   <button id="zoomIn" title="Wider days">+</button>
+  <button id="fit" aria-pressed="false" title="Fit the whole date range to the panel's width">Fit</button>
   <button id="today" title="Scroll to today">Today</button>
   <button id="refresh" title="Re-read the project's files">Refresh</button>
   <button id="exportXlsx" title="Save the chart as an Excel workbook">Excel</button>
@@ -470,6 +507,9 @@ class ProjectView implements vscode.Disposable {
   <span class="swatch active"></span>in progress
   <span class="swatch planned"></span>planned
   <span class="swatch milestone"></span>milestone
+  <span class="progressLegend" hidden><span class="swatch hatch"></span>done share
+  <span class="swatch summary"></span>summary
+  <span class="behind-dot"></span>behind schedule</span>
   <span class="muted">Double-click a task to open it; right-click for more.</span>
 </div>
 <div id="chart" class="chart" tabindex="0"></div>
@@ -484,6 +524,17 @@ class ProjectView implements vscode.Disposable {
         this.panel?.dispose();
         for (const d of this.disposables) d.dispose();
     }
+}
+
+/** Progress settings (scimax.project.*) for the chart and its exports. */
+function progressSettings(): Pick<GanttOptions, 'progressWeighting' | 'defaultEffortMinutes' | 'behindTolerance'> {
+    const config = vscode.workspace.getConfiguration('scimax.project');
+    const effort = parseEffort(config.get<string>('defaultEffort', '1d') || '1d');
+    return {
+        progressWeighting: config.get<ProgressWeighting>('progressWeighting', 'auto'),
+        defaultEffortMinutes: effort > 0 ? effort : undefined,
+        behindTolerance: config.get<number>('behindTolerance', 10),
+    };
 }
 
 function isInside(file: string, root: string): boolean {
@@ -506,7 +557,7 @@ async function revealTask(filePath: string, line: number): Promise<void> {
 }
 
 export function registerProjectView(context: vscode.ExtensionContext): void {
-    const view = new ProjectView(context.extensionUri);
+    const view = new ProjectView(context.extensionUri, context.globalState);
 
     const priority = async (arg?: TaskContext) => {
         const picked = await vscode.window.showQuickPick(

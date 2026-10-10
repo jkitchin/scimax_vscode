@@ -153,6 +153,18 @@ children to be completed in order. Blocked/ready indicators
 (=hideBlockedInAgenda=), and dangling/cycle diagnostics surface the dependency
 graph. See [[file:03.5-task-dependencies.org][Task Dependencies]] for the full guide.
 
+** ⚠️ Project View Progress
+
+The project view's *Progress* toggle rolls subtask progress up to parent tasks,
+hatches the done share of each bar, and flags tasks that are behind schedule.
+See [[file:03.6-project-management.org::*Progress, rollups and the behind flag][Progress, rollups and the behind flag]].
+
+| Setting                            | Default | Description                                                   |
+|------------------------------------+---------+---------------------------------------------------------------|
+| =scimax.project.progressWeighting= | =auto=  | =auto= (effort if half the tasks have one), =count=, =effort= |
+| =scimax.project.defaultEffort=     | =1d=    | Effort assumed for a task without =EFFORT= when weighting     |
+| =scimax.project.behindTolerance=   | =10=    | Points below the expected percentage before a task is behind  |
+
 ** ✅ Entity Selector (Contacts, Locations, …)
 CLOSED: [2026-07-02 Thu 08:05]
 

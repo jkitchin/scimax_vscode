@@ -80,7 +80,7 @@ not apply:
 ,#+END:
 #+end_src
 
-** ✅ Project view
+** 👀 Project view
 CLOSED: [2026-10-03 Sat 15:20]
 
 [[cmd:scimax.project.view]] (*Scimax: Project View (Gantt Chart)*) opens a panel
@@ -100,7 +100,9 @@ else the deadline minus the effort, else the project's earliest start (or
 today). =EFFORT= sets the length in working days of 8 hours; a task with
 =SCHEDULED= and =DEADLINE= but no effort runs to the deadline, and a task with
 only a =DEADLINE= is a milestone. Children of an =:ORDERED: t= parent follow one
-another.
+another. Rows (within each group) list the tasks that have a =DEADLINE= first,
+by start date, then the tasks without one, also by start date. The *Outline*
+grouping keeps the order of the headings instead.
 
 - *Double-click* a task (or select it and press =Enter=) to open it beside the
   chart. The arrow keys move the selection.
@@ -132,8 +134,15 @@ another.
   that had no deadline before has nothing to measure from, so nothing is
   offered.
 - The toolbar filters by *Assignee* (or *Unassigned*), groups rows by assignee,
-  file or parent heading, shows or hides *Done tasks*, undoes and redoes drags,
+  file, parent heading or *Outline* (the file's heading tree, see
+  [[*Progress, rollups and the behind flag]]), shows or hides *Done tasks*, undoes and redoes drags,
   zooms the timeline with =-= and =+=, and scrolls to *Today*.
+- *Fit* squeezes the whole date range into the panel's width, so there is no
+  sideways scrolling: handy for a screenshot or a presentation. It keeps
+  fitting when the panel is resized or the chart changes. As the days narrow,
+  the day numbers thin out to one a week and then only today, weekend shading
+  goes, and month names drop the year. Press =-= or =+= to zoom by hand again,
+  or *Fit* to turn it off. The chart remembers the choice.
 - *Tags* opens a checklist of the project's tags. Check one or more to show only
   the tasks that have /any/ of them; *Clear* shows every task again. A task's
   tags include those it inherits from parent headings and from =#+FILETAGS=, so
@@ -141,6 +150,87 @@ another.
   =@name= tags are assignees and are left out of the list. The button shows the
   chosen tags, and the tag filter combines with the assignee filter. A task's
   tags appear in its tooltip.
+- *Files* opens a checklist of the project's files that have tasks. Uncheck a
+  file to leave its tasks out of the chart, its rollups and its exports;
+  *Show all* and *Hide all* check or clear every file. The choice is
+  remembered for each project, so a hidden file stays hidden when the view is
+  reopened. To keep files out of the project altogether (the task table's
+  =:scope project= too), list them in a =.projectileignore= or =.gitignore= at
+  the project root.
+
+*** ⚠️ Progress, rollups and the behind flag
+
+Tick *Progress* in the toolbar to show how far along each task is. It is off by
+default, and with it off the chart and its exports look exactly as before.
+
+- *Leaf tasks* (tasks with no TODO subtasks) are 100% when DONE and 0%
+  otherwise, unless they carry a =:PROGRESS:= property (=50= or =50%=, from 0
+  to 100). DONE always counts as 100%. A plain leaf without =:PROGRESS:= shows
+  no percentage.
+- *Parent tasks* take their percentage from the leaf tasks under them; a
+  parent's own =:PROGRESS:= is ignored. CANCELLED tasks are left out of both
+  the done share and the total.
+- *Weighting* is set by =scimax.project.progressWeighting=:
+  - =count=: every leaf counts the same.
+  - =effort=: each leaf counts by its =EFFORT=. A leaf without one counts as
+    =scimax.project.defaultEffort= (default =1d=).
+  - =auto= (the default): effort when at least half the leaf tasks have an
+    =EFFORT=, count otherwise. The choice is made once for the whole chart, so
+    every bar uses the same method, and the tooltip says which it is and how
+    many tasks had no estimate.
+- Rollups count the tasks that pass the assignee and tag filters. DONE tasks
+  still count when *Done tasks* is unticked, so hiding them does not drop the
+  percentage.
+- The done share is *hatched* on the bar, and the percentage is shown after
+  the bar and beside the title. A parent task becomes a grey-blue *summary bar*
+  spanning its subtasks (cancelled ones excluded). Summary bars cannot be
+  dragged. Group rows get a summary bar and percentage too.
+
+#+begin_src org
+,** TODO Aim 1: Synthesis
+,*** DONE Prepare precursors
+    :PROPERTIES:
+    :EFFORT: 2d
+    :END:
+,*** TODO Run reactions
+    :PROPERTIES:
+    :EFFORT: 4d
+    :PROGRESS: 25
+    :END:
+,*** CANCELLED Try the old route
+#+end_src
+
+Weighted by effort, Aim 1 is (2d × 100% + 4d × 25%) / 6d = 50% done; the
+cancelled task does not count.
+
+**** ⚠️ Behind schedule
+
+A task is /behind/ when work remains and either its end date has passed, or it
+has started and its percentage is more than =scimax.project.behindTolerance=
+points (default 10) below the share of its span that has elapsed. For a task
+running Monday to Friday, on Wednesday the expected share is 40%, so with the
+default tolerance it is behind below 30%. Finished tasks, tasks that have not
+started, and plain leaves without =:PROGRESS:= are never behind.
+
+Behind rows get a small amber dot by the title and a thin amber band under the
+bar, from the end of the hatch to today. The tooltip gives the expected and
+actual percentages.
+
+**** ⚠️ Finding your way in large charts
+
+- *Outline* grouping lays rows out in the order of the headings in the files.
+  Headings that are not shown tasks become group rows, and each file gets its
+  own row when the project spans several files.
+- Click the ▸/▾ triangle on a row to fold or unfold what is under it. *Depth*
+  (All, 1, 2, 3) shows only the top levels.
+- The *N behind* button with *‹* and *›*, or the =n= and =p= keys, jump from one
+  behind row to the next, opening folded rows as needed. *Behind only* keeps
+  the behind rows and the rows above them for context.
+- While you scroll, the top-left corner shows the headings above the first
+  visible row.
+
+Folding, Depth and Behind only apply to the PDF and Excel exports too, so you
+can export just the level you want to present.
 
 *** ✅ Dragging tasks on the chart
 CLOSED: [2026-10-03 Sat 15:20]
@@ -189,7 +279,7 @@ depend on this one are listed too. Tasks in other files are saved after they
 move; edits in the file you are in are left for you to save. Typing a new date
 by hand does not trigger it.
 
-*** ✅ Exporting the chart
+*** 👀 Exporting the chart
 CLOSED: [2026-10-03 Sat 08:59]
 
 The *Excel* and *PDF* buttons in the toolbar, the right-click menu on the chart,
@@ -207,6 +297,12 @@ assignee and tag filters and grouping:
   viewers and printers scale it to the paper. Text is set in Helvetica, so
   characters outside Latin-1 (emoji, CJK) print as =?=; blocked tasks are marked
   =[blocked]=.
+
+With *Progress* ticked, both exports hatch the done share of each bar, draw
+summary bars for parent tasks and groups, indent rows by outline level, and
+mark behind rows. The Excel sheet gains a *% done* column and a *Status* column
+(=behind=, =done= or =on track=); the PDF legend explains the hatch, the summary
+bar and the behind mark. Folded rows, Depth and Behind only are respected.
 
 ** ✅ Dependency graph
 CLOSED: [2026-07-02 Thu 08:07]
@@ -254,12 +350,15 @@ A *person* is any heading tagged =:person:=, with contact properties:
 Assignees feed the table's =assignee= column and grouping (=:groupby assignee=),
 the project view's assignee filter and grouping, and the agenda's =@= filter.
 
-** ✅ Configuration
+** 👀 Configuration
 CLOSED: [2026-07-02 Thu 08:07]
 
-| Setting                    | Default | Description                                   |
-|----------------------------+---------+-----------------------------------------------|
-| =scimax.org.peopleFile=    | (empty) | Where "New Person" appends; empty ⇒ people.org |
+| Setting                            | Default | Description                                                  |
+|------------------------------------+---------+--------------------------------------------------------------|
+| =scimax.org.peopleFile=            | (empty) | Where "New Person" appends; empty ⇒ people.org               |
+| =scimax.project.progressWeighting= | =auto=  | Progress rollup: =auto=, =count= or =effort=                 |
+| =scimax.project.defaultEffort=     | =1d=    | Effort assumed for a task without =EFFORT= when weighting    |
+| =scimax.project.behindTolerance=   | =10=    | Points below the expected percentage before a task is behind |
 
 Task-dependency settings (blocking, promotion, indicators) are documented in
 [[file:03.5-task-dependencies.org][Task Dependencies]].

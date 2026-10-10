@@ -7435,6 +7435,29 @@
           "default": true,
           "description": "Enable org-mode speed commands (single-key shortcuts at beginning of headings)"
         },
+        "scimax.project.progressWeighting": {
+          "type": "string",
+          "enum": ["auto", "count", "effort"],
+          "enumDescriptions": [
+            "Weight by EFFORT when at least half of the leaf tasks have one, else count tasks",
+            "Every task counts the same",
+            "Weight tasks by EFFORT; tasks without one use scimax.project.defaultEffort"
+          ],
+          "default": "auto",
+          "description": "How the project view's Progress rollup weights the subtasks of a row."
+        },
+        "scimax.project.defaultEffort": {
+          "type": "string",
+          "default": "1d",
+          "description": "Effort assumed for a task without an EFFORT property when progress is weighted by effort (e.g. 1d, 4h, 2:30)."
+        },
+        "scimax.project.behindTolerance": {
+          "type": "number",
+          "default": 10,
+          "minimum": 0,
+          "maximum": 100,
+          "description": "Percentage points a row's done share may trail the share of its time that has passed before the project view flags it as behind schedule."
+        },
         "scimax.agenda.includeJournal": {
           "type": "boolean",
           "default": true,

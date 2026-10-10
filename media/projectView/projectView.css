@@ -8,6 +8,10 @@
     --active: #4472c4;
     --planned: #9dc3e6;
     --milestone: #ffc000;
+    --summary: #8497b0;
+    --behind: #ed7d31;
+    /* Dark stripes over any bar colour: the done share. */
+    --hatch: repeating-linear-gradient(135deg, rgba(0, 0, 0, 0.5) 0 2px, transparent 2px 5px);
     --grid: var(--vscode-editorWidget-border, rgba(128, 128, 128, 0.25));
 }
 
@@ -56,7 +60,9 @@ body {
     position: relative;
 }
 
-.toolbar #tagsButton.active {
+.toolbar #tagsButton.active,
+.toolbar #filesButton.active,
+.toolbar #fit.active {
     border-color: var(--vscode-focusBorder);
 }
 
@@ -91,6 +97,11 @@ body {
 .tagsMenu .clear {
     align-self: flex-start;
     margin-bottom: 4px;
+}
+
+.tagsMenu .menuButtons {
+    display: flex;
+    gap: 4px;
 }
 
 .toolbar button {
@@ -136,6 +147,10 @@ body {
 .swatch.active, .bar.active { background: var(--active); }
 .swatch.planned, .bar.planned { background: var(--planned); }
 .swatch.milestone { background: var(--milestone); transform: rotate(45deg) scale(0.8); width: 10px; }
+.swatch.summary, .bar.summary { background: var(--summary); }
+.swatch.hatch { background: var(--hatch), var(--planned); }
+.progressLegend[hidden] { display: none; }
+.legend .behind-dot { margin: 0 2px 0 8px; }
 
 .chart {
     flex: 1;
@@ -164,6 +179,9 @@ body {
 }
 
 .corner {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
     position: sticky;
     left: 0;
     z-index: 5;
@@ -325,3 +343,68 @@ body {
     border-radius: 3px;
 }
 .dragTip[hidden] { display: none; }
+
+/* Progress: hatched done share, percent labels, rows behind schedule. */
+.toolbar .behindTools { display: inline-flex; align-items: center; gap: 4px; }
+.toolbar .behindTools[hidden] { display: none; }
+.toolbar #behindCount.some { color: var(--behind); border-color: var(--behind); }
+
+.bar .fill {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    border-radius: 3px;
+    background: var(--hatch);
+    pointer-events: none;
+}
+.bar .fill.partial {
+    border-radius: 3px 0 0 3px;
+    box-shadow: inset -2px 0 0 rgba(0, 0, 0, 0.6);
+}
+.bar.summary,
+.bar.summary-task { top: 5px; height: calc(var(--row-h) - 11px); }
+.bar.summary-task { box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.35); }
+.group .bar.summary { opacity: 0.95; }
+
+.row .pct {
+    position: absolute;
+    top: 0;
+    line-height: var(--row-h);
+    font-size: 0.85em;
+    font-weight: 600;
+    white-space: nowrap;
+    pointer-events: none;
+}
+.label .pct-label { flex: none; margin-left: auto; font-size: 0.85em; opacity: 0.8; }
+.label .who + .pct-label { margin-left: 0; }
+
+.behind-dot {
+    display: inline-block;
+    flex: none;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--behind);
+}
+.row .behind-band {
+    position: absolute;
+    bottom: 2px;
+    height: 3px;
+    border-radius: 1px;
+    background: var(--behind);
+    opacity: 0.7;
+    pointer-events: none;
+}
+
+.label .fold {
+    flex: none;
+    width: 10px;
+    margin-right: -2px;
+    font-size: 0.8em;
+    opacity: 0.7;
+    cursor: pointer;
+    user-select: none;
+}
+.label .fold.closed { cursor: default; }
+.label .fold:empty { cursor: default; }
