@@ -746,7 +746,11 @@
     const now = performance.now(), scale = window.devicePixelRatio || 1;
     tail = tail.filter(p => now - p.t < TRAIL_MS);
     const w = Math.round(innerWidth * scale), h = Math.round(innerHeight * scale);
-    if (trail.width !== w || trail.height !== h) { trail.width = w; trail.height = h; }
+    if (trail.width !== w || trail.height !== h) {
+      trail.width = w; trail.height = h;
+      // a canvas does not stretch to its insets: pin its CSS size, or it shows at w x h CSS pixels
+      trail.style.width = innerWidth + "px"; trail.style.height = innerHeight + "px";
+    }
     tctx.setTransform(scale, 0, 0, scale, 0, 0);
     tctx.clearRect(0, 0, innerWidth, innerHeight);
     tctx.lineCap = "round";
