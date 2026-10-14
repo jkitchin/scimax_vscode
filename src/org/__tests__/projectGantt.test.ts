@@ -4,6 +4,8 @@ import { parseOrg } from '../../parser/orgParserUnified';
 import { org } from '../../parser/orgModify';
 import { extractProjectTasks, isTaskBlocked, parseProgress, scheduleProjectTasks, type ProjectTask } from '../../parser/projectTasks';
 import { buildGanttModel, columnName, ganttToPdf, ganttToXlsx, type GanttTaskInput } from '../projectGantt';
+import { ganttToHtml, ganttToSvg, ganttToSvgFile } from '../projectGanttSvg';
+import { DOMParser } from '@xmldom/xmldom';
 
 const TODAY = new Date(2026, 6, 1); // Wed 2026-07-01
 
@@ -417,5 +419,56 @@ SCHEDULED: <2026-06-29 Mon>
         const sheet = await (await JSZip.loadAsync(await ganttToXlsx(model))).file('xl/worksheets/sheet1.xml')!.async('string');
         expect(sheet).not.toContain('% done');
         expect(ganttToPdf(model).toString('latin1')).not.toContain('re W n');
+    });
+});
+
+describe('SVG and HTML exports', () => {
+    // A well-formedness check: the SVG must parse as XML for browsers and image tools.
+    function parseXml(text: string) {
+        const errors: string[] = [];
+        const doc = new DOMParser({ onError: (level: string, msg: string) => { if (level !== 'warning') errors.push(msg); } })
+            .parseFromString(text, 'image/svg+xml');
+        expect(errors).toEqual([]);
+        return doc;
+    }
+
+    it('draws a well-formed SVG with a row per task, dependency lines and escaped text', () => {
+        const model = buildGanttModel(tasksOf(MAIN.replace('Make figures', 'Make <figures> & "plots"')), {}, TODAY);
+        const { svg, width, height } = ganttToSvg(model, 'Demo é 🔒');
+        const doc = parseXml(svg);
+        expect(doc.documentElement!.getAttribute('viewBox')).toBe(`0 0 ${width} ${height}`);
+        const rows = Array.from(doc.getElementsByTagName('g')).filter(g => /\btask\b/.test(g.getAttribute('class') || ''));
+        expect(rows).toHaveLength(model.rows.filter(r => r.kind === 'task').length);
+        expect(svg).toContain('Make &lt;figures&gt; &amp; &quot;plots&quot;');
+        expect(svg).toContain('Demo é 🔒');
+        const deps = Array.from(doc.getElementsByTagName('path')).filter(p => p.getAttribute('data-from'));
+        expect(deps).toHaveLength(1);
+        const figures = model.rows.find(r => r.kind === 'task' && r.title.startsWith('Make'))!;
+        expect(deps[0].getAttribute('data-to')).toBe((figures as { ganttId: string }).ganttId);
+    });
+
+    it('puts dates, assignees and effort in the hover text', () => {
+        const model = buildGanttModel(tasksOf(MAIN), {}, TODAY);
+        const { svg } = ganttToSvg(model);
+        expect(svg).toContain('2026-07-01 to 2026-07-02 (in progress)');
+        expect(svg).toContain('Assigned: @jrk');
+        expect(svg).toContain('Effort: 2d');
+        expect(svg).toContain('main.org:');
+    });
+
+    it('writes the SVG file with an XML declaration', () => {
+        const model = buildGanttModel(tasksOf(MAIN), {}, TODAY);
+        expect(ganttToSvgFile(model).startsWith('<?xml version="1.0" encoding="UTF-8"?>\n<svg')).toBe(true);
+    });
+
+    it('writes a self-contained HTML page around the SVG', () => {
+        const model = buildGanttModel(tasksOf(MAIN), {}, TODAY);
+        const html = ganttToHtml(model, 'Demo');
+        expect(html.startsWith('<!DOCTYPE html>')).toBe(true);
+        expect(html).toContain('<svg xmlns="http://www.w3.org/2000/svg" class="gantt"');
+        expect(html).toContain('<title>Demo Gantt chart</title>');
+        // Nothing fetched: no external scripts, styles, images or fonts.
+        expect(html).not.toMatch(/\b(src|href)\s*=\s*["']?https?:/i);
+        expect(html).not.toMatch(/@import|url\(\s*["']?https?:/i);
     });
 });

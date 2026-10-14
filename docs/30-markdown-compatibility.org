@@ -239,7 +239,7 @@ CLOSED: [2026-01-19 Mon 09:40]
 | C   | Show children        |
 | o   | Overview (fold all)  |
 
-** ✅ Folding
+** 👀 Folding
 CLOSED: [2026-01-19 Mon 09:40]
 
 Markdown headings support folding via the standard VS Code folding mechanism:
@@ -247,6 +247,9 @@ Markdown headings support folding via the standard VS Code folding mechanism:
 - Press =Tab= on a heading to cycle fold state
 - Press =Shift+Tab= anywhere for global fold cycling
 - Use the fold icons in the gutter
+
+Fenced code blocks and Pandoc fenced divs (=::: {.callout-note}= ... =:::=,
+nested to any depth, and MyST =:::{note}= fences) fold as well.
 
 ** Markdown Preview
 
@@ -271,6 +274,47 @@ additions from Scimax:
 
 Files with ~marp: true~ in their front matter are previewed as slides; see
 [[file:44-marp.org][Marp Slides]].
+
+* ⚠️ Quarto Documents
+
+Quarto files (=.qmd=) are Pandoc Markdown with executable code chunks. Scimax
+works alongside the official [[https://marketplace.visualstudio.com/items?itemName=quarto.quarto][Quarto extension]] (=quarto.quarto=), which gives
+=.qmd= files their language (~quarto~). Each extension does its own part:
+
+| Feature                                      | Provided by |
+|----------------------------------------------+-------------|
+| Syntax highlighting, YAML header completion  | Quarto      |
+| Outline view, cross-reference completion     | Quarto      |
+| Render and preview (=Cmd+Shift+K=)           | Quarto      |
+| Running chunks in a Jupyter session          | Quarto      |
+| Heading navigation, promote/demote, move     | Scimax      |
+| Subtree kill, copy, yank, refile             | Scimax      |
+| Speed commands at a heading                  | Scimax      |
+| Folding cycles (=Tab=, =Shift+Tab=)          | Scimax      |
+| Tables, citations, timestamps, jump          | Scimax      |
+| Code block split, clone, move, navigation    | Scimax      |
+
+Everything in [[*Supported Features][Supported Features]] above works the same way in a =.qmd=
+file as in a =.md= file.
+
+** ⚠️ Code chunks
+
+Scimax recognizes Quarto's chunk fences (=```{python}=, =```{r, echo=FALSE}=)
+as code blocks, along with plain fences, =```{.python}= display blocks and
+=```{=html}= raw blocks. Blocks that scimax inserts in a =.qmd= file use the
+chunk form, so Quarto executes them; splitting, cloning and merging keep it.
+
+=C-c C-c= in a chunk runs it with Quarto's *Run Cell* (~quarto.runCurrentCell~)
+rather than scimax's own execution, because chunk output belongs in the
+rendered page, not in the source. Quarto's own keys stay in charge in =.qmd=
+files: =Cmd+Enter= (run line or selection), =Shift+Enter= (run and advance) and
+=Cmd+Shift+K= (preview). In a =.md= file those keys keep their scimax
+meanings, and =Cmd+Shift+K= on a citation still deletes it there.
+
+** ⚠️ Callouts and other divs
+
+Fenced divs (callouts, =::: {.columns}=, panels, =::: {#fig-x}= figure divs)
+fold from the opening =:::= to its matching close, including nested divs.
 
 * ✅ Features Not Available in Markdown
 CLOSED: [2026-01-19 Mon 09:40]

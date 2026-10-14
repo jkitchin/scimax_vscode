@@ -5,6 +5,7 @@
 
 import * as vscode from 'vscode';
 import { findMarkdownFencedBlocks, markdownFencedLineMask, FencedBlock } from '../shared/markdownFences';
+import { isMarkdownLike } from '../shared/markdownLike';
 
 // =============================================================================
 // Lightweight Headline Structure (no full AST needed)
@@ -248,7 +249,7 @@ export class OrgDocumentSymbolProvider implements vscode.DocumentSymbolProvider 
         }
 
         const symbols: vscode.DocumentSymbol[] = [];
-        const isMarkdown = document.languageId === 'markdown';
+        const isMarkdown = isMarkdownLike(document.languageId);
 
         try {
             // Use fast lightweight parser - only extracts headlines and blocks

@@ -2,6 +2,24 @@ import * as vscode from 'vscode';
 import { JournalManager } from './journalManager';
 import { DAY_NAMES_SHORT } from '../utils/dateConstants';
 import { showCalendarDatePicker, dateKey } from '../org/calendarDatePicker';
+import { contributedKeybindings } from '../utils/keybindingLabels';
+import { addDays } from 'date-fns';
+
+/** The journal commands offered by the M-j ? menu, in a useful order. */
+const JOURNAL_MENU: Array<{ command: string; label: string }> = [
+    { command: 'scimax.journal.today', label: "Today's entry" },
+    { command: 'scimax.journal.yesterday', label: "Yesterday's entry" },
+    { command: 'scimax.journal.tomorrow', label: "Tomorrow's entry" },
+    { command: 'scimax.journal.goto', label: 'Go to date' },
+    { command: 'scimax.journal.prev', label: 'Previous entry' },
+    { command: 'scimax.journal.next', label: 'Next entry' },
+    { command: 'scimax.journal.new', label: 'New entry from template' },
+    { command: 'scimax.journal.quickLog', label: 'Quick log' },
+    { command: 'scimax.journal.insertTimestamp', label: 'Insert timestamp' },
+    { command: 'scimax.journal.search', label: 'Search' },
+    { command: 'scimax.journal.weekView', label: "This week's entries" },
+    { command: 'scimax.journal.calendar', label: 'Calendar panel' }
+];
 
 export function registerJournalCommands(
     context: vscode.ExtensionContext,
@@ -11,6 +29,36 @@ export function registerJournalCommands(
     context.subscriptions.push(
         vscode.commands.registerCommand('scimax.journal.today', async () => {
             await manager.openEntry(new Date());
+        })
+    );
+
+    // Open yesterday's and tomorrow's journal, relative to today
+    context.subscriptions.push(
+        vscode.commands.registerCommand('scimax.journal.yesterday', async () => {
+            await manager.openEntry(addDays(new Date(), -1));
+        }),
+        vscode.commands.registerCommand('scimax.journal.tomorrow', async () => {
+            await manager.openEntry(addDays(new Date(), 1));
+        })
+    );
+
+    // List the M-j journal commands and run the one chosen
+    context.subscriptions.push(
+        vscode.commands.registerCommand('scimax.journal.listCommands', async () => {
+            const bound = contributedKeybindings('alt+j ');
+
+            const picked = await vscode.window.showQuickPick(
+                JOURNAL_MENU.map(entry => ({
+                    label: entry.label,
+                    description: bound.get(entry.command) ?? '',
+                    command: entry.command
+                })),
+                { title: 'Journal', placeHolder: 'Choose a journal command' }
+            );
+
+            if (picked) {
+                await vscode.commands.executeCommand(picked.command);
+            }
         })
     );
 

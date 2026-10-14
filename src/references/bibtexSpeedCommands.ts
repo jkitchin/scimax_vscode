@@ -8,6 +8,7 @@
  */
 
 import * as vscode from 'vscode';
+import { pushKill } from '../killRing/commands';
 import * as https from 'https';
 import { BibEntry, parseBibTeX, entryToBibTeX, formatAuthors } from './bibtexParser';
 import { getFirstAuthorKeyName } from './authorUtils';
@@ -1304,7 +1305,7 @@ export async function copyBibtex(): Promise<void> {
     }
 
     const entryText = editor.document.getText(range);
-    await vscode.env.clipboard.writeText(entryText);
+    await pushKill(entryText);
     vscode.window.showInformationMessage('BibTeX entry copied');
 }
 
@@ -1332,7 +1333,7 @@ export async function killEntry(): Promise<void> {
 
     // Copy to clipboard first
     const entryText = editor.document.getText(range);
-    await vscode.env.clipboard.writeText(entryText);
+    await pushKill(entryText);
 
     // Delete with trailing newlines
     let endLine = range.end.line;

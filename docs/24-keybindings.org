@@ -31,6 +31,28 @@ This document provides a comprehensive reference for all keybindings in Scimax V
 | C-c S-/     | Context-sensitive help              |
 | C-c S-g     | Show link graph for current file    |
 
+* ⚠️ Journal
+
+Journal commands live under the =M-j= (Option-J on Mac) prefix and work from
+anywhere, not only inside a journal file. Press =M-j ?= to pick from a list if
+you forget a key.
+
+| Key     | Action                                   |
+|---------+------------------------------------------|
+| M-j j   | Today's entry                            |
+| M-j y   | Yesterday's entry                        |
+| M-j m   | Tomorrow's entry                         |
+| M-j d   | Go to a date (calendar picker)           |
+| M-j p   | Previous entry (in a journal file)       |
+| M-j n   | Next entry (in a journal file)           |
+| M-j e   | New entry for a chosen date and template |
+| M-j l   | Quick log entry in today's journal       |
+| M-j t   | Insert timestamp                         |
+| M-j s   | Search the journal                       |
+| M-j w   | This week's entries                      |
+| M-j c   | Journal calendar panel                   |
+| M-j ?   | List the journal commands                |
+
 * ✅ Help Commands
 CLOSED: [2026-01-17 Sat 13:38]
 
@@ -94,9 +116,10 @@ Select a result to see details or open the documentation file at that location.
 | C-x C-<left>    | Navigate back                  |
 | C-x C-<right>   | Navigate forward               |
 | C-/             | Undo                           |
-| C-y             | Paste                          |
-| C-w             | Cut (with selection)           |
-| M-w             | Copy (with selection)          |
+| C-y             | Yank from kill ring            |
+| M-y             | Yank pop / browse kill ring    |
+| C-w             | Kill region (with selection)   |
+| M-w             | Copy region to kill ring       |
 | C-;             | Toggle comment                 |
 | M-;             | DWIM comment (org/md, toggle =# =) |
 | M-c             | Capitalize word and move next  |
@@ -211,7 +234,7 @@ org-mode, markdown, and LaTeX files with consistent behavior.
 
 * Source Blocks (Babel)
 
-** Execution
+** 👀 Execution
 
 | Key          | Action                              |
 |--------------+-------------------------------------|
@@ -219,6 +242,10 @@ org-mode, markdown, and LaTeX files with consistent behavior.
 | s-<return>   | (Mac) Execute source block          |
 | C-c C-c      | Execute source block (in src block) |
 | S-<return>   | Execute and move to next block      |
+
+In a Quarto (=.qmd=) chunk, =C-c C-c= runs the chunk with the Quarto
+extension's *Run Cell*, and =C-<return>=, =s-<return>= and =S-<return>= are left to
+Quarto's own run commands. See [[file:30-markdown-compatibility.org::*Quarto Documents][Quarto Documents]].
 
 ** Navigation & Manipulation
 
@@ -483,6 +510,26 @@ Emacs-style mark and region commands.
 | Ctrl+X Ctrl+Space | Pop from global ring (alt) |
 | C-x C-x           | Exchange point and mark    |
 | C-c m s           | Show mark ring             |
+
+* ⚠️ Kill Ring (Emacs-style)
+
+Kills and copies go onto a kill ring as well as the system clipboard, so you can
+yank older kills, not just the last one. See [[file:25-commands.org::#kill-ring][Kill Ring commands]] for details.
+
+| Key | Action                                                       |
+|-----+--------------------------------------------------------------|
+| C-y | Yank the current kill                                        |
+| M-y | After C-y: replace it with the next older kill (repeatable)  |
+| M-y | Otherwise: pick a kill from the ring to insert               |
+| C-w | Kill region                                                  |
+| M-w | Copy region to the kill ring                                 |
+| C-k | Kill to end of line (repeated C-k joins into one kill)       |
+
+** Related Topics
+
+- [[file:25-commands.org::#kill-ring][Kill Ring commands]]
+- [[file:26-configuration.org][Configuration]] (=scimax.killRing.maxSize=)
+- Mark Ring (above), for setting the region with =C-SPC=
 
 * Rectangle Commands (Emacs-style)
 

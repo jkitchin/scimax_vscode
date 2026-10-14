@@ -218,6 +218,34 @@
     }
     $('exportXlsx').addEventListener('click', () => vscode.postMessage({ type: 'export', format: 'xlsx' }));
     $('exportPdf').addEventListener('click', () => vscode.postMessage({ type: 'export', format: 'pdf' }));
+    $('exportSvg').addEventListener('click', () => vscode.postMessage({ type: 'export', format: 'svg' }));
+    $('exportPng').addEventListener('click', () => vscode.postMessage({ type: 'export', format: 'png' }));
+    $('exportHtml').addEventListener('click', () => vscode.postMessage({ type: 'export', format: 'html' }));
+
+    // PNG export: draw the SVG the extension sends onto a canvas and send back a data URL.
+    function rasterize(msg) {
+        const url = URL.createObjectURL(new Blob([msg.svg], { type: 'image/svg+xml' }));
+        const img = new Image();
+        const done = (dataUrl, error) => {
+            URL.revokeObjectURL(url);
+            vscode.postMessage({ type: 'png', id: msg.id, dataUrl, error });
+        };
+        img.onload = () => {
+            try {
+                const canvas = document.createElement('canvas');
+                canvas.width = Math.round(msg.width * msg.scale);
+                canvas.height = Math.round(msg.height * msg.scale);
+                const ctx = canvas.getContext('2d');
+                ctx.scale(msg.scale, msg.scale);
+                ctx.drawImage(img, 0, 0, msg.width, msg.height);
+                done(canvas.toDataURL('image/png'));
+            } catch (err) {
+                done(undefined, String(err && err.message || err));
+            }
+        };
+        img.onerror = () => done(undefined, 'the SVG could not be loaded');
+        img.src = url;
+    }
 
     function setFit(on) {
         fit = on;
@@ -703,6 +731,7 @@
 
     window.addEventListener('message', event => {
         const msg = event.data;
+        if (msg.type === 'rasterize') { rasterize(msg); return; }
         if (msg.type !== 'model') return;
         model = msg.model;
         options = msg.options;

@@ -10,7 +10,10 @@
  */
 
 import * as vscode from 'vscode';
+import { pushKill } from '../killRing/commands';
 import { executeSourceBlock, formatResult, parseHeaderArguments, ExecutionContext } from '../parser/orgBabel';
+import { isMarkdownLike } from '../shared/markdownLike';
+import { matchCodeFenceOpen } from '../shared/markdownFences';
 
 // =============================================================================
 // Types
@@ -29,6 +32,7 @@ interface SourceBlock {
     name?: string;
     format: BlockFormat;
     fence?: string;  // For markdown: the fence characters (``` or ~~~)
+    braced?: boolean; // For markdown: Quarto chunk form ```{python}
 }
 
 interface BlockPosition {
@@ -41,9 +45,18 @@ interface BlockPosition {
  * Detect if document is markdown (based on language ID or file extension)
  */
 function isMarkdownDocument(document: vscode.TextDocument): boolean {
-    return document.languageId === 'markdown' ||
+    return isMarkdownLike(document.languageId) ||
         document.fileName.endsWith('.md') ||
-        document.fileName.endsWith('.markdown');
+        document.fileName.endsWith('.markdown') ||
+        document.fileName.endsWith('.qmd');
+}
+
+/**
+ * Quarto runs only chunks written ```{python}; a plain ```python block is
+ * displayed but not executed. New blocks in a .qmd use the chunk form.
+ */
+function usesBracedChunks(document: vscode.TextDocument): boolean {
+    return document.languageId === 'quarto' || document.fileName.endsWith('.qmd');
 }
 
 // =============================================================================
@@ -183,16 +196,16 @@ function findOrgBlockAtCursor(lines: string[], position: vscode.Position): Block
  */
 function findMarkdownBlockAtCursor(lines: string[], position: vscode.Position): BlockPosition | null {
     // Find all fence blocks and check if cursor is inside one
-    const blocks: Array<{ start: number; end: number; fence: string; language: string }> = [];
+    const blocks: Array<{ start: number; end: number; fence: string; language: string; braced: boolean }> = [];
 
     let i = 0;
     while (i < lines.length) {
         const line = lines[i];
-        const fenceMatch = line.match(/^(`{3,}|~{3,})(\w*)$/);
+        const fenceMatch = matchCodeFenceOpen(line);
 
         if (fenceMatch) {
-            const fence = fenceMatch[1];
-            const language = fenceMatch[2] || '';
+            const fence = fenceMatch.fence;
+            const language = fenceMatch.language || '';
             const fenceChar = fence[0];
             const fenceLen = fence.length;
 
@@ -212,7 +225,8 @@ function findMarkdownBlockAtCursor(lines: string[], position: vscode.Position): 
                     start: i,
                     end: closingLine,
                     fence,
-                    language
+                    language,
+                    braced: fenceMatch.braced
                 });
                 i = closingLine + 1;
                 continue;
@@ -237,7 +251,8 @@ function findMarkdownBlockAtCursor(lines: string[], position: vscode.Position): 
                     codeStartLine: block.start + 1,
                     codeEndLine: block.end - 1,
                     format: 'markdown',
-                    fence: block.fence
+                    fence: block.fence,
+                    braced: block.braced
                 }
             };
         }
@@ -263,9 +278,9 @@ function findAllBlocks(document: vscode.TextDocument): BlockPosition[] {
         if (isMarkdown) {
             // Check for markdown fenced code block
             // Match opening fences (with or without language specifier)
-            const fenceMatch = line.match(/^(`{3,}|~{3,})(\w*)$/);
+            const fenceMatch = matchCodeFenceOpen(line);
             if (fenceMatch) {
-                const fence = fenceMatch[1];
+                const fence = fenceMatch.fence;
                 const fenceChar = fence[0];
                 const fenceLen = fence.length;
 
@@ -280,8 +295,8 @@ function findAllBlocks(document: vscode.TextDocument): BlockPosition[] {
                         break;
                     }
                     // If we find another opening fence with language, stop
-                    const nextOpenMatch = lines[j].match(/^(`{3,}|~{3,})(\w+)$/);
-                    if (nextOpenMatch) {
+                    const nextOpen = matchCodeFenceOpen(lines[j]);
+                    if (nextOpen && nextOpen.language) {
                         break;
                     }
                 }
@@ -359,9 +374,9 @@ function findPreviousBlock(
 /**
  * Generate opening line for a code block
  */
-function generateBlockOpen(language: string, format: BlockFormat, fence?: string, parameters?: string): string {
+function generateBlockOpen(language: string, format: BlockFormat, fence?: string, parameters?: string, braced?: boolean): string {
     if (format === 'markdown') {
-        return `${fence || '```'}${language}`;
+        return `${fence || '```'}${braced ? `{${language}}` : language}`;
     } else {
         return `#+BEGIN_SRC ${language}${parameters ? ' ' + parameters : ''}`;
     }
@@ -381,8 +396,8 @@ function generateBlockClose(format: BlockFormat, fence?: string): string {
 /**
  * Generate a complete code block
  */
-function generateBlock(language: string, code: string, format: BlockFormat, fence?: string, parameters?: string): string {
-    const open = generateBlockOpen(language, format, fence, parameters);
+function generateBlock(language: string, code: string, format: BlockFormat, fence?: string, parameters?: string, braced?: boolean): string {
+    const open = generateBlockOpen(language, format, fence, parameters, braced);
     const close = generateBlockClose(format, fence);
     return `${open}\n${code}\n${close}`;
 }
@@ -412,7 +427,7 @@ export async function insertBlockAbove(): Promise<void> {
 
     if (!language) return;
 
-    const blockText = generateBlock(language, '', format) + '\n';
+    const blockText = generateBlock(language, '', format, undefined, undefined, usesBracedChunks(editor.document)) + '\n';
 
     await editor.edit(editBuilder => {
         editBuilder.insert(new vscode.Position(insertLine, 0), blockText);
@@ -450,7 +465,7 @@ export async function insertBlockBelow(): Promise<void> {
 
     if (!language) return;
 
-    const blockText = '\n' + generateBlock(language, '', format) + '\n';
+    const blockText = '\n' + generateBlock(language, '', format, undefined, undefined, usesBracedChunks(editor.document)) + '\n';
 
     await editor.edit(editBuilder => {
         editBuilder.insert(new vscode.Position(insertLine, 0), blockText);
@@ -481,7 +496,8 @@ export async function insertBlockBelowSameLanguage(): Promise<void> {
         insertLine = editor.selection.active.line + 1;
     }
 
-    const blockText = '\n' + generateBlock(language, '', format, fence) + '\n';
+    const braced = currentBlock ? currentBlock.block.braced : usesBracedChunks(editor.document);
+    const blockText = '\n' + generateBlock(language, '', format, fence, undefined, braced) + '\n';
 
     await editor.edit(editBuilder => {
         editBuilder.insert(new vscode.Position(insertLine, 0), blockText);
@@ -535,7 +551,7 @@ export async function splitBlock(): Promise<void> {
     }
 
     // Generate blocks using correct format
-    const openLine = generateBlockOpen(block.language, block.format, block.fence, block.parameters);
+    const openLine = generateBlockOpen(block.language, block.format, block.fence, block.parameters, block.braced);
     const closeLine = generateBlockClose(block.format, block.fence);
 
     const newContent = [
@@ -617,7 +633,7 @@ export async function killBlockAndResults(): Promise<void> {
     // Copy to clipboard
     const blockRange = new vscode.Range(startLine, 0, endLine + 1, 0);
     const blockText = document.getText(blockRange);
-    await vscode.env.clipboard.writeText(blockText);
+    await pushKill(blockText);
 
     await editor.edit(editBuilder => {
         editBuilder.delete(blockRange);
@@ -658,7 +674,7 @@ export async function copyBlockAndResults(): Promise<void> {
     );
     const blockText = document.getText(blockRange);
 
-    await vscode.env.clipboard.writeText(blockText);
+    await pushKill(blockText);
     vscode.window.showInformationMessage('Block copied to clipboard');
 }
 
@@ -812,7 +828,8 @@ export async function mergeWithPrevious(): Promise<void> {
         mergedCode,
         prevBlock.block.format,
         prevBlock.block.fence,
-        prevBlock.block.parameters
+        prevBlock.block.parameters,
+        prevBlock.block.braced
     );
 
     // Delete both blocks and insert merged
@@ -864,7 +881,8 @@ export async function mergeWithNext(): Promise<void> {
         mergedCode,
         blockPos.block.format,
         blockPos.block.fence,
-        blockPos.block.parameters
+        blockPos.block.parameters,
+        blockPos.block.braced
     );
 
     // Delete both blocks and insert merged
@@ -1017,7 +1035,7 @@ export async function executeAndNew(): Promise<void> {
         return;
     }
 
-    const { language, parameters, format, fence } = initialBlockPos.block;
+    const { language, parameters, format, fence, braced } = initialBlockPos.block;
 
     // Execute current block
     await vscode.commands.executeCommand('scimax.org.executeBlock');
@@ -1033,7 +1051,7 @@ export async function executeAndNew(): Promise<void> {
     const insertLine = (blockPos.resultsEnd !== undefined ? blockPos.resultsEnd : blockPos.block.endLine) + 1;
 
     // Build new block with same language, parameters, and format
-    const newBlockText = '\n' + generateBlock(language, '', format, fence, parameters) + '\n';
+    const newBlockText = '\n' + generateBlock(language, '', format, fence, parameters, braced) + '\n';
 
     await editor.edit(editBuilder => {
         editBuilder.insert(new vscode.Position(insertLine, 0), newBlockText);

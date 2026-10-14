@@ -4,6 +4,7 @@
  */
 
 import * as vscode from 'vscode';
+import { isMarkdownLike } from '../shared/markdownLike';
 
 // =============================================================================
 // Types
@@ -68,7 +69,7 @@ function detectContext(editor: vscode.TextEditor): DetectedContext {
     }
 
     // Check for Markdown file (not org)
-    if (languageId === 'markdown' && !fileName.endsWith('.org')) {
+    if (isMarkdownLike(languageId) && !fileName.endsWith('.org')) {
         return detectMarkdownContext(document, position, line);
     }
 

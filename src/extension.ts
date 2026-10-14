@@ -90,6 +90,7 @@ import { ProjectTreeProvider, ProjectItem } from './projectile/projectTreeProvid
 import { registerFuzzySearchCommands } from './fuzzySearch/commands';
 import { registerJumpCommands } from './jump/commands';
 import { registerMarkCommands } from './mark/markRing';
+import { registerKillRingCommands } from './killRing/commands';
 import { registerRecenterCommands } from './recenter/recenter';
 import { registerCitationManipulationCommands, checkCitationContext } from './references/citationManipulation';
 import { registerBibtexSpeedCommands } from './references/bibtexSpeedCommands';
@@ -104,9 +105,10 @@ import { TemplateManager, registerTemplateCommands } from './templates';
 import { registerManuscriptCommands } from './manuscript';
 import { initializeLogging, extensionLogger, getLoggingService } from './utils/logger';
 import { recordActivationFailure, getActivationFailures } from './utils/activationStatus';
-import { registerDiredCommands } from './dired';
+import { registerDiredCommands, DiredPanel } from './dired';
 import { registerFindFileCommands } from './findFile';
 import { registerLinkGraphCommands } from './linkGraph';
+import { isMarkdownLike } from './shared/markdownLike';
 
 let journalManager: JournalManager;
 let hydraManager: HydraManager;
@@ -246,6 +248,11 @@ async function activateScimax(context: vscode.ExtensionContext) {
     // Open Terminal Here - opens integrated terminal in file's directory
     context.subscriptions.push(
         vscode.commands.registerCommand('scimax.openTerminalHere', (uri?: vscode.Uri) => {
+            const diredDir = uri ? undefined : DiredPanel.activeDirectory();
+            if (diredDir) {
+                vscode.window.createTerminal({ cwd: diredDir }).show();
+                return;
+            }
             if (!uri) {
                 uri = vscode.window.activeTextEditor?.document.uri;
             }
@@ -264,7 +271,8 @@ async function activateScimax(context: vscode.ExtensionContext) {
     context.subscriptions.push(
         vscode.commands.registerCommand('scimax.openExternalTerminalHere', async (uri?: vscode.Uri) => {
             if (!uri) {
-                uri = vscode.window.activeTextEditor?.document.uri;
+                const diredDir = DiredPanel.activeDirectory();
+                uri = diredDir ? vscode.Uri.file(diredDir) : vscode.window.activeTextEditor?.document.uri;
             }
             if (!uri || uri.scheme !== 'file') {
                 vscode.window.showWarningMessage('No file to open a terminal for');
@@ -490,10 +498,11 @@ async function activateScimax(context: vscode.ExtensionContext) {
     }
 
 
-    // Register Citation Hover Provider (for org and markdown)
+    // Register Citation Hover Provider (for org, markdown, quarto and latex)
     const documentSelector = [
         { language: 'org', scheme: 'file' },
         { language: 'markdown', scheme: 'file' },
+        { language: 'quarto', scheme: 'file' },
         { language: 'latex', scheme: 'file' }
     ];
 
@@ -564,7 +573,7 @@ async function activateScimax(context: vscode.ExtensionContext) {
     // Register Markdown Heading Link Provider (for clickable # symbols to toggle fold)
     context.subscriptions.push(
         vscode.languages.registerDocumentLinkProvider(
-            { language: 'markdown', scheme: 'file' },
+            [{ language: 'markdown', scheme: 'file' }, { language: 'quarto', scheme: 'file' }],
             new MarkdownHeadingLinkProvider()
         )
     );
@@ -855,7 +864,7 @@ async function activateScimax(context: vscode.ExtensionContext) {
     // This enables different keybindings when cursor is in a table vs on a heading
     trackEditorContext(context, editor => {
         const document = editor?.document;
-        if (!editor || !document || (document.languageId !== 'org' && document.languageId !== 'markdown')) {
+        if (!editor || !document || (document.languageId !== 'org' && !isMarkdownLike(document.languageId))) {
             setContextKey('scimax.inTable', false);
             setContextKey('scimax.onTblfmLine', false);
             return;
@@ -1180,6 +1189,7 @@ async function activateScimax(context: vscode.ExtensionContext) {
 
     // Register Mark Ring Commands (Emacs-style mark ring)
     activationStep('registerMarkCommands', () => registerMarkCommands(context));
+    activationStep('registerKillRingCommands', () => registerKillRingCommands(context));
 
     // Register Recenter Command (Emacs-style C-l recenter-top-bottom)
     activationStep('registerRecenterCommands', () => registerRecenterCommands(context));

@@ -164,7 +164,7 @@ export function parseIsoDay(s: string): Date {
     return new Date(y, m - 1, d);
 }
 
-function shiftDays(d: Date, n: number): Date {
+export function shiftDays(d: Date, n: number): Date {
     const r = new Date(d.getFullYear(), d.getMonth(), d.getDate());
     r.setDate(r.getDate() + n);
     return r;
@@ -784,8 +784,8 @@ ${model.progress ? '<col min="10" max="11" width="9" customWidth="1"/>' : ''}
 // PDF
 // =============================================================================
 
-/** RGB 0-1 fills, matching the webview and the workbook. */
-const PDF_COLOURS: Record<GanttStatus | 'milestone' | 'grid' | 'weekend' | 'today' | 'group' | 'text' | 'summary' | 'behind', [number, number, number]> = {
+/** RGB 0-1 fills, matching the webview and the workbook (the SVG export uses them too). */
+export const PDF_COLOURS: Record<GanttStatus | 'milestone' | 'grid' | 'weekend' | 'today' | 'group' | 'text' | 'summary' | 'behind', [number, number, number]> = {
     done: [0.44, 0.68, 0.28],
     blocked: [0.88, 0.34, 0.35],
     active: [0.27, 0.45, 0.77],
@@ -822,7 +822,7 @@ function pdfText(s: string): string {
 }
 
 /** Shorten text to roughly fit width points at a Helvetica size. */
-function fitText(s: string, width: number, size: number): string {
+export function fitText(s: string, width: number, size: number): string {
     const max = Math.floor(width / (size * 0.5));
     return s.length <= max ? s : s.slice(0, Math.max(1, max - 1)) + '.';
 }

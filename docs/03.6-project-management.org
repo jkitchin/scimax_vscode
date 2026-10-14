@@ -282,10 +282,12 @@ by hand does not trigger it.
 *** 👀 Exporting the chart
 CLOSED: [2026-10-03 Sat 08:59]
 
-The *Excel* and *PDF* buttons in the toolbar, the right-click menu on the chart,
-and the commands [[cmd:scimax.project.exportExcel]] and
-[[cmd:scimax.project.exportPdf]] save the chart as it is shown, with the current
-assignee and tag filters and grouping:
+The *Excel*, *PDF*, *SVG*, *PNG* and *HTML* buttons in the toolbar, the
+right-click menu on the chart, and the commands
+[[cmd:scimax.project.exportExcel]], [[cmd:scimax.project.exportPdf]],
+[[cmd:scimax.project.exportSvg]], [[cmd:scimax.project.exportPng]] and
+[[cmd:scimax.project.exportHtml]] save the chart as it is shown, with the
+current assignee and tag filters and grouping:
 
 - *Excel* (=.xlsx=): one sheet with the task table (task, file, state, priority,
   assignees, effort in hours, start and end as real dates, blocked) and a
@@ -297,6 +299,36 @@ assignee and tag filters and grouping:
   viewers and printers scale it to the paper. Text is set in Helvetica, so
   characters outside Latin-1 (emoji, CJK) print as =?=; blocked tasks are marked
   =[blocked]=.
+- *SVG*: the same chart as a vector image, with full Unicode text. Hovering a
+  row in a browser shows its dates, assignees, effort and file.
+- *PNG*: the SVG drawn at twice its size, for documents and slides that need a
+  bitmap. The project view draws it, so exporting a PNG from the command
+  palette opens the view first.
+- *HTML*: one self-contained, read-only page holding the chart (nothing is
+  loaded from the network). It fits itself to the window; hovering a task shows
+  its details, clicking it highlights everything it waits on and everything
+  waiting on it (click again or press =Esc= to clear), and the =-=, =+= and
+  =Fit= buttons, which appear in the top-right corner once you move the mouse
+  (or =Ctrl=/=Cmd= + mouse wheel), zoom.
+
+**** ⚠️ A Gantt chart in a Marp slide
+
+Export the chart as HTML next to the deck and put it in a slide with an iframe:
+
+#+begin_src markdown
+<iframe src="project-gantt.html" style="width:100%;height:85%;border:0"></iframe>
+#+end_src
+
+The iframe is raw HTML, so the deck needs HTML allowed (=scimax.marp.enableHtml=,
+or a presenter deck, which always allows it). In the slideshow and an HTML
+export the chart stays interactive, and a presenter export copies the page into
+the deck, so the single deck file still works on its own. PDF, PPTX and image
+exports of the deck show the chart as a still picture (this needs
+=scimax.marp.allowLocalFiles=, on by default in a trusted workspace). If HTML
+is not allowed, use the PNG or SVG export with an ordinary image link instead
+(=![](project-gantt.svg)=).
+
+See also [[file:44-marp.org][Marp Slides]].
 
 With *Progress* ticked, both exports hatch the done share of each bar, draw
 summary bars for parent tasks and groups, indent rows by outline level, and

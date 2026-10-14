@@ -5,6 +5,7 @@
  */
 
 import * as vscode from 'vscode';
+import { pushKill } from '../../killRing/commands';
 import { getHeadingLevel, getSubtreeRange } from './context';
 
 /**
@@ -129,7 +130,7 @@ export async function copySubtree(): Promise<void> {
     const subtreeText = document.getText(subtreeRange);
 
     // Copy to clipboard
-    await vscode.env.clipboard.writeText(subtreeText);
+    await pushKill(subtreeText);
 
     vscode.window.showInformationMessage('Subtree copied to clipboard');
 }

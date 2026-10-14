@@ -1,5 +1,8 @@
 import * as vscode from 'vscode';
+import { pushKill } from '../killRing/commands';
 import { markdownFencedLineMask } from '../shared/markdownFences';
+import { contributedKeybindings } from '../utils/keybindingLabels';
+import { isMarkdownLike } from '../shared/markdownLike';
 
 /**
  * Jump to visible text - avy-style navigation
@@ -363,12 +366,12 @@ function headingsInEditor(editor: vscode.TextEditor): RawMatch[] {
     // being read as a markdown heading.
     const patterns: RegExp[] =
         language === 'org' ? [/^(\*+)\s+\S/] :
-        language === 'markdown' ? [/^(#{1,6})\s+\S/] :
+        isMarkdownLike(language) ? [/^(#{1,6})\s+\S/] :
         language === 'latex' ? [/^\s*\\(?:part|chapter|(?:sub)*section|paragraph)\*?[[{]/] :
         [/^(\*+)\s+\S/, /^(#{1,6})\s+\S/];
 
     // Likewise a "# comment" inside a markdown code fence is code, not a heading
-    const inFence = language === 'markdown'
+    const inFence = isMarkdownLike(language)
         ? markdownFencedLineMask(editor.document.getText().split('\n'))
         : [];
 
@@ -805,13 +808,14 @@ async function jumpToTarget(target: JumpTarget): Promise<void> {
 }
 
 async function copyTargetLine(target: JumpTarget): Promise<void> {
-    await vscode.env.clipboard.writeText(target.lineText);
+    await pushKill(target.lineText);
     vscode.window.showInformationMessage(`Copied line ${target.position.line + 1}`);
 }
 
 async function killTargetLine(target: JumpTarget): Promise<void> {
     const editor = await focusTarget(target);
     const line = editor.document.lineAt(target.position.line);
+    await pushKill(editor.document.getText(line.rangeIncludingLineBreak));
     await editor.edit(editBuilder => {
         editBuilder.delete(line.rangeIncludingLineBreak);
     });
@@ -987,8 +991,6 @@ function jumpKillLine(): Promise<void> {
 /* Menu                                                                */
 /* ------------------------------------------------------------------ */
 
-const EXTENSION_ID = 'jkitchin.scimax-vscode';
-
 /** The jump commands offered by the C-c j ? menu, in a useful order. */
 const JUMP_MENU: Array<{ command: string; label: string; detail: string }> = [
     { command: 'scimax.jump.gotoChar', label: 'Character', detail: 'Type one character, then a label' },
@@ -1003,42 +1005,11 @@ const JUMP_MENU: Array<{ command: string; label: string; detail: string }> = [
     { command: 'scimax.jump.killLine', label: 'Kill line', detail: 'Label every visible line, delete the one chosen' }
 ];
 
-/** Render a VS Code keybinding the way the docs and Emacs write it. */
-function formatKeybinding(key: string): string {
-    return key
-        .split(' ')
-        .map(part => part
-            .replace(/^ctrl\+/, 'C-')
-            .replace(/^alt\+/, 'M-')
-            .replace(/^shift\+\/$/, '?')
-            .replace(/^shift\+/, 'S-'))
-        .join(' ');
-}
-
-/** Read the jump keybindings back out of our own manifest, so they cannot drift. */
-function jumpKeybindings(): Map<string, string> {
-    const bound = new Map<string, string>();
-    const contributed = vscode.extensions.getExtension(EXTENSION_ID)
-        ?.packageJSON?.contributes?.keybindings;
-
-    if (Array.isArray(contributed)) {
-        for (const binding of contributed) {
-            const command = binding?.command;
-            const key = binding?.key;
-            if (typeof command === 'string' && typeof key === 'string' && !bound.has(command)) {
-                bound.set(command, formatKeybinding(key));
-            }
-        }
-    }
-
-    return bound;
-}
-
 /**
  * List the jump commands and run the one chosen.
  */
 async function listJumpCommands(): Promise<void> {
-    const bound = jumpKeybindings();
+    const bound = contributedKeybindings();
 
     const picked = await vscode.window.showQuickPick(
         JUMP_MENU.map(entry => ({

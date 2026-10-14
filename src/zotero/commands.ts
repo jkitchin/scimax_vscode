@@ -8,6 +8,7 @@ import * as path from 'path';
 import { isZoteroRunning, openCitationPicker, exportBibTeX } from './zoteroService';
 import { ReferenceManager } from '../references/referenceManager';
 import { parseBibTeX, BibEntry } from '../references/bibtexParser';
+import { isMarkdownLike } from '../shared/markdownLike';
 
 /**
  * Find the bibliography file linked in the document
@@ -235,7 +236,7 @@ async function addBibliographyLink(
         insertText = lastLine.text.trim() === ''
             ? `\\bibliographystyle{unsrtnat}\n\\bibliography{${bibName}}\n`
             : `\n\n\\bibliographystyle{unsrtnat}\n\\bibliography{${bibName}}\n`;
-    } else if (languageId === 'markdown') {
+    } else if (isMarkdownLike(languageId)) {
         // Markdown: add YAML frontmatter or append to existing frontmatter
         const text = document.getText();
         const frontmatterMatch = text.match(/^---\n([\s\S]*?)\n---/);
@@ -273,7 +274,7 @@ export function formatCitation(keys: string[], languageId: string): string {
         // LaTeX format: \cite{key1,key2}
         const style = config.get<string>('defaultCiteStyle') || 'cite';
         return `\\${style}{${keys.join(',')}}`;
-    } else if (languageId === 'markdown') {
+    } else if (isMarkdownLike(languageId)) {
         // Pandoc markdown format: [@key1; @key2]
         return `[${keys.map(k => `@${k}`).join('; ')}]`;
     } else {
@@ -459,7 +460,7 @@ export function registerZoteroCommands(
 
             // Check if this is an org or markdown file
             const languageId = editor.document.languageId;
-            if (!['org', 'markdown', 'latex'].includes(languageId)) {
+            if (!['org', 'markdown', 'quarto', 'latex'].includes(languageId)) {
                 vscode.window.showWarningMessage('Zotero citations work best in org, markdown, or LaTeX files');
             }
 

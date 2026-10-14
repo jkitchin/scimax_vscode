@@ -6,6 +6,7 @@
  */
 
 import * as vscode from 'vscode';
+import { pushKill } from '../killRing/commands';
 import {
     computeRectangle,
     extractRectangle,
@@ -209,7 +210,7 @@ async function executeRectangleOperation(): Promise<void> {
         case 'kill': {
             const rectText = extractRectangle(getLineText, region);
             lastKilledRectangle = rectText;
-            await vscode.env.clipboard.writeText(rectText.join('\n'));
+            await pushKill(rectText.join('\n'));
             const edits = computeDeleteEdits(getLineText, region);
             await applyEdits(editor, edits);
             vscode.window.setStatusBarMessage(`Rectangle killed (${rectText.length} lines)`, 3000);
@@ -218,7 +219,7 @@ async function executeRectangleOperation(): Promise<void> {
         case 'copy': {
             const rectText = extractRectangle(getLineText, region);
             lastKilledRectangle = rectText;
-            await vscode.env.clipboard.writeText(rectText.join('\n'));
+            await pushKill(rectText.join('\n'));
             vscode.window.setStatusBarMessage(`Rectangle copied (${rectText.length} lines)`, 3000);
             break;
         }
@@ -373,7 +374,7 @@ async function killRectangle(): Promise<void> {
     if (!ctx) { return; }
 
     lastKilledRectangle = extractRectangle(ctx.getLineText, ctx.region);
-    await vscode.env.clipboard.writeText(lastKilledRectangle.join('\n'));
+    await pushKill(lastKilledRectangle.join('\n'));
     const edits = computeDeleteEdits(ctx.getLineText, ctx.region);
     await applyEdits(editor, edits);
 
@@ -406,7 +407,7 @@ async function copyRectangle(): Promise<void> {
     if (!ctx) { return; }
 
     lastKilledRectangle = extractRectangle(ctx.getLineText, ctx.region);
-    await vscode.env.clipboard.writeText(lastKilledRectangle.join('\n'));
+    await pushKill(lastKilledRectangle.join('\n'));
 
     vscode.window.setStatusBarMessage(
         `Rectangle copied (${lastKilledRectangle.length} lines)`, 3000

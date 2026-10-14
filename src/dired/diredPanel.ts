@@ -51,6 +51,15 @@ export class DiredPanel {
         this.panel.webview.html = this.getHtmlContent();
     }
 
+    /**
+     * The directory shown by the dired panel, if it is the active tab
+     * (commands that normally use the active editor's file fall back to this).
+     */
+    public static activeDirectory(): string | undefined {
+        const current = DiredPanel.currentPanel;
+        return current?.panel.active ? current.manager.getState().currentDirectory : undefined;
+    }
+
     public static createOrShow(extensionUri: vscode.Uri, directory?: string): DiredPanel {
         const column = vscode.ViewColumn.Active;
 

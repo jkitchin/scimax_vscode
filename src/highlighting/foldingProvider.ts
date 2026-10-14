@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
 import { isInTable, nextCell } from '../org/tableProvider';
-import { findMarkdownFencedBlocks, markdownFencedLineMask } from '../shared/markdownFences';
+import { findFencedDivs, findMarkdownFencedBlocks, markdownFencedLineMask } from '../shared/markdownFences';
+import { isMarkdownLike } from '../shared/markdownLike';
 
 // LaTeX section commands in order of hierarchy (lower index = higher level)
 const LATEX_SECTION_LEVELS: { [key: string]: number } = {
@@ -293,6 +294,11 @@ export class MarkdownFoldingRangeProvider implements vscode.FoldingRangeProvider
             }
         }
 
+        // Pandoc fenced divs: Quarto callouts, columns and panels (::: ... :::)
+        for (const div of findFencedDivs(lines, inFence)) {
+            ranges.push(new vscode.FoldingRange(div.start, div.end, vscode.FoldingRangeKind.Region));
+        }
+
         // Track heading positions by level
         const headingStack: { level: number; line: number }[] = [];
 
@@ -487,14 +493,14 @@ async function toggleFoldAtCursor(): Promise<void> {
     let checkFn: (line: string) => boolean;
     if (langId === 'latex') {
         checkFn = isLaTeXSection;
-    } else if (langId === 'markdown') {
+    } else if (isMarkdownLike(langId)) {
         checkFn = isMarkdownHeading;
     } else {
         checkFn = isOrgHeading;
     }
 
     // In markdown, a `#` line inside a fenced code block is code, not a heading
-    const inFence = langId === 'markdown'
+    const inFence = isMarkdownLike(langId)
         ? markdownFencedLineMask(document.getText().split('\n'))
         : undefined;
     const isHeadingAt = (lineNum: number, text: string) =>
@@ -543,7 +549,7 @@ async function cycleGlobalFold(): Promise<void> {
     let prefix: string;
     if (langId === 'latex') {
         prefix = 'LaTeX';
-    } else if (langId === 'markdown') {
+    } else if (isMarkdownLike(langId)) {
         prefix = 'Markdown';
     } else {
         prefix = 'Org';
@@ -592,7 +598,10 @@ export function registerFoldingProvider(context: vscode.ExtensionContext): void 
     // Register Markdown folding provider for both saved and untitled files
     context.subscriptions.push(
         vscode.languages.registerFoldingRangeProvider(
-            [{ language: 'markdown', scheme: 'file' }, { language: 'markdown', scheme: 'untitled' }],
+            [
+                { language: 'markdown', scheme: 'file' }, { language: 'markdown', scheme: 'untitled' },
+                { language: 'quarto', scheme: 'file' }, { language: 'quarto', scheme: 'untitled' }
+            ],
             new MarkdownFoldingRangeProvider()
         )
     );

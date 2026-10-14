@@ -4,6 +4,7 @@
  */
 
 import * as vscode from 'vscode';
+import { pushKill, killRange } from '../killRing/commands';
 import { setContextKey, trackEditorContext } from '../utils/contextKeys';
 import * as path from 'path';
 import {
@@ -44,6 +45,7 @@ import { marpLinkArgs } from '../marp/marpExport';
 import * as os from 'os';
 import { expandTilde } from '../utils/pathResolver';
 import { markdownFencedLineMask } from '../shared/markdownFences';
+import { isMarkdownLike } from '../shared/markdownLike';
 
 // Re-export planning line utilities for external use
 export { findPlanningLine, buildPlanningLine, removeClosed };
@@ -58,7 +60,7 @@ const log = createLogger('Org');
  * Get the heading pattern for the document type
  */
 function getHeadingPattern(document: vscode.TextDocument): RegExp {
-    if (document.languageId === 'markdown') {
+    if (isMarkdownLike(document.languageId)) {
         return /^(#{1,6})\s/;
     }
     return /^(\*+)\s/;
@@ -68,7 +70,7 @@ function getHeadingPattern(document: vscode.TextDocument): RegExp {
  * Get the heading character for the document type
  */
 function getHeadingChar(document: vscode.TextDocument): string {
-    return document.languageId === 'markdown' ? '#' : '*';
+    return isMarkdownLike(document.languageId) ? '#' : '*';
 }
 
 // Cache of fenced-code-line masks for markdown documents, keyed by document version
@@ -78,7 +80,7 @@ const fenceMaskCache = new WeakMap<vscode.TextDocument, { version: number; mask:
  * True if the line is inside a markdown fenced code block (where `#` is code, not a heading)
  */
 function isInMarkdownCodeBlock(document: vscode.TextDocument, lineNumber: number): boolean {
-    if (document.languageId !== 'markdown') return false;
+    if (!isMarkdownLike(document.languageId)) return false;
     let cached = fenceMaskCache.get(document);
     if (!cached || cached.version !== document.version) {
         cached = { version: document.version, mask: markdownFencedLineMask(document.getText().split('\n')) };
@@ -1032,7 +1034,7 @@ export async function jumpToHeading(): Promise<void> {
 
     const document = editor.document;
     const headings: { label: string; line: number; level: number }[] = [];
-    const isMarkdown = document.languageId === 'markdown';
+    const isMarkdown = isMarkdownLike(document.languageId);
 
     // Pattern for headings: org uses *, markdown uses #
     const headingPattern = isMarkdown ? /^(#{1,6})\s+(.*)$/ : /^(\*+)\s+(.*)$/;
@@ -1210,7 +1212,7 @@ export async function demoteHeading(): Promise<void> {
     }
 
     // Markdown headings max out at level 6
-    if (document.languageId === 'markdown' && level >= 6) {
+    if (isMarkdownLike(document.languageId) && level >= 6) {
         vscode.window.showInformationMessage('Cannot demote further (max level 6)');
         return;
     }
@@ -1262,7 +1264,7 @@ export async function demoteSubtree(): Promise<void> {
     const { startLine, endLine } = getSubtreeRange(document, position.line);
 
     // Check if any heading would exceed max level (markdown: 6)
-    if (document.languageId === 'markdown') {
+    if (isMarkdownLike(document.languageId)) {
         for (let i = startLine; i <= endLine; i++) {
             const level = getHeadingLevel(document, i);
             if (level >= 6) {
@@ -1494,7 +1496,7 @@ export async function killSubtree(): Promise<void> {
     // Copy to clipboard first
     const subtreeRange = new vscode.Range(startLine, 0, endLine + 1, 0);
     const subtreeText = document.getText(subtreeRange);
-    await vscode.env.clipboard.writeText(subtreeText);
+    await pushKill(subtreeText);
 
     await editor.edit(editBuilder => {
         editBuilder.delete(subtreeRange);
@@ -2756,7 +2758,7 @@ export function setupListContext(context: vscode.ExtensionContext): void {
         const langId = editor?.document.languageId;
 
         // Only track for org and markdown files
-        if (!editor || (langId !== 'org' && langId !== 'markdown')) {
+        if (!editor || (langId !== 'org' && !isMarkdownLike(langId))) {
             setContextKey('scimax.inOrderedList', false);
             setContextKey('scimax.onListItem', false);
             return;
@@ -2768,7 +2770,7 @@ export function setupListContext(context: vscode.ExtensionContext): void {
         // Check if on any list item (unordered: - + * or ordered: 1. 1))
         // But not on a heading (org: * at start, markdown: # at start)
         const isOrgHeading = langId === 'org' && /^\*+\s/.test(line);
-        const isMdHeading = langId === 'markdown' && /^#+\s/.test(line);
+        const isMdHeading = isMarkdownLike(langId) && /^#+\s/.test(line);
         const listMatch = /^(\s*)([-+*]|\d+[.)])\s+/.test(line);
         const onListItem = listMatch && !isOrgHeading && !isMdHeading;
         setContextKey('scimax.onListItem', onListItem);
@@ -3675,7 +3677,7 @@ export async function addIdToHeading(): Promise<void> {
 export function setupLinkContext(context: vscode.ExtensionContext): void {
     trackEditorContext(context, editor => {
         // Only check for org/markdown files
-        if (!editor || !['org', 'markdown'].includes(editor.document.languageId)) {
+        if (!editor || !['org', 'markdown', 'quarto'].includes(editor.document.languageId)) {
             setContextKey('scimax.onLink', false);
             return;
         }
@@ -3695,7 +3697,7 @@ function isOnHeading(document: vscode.TextDocument, position: vscode.Position): 
     if (document.languageId === 'org') {
         // Org heading: starts with one or more asterisks followed by space
         return /^\*+\s/.test(line);
-    } else if (document.languageId === 'markdown') {
+    } else if (isMarkdownLike(document.languageId)) {
         // Markdown heading: starts with one or more hashes followed by space
         return /^#+\s/.test(line);
     } else if (document.languageId === 'latex') {
@@ -3723,7 +3725,7 @@ function updateHeadingContexts(editor: vscode.TextEditor | undefined): void {
     const document = editor.document;
 
     // Only check for supported file types
-    if (!['org', 'markdown', 'latex'].includes(document.languageId)) {
+    if (!['org', 'markdown', 'quarto', 'latex'].includes(document.languageId)) {
         setContextKey('scimax.onHeading', false);
         setContextKey('scimax.onResults', false);
         setContextKey('scimax.onDrawer', false);
@@ -3757,7 +3759,7 @@ function updateHeadingContexts(editor: vscode.TextEditor | undefined): void {
 
     // Check if on a block begin line (#+BEGIN_SRC, #+BEGIN_EXAMPLE, etc.) so Tab
     // can fold the block. Matches the line check in toggleFoldAtCursor.
-    const onBlockBegin = (document.languageId === 'org' || document.languageId === 'markdown')
+    const onBlockBegin = (document.languageId === 'org' || isMarkdownLike(document.languageId))
         && /^\s*#\+BEGIN_/i.test(line);
     setContextKey('scimax.onBlockBegin', onBlockBegin);
 }
@@ -4301,7 +4303,7 @@ export function registerScimaxOrgCommands(context: vscode.ExtensionContext): voi
         })
     );
 
-    // Kill line (C-k in Emacs) - delete to end of line and copy to clipboard
+    // Kill line (C-k in Emacs) - kill to end of line onto the kill ring
     context.subscriptions.push(
         vscode.commands.registerCommand('scimax.killLine', async () => {
             const editor = vscode.window.activeTextEditor;
@@ -4310,35 +4312,19 @@ export function registerScimaxOrgCommands(context: vscode.ExtensionContext): voi
             }
 
             const document = editor.document;
-            const selection = editor.selection;
-            const position = selection.active;
+            const position = editor.selection.active;
             const line = document.lineAt(position.line);
 
             // If cursor is at end of line, kill the newline (join with next line)
             if (position.character >= line.text.length) {
                 if (position.line < document.lineCount - 1) {
-                    const range = new vscode.Range(position, new vscode.Position(position.line + 1, 0));
-                    const text = document.getText(range);
-                    await vscode.env.clipboard.writeText(text);
-                    await editor.edit(editBuilder => {
-                        editBuilder.delete(range);
-                    });
+                    await killRange(editor, new vscode.Range(position, new vscode.Position(position.line + 1, 0)));
                 }
                 return;
             }
 
-            // Kill from cursor to end of line
-            const endOfLine = line.range.end;
-            const range = new vscode.Range(position, endOfLine);
-            const text = document.getText(range);
-
-            // Copy to clipboard
-            await vscode.env.clipboard.writeText(text);
-
-            // Delete the text
-            await editor.edit(editBuilder => {
-                editBuilder.delete(range);
-            });
+            // Kill from cursor to end of line; repeated C-k joins into one kill
+            await killRange(editor, new vscode.Range(position, line.range.end));
         })
     );
 

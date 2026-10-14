@@ -181,6 +181,16 @@ function deactivateSelectionMode(): void {
 }
 
 /**
+ * Deactivate the mark if C-SPC selection mode is on (kills and copies do
+ * this, as in Emacs). Returns true if it was active.
+ */
+export function deactivateMark(): boolean {
+    if (!selectionModeActive) return false;
+    deactivateSelectionMode();
+    return true;
+}
+
+/**
  * Cancel selection mode (like Emacs C-g)
  */
 export function cancelSelection(): void {

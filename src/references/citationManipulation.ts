@@ -539,7 +539,7 @@ export function checkCitationContext(context: vscode.ExtensionContext): void {
             const document = editor.document;
 
             // Only check for org/markdown/latex files
-            if (!['org', 'markdown', 'latex'].includes(document.languageId)) {
+            if (!['org', 'markdown', 'quarto', 'latex'].includes(document.languageId)) {
                 vscode.commands.executeCommand('setContext', 'scimax.onCitation', false);
                 return;
             }

@@ -22,6 +22,8 @@ import * as fs from 'fs';
 import { OrgParser } from '../parser/orgParser';
 import { normalizeLineEndings } from '../utils/escapeUtils';
 import { getKernelManager } from '../jupyter/kernelManager';
+import { isMarkdownLike } from '../shared/markdownLike';
+import { matchCodeFenceOpen } from '../shared/markdownFences';
 
 // Output channel for Babel execution
 let outputChannel: vscode.OutputChannel | undefined;
@@ -776,13 +778,13 @@ function findMarkdownFencedBlockAtCursor(document: vscode.TextDocument, position
     let i = 0;
     while (i < lines.length) {
         const line = lines[i];
-        const fenceMatch = line.match(/^(`{3,}|~{3,})(\w*)$/);
+        const fenceMatch = matchCodeFenceOpen(line);
 
         if (fenceMatch) {
-            const fence = fenceMatch[1];
+            const fence = fenceMatch.fence;
             const fenceChar = fence[0];
             const fenceLen = fence.length;
-            const language = fenceMatch[2] || 'text';
+            const language = fenceMatch.language || 'text';
 
             // Look for closing fence
             let closingLine = -1;
@@ -1396,6 +1398,20 @@ async function executeSourceBlockAtCursor(lineNumber?: number): Promise<void> {
     }
 
     const langId = editor.document.languageId;
+    if (langId === 'quarto') {
+        // Quarto chunks run in the Quarto extension's Jupyter session, and
+        // their output belongs in the rendered page, not in the source
+        if (lineNumber !== undefined) {
+            editor.selection = new vscode.Selection(lineNumber, 0, lineNumber, 0);
+        }
+        const commands = await vscode.commands.getCommands(true);
+        if (!commands.includes('quarto.runCurrentCell')) {
+            vscode.window.showWarningMessage('Running Quarto chunks needs the Quarto extension (quarto.quarto)');
+            return;
+        }
+        await vscode.commands.executeCommand('quarto.runCurrentCell');
+        return;
+    }
     if (langId !== 'org' && langId !== 'markdown') {
         vscode.window.showWarningMessage('Not an org-mode or markdown file');
         return;
@@ -2201,10 +2217,10 @@ export function registerBabelCommands(context: vscode.ExtensionContext): void {
         let i = 0;
         while (i < lines.length) {
             const line = lines[i];
-            const fenceMatch = line.match(/^(`{3,}|~{3,})(\w*)$/);
+            const fenceMatch = matchCodeFenceOpen(line);
 
             if (fenceMatch) {
-                const fence = fenceMatch[1];
+                const fence = fenceMatch.fence;
                 const fenceChar = fence[0];
                 const fenceLen = fence.length;
 
@@ -2246,7 +2262,7 @@ export function registerBabelCommands(context: vscode.ExtensionContext): void {
         const position = editor.selection.active;
 
         // Check for markdown files
-        if (document.languageId === 'markdown') {
+        if (isMarkdownLike(document.languageId)) {
             const inFencedBlock = isInMarkdownFencedBlock(document, position);
             vscode.commands.executeCommand('setContext', 'scimax.inSourceBlock', inFencedBlock);
             vscode.commands.executeCommand('setContext', 'scimax.inInlineSrc', false);

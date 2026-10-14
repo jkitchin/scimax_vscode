@@ -4,6 +4,7 @@
  */
 
 import * as vscode from 'vscode';
+import { pushKill } from '../killRing/commands';
 import { getEnvironments, LaTeXEnvironment } from './latexDocumentSymbolProvider';
 import { findCurrentEnvironment } from './latexNavigation';
 
@@ -311,7 +312,7 @@ export async function deleteEnvironment(): Promise<void> {
         new vscode.Position(env.endLine, document.lineAt(env.endLine).text.length)
     );
     const envText = document.getText(envRange);
-    await vscode.env.clipboard.writeText(envText);
+    await pushKill(envText);
 
     // Delete with trailing newline if present
     const deleteRange = new vscode.Range(

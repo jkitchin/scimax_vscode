@@ -2,8 +2,9 @@
  * Project view: a webview with the project's tasks on a graphical Gantt chart.
  *
  * Tasks come from every org file under the project root (see projectData.ts),
- * and the rows are built by projectGantt.ts, which the Excel and PDF exports
- * share, so an export matches the screen.
+ * and the rows are built by projectGantt.ts, which the Excel, PDF, SVG, PNG
+ * and HTML exports share, so an export matches the screen. PNG is drawn by
+ * rasterizing the SVG in this webview, so no image library is needed.
  *
  * Interaction: double-click a task to jump to it; drag a bar to move the task
  * (or its right end to move the deadline); right-click for VS Code's own
@@ -27,6 +28,7 @@ import {
     type GanttOptions,
     type ProgressWeighting,
 } from './projectGantt';
+import { ganttToHtml, ganttToSvg, ganttToSvgFile } from './projectGanttSvg';
 import { parseEffort } from '../parser/orgClocking';
 import { runOnSourceHeading } from './agendaDocumentProvider';
 import { addDependencyBetween, removeDependencies } from './dependencyCommands';
@@ -58,10 +60,25 @@ type FromWebview =
     | { type: 'refresh' }
     | { type: 'options'; options: ViewOptions }
     | { type: 'open'; filePath: string; line: number }
-    | { type: 'export'; format: 'xlsx' | 'pdf' }
+    | { type: 'export'; format: ExportFormat }
+    | { type: 'png'; id: number; dataUrl?: string; error?: string }
     | { type: 'move'; filePath: string; line: number; days: number; edge: 'move' | 'end'; start: string }
     | { type: 'undo' }
     | { type: 'redo' };
+
+export type ExportFormat = 'xlsx' | 'pdf' | 'svg' | 'png' | 'html';
+
+const EXPORT_FILTERS: Record<ExportFormat, Record<string, string[]>> = {
+    xlsx: { 'Excel workbook': ['xlsx'] },
+    pdf: { PDF: ['pdf'] },
+    svg: { 'SVG image': ['svg'] },
+    png: { 'PNG image': ['png'] },
+    html: { 'Interactive HTML page': ['html'] },
+};
+
+/** PNG pixels per SVG unit, and the largest side a canvas reliably allows. */
+const PNG_SCALE = 2;
+const PNG_MAX_SIDE = 16000;
 
 /** A drag that can be undone: what it was called and the lines it changed. */
 interface MoveRecord {
@@ -77,6 +94,11 @@ const hiddenFilesKey = (root: string) => `scimax.projectView.hiddenFiles:${root}
 class ProjectView implements vscode.Disposable {
     private panel: vscode.WebviewPanel | undefined;
     private root: string | undefined;
+    /** Settles when the webview's script has loaded (its 'ready' message). */
+    private ready: Promise<void> = Promise.resolve();
+    private resolveReady: (() => void) | undefined;
+    private pngRequests = new Map<number, { resolve: (dataUrl: string) => void; reject: (err: Error) => void }>();
+    private nextPngId = 1;
     private tasks: ProjectTaskInfo[] = [];
     private options: ViewOptions = { showDone: false, groupBy: 'none' };
     private reloadTimer: NodeJS.Timeout | undefined;
@@ -113,6 +135,7 @@ class ProjectView implements vscode.Disposable {
         if (this.panel) {
             this.panel.reveal();
         } else {
+            this.ready = new Promise(resolve => { this.resolveReady = resolve; });
             this.panel = vscode.window.createWebviewPanel('scimax.projectView', '', vscode.ViewColumn.Active, {
                 enableScripts: true,
                 retainContextWhenHidden: true,
@@ -160,9 +183,19 @@ class ProjectView implements vscode.Disposable {
     private async onMessage(message: FromWebview): Promise<void> {
         switch (message.type) {
             case 'ready':
+                this.resolveReady?.();
+                await this.reload();
+                break;
             case 'refresh':
                 await this.reload();
                 break;
+            case 'png': {
+                const pending = this.pngRequests.get(message.id);
+                this.pngRequests.delete(message.id);
+                if (message.dataUrl) pending?.resolve(message.dataUrl);
+                else pending?.reject(new Error(message.error || 'the chart could not be drawn'));
+                break;
+            }
             case 'options':
                 this.options = message.options;
                 if (this.root) void this.state.update(hiddenFilesKey(this.root), message.options.hiddenFiles);
@@ -411,7 +444,7 @@ class ProjectView implements vscode.Disposable {
         }
     }
 
-    async export(format: 'xlsx' | 'pdf'): Promise<void> {
+    async export(format: ExportFormat): Promise<void> {
         // With the view open, export what it shows; otherwise the active file's project.
         const root = this.panel ? this.root : currentProjectRoot();
         if (!root) {
@@ -424,18 +457,51 @@ class ProjectView implements vscode.Disposable {
         const name = path.basename(root);
         const target = await vscode.window.showSaveDialog({
             defaultUri: vscode.Uri.file(path.join(root, `${name}-gantt.${format}`)),
-            filters: format === 'xlsx' ? { 'Excel workbook': ['xlsx'] } : { PDF: ['pdf'] },
+            filters: EXPORT_FILTERS[format],
             title: `Export ${name} Gantt chart`,
         });
         if (!target) return;
 
         const model = buildGanttModel(tasks, this.ganttOptions(root));
-        const data = format === 'xlsx' ? await ganttToXlsx(model, name) : ganttToPdf(model, name);
+        let data: Buffer | string;
+        try {
+            switch (format) {
+                case 'xlsx': data = await ganttToXlsx(model, name); break;
+                case 'pdf': data = ganttToPdf(model, name); break;
+                case 'svg': data = ganttToSvgFile(model, name); break;
+                case 'html': data = ganttToHtml(model, name); break;
+                case 'png': data = await this.rasterize(model, name, root); break;
+            }
+        } catch (err) {
+            vscode.window.showErrorMessage(`Could not export the Gantt chart: ${(err as Error).message}`);
+            return;
+        }
         await fs.promises.writeFile(target.fsPath, data);
         const choice = await vscode.window.showInformationMessage(
             `Exported ${path.basename(target.fsPath)}`, 'Open'
         );
         if (choice === 'Open') await vscode.env.openExternal(target);
+    }
+
+    /**
+     * The chart as PNG bytes: the webview draws the SVG onto a canvas. The
+     * view is opened first if it is not showing.
+     */
+    private async rasterize(model: ReturnType<typeof buildGanttModel>, name: string, root: string): Promise<Buffer> {
+        if (!this.panel) await this.open(root);
+        if (!this.panel) throw new Error('the project view could not be opened');
+        await this.ready;
+        const { svg, width, height } = ganttToSvg(model, name);
+        const scale = Math.min(PNG_SCALE, PNG_MAX_SIDE / Math.max(width, height));
+        const id = this.nextPngId++;
+        const dataUrl = await new Promise<string>((resolve, reject) => {
+            this.pngRequests.set(id, { resolve, reject });
+            void this.panel!.webview.postMessage({ type: 'rasterize', id, svg, width, height, scale });
+            setTimeout(() => {
+                if (this.pngRequests.delete(id)) reject(new Error('timed out drawing the chart'));
+            }, 30000);
+        });
+        return Buffer.from(dataUrl.slice(dataUrl.indexOf(',') + 1), 'base64');
     }
 
     private html(webview: vscode.Webview): string {
@@ -445,6 +511,8 @@ class ProjectView implements vscode.Disposable {
         const csp = [
             `default-src 'none'`,
             `style-src ${webview.cspSource}`,
+            // PNG export draws the chart's SVG from a blob: URL onto a canvas.
+            `img-src blob:`,
             `script-src 'nonce-${nonce}'`,
         ].join('; ');
         const bodyContext = JSON.stringify({ webviewSection: 'chart', preventDefaultContextMenuItems: true });
@@ -500,6 +568,9 @@ class ProjectView implements vscode.Disposable {
   <button id="refresh" title="Re-read the project's files">Refresh</button>
   <button id="exportXlsx" title="Save the chart as an Excel workbook">Excel</button>
   <button id="exportPdf" title="Save the chart as a PDF">PDF</button>
+  <button id="exportSvg" title="Save the chart as an SVG image">SVG</button>
+  <button id="exportPng" title="Save the chart as a PNG image">PNG</button>
+  <button id="exportHtml" title="Save the chart as an interactive, read-only HTML page (for a Marp slide: &lt;iframe src=&quot;file.html&quot;&gt;)">HTML</button>
 </div>
 <div class="legend">
   <span class="swatch done"></span>done
@@ -577,6 +648,9 @@ export function registerProjectView(context: vscode.ExtensionContext): void {
         vscode.commands.registerCommand('scimax.project.view', () => view.open()),
         vscode.commands.registerCommand('scimax.project.exportExcel', () => view.export('xlsx')),
         vscode.commands.registerCommand('scimax.project.exportPdf', () => view.export('pdf')),
+        vscode.commands.registerCommand('scimax.project.exportSvg', () => view.export('svg')),
+        vscode.commands.registerCommand('scimax.project.exportPng', () => view.export('png')),
+        vscode.commands.registerCommand('scimax.project.exportHtml', () => view.export('html')),
         vscode.commands.registerCommand('scimax.project.refresh', () => view.reload()),
         // Task context menu (webview/context).
         vscode.commands.registerCommand('scimax.project.task.open', (arg?: TaskContext) =>

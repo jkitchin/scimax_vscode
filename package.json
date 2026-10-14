@@ -31,6 +31,7 @@
   "activationEvents": [
     "onLanguage:org",
     "onLanguage:markdown",
+    "onLanguage:quarto",
     "onLanguage:bibtex",
     "workspaceContains:**/*.org",
     "workspaceContains:**/*.bib",
@@ -1562,6 +1563,18 @@
         "title": "Scimax: This Week's Entries"
       },
       {
+        "command": "scimax.journal.yesterday",
+        "title": "Scimax: Open Yesterday's Journal"
+      },
+      {
+        "command": "scimax.journal.tomorrow",
+        "title": "Scimax: Open Tomorrow's Journal"
+      },
+      {
+        "command": "scimax.journal.listCommands",
+        "title": "Scimax: List Journal Commands"
+      },
+      {
         "command": "scimax.ref.insertCitation",
         "title": "Scimax: Insert Citation"
       },
@@ -2148,6 +2161,30 @@
         "title": "Scimax: Clear All Mark Rings"
       },
       {
+        "command": "scimax.killRing.yank",
+        "title": "Scimax: Yank from Kill Ring"
+      },
+      {
+        "command": "scimax.killRing.yankPop",
+        "title": "Scimax: Yank Pop (Cycle or Pick from Kill Ring)"
+      },
+      {
+        "command": "scimax.killRing.killRegion",
+        "title": "Scimax: Kill Region"
+      },
+      {
+        "command": "scimax.killRing.copyRegion",
+        "title": "Scimax: Copy Region to Kill Ring"
+      },
+      {
+        "command": "scimax.killRing.browse",
+        "title": "Scimax: Browse Kill Ring"
+      },
+      {
+        "command": "scimax.killRing.clear",
+        "title": "Scimax: Clear Kill Ring"
+      },
+      {
         "command": "scimax.editmarks.insertion",
         "title": "Scimax: Mark Insertion"
       },
@@ -2398,6 +2435,18 @@
       {
         "command": "scimax.project.exportPdf",
         "title": "Scimax: Export Project Gantt to PDF"
+      },
+      {
+        "command": "scimax.project.exportSvg",
+        "title": "Scimax: Export Project Gantt to SVG"
+      },
+      {
+        "command": "scimax.project.exportPng",
+        "title": "Scimax: Export Project Gantt to PNG"
+      },
+      {
+        "command": "scimax.project.exportHtml",
+        "title": "Scimax: Export Project Gantt to Interactive HTML"
       },
       {
         "command": "scimax.project.refresh",
@@ -4074,19 +4123,25 @@
         "when": "editorTextFocus"
       },
       {
-        "command": "editor.action.clipboardPasteAction",
+        "command": "scimax.killRing.yank",
         "key": "ctrl+y",
         "mac": "ctrl+y",
-        "when": "editorTextFocus"
+        "when": "editorTextFocus && !editorReadonly"
       },
       {
-        "command": "editor.action.clipboardCutAction",
+        "command": "scimax.killRing.yankPop",
+        "key": "alt+y",
+        "mac": "alt+y",
+        "when": "editorTextFocus && !editorReadonly"
+      },
+      {
+        "command": "scimax.killRing.killRegion",
         "key": "ctrl+w",
         "mac": "ctrl+w",
-        "when": "editorTextFocus && editorHasSelection"
+        "when": "editorTextFocus && editorHasSelection && !editorReadonly"
       },
       {
-        "command": "editor.action.clipboardCopyAction",
+        "command": "scimax.killRing.copyRegion",
         "key": "alt+w",
         "mac": "alt+w",
         "when": "editorTextFocus && editorHasSelection"
@@ -4187,6 +4242,84 @@
         "when": "resourceFilename =~ /^\\d{4}-\\d{2}-\\d{2}\\.(org|md)$/"
       },
       {
+        "command": "scimax.journal.today",
+        "key": "alt+j j",
+        "mac": "alt+j j",
+        "when": "!terminalFocus"
+      },
+      {
+        "command": "scimax.journal.goto",
+        "key": "alt+j d",
+        "mac": "alt+j d",
+        "when": "!terminalFocus"
+      },
+      {
+        "command": "scimax.journal.next",
+        "key": "alt+j n",
+        "mac": "alt+j n",
+        "when": "!terminalFocus"
+      },
+      {
+        "command": "scimax.journal.prev",
+        "key": "alt+j p",
+        "mac": "alt+j p",
+        "when": "!terminalFocus"
+      },
+      {
+        "command": "scimax.journal.yesterday",
+        "key": "alt+j y",
+        "mac": "alt+j y",
+        "when": "!terminalFocus"
+      },
+      {
+        "command": "scimax.journal.tomorrow",
+        "key": "alt+j m",
+        "mac": "alt+j m",
+        "when": "!terminalFocus"
+      },
+      {
+        "command": "scimax.journal.quickLog",
+        "key": "alt+j l",
+        "mac": "alt+j l",
+        "when": "!terminalFocus"
+      },
+      {
+        "command": "scimax.journal.search",
+        "key": "alt+j s",
+        "mac": "alt+j s",
+        "when": "!terminalFocus"
+      },
+      {
+        "command": "scimax.journal.weekView",
+        "key": "alt+j w",
+        "mac": "alt+j w",
+        "when": "!terminalFocus"
+      },
+      {
+        "command": "scimax.journal.calendar",
+        "key": "alt+j c",
+        "mac": "alt+j c",
+        "when": "!terminalFocus"
+      },
+      {
+        "command": "scimax.journal.new",
+        "key": "alt+j e",
+        "mac": "alt+j e",
+        "when": "!terminalFocus"
+      },
+      {
+        "command": "scimax.journal.insertTimestamp",
+        "key": "alt+j t",
+        "mac": "alt+j t",
+        "when": "editorTextFocus && !terminalFocus"
+      },
+      {
+        "command": "scimax.journal.listCommands",
+        "key": "alt+j shift+/",
+        "mac": "alt+j shift+/",
+        "when": "!terminalFocus"
+      },
+      {
         "command": "scimax.marp.runCell",
         "key": "ctrl+c ctrl+c",
         "mac": "ctrl+c ctrl+c",
@@ -4202,49 +4335,49 @@
         "command": "scimax.ref.insertCitation",
         "key": "ctrl+c ]",
         "mac": "ctrl+c ]",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown|latex/ && !terminalFocus"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto|latex/ && !terminalFocus"
       },
       {
         "command": "scimax.zotero.insertCitation",
         "key": "ctrl+c z",
         "mac": "ctrl+c z",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown|latex/ && !terminalFocus"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto|latex/ && !terminalFocus"
       },
       {
         "command": "scimax.ref.insertRef",
         "key": "ctrl+u ctrl+c ]",
         "mac": "ctrl+u ctrl+c ]",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown|latex/"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto|latex/"
       },
       {
         "command": "scimax.table.nextCell",
         "key": "tab",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.inTable && !editorHasSelection && !suggestWidgetVisible && !inlineSuggestionVisible && !inSnippetMode"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/ && scimax.inTable && !editorHasSelection && !suggestWidgetVisible && !inlineSuggestionVisible && !inSnippetMode"
       },
       {
         "command": "scimax.table.prevCell",
         "key": "shift+tab",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.inTable && !editorHasSelection && !suggestWidgetVisible && !inlineSuggestionVisible && !inSnippetMode"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/ && scimax.inTable && !editorHasSelection && !suggestWidgetVisible && !inlineSuggestionVisible && !inSnippetMode"
       },
       {
         "command": "scimax.list.cycleIndent",
         "key": "tab",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.onListItem && !scimax.inTable && !editorHasSelection && !suggestWidgetVisible && !inlineSuggestionVisible && !inSnippetMode"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/ && scimax.onListItem && !scimax.inTable && !editorHasSelection && !suggestWidgetVisible && !inlineSuggestionVisible && !inSnippetMode"
       },
       {
         "command": "scimax.list.cycleOutdent",
         "key": "shift+tab",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.onListItem && !scimax.inTable && !editorHasSelection && !suggestWidgetVisible && !inlineSuggestionVisible && !inSnippetMode"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/ && scimax.onListItem && !scimax.inTable && !editorHasSelection && !suggestWidgetVisible && !inlineSuggestionVisible && !inSnippetMode"
       },
       {
         "command": "scimax.org.toggleFold",
         "key": "tab",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown|latex/ && scimax.onHeading && !editorHasSelection && !suggestWidgetVisible && !inlineSuggestionVisible && !inSnippetMode"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto|latex/ && scimax.onHeading && !editorHasSelection && !suggestWidgetVisible && !inlineSuggestionVisible && !inSnippetMode"
       },
       {
         "command": "-tab",
         "key": "tab",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown|latex/ && scimax.onHeading && !editorHasSelection && !suggestWidgetVisible && !inlineSuggestionVisible && !inSnippetMode"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto|latex/ && scimax.onHeading && !editorHasSelection && !suggestWidgetVisible && !inlineSuggestionVisible && !inSnippetMode"
       },
       {
         "command": "scimax.org.toggleFold",
@@ -4259,7 +4392,7 @@
       {
         "command": "scimax.org.toggleFold",
         "key": "tab",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.onBlockBegin && !editorHasSelection && !suggestWidgetVisible && !inlineSuggestionVisible && !inSnippetMode"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/ && scimax.onBlockBegin && !editorHasSelection && !suggestWidgetVisible && !inlineSuggestionVisible && !inSnippetMode"
       },
       {
         "command": "scimax.org.toggleFold",
@@ -4269,7 +4402,7 @@
       {
         "command": "scimax.org.cycleGlobalFold",
         "key": "shift+tab",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown|latex/ && !scimax.inTable"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto|latex/ && !scimax.inTable"
       },
       {
         "command": "-",
@@ -4287,7 +4420,7 @@
         "command": "scimax.org.executeBlock",
         "key": "ctrl+c ctrl+c",
         "mac": "ctrl+c ctrl+c",
-        "when": "editorTextFocus && editorLangId == 'markdown' && scimax.inSourceBlock && !scimax.marp.inRunCell && !terminalFocus"
+        "when": "editorTextFocus && editorLangId =~ /^(markdown|quarto)$/ && scimax.inSourceBlock && !scimax.marp.inRunCell && !terminalFocus"
       },
       {
         "command": "scimax.babel.executeInline",
@@ -4383,7 +4516,7 @@
         "command": "scimax.org.parentHeading",
         "key": "ctrl+c u",
         "mac": "ctrl+c u",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && !terminalFocus"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/ && !terminalFocus"
       },
       {
         "command": "scimax.ob.nextBlock",
@@ -4471,43 +4604,43 @@
         "command": "scimax.org.shiftTimestampUp",
         "key": "shift+up",
         "mac": "shift+up",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/"
       },
       {
         "command": "scimax.org.shiftTimestampDown",
         "key": "shift+down",
         "mac": "shift+down",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/"
       },
       {
         "command": "scimax.org.shiftTimestampLeft",
         "key": "shift+left",
         "mac": "shift+left",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && !editorHasSelection"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/ && !editorHasSelection"
       },
       {
         "command": "scimax.org.shiftTimestampRight",
         "key": "shift+right",
         "mac": "shift+right",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && !editorHasSelection"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/ && !editorHasSelection"
       },
       {
         "command": "scimax.org.insertTimestamp",
         "key": "ctrl+c .",
         "mac": "ctrl+c .",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && !terminalFocus"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/ && !terminalFocus"
       },
       {
         "command": "scimax.org.insertInactiveTimestamp",
         "key": "ctrl+c oem_comma",
         "mac": "ctrl+c oem_comma",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && !terminalFocus"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/ && !terminalFocus"
       },
       {
         "command": "scimax.org.addRepeater",
         "key": "ctrl+c ctrl+r",
         "mac": "ctrl+c ctrl+r",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && !terminalFocus"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/ && !terminalFocus"
       },
       {
         "command": "cursorTop",
@@ -4525,133 +4658,133 @@
         "command": "scimax.table.moveRowUp",
         "key": "alt+up",
         "mac": "alt+up",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.inTable"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/ && scimax.inTable"
       },
       {
         "command": "scimax.table.moveRowDown",
         "key": "alt+down",
         "mac": "alt+down",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.inTable"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/ && scimax.inTable"
       },
       {
         "command": "scimax.table.moveColumnLeft",
         "key": "alt+left",
         "mac": "alt+left",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.inTable"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/ && scimax.inTable"
       },
       {
         "command": "scimax.table.moveColumnRight",
         "key": "alt+right",
         "mac": "alt+right",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.inTable"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/ && scimax.inTable"
       },
       {
         "command": "scimax.table.moveCellUp",
         "key": "ctrl+alt+up",
         "mac": "ctrl+alt+up",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.inTable"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/ && scimax.inTable"
       },
       {
         "command": "scimax.table.moveCellDown",
         "key": "ctrl+alt+down",
         "mac": "ctrl+alt+down",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.inTable"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/ && scimax.inTable"
       },
       {
         "command": "scimax.table.moveCellLeft",
         "key": "ctrl+alt+left",
         "mac": "ctrl+alt+left",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.inTable"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/ && scimax.inTable"
       },
       {
         "command": "scimax.table.moveCellRight",
         "key": "ctrl+alt+right",
         "mac": "ctrl+alt+right",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.inTable"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/ && scimax.inTable"
       },
       {
         "command": "scimax.table.insertRowAbove",
         "key": "alt+shift+up",
         "mac": "alt+shift+up",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.inTable"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/ && scimax.inTable"
       },
       {
         "command": "scimax.table.insertRowBelow",
         "key": "alt+shift+down",
         "mac": "alt+shift+down",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.inTable"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/ && scimax.inTable"
       },
       {
         "command": "scimax.table.insertColumnLeft",
         "key": "alt+shift+left",
         "mac": "alt+shift+left",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.inTable"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/ && scimax.inTable"
       },
       {
         "command": "scimax.table.insertColumnRight",
         "key": "alt+shift+right",
         "mac": "alt+shift+right",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.inTable"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/ && scimax.inTable"
       },
       {
         "command": "scimax.table.deleteRow",
         "key": "alt+shift+backspace",
         "mac": "alt+shift+backspace",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.inTable"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/ && scimax.inTable"
       },
       {
         "command": "scimax.table.create",
         "key": "ctrl+c shift+\\",
         "mac": "ctrl+c shift+\\",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && !terminalFocus"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/ && !terminalFocus"
       },
       {
         "command": "scimax.table.insertSeparator",
         "key": "ctrl+c -",
         "mac": "ctrl+c -",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.inTable && !terminalFocus"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/ && scimax.inTable && !terminalFocus"
       },
       {
         "command": "scimax.heading.promote",
         "key": "alt+left",
         "mac": "alt+left",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && !scimax.onHeading && !scimax.inTable"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/ && !scimax.onHeading && !scimax.inTable"
       },
       {
         "command": "scimax.heading.demote",
         "key": "alt+right",
         "mac": "alt+right",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && !scimax.onHeading && !scimax.inTable"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/ && !scimax.onHeading && !scimax.inTable"
       },
       {
         "command": "scimax.heading.promoteSubtree",
         "key": "alt+shift+left",
         "mac": "alt+shift+left",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && !scimax.inTable"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/ && !scimax.inTable"
       },
       {
         "command": "scimax.heading.demoteSubtree",
         "key": "alt+shift+right",
         "mac": "alt+shift+right",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && !scimax.inTable"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/ && !scimax.inTable"
       },
       {
         "command": "scimax.heading.moveUp",
         "key": "alt+up",
         "mac": "alt+up",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && !scimax.onHeading && !scimax.inTable"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/ && !scimax.onHeading && !scimax.inTable"
       },
       {
         "command": "scimax.heading.moveDown",
         "key": "alt+down",
         "mac": "alt+down",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && !scimax.onHeading && !scimax.inTable"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/ && !scimax.onHeading && !scimax.inTable"
       },
       {
         "command": "scimax.heading.insert",
         "key": "ctrl+enter",
         "mac": "ctrl+enter",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && !scimax.inSourceBlock && !scimax.onHeading && !notebookEditorFocused"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/ && !scimax.inSourceBlock && !scimax.onHeading && !notebookEditorFocused"
       },
       {
         "command": "scimax.projectile.switch",
@@ -4841,25 +4974,25 @@
         "command": "scimax.ref.transposeCitationLeft",
         "key": "shift+left",
         "mac": "shift+left",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown|latex/ && scimax.onCitation"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto|latex/ && scimax.onCitation"
       },
       {
         "command": "scimax.ref.transposeCitationRight",
         "key": "shift+right",
         "mac": "shift+right",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown|latex/ && scimax.onCitation"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto|latex/ && scimax.onCitation"
       },
       {
         "command": "scimax.ref.sortCitations",
         "key": "shift+up",
         "mac": "shift+up",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown|latex/ && scimax.onCitation"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto|latex/ && scimax.onCitation"
       },
       {
         "command": "scimax.ref.sortCitationsByYear",
         "key": "shift+down",
         "mac": "shift+down",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown|latex/ && scimax.onCitation"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto|latex/ && scimax.onCitation"
       },
       {
         "command": "scimax.ref.deleteCitation",
@@ -4984,181 +5117,181 @@
         "command": "scimax.org.fillParagraph",
         "key": "alt+q",
         "mac": "alt+q",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && !terminalFocus"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/ && !terminalFocus"
       },
       {
         "command": "scimax.org.dwimComment",
         "key": "alt+;",
         "mac": "alt+;",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/"
       },
       {
         "command": "scimax.markup.bold",
         "key": "ctrl+c b",
         "mac": "ctrl+c b",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && !terminalFocus"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/ && !terminalFocus"
       },
       {
         "command": "scimax.markup.italic",
         "key": "ctrl+c i",
         "mac": "ctrl+c i",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && !terminalFocus"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/ && !terminalFocus"
       },
       {
         "command": "scimax.markup.underline",
         "key": "ctrl+c _",
         "mac": "ctrl+c _",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && !terminalFocus"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/ && !terminalFocus"
       },
       {
         "command": "scimax.markup.code",
         "key": "ctrl+c `",
         "mac": "ctrl+c `",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && !terminalFocus"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/ && !terminalFocus"
       },
       {
         "command": "scimax.markup.verbatim",
         "key": "ctrl+c =",
         "mac": "ctrl+c =",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && !terminalFocus"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/ && !terminalFocus"
       },
       {
         "command": "scimax.markup.strikethrough",
         "key": "ctrl+c +",
         "mac": "ctrl+c +",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && !terminalFocus"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/ && !terminalFocus"
       },
       {
         "command": "scimax.markup.command",
         "key": "ctrl+c '",
         "mac": "ctrl+c '",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && !terminalFocus"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/ && !terminalFocus"
       },
       {
         "command": "scimax.markup.bold",
         "key": "alt+b",
         "mac": "alt+b",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/"
       },
       {
         "command": "scimax.markup.italic",
         "key": "alt+i",
         "mac": "alt+i",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/"
       },
       {
         "command": "scimax.markup.underline",
         "key": "alt+u",
         "mac": "alt+u",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/"
       },
       {
         "command": "scimax.markup.code",
         "key": "alt+c",
         "mac": "alt+c",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/"
       },
       {
         "command": "scimax.markup.verbatim",
         "key": "alt+v",
         "mac": "alt+v",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/"
       },
       {
         "command": "scimax.markup.strikethrough",
         "key": "alt+s",
         "mac": "alt+s",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/"
       },
       {
         "command": "scimax.markup.subscript",
         "key": "alt+-",
         "mac": "alt+-",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/"
       },
       {
         "command": "scimax.markup.superscript",
         "key": "alt+=",
         "mac": "alt+=",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/"
       },
       {
         "command": "scimax.org.cycleTodo",
         "key": "ctrl+c ctrl+t",
         "mac": "ctrl+c ctrl+t",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && !terminalFocus"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/ && !terminalFocus"
       },
       {
         "command": "scimax.org.jumpToHeading",
         "key": "ctrl+c ctrl+j",
         "mac": "ctrl+c ctrl+j",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && !terminalFocus"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/ && !terminalFocus"
       },
       {
         "command": "scimax.org.nextHeading",
         "key": "ctrl+c ctrl+n",
         "mac": "ctrl+c ctrl+n",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && !terminalFocus"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/ && !terminalFocus"
       },
       {
         "command": "scimax.org.previousHeading",
         "key": "ctrl+c ctrl+p",
         "mac": "ctrl+c ctrl+p",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && !terminalFocus"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/ && !terminalFocus"
       },
       {
         "command": "scimax.speed.nextSibling",
         "key": "ctrl+c ctrl+f",
         "mac": "ctrl+c ctrl+f",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && !terminalFocus"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/ && !terminalFocus"
       },
       {
         "command": "scimax.speed.previousSibling",
         "key": "ctrl+c ctrl+b",
         "mac": "ctrl+c ctrl+b",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && !terminalFocus"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/ && scimax.atHeadingStart && !terminalFocus"
       },
       {
         "command": "scimax.org.promoteHeading",
         "key": "alt+left",
         "mac": "alt+left",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.onHeading"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/ && scimax.onHeading"
       },
       {
         "command": "scimax.org.demoteHeading",
         "key": "alt+right",
         "mac": "alt+right",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.onHeading"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/ && scimax.onHeading"
       },
       {
         "command": "scimax.org.moveSubtreeUp",
         "key": "alt+up",
         "mac": "alt+up",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.onHeading"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/ && scimax.onHeading"
       },
       {
         "command": "scimax.org.moveSubtreeDown",
         "key": "alt+down",
         "mac": "alt+down",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.onHeading"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/ && scimax.onHeading"
       },
       {
         "command": "scimax.org.insertHeading",
         "key": "ctrl+enter",
         "mac": "ctrl+enter",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.onHeading && !notebookEditorFocused"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/ && scimax.onHeading && !notebookEditorFocused"
       },
       {
         "command": "scimax.org.openLink",
         "key": "ctrl+c ctrl+o",
         "mac": "ctrl+c ctrl+o",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && !terminalFocus"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/ && !terminalFocus"
       },
       {
         "command": "scimax.org.dwimReturn",
         "key": "enter",
         "mac": "enter",
-        "when": "editorTextFocus && resourceScheme != org-agenda && editorLangId =~ /org|markdown/ && !suggestWidgetVisible && !editorHasSelection && !inSnippetMode"
+        "when": "editorTextFocus && resourceScheme != org-agenda && editorLangId =~ /org|markdown|quarto/ && !suggestWidgetVisible && !editorHasSelection && !inSnippetMode"
       },
       {
         "command": "scimax.insertNewline",
@@ -5176,49 +5309,49 @@
         "command": "scimax.org.storeLink",
         "key": "ctrl+c l",
         "mac": "ctrl+c l",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && !terminalFocus"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/ && !terminalFocus"
       },
       {
         "command": "scimax.org.insertLink",
         "key": "ctrl+c ctrl+l",
         "mac": "ctrl+c ctrl+l",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && !terminalFocus"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/ && !terminalFocus"
       },
       {
         "command": "scimax.ob.nextBlock",
         "key": "ctrl+down",
         "mac": "ctrl+down",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/"
       },
       {
         "command": "scimax.ob.previousBlock",
         "key": "ctrl+up",
         "mac": "ctrl+up",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/"
       },
       {
         "command": "scimax.ob.insertBlockBelow",
         "key": "ctrl+c ctrl+,",
         "mac": "ctrl+c ctrl+,",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && !terminalFocus"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/ && !terminalFocus"
       },
       {
         "command": "scimax.ob.insertBlockAbove",
         "key": "escape a",
         "mac": "escape a",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && !scimax.jumpActive"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/ && !scimax.jumpActive"
       },
       {
         "command": "scimax.ob.insertBlockBelow",
         "key": "escape b",
         "mac": "escape b",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && !scimax.jumpActive"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/ && !scimax.jumpActive"
       },
       {
         "command": "scimax.ob.splitBlock",
         "key": "escape -",
         "mac": "escape -",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.inSourceBlock && !scimax.jumpActive"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/ && scimax.inSourceBlock && !scimax.jumpActive"
       },
       {
         "command": "scimax.ob.executeAndNext",
@@ -5230,213 +5363,213 @@
         "command": "scimax.ob.executeAndNew",
         "key": "alt+shift+enter",
         "mac": "alt+shift+enter",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.inSourceBlock && !notebookEditorFocused"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/ && scimax.inSourceBlock && !notebookEditorFocused"
       },
       {
         "command": "scimax.ob.splitBlock",
         "key": "ctrl+c -",
         "mac": "ctrl+c -",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.inSourceBlock && !terminalFocus"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/ && scimax.inSourceBlock && !terminalFocus"
       },
       {
         "command": "scimax.ob.jumpToBlock",
         "key": "ctrl+c ctrl+b",
         "mac": "ctrl+c ctrl+b",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && !terminalFocus"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/ && !terminalFocus"
       },
       {
         "command": "scimax.ob.nextBlock",
         "key": "ctrl+c ctrl+v n",
         "mac": "ctrl+c ctrl+v n",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && !terminalFocus"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/ && !terminalFocus"
       },
       {
         "command": "scimax.ob.previousBlock",
         "key": "ctrl+c ctrl+v p",
         "mac": "ctrl+c ctrl+v p",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && !terminalFocus"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/ && !terminalFocus"
       },
       {
         "command": "scimax.ob.jumpToBlock",
         "key": "ctrl+c ctrl+v g",
         "mac": "ctrl+c ctrl+v g",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && !terminalFocus"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/ && !terminalFocus"
       },
       {
         "command": "scimax.table.sortByColumn",
         "key": "ctrl+c shift+6",
         "mac": "ctrl+c shift+6",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.inTable && !terminalFocus"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/ && scimax.inTable && !terminalFocus"
       },
       {
         "command": "scimax.speed.nextSibling",
         "key": "f",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/ && scimax.atHeadingStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.speed.previousSibling",
         "key": "b",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/ && scimax.atHeadingStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.org.nextHeading",
         "key": "n",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/ && scimax.atHeadingStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.org.previousHeading",
         "key": "p",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/ && scimax.atHeadingStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.org.parentHeading",
         "key": "u",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/ && scimax.atHeadingStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.org.jumpToHeading",
         "key": "j",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/ && scimax.atHeadingStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.speed.gotoMenu",
         "key": "g",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/ && scimax.atHeadingStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.org.cycleGlobalFold",
         "key": "c",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/ && scimax.atHeadingStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.speed.showChildren",
         "key": "shift+c",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/ && scimax.atHeadingStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.speed.overview",
         "key": "o",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/ && scimax.atHeadingStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.heading.moveUp",
         "key": "shift+u",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/ && scimax.atHeadingStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.heading.moveDown",
         "key": "shift+d",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/ && scimax.atHeadingStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.heading.demoteSubtree",
         "key": "r",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/ && scimax.atHeadingStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.heading.promoteSubtree",
         "key": "l",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/ && scimax.atHeadingStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.heading.demote",
         "key": "shift+r",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/ && scimax.atHeadingStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.heading.promote",
         "key": "shift+l",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/ && scimax.atHeadingStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.org.refile",
         "key": "w",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/ && scimax.atHeadingStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.org.killSubtree",
         "key": "k",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/ && scimax.atHeadingStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.org.markSubtree",
         "key": "m",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/ && scimax.atHeadingStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.org.markSubtree",
         "key": "shift+2",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/ && scimax.atHeadingStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.org.sortEntries",
         "key": "shift+6",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/ && scimax.atHeadingStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.speed.yankSubtree",
         "key": "y",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/ && scimax.atHeadingStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.org.cloneSubtree",
         "key": "shift+w",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/ && scimax.atHeadingStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.org.refile",
         "key": "shift+f",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/ && scimax.atHeadingStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.org.cycleTodo",
         "key": "t",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/ && scimax.atHeadingStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.org.shiftTimestampUp",
         "key": ",",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/ && scimax.atHeadingStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.speed.priorityA",
         "key": "1",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/ && scimax.atHeadingStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.speed.priorityB",
         "key": "2",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/ && scimax.atHeadingStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.speed.priorityC",
         "key": "3",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/ && scimax.atHeadingStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.speed.priorityNone",
         "key": "0",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/ && scimax.atHeadingStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.speed.schedule",
         "key": "s",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/ && scimax.atHeadingStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.speed.deadline",
         "key": "d",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/ && scimax.atHeadingStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.org.insertTimestamp",
         "key": ".",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/ && scimax.atHeadingStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.speed.setTags",
         "key": "shift+;",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/ && scimax.atHeadingStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.speed.setTags",
@@ -5447,48 +5580,48 @@
       {
         "command": "scimax.speed.setEffort",
         "key": "e",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/ && scimax.atHeadingStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.speed.setProperty",
         "key": "shift+p",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/ && scimax.atHeadingStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.speed.setProperty",
         "key": "ctrl+c x p",
         "mac": "ctrl+c x p",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/"
       },
       {
         "command": "scimax.speed.clockIn",
         "key": "shift+i",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/ && scimax.atHeadingStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.speed.clockOut",
         "key": "shift+o",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/ && scimax.atHeadingStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.speed.archiveSubtree",
         "key": "a",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/ && scimax.atHeadingStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.speed.toggleArchiveTag",
         "key": "shift+a",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/ && scimax.atHeadingStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.speed.archiveToSibling",
         "key": "shift+4",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/ && scimax.atHeadingStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.speed.help",
         "key": "shift+/",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/ && scimax.atHeadingStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
         "command": "scimax.ob.nextBlock",
@@ -5509,7 +5642,7 @@
         "command": "scimax.speed.toggle",
         "key": "ctrl+c ctrl+x s",
         "mac": "ctrl+c ctrl+x s",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && !terminalFocus"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/ && !terminalFocus"
       },
       {
         "command": "scimax.latex.speedCommand",
@@ -5968,13 +6101,13 @@
         "command": "scimax.org.refile",
         "key": "ctrl+c ctrl+w",
         "mac": "ctrl+c ctrl+w",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && !terminalFocus"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/ && !terminalFocus"
       },
       {
         "command": "scimax.org.refileCopy",
         "key": "ctrl+c alt+w",
         "mac": "ctrl+c alt+w",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && !terminalFocus"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/ && !terminalFocus"
       },
       {
         "command": "scimax.table.recalculate",
@@ -6208,19 +6341,19 @@
         "command": "cursorTop",
         "key": "ctrl+shift+,",
         "mac": "cmd+shift+,",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown|latex/"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto|latex/"
       },
       {
         "command": "cursorBottom",
         "key": "ctrl+shift+.",
         "mac": "cmd+shift+.",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown|latex/"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto|latex/"
       },
       {
         "command": "scimax.templates.quickInsert",
         "key": "ctrl+c ctrl+t i",
         "mac": "ctrl+c ctrl+t i",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown|latex/ && !terminalFocus"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto|latex/ && !terminalFocus"
       },
       {
         "command": "scimax.templates.newFile",
@@ -6250,19 +6383,19 @@
         "command": "scimax.insertScreenshot",
         "key": "f10",
         "mac": "f10",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/"
       },
       {
         "command": "scimax.insertOcrScreenshot",
         "key": "shift+f10",
         "mac": "shift+f10",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/"
       },
       {
         "command": "scimax.showLinkGraph",
         "key": "ctrl+c shift+g",
         "mac": "ctrl+c shift+g",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/"
       },
       {
         "command": "scimax.rectangle.kill",
@@ -6661,6 +6794,13 @@
           "minimum": 1,
           "maximum": 100,
           "description": "Maximum number of marks to store in the mark ring"
+        },
+        "scimax.killRing.maxSize": {
+          "type": "number",
+          "default": 120,
+          "minimum": 1,
+          "maximum": 1000,
+          "description": "Maximum number of entries kept in the kill ring (Emacs kill-ring-max)"
         },
         "scimax.logLevel": {
           "type": "string",
@@ -7994,6 +8134,21 @@
           "command": "scimax.project.exportPdf",
           "when": "webviewId == 'scimax.projectView'",
           "group": "9_export@2"
+        },
+        {
+          "command": "scimax.project.exportSvg",
+          "when": "webviewId == 'scimax.projectView'",
+          "group": "9_export@3"
+        },
+        {
+          "command": "scimax.project.exportPng",
+          "when": "webviewId == 'scimax.projectView'",
+          "group": "9_export@4"
+        },
+        {
+          "command": "scimax.project.exportHtml",
+          "when": "webviewId == 'scimax.projectView'",
+          "group": "9_export@5"
         },
         {
           "command": "scimax.marp.slide.editWithClaude",

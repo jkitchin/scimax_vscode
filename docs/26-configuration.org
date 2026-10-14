@@ -1616,6 +1616,21 @@ color must be opaque. Any CSS color works.
 - [[file:24-keybindings.org][Keybindings]] - Jump keybindings (=C-c j c=, =C-c j w=, …)
 - [[file:25-commands.org][Commands]] - Full command reference
 
+* ⚠️ Kill Ring Settings
+
+| Setting                 | Type   | Default | Description                                    |
+|-------------------------+--------+---------+------------------------------------------------|
+| scimax.killRing.maxSize | number | 120     | Maximum number of entries kept in the kill ring |
+
+This is the equivalent of Emacs =kill-ring-max=. When the ring is full, the
+oldest kill is dropped. The ring lives in memory only and starts empty each
+session.
+
+** Related Topics
+
+- [[file:25-commands.org::#kill-ring][Kill Ring commands]]
+- [[file:24-keybindings.org][Keybindings]] - =C-y=, =M-y=, =C-w=, =M-w=
+
 * Speed Commands Settings
 
 Configure org-mode style speed commands.

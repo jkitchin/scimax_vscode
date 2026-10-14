@@ -159,6 +159,9 @@ Task tables, a project view with a Gantt chart, a dependency graph, and a people
 | [[cmd:scimax.project.view]]            | Project View (Gantt Chart) | -                  |
 | [[cmd:scimax.project.exportExcel]]     | Export Project Gantt to Excel | -               |
 | [[cmd:scimax.project.exportPdf]]       | Export Project Gantt to PDF | -                 |
+| [[cmd:scimax.project.exportSvg]]       | Export Project Gantt to SVG | -                 |
+| [[cmd:scimax.project.exportPng]]       | Export Project Gantt to PNG | -                 |
+| [[cmd:scimax.project.exportHtml]]      | Export Project Gantt to Interactive HTML | -    |
 | [[cmd:scimax.project.refresh]]         | Refresh Project View       | -                  |
 | [[cmd:scimax.project.task.open]]       | Open Task (project view menu) | -               |
 | [[cmd:scimax.project.task.cycleTodo]]  | Cycle TODO State (project view menu) | -        |
@@ -694,29 +697,32 @@ CLOSED: [2026-01-17 Sat 12:51]
 * ✅ Journal
 CLOSED: [2026-01-17 Sat 12:51]
 
-** ✅ Basic Journal Operations
+** 👀 Basic Journal Operations
 CLOSED: [2026-01-17 Sat 12:51]
 
-| Command ID                      | Description            | Default Keybinding |
-|---------------------------------+------------------------+--------------------|
-| [[cmd:scimax.journal.today]]    | Open Today's Journal   | C-S-j              |
-| [[cmd:scimax.journal.new]]      | New Journal Entry      | -                  |
-| [[cmd:scimax.journal.prev]]     | Previous Journal Entry | M-[ (in journal)   |
-| [[cmd:scimax.journal.next]]     | Next Journal Entry     | M-] (in journal)   |
-| [[cmd:scimax.journal.goto]]     | Go to Journal Date     | -                  |
-| [[cmd:scimax.journal.search]]   | Search Journal         | -                  |
-| [[cmd:scimax.journal.calendar]] | Show Journal Calendar  | -                  |
+| Command ID                          | Description              | Default Keybinding      |
+|-------------------------------------+--------------------------+-------------------------|
+| [[cmd:scimax.journal.today]]        | Open Today's Journal     | M-j j, C-S-j            |
+| [[cmd:scimax.journal.yesterday]]    | Open Yesterday's Journal | M-j y                   |
+| [[cmd:scimax.journal.tomorrow]]     | Open Tomorrow's Journal  | M-j m                   |
+| [[cmd:scimax.journal.new]]          | New Journal Entry        | M-j e                   |
+| [[cmd:scimax.journal.prev]]         | Previous Journal Entry   | M-j p, M-[ (in journal) |
+| [[cmd:scimax.journal.next]]         | Next Journal Entry       | M-j n, M-] (in journal) |
+| [[cmd:scimax.journal.goto]]         | Go to Journal Date       | M-j d                   |
+| [[cmd:scimax.journal.search]]       | Search Journal           | M-j s                   |
+| [[cmd:scimax.journal.calendar]]     | Show Journal Calendar    | M-j c                   |
+| [[cmd:scimax.journal.listCommands]] | List Journal Commands    | M-j ?                   |
 
-** ✅ Journal Utilities
+** 👀 Journal Utilities
 
 | Command ID                             | Description             | Default Keybinding |
 |----------------------------------------+-------------------------+--------------------|
 | [[cmd:scimax.journal.refresh]]         | Refresh Journal View    | -                  |
 | [[cmd:scimax.journal.openDirectory]]   | Open Journal Directory  | -                  |
-| [[cmd:scimax.journal.insertTimestamp]] | Insert Timestamp        | -                  |
-| [[cmd:scimax.journal.quickLog]]        | Quick Log Entry         | -                  |
+| [[cmd:scimax.journal.insertTimestamp]] | Insert Timestamp        | M-j t              |
+| [[cmd:scimax.journal.quickLog]]        | Quick Log Entry         | M-j l              |
 | [[cmd:scimax.journal.stats]]           | Show Journal Statistics | -                  |
-| [[cmd:scimax.journal.weekView]]        | This Week's Entries     | -                  |
+| [[cmd:scimax.journal.weekView]]        | This Week's Entries     | M-j w              |
 
 * ✅ Database and Search
 CLOSED: [2026-01-17 Sat 12:45]
@@ -1685,6 +1691,56 @@ Emacs-style mark ring for navigation and selection. Save cursor positions (marks
 1. Run =scimax.mark.show= from command palette
 2. Quick pick shows local marks and global marks with line previews
 3. Select an entry to jump to that position
+
+* ⚠️ Kill Ring
+:PROPERTIES:
+:CUSTOM_ID: kill-ring
+:END:
+
+An Emacs-style kill ring. Every kill and copy is pushed onto the ring and also
+written to the system clipboard, so pasting into other applications still
+works, and you can yank kills older than the last one.
+
+| Command ID                         | Description                          | Default Keybinding |
+|------------------------------------+--------------------------------------+--------------------|
+| [[cmd:scimax.killRing.yank]]       | Yank from Kill Ring                  | C-y                |
+| [[cmd:scimax.killRing.yankPop]]    | Yank Pop (Cycle or Pick from Ring)   | M-y                |
+| [[cmd:scimax.killRing.killRegion]] | Kill Region                          | C-w                |
+| [[cmd:scimax.killRing.copyRegion]] | Copy Region to Kill Ring             | M-w                |
+| [[cmd:scimax.killRing.browse]]     | Browse Kill Ring                     | -                  |
+| [[cmd:scimax.killRing.clear]]      | Clear Kill Ring                      | -                  |
+
+** ⚠️ How It Works
+
+=C-y= inserts the entry under the yank pointer, which is normally the newest
+kill. Pressing =M-y= straight after a yank replaces the yanked text with the
+next older kill, and each further =M-y= steps back one more, wrapping around at
+the oldest. The status bar shows which entry you are on (for example
+=Kill ring: 3/12=). Once you move the cursor or edit, =M-y= instead opens a
+picker over the whole ring: type to filter, press Enter to insert, or click the
+trash icon to drop an entry. Whichever entry you insert becomes the one the
+next =C-y= yanks.
+
+Consecutive kills at the same spot join into one entry, as in Emacs, so
+pressing =C-k= three times and then =C-y= brings back all three lines. A kill
+made after you move the cursor or edit starts a new entry.
+
+Text copied elsewhere (in another application, or with =Cmd+C=) is pulled onto
+the ring before the next kill or yank, so it is not lost when a kill replaces
+the clipboard. The ring holds 120 entries by default (=scimax.killRing.maxSize=)
+and is not saved between sessions.
+
+These commands push onto the ring: =C-k= (=scimax.killLine=), =C-w=, =M-w=,
+killing or copying an org subtree or source block, killing a LaTeX section or
+environment, killing or copying a BibTeX entry, the jump kill-line and
+copy-line actions, and rectangle kill and copy. Rectangle yank (=C-x r y=)
+still inserts the last killed rectangle as a rectangle.
+
+** Related Topics
+
+- [[file:24-keybindings.org][Keybindings]] - Kill Ring keys
+- [[#mark-ring][Mark Ring]] - setting the region with =C-SPC=
+- [[file:26-configuration.org][Configuration]] - =scimax.killRing.maxSize=
 4. Timestamps show how long ago each mark was set
 
 * ✅ Rectangle

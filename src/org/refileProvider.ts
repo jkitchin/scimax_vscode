@@ -145,7 +145,7 @@ export async function refileSubtree(options?: { keepOriginal?: boolean }): Promi
     const document = editor.document;
 
     // Check if we're in an org or markdown file
-    if (!['org', 'markdown'].includes(document.languageId)) {
+    if (!['org', 'markdown', 'quarto'].includes(document.languageId)) {
         vscode.window.showWarningMessage('Refile is only available in org and markdown files');
         return;
     }

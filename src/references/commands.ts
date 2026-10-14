@@ -15,6 +15,7 @@ import {
 } from './openalexService';
 import { storeOpenAlexApiKey, getOpenAlexApiKey, deleteOpenAlexApiKey, hasOpenAlexApiKey } from '../database/secretStorage';
 import { findCitationAtPosition, rebuildCitation } from './citationParser';
+import { isMarkdownLike } from '../shared/markdownLike';
 
 /**
  * Register all reference-related commands
@@ -193,7 +194,7 @@ export function registerReferenceCommands(
                 if (langId === 'bibtex') {
                     // If in a bib file, use that
                     targetBibFile = docPath;
-                } else if (langId === 'org' || langId === 'latex' || langId === 'markdown') {
+                } else if (langId === 'org' || langId === 'latex' || isMarkdownLike(langId)) {
                     // Look for bibliography reference in the document
                     const text = activeEditor.document.getText();
 

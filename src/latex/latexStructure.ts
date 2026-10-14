@@ -4,6 +4,7 @@
  */
 
 import * as vscode from 'vscode';
+import { pushKill } from '../killRing/commands';
 import {
     getSections,
     getSectionLevel,
@@ -474,7 +475,7 @@ export async function killSection(): Promise<void> {
     const text = document.getText(range);
 
     // Copy to clipboard
-    await vscode.env.clipboard.writeText(text);
+    await pushKill(text);
 
     // Delete the section (include trailing newline if present)
     const deleteRange = new vscode.Range(

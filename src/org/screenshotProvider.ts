@@ -12,6 +12,7 @@ import * as crypto from 'crypto';
 import { spawn } from 'child_process';
 import { createLogger } from '../utils/logger';
 import type { Worker as OcrWorker } from 'tesseract.js';
+import { isMarkdownLike } from '../shared/markdownLike';
 
 const log = createLogger('Screenshot');
 
@@ -370,7 +371,7 @@ export async function insertScreenshot(): Promise<void> {
 
     const document = editor.document;
     const isOrg = document.languageId === 'org';
-    const isMd = document.languageId === 'markdown';
+    const isMd = isMarkdownLike(document.languageId);
 
     if (!isOrg && !isMd) {
         vscode.window.showErrorMessage('Screenshot insertion only works in org-mode or markdown files');
@@ -457,7 +458,7 @@ export async function insertOcrScreenshot(): Promise<void> {
 
     const document = editor.document;
     const isOrg = document.languageId === 'org';
-    const isMd = document.languageId === 'markdown';
+    const isMd = isMarkdownLike(document.languageId);
 
     if (!isOrg && !isMd) {
         vscode.window.showErrorMessage('OCR screenshot insertion only works in org-mode or markdown files');

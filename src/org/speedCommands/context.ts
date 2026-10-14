@@ -16,6 +16,7 @@ import * as archive from './archive';
 import * as structure from './structure';
 import { orgSort } from './sort';
 import { isSectionLine } from '../../latex/latexNavigation';
+import { isMarkdownLike } from '../../shared/markdownLike';
 
 /**
  * Check if cursor is at the start of a heading (column 0)
@@ -28,7 +29,7 @@ export function isAtHeadingStart(document: vscode.TextDocument, position: vscode
 
     if (document.languageId === 'org') {
         return /^\*+\s/.test(line);
-    } else if (document.languageId === 'markdown') {
+    } else if (isMarkdownLike(document.languageId)) {
         return /^#+\s/.test(line);
     }
 
@@ -46,7 +47,7 @@ export function isAtSrcBlockStart(document: vscode.TextDocument, position: vscod
 
     if (document.languageId === 'org') {
         return /^#\+begin_src\s/i.test(line);
-    } else if (document.languageId === 'markdown') {
+    } else if (isMarkdownLike(document.languageId)) {
         // Check for markdown fenced code block opening
         return /^(`{3,}|~{3,})\w+$/.test(line);
     }
@@ -106,7 +107,7 @@ export function getHeadingLevel(document: vscode.TextDocument, lineNum: number):
     if (document.languageId === 'org') {
         const match = line.match(/^(\*+)\s/);
         return match ? match[1].length : 0;
-    } else if (document.languageId === 'markdown') {
+    } else if (isMarkdownLike(document.languageId)) {
         const match = line.match(/^(#+)\s/);
         return match ? match[1].length : 0;
     }
@@ -171,7 +172,7 @@ function updatePositionContexts(editor: vscode.TextEditor | undefined): void {
         return;
     }
 
-    if (!['org', 'markdown'].includes(document.languageId)) {
+    if (!['org', 'markdown', 'quarto'].includes(document.languageId)) {
         vscode.commands.executeCommand('setContext', 'scimax.atHeadingStart', false);
         vscode.commands.executeCommand('setContext', 'scimax.atSrcBlockStart', false);
         vscode.commands.executeCommand('setContext', 'scimax.atLatexSectionStart', false);

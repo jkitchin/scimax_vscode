@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
 import { getDatabase } from '../database/lazyDb';
+import { isMarkdownLike } from '../shared/markdownLike';
 
 interface LineItem extends vscode.QuickPickItem {
     filePath: string;
@@ -280,7 +281,7 @@ async function fuzzySearchOutline(): Promise<void> {
 
     // Patterns for different file types
     const isOrg = document.languageId === 'org';
-    const isMarkdown = document.languageId === 'markdown';
+    const isMarkdown = isMarkdownLike(document.languageId);
 
     for (let i = 0; i < document.lineCount; i++) {
         const line = document.lineAt(i);
