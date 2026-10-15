@@ -16,6 +16,7 @@ import {
     buildNoteDefinition,
     NoteDefinition,
 } from '../parser/orgNotes';
+import { isHeadingLine } from '../parser/orgHeadingLine';
 
 function isOrg(doc: vscode.TextDocument): boolean {
     return doc.languageId === 'org' || doc.fileName.endsWith('.org');
@@ -35,7 +36,7 @@ function today(): string {
 function nearestHeadingTitle(lines: string[], line: number): string {
     for (let i = Math.min(line, lines.length - 1); i >= 0; i--) {
         const m = lines[i].match(/^\*+\s+(.*)$/);
-        if (m) return m[1].replace(/\s+:[\w@#%:]+:\s*$/, '').trim();
+        if (m && isHeadingLine(lines[i])) return m[1].replace(/\s+:[\w@#%:]+:\s*$/, '').trim();
     }
     return '';
 }
@@ -92,7 +93,7 @@ async function addNoteCommand(): Promise<void> {
     if (notesHeadingLine >= 0) {
         let end = lines.length;
         for (let i = notesHeadingLine + 1; i < lines.length; i++) {
-            if (/^\*+\s/.test(lines[i])) { end = i; break; }
+            if (isHeadingLine(lines[i])) { end = i; break; }
         }
         if (end >= lines.length) {
             // Notes is the last section: append at end of document.
@@ -212,7 +213,7 @@ class NotesTreeProvider implements vscode.TreeDataProvider<NotesNode> {
             const headingLines: { title: string; line: number }[] = [];
             lines.forEach((l, i) => {
                 const m = l.match(/^\*+\s+(.*)$/);
-                if (m) headingLines.push({ title: m[1].replace(/\s+:[\w@#%:]+:\s*$/, '').trim(), line: i });
+                if (m && isHeadingLine(l)) headingLines.push({ title: m[1].replace(/\s+:[\w@#%:]+:\s*$/, '').trim(), line: i });
             });
             const used = new Set<number>();
             for (const ref of refs) {
@@ -240,7 +241,7 @@ class NotesTreeProvider implements vscode.TreeDataProvider<NotesNode> {
 
     private refOwner(line: number, lines: string[]): number {
         let owner = -1;
-        for (let i = line - 1; i >= 0; i--) { if (/^\*+\s/.test(lines[i])) { owner = i; break; } }
+        for (let i = line - 1; i >= 0; i--) { if (isHeadingLine(lines[i])) { owner = i; break; } }
         return owner;
     }
 }

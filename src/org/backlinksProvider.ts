@@ -19,6 +19,7 @@ import * as vscode from 'vscode';
 import { getDatabase } from '../database/lazyDb';
 import type { BacklinkRow, BacklinkTarget } from '../database/scimaxDbCore';
 import { extractAnchors } from '../parser/orgAnchors';
+import { isHeadingLine } from '../parser/orgHeadingLine';
 import { getTodoStatesFromText, extractHeadingTitle } from './todoStates';
 
 type Target = BacklinkTarget;
@@ -35,7 +36,7 @@ function readHeadingTarget(lines: string[], headingLine: number, todoStates: Set
     let customId: string | undefined;
     let id: string | undefined;
     for (let i = headingLine + 1; i < Math.min(headingLine + 30, lines.length); i++) {
-        if (/^\*+\s/.test(lines[i])) break;
+        if (/^\*+\s/.test(lines[i])) break; // heading or inline task
         const c = lines[i].match(/^\s*:CUSTOM_ID:\s*(\S+)/i);
         if (c) customId = c[1];
         const d = lines[i].match(/^\s*:ID:\s*(\S+)/i);
@@ -59,7 +60,7 @@ function resolveTargetAt(document: vscode.TextDocument, position: vscode.Positio
     const lines = fullText.split('\n');
     const todoStates = getTodoStatesFromText(fullText);
     for (let i = position.line; i >= 0; i--) {
-        if (/^\*+\s+/.test(lines[i])) return readHeadingTarget(lines, i, todoStates);
+        if (isHeadingLine(lines[i])) return readHeadingTarget(lines, i, todoStates);
     }
     return undefined;
 }
@@ -137,9 +138,10 @@ class BacklinksCodeLensProvider implements vscode.CodeLensProvider {
                 anchorPos: new vscode.Position(a.lineNumber - 1, a.column),
             });
         }
-        // One candidate per heading.
+        // One candidate per heading. Inline tasks (and their END lines) are not
+        // link targets; their lines belong to the enclosing heading.
         for (let i = 0; i < lines.length; i++) {
-            if (/^\*+\s+/.test(lines[i])) {
+            if (isHeadingLine(lines[i])) {
                 candidates.push({
                     range: new vscode.Range(i, 0, i, 0),
                     target: readHeadingTarget(lines, i, todoStates),

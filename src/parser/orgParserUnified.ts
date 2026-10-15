@@ -3,6 +3,7 @@
  * Combines all parsing modules to produce a complete AST with the new element types
  */
 
+import { DEFAULT_INLINETASK_MIN_LEVEL } from './orgHeadingLine';
 import type {
     OrgDocumentNode,
     HeadlineElement,
@@ -67,7 +68,6 @@ export interface OrgParserConfig {
 
 // Done keywords are a subset of DEFAULT_TODO_STATES from todoStates.ts
 const DEFAULT_DONE_KEYWORDS = ['DONE', 'CANCELLED', 'CANCELED'];
-const DEFAULT_INLINETASK_MIN_LEVEL = 15;
 
 // Maximum lines to consume when looking for block end tags (prevents unbounded memory consumption)
 const MAX_BLOCK_LINES = 50000;
