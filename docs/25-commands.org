@@ -39,7 +39,7 @@ CLOSED: [2026-01-17 Sat 12:24]
 | [[cmd:scimax.heading.moveUp]]           | Move Heading Up        | M-UP                            |
 | [[cmd:scimax.heading.moveDown]]         | Move Heading Down      | M-DOWN                          |
 
-** ✅ Org-Mode Heading Navigation
+** 👀 Org-Mode Heading Navigation
 CLOSED: [2026-01-17 Sat 12:24]
 
 | Command ID                          | Description            | Default Keybinding |
@@ -56,7 +56,7 @@ CLOSED: [2026-01-17 Sat 12:24]
 | [[cmd:scimax.org.moveSubtreeDown]]  | Move Subtree Down      | M-DOWN (heading)   |
 | [[cmd:scimax.org.insertHeading]]    | Insert Heading         | C-RET (heading)    |
 | [[cmd:scimax.org.insertSubheading]] | Insert Subheading      | -                  |
-| [[cmd:scimax.org.insertInlineTask]] | Insert Inline Task     | -                  |
+| [[cmd:scimax.org.insertInlineTask]] | Insert Inline Task     | C-c C-x t (org)    |
 | [[cmd:scimax.org.killSubtree]]      | Kill Subtree           | -                  |
 | [[cmd:scimax.org.cloneSubtree]]     | Clone Subtree          | -                  |
 | [[cmd:scimax.org.refile]]           | Refile Subtree         | C-c C-w            |
