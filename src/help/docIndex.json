@@ -1,5 +1,5 @@
 {
-  "buildDate": "2026-10-14T20:12:45.777Z",
+  "buildDate": "2026-10-15T17:52:01.740Z",
   "count": 3665,
   "entries": [
     {
@@ -73881,7 +73881,7 @@
       "heading": "Navigation & Manipulation",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 250,
+      "line": 251,
       "content": "| Key           | Action                          | |---------------+---------------------------------| | C-<up>        | Previous source block           | | C-<down>      | Next source block               | | C-c C-b       | Jump to source block            | | C-c C-v g     | Jump to source block (alt)      | | C-c C-v n     | Next source block (alt)         | | C-c n         | Next source block               | | C-c C-,       | Insert source block below       | | C-c -         | Split source b",
       "path": [
         "Source Blocks (Babel)"
@@ -73918,7 +73918,7 @@
       "heading": "Advanced Babel Operations",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 268,
+      "line": 269,
       "content": "| Key       | Action                      | |-----------+-----------------------------| | C-c C-v t | Tangle source blocks        | | C-c C-v p | Execute all blocks to point | | C-c C-v i | Execute inline code         | | C-c C-v q | Queue block for execution   |",
       "path": [
         "Source Blocks (Babel)"
@@ -73952,7 +73952,7 @@
       "heading": "Export",
       "level": 1,
       "file": "24-keybindings.org",
-      "line": 277,
+      "line": 278,
       "content": "| Key           | Action                        | |---------------+-------------------------------| | C-c C-e       | Export dispatcher (show menu) | | C-c C-e h h   | Export to HTML                | | C-c C-e h o   | Export to HTML and open       | | C-c C-e h p   | Open the live org preview     | | C-c C-e l l   | Export to LaTeX               | | C-c C-e l o   | Export to LaTeX and open      | | C-c C-e l p   | Export to PDF                 | | C-c C-e l v   | Open LaTeX preview            | ",
       "path": [],
       "commands": [],
@@ -73982,7 +73982,7 @@
       "heading": "Org Preview",
       "level": 1,
       "file": "24-keybindings.org",
-      "line": 300,
+      "line": 301,
       "content": "Like the Markdown preview, but for org files. See [[file:46-org-preview.org][Org Preview]]. | Key (macOS)   | Key (Windows/Linux) | Where        | Action                          | |---------------+---------------------+--------------+---------------------------------| | Cmd+Shift+V   | Ctrl+Shift+V        | Org editor   | Open preview in this group      | | Cmd+K V       | Ctrl+K V            | Org editor   | Open preview to the side        | | Cmd+Shift+V   | Ctrl+Shift+V        | Org preview ",
       "path": [],
       "commands": [],
@@ -74016,7 +74016,7 @@
       "heading": "Links",
       "level": 1,
       "file": "24-keybindings.org",
-      "line": 310,
+      "line": 311,
       "content": "| Key        | Action                   | |------------+--------------------------| | C-c C-l    | Insert link              | | C-c C-o    | Open link                | | <return>   | Open link (when on link) | | F10        | Insert screenshot        | *Note:* On macOS, =F10= requires screen recording permission. See [[file:12-image-overlays.org::*Inserting Screenshots][Inserting Screenshots]].",
       "path": [],
       "commands": [],
@@ -74051,7 +74051,7 @@
       "heading": "Citations & References",
       "level": 1,
       "file": "24-keybindings.org",
-      "line": 321,
+      "line": 322,
       "content": "| Key        | Action                                 | |------------+----------------------------------------| | C-c ]      | Insert citation                        | | C-c z      | Insert citation from Zotero            | | C-u C-c ]  | Insert cross-reference                 | | S-<left>   | Transpose citation left (on citation)  | | S-<right>  | Transpose citation right (on citation) | | S-<up>     | Sort citations (on citation)           | | S-<down>   | Sort citations by year (on citation) ",
       "path": [],
       "commands": [],
@@ -74086,7 +74086,7 @@
       "heading": "Text Markup",
       "level": 1,
       "file": "24-keybindings.org",
-      "line": 335,
+      "line": 336,
       "content": "| Key   | Alt Key (Mac: C-M) | Action                              | |-------+--------------------+-------------------------------------| | C-c b | M-b (C-M-b)        | Bold                                | | C-c i | M-i (C-M-i)        | Italic                              | | C-c _ | M-u (C-M-u)        | Underline                           | | C-c ` | M-c (C-M-c)        | Code (inline)                       | | C-c = | M-v (C-M-v)        | Verbatim                            | | C-c + | M-x (C-",
       "path": [],
       "commands": [],
@@ -74132,7 +74132,7 @@
       "heading": "Search & Navigation",
       "level": 1,
       "file": "24-keybindings.org",
-      "line": 351,
+      "line": 352,
       "content": "",
       "path": [],
       "commands": [],
@@ -74146,7 +74146,7 @@
       "heading": "Fuzzy Search (Swiper-style)",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 353,
+      "line": 354,
       "content": "| Key     | Action                         | |---------+--------------------------------| | C-c s   | Fuzzy search in current buffer | | C-c S-s | Fuzzy search in open files     | | C-c M-s | Fuzzy search outline/headings  |",
       "path": [
         "Search & Navigation"
@@ -74176,7 +74176,7 @@
       "heading": "Jump (Avy-style)",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 361,
+      "line": 362,
       "content": "| Key     | Action                          | |---------+---------------------------------| | C-c j c | Jump to character               | | C-c j j | Jump to 2 characters            | | C-c j t | Jump to text (pause for labels) | | C-c j w | Jump to word                    | | C-c j l | Jump to line                    | | C-c j o | Jump to symbol/outline          | | C-c j s | Jump to subword                 | | C-c j h | Jump to heading                 | | C-c j ? | List the jump commands      ",
       "path": [
         "Search & Navigation"
@@ -74210,7 +74210,7 @@
       "heading": "Recenter",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 378,
+      "line": 379,
       "content": "| Key | Action                                         | |-----+------------------------------------------------| | C-l | Recenter top/bottom (center → top → bottom)    | Emacs-style =recenter-top-bottom=. Press =C-l= repeatedly while the cursor stays put to cycle the cursor line through center, top, and bottom of the viewport. Moving the cursor resets the cycle to center.",
       "path": [
         "Search & Navigation"
@@ -74246,7 +74246,7 @@
       "heading": "Projectile",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 388,
+      "line": 389,
       "content": "| Key       | Action                          | |-----------+---------------------------------| | C-c p p   | Switch project                  | | C-c p .   | Switch to this file's project   | | C-c p f   | Find file in project            | | C-c p s   | Search in project               | | C-c p d   | Open project root directory     | | C-c p a   | Add project                     | | C-c p S-f | Find file in all known projects |",
       "path": [
         "Search & Navigation"
@@ -74278,7 +74278,7 @@
       "heading": "Database and Agenda",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 400,
+      "line": 401,
       "content": "CLOSED: [2026-01-24 Sat 17:38] | Key     | Action               | |---------+----------------------| | C-c a a | Agenda menu          | | C-c a v | Agenda buffer        | | C-c a w | Week agenda          | | C-c a m | Month agenda         | | C-c a t | TODO list            | | C-c a d | Deadlines            | | C-c d   | Database hydra menu  | | C-c d f | Browse indexed files | | C-c d s | Search database      | | C-c d h | Search headings      | | C-c d t | Show TODOs           | | C-c d a | Sh",
       "path": [
         "Search & Navigation"
@@ -74314,7 +74314,7 @@
       "heading": "Agenda Buffer",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 418,
+      "line": 419,
       "content": "CLOSED: [2026-10-03 Sat 09:01] Single keys, active only inside an agenda buffer (see [[file:13-agenda.org][Agenda]]). The buffer is read-only, so these keys are never ambiguous with typing. | Key | Action                       | |-----+------------------------------| | RET | Jump to the item's source    | | t   | Cycle the item's TODO state  | | @   | Filter by assignee           | | g   | Refresh                      | | f   | Forward one period           | | b   | Back one period              ",
       "path": [
         "Search & Navigation"
@@ -74348,7 +74348,7 @@
       "heading": "Templates",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 438,
+      "line": 439,
       "content": "CLOSED: [2026-01-24 Sat 17:38] | Key       | Action                         | |-----------+--------------------------------| | C-c C-t i | Quick insert template          | | C-c C-t n | New file from template         | | C-c C-t l | List templates                 | | C-c C-t s | Create template from selection |",
       "path": [
         "Search & Navigation"
@@ -74381,7 +74381,7 @@
       "heading": "Spelling",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 448,
+      "line": 449,
       "content": "CLOSED: [2026-01-24 Sat 17:38] | Key     | Action                        | |---------+-------------------------------| | C-c ;   | Go to previous spelling error | | C-c S-; | Go to next spelling error     |",
       "path": [
         "Search & Navigation"
@@ -74409,7 +74409,7 @@
       "heading": "Slide Sorter",
       "level": 1,
       "file": "24-keybindings.org",
-      "line": 456,
+      "line": 457,
       "content": "Keys that work while the Slide Sorter has focus. They are handled by the sorter, so they do not appear in Keyboard Shortcuts. Use =Ctrl= in place of =Cmd= on Windows and Linux. See [[file:44-marp.org::*Editing Slides][Editing Slides]]. | Key                        | Action                                                           | |----------------------------+------------------------------------------------------------------| | Left / Right               | Select previous / next slide         ",
       "path": [],
       "commands": [],
@@ -74441,7 +74441,7 @@
       "heading": "Edit Marks (Track Changes)",
       "level": 1,
       "file": "24-keybindings.org",
-      "line": 483,
+      "line": 484,
       "content": "| Key     | Action                  | |---------+-------------------------| | C-c e i | Mark insertion          | | C-c e d | Mark deletion           | | C-c e c | Add comment             | | C-c e t | Mark typo               | | C-c e a | Accept edit mark        | | C-c e r | Reject edit mark        | | C-c e ] | Next edit mark          | | C-c e [ | Previous edit mark      | | C-c e s | Show edit marks summary |",
       "path": [],
       "commands": [],
@@ -74475,7 +74475,7 @@
       "heading": "Mark Ring (Emacs-style)",
       "level": 1,
       "file": "24-keybindings.org",
-      "line": 497,
+      "line": 498,
       "content": "CLOSED: [2026-01-24 Sat 17:38] Emacs-style mark and region commands. | Key               | Action                     | |-------------------+----------------------------| | C-Space           | Set mark at point          | | C-g               | Cancel selection           | | C-c Space         | Push mark to ring          | | C-u C-Space       | Pop mark from local ring   | | Ctrl+U Ctrl+Space | Pop from local ring (alt)  | | C-x C-Space       | Pop mark from global ring  | | Ctrl+X Ctrl+Space | P",
       "path": [],
       "commands": [],
@@ -74516,7 +74516,7 @@
       "heading": "Kill Ring (Emacs-style)",
       "level": 1,
       "file": "24-keybindings.org",
-      "line": 514,
+      "line": 515,
       "content": "Kills and copies go onto a kill ring as well as the system clipboard, so you can yank older kills, not just the last one. See [[file:25-commands.org::#kill-ring][Kill Ring commands]] for details. | Key | Action                                                       | |-----+--------------------------------------------------------------| | C-y | Yank the current kill                                        | | M-y | After C-y: replace it with the next older kill (repeatable)  | | M-y | Otherwise: p",
       "path": [],
       "commands": [],
@@ -74551,7 +74551,7 @@
       "heading": "Related Topics",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 528,
+      "line": 529,
       "content": "- [[file:25-commands.org::#kill-ring][Kill Ring commands]] - [[file:26-configuration.org][Configuration]] (=scimax.killRing.maxSize=) - Mark Ring (above), for setting the region with =C-SPC=",
       "path": [
         "Kill Ring (Emacs-style)"
@@ -74582,7 +74582,7 @@
       "heading": "Rectangle Commands (Emacs-style)",
       "level": 1,
       "file": "24-keybindings.org",
-      "line": 534,
+      "line": 535,
       "content": "Emacs-style rectangle editing commands. A rectangle is defined by the column range and line range of the current selection. | Key         | Action                                | |-------------+---------------------------------------| | C-x r k     | Kill rectangle (save to rect clip)    | | C-x r M-w   | Copy rectangle (no delete)            | | C-x r d     | Delete rectangle (no save)            | | C-x r y     | Yank rectangle at point               | | C-x r o     | Open rectangle (insert b",
       "path": [],
       "commands": [],
@@ -74617,7 +74617,7 @@
       "heading": "Speed Commands",
       "level": 1,
       "file": "24-keybindings.org",
-      "line": 551,
+      "line": 552,
       "content": "Speed commands are single-key shortcuts available when the cursor is at the *beginning* of a heading (the first character of the heading line). They must be enabled in settings (scimax.speedCommands.enabled).",
       "path": [],
       "commands": [
@@ -74645,7 +74645,7 @@
       "heading": "Navigation Speed Commands",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 555,
+      "line": 556,
       "content": "| Key | Action                            | |-----+-----------------------------------| | n   | Next heading (same level)         | | p   | Previous heading (same level)     | | f   | Next sibling heading              | | b   | Previous sibling heading          | | u   | Parent heading (up one level)     | | j   | Jump to heading (quick picker)    | | g   | Goto menu (additional navigation) |",
       "path": [
         "Speed Commands"
@@ -74678,7 +74678,7 @@
       "heading": "Visibility Speed Commands",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 567,
+      "line": 568,
       "content": "| Key   | Action                            | |-------+-----------------------------------| | <tab> | Toggle fold (same as regular tab) | | c     | Cycle global fold                 | | C     | Show children only                | | o     | Overview (collapse all)           | | 1     | Show level 1 headings             | | 2     | Show level 2 headings             | | 3     | Show level 3 headings             | | 0     | Show all headings                 | | N     | Narrow to subtree             ",
       "path": [
         "Speed Commands"
@@ -74712,7 +74712,7 @@
       "heading": "Structure Editing Speed Commands",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 581,
+      "line": 582,
       "content": "| Key | Action               | |-----+----------------------| | l   | Promote heading only | | r   | Demote heading only  | | L   | Promote subtree      | | R   | Demote subtree       | | U   | Move subtree up      | | D   | Move subtree down    |",
       "path": [
         "Speed Commands"
@@ -74739,7 +74739,7 @@
       "heading": "\"TODO\" & Content Speed Commands",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 592,
+      "line": 593,
       "content": "| Key | Action                 | |-----+------------------------| | t   | Cycle TODO state       | | d   | Insert DEADLINE        | | s   | Insert SCHEDULED       | | e   | Set effort estimate    | | :   | Set tags               | | P   | Set property           | | I   | Clock in               | | O   | Clock out              |",
       "path": [
         "Speed Commands"
@@ -74772,7 +74772,7 @@
       "heading": "Editing Speed Commands",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 605,
+      "line": 606,
       "content": "| Key | Action                  | |-----+-------------------------| | k   | Kill (cut) subtree      | | y   | Yank (paste) subtree    | | w   | Refile subtree          | | W   | Clone subtree           | | m   | Mark (select) subtree   | | @   | Mark subtree (alt)      | | ^   | Sort entries            | | a   | Archive subtree         | | A   | Toggle archive tag      | | $   | Archive to sibling      |",
       "path": [
         "Speed Commands"
@@ -74806,7 +74806,7 @@
       "heading": "Other Speed Commands",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 620,
+      "line": 621,
       "content": "| Key | Action                   | |-----+--------------------------| | ?   | Show speed commands help | | /   | Show speed commands help |",
       "path": [
         "Speed Commands"
@@ -74827,7 +74827,7 @@
       "heading": "BibTeX Speed Commands",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 627,
+      "line": 628,
       "content": "CLOSED: [2026-01-19 Mon 18:18] Speed commands for BibTeX files, active at column 0 of @entry lines (e.g., =@article{=, =@book{=).",
       "path": [
         "Speed Commands"
@@ -74854,7 +74854,7 @@
       "heading": "Navigation",
       "level": 3,
       "file": "24-keybindings.org",
-      "line": 632,
+      "line": 633,
       "content": "CLOSED: [2026-01-19 Mon 18:18] | Key | Action         | |-----+----------------| | n   | Next entry     | | p   | Previous entry | | j   | Jump to entry  |",
       "path": [
         "Speed Commands",
@@ -74881,7 +74881,7 @@
       "heading": "Formatting",
       "level": 3,
       "file": "24-keybindings.org",
-      "line": 641,
+      "line": 642,
       "content": "CLOSED: [2026-01-19 Mon 18:18] | Key | Action              | |-----+---------------------| | s   | Sort fields         | | d   | Downcase entry      | | t   | Title case title    | | S   | Sentence case title | | c   | Clean/format entry  |",
       "path": [
         "Speed Commands",
@@ -74912,7 +74912,7 @@
       "heading": "Wrap/Strip Braces (Case Protection)",
       "level": 4,
       "file": "24-keybindings.org",
-      "line": 652,
+      "line": 653,
       "content": "CLOSED: [2026-01-21 Wed 08:02] | Key         | Action                                      | |-------------+---------------------------------------------| | C-S-]       | Wrap selection or word at cursor in braces  | | C-S-[       | Strip braces from selection or word         | Wraps text in ={}= for case protection in BibTeX titles (e.g., ={NASA}=, ={Python}=). Works anywhere in the file, not just at entry start.",
       "path": [
         "Speed Commands",
@@ -74950,7 +74950,7 @@
       "heading": "Access",
       "level": 3,
       "file": "24-keybindings.org",
-      "line": 662,
+      "line": 663,
       "content": "CLOSED: [2026-01-19 Mon 18:18] | Key | Action               | |-----+----------------------| | o   | Open PDF             | | u   | Open URL/DOI         | | N   | Open notes           | | g   | Google Scholar       | | x   | CrossRef             | | w   | Web of Science       |",
       "path": [
         "Speed Commands",
@@ -74982,7 +74982,7 @@
       "heading": "OpenAlex Integration",
       "level": 3,
       "file": "24-keybindings.org",
-      "line": 674,
+      "line": 675,
       "content": "CLOSED: [2026-01-19 Mon 18:18] | Key | Action                        | |-----+-------------------------------| | C   | Show citing works (OpenAlex)  | | R   | Show related works (OpenAlex) | | r   | Show references (OpenAlex)    |",
       "path": [
         "Speed Commands",
@@ -75011,7 +75011,7 @@
       "heading": "Actions",
       "level": 3,
       "file": "24-keybindings.org",
-      "line": 683,
+      "line": 684,
       "content": "CLOSED: [2026-01-19 Mon 18:18] | Key | Action                    | |-----+---------------------------| | y   | Copy citation key         | | b   | Copy BibTeX entry         | | B   | Strip braces from entry   | | k   | Delete entry              | | K   | Generate citation key     | | U   | Update from web           | | N   | Open notes for entry      | | A   | Toggle journal abbreviation | | ?   | Show help                 |",
       "path": [
         "Speed Commands",
@@ -75046,7 +75046,7 @@
       "heading": "Toggle Speed Commands",
       "level": 1,
       "file": "24-keybindings.org",
-      "line": 698,
+      "line": 699,
       "content": "CLOSED: [2026-01-19 Mon 18:19] | Key       | Action                       | |-----------+------------------------------| | C-c C-x s | Toggle speed commands on/off |",
       "path": [],
       "commands": [],
@@ -75073,7 +75073,7 @@
       "heading": "Additional Notes",
       "level": 1,
       "file": "24-keybindings.org",
-      "line": 705,
+      "line": 706,
       "content": "CLOSED: [2026-01-19 Mon 18:19]",
       "path": [],
       "commands": [],
@@ -75091,7 +75091,7 @@
       "heading": "Context-Dependent Keybindings",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 708,
+      "line": 709,
       "content": "Many keybindings are context-aware and behave differently depending on cursor position: - C-c C-c toggles checkboxes normally, sets tags on a headline line (like C-c C-q; on a statistics cookie it updates the cookie instead), executes source blocks inside code blocks, recalculates tables on TBLFM lines, and runs a Marp deck's ~```python run~ cell in the Python panel - S-<arrow> keys modify timestamps normally, but transpose/sort citations when on a citation - M-S-<left>/M-S-<right> promote/demot",
       "path": [
         "Additional Notes"
@@ -75129,7 +75129,7 @@
       "heading": "When Conditions",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 717,
+      "line": 718,
       "content": "CLOSED: [2026-01-19 Mon 18:19] Some keybindings only work in specific contexts: - Org-mode/Markdown files: Most document structure commands - On headings: Folding, promotion, demotion - In tables: Table-specific commands - In source blocks: Block execution - At heading start: Speed commands",
       "path": [
         "Additional Notes"
@@ -75163,7 +75163,7 @@
       "heading": "Mac vs Windows/Linux",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 727,
+      "line": 728,
       "content": "CLOSED: [2026-01-19 Mon 18:19] Most keybindings use C- (Ctrl) on all platforms to match Emacs conventions. Exceptions where Mac uses s- (Cmd): - s-S-j (journal) - s-<return> (execute/insert heading) - s-S-k (delete citation) - s-S-r (reload window) - C-s-v (database menu)",
       "path": [
         "Additional Notes"
@@ -75199,7 +75199,7 @@
       "heading": "LaTeX Navigation",
       "level": 1,
       "file": "24-keybindings.org",
-      "line": 737,
+      "line": 738,
       "content": "CLOSED: [2026-01-19 Mon 18:20] These keybindings are active in LaTeX files (=.tex=):",
       "path": [],
       "commands": [],
@@ -75220,7 +75220,7 @@
       "heading": "Section Navigation",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 742,
+      "line": 743,
       "content": "CLOSED: [2026-01-19 Mon 18:19] | Key         | Action                       | |-------------+------------------------------| | C-c C-n     | Next section                 | | C-c C-p     | Previous section             | | C-c C-u     | Parent section               | | C-c C-f     | Next sibling section         | | C-c C-b     | Previous sibling section     | | C-c C-j     | Jump to any section          | | C-c j       | Jump to any section (alt)    |",
       "path": [
         "LaTeX Navigation"
@@ -75262,7 +75262,7 @@
       "heading": "Structure Editing",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 755,
+      "line": 756,
       "content": "CLOSED: [2026-01-19 Mon 18:20] | Key              | Action                     | |------------------+----------------------------| | Alt+Left         | Promote section            | | Alt+Right        | Demote section             | | Alt+Shift+Left   | Promote subtree            | | Alt+Shift+Right  | Demote subtree             | | Alt+Up           | Move section up            | | Alt+Down         | Move section down          | | C-c @            | Mark (select) section      |",
       "path": [
         "LaTeX Navigation"
@@ -75304,7 +75304,7 @@
       "heading": "Environment Commands",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 768,
+      "line": 769,
       "content": "CLOSED: [2026-01-19 Mon 18:20] | Key       | Action                          | |-----------+---------------------------------| | C-c C-e   | Select environment              | | C-c e     | Change environment type         | | C-c w     | Wrap selection in environment   | | C-c *     | Toggle starred variant          | | C-c %     | Jump to matching begin/end      | | C-c l     | Jump to label                   | | C-c C-l   | Add label to environment        |",
       "path": [
         "LaTeX Navigation"
@@ -75342,7 +75342,7 @@
       "heading": "Folding",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 781,
+      "line": 782,
       "content": "CLOSED: [2026-01-19 Mon 18:20] | Key       | Action            | |-----------+-------------------| | Tab       | Toggle fold       | | Shift+Tab | Cycle global fold |",
       "path": [
         "LaTeX Navigation"
@@ -75372,7 +75372,7 @@
       "heading": "Compile and Preview",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 789,
+      "line": 790,
       "content": "CLOSED: [2026-01-19 Mon 18:20] | Key       | Action                      | |-----------+-----------------------------| | C-c C-c   | Compile document            | | C-c v     | View PDF (built-in panel)   | | C-c C-v   | View PDF (external viewer)  | | C-c C-a   | Compile and view PDF        | | C-c g     | SyncTeX forward search      | | C-c C-k   | Clean auxiliary files       | See [[file:33-latex-navigation.org][LaTeX Navigation and Structure]] for complete documentation.",
       "path": [
         "LaTeX Navigation"
@@ -75412,7 +75412,7 @@
       "heading": "LaTeX Speed Commands",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 803,
+      "line": 804,
       "content": "CLOSED: [2026-01-24 Sat 17:39] Speed commands active at the start of =\\section=, =\\subsection=, or =\\begin{}= lines:",
       "path": [
         "LaTeX Navigation"
@@ -75439,7 +75439,7 @@
       "heading": "Section Speed Commands",
       "level": 3,
       "file": "24-keybindings.org",
-      "line": 808,
+      "line": 809,
       "content": "| Key | Action             | |-----+--------------------| | n   | Next section       | | p   | Previous section   | | f   | Forward sibling    | | b   | Backward sibling   | | u   | Up to parent       | | j   | Jump to section    | | U   | Move section up    | | D   | Move section down  | | <   | Promote section    | | >   | Demote section     | | I   | Insert section     | | N   | Narrow to section  | | W   | Widen (show all)   | | /   | Show help          |",
       "path": [
         "LaTeX Navigation",
@@ -75474,7 +75474,7 @@
       "heading": "Environment Speed Commands",
       "level": 3,
       "file": "24-keybindings.org",
-      "line": 827,
+      "line": 828,
       "content": "| Key | Action                  | |-----+-------------------------| | n   | Next environment        | | p   | Previous environment    | | j   | Jump to environment     | | s   | Select environment      | | c   | Change environment      | | k   | Kill environment        | | w   | Wrap in environment     | | u   | Unwrap environment      | | *   | Toggle starred variant  | | l   | Add label               | | C   | Add caption             | | i   | Environment info        | | /   | Show help       ",
       "path": [
         "LaTeX Navigation",
@@ -75509,7 +75509,7 @@
       "heading": "Quick Reference Card",
       "level": 1,
       "file": "24-keybindings.org",
-      "line": 845,
+      "line": 846,
       "content": "CLOSED: [2026-01-19 Mon 18:20]",
       "path": [],
       "commands": [],
@@ -75528,7 +75528,7 @@
       "heading": "Most Common Commands",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 848,
+      "line": 849,
       "content": "CLOSED: [2026-01-19 Mon 18:20] | Command            | Keybinding   | |--------------------+--------------| | Open journal       | C-S-j        | | Execute code block | C-<return>   | | Cycle TODO         | C-c C-t      | | Insert timestamp   | C-c .        | | Insert link        | C-c C-l      | | Insert citation    | C-c ]        | | Export dispatcher  | C-c C-e      | | Jump to heading    | C-c C-j      | | Fuzzy search       | C-c s        | | Hydra menu         | C-c m        |",
       "path": [
         "Quick Reference Card"
@@ -75569,7 +75569,7 @@
       "heading": "Most Common Speed Commands",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 864,
+      "line": 865,
       "content": "CLOSED: [2026-01-19 Mon 18:20] | Speed Key | Action                 | |-----------+------------------------| | n/p       | Next/Previous heading  | | f/b       | Forward/Back sibling   | | u         | Up to parent           | | j         | Jump to heading        | | t         | Cycle TODO             | | l/r       | Promote/Demote subtree |",
       "path": [
         "Quick Reference Card"
@@ -75603,7 +75603,7 @@
       "heading": "Related Topics",
       "level": 1,
       "file": "24-keybindings.org",
-      "line": 876,
+      "line": 877,
       "content": "- [[file:25-commands.org][Commands Reference]] - every command, with or without a key - [[file:23-speed-commands.org][Speed Commands]] - single keys at the start of a heading - [[file:26-configuration.org][Configuration]] - settings that change key behaviour - [[file:44-marp.org][Marp Slides]] - Slide Sorter, presenter and export keys - [[file:46-org-preview.org][Org Preview]] - the live preview keys",
       "path": [],
       "commands": [],
@@ -75635,7 +75635,7 @@
       "heading": "Further Help",
       "level": 1,
       "file": "24-keybindings.org",
-      "line": 884,
+      "line": 885,
       "content": "CLOSED: [2026-01-19 Mon 18:20] - Use C-c m to open the Hydra menu for guided command discovery - Use M-x to search all commands by name - Enable speed commands help with ? when at heading start - See [[file:00-index.org][Documentation Index]] for comprehensive guides",
       "path": [],
       "commands": [],
@@ -75670,7 +75670,7 @@
       "heading": "Navigation",
       "level": 1,
       "file": "24-keybindings.org",
-      "line": 892,
+      "line": 893,
       "content": "CLOSED: [2026-01-19 Mon 18:20] - Previous: [[file:23-speed-commands.org][Speed Commands]] - Index: [[file:00-index.org][Documentation Index]] - Next: [[file:25-commands.org][Commands]]",
       "path": [],
       "commands": [],
@@ -93329,7 +93329,7 @@
       "level": 1,
       "file": "30-markdown-compatibility.org",
       "line": 278,
-      "content": "Quarto files (=.qmd=) are Pandoc Markdown with executable code chunks. Scimax works alongside the official [[https://marketplace.visualstudio.com/items?itemName=quarto.quarto][Quarto extension]] (=quarto.quarto=), which gives =.qmd= files their language (~quarto~). Each extension does its own part: | Feature                                      | Provided by | |----------------------------------------------+-------------| | Syntax highlighting, YAML header completion  | Quarto      | | Outline v",
+      "content": "Quarto files (=.qmd=) are Pandoc Markdown with executable code chunks. Scimax works alongside the official [[https://marketplace.visualstudio.com/items?itemName=quarto.quarto][Quarto extension]] (=quarto.quarto=), which gives =.qmd= files their language (~quarto~). Each extension does its own part: | Feature                                           | Provided by | |---------------------------------------------------+-------------| | Syntax highlighting, YAML header completion       | Quarto    ",
       "path": [],
       "commands": [],
       "keybindings": [],
@@ -93396,7 +93396,7 @@
       "heading": "Callouts and other divs",
       "level": 2,
       "file": "30-markdown-compatibility.org",
-      "line": 314,
+      "line": 317,
       "content": "Fenced divs (callouts, =::: {.columns}=, panels, =::: {#fig-x}= figure divs) fold from the opening =:::= to its matching close, including nested divs.",
       "path": [
         "Quarto Documents"
@@ -93423,7 +93423,7 @@
       "heading": "Features Not Available in Markdown",
       "level": 1,
       "file": "30-markdown-compatibility.org",
-      "line": 319,
+      "line": 322,
       "content": "CLOSED: [2026-01-19 Mon 09:40] The following org-mode features are *not* supported in Markdown files because they require org-specific syntax:",
       "path": [],
       "commands": [],
@@ -93449,7 +93449,7 @@
       "heading": "Task Management",
       "level": 2,
       "file": "30-markdown-compatibility.org",
-      "line": 325,
+      "line": 328,
       "content": "CLOSED: [2026-01-19 Mon 09:40] | Feature        | Reason                                      | |----------------+---------------------------------------------| | TODO keywords  | Org syntax: =* TODO Task=                   | | Priorities     | Org syntax: =[#A]=                          | | Checkbox lists | Markdown checkboxes work differently        | | Progress cookies| Org syntax: =[2/5]= or =[40%]=             |",
       "path": [
         "Features Not Available in Markdown"
@@ -93483,7 +93483,7 @@
       "heading": "Planning",
       "level": 2,
       "file": "30-markdown-compatibility.org",
-      "line": 335,
+      "line": 338,
       "content": "CLOSED: [2026-01-19 Mon 09:40] | Feature    | Reason                                         | |------------+------------------------------------------------| | SCHEDULED  | Org syntax: =SCHEDULED: <2026-01-20>=          | | DEADLINE   | Org syntax: =DEADLINE: <2026-01-20>=           | | Clocking   | Org syntax: =CLOCK: [timestamp]--[timestamp]=  | | Agenda     | Requires TODO states and scheduling            |",
       "path": [
         "Features Not Available in Markdown"
@@ -93517,7 +93517,7 @@
       "heading": "Metadata",
       "level": 2,
       "file": "30-markdown-compatibility.org",
-      "line": 345,
+      "line": 348,
       "content": "CLOSED: [2026-01-19 Mon 09:40] | Feature         | Reason                                    | |-----------------+-------------------------------------------| | Properties      | Org syntax: =:PROPERTIES:= drawer         | | Tags            | Org syntax: =* Heading :tag1:tag2:=       | | Inherited tags  | Requires org tag syntax                   | | LOGBOOK         | Org syntax: =:LOGBOOK:= drawer            |",
       "path": [
         "Features Not Available in Markdown"
@@ -93550,7 +93550,7 @@
       "heading": "Special Elements",
       "level": 2,
       "file": "30-markdown-compatibility.org",
-      "line": 355,
+      "line": 358,
       "content": "CLOSED: [2026-01-19 Mon 09:40] | Feature         | Reason                                    | |-----------------+-------------------------------------------| | Inline tasks    | Org syntax: 15+ stars                     | | Dynamic blocks  | Org syntax: =#+BEGIN:=                    | | Special blocks  | Org syntax: =#+BEGIN_QUOTE=, etc.         |",
       "path": [
         "Features Not Available in Markdown"
@@ -93583,7 +93583,7 @@
       "heading": "Tips for Markdown Users",
       "level": 1,
       "file": "30-markdown-compatibility.org",
-      "line": 364,
+      "line": 367,
       "content": "CLOSED: [2026-01-19 Mon 09:40]",
       "path": [],
       "commands": [],
@@ -93602,7 +93602,7 @@
       "heading": "Maximizing Compatibility",
       "level": 2,
       "file": "30-markdown-compatibility.org",
-      "line": 367,
+      "line": 370,
       "content": "CLOSED: [2026-01-19 Mon 09:41] To get the most out of Scimax VS Code with Markdown: 1. *Use speed commands* - Position cursor at column 0 of headings for rapid single-key operations 2. *Use fenced code blocks* - The extension fully supports =```language= blocks for execution and manipulation 3. *Use the outline view* - Provides visual navigation similar to org's sparse tree features 4. *Use jump commands* - =C-c C-j= for headings, =C-c C-v g= for code blocks",
       "path": [
         "Tips for Markdown Users"
@@ -93639,7 +93639,7 @@
       "heading": "When to Use Org-Mode Instead",
       "level": 2,
       "file": "30-markdown-compatibility.org",
-      "line": 383,
+      "line": 386,
       "content": "CLOSED: [2026-01-19 Mon 09:41] Consider using org-mode files when you need: - Task management with TODO states and priorities - Scheduling and deadlines with agenda integration - Time tracking with clocking - Inherited properties and tags - Advanced export features Org files can be exported to Markdown when sharing with others who don't use org-mode.",
       "path": [
         "Tips for Markdown Users"
@@ -93673,7 +93673,7 @@
       "heading": "Related Topics",
       "level": 1,
       "file": "30-markdown-compatibility.org",
-      "line": 397,
+      "line": 400,
       "content": "- [[file:45-myst-preview.org][MyST Markdown Preview]] - Jupyter Book directives and roles in the preview - [[file:44-marp.org][Marp Slides]] - jump from a Marp slide preview to its source - [[file:25-commands.org][Commands]] - Markdown File Export commands (Pandoc) - [[file:02-document-structure.org][Document Structure]] - Full org-mode structure documentation - [[file:23-speed-commands.org][Speed Commands]] - Complete speed command reference - [[file:07-source-blocks.org][Source Blocks]] - Code",
       "path": [],
       "commands": [],
@@ -93705,7 +93705,7 @@
       "heading": "Navigation",
       "level": 1,
       "file": "30-markdown-compatibility.org",
-      "line": 407,
+      "line": 410,
       "content": "CLOSED: [2026-01-19 Mon 09:44] - Previous: [[file:29-unsupported-features.org][Unsupported Features]] - Index: [[file:00-index.org][Documentation Index]] - Next: [[file:31-publishing.org][Publishing]]",
       "path": [],
       "commands": [],
