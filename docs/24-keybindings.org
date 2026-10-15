@@ -245,7 +245,8 @@ org-mode, markdown, and LaTeX files with consistent behavior.
 
 In a Quarto (=.qmd=) chunk, =C-c C-c= runs the chunk with the Quarto
 extension's *Run Cell*, and =C-<return>=, =s-<return>= and =S-<return>= are left to
-Quarto's own run commands. See [[file:30-markdown-compatibility.org::*Quarto Documents][Quarto Documents]].
+Quarto's own run commands. =Cmd+Shift+V= (=Ctrl+Shift+V=) in a =.qmd= file opens
+Quarto's preview (~quarto.preview~), the same as =Cmd+Shift+K=. See [[file:30-markdown-compatibility.org::*Quarto Documents][Quarto Documents]].
 
 ** Navigation & Manipulation
 

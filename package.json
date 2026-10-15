@@ -4483,6 +4483,12 @@
         "when": "editorTextFocus && editorLangId == 'org'"
       },
       {
+        "command": "quarto.preview",
+        "key": "ctrl+shift+v",
+        "mac": "cmd+shift+v",
+        "when": "editorTextFocus && editorLangId == 'quarto'"
+      },
+      {
         "command": "scimax.org.preview.openToSide",
         "key": "ctrl+k v",
         "mac": "cmd+k v",

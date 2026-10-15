@@ -281,23 +281,23 @@ Quarto files (=.qmd=) are Pandoc Markdown with executable code chunks. Scimax
 works alongside the official [[https://marketplace.visualstudio.com/items?itemName=quarto.quarto][Quarto extension]] (=quarto.quarto=), which gives
 =.qmd= files their language (~quarto~). Each extension does its own part:
 
-| Feature                                      | Provided by |
-|----------------------------------------------+-------------|
-| Syntax highlighting, YAML header completion  | Quarto      |
-| Outline view, cross-reference completion     | Quarto      |
-| Render and preview (=Cmd+Shift+K=)           | Quarto      |
-| Running chunks in a Jupyter session          | Quarto      |
-| Heading navigation, promote/demote, move     | Scimax      |
-| Subtree kill, copy, yank, refile             | Scimax      |
-| Speed commands at a heading                  | Scimax      |
-| Folding cycles (=Tab=, =Shift+Tab=)          | Scimax      |
-| Tables, citations, timestamps, jump          | Scimax      |
-| Code block split, clone, move, navigation    | Scimax      |
+| Feature                                           | Provided by |
+|---------------------------------------------------+-------------|
+| Syntax highlighting, YAML header completion       | Quarto      |
+| Outline view, cross-reference completion          | Quarto      |
+| Render and preview (=Cmd+Shift+K=, =Cmd+Shift+V=) | Quarto      |
+| Running chunks in a Jupyter session               | Quarto      |
+| Heading navigation, promote/demote, move          | Scimax      |
+| Subtree kill, copy, yank, refile                  | Scimax      |
+| Speed commands at a heading                       | Scimax      |
+| Folding cycles (=Tab=, =Shift+Tab=)               | Scimax      |
+| Tables, citations, timestamps, jump               | Scimax      |
+| Code block split, clone, move, navigation         | Scimax      |
 
 Everything in [[*Supported Features][Supported Features]] above works the same way in a =.qmd=
 file as in a =.md= file.
 
-** ⚠️ Code chunks
+** 👀 Code chunks
 
 Scimax recognizes Quarto's chunk fences (=```{python}=, =```{r, echo=FALSE}=)
 as code blocks, along with plain fences, =```{.python}= display blocks and
@@ -310,6 +310,9 @@ rendered page, not in the source. Quarto's own keys stay in charge in =.qmd=
 files: =Cmd+Enter= (run line or selection), =Shift+Enter= (run and advance) and
 =Cmd+Shift+K= (preview). In a =.md= file those keys keep their scimax
 meanings, and =Cmd+Shift+K= on a citation still deletes it there.
+
+=Cmd+Shift+V= (=Ctrl+Shift+V=) in a =.qmd= file also runs Quarto's *Preview*
+(~quarto.preview~), so the preview key matches org and Markdown files.
 
 ** ⚠️ Callouts and other divs
 
