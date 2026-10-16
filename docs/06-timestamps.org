@@ -225,10 +225,11 @@ Place cursor on a timestamp component and use:
 | S-<right> | Move to next day                  |
 | S-<left>  | Move to previous day              |
 
-** ✅ Component-Based Editing
-CLOSED: [2026-01-15 Thu 15:03]
+** 👀 Component-Based Editing
 
-The cursor position determines what changes:
+The cursor position determines what changes. A cursor directly after a field
+also counts as on it, so with the cursor between =10= and =-= in
+=<2026-10-19 Mon>=, S-<up> changes the month, as in Emacs.
 
 #+BEGIN_EXAMPLE
 <2026-01-15 Wed 14:30>
