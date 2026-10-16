@@ -164,6 +164,10 @@ export class DiredPanel {
                     }
                     break;
 
+                case 'openDirectoryExternal':
+                    await vscode.env.openExternal(vscode.Uri.file(this.manager.getState().currentDirectory));
+                    break;
+
                 case 'copyPath':
                     const entryToCopy = this.manager.getState().entries[message.index];
                     if (entryToCopy) {
@@ -333,6 +337,9 @@ export class DiredPanel {
                     break;
 
                 case 'showActions':
+                    if (message.index !== undefined) {
+                        this.manager.selectIndex(message.index);
+                    }
                     await this.showActionsMenu();
                     break;
 
@@ -495,13 +502,20 @@ export class DiredPanel {
     private async showActionsMenu(): Promise<void> {
         const state = this.manager.getState();
         const entry = state.entries[state.selectedIndex];
-        if (!entry || entry.name === '.' || entry.name === '..') {
-            this.sendMessage({ command: 'info', message: 'No file selected' });
-            return;
-        }
+        const dirAction = { label: '$(folder-opened) Open This Directory in Finder/Explorer', action: 'openDirectoryExternal' };
 
         interface ActionItem extends vscode.QuickPickItem {
             action: string;
+        }
+
+        if (!entry || entry.name === '.' || entry.name === '..') {
+            const selectedDirAction = await vscode.window.showQuickPick([dirAction], {
+                placeHolder: 'Actions for this directory'
+            });
+            if (selectedDirAction) {
+                await vscode.env.openExternal(vscode.Uri.file(state.currentDirectory));
+            }
+            return;
         }
 
         const actions: ActionItem[] = [
@@ -514,6 +528,7 @@ export class DiredPanel {
             { label: '$(check) Mark', action: 'mark' },
             { label: '$(circle-slash) Unmark', action: 'unmark' },
             { label: '$(warning) Flag for Deletion', action: 'flag' },
+            dirAction,
         ];
 
         if (entry.isDirectory) {
@@ -537,6 +552,9 @@ export class DiredPanel {
                 break;
             case 'openExternal':
                 await vscode.commands.executeCommand('revealFileInOS', vscode.Uri.file(entry.path));
+                break;
+            case 'openDirectoryExternal':
+                await vscode.env.openExternal(vscode.Uri.file(state.currentDirectory));
                 break;
             case 'copyPath':
                 await vscode.env.clipboard.writeText(entry.path);
@@ -970,8 +988,9 @@ export class DiredPanel {
                     }
                 });
                 tr.addEventListener('contextmenu', (e) => {
+                    // Right-click selects the row and opens the M-o actions menu
                     e.preventDefault();
-                    showContextMenu(e, index);
+                    vscode.postMessage({ command: 'showActions', index });
                 });
 
                 tbody.appendChild(tr);
@@ -1032,21 +1051,6 @@ export class DiredPanel {
             // Don't use prompt() - it's blocked in webviews
             // Send message without name, extension will show VS Code's input box
             vscode.postMessage({ command: 'createDir' });
-        }
-
-        function showContextMenu(e, index) {
-            // Simple context menu using prompt for now
-            // A real implementation would use a custom menu
-            const entry = state.entries[index];
-            const actions = [
-                '1. Open',
-                '2. Open in Finder/Explorer',
-                '3. Copy path',
-                '4. Mark',
-                '5. Flag for delete',
-                '6. Delete'
-            ];
-            // For simplicity, we'll just log - a proper implementation would create a menu
         }
 
         function showMessage(text, type) {
@@ -1229,6 +1233,11 @@ export class DiredPanel {
                     // Find file - create if it doesn't exist
                     e.preventDefault();
                     vscode.postMessage({ command: 'findFile' });
+                    break;
+                case 'F':
+                    // Open the current directory in Finder/Explorer
+                    e.preventDefault();
+                    vscode.postMessage({ command: 'openDirectoryExternal' });
                     break;
                 case 'q':
                     e.preventDefault();
