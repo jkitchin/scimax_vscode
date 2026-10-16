@@ -975,12 +975,11 @@ CLOSED: [2026-01-17 Sat 12:46]
 * ✅ Navigation
 CLOSED: [2026-01-17 Sat 12:47]
 
-** ✅ Fuzzy Search (Swiper)
-CLOSED: [2026-04-12 Sun 19:53]
+** 👀 Fuzzy Search (Swiper)
 
 | Command ID                             | Description                      | Default Keybinding |
 |----------------------------------------+----------------------------------+--------------------|
-| [[cmd:scimax.fuzzySearch]]             | Fuzzy Search (Current File)      | C-c s              |
+| [[cmd:scimax.fuzzySearch]]             | Fuzzy Search (Current File)      | C-s or C-c s       |
 | [[cmd:scimax.fuzzySearchOpenFiles]]    | Fuzzy Search (Open Files)        | C-c S-s            |
 | [[cmd:scimax.fuzzySearchOutline]]      | Fuzzy Search (Outline)           | C-c M-s            |
 | [[cmd:scimax.fuzzySearchRecentFiles]]  | Fuzzy Search (Recent org/md)     | C-x b              |

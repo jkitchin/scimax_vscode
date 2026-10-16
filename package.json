@@ -4847,6 +4847,12 @@
         "when": "editorTextFocus && !terminalFocus"
       },
       {
+        "command": "scimax.fuzzySearch",
+        "key": "ctrl+s",
+        "mac": "ctrl+s",
+        "when": "editorTextFocus && !terminalFocus"
+      },
+      {
         "command": "scimax.fuzzySearchOpenFiles",
         "key": "ctrl+c shift+s",
         "mac": "ctrl+c shift+s",

@@ -197,12 +197,11 @@ Fuzzy search provides incremental search with live preview, inspired by Emacs
 Swiper. As you type, matching lines are filtered and the cursor moves to show
 a live preview.
 
-** ✅ Search Current File
-CLOSED: [2026-01-15 Thu 07:42]
+** 👀 Search Current File
 
-| Command            | Key Binding | Description                  |
-|--------------------+-------------+------------------------------|
-| scimax.fuzzySearch | C-c s       | Search lines in current file |
+| Command            | Key Binding  | Description                  |
+|--------------------+--------------+------------------------------|
+| scimax.fuzzySearch | C-s or C-c s | Search lines in current file |
 
 Opens a quick pick showing all non-empty lines in the current file. Features:
 
@@ -212,7 +211,7 @@ Opens a quick pick showing all non-empty lines in the current file. Features:
 - *Cancel restores position* - press Escape to return to original location
 
 Example workflow:
-1. Press C-c s to open fuzzy search
+1. Press C-s (or C-c s) to open fuzzy search
 2. Type "function calculate" to find lines with both words
 3. Use arrow keys or continue typing to narrow results
 4. Press Enter to jump to selected line

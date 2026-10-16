@@ -351,10 +351,11 @@ Like the Markdown preview, but for org files. See [[file:46-org-preview.org][Org
 
 * Search & Navigation
 
-** Fuzzy Search (Swiper-style)
+** 👀 Fuzzy Search (Swiper-style)
 
 | Key     | Action                         |
 |---------+--------------------------------|
+| C-s     | Fuzzy search in current buffer |
 | C-c s   | Fuzzy search in current buffer |
 | C-c S-s | Fuzzy search in open files     |
 | C-c M-s | Fuzzy search outline/headings  |
