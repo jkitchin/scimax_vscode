@@ -7,9 +7,54 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.9.0] - 2026-10-17
+
 ### Added
 
+- **Kill ring** - `C-w`, `M-w`, `C-y` and `M-y` work like Emacs. Kills and copies go onto a ring (`scimax.killRing.maxSize`, default 120) and the system clipboard, and kills in a row at one spot join into one entry. `M-y` right after a yank cycles to older kills; at other times it opens a picker. Subtree, block, BibTeX, rectangle and the other kill commands also add to the ring.
+- **Progress reporting in the project view** - A *Progress* toggle on the Gantt chart rolls each parent's percent up from its leaf tasks. Tasks are weighted by `EFFORT` or by count (`scimax.project.progressWeighting`), an optional `:PROGRESS: N` gives a task partial credit, and CANCELLED tasks are left out. A quiet amber mark shows tasks that are behind schedule (`scimax.project.behindTolerance`). For large charts: *Outline* grouping follows the heading tree with folding rows and a *Depth* limit, `<` `>` (or `n`/`p`) jump between tasks that are behind, *Behind only* hides the rest, a *Files* checklist hides chosen files, and *Fit* fits the whole date range in the panel. The PDF and Excel exports show all of this too, and Excel has new % done and Status columns.
+- **Gantt chart as SVG, PNG or interactive HTML** - The project view also exports the chart as an image or as a self-contained HTML page with hover details, dependency-chain highlighting and zoom. The HTML page can go into a Marp slide with an iframe.
+- **Quarto files** - `.qmd` files get scimax's Markdown structure editing, speed commands, folding, tables and citations. `` ```{python} `` chunks are recognized as code blocks, `C-c C-c` in a chunk runs it with Quarto, `:::` fenced divs fold, and `Cmd+Shift+V` opens the Quarto preview. Quarto keeps `Cmd+Enter`, `Shift+Enter` and `Cmd+Shift+K`.
+- **Emacs frame keys (`C-x 5`)** - `C-x 5 f` opens a file in a new floating editor window, `C-x 5 2` shows the current file in a new window, `C-x 5 0` closes the current window, and `C-x 5 o` picks a window to switch to. The `C-x C-f` picker's `M-o` menu has a matching `w` action.
+- **Switch to the current file's project** - `C-c p .` opens the project of the file you are in (for example a file you reached from the agenda or a search), adds it to the known projects, and reopens the file at the same line.
+- **Journal calendar** - `scimax.journal.goto` opens a calendar where days that have entries show a dot. Clicking an empty day creates its entry. There are new yesterday and tomorrow commands, and `M-j ?` opens a menu of the journal commands.
+- **Agenda buffer hover** - Hovering an item in the `C-c a v` buffer shows its file and line, the heading with the start of its entry, and links that open it (here or to the side), cycle its TODO state or ignore its file. Links in the preview can be clicked.
+- **Marp link hover** - Hovering a `marp:` link shows the deck's first slide, its slide count, and Edit / Preview / Present links.
+- **MyST cross-references and citations in the Markdown preview** - Empty `[](#label)` links, `{ref}`, `{numref}` and `{prf:ref}` take the title of their target. `` {eq}`label` `` links to the equation and shows it on hover. `[@key]` and `{cite:t}` / `{cite:p}` citations render author-year, with the full reference as a tooltip, from the bibliography named in front matter, `myst.yml` or a Jupyter Book `_config.yml`. Code cells with a kernel name (`ipython3`, `ir`, `julia-1.x`) are highlighted as that language.
 - **Editing toolbar in the Marp slideshow** - While editing a presenter deck (`d`), the bar inserts a text box, an image (from a file or pasted) or a table, and sets the font, size, bold, italic, underline, strikethrough and colour of the selected words or element. Selecting words while typing shows the same controls just above them. `Cmd/Ctrl+B`, `I`, `U` and `/` toggle bold, italic, underline and strikethrough, and `Cmd/Ctrl+C`, `X` and `V` copy, cut and paste elements between slides.
+- **Laser pointer tail** - The Marp laser pointer leaves a short fading trail, so it is easier to follow on a projector.
+- **`C-c C-c` on a headline sets its tags** - It opens the tag picker, as `C-c C-q` does (on a statistics cookie it still updates the cookie). In the picker the best match is highlighted as you type, and Enter adds it.
+- **Dired** - `F` opens the directory in Finder or Explorer, and right-clicking a row opens the `M-o` actions menu.
+- **`C-s` runs swiper search** (`scimax.fuzzySearch`). `C-c s` still works.
+
+### Changed
+
+- **Keybindings that could never fire have moved** - In VS Code, a key that also starts a longer chord can only reach one of the two bindings. These have changed:
+  - The template commands moved from `C-c C-t i/n/l/s` to `C-c T`, so `C-c C-t` cycles TODO states again (#61).
+  - The database menu: `C-c d` → `C-c d d`.
+  - Show mark ring: `C-c m s` → `C-c M`.
+  - LaTeX change environment: `C-c e` → `C-c E`.
+  - Execute to point: `C-c C-v p` → `C-c C-v P` (`C-c C-v p` is previous block).
+  - Org preview to the side (Windows/Linux): `Ctrl+K V` → `Ctrl+C Shift+V`.
+  - Previous source block (`C-c p`) and LaTeX jump to section (`C-c j`) were removed. Use `C-c C-v p`, `C-<up>` or speed key `p`, and `C-c C-j`.
+  - `Esc` chords are off in rectangle mark mode, so `Esc` cancels it.
+- **Deadline warning periods** - A deadline with a warning period (`-2w`) now appears in the agenda when the period starts, listed as "In N d.:". There is no 14-day default any more: the agenda window you pick sets how far ahead you see deadlines. The agenda view, the agenda buffer and the CLI all follow the same rule.
+- **`C-x 1` keeps only the current window** - It merges all splits into the current one, as Emacs `delete-other-windows` does, and the other files stay open as tabs. Before, it closed the current group's editors.
+
+### Fixed
+
+- **Semantic search went from over a minute to about 2 seconds** - Semantic search never used the libsql vector index, but every write still updated it. On one real database the index was 47.6 GB, and a search took 60-80 s, which is past the query timeout. The index is no longer created, and an existing one is dropped. On that database, dropping it and running VACUUM shrank the file from 50 GB to 2.1 GB.
+- **Heading search covers the whole index** - `C-c d h` only filtered the first 5000 headings, and the Add Dependency picker only the first 1000. Both now query the database: every term must match the title, TODO state, tags or path. Results stay in most-recently-modified order and show the full file path. Property-name completion now reads property names from the whole index.
+- **Exclude patterns apply to every indexed file** - Saves and file-watcher events skipped the excludes, so VS Code's local-history copies got into the index (duplicate people in the assignee picker, stale TODOs in the agenda). The Claude desktop app's data folder is excluded by default, and `~` in patterns now works on Windows.
+- **Embedding progress** - The Database view shows "Embeddings: Generating n/N" during a run instead of "Reindex required" (#59). The queue is also faster: about 20 minutes less per 2500 files.
+- **Assign task** - Each person is listed once, and Enter assigns the highlighted person, or the only person left by the filter. Before, it could write an empty `:ASSIGNEE:`.
+- **Adding a dependency to a scheduled task** - A `SCHEDULED`/`DEADLINE` line hid the properties drawer, so a second drawer was created. The picker also no longer re-sorts while you look at it.
+- **Backlinks and inline tasks** - An inline task's `*************** END` line was taken for a heading titled END that collected every `[[end]]` link (#60).
+- **Orphan-link check** - Typed links such as `ref:`, `eqref:`, `cref:`, citation variants and `marp:` are no longer flagged as unresolved.
+- **Hydra submenus** - Opening a submenu (`C-c C-e l`) no longer jumps back to the parent menu.
+- **Links** - A link to a folder opens it in dired, and `~` in file links means the home directory, for both Ctrl+click and `C-c C-o`.
+- **`S-up`/`S-down` on timestamps** - With the cursor right after a field (between `10` and `-` in `<2026-10-19 Mon>`), they now change that field instead of the day.
+- **Dired terminals** - Opening a terminal from a dired panel uses the panel's directory.
 
 ## [0.8.2] - 2026-10-05
 
