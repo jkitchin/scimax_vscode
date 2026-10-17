@@ -35,6 +35,10 @@ export interface AgendaSettings {
     requireTodoState: boolean;
     todoStates: string[];
     doneStates: string[];
+    /** scimax.agenda.customCommands, unvalidated */
+    customCommands: unknown;
+    /** scimax.agenda.stuckProjects */
+    stuckProjects: Record<string, unknown>;
 }
 
 /**
@@ -382,6 +386,8 @@ export function loadSettings(): ScimaxSettings {
             requireTodoState: getSetting<boolean>(settings, 'scimax.agenda.requireTodoState', true),
             todoStates: getSetting<string[]>(settings, 'scimax.agenda.todoStates', ['TODO', 'NEXT', 'WAITING']),
             doneStates: getSetting<string[]>(settings, 'scimax.agenda.doneStates', ['DONE', 'CANCELLED', 'CANCELED']),
+            customCommands: getSetting<unknown>(settings, 'scimax.agenda.customCommands', []),
+            stuckProjects: getSetting<Record<string, unknown>>(settings, 'scimax.agenda.stuckProjects', {}),
         },
         export: {
             latex: {

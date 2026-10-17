@@ -25,6 +25,7 @@ import {
     type AgendaItem,
     type AgendaViewConfig,
 } from '../parser/orgAgenda';
+import { renderCustomCommand, type CustomAgendaCommand, type CustomCommandResult } from '../parser/orgAgendaCustom';
 import { renderSnippetMarkdown, type SnippetLine } from './agendaHover';
 import type { AgendaManager } from './agendaProvider';
 
@@ -63,6 +64,10 @@ interface ViewState {
     days: number;
     /** Periods paged forward (+) or back (-) from the base start date */
     offset: number;
+    /** A custom agenda command's key; its blocks replace the plain agenda */
+    customKey?: string;
+    /** An ad hoc command (a one-off match) instead of one from settings */
+    customSpec?: CustomAgendaCommand;
 }
 
 export class AgendaDocumentProvider
@@ -76,6 +81,7 @@ export class AgendaDocumentProvider
 
     private states = new Map<string, ViewState>();
     private lineMaps = new Map<string, Map<number, AgendaItem>>();
+    private customResults = new Map<string, CustomCommandResult>();
 
     constructor(private manager: AgendaManager) {}
 
@@ -95,6 +101,18 @@ export class AgendaDocumentProvider
             ].join('\n');
         }
 
+        if (state.customKey !== undefined) {
+            const outcome = await this.manager.runCustomCommand(state.customSpec ?? state.customKey, { offset: state.offset });
+            if ('error' in outcome) {
+                this.lineMaps.set(uri.toString(), new Map());
+                return `Custom agenda "${state.customKey}" could not run:\n\n${outcome.error}`;
+            }
+            this.customResults.set(uri.toString(), outcome.result);
+            const { text, lineMap } = renderCustomCommand(outcome.result);
+            this.lineMaps.set(uri.toString(), lineMap);
+            return text;
+        }
+
         const view = await this.manager.getAgendaView(this.resolveConfig(state));
         const { text, lineMap } = renderAgendaBuffer(view);
         this.lineMaps.set(uri.toString(), lineMap);
@@ -109,6 +127,35 @@ export class AgendaDocumentProvider
             days: state.days,
             startDate: addDays(base, state.offset * state.days),
         };
+    }
+
+    /** The last result shown in a custom agenda buffer (for export). */
+    getCustomResult(uri: vscode.Uri): CustomCommandResult | undefined {
+        return this.customResults.get(uri.toString());
+    }
+
+    /** True if the buffer shows a custom agenda command. */
+    isCustom(uri: vscode.Uri): boolean {
+        return this.states.get(uri.toString())?.customKey !== undefined;
+    }
+
+    /**
+     * Open (or reveal) the buffer for a custom agenda command. Paging moves
+     * its agenda blocks by their own span; list blocks are unaffected.
+     */
+    async openCustom(key: string): Promise<void> {
+        // Keys are short dispatcher strings; keep the URI path plain.
+        const safe = key.replace(/[^\w-]/g, c => `_${c.charCodeAt(0).toString(16)}`);
+        const uri = vscode.Uri.parse(`${AGENDA_SCHEME}:custom-${safe}.org`);
+        this.states.set(uri.toString(), { config: {}, days: 1, offset: 0, customKey: key });
+        await this.show(uri);
+    }
+
+    /** Open a buffer for a one-off command that is not in settings. */
+    async openAdHoc(spec: CustomAgendaCommand): Promise<void> {
+        const uri = vscode.Uri.parse(`${AGENDA_SCHEME}:Agenda Match.org`);
+        this.states.set(uri.toString(), { config: {}, days: 1, offset: 0, customKey: spec.key, customSpec: spec });
+        await this.show(uri);
     }
 
     /** The item rendered on a given 0-based line, if any. */
@@ -274,7 +321,10 @@ export class AgendaDocumentProvider
         } else {
             this.states.set(key, { config, days, offset: 0 });
         }
+        await this.show(uri);
+    }
 
+    private async show(uri: vscode.Uri): Promise<void> {
         const doc = await vscode.workspace.openTextDocument(uri);
         // Borrow org highlighting rather than contributing a new grammar.
         await vscode.languages.setTextDocumentLanguage(doc, 'org');
@@ -288,6 +338,7 @@ export class AgendaDocumentProvider
         this._onDidChange.dispose();
         this.states.clear();
         this.lineMaps.clear();
+        this.customResults.clear();
     }
 }
 
