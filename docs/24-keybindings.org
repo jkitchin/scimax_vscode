@@ -437,15 +437,14 @@ The buffer is read-only, so these keys are never ambiguous with typing.
 Items are also links: Ctrl+click (Cmd+click on macOS) opens the source
 heading. Right-click any line for a context menu with the same actions.
 
-** ✅ Templates
-CLOSED: [2026-01-24 Sat 17:38]
+** 👀 Templates
 
 | Key       | Action                         |
 |-----------+--------------------------------|
-| C-c C-t i | Quick insert template          |
-| C-c C-t n | New file from template         |
-| C-c C-t l | List templates                 |
-| C-c C-t s | Create template from selection |
+| C-c T i   | Quick insert template          |
+| C-c T n   | New file from template         |
+| C-c T l   | List templates                 |
+| C-c T s   | Create template from selection |
 
 ** ✅ Spelling
 CLOSED: [2026-01-24 Sat 17:38]

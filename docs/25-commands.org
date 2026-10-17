@@ -1394,8 +1394,7 @@ CLOSED: [2026-01-21 Wed 11:36]
 
 Insert and manage file templates for org, markdown, and LaTeX files.
 
-** ✅ Insert Templates
-CLOSED: [2026-01-21 Wed 11:36]
+** 👀 Insert Templates
 
 | Command ID                               | Description               | Default Keybinding |
 |------------------------------------------+---------------------------+--------------------|
@@ -1403,14 +1402,13 @@ CLOSED: [2026-01-21 Wed 11:36]
 | [[cmd:scimax.templates.insertOrg]]       | Insert Org Template       | -                  |
 | [[cmd:scimax.templates.insertMarkdown]]  | Insert Markdown Template  | -                  |
 | [[cmd:scimax.templates.insertLatex]]     | Insert LaTeX Template     | -                  |
-| [[cmd:scimax.templates.quickInsert]]     | Quick Insert Template     | C-c C-t i          |
+| [[cmd:scimax.templates.quickInsert]]     | Quick Insert Template     | C-c T i            |
 
-** ✅ New Files from Templates
-CLOSED: [2026-01-21 Wed 11:36]
+** 👀 New Files from Templates
 
 | Command ID                               | Description                  | Default Keybinding |
 |------------------------------------------+------------------------------+--------------------|
-| [[cmd:scimax.templates.newFile]]         | New File from Template       | C-c C-t i          |
+| [[cmd:scimax.templates.newFile]]         | New File from Template       | C-c T n            |
 | [[cmd:scimax.templates.newOrgFile]]      | New Org File from Template   | -                  |
 | [[cmd:scimax.templates.newMarkdownFile]] | New Markdown from Template   | -                  |
 | [[cmd:scimax.templates.newLatexFile]]    | New LaTeX from Template      | -                  |

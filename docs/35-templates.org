@@ -17,18 +17,16 @@ The document template system provides yasnippet/skeleton-like functionality for 
 * ✅ Quick Start
 CLOSED: [2026-01-21 Wed 07:10]
 
-** ✅ Insert a Template
-CLOSED: [2026-01-21 Wed 07:10]
+** 👀 Insert a Template
 
 1. Open a file (org, markdown, or latex)
-2. Press =C-c C-t i= or run =Scimax: Quick Insert Template=
+2. Press =C-c T i= or run =Scimax: Quick Insert Template=
 3. Select a template from the list
 4. Tab through placeholders to fill in values
 
-** ✅ Create a New File from Template
-CLOSED: [2026-01-21 Wed 07:10]
+** 👀 Create a New File from Template
 
-1. Press =C-c C-t n= or run =Scimax: New File from Template=
+1. Press =C-c T n= or run =Scimax: New File from Template=
 2. Select a template
 3. Enter the filename
 4. The file is created and opened with the template content
@@ -298,31 +296,29 @@ ${3:Introduction paragraph}
 $0
 #+END_SRC
 
-** ✅ Create Template from Selection
-CLOSED: [2026-01-21 Wed 07:17]
+** 👀 Create Template from Selection
 
 1. Select text in the editor
-2. Press =C-c C-t s= or run =Scimax: Create Template from Selection=
+2. Press =C-c T s= or run =Scimax: Create Template from Selection=
 3. Enter a name for the template
 4. Optionally add a description
 5. The template is saved to your templates directory
 
-* ✅ Commands
-CLOSED: [2026-01-21 Wed 07:17]
+* 👀 Commands
 
 | Command                                | Keybinding  | Description                          |
 |----------------------------------------+-------------+--------------------------------------|
-| =scimax.templates.quickInsert=         | =C-c C-t i= | Insert template (auto-detect format) |
+| =scimax.templates.quickInsert=         | =C-c T i=   | Insert template (auto-detect format) |
 | =scimax.templates.insert=              |             | Insert any template                  |
 | =scimax.templates.insertOrg=           |             | Insert org-mode template             |
 | =scimax.templates.insertMarkdown=      |             | Insert markdown template             |
 | =scimax.templates.insertLatex=         |             | Insert LaTeX template                |
-| =scimax.templates.newFile=             | =C-c C-t n= | Create new file from template        |
+| =scimax.templates.newFile=             | =C-c T n=   | Create new file from template        |
 | =scimax.templates.newOrgFile=          |             | Create new org file from template    |
 | =scimax.templates.newMarkdownFile=     |             | Create new markdown file             |
 | =scimax.templates.newLatexFile=        |             | Create new LaTeX file                |
-| =scimax.templates.list=                | =C-c C-t l= | List all templates                   |
-| =scimax.templates.createFromSelection= | =C-c C-t s= | Create template from selection       |
+| =scimax.templates.list=                | =C-c T l=   | List all templates                   |
+| =scimax.templates.createFromSelection= | =C-c T s=   | Create template from selection       |
 | =scimax.templates.editTemplates=       |             | Open templates in VS Code            |
 | =scimax.templates.openDirectory=       |             | Open templates dir in file explorer  |
 | =scimax.templates.reload=              |             | Reload templates from disk           |

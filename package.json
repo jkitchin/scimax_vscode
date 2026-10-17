@@ -6363,26 +6363,26 @@
       },
       {
         "command": "scimax.templates.quickInsert",
-        "key": "ctrl+c ctrl+t i",
-        "mac": "ctrl+c ctrl+t i",
+        "key": "ctrl+c shift+t i",
+        "mac": "ctrl+c shift+t i",
         "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto|latex/ && !terminalFocus"
       },
       {
         "command": "scimax.templates.newFile",
-        "key": "ctrl+c ctrl+t n",
-        "mac": "ctrl+c ctrl+t n",
+        "key": "ctrl+c shift+t n",
+        "mac": "ctrl+c shift+t n",
         "when": "editorTextFocus && !terminalFocus"
       },
       {
         "command": "scimax.templates.list",
-        "key": "ctrl+c ctrl+t l",
-        "mac": "ctrl+c ctrl+t l",
+        "key": "ctrl+c shift+t l",
+        "mac": "ctrl+c shift+t l",
         "when": "editorTextFocus && !terminalFocus"
       },
       {
         "command": "scimax.templates.createFromSelection",
-        "key": "ctrl+c ctrl+t s",
-        "mac": "ctrl+c ctrl+t s",
+        "key": "ctrl+c shift+t s",
+        "mac": "ctrl+c shift+t s",
         "when": "editorTextFocus && editorHasSelection && !terminalFocus"
       },
       {

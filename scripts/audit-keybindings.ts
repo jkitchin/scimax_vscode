@@ -58,6 +58,7 @@ interface AuditResults {
         commands: string[];
         contexts: string[];
     }>;
+    shadowedPrefixes: ShadowedPrefix[];
     statistics: {
         totalCommands: number;
         totalKeybindings: number;
@@ -320,6 +321,55 @@ function findDuplicateKeybindings(keybindings: Keybinding[]): Array<{
     return duplicates;
 }
 
+interface ShadowedPrefix {
+    key: string;
+    command: string;
+    when: string;
+    longer: Array<{ key: string; command: string; when: string }>;
+}
+
+// Languages a `when` clause is restricted to, or null if unrestricted.
+function whenLanguages(when: string): string[] | null {
+    const eq = when.match(/editorLangId == '([^']+)'/);
+    if (eq) return [eq[1]];
+    const re = when.match(/editorLangId =~ \/([^/]+)\//);
+    if (re) return re[1].split('|');
+    return null;
+}
+
+function languagesOverlap(a: string, b: string): boolean {
+    const la = whenLanguages(a);
+    const lb = whenLanguages(b);
+    if (!la || !lb) return true;
+    return la.some(l => lb.includes(l));
+}
+
+// A binding whose key is the first part of a longer chord never fires when
+// both are active: VS Code waits for the next key of the chord instead
+// (e.g. C-c C-t vs C-c C-t i, issue #61).
+function findShadowedPrefixes(keybindings: Keybinding[]): ShadowedPrefix[] {
+    const positive = keybindings.filter(kb => !kb.command.startsWith('-'));
+    const shadowed: ShadowedPrefix[] = [];
+
+    for (const kb of positive) {
+        const key = normalizeVSCode(kb.key);
+        const when = kb.when || '';
+        const longer = positive
+            .filter(other => normalizeVSCode(other.key).startsWith(key + ' '))
+            .filter(other => languagesOverlap(when, other.when || ''))
+            .map(other => ({
+                key: normalizeVSCode(other.key),
+                command: other.command,
+                when: other.when || ''
+            }));
+        if (longer.length > 0) {
+            shadowed.push({ key, command: kb.command, when, longer });
+        }
+    }
+
+    return shadowed;
+}
+
 function audit(): AuditResults {
     const pkg = parsePackageJson();
     const docKeybindings = parseKeybindingsDoc();
@@ -402,6 +452,7 @@ function audit(): AuditResults {
         commandsInDocsNotInPackage,
         keybindingDiscrepancies,
         duplicateKeybindings,
+        shadowedPrefixes: findShadowedPrefixes(pkg.contributes.keybindings),
         statistics: {
             totalCommands: packageCommands.size,
             totalKeybindings: pkg.contributes.keybindings.length,
@@ -466,6 +517,20 @@ function printResults(results: AuditResults): void {
         }
     }
 
+    console.log('\n--- SHADOWED CHORD PREFIXES (binding never fires) ---');
+    if (results.shadowedPrefixes.length === 0) {
+        console.log('  No keybindings are shadowed by longer chords!');
+    } else {
+        console.log(`  (${results.shadowedPrefixes.length} shadowed keybindings)`);
+        for (const p of results.shadowedPrefixes) {
+            console.log(`  - Key: ${p.key} -> ${p.command}`);
+            console.log(`      when: ${p.when || '(no condition)'}`);
+            for (const l of p.longer) {
+                console.log(`    shadowed by ${l.key} -> ${l.command}`);
+            }
+        }
+    }
+
     console.log('\n=== END OF AUDIT ===\n');
 }
 
@@ -477,7 +542,8 @@ printResults(results);
 const hasIssues =
     results.commandsInPackageNotInDocs.length > 0 ||
     results.commandsInDocsNotInPackage.length > 0 ||
-    results.duplicateKeybindings.length > 0;
+    results.duplicateKeybindings.length > 0 ||
+    results.shadowedPrefixes.length > 0;
 
 if (hasIssues) {
     console.log('Audit found issues that may need attention.');
