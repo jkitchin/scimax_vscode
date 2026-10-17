@@ -7,10 +7,11 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
 import * as fs from 'fs';
+import * as os from 'os';
 import { parseOrg } from '../parser/orgParserUnified';
 import {
     generateAgendaView,
-    placeWarnedDeadlines,
+    filterAgendaItems,
     formatAgendaItem,
     AgendaItem,
     AgendaView,
@@ -18,7 +19,19 @@ import {
     AgendaViewConfig,
     TodoListView,
 } from '../parser/orgAgenda';
-import { parseWarning, warningStart } from '../parser/deadlineWarning';
+import { dbItemToAgendaItem, groupItemsByDate, headingToAgendaItem } from '../parser/orgAgendaDb';
+import {
+    resolveCustomCommands,
+    runCustomCommand,
+    commandsUnderPrefix,
+    exportCustomCommand,
+    DEFAULT_STUCK_PROJECTS,
+    type CustomAgendaCommand,
+    type CustomCommandResult,
+    type ResolvedCommand,
+    type StuckProjectsConfig,
+} from '../parser/orgAgendaCustom';
+import { createDbAgendaSource } from '../parser/orgAgendaCustomSource';
 import { getRowAssignees } from '../parser/projectTasks';
 import { loadProjectDocuments, loadProjectTasks, collectProjectTasks, taskKey, currentProjectRoot } from './projectData';
 import { pickAssigneeFilter } from './people';
@@ -31,7 +44,6 @@ import {
     type AgendaLineRef,
 } from './agendaDocumentProvider';
 import type { EntryLinkRef } from './agendaHover';
-import { parseHeadingTags } from './agendaTags';
 import {
     collectAllClockEntries,
     generateTimeReport,
@@ -40,15 +52,12 @@ import {
 } from '../parser/orgClocking';
 import { minimatch } from 'minimatch';
 import { getDatabase } from '../database/lazyDb';
-import type { ScimaxDb, AgendaItem as DbAgendaItem, HeadingRecord } from '../database/scimaxDb';
+import type { ScimaxDb, HeadingRecord } from '../database/scimaxDb';
 import { isHeadingBlocked } from './dependencies';
 // Per-function imports: the package index loads all of date-fns.
 import format from 'date-fns/format';
 import addDays from 'date-fns/addDays';
 import startOfDay from 'date-fns/startOfDay';
-import isSameDay from 'date-fns/isSameDay';
-import differenceInDays from 'date-fns/differenceInDays';
-import { parseLocalYmd } from '../utils/dateParser';
 
 // =============================================================================
 // Types
@@ -255,6 +264,11 @@ export class AgendaManager {
             this.refreshEmitter.fire();
             this.log(`Agenda: Removed ${filePath} from exclude list`);
         }
+    }
+
+    /** Write to the Org Agenda output channel. */
+    logMessage(message: string): void {
+        this.log(message);
     }
 
     private log(message: string): void {
@@ -494,21 +508,21 @@ export class AgendaManager {
                     if (!matchesAssignees({ assignees }, fullConfig.assignees)) continue;
                 }
 
-                const agendaItem = this.convertDbItemToAgendaItem(dbItem, startDate);
-                if (agendaItem) {
-                    agendaItem.blocked = blocked;
-                    agendaItem.assignees = assignees;
-                    items.push(agendaItem);
-                }
+                const agendaItem = dbItemToAgendaItem(dbItem);
+                agendaItem.blocked = blocked;
+                agendaItem.assignees = assignees;
+                items.push(agendaItem);
             }
 
-            // Group items by date
-            const groups = this.groupItemsByDate(items, startDate, fullConfig.days);
+            // Tag, state, priority, category and file filters. Done items
+            // were already left out by the query.
+            const filtered = filterAgendaItems(items, fullConfig);
+            const groups = groupItemsByDate(filtered, startDate, fullConfig.days);
 
             return {
                 config: fullConfig,
                 groups,
-                totalItems: items.length,
+                totalItems: groups.reduce((n, g) => n + g.items.length, 0),
                 totalFiles: 0, // Not applicable for database view
                 dateRange: { start: startDate, end: endDate },
             };
@@ -519,134 +533,75 @@ export class AgendaManager {
     }
 
     /**
-     * Convert a database AgendaItem to the parser's AgendaItem format
+     * Custom agenda commands from scimax.agenda.customCommands, validated.
+     * Problems with the setting as a whole go to the output channel.
      */
-    private convertDbItemToAgendaItem(dbItem: DbAgendaItem, startDate: Date): AgendaItem | null {
-        const heading = dbItem.heading;
+    getCustomCommands(): ResolvedCommand[] {
+        const config = vscode.workspace.getConfiguration('scimax.agenda');
+        const { commands, problems } = resolveCustomCommands(config.get('customCommands', []), {
+            home: process.env.HOME || process.env.USERPROFILE || '',
+            stuck: this.getStuckProjects(),
+        });
+        for (const problem of problems) this.log(`Custom agenda: ${problem}`);
+        return commands;
+    }
 
-        // Parse the date string to a Date object
-        // Parse as a LOCAL date, not UTC
-        // new Date('2024-01-27') creates UTC midnight which is the previous evening in local time!
-        let itemDate: Date | undefined;
-        if (dbItem.date) {
-            // Date format from DB: "2024-01-15" or "2024-01-15 Mon 10:00"
-            const dateMatch = dbItem.date.match(/(\d{4}-\d{2}-\d{2})/);
-            if (dateMatch) {
-                itemDate = parseLocalYmd(dateMatch[1]);
-            }
-        }
-
-        // Extract time if present
-        let time: string | undefined;
-        if (dbItem.date) {
-            const timeMatch = dbItem.date.match(/(\d{1,2}:\d{2})/);
-            if (timeMatch) {
-                time = timeMatch[1];
-            }
-        }
-
-        const tags = parseHeadingTags(heading.tags);
-
-        // Determine agenda type
-        const agendaType: AgendaItem['agendaType'] = dbItem.type === 'deadline' ? 'deadline' :
-            dbItem.type === 'scheduled' ? 'scheduled' : 'todo';
-
-        // Create a minimal HeadlineElement for compatibility
-        const minimalHeadline: HeadlineElement = {
-            type: 'headline',
-            range: { start: heading.begin_pos, end: heading.begin_pos + heading.title.length },
-            postBlank: 0,
-            properties: {
-                level: heading.level,
-                rawValue: heading.title,
-                todoKeyword: heading.todo_state || undefined,
-                priority: heading.priority || undefined,
-                tags,
-                archivedp: false,
-                commentedp: false,
-                footnoteSection: false,
-                lineNumber: heading.line_number,
-            },
-            children: [],
-        };
-
-        return {
-            title: heading.title,
-            todoState: heading.todo_state || undefined,
-            priority: heading.priority || undefined,
-            tags,
-            file: heading.file_path,
-            line: heading.line_number,
-            scheduled: agendaType === 'scheduled' ? itemDate : undefined,
-            deadline: agendaType === 'deadline' ? itemDate : undefined,
-            warningStart: agendaType === 'deadline' && itemDate && parseWarning(dbItem.date)
-                ? warningStart(itemDate, parseWarning(dbItem.date))
-                : undefined,
-            daysUntil: dbItem.days_until,
-            overdue: dbItem.overdue,
-            category: heading.file_path.split('/').pop()?.replace('.org', ''),
-            headline: minimalHeadline,
-            agendaType,
-            time,
-        };
+    private getStuckProjects(): StuckProjectsConfig {
+        const raw = vscode.workspace.getConfiguration('scimax.agenda').get<Partial<StuckProjectsConfig>>('stuckProjects', {});
+        return { ...DEFAULT_STUCK_PROJECTS, ...raw };
     }
 
     /**
-     * Group agenda items by date
+     * Run a custom agenda command by key. `offset` pages its agenda blocks.
+     * Invalid commands and database errors come back as an error message,
+     * which is also logged.
      */
-    private groupItemsByDate(items: AgendaItem[], startDate: Date, days: number): AgendaGroup[] {
-        const groups: AgendaGroup[] = [];
-
-        for (let i = 0; i < days; i++) {
-            const date = addDays(startDate, i);
-            const dateKey = format(date, 'yyyy-MM-dd');
-            const dateLabel = this.formatDateLabel(date);
-
-            const dayItems = items.filter(item => {
-                const itemDate = item.scheduled || item.deadline || item.timestamp;
-                return itemDate && isSameDay(itemDate, date);
-            });
-
-            groups.push({
-                label: dateLabel,
-                key: dateKey,
-                items: dayItems,
-            });
+    async runCustomCommand(
+        keyOrSpec: string | CustomAgendaCommand,
+        options: { offset?: number } = {}
+    ): Promise<{ result: CustomCommandResult } | { error: string }> {
+        // An ad hoc spec (e.g. from scimax.agenda.match) is validated on its own.
+        const key = typeof keyOrSpec === 'string' ? keyOrSpec : keyOrSpec.key;
+        const command = typeof keyOrSpec === 'string'
+            ? this.getCustomCommands().find(c => c.key === key)
+            : resolveCustomCommands([keyOrSpec], { stuck: this.getStuckProjects() }).commands[0];
+        if (!command) return { error: `No custom agenda command with key "${key}" in scimax.agenda.customCommands.` };
+        if (command.isPrefix) return { error: `"${key}" is a prefix key; choose one of the commands under it.` };
+        if (command.errors.length) {
+            const error = command.errors.join('\n');
+            this.log(`Custom agenda "${key}":\n${error}`);
+            return { error };
         }
 
-        placeWarnedDeadlines(items, groups, startDate, days);
+        const db = this.db || await getDatabase();
+        if (!db) return { error: 'The database is not ready yet. Try again in a moment.' };
+        await this.updateChangedFiles(db);
 
-        // Add overdue items to today's group
-        const overdueItems = items.filter(item => item.overdue);
-        if (overdueItems.length > 0) {
-            const todayKey = format(new Date(), 'yyyy-MM-dd');
-            const todayGroup = groups.find(g => g.key === todayKey);
-            if (todayGroup) {
-                for (const item of overdueItems) {
-                    if (!todayGroup.items.includes(item)) {
-                        todayGroup.items.unshift(item);
-                    }
-                }
+        const dependEnabled = vscode.workspace.getConfiguration('scimax.org.depend').get<boolean>('enabled', true);
+        const source = createDbAgendaSource(db, {
+            doneStates: this.config.doneStates,
+            requireTodoState: this.config.requireTodoState,
+            isExcluded: file => this.isFileExcluded(file),
+            stuckProjects: this.getStuckProjects(),
+            // The regular agenda path, so blocked flags, hideBlockedInAgenda
+            // and project directories behave as in the plain agenda.
+            agendaView: async config => (await this.getAgendaView(config)),
+        });
+        source.isBlocked = async item => {
+            if (!dependEnabled) return false;
+            try {
+                return await isHeadingBlocked({ properties: JSON.stringify(item.properties ?? {}), todo_state: item.todoState });
+            } catch {
+                return false;
             }
+        };
+
+        try {
+            return { result: await runCustomCommand(command, source, { offset: options.offset }) };
+        } catch (error) {
+            this.log(`Custom agenda "${key}" failed: ${error}`);
+            return { error: String(error) };
         }
-
-        return groups;
-    }
-
-    /**
-     * Format a date for display in agenda groups
-     */
-    private formatDateLabel(date: Date): string {
-        const today = startOfDay(new Date());
-        const diff = differenceInDays(date, today);
-
-        if (diff === 0) return 'Today';
-        if (diff === 1) return 'Tomorrow';
-        if (diff === -1) return 'Yesterday';
-
-        const dayName = format(date, 'EEEE');
-        const dateStr = format(date, 'MMM d');
-        return `${dayName} ${dateStr}`;
     }
 
     /**
@@ -716,38 +671,8 @@ export class AgendaManager {
                 if (!this.config.showDone && isDone(heading)) continue;
                 if (this.isFileExcluded(heading.file_path)) continue;
 
-                const tags = heading.tags ? heading.tags.split(',').map((t: string) => t.trim()).filter((t: string) => t) : [];
                 const priority = heading.priority || 'none';
-
-                const minimalHeadline: HeadlineElement = {
-                    type: 'headline',
-                    range: { start: heading.begin_pos, end: heading.begin_pos + heading.title.length },
-                    postBlank: 0,
-                    properties: {
-                        level: heading.level,
-                        rawValue: heading.title,
-                        todoKeyword: state,
-                        priority: heading.priority || undefined,
-                        tags,
-                        archivedp: false,
-                        commentedp: false,
-                        footnoteSection: false,
-                        lineNumber: heading.line_number,
-                    },
-                    children: [],
-                };
-
-                const item: AgendaItem = {
-                    title: heading.title,
-                    todoState: state,
-                    priority: heading.priority || undefined,
-                    tags,
-                    file: heading.file_path,
-                    line: heading.line_number,
-                    agendaType: 'todo',
-                    headline: minimalHeadline,
-                    category: heading.file_path.split('/').pop()?.replace('.org', ''),
-                };
+                const item = headingToAgendaItem(heading, isDone(heading));
 
                 if (!byState.has(state)) byState.set(state, []);
                 byState.get(state)!.push(item);
@@ -1137,6 +1062,69 @@ export class AgendaTreeProvider implements vscode.TreeDataProvider<AgendaTreeIte
 // =============================================================================
 // Commands
 // =============================================================================
+
+interface DispatchEntry {
+    key: string;
+    label: string;
+    description?: string;
+    run: () => unknown;
+}
+
+/**
+ * Show one level of the agenda dispatcher. Typing a key that names exactly
+ * one entry runs it immediately, as org-agenda's dispatcher does; Enter runs
+ * the highlighted entry. Prefix keys recurse with a longer prefix.
+ */
+async function runDispatcher(
+    commands: ResolvedCommand[],
+    prefix: string,
+    builtins: DispatchEntry[],
+    openCustom: (key: string) => Promise<void>
+): Promise<void> {
+    const custom: DispatchEntry[] = commandsUnderPrefix(commands, prefix).map(c => ({
+        key: c.key.slice(prefix.length),
+        label: c.isPrefix ? `${c.description}...` : c.description,
+        description: c.errors.length ? `$(warning) ${c.errors[0]}` : c.isPrefix ? 'prefix' : undefined,
+        run: () => (c.isPrefix ? runDispatcher(commands, c.key, [], openCustom) : openCustom(c.key)),
+    }));
+    const customKeys = new Set(custom.map(e => e.key));
+    const entries = [...builtins.filter(b => !customKeys.has(b.key)), ...custom];
+    if (entries.length === 0) return;
+
+    type Item = vscode.QuickPickItem & { entry?: DispatchEntry };
+    const toItem = (e: DispatchEntry): Item => ({ label: `[${e.key}] ${e.label}`, description: e.description, entry: e });
+    const builtinItems = entries.filter(e => !customKeys.has(e.key) && builtins.includes(e)).map(toItem);
+    const customItems = custom.map(toItem);
+    const items: Item[] = builtinItems.length && customItems.length
+        ? [...builtinItems, { label: 'Custom commands', kind: vscode.QuickPickItemKind.Separator }, ...customItems]
+        : [...builtinItems, ...customItems];
+
+    const picked = await new Promise<DispatchEntry | undefined>(resolve => {
+        const qp = vscode.window.createQuickPick<Item>();
+        qp.items = items;
+        qp.placeholder = prefix ? `Agenda: ${prefix}-` : 'Org Agenda: press a key';
+        qp.matchOnDescription = true;
+        let done = false;
+        const finish = (entry: DispatchEntry | undefined) => {
+            if (done) return;
+            done = true;
+            resolve(entry);
+            qp.hide();
+        };
+        qp.onDidChangeValue(value => {
+            const hit = entries.find(e => e.key === value);
+            if (hit) finish(hit);
+        });
+        qp.onDidAccept(() => finish(qp.selectedItems[0]?.entry));
+        qp.onDidHide(() => {
+            finish(undefined);
+            qp.dispose();
+        });
+        qp.show();
+    });
+    if (picked) await picked.run();
+}
+
 
 /**
  * Show a one-shot toast on activation if the user has set any of the now-
@@ -1857,28 +1845,121 @@ ${reportLines.join('\n')}
         }),
 
         // Agenda menu
+        // Org-style dispatcher: each entry has a key, and typing a key that
+        // names exactly one entry runs it at once. Custom commands override
+        // built-in entries with the same key; a prefix key opens a submenu.
         vscode.commands.registerCommand('scimax.agenda.menu', async () => {
-            const options = [
-                { label: '$(window) Agenda Buffer', description: 'Persistent, refreshable agenda in an editor tab', command: 'scimax.agenda.openBuffer' },
-                { label: '$(calendar) Day Agenda', description: 'Today\'s agenda', command: 'scimax.agenda.day' },
-                { label: '$(calendar) Week Agenda', description: '7-day view', command: 'scimax.agenda.week' },
-                { label: '$(calendar) Fortnight', description: '14-day view', command: 'scimax.agenda.fortnight' },
-                { label: '$(calendar) Month Agenda', description: '30-day view', command: 'scimax.agenda.month' },
-                { label: '$(tasklist) TODO List', description: 'All TODO items', command: 'scimax.agenda.todoList' },
-                { label: '$(clock) Deadlines', description: 'Upcoming deadlines', command: 'scimax.agenda.deadlines' },
-                { label: '$(milestone) Scheduled', description: 'Scheduled items', command: 'scimax.agenda.scheduled' },
-                { label: '$(history) Clock Report', description: 'Time tracking report', command: 'scimax.agenda.clockReport' },
-                { label: '$(tag) Filter by Tag', description: 'Show items with tag', command: 'scimax.agenda.filterByTag' },
-                { label: '$(refresh) Refresh', description: 'Re-scan agenda files', command: 'scimax.agenda.refresh' },
+            const builtins: DispatchEntry[] = [
+                { key: 'a', label: 'Agenda Buffer', description: 'Persistent, refreshable agenda in an editor tab', run: () => vscode.commands.executeCommand('scimax.agenda.openBuffer') },
+                { key: 'd', label: 'Day Agenda', description: 'Today\'s agenda', run: () => vscode.commands.executeCommand('scimax.agenda.day') },
+                { key: 'w', label: 'Week Agenda', description: '7-day view', run: () => vscode.commands.executeCommand('scimax.agenda.week') },
+                { key: 'f', label: 'Fortnight', description: '14-day view', run: () => vscode.commands.executeCommand('scimax.agenda.fortnight') },
+                { key: 'M', label: 'Month Agenda', description: '30-day view', run: () => vscode.commands.executeCommand('scimax.agenda.month') },
+                { key: 't', label: 'TODO List', description: 'All TODO items', run: () => vscode.commands.executeCommand('scimax.agenda.todoList') },
+                { key: 'D', label: 'Deadlines', description: 'Upcoming deadlines', run: () => vscode.commands.executeCommand('scimax.agenda.deadlines') },
+                { key: 'S', label: 'Scheduled', description: 'Scheduled items', run: () => vscode.commands.executeCommand('scimax.agenda.scheduled') },
+                { key: 'c', label: 'Clock Report', description: 'Time tracking report', run: () => vscode.commands.executeCommand('scimax.agenda.clockReport') },
+                { key: 'm', label: 'Match Tags/Properties', description: 'Headlines matching a match string', run: () => vscode.commands.executeCommand('scimax.agenda.match') },
+                { key: 'T', label: 'Filter by Tag', description: 'Show items with tag', run: () => vscode.commands.executeCommand('scimax.agenda.filterByTag') },
+                { key: 'e', label: 'Store Agenda Views', description: 'Write every custom command\'s export files', run: () => vscode.commands.executeCommand('scimax.agenda.storeViews') },
+                { key: 'r', label: 'Refresh', description: 'Re-scan agenda files', run: () => vscode.commands.executeCommand('scimax.agenda.refresh') },
             ];
+            await runDispatcher(manager.getCustomCommands(), '', builtins, key => docProvider.openCustom(key));
+        }),
 
-            const selected = await vscode.window.showQuickPick(options, {
-                placeHolder: 'Org Agenda',
-            });
-
-            if (selected) {
-                vscode.commands.executeCommand(selected.command);
+        vscode.commands.registerCommand('scimax.agenda.custom', async (key?: string) => {
+            const commands = manager.getCustomCommands();
+            if (typeof key !== 'string') {
+                if (commands.length === 0) {
+                    const open = await vscode.window.showInformationMessage(
+                        'No custom agenda commands are defined. Add them to scimax.agenda.customCommands.',
+                        'Open Settings'
+                    );
+                    if (open) vscode.commands.executeCommand('workbench.action.openSettings', 'scimax.agenda.customCommands');
+                    return;
+                }
+                await runDispatcher(commands, '', [], k => docProvider.openCustom(k));
+                return;
             }
+            const command = commands.find(c => c.key === key);
+            if (!command) {
+                vscode.window.showErrorMessage(`No custom agenda command with key "${key}".`);
+                return;
+            }
+            if (command.isPrefix) {
+                await runDispatcher(commands, key, [], k => docProvider.openCustom(k));
+                return;
+            }
+            await docProvider.openCustom(key);
+        }),
+
+        // A one-off tags/properties match, like C-c a m.
+        vscode.commands.registerCommand('scimax.agenda.match', async () => {
+            const match = await vscode.window.showInputBox({
+                prompt: 'Match (tags, properties, /TODO part)',
+                placeHolder: '+work-someday+PRIORITY="A"/!',
+                validateInput: value => {
+                    const { commands } = resolveCustomCommands([{ key: 'm', type: 'tags', match: value }]);
+                    return commands[0]?.errors[0];
+                },
+            });
+            if (match === undefined) return;
+            await docProvider.openAdHoc({ key: 'm', description: `Match: ${match}`, type: 'tags', match });
+        }),
+
+        vscode.commands.registerCommand('scimax.agenda.storeViews', async () => {
+            const commands = manager.getCustomCommands().filter(c => c.export.length > 0 && !c.isPrefix);
+            if (commands.length === 0) {
+                vscode.window.showInformationMessage('No custom agenda command has an "export" list.');
+                return;
+            }
+            const written: string[] = [];
+            const failed: string[] = [];
+            await vscode.window.withProgress(
+                { location: vscode.ProgressLocation.Notification, title: 'Storing agenda views' },
+                async progress => {
+                    for (const command of commands) {
+                        progress.report({ message: command.description });
+                        const outcome = await manager.runCustomCommand(command.key);
+                        if ('error' in outcome) {
+                            failed.push(`${command.key}: ${outcome.error}`);
+                            continue;
+                        }
+                        for (const file of command.export) {
+                            try {
+                                await fs.promises.mkdir(path.dirname(file), { recursive: true });
+                                await fs.promises.writeFile(file, exportCustomCommand(outcome.result, file), 'utf8');
+                                written.push(file);
+                            } catch (error) {
+                                failed.push(`${file}: ${error}`);
+                            }
+                        }
+                    }
+                }
+            );
+            if (failed.length) {
+                manager.logMessage(`Store agenda views:\n${failed.join('\n')}`);
+                vscode.window.showWarningMessage(`Stored ${written.length} agenda view(s); ${failed.length} failed (see the Org Agenda output).`);
+            } else {
+                vscode.window.showInformationMessage(`Stored ${written.length} agenda view(s).`);
+            }
+        }),
+
+        vscode.commands.registerCommand('scimax.agenda.exportCurrent', async () => {
+            const uri = activeBuffer();
+            const result = uri ? docProvider.getCustomResult(uri) : undefined;
+            if (!result) {
+                vscode.window.showInformationMessage('Export works in a custom agenda buffer (open one from the agenda menu).');
+                return;
+            }
+            const target = await vscode.window.showSaveDialog({
+                title: 'Export agenda view',
+                defaultUri: vscode.Uri.file(path.join(os.homedir(), `agenda-${result.command.key}.html`)),
+                filters: { 'HTML': ['html'], 'Text': ['txt'], 'Org': ['org'], 'iCalendar': ['ics'], 'JSON': ['json'] },
+            });
+            if (!target) return;
+            await fs.promises.writeFile(target.fsPath, exportCustomCommand(result, target.fsPath), 'utf8');
+            vscode.window.showInformationMessage(`Exported agenda view to ${target.fsPath}`);
         }),
 
         // Configure agenda files. The agenda is a view over the database, so

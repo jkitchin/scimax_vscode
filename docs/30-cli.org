@@ -101,7 +101,7 @@ scimax task help
 scimax skill
 #+end_src
 
-** Agenda
+** 👀 Agenda
 
 View scheduled items, deadlines, and TODO items.
 
@@ -138,6 +138,28 @@ scimax agenda week --json
   NEXT     Today    Submit grant proposal
            projects/grant.org:15
 #+end_example
+
+*** ⚠️ Custom Agenda Commands
+
+The CLI runs the custom agenda commands defined in =scimax.agenda.customCommands=
+in your VS Code =settings.json= (see [[file:13-agenda.org::*Custom Agenda Commands][Custom Agenda Commands]]).
+
+#+begin_src bash
+# List your custom commands and their keys
+scimax agenda custom
+
+# Print the view for key "d"
+scimax agenda custom d
+
+# Structured output
+scimax agenda custom d --json
+
+# Write every command's "export" files (.txt, .org, .html, .ics, .json)
+scimax agenda store
+#+end_src
+
+=scimax agenda store= from cron keeps HTML or iCalendar copies of your views
+current, like =org-store-agenda-views= in Emacs.
 
 ** Search
 

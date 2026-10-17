@@ -2994,6 +2994,22 @@
         "title": "Scimax: Open Agenda Buffer"
       },
       {
+        "command": "scimax.agenda.custom",
+        "title": "Scimax: Run Custom Agenda Command"
+      },
+      {
+        "command": "scimax.agenda.match",
+        "title": "Scimax: Agenda Match (Tags/Properties)"
+      },
+      {
+        "command": "scimax.agenda.storeViews",
+        "title": "Scimax: Store Agenda Views"
+      },
+      {
+        "command": "scimax.agenda.exportCurrent",
+        "title": "Scimax: Export Agenda View"
+      },
+      {
         "command": "scimax.agenda.buffer.goto",
         "title": "Scimax: Agenda Buffer - Go to Item"
       },
@@ -6504,6 +6520,12 @@
         "key": "shift+2",
         "mac": "shift+2",
         "when": "resourceScheme == org-agenda && editorTextFocus && !scimax.jumpActive"
+      },
+      {
+        "command": "scimax.agenda.exportCurrent",
+        "key": "ctrl+x ctrl+w",
+        "mac": "ctrl+x ctrl+w",
+        "when": "resourceScheme == org-agenda && editorTextFocus"
       }
     ],
     "configuration": {
@@ -7691,6 +7713,566 @@
             "CANCELED"
           ],
           "description": "Completed TODO states, in addition to the done keywords a file declares after | in its #+TODO line"
+        },
+        "scimax.agenda.customCommands": {
+          "type": "array",
+          "default": [],
+          "markdownDescription": "Custom agenda commands, after `org-agenda-custom-commands`. Each has a `key`, a `description`, and either `blocks` (a composite view) or a single block given by `type` and `match`. A command with neither is a prefix key for commands whose keys start with it. See the agenda documentation for match strings, skip conditions and sorting.",
+          "items": {
+            "type": "object",
+            "required": [
+              "key"
+            ],
+            "properties": {
+              "key": {
+                "type": "string",
+                "description": "Dispatcher key, e.g. \"w\"; \"gw\" is \"w\" under prefix \"g\""
+              },
+              "description": {
+                "type": "string",
+                "description": "Shown in the dispatcher and as the buffer title"
+              },
+              "blocks": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": [
+                    "type"
+                  ],
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "agenda",
+                        "todo",
+                        "alltodo",
+                        "tags",
+                        "tags-todo",
+                        "search",
+                        "stuck"
+                      ],
+                      "description": "Block type"
+                    },
+                    "match": {
+                      "type": "string",
+                      "description": "Match string (tags, tags-todo, agenda), keywords like \"NEXT|WAITING\" (todo), or words (search)"
+                    },
+                    "header": {
+                      "type": "string",
+                      "description": "Section header"
+                    },
+                    "span": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 366,
+                      "description": "agenda blocks: number of days (1 = day, 7 = week)"
+                    },
+                    "startDay": {
+                      "type": "string",
+                      "description": "agenda blocks: \"today\", a weekday (\"monday\"), an offset (\"-1d\") or yyyy-mm-dd"
+                    },
+                    "files": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "Only entries from these files"
+                    },
+                    "directories": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "Only entries from files under these directories"
+                    },
+                    "showDone": {
+                      "type": "boolean",
+                      "description": "Include done entries in list blocks"
+                    },
+                    "inheritTags": {
+                      "type": "boolean",
+                      "default": true,
+                      "description": "Count inherited tags in matches"
+                    },
+                    "groupBy": {
+                      "type": "string",
+                      "enum": [
+                        "none",
+                        "todo",
+                        "category",
+                        "priority",
+                        "tag",
+                        "file"
+                      ],
+                      "description": "Group the entries of a list block"
+                    },
+                    "sort": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "enum": [
+                          "time-up",
+                          "time-down",
+                          "priority-up",
+                          "priority-down",
+                          "deadline-up",
+                          "deadline-down",
+                          "scheduled-up",
+                          "scheduled-down",
+                          "effort-up",
+                          "effort-down",
+                          "alpha-up",
+                          "alpha-down",
+                          "todo-state-up",
+                          "todo-state-down",
+                          "category-up",
+                          "category-down",
+                          "category-keep",
+                          "level-up",
+                          "level-down"
+                        ]
+                      },
+                      "description": "Sorting strategy, applied in order (org-agenda-sorting-strategy)"
+                    },
+                    "skip": {
+                      "type": "object",
+                      "description": "Skip an entry when any condition holds (org-agenda-skip-entry-if)",
+                      "properties": {
+                        "scheduled": {
+                          "type": "boolean",
+                          "description": "Skip entries with a SCHEDULED date"
+                        },
+                        "notScheduled": {
+                          "type": "boolean",
+                          "description": "Skip entries without a SCHEDULED date"
+                        },
+                        "deadline": {
+                          "type": "boolean",
+                          "description": "Skip entries with a DEADLINE"
+                        },
+                        "notDeadline": {
+                          "type": "boolean",
+                          "description": "Skip entries without a DEADLINE"
+                        },
+                        "todo": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          },
+                          "description": "Skip entries in these TODO states (\"todo\" and \"done\" mean any not-done or done state)"
+                        },
+                        "notTodo": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          },
+                          "description": "Skip entries not in these TODO states"
+                        },
+                        "tags": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          },
+                          "description": "Skip entries with any of these tags (own or inherited)"
+                        },
+                        "notTags": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          },
+                          "description": "Skip entries with none of these tags"
+                        },
+                        "regexp": {
+                          "type": "string",
+                          "description": "Skip entries whose heading or body matches this regular expression"
+                        },
+                        "notRegexp": {
+                          "type": "string",
+                          "description": "Skip entries whose heading and body do not match this regular expression"
+                        },
+                        "blocked": {
+                          "type": "boolean",
+                          "description": "Skip entries with an unfinished dependency"
+                        }
+                      },
+                      "additionalProperties": false
+                    },
+                    "prefix": {
+                      "type": "string",
+                      "description": "Line prefix: %c category, %t time, %s schedule info, %e effort, %f file, %l level indent; %-10c pads"
+                    },
+                    "limit": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "description": "Show at most this many entries"
+                    }
+                  }
+                },
+                "description": "Blocks of a composite view, shown in order"
+              },
+              "settings": {
+                "type": "object",
+                "properties": {
+                  "span": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 366,
+                    "description": "agenda blocks: number of days (1 = day, 7 = week)"
+                  },
+                  "startDay": {
+                    "type": "string",
+                    "description": "agenda blocks: \"today\", a weekday (\"monday\"), an offset (\"-1d\") or yyyy-mm-dd"
+                  },
+                  "files": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "Only entries from these files"
+                  },
+                  "directories": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "Only entries from files under these directories"
+                  },
+                  "showDone": {
+                    "type": "boolean",
+                    "description": "Include done entries in list blocks"
+                  },
+                  "inheritTags": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Count inherited tags in matches"
+                  },
+                  "groupBy": {
+                    "type": "string",
+                    "enum": [
+                      "none",
+                      "todo",
+                      "category",
+                      "priority",
+                      "tag",
+                      "file"
+                    ],
+                    "description": "Group the entries of a list block"
+                  },
+                  "sort": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "enum": [
+                        "time-up",
+                        "time-down",
+                        "priority-up",
+                        "priority-down",
+                        "deadline-up",
+                        "deadline-down",
+                        "scheduled-up",
+                        "scheduled-down",
+                        "effort-up",
+                        "effort-down",
+                        "alpha-up",
+                        "alpha-down",
+                        "todo-state-up",
+                        "todo-state-down",
+                        "category-up",
+                        "category-down",
+                        "category-keep",
+                        "level-up",
+                        "level-down"
+                      ]
+                    },
+                    "description": "Sorting strategy, applied in order (org-agenda-sorting-strategy)"
+                  },
+                  "skip": {
+                    "type": "object",
+                    "description": "Skip an entry when any condition holds (org-agenda-skip-entry-if)",
+                    "properties": {
+                      "scheduled": {
+                        "type": "boolean",
+                        "description": "Skip entries with a SCHEDULED date"
+                      },
+                      "notScheduled": {
+                        "type": "boolean",
+                        "description": "Skip entries without a SCHEDULED date"
+                      },
+                      "deadline": {
+                        "type": "boolean",
+                        "description": "Skip entries with a DEADLINE"
+                      },
+                      "notDeadline": {
+                        "type": "boolean",
+                        "description": "Skip entries without a DEADLINE"
+                      },
+                      "todo": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        },
+                        "description": "Skip entries in these TODO states (\"todo\" and \"done\" mean any not-done or done state)"
+                      },
+                      "notTodo": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        },
+                        "description": "Skip entries not in these TODO states"
+                      },
+                      "tags": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        },
+                        "description": "Skip entries with any of these tags (own or inherited)"
+                      },
+                      "notTags": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        },
+                        "description": "Skip entries with none of these tags"
+                      },
+                      "regexp": {
+                        "type": "string",
+                        "description": "Skip entries whose heading or body matches this regular expression"
+                      },
+                      "notRegexp": {
+                        "type": "string",
+                        "description": "Skip entries whose heading and body do not match this regular expression"
+                      },
+                      "blocked": {
+                        "type": "boolean",
+                        "description": "Skip entries with an unfinished dependency"
+                      }
+                    },
+                    "additionalProperties": false
+                  },
+                  "prefix": {
+                    "type": "string",
+                    "description": "Line prefix: %c category, %t time, %s schedule info, %e effort, %f file, %l level indent; %-10c pads"
+                  },
+                  "limit": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "description": "Show at most this many entries"
+                  }
+                },
+                "description": "Defaults for every block"
+              },
+              "export": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "Files written by \"Store Agenda Views\" (.txt, .org, .html, .ics, .json)"
+              },
+              "type": {
+                "type": "string",
+                "enum": [
+                  "agenda",
+                  "todo",
+                  "alltodo",
+                  "tags",
+                  "tags-todo",
+                  "search",
+                  "stuck"
+                ],
+                "description": "Single-block command: block type"
+              },
+              "match": {
+                "type": "string",
+                "description": "Single-block command: match string"
+              },
+              "header": {
+                "type": "string",
+                "description": "Single-block command: section header"
+              },
+              "span": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 366,
+                "description": "agenda blocks: number of days (1 = day, 7 = week)"
+              },
+              "startDay": {
+                "type": "string",
+                "description": "agenda blocks: \"today\", a weekday (\"monday\"), an offset (\"-1d\") or yyyy-mm-dd"
+              },
+              "files": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "Only entries from these files"
+              },
+              "directories": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "Only entries from files under these directories"
+              },
+              "showDone": {
+                "type": "boolean",
+                "description": "Include done entries in list blocks"
+              },
+              "inheritTags": {
+                "type": "boolean",
+                "default": true,
+                "description": "Count inherited tags in matches"
+              },
+              "groupBy": {
+                "type": "string",
+                "enum": [
+                  "none",
+                  "todo",
+                  "category",
+                  "priority",
+                  "tag",
+                  "file"
+                ],
+                "description": "Group the entries of a list block"
+              },
+              "sort": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "time-up",
+                    "time-down",
+                    "priority-up",
+                    "priority-down",
+                    "deadline-up",
+                    "deadline-down",
+                    "scheduled-up",
+                    "scheduled-down",
+                    "effort-up",
+                    "effort-down",
+                    "alpha-up",
+                    "alpha-down",
+                    "todo-state-up",
+                    "todo-state-down",
+                    "category-up",
+                    "category-down",
+                    "category-keep",
+                    "level-up",
+                    "level-down"
+                  ]
+                },
+                "description": "Sorting strategy, applied in order (org-agenda-sorting-strategy)"
+              },
+              "skip": {
+                "type": "object",
+                "description": "Skip an entry when any condition holds (org-agenda-skip-entry-if)",
+                "properties": {
+                  "scheduled": {
+                    "type": "boolean",
+                    "description": "Skip entries with a SCHEDULED date"
+                  },
+                  "notScheduled": {
+                    "type": "boolean",
+                    "description": "Skip entries without a SCHEDULED date"
+                  },
+                  "deadline": {
+                    "type": "boolean",
+                    "description": "Skip entries with a DEADLINE"
+                  },
+                  "notDeadline": {
+                    "type": "boolean",
+                    "description": "Skip entries without a DEADLINE"
+                  },
+                  "todo": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "Skip entries in these TODO states (\"todo\" and \"done\" mean any not-done or done state)"
+                  },
+                  "notTodo": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "Skip entries not in these TODO states"
+                  },
+                  "tags": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "Skip entries with any of these tags (own or inherited)"
+                  },
+                  "notTags": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "Skip entries with none of these tags"
+                  },
+                  "regexp": {
+                    "type": "string",
+                    "description": "Skip entries whose heading or body matches this regular expression"
+                  },
+                  "notRegexp": {
+                    "type": "string",
+                    "description": "Skip entries whose heading and body do not match this regular expression"
+                  },
+                  "blocked": {
+                    "type": "boolean",
+                    "description": "Skip entries with an unfinished dependency"
+                  }
+                },
+                "additionalProperties": false
+              },
+              "prefix": {
+                "type": "string",
+                "description": "Line prefix: %c category, %t time, %s schedule info, %e effort, %f file, %l level indent; %-10c pads"
+              },
+              "limit": {
+                "type": "integer",
+                "minimum": 1,
+                "description": "Show at most this many entries"
+              }
+            }
+          }
+        },
+        "scimax.agenda.stuckProjects": {
+          "type": "object",
+          "default": {
+            "match": "LEVEL=2",
+            "todoStates": [
+              "TODO",
+              "NEXT",
+              "NEXTACTION"
+            ],
+            "tags": []
+          },
+          "markdownDescription": "Stuck projects, after `org-stuck-projects`: headings matching `match` that are not done and have no descendant in one of `todoStates`, with one of `tags`, or with a title matching `regexp`.",
+          "properties": {
+            "match": {
+              "type": "string",
+              "description": "Match string selecting project headings"
+            },
+            "todoStates": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "A descendant in one of these states makes a project active"
+            },
+            "tags": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "A descendant with one of these tags makes a project active"
+            },
+            "regexp": {
+              "type": "string",
+              "description": "A descendant title matching this makes a project active"
+            }
+          }
         },
         "scimax.agenda.maxFiles": {
           "type": "number",

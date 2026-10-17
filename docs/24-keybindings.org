@@ -416,7 +416,7 @@ viewport. Moving the cursor resets the cycle to center.
 | C-c d t | Show TODOs           |
 | C-c d a | Show agenda          |
 
-** ✅ Agenda Buffer
+** 👀 Agenda Buffer
 CLOSED: [2026-10-03 Sat 09:01]
 
 Single keys, active only inside an agenda buffer (see [[file:13-agenda.org][Agenda]]).
@@ -431,6 +431,7 @@ The buffer is read-only, so these keys are never ambiguous with typing.
 | f   | Forward one period           |
 | b   | Back one period              |
 | .   | Return to the current period |
+| C-x C-w | Export a custom view to a file |
 | q   | Close the buffer             |
 
 Items are also links: Ctrl+click (Cmd+click on macOS) opens the source

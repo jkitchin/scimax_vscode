@@ -57,6 +57,14 @@ export interface AgendaItem {
     priority?: string;
     /** Tags */
     tags: string[];
+    /** Tags inherited from ancestors and #+FILETAGS (database items) */
+    inheritedTags?: string[];
+    /** Property drawer (database items) */
+    properties?: Record<string, string>;
+    /** Outline level (database items) */
+    level?: number;
+    /** The TODO keyword is a done state for its file (database items) */
+    isDone?: boolean;
     /** File path */
     file: string;
     /** Line number */
@@ -389,10 +397,15 @@ export function isUnderAnyDirectory(file: string, directories: string[]): boolea
     });
 }
 
+/** Own and inherited tags. */
+function itemTags(item: AgendaItem): string[] {
+    return item.inheritedTags?.length ? [...item.tags, ...item.inheritedTags] : item.tags;
+}
+
 /**
  * Filter agenda items based on configuration
  */
-function filterAgendaItems(items: AgendaItem[], config: AgendaViewConfig): AgendaItem[] {
+export function filterAgendaItems(items: AgendaItem[], config: AgendaViewConfig): AgendaItem[] {
     return items.filter(item => {
         // Filter by TODO state
         if (config.todoStates && config.todoStates.length > 0) {
@@ -402,20 +415,22 @@ function filterAgendaItems(items: AgendaItem[], config: AgendaViewConfig): Agend
         }
 
         // Filter done items
-        if (!config.showDone && item.todoState === 'DONE') {
+        if (!config.showDone && (item.isDone || item.todoState === 'DONE')) {
             return false;
         }
 
         // Filter by tags (include)
         if (config.includeTags && config.includeTags.length > 0) {
-            if (!config.includeTags.some(tag => item.tags.includes(tag))) {
+            const tags = itemTags(item);
+            if (!config.includeTags.some(tag => tags.includes(tag))) {
                 return false;
             }
         }
 
         // Filter by tags (exclude)
         if (config.excludeTags && config.excludeTags.length > 0) {
-            if (config.excludeTags.some(tag => item.tags.includes(tag))) {
+            const tags = itemTags(item);
+            if (config.excludeTags.some(tag => tags.includes(tag))) {
                 return false;
             }
         }

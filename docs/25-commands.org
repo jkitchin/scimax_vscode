@@ -652,7 +652,7 @@ CLOSED: [2026-01-17 Sat 12:28]
 | [[cmd:scimax.db.deadlines]]      | Show Upcoming Deadlines | -                  |
 | [[cmd:scimax.agenda.currentFile]]| Agenda for Current File | C-c a <            |
 
-** ✅ Advanced Agenda
+** 👀 Advanced Agenda
 CLOSED: [2026-01-17 Sat 12:51]
 
 | Command ID                            | Description              | Default Keybinding |
@@ -682,6 +682,10 @@ CLOSED: [2026-01-17 Sat 12:51]
 | [[cmd:scimax.agenda.ignoreFileFromTab]] | Ignore File from Editor Tab  | -            |
 | [[cmd:scimax.agenda.unignoreFile]]    | Unignore File in Agenda  | -                  |
 | [[cmd:scimax.agenda.openBuffer]]      | Open Agenda Buffer       | C-c a v            |
+| [[cmd:scimax.agenda.custom]]          | Run Custom Agenda Command | -                 |
+| [[cmd:scimax.agenda.match]]           | Agenda Match (Tags/Properties) | m (agenda menu) |
+| [[cmd:scimax.agenda.storeViews]]      | Store Agenda Views       | e (agenda menu)    |
+| [[cmd:scimax.agenda.exportCurrent]]   | Export Agenda View       | C-x C-w (in buffer) |
 | [[cmd:scimax.agenda.buffer.goto]]     | Agenda Buffer - Go to Item   | RET (in buffer) |
 | [[cmd:scimax.agenda.buffer.refresh]]  | Agenda Buffer - Refresh      | g (in buffer)   |
 | [[cmd:scimax.agenda.buffer.next]]     | Agenda Buffer - Next Period  | f (in buffer)   |

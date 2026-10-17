@@ -119,13 +119,19 @@ In scimax, clicking on error messages in results jumps to the corresponding line
 
 * Agenda Limitations
 
-** Custom Agenda Views
+** 👀 Custom Agenda Views
 
 Emacs org-agenda supports highly customizable agenda views with complex matching criteria, custom sorting, and display options via =org-agenda-custom-commands=.
 
-*VS Code limitation*: Only basic agenda views (day/week/month, TODO list, tag filter) are supported.
+*Now supported*: =scimax.agenda.customCommands= defines dispatcher commands with
+the =agenda=, =todo=, =alltodo=, =tags=, =tags-todo=, =search= and =stuck= block
+types, composite views, Org match strings, skip conditions, sorting strategies,
+prefix keys, and stored or exported views. See [[file:13-agenda.org::*Custom Agenda Commands][Custom Agenda Commands]].
 
-*Workaround*: Use database search with custom queries for complex filtering.
+*Remaining limitations*:
+- Skip conditions are declarative; there are no Lisp skip functions.
+- Category is not inherited from ancestor headings, and =#+CATEGORY:= is not read.
+- Custom views come from the database, so files must be indexed.
 
 ** Agenda Follow Mode
 

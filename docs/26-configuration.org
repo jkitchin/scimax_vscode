@@ -1662,7 +1662,7 @@ When enabled, you can use single-key shortcuts (like `n', `p', `u') when the cur
 
 Configure the agenda view and TODO tracking.
 
-** ✅ Settings Overview
+** 👀 Settings Overview
 CLOSED: [2026-10-03 Sat 09:01]
 
 The agenda is now a *view over the Scimax database*. Indexing scope
@@ -1680,6 +1680,8 @@ below are display-only.
 | scimax.agenda.showHabits         | boolean | true                              | Show habit-tagged items                |
 | scimax.agenda.todoStates         | array   | ["TODO", "NEXT", "WAITING"]       | Active TODO states                     |
 | scimax.agenda.doneStates         | array   | ["DONE", "CANCELLED", "CANCELED"] | Completed states                       |
+| scimax.agenda.customCommands     | array   | []                                | Custom agenda commands                 |
+| scimax.agenda.stuckProjects      | object  | See below                         | What counts as a stuck project         |
 
 The following =scimax.agenda.*= settings are *deprecated* — they have
 no effect. Use the =scimax.db.*= equivalents instead:
@@ -1818,6 +1820,56 @@ CLOSED: [2026-10-02 Fri 06:59]
     "DEFERRED",
     "ARCHIVED"
   ]
+}
+#+end_src
+
+*** ⚠️ scimax.agenda.customCommands
+
+- *Type*: array of command objects
+- *Default*: =[]=
+- *Description*: Custom agenda commands, after =org-agenda-custom-commands=.
+  Each has a =key=, a =description=, and either a single block (=type= and
+  =match=) or a list of =blocks=. A command with neither is a prefix key. Run
+  them from the agenda menu (=C-c a a=) or with =scimax.agenda.custom=. See
+  [[file:13-agenda.org::*Custom Agenda Commands][Custom Agenda Commands]] for block types, match strings, skip
+  conditions, sorting and export.
+
+*Example*:
+#+begin_src json
+{
+  "scimax.agenda.customCommands": [
+    { "key": "w", "description": "Work", "type": "tags-todo", "match": "+work/!-WAITING" },
+    {
+      "key": "d",
+      "description": "Daily review",
+      "blocks": [
+        { "type": "agenda", "span": 1 },
+        { "type": "todo", "match": "NEXT" },
+        { "type": "stuck" }
+      ],
+      "export": ["~/agenda/daily.html"]
+    }
+  ]
+}
+#+end_src
+
+*** ⚠️ scimax.agenda.stuckProjects
+
+- *Type*: object
+- *Default*: ={ "match": "LEVEL=2", "todoStates": ["TODO", "NEXT", "NEXTACTION"], "tags": [] }=
+- *Description*: Defines projects for =stuck= blocks, after
+  =org-stuck-projects=. Headings matching =match= are projects. A project is
+  not stuck if a descendant is in one of =todoStates=, has one of =tags=, or
+  has a title matching =regexp=.
+
+*Example*:
+#+begin_src json
+{
+  "scimax.agenda.stuckProjects": {
+    "match": "+project",
+    "todoStates": ["NEXT"],
+    "tags": ["active"]
+  }
 }
 #+end_src
 

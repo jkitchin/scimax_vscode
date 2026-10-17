@@ -4,9 +4,23 @@
  * Uses the same settings as the VS Code extension for consistent behavior.
  */
 
+import * as fs from 'fs';
+import * as os from 'os';
+import * as path from 'path';
 import { createCliDatabase, CliDatabase } from '../database';
 import type { ScimaxDbCore, AgendaItem, HeadingRecord } from '../../database/scimaxDbCore';
-import { loadSettings, AgendaSettings } from '../settings';
+import { loadSettings, shouldExclude, AgendaSettings } from '../settings';
+import {
+    resolveCustomCommands,
+    runCustomCommand,
+    renderCustomCommand,
+    exportCustomCommand,
+    customCommandToJson,
+    DEFAULT_STUCK_PROJECTS,
+    type ResolvedCommand,
+    type StuckProjectsConfig,
+} from '../../parser/orgAgendaCustom';
+import { createDbAgendaSource } from '../../parser/orgAgendaCustomSource';
 import { vscodeLinkAt } from '../links';
 // Per-function imports: the package index loads all of date-fns.
 import format from 'date-fns/format';
@@ -68,9 +82,16 @@ export async function agendaCommand(config: CliConfig, args: ParsedArgs): Promis
             case 'overdue':
                 await showOverdue(db, settings.agenda, json);
                 break;
+            case 'custom':
+                // args holds the subcommand first.
+                await showCustom(db, args.args[1], settings.agenda, json);
+                break;
+            case 'store':
+                await storeViews(db, settings.agenda, json);
+                break;
             default:
                 console.log(`Unknown agenda view: ${view}`);
-                console.log('Available: today, week, todos, overdue');
+                console.log('Available: today, week, todos, overdue, custom <key>, store');
         }
     } finally {
         await db.close();
@@ -326,4 +347,95 @@ async function showOverdue(db: ScimaxDbCore, settings: AgendaSettings, json: boo
         console.log(`           ${link}`);
         console.log();
     }
+}
+
+function customCommands(settings: AgendaSettings): { commands: ResolvedCommand[]; stuck: StuckProjectsConfig } {
+    const stuck = { ...DEFAULT_STUCK_PROJECTS, ...settings.stuckProjects } as StuckProjectsConfig;
+    const { commands, problems } = resolveCustomCommands(settings.customCommands, { home: os.homedir(), stuck });
+    for (const problem of problems) console.error(`scimax.agenda.customCommands: ${problem}`);
+    return { commands, stuck };
+}
+
+function customSource(db: ScimaxDbCore, settings: AgendaSettings, stuck: StuckProjectsConfig) {
+    return createDbAgendaSource(db, {
+        doneStates: settings.doneStates,
+        requireTodoState: settings.requireTodoState,
+        isExcluded: file => shouldExclude(file, settings.exclude),
+        stuckProjects: stuck,
+    });
+}
+
+/** `scimax agenda custom [key]`: run one custom command, or list them. */
+async function showCustom(db: ScimaxDbCore, key: string | undefined, settings: AgendaSettings, json: boolean): Promise<void> {
+    const { commands, stuck } = customCommands(settings);
+    if (!key) {
+        if (json) {
+            console.log(JSON.stringify(commands.map(c => ({
+                key: c.key, description: c.description, prefix: c.isPrefix, blocks: c.blocks.map(b => b.type), errors: c.errors,
+            })), null, 2));
+            return;
+        }
+        if (commands.length === 0) {
+            console.log('No custom agenda commands. Define them in scimax.agenda.customCommands.');
+            return;
+        }
+        for (const c of commands) {
+            const note = c.isPrefix ? '(prefix)' : c.errors.length ? `(error: ${c.errors[0]})` : '';
+            console.log(`  ${c.key.padEnd(6)} ${c.description} ${note}`.trimEnd());
+        }
+        return;
+    }
+
+    const command = commands.find(c => c.key === key);
+    if (!command || command.isPrefix) {
+        console.error(command ? `"${key}" is a prefix key.` : `No custom agenda command with key "${key}".`);
+        process.exitCode = 1;
+        return;
+    }
+    if (command.errors.length) {
+        console.error(`Custom agenda "${key}" is invalid:\n  ${command.errors.join('\n  ')}`);
+        process.exitCode = 1;
+        return;
+    }
+    const result = await runCustomCommand(command, customSource(db, settings, stuck));
+    if (json) {
+        console.log(JSON.stringify(customCommandToJson(result), null, 2));
+        return;
+    }
+    console.log(renderCustomCommand(result).text);
+}
+
+/** `scimax agenda store`: write every custom command's export files. */
+async function storeViews(db: ScimaxDbCore, settings: AgendaSettings, json: boolean): Promise<void> {
+    const { commands, stuck } = customCommands(settings);
+    const source = customSource(db, settings, stuck);
+    const written: string[] = [];
+    const failed: { file: string; error: string }[] = [];
+
+    for (const command of commands) {
+        if (command.isPrefix || command.export.length === 0) continue;
+        if (command.errors.length) {
+            failed.push({ file: command.key, error: command.errors.join('; ') });
+            continue;
+        }
+        const result = await runCustomCommand(command, source);
+        for (const file of command.export) {
+            try {
+                await fs.promises.mkdir(path.dirname(file), { recursive: true });
+                await fs.promises.writeFile(file, exportCustomCommand(result, file), 'utf8');
+                written.push(file);
+            } catch (error) {
+                failed.push({ file, error: String(error) });
+            }
+        }
+    }
+
+    if (json) {
+        console.log(JSON.stringify({ written, failed }, null, 2));
+    } else {
+        for (const file of written) console.log(`  wrote ${file}`);
+        for (const f of failed) console.error(`  failed ${f.file}: ${f.error}`);
+        if (written.length === 0 && failed.length === 0) console.log('No custom agenda command has an "export" list.');
+    }
+    if (failed.length) process.exitCode = 1;
 }
