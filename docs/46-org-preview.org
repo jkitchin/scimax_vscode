@@ -12,13 +12,13 @@ source, the way VS Code's Markdown preview does for =.md= files. It uses the
 same engine as HTML export ([[file:10-export.org][Export]]), so what you see is what
 HTML export produces, and it updates as you type.
 
-* Opening the Preview
+* 👀 Opening the Preview
 
-| Action                          | macOS         | Windows/Linux  | Command                            |
-|---------------------------------+---------------+----------------+------------------------------------|
-| Open preview (in this group)    | =Cmd+Shift+V= | =Ctrl+Shift+V= | ~scimax.org.preview.open~          |
-| Open preview to the side        | =Cmd+K V=     | =Ctrl+K V=     | ~scimax.org.preview.openToSide~    |
-| Back to the source from preview | =Cmd+Shift+V= | =Ctrl+Shift+V= | ~scimax.org.preview.showSource~    |
+| Action                          | macOS         | Windows/Linux    | Command                         |
+|---------------------------------+---------------+------------------+---------------------------------|
+| Open preview (in this group)    | =Cmd+Shift+V= | =Ctrl+Shift+V=   | ~scimax.org.preview.open~       |
+| Open preview to the side        | =Cmd+K V=     | =Ctrl+C Shift+V= | ~scimax.org.preview.openToSide~ |
+| Back to the source from preview | =Cmd+Shift+V= | =Ctrl+Shift+V=   | ~scimax.org.preview.showSource~ |
 
 The preview icon in the editor title bar of an org file also opens the preview
 to the side, and the preview's own title bar has a button that goes back to the

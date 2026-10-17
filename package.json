@@ -4448,8 +4448,8 @@
       },
       {
         "command": "scimax.babel.executeToPoint",
-        "key": "ctrl+c ctrl+v p",
-        "mac": "ctrl+c ctrl+v p",
+        "key": "ctrl+c ctrl+v shift+p",
+        "mac": "ctrl+c ctrl+v shift+p",
         "when": "editorTextFocus && editorLangId == 'org' && !terminalFocus"
       },
       {
@@ -4490,7 +4490,7 @@
       },
       {
         "command": "scimax.org.preview.openToSide",
-        "key": "ctrl+k v",
+        "key": "ctrl+c shift+v",
         "mac": "cmd+k v",
         "when": "editorTextFocus && editorLangId == 'org'"
       },
@@ -4528,12 +4528,6 @@
         "command": "scimax.ob.nextBlock",
         "key": "ctrl+c n",
         "mac": "ctrl+c n",
-        "when": "editorTextFocus && editorLangId == 'org' && scimax.inSourceBlock && !terminalFocus"
-      },
-      {
-        "command": "scimax.ob.previousBlock",
-        "key": "ctrl+c p",
-        "mac": "ctrl+c p",
         "when": "editorTextFocus && editorLangId == 'org' && scimax.inSourceBlock && !terminalFocus"
       },
       {
@@ -4950,7 +4944,7 @@
         "command": "scimax.mark.cancel",
         "key": "escape escape",
         "mac": "escape escape",
-        "when": "editorTextFocus && editorHasSelection && !scimax.jumpActive"
+        "when": "editorTextFocus && editorHasSelection && !scimax.jumpActive && !scimax.rectangleMarkMode"
       },
       {
         "command": "scimax.mark.push",
@@ -4978,8 +4972,8 @@
       },
       {
         "command": "scimax.mark.show",
-        "key": "ctrl+c m s",
-        "mac": "ctrl+c m s",
+        "key": "ctrl+c shift+m",
+        "mac": "ctrl+c shift+m",
         "when": "editorTextFocus && !terminalFocus"
       },
       {
@@ -5079,8 +5073,8 @@
       },
       {
         "command": "scimax.hydra.database",
-        "key": "ctrl+c d",
-        "mac": "ctrl+c d",
+        "key": "ctrl+c d d",
+        "mac": "ctrl+c d d",
         "when": "!terminalFocus"
       },
       {
@@ -5351,19 +5345,19 @@
         "command": "scimax.ob.insertBlockAbove",
         "key": "escape a",
         "mac": "escape a",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/ && !scimax.jumpActive"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/ && !scimax.jumpActive && !scimax.rectangleMarkMode"
       },
       {
         "command": "scimax.ob.insertBlockBelow",
         "key": "escape b",
         "mac": "escape b",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/ && !scimax.jumpActive"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/ && !scimax.jumpActive && !scimax.rectangleMarkMode"
       },
       {
         "command": "scimax.ob.splitBlock",
         "key": "escape -",
         "mac": "escape -",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/ && scimax.inSourceBlock && !scimax.jumpActive"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/ && scimax.inSourceBlock && !scimax.jumpActive && !scimax.rectangleMarkMode"
       },
       {
         "command": "scimax.ob.executeAndNext",
@@ -6171,12 +6165,6 @@
       },
       {
         "command": "scimax.latex.jumpToSection",
-        "key": "ctrl+c j",
-        "mac": "ctrl+c j",
-        "when": "editorTextFocus && editorLangId == 'latex' && !terminalFocus"
-      },
-      {
-        "command": "scimax.latex.jumpToSection",
         "key": "ctrl+c ctrl+j",
         "mac": "ctrl+c ctrl+j",
         "when": "editorTextFocus && editorLangId == 'latex' && !terminalFocus"
@@ -6231,8 +6219,8 @@
       },
       {
         "command": "scimax.latex.changeEnvironment",
-        "key": "ctrl+c e",
-        "mac": "ctrl+c e",
+        "key": "ctrl+c shift+e",
+        "mac": "ctrl+c shift+e",
         "when": "editorTextFocus && editorLangId == 'latex' && !terminalFocus"
       },
       {

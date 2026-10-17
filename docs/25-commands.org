@@ -314,23 +314,22 @@ CLOSED: [2026-01-17 Sat 12:26]
 | [[cmd:scimax.ob.toggleResults]]       | Toggle Results Visibility       | -                  |
 | [[cmd:scimax.ob.editHeader]]          | Edit Block Header               | -                  |
 
-** ✅ Extended Babel Features
-CLOSED: [2026-01-17 Sat 12:27]
+** 👀 Extended Babel Features
 
-| Command ID                       | Description                      | Default Keybinding |
-|----------------------------------+----------------------------------+--------------------|
-| [[cmd:scimax.babel.tangle]]      | Tangle Source Blocks             | C-c C-v t          |
-| [[cmd:scimax.babel.executeToPoint]]| Execute Blocks to Point          | C-c C-v p          |
-| [[cmd:scimax.babel.executeInline]]| Execute Inline Source at Cursor  | C-c C-v i          |
-| [[cmd:scimax.babel.executeInlineBabelCall]]| Execute Inline Babel Call at Cursor | - |
-| [[cmd:scimax.babel.clearCache]]  | Clear Babel Result Cache         | -                  |
-| [[cmd:scimax.babel.cacheStats]]  | Show Babel Cache Statistics      | -                  |
-| [[cmd:scimax.babel.showQueue]]   | Show Execution Queue             | -                  |
-| [[cmd:scimax.babel.clearQueue]]  | Clear Execution Queue            | -                  |
-| [[cmd:scimax.babel.queueBlock]]  | Queue Block for Async Execution  | C-c C-v q          |
-| [[cmd:scimax.babel.pauseQueue]]  | Pause Execution Queue            | -                  |
-| [[cmd:scimax.babel.resumeQueue]] | Resume Execution Queue           | -                  |
-| [[cmd:scimax.babel.showOutput]]  | Show Babel Output                | -                  |
+| Command ID                                  | Description                         | Default Keybinding |
+|---------------------------------------------+-------------------------------------+--------------------|
+| [[cmd:scimax.babel.tangle]]                 | Tangle Source Blocks                | C-c C-v t          |
+| [[cmd:scimax.babel.executeToPoint]]         | Execute Blocks to Point             | C-c C-v P          |
+| [[cmd:scimax.babel.executeInline]]          | Execute Inline Source at Cursor     | C-c C-v i          |
+| [[cmd:scimax.babel.executeInlineBabelCall]] | Execute Inline Babel Call at Cursor | -                  |
+| [[cmd:scimax.babel.clearCache]]             | Clear Babel Result Cache            | -                  |
+| [[cmd:scimax.babel.cacheStats]]             | Show Babel Cache Statistics         | -                  |
+| [[cmd:scimax.babel.showQueue]]              | Show Execution Queue                | -                  |
+| [[cmd:scimax.babel.clearQueue]]             | Clear Execution Queue               | -                  |
+| [[cmd:scimax.babel.queueBlock]]             | Queue Block for Async Execution     | C-c C-v q          |
+| [[cmd:scimax.babel.pauseQueue]]             | Pause Execution Queue               | -                  |
+| [[cmd:scimax.babel.resumeQueue]]            | Resume Execution Queue              | -                  |
+| [[cmd:scimax.babel.showOutput]]             | Show Babel Output                   | -                  |
 
 * ✅ Export
 CLOSED: [2026-01-17 Sat 12:27]
@@ -345,16 +344,16 @@ CLOSED: [2026-01-17 Sat 12:27]
 | [[cmd:scimax.org.exportMenu]]      | Export Menu (C-c C-e) | C-c C-e            |
 | [[cmd:scimax.org.previewHtml]]     | Preview HTML          | -                  |
 
-** Org Preview
+** 👀 Org Preview
 
 Live rendered preview of an org file. See [[file:46-org-preview.org][Org Preview]].
 
-| Command ID                             | Description                          | Default Keybinding      |
-|----------------------------------------+--------------------------------------+-------------------------|
-| [[cmd:scimax.org.preview.open]]        | Open Org Preview (in this group)     | Cmd+Shift+V / Ctrl+Shift+V |
-| [[cmd:scimax.org.preview.openToSide]]  | Open Org Preview to the Side         | Cmd+K V / Ctrl+K V      |
-| [[cmd:scimax.org.preview.showSource]]  | Show Org Source (from the preview)   | Cmd+Shift+V / Ctrl+Shift+V |
-| [[cmd:scimax.org.previewHtml]]         | Alias: opens the preview to the side | -                       |
+| Command ID                            | Description                          | Default Keybinding         |
+|---------------------------------------+--------------------------------------+----------------------------|
+| [[cmd:scimax.org.preview.open]]       | Open Org Preview (in this group)     | Cmd+Shift+V / Ctrl+Shift+V |
+| [[cmd:scimax.org.preview.openToSide]] | Open Org Preview to the Side         | Cmd+K V / Ctrl+C Shift+V   |
+| [[cmd:scimax.org.preview.showSource]] | Show Org Source (from the preview)   | Cmd+Shift+V / Ctrl+Shift+V |
+| [[cmd:scimax.org.previewHtml]]        | Alias: opens the preview to the side | -                          |
 
 ** ✅ HTML Export
 CLOSED: [2026-01-17 Sat 12:27]
@@ -1065,17 +1064,16 @@ CLOSED: [2026-01-17 Sat 12:47]
 | [[cmd:scimax.editmarks.prev]]      | Previous Edit Mark      | C-c e [            |
 | [[cmd:scimax.editmarks.summary]]   | Show Edit Marks Summary | C-c e s            |
 
-* ✅ Hydra
-CLOSED: [2026-01-17 Sat 12:47]
+* 👀 Hydra
 
-| Command ID                      | Description      | Default Keybinding |
-|---------------------------------+------------------+--------------------|
-| [[cmd:scimax.hydra.show]]       | Show Hydra Menu  | -                  |
-| [[cmd:scimax.hydra.hide]]       | Hide Hydra Menu  | -                  |
-| [[cmd:scimax.hydra.back]]       | Hydra Menu Back  | -                  |
-| [[cmd:scimax.hydra.main]]       | Main Menu        | C-c m              |
-| [[cmd:scimax.hydra.database]]   | Database Menu    | -                  |
-| [[cmd:scimax.hydra.contextMenu]]| Context Menu     | C-c C-m            |
+| Command ID                       | Description     | Default Keybinding |
+|----------------------------------+-----------------+--------------------|
+| [[cmd:scimax.hydra.show]]        | Show Hydra Menu | -                  |
+| [[cmd:scimax.hydra.hide]]        | Hide Hydra Menu | -                  |
+| [[cmd:scimax.hydra.back]]        | Hydra Menu Back | -                  |
+| [[cmd:scimax.hydra.main]]        | Main Menu       | C-c m              |
+| [[cmd:scimax.hydra.database]]    | Database Menu   | C-c d d            |
+| [[cmd:scimax.hydra.contextMenu]] | Context Menu    | C-c C-m            |
 
 * ✅ Markup
 CLOSED: [2026-01-17 Sat 12:48]
@@ -1207,8 +1205,7 @@ CLOSED: [2026-01-21 Wed 11:33]
 
 Comprehensive LaTeX editing support with structural navigation, environment manipulation, and compilation.
 
-** ✅ Section Navigation
-CLOSED: [2026-01-21 Wed 11:33]
+** 👀 Section Navigation
 
 | Command ID                                  | Description              | Default Keybinding |
 |---------------------------------------------+--------------------------+--------------------|
@@ -1219,7 +1216,7 @@ CLOSED: [2026-01-21 Wed 11:33]
 | [[cmd:scimax.latex.previousSiblingSection]] | Previous Sibling Section | C-c C-b            |
 | [[cmd:scimax.latex.firstSection]]           | First Section            | -                  |
 | [[cmd:scimax.latex.lastSection]]            | Last Section             | -                  |
-| [[cmd:scimax.latex.jumpToSection]]          | Jump to Section          | C-c j / C-c C-j    |
+| [[cmd:scimax.latex.jumpToSection]]          | Jump to Section          | C-c C-j            |
 
 ** ✅ Environment Navigation
 CLOSED: [2026-01-21 Wed 11:33]
@@ -1251,14 +1248,13 @@ CLOSED: [2026-01-21 Wed 11:33]
 | [[cmd:scimax.latex.narrowToSection]]    | Narrow to Section  | -                  |
 | [[cmd:scimax.latex.widen]]              | Widen (Unfold All) | -                  |
 
-** ✅ Environment Manipulation
-CLOSED: [2026-01-21 Wed 11:33]
+** 👀 Environment Manipulation
 
 | Command ID                                    | Description                | Default Keybinding |
 |-----------------------------------------------+----------------------------+--------------------|
 | [[cmd:scimax.latex.selectEnvironment]]        | Select Environment         | C-c C-e            |
 | [[cmd:scimax.latex.selectEnvironmentContent]] | Select Environment Content | -                  |
-| [[cmd:scimax.latex.changeEnvironment]]        | Change Environment         | C-c e              |
+| [[cmd:scimax.latex.changeEnvironment]]        | Change Environment         | C-c E              |
 | [[cmd:scimax.latex.wrapInEnvironment]]        | Wrap in Environment        | C-c w              |
 | [[cmd:scimax.latex.unwrapEnvironment]]        | Unwrap Environment         | -                  |
 | [[cmd:scimax.latex.deleteEnvironment]]        | Delete Environment         | -                  |
@@ -1522,8 +1518,7 @@ CLOSED: [2026-01-17 Sat 12:50]
 | C-c C-e l v | LaTeX live preview |
 | C-c C-e m m | Markdown           |
 
-** ✅ Babel/Source Block Keybindings
-CLOSED: [2026-01-17 Sat 12:51]
+** 👀 Babel/Source Block Keybindings
 
 | Keybinding | Action                 |
 |------------+------------------------|
@@ -1531,7 +1526,7 @@ CLOSED: [2026-01-17 Sat 12:51]
 | C-c C-c    | Execute block (in src) |
 | S-RET      | Execute and next       |
 | C-c C-v t  | Tangle                 |
-| C-c C-v p  | Execute to point       |
+| C-c C-v P  | Execute to point       |
 | C-c C-v i  | Execute inline         |
 | C-c C-v q  | Queue block            |
 | C-DOWN     | Next source block      |
@@ -1637,25 +1632,25 @@ Results appear in the Problems panel.
 
 Shows available lint checkers and allows enabling/disabling specific checks.
 
-* ✅ Mark Ring
+* 👀 Mark Ring
 :PROPERTIES:
 :CUSTOM_ID: mark-ring
 :END:
 
 Emacs-style mark ring for navigation and selection. Save cursor positions (marks) and return to them later. Each document has its own mark ring, plus there's a global mark ring that tracks positions across all documents.
 
-| Command ID                       | Description               | Default Keybinding |
-|----------------------------------+---------------------------+--------------------|
-| [[cmd:scimax.mark.set]]          | Set Mark (for selection)  | C-SPC              |
-| [[cmd:scimax.mark.cancel]]       | Cancel Selection          | C-g                |
-| [[cmd:scimax.mark.push]]         | Push Mark                 | C-c SPC            |
-| [[cmd:scimax.mark.pop]]          | Pop Mark                  | C-u C-SPC          |
-| [[cmd:scimax.mark.popGlobal]]    | Pop Global Mark           | C-x C-SPC          |
-| [[cmd:scimax.mark.exchange]]     | Exchange Point and Mark   | C-x C-x            |
-| [[cmd:scimax.mark.selectToMark]] | Select to Mark            | -                  |
-| [[cmd:scimax.mark.show]]         | Show Mark Ring            | -                  |
-| [[cmd:scimax.mark.clear]]        | Clear Mark Ring           | -                  |
-| [[cmd:scimax.mark.clearAll]]     | Clear All Mark Rings      | -                  |
+| Command ID                       | Description              | Default Keybinding |
+|----------------------------------+--------------------------+--------------------|
+| [[cmd:scimax.mark.set]]          | Set Mark (for selection) | C-SPC              |
+| [[cmd:scimax.mark.cancel]]       | Cancel Selection         | C-g                |
+| [[cmd:scimax.mark.push]]         | Push Mark                | C-c SPC            |
+| [[cmd:scimax.mark.pop]]          | Pop Mark                 | C-u C-SPC          |
+| [[cmd:scimax.mark.popGlobal]]    | Pop Global Mark          | C-x C-SPC          |
+| [[cmd:scimax.mark.exchange]]     | Exchange Point and Mark  | C-x C-x            |
+| [[cmd:scimax.mark.selectToMark]] | Select to Mark           | -                  |
+| [[cmd:scimax.mark.show]]         | Show Mark Ring           | C-c M              |
+| [[cmd:scimax.mark.clear]]        | Clear Mark Ring          | -                  |
+| [[cmd:scimax.mark.clearAll]]     | Clear All Mark Rings     | -                  |
 
 ** ✅ Mark Ring Concepts
 

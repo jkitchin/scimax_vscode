@@ -11,25 +11,25 @@ This document provides a comprehensive reference for all keybindings in Scimax V
 
 *Note for Mac Users:* On macOS, most keybindings use Ctrl (not Cmd) to match Emacs conventions, except where explicitly noted with alternative Mac bindings.
 
-* Global Commands
+* 👀 Global Commands
 
-| Key         | Action                              |
-|-------------+-------------------------------------|
-| C-S-j       | Open today's journal entry          |
-| s-S-j       | (Mac) Open today's journal entry    |
-| C-c m       | Show Hydra main menu                |
-| C-c C-m     | Show Hydra context menu             |
-| C-c d       | Show database hydra menu            |
-| C-c c       | Quick capture                       |
-| C-c t       | Quick capture TODO                  |
-| C-M-v       | Show database menu                  |
-| C-s-v       | (Mac) Show database menu            |
-| C-S-r       | Reload window                       |
-| s-S-r       | (Mac) Reload window                 |
-| M-[         | Previous journal entry (in journal) |
-| M-]         | Next journal entry (in journal)     |
-| C-c S-/     | Context-sensitive help              |
-| C-c S-g     | Show link graph for current file    |
+| Key     | Action                              |
+|---------+-------------------------------------|
+| C-S-j   | Open today's journal entry          |
+| s-S-j   | (Mac) Open today's journal entry    |
+| C-c m   | Show Hydra main menu                |
+| C-c C-m | Show Hydra context menu             |
+| C-c d d | Show database hydra menu            |
+| C-c c   | Quick capture                       |
+| C-c t   | Quick capture TODO                  |
+| C-M-v   | Show database menu                  |
+| C-s-v   | (Mac) Show database menu            |
+| C-S-r   | Reload window                       |
+| s-S-r   | (Mac) Reload window                 |
+| M-[     | Previous journal entry (in journal) |
+| M-]     | Next journal entry (in journal)     |
+| C-c S-/ | Context-sensitive help              |
+| C-c S-g | Show link graph for current file    |
 
 * ⚠️ Journal
 
@@ -266,12 +266,12 @@ Quarto's preview (~quarto.preview~), the same as =Cmd+Shift+K=. See [[file:30-ma
 | S-<return>    | Execute and move to next block  |
 | M-S-<return>  | Execute and insert new block    |
 
-** Advanced Babel Operations
+** 👀 Advanced Babel Operations
 
 | Key       | Action                      |
 |-----------+-----------------------------|
 | C-c C-v t | Tangle source blocks        |
-| C-c C-v p | Execute all blocks to point |
+| C-c C-v P | Execute all blocks to point |
 | C-c C-v i | Execute inline code         |
 | C-c C-v q | Queue block for execution   |
 
@@ -298,15 +298,15 @@ of the Markdown preview; =Cmd+K V= still opens the Markdown preview beside the
 editor. =C-c C-c= in a ~```python run~ cell of a deck runs it in a Python panel
 beside the editor. See [[file:44-marp.org::*Exporting Slides][Exporting Slides]], [[file:44-marp.org::*Slideshow][Slideshow]] and [[file:44-marp.org::*Running cells in VS Code][Running cells in VS Code]].
 
-* Org Preview
+* 👀 Org Preview
 
 Like the Markdown preview, but for org files. See [[file:46-org-preview.org][Org Preview]].
 
-| Key (macOS)   | Key (Windows/Linux) | Where        | Action                          |
-|---------------+---------------------+--------------+---------------------------------|
-| Cmd+Shift+V   | Ctrl+Shift+V        | Org editor   | Open preview in this group      |
-| Cmd+K V       | Ctrl+K V            | Org editor   | Open preview to the side        |
-| Cmd+Shift+V   | Ctrl+Shift+V        | Org preview  | Back to the org source          |
+| Key (macOS) | Key (Windows/Linux) | Where       | Action                     |
+|-------------+---------------------+-------------+----------------------------|
+| Cmd+Shift+V | Ctrl+Shift+V        | Org editor  | Open preview in this group |
+| Cmd+K V     | Ctrl+C Shift+V      | Org editor  | Open preview to the side   |
+| Cmd+Shift+V | Ctrl+Shift+V        | Org preview | Back to the org source     |
 
 * Links
 
@@ -399,8 +399,7 @@ viewport. Moving the cursor resets the cycle to center.
 | C-c p a   | Add project                     |
 | C-c p S-f | Find file in all known projects |
 
-** ✅ Database and Agenda
-CLOSED: [2026-01-24 Sat 17:38]
+** 👀 Database and Agenda
 
 | Key     | Action               |
 |---------+----------------------|
@@ -410,7 +409,7 @@ CLOSED: [2026-01-24 Sat 17:38]
 | C-c a m | Month agenda         |
 | C-c a t | TODO list            |
 | C-c a d | Deadlines            |
-| C-c d   | Database hydra menu  |
+| C-c d d | Database hydra menu  |
 | C-c d f | Browse indexed files |
 | C-c d s | Search database      |
 | C-c d h | Search headings      |
@@ -495,8 +494,7 @@ are handled by the sorter, so they do not appear in Keyboard Shortcuts. Use
 | C-c e [ | Previous edit mark      |
 | C-c e s | Show edit marks summary |
 
-* ✅ Mark Ring (Emacs-style)
-CLOSED: [2026-01-24 Sat 17:38]
+* 👀 Mark Ring (Emacs-style)
 
 Emacs-style mark and region commands.
 
@@ -510,7 +508,7 @@ Emacs-style mark and region commands.
 | C-x C-Space       | Pop mark from global ring  |
 | Ctrl+X Ctrl+Space | Pop from global ring (alt) |
 | C-x C-x           | Exchange point and mark    |
-| C-c m s           | Show mark ring             |
+| C-c M             | Show mark ring             |
 
 * ⚠️ Kill Ring (Emacs-style)
 
@@ -740,18 +738,16 @@ CLOSED: [2026-01-19 Mon 18:20]
 
 These keybindings are active in LaTeX files (=.tex=):
 
-** ✅ Section Navigation
-CLOSED: [2026-01-19 Mon 18:19]
+** 👀 Section Navigation
 
-| Key         | Action                       |
-|-------------+------------------------------|
-| C-c C-n     | Next section                 |
-| C-c C-p     | Previous section             |
-| C-c C-u     | Parent section               |
-| C-c C-f     | Next sibling section         |
-| C-c C-b     | Previous sibling section     |
-| C-c C-j     | Jump to any section          |
-| C-c j       | Jump to any section (alt)    |
+| Key     | Action                   |
+|---------+--------------------------|
+| C-c C-n | Next section             |
+| C-c C-p | Previous section         |
+| C-c C-u | Parent section           |
+| C-c C-f | Next sibling section     |
+| C-c C-b | Previous sibling section |
+| C-c C-j | Jump to any section      |
 
 ** ✅ Structure Editing
 CLOSED: [2026-01-19 Mon 18:20]
@@ -766,18 +762,17 @@ CLOSED: [2026-01-19 Mon 18:20]
 | Alt+Down         | Move section down          |
 | C-c @            | Mark (select) section      |
 
-** ✅ Environment Commands
-CLOSED: [2026-01-19 Mon 18:20]
+** 👀 Environment Commands
 
-| Key       | Action                          |
-|-----------+---------------------------------|
-| C-c C-e   | Select environment              |
-| C-c e     | Change environment type         |
-| C-c w     | Wrap selection in environment   |
-| C-c *     | Toggle starred variant          |
-| C-c %     | Jump to matching begin/end      |
-| C-c l     | Jump to label                   |
-| C-c C-l   | Add label to environment        |
+| Key     | Action                        |
+|---------+-------------------------------|
+| C-c C-e | Select environment            |
+| C-c E   | Change environment type       |
+| C-c w   | Wrap selection in environment |
+| C-c *   | Toggle starred variant        |
+| C-c %   | Jump to matching begin/end    |
+| C-c l   | Jump to label                 |
+| C-c C-l | Add label to environment      |
 
 ** ✅ Folding
 CLOSED: [2026-01-19 Mon 18:20]
