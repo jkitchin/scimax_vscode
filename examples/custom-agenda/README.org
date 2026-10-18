@@ -25,10 +25,13 @@ example later, or the agenda blocks will be empty (the list blocks still work).
    =scimax db scan examples/custom-agenda= from the repository root.
 2. Copy =scimax.agenda.customCommands= and =scimax.agenda.stuckProjects= from
    [[file:settings.json]] into your user =settings.json=.
-3. The commands limit themselves to this folder with
-   ="~/projects/scimax_vscode/examples/custom-agenda"=. If your checkout is
-   elsewhere, change those paths. To run them on your own files, delete the
-   =directories= and =files= lines.
+3. Reload the window.
+
+The commands read the whole database, so they show your own entries along with
+the example ones. To limit a command to some files or folders, add =files= or
+=directories= to it. =xh= does this with ="files": ["~/projects/scimax_vscode/examples/custom-agenda/home.org"]=;
+change that path if your checkout is elsewhere. Use =directories= the same way
+for a folder.
 
 All the commands sit under the prefix key =x=, so they do not replace your own
 keys or the built-in menu keys.
@@ -76,4 +79,6 @@ scimax agenda store           # write the export files
   numeric or duration comparison, so =EFFORT<1:00= alone also matches every
   entry without an effort.
 - =xh= sets =files= on the command itself, next to =blocks=, so it applies to
-  both blocks.
+  both blocks. A block can set its own =files= or =directories= instead.
+- To drop the example entries from your database afterwards, run
+  =scimax db remove 'examples/custom-agenda/*.org'= from the repository root.
