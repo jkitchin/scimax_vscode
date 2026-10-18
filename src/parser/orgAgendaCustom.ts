@@ -380,11 +380,11 @@ export interface CustomAgendaSource {
     /** A dated agenda (one group per day), already filtered for excluded files */
     agendaView(config: Partial<AgendaViewConfig>): Promise<AgendaView>;
     /** Heading rows that may satisfy the prefilter */
-    headings(prefilter: MatchPrefilter & { inheritTags: boolean }): Promise<HeadingRecord[]>;
+    headings(prefilter: MatchPrefilter & { inheritTags: boolean } & BlockScope): Promise<HeadingRecord[]>;
     /** Every heading of one file in document order */
     headingsInFile(file: string): Promise<HeadingRecord[]>;
     /** Headings whose title or body contains all words (a candidate set for search blocks) */
-    searchHeadings(words: string[]): Promise<HeadingRecord[]>;
+    searchHeadings(words: string[], scope?: BlockScope): Promise<HeadingRecord[]>;
     /** A file's text, for body regexps; undefined if unreadable */
     readFile(file: string): Promise<string | undefined>;
     /** Excluded from the agenda by the user */
@@ -595,6 +595,19 @@ export function groupList(items: AgendaItem[], groupBy: CustomGroupBy | undefine
     return entries.map(([key, groupItems]) => ({ label: key, key, items: groupItems }));
 }
 
+/** A block's file restriction, passed to the source so it applies before the row limit. */
+export interface BlockScope {
+    files?: string[];
+    directories?: string[];
+}
+
+function blockScope(block: ResolvedBlock): BlockScope {
+    return {
+        ...(block.files?.length ? { files: block.files } : {}),
+        ...(block.directories?.length ? { directories: block.directories } : {}),
+    };
+}
+
 function inScope(file: string, block: ResolvedBlock): boolean {
     if (block.files?.length && !block.files.includes(file)) return false;
     if (block.directories?.length) {
@@ -639,7 +652,7 @@ async function runListBlock(
     fileCache: Map<string, string | undefined>
 ): Promise<AgendaItem[]> {
     const inheritTags = block.inheritTags ?? true;
-    const prefilter: MatchPrefilter & { inheritTags: boolean } = { ...block.prefilter, inheritTags };
+    const prefilter: MatchPrefilter & { inheritTags: boolean } & BlockScope = { ...block.prefilter, inheritTags, ...blockScope(block) };
     const todoOnly = block.type === 'todo' || block.type === 'alltodo' || block.type === 'tags-todo';
     if (todoOnly) {
         prefilter.requireTodo = true;
@@ -651,7 +664,7 @@ async function runListBlock(
     let search: ReturnType<typeof parseSearchWords> | undefined;
     if (block.type === 'search') {
         search = parseSearchWords(block.match ?? '');
-        rows = await source.searchHeadings(search.required);
+        rows = await source.searchHeadings(search.required, blockScope(block));
     } else {
         rows = await source.headings(prefilter);
     }
@@ -696,7 +709,7 @@ async function runStuckBlock(
 ): Promise<AgendaItem[]> {
     const stuck = source.stuckProjects;
     const inheritTags = block.inheritTags ?? true;
-    const candidates = await source.headings({ ...block.prefilter, inheritTags });
+    const candidates = await source.headings({ ...block.prefilter, inheritTags, ...blockScope(block) });
     let regexp: RegExp | undefined;
     if (stuck.regexp) {
         try { regexp = new RegExp(stuck.regexp); } catch { regexp = undefined; }

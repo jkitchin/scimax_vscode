@@ -123,6 +123,16 @@ describe('custom agenda commands (integration)', () => {
         expect(r.blocks[1].totalItems).toBe(1);
     });
 
+    it('restricts heading queries to files and directories before the row limit', async () => {
+        const fromHome = await db.getHeadingsMatching({ files: [home], limit: 2 });
+        expect(fromHome.map(h => h.file_path)).toEqual([home, home]);
+        expect((await db.getHeadingsMatching({ directories: [dir] })).length).toBeGreaterThan(5);
+        // A sibling directory sharing the name prefix does not match
+        expect(await db.getHeadingsMatching({ directories: [dir.slice(0, -1)] })).toEqual([]);
+        const found = await db.getHeadingsInFilesContaining(['compost'], { directories: [dir + path.sep] });
+        expect(found.map(h => h.title)).toContain('Plan the garden');
+    });
+
     it('restricts blocks to files', async () => {
         expect((await titles({ type: 'alltodo', files: [home] })).sort()).toEqual(['Fix the sink', 'Plan the garden']);
     });

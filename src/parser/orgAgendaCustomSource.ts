@@ -66,7 +66,7 @@ export function createDbAgendaSource(db: Db, options: DbSourceOptions = {}): Cus
         agendaView,
         headings: prefilter => db.getHeadingsMatching({ ...prefilter, doneStates }),
         headingsInFile: file => db.getHeadingsInFile(file),
-        searchHeadings: words => db.getHeadingsInFilesContaining(words),
+        searchHeadings: (words, scope) => db.getHeadingsInFilesContaining(words, scope),
         readFile: async file => {
             try {
                 return await fs.promises.readFile(file, 'utf8');
