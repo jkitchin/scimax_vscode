@@ -275,6 +275,15 @@ export const migrations: Migration[] = [
             `CREATE INDEX IF NOT EXISTS idx_dependencies_file_path ON dependencies(file_path)`,
             `CREATE INDEX IF NOT EXISTS idx_hashtags_file_path ON hashtags(file_path)`
         ]
+    },
+    {
+        version: 10,
+        description: 'Reindex org files so inherited_tags includes #+FILETAGS',
+        up: [
+            // Older indexes built inherited_tags from ancestor headings only;
+            // mark org files stale so background sync reindexes them.
+            `UPDATE files SET mtime = 0 WHERE file_type = 'org'`
+        ]
     }
 ];
 

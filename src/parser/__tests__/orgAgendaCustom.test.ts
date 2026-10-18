@@ -68,6 +68,21 @@ describe('resolveCustomCommands', () => {
         expect(c.blocks[1].skip).toEqual({ scheduled: true });
     });
 
+    it('applies block settings written on a composite command to every block', () => {
+        const c = resolveOne({
+            key: 'h',
+            files: ['~/home.org'],
+            limit: 5,
+            skip: { tags: ['someday'] },
+            blocks: [{ type: 'agenda', span: 7 }, { type: 'tags-todo', match: '+chore', limit: 2 }],
+        });
+        expect(c.errors).toEqual([]);
+        expect(c.blocks.map(b => b.files)).toEqual([[path.join('/home/me', 'home.org')], [path.join('/home/me', 'home.org')]]);
+        expect(c.blocks.map(b => b.limit)).toEqual([5, 2]);
+        expect(c.blocks[1].skip).toEqual({ tags: ['someday'] });
+        expect(c.blocks[0].type).toBe('agenda');
+    });
+
     it('reports bad block types, match strings, sort keys and regexes', () => {
         const c = resolveOne({
             key: 'b',
@@ -165,6 +180,12 @@ describe('groupList', () => {
         expect(groupList(items, 'tag', 'H').map(g => g.label)).toEqual(['x', 'Untagged']);
         expect(groupList(items, undefined, 'H')).toEqual([{ label: 'H', key: 'all', items }]);
     });
+
+    it('orders priority groups A first and unprioritized last', () => {
+        const items = [item({ priority: 'B' }), item({}), item({ priority: 'A' }), item({ priority: 'C' })];
+        expect(groupList(items, 'priority', 'H').map(g => g.label))
+            .toEqual(['Priority A', 'Priority B', 'Priority C', 'No priority']);
+    });
 });
 
 describe('parseSearchWords', () => {
@@ -228,6 +249,8 @@ describe('formatCustomItem', () => {
         });
         expect(formatCustomItem(i, '%-8c %t %s %e')).toBe('work:    09:30 Scheduled: 1:15 TODO [#A] Call :phone:');
         expect(formatCustomItem(i, '%f ')).toBe('work.org TODO [#A] Call :phone:');
+        // An empty last field keeps its padding, so columns line up
+        expect(formatCustomItem(item({ title: 'X', category: 'work' }), '%-6c %5e ')).toBe('work:        X');
     });
 });
 
