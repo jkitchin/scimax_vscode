@@ -1204,10 +1204,13 @@ export class ScimaxDbCore {
 
         const flatHeadings = this.parser.flattenHeadings(doc);
         const tagStack: string[][] = [];
+        // #+FILETAGS (":a:b:" or "a b") are inherited by every heading in the file
+        const fileTagsKey = Object.keys(doc.keywords || {}).find(k => k.toUpperCase() === 'FILETAGS');
+        const fileTags = fileTagsKey ? doc.keywords[fileTagsKey].split(/[:\s]+/).filter(Boolean) : [];
 
         for (const heading of flatHeadings) {
             while (tagStack.length >= heading.level) tagStack.pop();
-            const inheritedTags = tagStack.flat();
+            const inheritedTags = [...fileTags, ...tagStack.flat()];
             tagStack.push(heading.tags);
 
             const headingLine = heading.lineNumber - 1;

@@ -523,6 +523,9 @@ open in the agenda buffer, so =RET=, =t=, =g=, =f= / =b= and hover all work.
 
 ** ⚠️ Defining Commands
 
+A ready-to-try set of commands and org files is in
+[[file:../examples/custom-agenda/README.org][examples/custom-agenda]].
+
 Set =scimax.agenda.customCommands= to a list of commands:
 
 #+BEGIN_SRC json
@@ -562,7 +565,8 @@ A command with neither =type= nor =blocks= is a *prefix key*. Choosing it
 opens a second menu listing the commands whose keys start with it.
 
 Any block setting can also be given on the command itself, or under
-=settings=, to apply to all of its blocks.
+=settings=, to apply to all of its blocks. A setting on a block overrides
+both.
 
 Invalid commands do not stop the others from loading. The problem, such as a
 bad match string with the column of the error, is written to the Scimax
@@ -620,6 +624,11 @@ Match strings use the Org syntax for matching tags and properties:
 Comparison operators are ===, =<>=, =<=, =<==, =>= and =>==. Numbers compare
 numerically, durations in minutes, quoted =<...>= values as dates, and other
 values as strings.
+
+As in Org, a missing property reads as 0 in a numeric or duration comparison,
+so =EFFORT<1:00= also matches entries with no effort. Write
+=EFFORT>0:00+EFFORT<1:00= to exclude them. Tags from =#+FILETAGS:= count as
+inherited tags.
 
 Try a match string without saving a command using [[cmd:scimax.agenda.match]]
 (=m= in the agenda menu).

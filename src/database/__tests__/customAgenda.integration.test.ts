@@ -45,6 +45,7 @@ describe('custom agenda commands (integration)', () => {
             ':END:',
         ].join('\n'));
         fs.writeFileSync(home, [
+            '#+FILETAGS: :house:',
             '* TODO Fix the sink                         :chore:',
             `  SCHEDULED: <${day(1)}>`,
             '* TODO Plan the garden                      :someday:',
@@ -79,6 +80,11 @@ describe('custom agenda commands (integration)', () => {
             .toEqual(['Budget', 'Draft the aims', 'Get photos']);
         expect(await titles({ type: 'tags-todo', match: '+work', inheritTags: false })).toEqual([]);
         expect(await titles({ type: 'tags-todo', match: '+work-money/!-WAITING' })).toEqual(['Draft the aims']);
+    });
+
+    it('#+FILETAGS tags are inherited', async () => {
+        expect((await titles({ type: 'tags-todo', match: '+house' })).sort()).toEqual(['Fix the sink', 'Plan the garden']);
+        expect(await titles({ type: 'tags-todo', match: '+house', inheritTags: false })).toEqual([]);
     });
 
     it('tags matches headings without a TODO keyword, and properties', async () => {
