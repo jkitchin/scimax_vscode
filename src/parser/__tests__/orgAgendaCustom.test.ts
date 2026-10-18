@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest';
+import * as path from 'path';
 import {
     resolveCustomCommands,
     resolveStartDay,
@@ -62,7 +63,7 @@ describe('resolveCustomCommands', () => {
             settings: { files: ['~/org/a.org'], skip: { scheduled: true } },
             blocks: [{ type: 'alltodo', skip: { deadline: true } }, { type: 'agenda', span: 1 }],
         });
-        expect(c.blocks[0].files).toEqual(['/home/me/org/a.org']);
+        expect(c.blocks[0].files).toEqual([path.join('/home/me', 'org/a.org')]);
         expect(c.blocks[0].skip).toEqual({ scheduled: true, deadline: true });
         expect(c.blocks[1].skip).toEqual({ scheduled: true });
     });
