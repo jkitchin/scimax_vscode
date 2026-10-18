@@ -510,6 +510,275 @@ Show TODOs:
 
 Use the database search commands for complex filtering.
 
+* ⚠️ Custom Agenda Commands
+
+Custom agenda commands are saved views you define in =settings.json=, after
+Emacs' =org-agenda-custom-commands=. Each command has a dispatcher key. It can
+be a single list (all =:work:= TODOs, say), or a /composite/ view that stacks
+several blocks in one buffer, such as today's agenda, then next actions, then
+stuck projects.
+
+Custom commands need the database, because they query indexed headings. They
+open in the agenda buffer, so =RET=, =t=, =g=, =f= / =b= and hover all work.
+
+** ⚠️ Defining Commands
+
+Set =scimax.agenda.customCommands= to a list of commands:
+
+#+BEGIN_SRC json
+"scimax.agenda.customCommands": [
+  {
+    "key": "w",
+    "description": "Work",
+    "type": "tags-todo",
+    "match": "+work-someday/!-WAITING"
+  },
+  {
+    "key": "d",
+    "description": "Daily review",
+    "blocks": [
+      { "type": "agenda", "span": 1 },
+      { "type": "todo", "match": "NEXT", "header": "Next actions" },
+      { "type": "stuck" }
+    ],
+    "export": ["~/agenda/daily.html", "~/agenda/daily.ics"]
+  },
+  { "key": "g", "description": "Grants" },
+  { "key": "gp", "description": "Proposals", "type": "tags", "match": "+proposal+LEVEL=1" },
+  { "key": "gd", "description": "Grant deadlines", "type": "agenda", "span": 30, "match": "+grant" }
+]
+#+END_SRC
+
+| Field         | Meaning                                                               |
+|---------------+-----------------------------------------------------------------------|
+| =key=         | Dispatcher key. A two-character key such as =gp= sits under prefix =g= |
+| =description= | Shown in the dispatcher and as the buffer heading                     |
+| =type=, =match= | A single block (see the block types below)                         |
+| =blocks=      | A list of blocks for a composite view                                 |
+| =settings=    | Defaults applied to every block of the command                        |
+| =export=      | Files written by [[cmd:scimax.agenda.storeViews]]                        |
+
+A command with neither =type= nor =blocks= is a *prefix key*. Choosing it
+opens a second menu listing the commands whose keys start with it.
+
+Any block setting can also be given on the command itself, or under
+=settings=, to apply to all of its blocks.
+
+Invalid commands do not stop the others from loading. The problem, such as a
+bad match string with the column of the error, is written to the Scimax
+output channel and shown when you try to run that command.
+
+** ⚠️ Block Types
+
+| Type        | Shows                                                         | =match= is            |
+|-------------+---------------------------------------------------------------+-----------------------|
+| =agenda=    | Dated agenda (scheduled, deadlines, timestamps) over =span= days | Optional match string |
+| =todo=      | Entries in the given TODO keywords                            | Keywords, e.g. =NEXT\vert{}WAITING= |
+| =alltodo=   | Every not-done TODO entry                                     | Not used              |
+| =tags=      | Any heading matching, TODO keyword or not                     | Match string          |
+| =tags-todo= | TODO entries matching                                         | Match string          |
+| =search=    | Entries whose heading or body contain the words               | Search words          |
+| =stuck=     | Projects with no next action                                  | Not used (see below)  |
+
+** ⚠️ Block Settings
+
+| Setting       | Applies to   | Meaning                                                        |
+|---------------+--------------+----------------------------------------------------------------|
+| =header=      | all          | Section header. Defaults to a description of the block         |
+| =span=        | agenda       | Days shown, 1 to 366 (1 = day, 7 = week)                       |
+| =startDay=    | agenda       | =today=, a weekday (=monday=), an offset (=-1d=) or =yyyy-mm-dd= |
+| =files=       | all          | Only these files (absolute or =~/= paths)                      |
+| =directories= | all          | Only files under these directories                             |
+| =showDone=    | lists        | Include done entries                                           |
+| =inheritTags= | all          | Count inherited tags and =#+FILETAGS= in matches (default true) |
+| =groupBy=     | lists        | =none=, =todo=, =category=, =priority=, =tag= or =file=        |
+| =sort=        | lists        | Sorting strategy (see below)                                   |
+| =skip=        | all          | Skip conditions (see below)                                    |
+| =prefix=      | all          | Line prefix format (see below)                                 |
+| =limit=       | all          | Stop after this many entries                                   |
+
+** ⚠️ Match Strings
+
+Match strings use the Org syntax for matching tags and properties:
+
+| Example                    | Matches                                                  |
+|----------------------------+----------------------------------------------------------|
+| =+work-boss=               | Tagged =work= and not =boss=                             |
+| =work\vert{}home=          | Tagged =work= or =home= (=+= and =-= bind tighter than =\vert=) |
+| ={^proj}=                  | A tag matching the regex =^proj=                         |
+| =LEVEL=2=                  | Second-level headings                                    |
+| =PRIORITY="A"=             | Priority A                                               |
+| =TODO="NEXT"=              | TODO keyword NEXT                                        |
+| =CLIENT="Acme"=            | Drawer property =CLIENT= equal to =Acme=                 |
+| =CLIENT={^Ac}=             | Drawer property matching a regex                         |
+| =EFFORT<=1:30=             | Effort of at most 90 minutes (durations compare in minutes) |
+| =SCHEDULED<"<+3d>"=        | Scheduled before three days from now                     |
+| =DEADLINE<="<today>"=      | Deadline today or overdue                                |
+| =+work/NEXT\vert{}TODO=    | After =/=: TODO keywords to match                        |
+| =+work/!-WAITING=          | =!= means not done; here, not done and not =WAITING=     |
+
+Comparison operators are ===, =<>=, =<=, =<==, =>= and =>==. Numbers compare
+numerically, durations in minutes, quoted =<...>= values as dates, and other
+values as strings.
+
+Try a match string without saving a command using [[cmd:scimax.agenda.match]]
+(=m= in the agenda menu).
+
+** ⚠️ Search Words
+
+A =search= block's =match= is a list of words:
+
+- =word= or =+word= must appear in the heading or entry body
+- =-word= must not appear
+- ="two words"= is a phrase
+- ={regex}= must match (case-insensitive)
+
+** ⚠️ Skip Conditions
+
+=skip= drops entries from a block, after =org-agenda-skip-entry-if=. An entry
+is skipped when *any* condition holds:
+
+| Condition      | Skips entries that                                   |
+|----------------+------------------------------------------------------|
+| =scheduled=    | have a SCHEDULED date                                |
+| =notScheduled= | have no SCHEDULED date                               |
+| =deadline=     | have a DEADLINE                                      |
+| =notDeadline=  | have no DEADLINE                                     |
+| =todo=         | are in one of these states (="todo"= / ="done"= = any) |
+| =notTodo=      | are not in one of these states                       |
+| =tags=         | have any of these tags (own or inherited)            |
+| =notTags=      | have none of these tags                              |
+| =regexp=       | match this regex in the heading or body              |
+| =notRegexp=    | do not match this regex                              |
+| =blocked=      | have an unfinished dependency                        |
+
+#+BEGIN_SRC json
+{ "key": "u", "description": "Unscheduled work", "type": "tags-todo",
+  "match": "+work", "skip": { "scheduled": true, "deadline": true } }
+#+END_SRC
+
+** ⚠️ Sorting
+
+=sort= lists keys applied in order; later keys break ties. The default for
+list blocks is =["priority-down", "category-keep"]=.
+
+| Key                                 | Sorts by                               |
+|-------------------------------------+----------------------------------------|
+| =priority-up= / =priority-down=     | Priority                               |
+| =deadline-up= / =deadline-down=     | Deadline date                          |
+| =scheduled-up= / =scheduled-down=   | Scheduled date                         |
+| =time-up= / =time-down=             | Time of day                            |
+| =effort-up= / =effort-down=         | Effort                                 |
+| =alpha-up= / =alpha-down=           | Heading text                           |
+| =todo-state-up= / =todo-state-down= | Position of the TODO keyword in the sequence |
+| =category-up= / =category-down=     | Category name                          |
+| =category-keep=                     | Keep categories in the order they first appear |
+| =level-up= / =level-down=           | Heading level                          |
+
+** ⚠️ Line Prefix
+
+=prefix= formats the start of each line, after =org-agenda-prefix-format=:
+
+| Code | Inserts                 |
+|------+-------------------------|
+| =%c= | Category                |
+| =%t= | Time of day             |
+| =%s= | Scheduled/deadline info |
+| =%e= | Effort                  |
+| =%f= | File name               |
+| =%l= | Heading level           |
+
+A number pads a field to a width, for example ="%-12c %e "=.
+
+** ⚠️ Stuck Projects
+
+A =stuck= block lists project headings that have no next action. Projects are
+defined by =scimax.agenda.stuckProjects=:
+
+#+BEGIN_SRC json
+"scimax.agenda.stuckProjects": {
+  "match": "LEVEL=2",
+  "todoStates": ["TODO", "NEXT", "NEXTACTION"],
+  "tags": [],
+  "regexp": ""
+}
+#+END_SRC
+
+A heading matching =match= is a project. It is *not* stuck when a descendant
+is in one of =todoStates=, carries one of =tags=, or has a title matching
+=regexp=. Done projects are never stuck.
+
+** ⚠️ Agenda Menu Keys
+
+The agenda menu ([[cmd:scimax.agenda.menu]], =C-c a a=) is a dispatcher like
+Emacs' =C-c a=. Typing a key that names a single entry runs it at once.
+
+| Key | Action                                   |
+|-----+------------------------------------------|
+| =a= | Agenda buffer                            |
+| =d= | Day agenda                               |
+| =w= | Week agenda                              |
+| =f= | Fortnight agenda                         |
+| =M= | Month agenda                             |
+| =t= | TODO list                                |
+| =D= | Upcoming deadlines                       |
+| =S= | Scheduled items                          |
+| =c= | Clock report                             |
+| =m= | Match tags/properties ([[cmd:scimax.agenda.match]]) |
+| =T= | Filter by tag                            |
+| =e= | Store agenda views ([[cmd:scimax.agenda.storeViews]]) |
+| =r= | Refresh                                  |
+
+Your custom commands are listed alongside these. A custom command with the
+same key as a built-in replaces it.
+
+To bind a key straight to one command, call [[cmd:scimax.agenda.custom]] with
+the key as its argument:
+
+#+BEGIN_SRC json
+{ "key": "ctrl+c a w", "command": "scimax.agenda.custom", "args": "w" }
+#+END_SRC
+
+** ⚠️ Storing and Exporting Views
+
+A command's =export= list names files to write. The format follows the
+extension:
+
+| Extension       | Contents                                     |
+|-----------------+----------------------------------------------|
+| =.txt=, =.org=  | The agenda as text, as shown in the buffer   |
+| =.html=         | A standalone HTML page                       |
+| =.ics=          | iCalendar events for the dated entries       |
+| =.json=         | Structured data                              |
+
+[[cmd:scimax.agenda.storeViews]] (=e= in the menu) runs every command with an
+=export= list and writes its files, like =org-store-agenda-views=.
+
+In a custom agenda buffer, =C-x C-w= ([[cmd:scimax.agenda.exportCurrent]])
+asks for a file name and writes the current view in the matching format.
+
+** ⚠️ From the Command Line
+
+The CLI reads the same settings:
+
+#+BEGIN_SRC sh
+scimax agenda custom            # list your custom commands
+scimax agenda custom d          # print the "d" view
+scimax agenda custom w --json   # JSON output
+scimax agenda store             # write every command's export files
+#+END_SRC
+
+See [[file:30-cli.org][CLI]].
+
+** ⚠️ Limitations
+
+- Category comes from the =CATEGORY= property of the heading itself, or the
+  file name. It is not inherited from ancestors, and =#+CATEGORY:= is not read.
+- Skip conditions are declarative. There are no Lisp-style skip functions.
+- The buffer filters (=@= by assignee) apply to the built-in agenda, not to
+  custom views.
+- Results come from the database, so files must be indexed and up to date.
+
 * ✅ Navigating and Acting on Items
 CLOSED: [2026-01-17 Sat 13:22]
 
@@ -599,7 +868,7 @@ A task with an unfinished dependency (see [[file:03.5-task-dependencies.org][Tas
 tasks instead. In a project agenda, blocking is worked out from the project's
 own files; elsewhere it comes from the database.
 
-*** ✅ Agenda Buffer Keys
+*** 👀 Agenda Buffer Keys
 CLOSED: [2026-10-03 Sat 09:00]
 
 These keys are active only inside an agenda buffer:
@@ -613,6 +882,7 @@ These keys are active only inside an agenda buffer:
 | =f=   | [[cmd:scimax.agenda.buffer.next]]        | Forward one period           |
 | =b=   | [[cmd:scimax.agenda.buffer.previous]]    | Back one period              |
 | =.=   | [[cmd:scimax.agenda.buffer.today]]       | Return to the current period |
+| =C-x C-w= | [[cmd:scimax.agenda.exportCurrent]]  | Export a custom view to a file |
 | =q=   | -                                    | Close the buffer             |
 
 Paging with =f= and =b= updates the buffer *in place* rather than opening a
@@ -1399,7 +1669,7 @@ CLOSED: [2026-01-18 Sun 12:50]
 * ✅ Quick Reference
 CLOSED: [2026-01-18 Sun 12:46]
 
-** ✅ Main Agenda Commands
+** 👀 Main Agenda Commands
 CLOSED: [2026-01-18 Sun 12:47]
 
 | Command                           | Description            |
@@ -1415,6 +1685,10 @@ CLOSED: [2026-01-18 Sun 12:47]
 | [[cmd:scimax.agenda.filterByTag]] | Filter by tag          |
 | [[cmd:scimax.agenda.refresh]]     | Refresh agenda         |
 | [[cmd:scimax.agenda.configure]]   | Configure agenda files |
+| [[cmd:scimax.agenda.custom]]      | Run a custom agenda command |
+| [[cmd:scimax.agenda.match]]       | Match tags/properties  |
+| [[cmd:scimax.agenda.storeViews]]  | Write custom views' export files |
+| [[cmd:scimax.agenda.exportCurrent]] | Export the current custom view |
 
 ** ✅ Database Agenda Commands
 CLOSED: [2026-01-18 Sun 12:55]
@@ -1507,7 +1781,7 @@ CLOSED: [2026-01-18 Sun 12:50]
 4. *Context work*: [[cmd:scimax.agenda.filterByTag]] - Focus by context
 5. *Review*: [[cmd:scimax.agenda.todoList]] - Review all TODOs
 
-* ✅ Related Topics
+* 👀 Related Topics
 CLOSED: [2026-01-18 Sun 11:49]
 
 - [[file:03-todo-items.org][TODO Items]] - Creating and managing TODO items
@@ -1515,6 +1789,8 @@ CLOSED: [2026-01-18 Sun 11:49]
 - [[file:02-document-structure.org][Document Structure]] - Organizing headlines and content
 - [[file:18-database-search.org][Database Search]] - Advanced search and filtering
 - [[file:26-configuration.org][Configuration]] - Extension settings
+- [[file:30-cli.org][CLI]] - Running custom agenda commands from the terminal
+- [[file:03.5-task-dependencies.org][Task Dependencies]] - Blocked tasks and the =blocked= skip condition
 - [[file:01-getting-started.org][Getting Started]] - Basic usage guide
 
 * Navigation

@@ -2437,6 +2437,76 @@ export class ScimaxDbCore {
     }
 
     /**
+     * Candidate headings for an agenda match string. The filter is only a
+     * prefilter: the caller still evaluates the full match on each row.
+     * Required tags count inherited tags unless inheritTags is false.
+     */
+    public async getHeadingsMatching(filter: {
+        requiredTags?: string[];
+        todoStates?: string[];
+        requireTodo?: boolean;
+        excludeDone?: boolean;
+        level?: number;
+        inheritTags?: boolean;
+        doneStates?: string[];
+        limit?: number;
+    } = {}): Promise<HeadingRecord[]> {
+        if (!this.db) return [];
+        const scope = this.getScopeClause();
+        let sql = `SELECT * FROM headings WHERE 1=1${scope.sql}`;
+        const args: any[] = [...scope.args];
+        for (const tag of filter.requiredTags ?? []) {
+            const pattern = `%"${tag.replace(/[\\%_]/g, c => '\\' + c)}"%`;
+            if (filter.inheritTags === false) {
+                sql += ` AND tags LIKE ? ESCAPE '\\'`;
+                args.push(pattern);
+            } else {
+                sql += ` AND (tags LIKE ? ESCAPE '\\' OR inherited_tags LIKE ? ESCAPE '\\')`;
+                args.push(pattern, pattern);
+            }
+        }
+        if (filter.todoStates?.length) {
+            sql += ` AND todo_state IN (${filter.todoStates.map(() => '?').join(', ')})`;
+            args.push(...filter.todoStates);
+        } else if (filter.requireTodo) {
+            sql += ' AND todo_state IS NOT NULL';
+        }
+        if (filter.excludeDone) {
+            const doneStates = filter.doneStates ?? DEFAULT_DONE_STATES;
+            sql += ` AND todo_type IS NOT 'done' AND (todo_state IS NULL OR todo_state NOT IN (${doneStates.map(() => '?').join(', ')}))`;
+            args.push(...doneStates);
+        }
+        if (filter.level !== undefined) {
+            sql += ' AND level = ?';
+            args.push(filter.level);
+        }
+        sql += ' ORDER BY file_path, line_number LIMIT ?';
+        args.push(filter.limit ?? 5000);
+        const result = await this.db.execute({ sql, args });
+        return result.rows as unknown as HeadingRecord[];
+    }
+
+    /**
+     * Headings of files whose text contains every word (case-insensitive):
+     * the candidate set for an agenda search block, which then checks each
+     * entry's own text.
+     */
+    public async getHeadingsInFilesContaining(words: string[], options?: { limit?: number }): Promise<HeadingRecord[]> {
+        if (!this.db) return [];
+        const scope = this.getScopeClause('h.file_path');
+        let sql = `SELECT h.* FROM headings h WHERE h.file_path IN (SELECT file_path FROM fts_content WHERE 1=1`;
+        const args: any[] = [];
+        for (const word of words) {
+            sql += ` AND lower(content) LIKE ? ESCAPE '\\'`;
+            args.push(`%${word.toLowerCase().replace(/[\\%_]/g, c => '\\' + c)}%`);
+        }
+        sql += `)${scope.sql} ORDER BY h.file_path, h.line_number LIMIT ?`;
+        args.push(...scope.args, options?.limit ?? 5000);
+        const result = await this.db.execute({ sql, args });
+        return result.rows as unknown as HeadingRecord[];
+    }
+
+    /**
      * Every heading tag (the `:tag:` kind, not #hashtags) in scope, with how
      * many headings carry it. Sorted by tag, case-insensitively, so spelling
      * variants like groupmeeting/groupmeetings sit next to each other.

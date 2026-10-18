@@ -3,7 +3,7 @@
  * Scimax CLI - Command-line interface for org-mode operations
  *
  * Usage:
- *   scimax agenda [today|week|todos]
+ *   scimax agenda [today|week|todos|overdue|custom <key>|store]
  *   scimax search <query> [--semantic]
  *   scimax search headings [query] [-t tag] [--todo STATE]
  *   scimax export <file> [--format html|pdf|latex|beamer|beamer-pdf]
@@ -148,7 +148,7 @@ USAGE:
     scimax <command> [options]
 
 COMMANDS:
-    agenda [view]           Show agenda (today, week, todos, overdue)
+    agenda [view]           Show agenda (today, week, todos, overdue, custom <key>, store)
     search <query>          Full-text search across org files
     search headings         Search headings by title, tag, or TODO state
     export <file>           Export org file to HTML, PDF, or LaTeX
@@ -165,6 +165,7 @@ COMMANDS:
 EXAMPLES:
     scimax agenda today
     scimax agenda todos --state NEXT
+    scimax agenda custom w --json
     scimax search "machine learning"
     scimax search "concepts" --semantic
     scimax search headings -t proposal
