@@ -1,0 +1,111 @@
+{
+  "scimax.agenda.stuckProjects": {
+    "match": "LEVEL=2-TODO={.}",
+    "todoStates": [
+      "TODO",
+      "NEXT"
+    ],
+    "tags": []
+  },
+  "scimax.agenda.customCommands": [
+    {
+      "key": "x",
+      "description": "Custom agenda examples"
+    },
+    {
+      "key": "xd",
+      "description": "Daily review",
+      "blocks": [
+        {
+          "type": "agenda",
+          "span": 1,
+          "header": "Today"
+        },
+        {
+          "type": "todo",
+          "match": "NEXT",
+          "header": "Next actions"
+        },
+        {
+          "type": "tags-todo",
+          "match": "PRIORITY=\"A\"",
+          "header": "Priority A"
+        },
+        {
+          "type": "stuck"
+        }
+      ],
+      "export": [
+        "/tmp/scimax-agenda-examples/daily.html",
+        "/tmp/scimax-agenda-examples/daily.txt"
+      ]
+    },
+    {
+      "key": "xw",
+      "description": "Work tasks (inherited :work: tag)",
+      "type": "tags-todo",
+      "match": "+work-meeting/!-WAITING",
+      "groupBy": "priority",
+      "prefix": "%-10c %5e "
+    },
+    {
+      "key": "xu",
+      "description": "Unscheduled tasks",
+      "type": "alltodo",
+      "skip": {
+        "scheduled": true,
+        "deadline": true,
+        "tags": [
+          "someday"
+        ]
+      },
+      "sort": [
+        "category-up",
+        "alpha-up"
+      ],
+      "groupBy": "category"
+    },
+    {
+      "key": "xq",
+      "description": "Quick wins (effort under an hour)",
+      "type": "tags-todo",
+      "match": "EFFORT>0:00+EFFORT<1:00",
+      "prefix": "%5e "
+    },
+    {
+      "key": "xr",
+      "description": "Reading and research search",
+      "type": "search",
+      "match": "{adsorption|transition state}"
+    },
+    {
+      "key": "xp",
+      "description": "Paper deadlines, next 3 weeks",
+      "type": "agenda",
+      "span": 21,
+      "match": "+paper|+grant"
+    },
+    {
+      "key": "xh",
+      "description": "Home this week",
+      "files": [
+        "~/projects/scimax_vscode/examples/custom-agenda/home.org"
+      ],
+      "blocks": [
+        {
+          "type": "agenda",
+          "span": 7,
+          "startDay": "today"
+        },
+        {
+          "type": "tags-todo",
+          "match": "+someday",
+          "header": "Someday"
+        }
+      ],
+      "export": [
+        "/tmp/scimax-agenda-examples/home.ics"
+      ]
+    }
+  ]
+}

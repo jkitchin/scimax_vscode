@@ -1,0 +1,84 @@
+#+TITLE: Example: Custom Agenda Commands
+
+Three small org files and a set of custom agenda commands that use them. Each
+command shows a different feature: composite views, inherited tags, skip
+conditions, property matches, search, a filtered date range and stuck projects.
+
+Full documentation: [[file:../../docs/13-agenda.org::*Custom Agenda Commands][Custom Agenda Commands]].
+
+* Files
+
+- [[file:work.org]] — grant, website and lab-safety projects, meetings and an
+  inbox. =#+FILETAGS: :work:= tags every entry.
+- [[file:research.org]] — a paper, two projects without next actions, and
+  reading. =#+FILETAGS: :research:=.
+- [[file:home.org]] — chores, an errand and someday items.
+- [[file:settings.json]] — the commands, ready to copy.
+
+The timestamps are in October and November 2026. Change them if you try the
+example later, or the agenda blocks will be empty (the list blocks still work).
+
+* Setup
+
+1. Index this folder: run [[cmd:scimax.agenda.configure]], choose /Add directory
+   to agenda/ and pick this folder, or run
+   =scimax db scan examples/custom-agenda= from the repository root.
+2. Copy =scimax.agenda.customCommands= and =scimax.agenda.stuckProjects= from
+   [[file:settings.json]] into your user =settings.json=.
+3. Reload the window.
+
+The commands read the whole database, so they show your own entries along with
+the example ones. To limit a command to some files or folders, add =files= or
+=directories= to it. =xh= does this with ="files": ["~/projects/scimax_vscode/examples/custom-agenda/home.org"]=;
+change that path if your checkout is elsewhere. Use =directories= the same way
+for a folder.
+
+All the commands sit under the prefix key =x=, so they do not replace your own
+keys or the built-in menu keys.
+
+* Try it
+
+Open the agenda menu with =C-c a a=, press =x=, then a key:
+
+| Key  | View                                 | Shows                                             |
+|------+--------------------------------------+---------------------------------------------------|
+| =xd= | Daily review                         | Composite: today, NEXT actions, priority A, stuck projects |
+| =xw= | Work tasks                           | =+work-meeting/!-WAITING=, grouped by priority, with a category/effort prefix |
+| =xu= | Unscheduled tasks                    | =alltodo= skipping scheduled, deadline and =:someday:= entries |
+| =xq= | Quick wins                           | Effort between 0 and 1 hour (=EFFORT>0:00+EFFORT<1:00=) |
+| =xr= | Reading and research search          | Entry text matching ={adsorption\vert{}transition state}= |
+| =xp= | Paper deadlines, next 3 weeks        | 21-day agenda limited to =+paper\vert{}+grant=     |
+| =xh= | Home this week                       | Week agenda and someday list, home.org only       |
+
+In a view:
+
+- =RET= jumps to an entry, =t= cycles its TODO state, =g= refreshes.
+- =f= and =b= page an agenda block forward and back.
+- =C-x C-w= saves the view as =.html=, =.txt=, =.org=, =.ics= or =.json=.
+
+Press =e= in the agenda menu to write the =export= files of =xd= and =xh= under
+=/tmp/scimax-agenda-examples/=.
+
+The same views work from the terminal:
+
+#+BEGIN_SRC sh
+scimax agenda custom          # list the commands
+scimax agenda custom xd       # print the daily review
+scimax agenda custom xw --json
+scimax agenda store           # write the export files
+#+END_SRC
+
+* Things to notice
+
+- =xw= matches =+work= although no heading carries the tag: it comes from
+  =#+FILETAGS:=. Add ="inheritTags": false= to the command and the view empties.
+- The stuck-projects definition is =LEVEL=2-TODO={.}=: a level-2 heading with no
+  TODO keyword is a project. /Catalyst screening/ and /Website refresh/ are
+  stuck; /Grant proposal/ is not, because it has NEXT and TODO children.
+- =xq= needs =EFFORT>0:00=. As in Org, a missing property reads as 0 in a
+  numeric or duration comparison, so =EFFORT<1:00= alone also matches every
+  entry without an effort.
+- =xh= sets =files= on the command itself, next to =blocks=, so it applies to
+  both blocks. A block can set its own =files= or =directories= instead.
+- To drop the example entries from your database afterwards, run
+  =scimax db remove 'examples/custom-agenda/*.org'= from the repository root.

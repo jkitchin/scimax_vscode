@@ -45,6 +45,7 @@ describe('custom agenda commands (integration)', () => {
             ':END:',
         ].join('\n'));
         fs.writeFileSync(home, [
+            '#+FILETAGS: :house:',
             '* TODO Fix the sink                         :chore:',
             `  SCHEDULED: <${day(1)}>`,
             '* TODO Plan the garden                      :someday:',
@@ -81,6 +82,11 @@ describe('custom agenda commands (integration)', () => {
         expect(await titles({ type: 'tags-todo', match: '+work-money/!-WAITING' })).toEqual(['Draft the aims']);
     });
 
+    it('#+FILETAGS tags are inherited', async () => {
+        expect((await titles({ type: 'tags-todo', match: '+house' })).sort()).toEqual(['Fix the sink', 'Plan the garden']);
+        expect(await titles({ type: 'tags-todo', match: '+house', inheritTags: false })).toEqual([]);
+    });
+
     it('tags matches headings without a TODO keyword, and properties', async () => {
         expect(await titles({ type: 'tags', match: 'LEVEL=2+work' })).toEqual(['Grant proposal', 'Website refresh']);
         expect(await titles({ type: 'tags', match: 'CLIENT="Acme"+EFFORT<1:00' })).toEqual(['Inbox triage']);
@@ -115,6 +121,16 @@ describe('custom agenda commands (integration)', () => {
         expect(r.blocks[0].groups[0].items.map(i => i.title)).toEqual(['Draft the aims']);
         expect(r.blocks[0].groups[1].items.map(i => i.title)).toEqual(['Fix the sink']);
         expect(r.blocks[1].totalItems).toBe(1);
+    });
+
+    it('restricts heading queries to files and directories before the row limit', async () => {
+        const fromHome = await db.getHeadingsMatching({ files: [home], limit: 2 });
+        expect(fromHome.map(h => h.file_path)).toEqual([home, home]);
+        expect((await db.getHeadingsMatching({ directories: [dir] })).length).toBeGreaterThan(5);
+        // A sibling directory sharing the name prefix does not match
+        expect(await db.getHeadingsMatching({ directories: [dir.slice(0, -1)] })).toEqual([]);
+        const found = await db.getHeadingsInFilesContaining(['compost'], { directories: [dir + path.sep] });
+        expect(found.map(h => h.title)).toContain('Plan the garden');
     });
 
     it('restricts blocks to files', async () => {

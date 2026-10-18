@@ -249,15 +249,24 @@ export function resolveCustomCommands(
         if (seen.has(key)) errors.push(`Duplicate key "${key}"`);
         seen.add(key);
 
+        // Block settings written on the command itself, beside "settings"
+        const own: Record<string, unknown> = { ...cmd };
+        for (const field of ['key', 'description', 'blocks', 'settings', 'export']) delete own[field];
+
         let blockSpecs: CustomBlock[];
+        let defaults: CustomBlockSettings;
         if (Array.isArray(cmd.blocks)) {
             blockSpecs = cmd.blocks;
+            // In a composite view these are defaults for every block; type, match
+            // and header belong to each block.
+            for (const field of ['type', 'match', 'header']) delete own[field];
+            defaults = { ...cmd.settings, ...own, skip: { ...cmd.settings?.skip, ...(own as CustomBlockSettings).skip } };
         } else if (cmd.type) {
-            const single: Record<string, unknown> = { ...cmd };
-            for (const field of ['key', 'description', 'blocks', 'settings', 'export']) delete single[field];
-            blockSpecs = [single as unknown as CustomBlock];
+            blockSpecs = [own as unknown as CustomBlock];
+            defaults = { ...cmd.settings };
         } else {
             blockSpecs = [];
+            defaults = {};
         }
         if (blockSpecs.length > MAX_BLOCKS) {
             errors.push(`More than ${MAX_BLOCKS} blocks`);
@@ -272,7 +281,7 @@ export function resolveCustomCommands(
                     + ` (expected one of ${CUSTOM_BLOCK_TYPES.join(', ')})`);
                 continue;
             }
-            const merged: CustomBlock = { ...cmd.settings, ...spec, skip: { ...cmd.settings?.skip, ...spec.skip } };
+            const merged: CustomBlock = { ...defaults, ...spec, skip: { ...defaults.skip, ...spec.skip } };
             if (merged.files) merged.files = merged.files.map(f => expandHome(f, home));
             if (merged.directories) merged.directories = merged.directories.map(d => expandHome(d, home));
             if (merged.sort) {
@@ -371,11 +380,11 @@ export interface CustomAgendaSource {
     /** A dated agenda (one group per day), already filtered for excluded files */
     agendaView(config: Partial<AgendaViewConfig>): Promise<AgendaView>;
     /** Heading rows that may satisfy the prefilter */
-    headings(prefilter: MatchPrefilter & { inheritTags: boolean }): Promise<HeadingRecord[]>;
+    headings(prefilter: MatchPrefilter & { inheritTags: boolean } & BlockScope): Promise<HeadingRecord[]>;
     /** Every heading of one file in document order */
     headingsInFile(file: string): Promise<HeadingRecord[]>;
     /** Headings whose title or body contains all words (a candidate set for search blocks) */
-    searchHeadings(words: string[]): Promise<HeadingRecord[]>;
+    searchHeadings(words: string[], scope?: BlockScope): Promise<HeadingRecord[]>;
     /** A file's text, for body regexps; undefined if unreadable */
     readFile(file: string): Promise<string | undefined>;
     /** Excluded from the agenda by the user */
@@ -577,7 +586,26 @@ export function groupList(items: AgendaItem[], groupBy: CustomGroupBy | undefine
         if (!groups.has(key)) groups.set(key, []);
         groups.get(key)!.push(item);
     }
-    return [...groups.entries()].map(([key, groupItems]) => ({ label: key, key, items: groupItems }));
+    const entries = [...groups.entries()];
+    if (groupBy === 'priority') {
+        // Priority A first, entries without a priority last
+        const rank = (key: string) => (key === 'No priority' ? '\uffff' : key);
+        entries.sort(([a], [b]) => rank(a).localeCompare(rank(b)));
+    }
+    return entries.map(([key, groupItems]) => ({ label: key, key, items: groupItems }));
+}
+
+/** A block's file restriction, passed to the source so it applies before the row limit. */
+export interface BlockScope {
+    files?: string[];
+    directories?: string[];
+}
+
+function blockScope(block: ResolvedBlock): BlockScope {
+    return {
+        ...(block.files?.length ? { files: block.files } : {}),
+        ...(block.directories?.length ? { directories: block.directories } : {}),
+    };
 }
 
 function inScope(file: string, block: ResolvedBlock): boolean {
@@ -624,7 +652,7 @@ async function runListBlock(
     fileCache: Map<string, string | undefined>
 ): Promise<AgendaItem[]> {
     const inheritTags = block.inheritTags ?? true;
-    const prefilter: MatchPrefilter & { inheritTags: boolean } = { ...block.prefilter, inheritTags };
+    const prefilter: MatchPrefilter & { inheritTags: boolean } & BlockScope = { ...block.prefilter, inheritTags, ...blockScope(block) };
     const todoOnly = block.type === 'todo' || block.type === 'alltodo' || block.type === 'tags-todo';
     if (todoOnly) {
         prefilter.requireTodo = true;
@@ -636,7 +664,7 @@ async function runListBlock(
     let search: ReturnType<typeof parseSearchWords> | undefined;
     if (block.type === 'search') {
         search = parseSearchWords(block.match ?? '');
-        rows = await source.searchHeadings(search.required);
+        rows = await source.searchHeadings(search.required, blockScope(block));
     } else {
         rows = await source.headings(prefilter);
     }
@@ -681,7 +709,7 @@ async function runStuckBlock(
 ): Promise<AgendaItem[]> {
     const stuck = source.stuckProjects;
     const inheritTags = block.inheritTags ?? true;
-    const candidates = await source.headings({ ...block.prefilter, inheritTags });
+    const candidates = await source.headings({ ...block.prefilter, inheritTags, ...blockScope(block) });
     let regexp: RegExp | undefined;
     if (stuck.regexp) {
         try { regexp = new RegExp(stuck.regexp); } catch { regexp = undefined; }
@@ -838,12 +866,15 @@ export function formatCustomItem(item: AgendaItem, prefix: string | undefined): 
         if (!n) return value;
         return n < 0 ? value.padEnd(-n) : value.padStart(n);
     });
-    const parts = [head.trimEnd()];
+    const parts: string[] = [];
     if (item.todoState) parts.push(item.todoState);
     if (item.priority) parts.push(`[#${item.priority}]`);
     parts.push(item.blocked ? `🔒 ${item.title}` : item.title);
     if (item.tags.length) parts.push(`:${item.tags.join(':')}:`);
-    return parts.filter(p => p !== '').join(' ');
+    const rest = parts.join(' ');
+    // Keep the prefix's padding so columns line up when a field is empty
+    if (!head.trim()) return rest;
+    return /\s$/.test(head) ? head + rest : `${head} ${rest}`;
 }
 
 export interface RenderedCustomAgenda {

@@ -434,6 +434,26 @@ export interface OptimizeResult {
     sizeAfter?: number;
 }
 
+/**
+ * SQL restricting a path column to the given files and/or directories, so
+ * the restriction applies before a query's LIMIT. Empty lists add nothing.
+ */
+function pathRestriction(column: string, files?: string[], directories?: string[]): { sql: string; args: string[] } {
+    let sql = '';
+    const args: string[] = [];
+    if (files?.length) {
+        sql += ` AND ${column} IN (${files.map(() => '?').join(', ')})`;
+        args.push(...files);
+    }
+    if (directories?.length) {
+        // The trailing separator keeps /a/b from matching /a/bc
+        const like = (dir: string) => (dir.replace(/[\\/]+$/, '') + path.sep).replace(/[\\%_]/g, c => '\\' + c) + '%';
+        sql += ` AND (${directories.map(() => `${column} LIKE ? ESCAPE '\\'`).join(' OR ')})`;
+        args.push(...directories.map(like));
+    }
+    return { sql, args };
+}
+
 function formatDbBytes(bytes: number): string {
     const units = ['B', 'KB', 'MB', 'GB', 'TB'];
     let i = 0;
@@ -1204,10 +1224,13 @@ export class ScimaxDbCore {
 
         const flatHeadings = this.parser.flattenHeadings(doc);
         const tagStack: string[][] = [];
+        // #+FILETAGS (":a:b:" or "a b") are inherited by every heading in the file
+        const fileTagsKey = Object.keys(doc.keywords || {}).find(k => k.toUpperCase() === 'FILETAGS');
+        const fileTags = fileTagsKey ? doc.keywords[fileTagsKey].split(/[:\s]+/).filter(Boolean) : [];
 
         for (const heading of flatHeadings) {
             while (tagStack.length >= heading.level) tagStack.pop();
-            const inheritedTags = tagStack.flat();
+            const inheritedTags = [...fileTags, ...tagStack.flat()];
             tagStack.push(heading.tags);
 
             const headingLine = heading.lineNumber - 1;
@@ -2449,12 +2472,17 @@ export class ScimaxDbCore {
         level?: number;
         inheritTags?: boolean;
         doneStates?: string[];
+        /** Only these files */
+        files?: string[];
+        /** Only files under these directories */
+        directories?: string[];
         limit?: number;
     } = {}): Promise<HeadingRecord[]> {
         if (!this.db) return [];
         const scope = this.getScopeClause();
-        let sql = `SELECT * FROM headings WHERE 1=1${scope.sql}`;
-        const args: any[] = [...scope.args];
+        const within = pathRestriction('file_path', filter.files, filter.directories);
+        let sql = `SELECT * FROM headings WHERE 1=1${scope.sql}${within.sql}`;
+        const args: any[] = [...scope.args, ...within.args];
         for (const tag of filter.requiredTags ?? []) {
             const pattern = `%"${tag.replace(/[\\%_]/g, c => '\\' + c)}"%`;
             if (filter.inheritTags === false) {
@@ -2491,17 +2519,21 @@ export class ScimaxDbCore {
      * the candidate set for an agenda search block, which then checks each
      * entry's own text.
      */
-    public async getHeadingsInFilesContaining(words: string[], options?: { limit?: number }): Promise<HeadingRecord[]> {
+    public async getHeadingsInFilesContaining(
+        words: string[],
+        options?: { files?: string[]; directories?: string[]; limit?: number }
+    ): Promise<HeadingRecord[]> {
         if (!this.db) return [];
         const scope = this.getScopeClause('h.file_path');
+        const within = pathRestriction('h.file_path', options?.files, options?.directories);
         let sql = `SELECT h.* FROM headings h WHERE h.file_path IN (SELECT file_path FROM fts_content WHERE 1=1`;
         const args: any[] = [];
         for (const word of words) {
             sql += ` AND lower(content) LIKE ? ESCAPE '\\'`;
             args.push(`%${word.toLowerCase().replace(/[\\%_]/g, c => '\\' + c)}%`);
         }
-        sql += `)${scope.sql} ORDER BY h.file_path, h.line_number LIMIT ?`;
-        args.push(...scope.args, options?.limit ?? 5000);
+        sql += `)${scope.sql}${within.sql} ORDER BY h.file_path, h.line_number LIMIT ?`;
+        args.push(...scope.args, ...within.args, options?.limit ?? 5000);
         const result = await this.db.execute({ sql, args });
         return result.rows as unknown as HeadingRecord[];
     }
