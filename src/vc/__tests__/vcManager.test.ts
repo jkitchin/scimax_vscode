@@ -29,11 +29,15 @@ async function git(repo: string, ...args: string[]): Promise<string> {
 }
 
 async function makeRepo(): Promise<string> {
-    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'scimax-vc-'));
+    // realpathSync.native expands Windows 8.3 short names (RUNNER~1) so the
+    // path matches what git reports for the repository root
+    const dir = fs.realpathSync.native(fs.mkdtempSync(path.join(os.tmpdir(), 'scimax-vc-')));
     await git(dir, 'init', '-q', '-b', 'main');
     await git(dir, 'config', 'user.name', 'Test');
     await git(dir, 'config', 'user.email', 'test@example.com');
     await git(dir, 'config', 'commit.gpgsign', 'false');
+    // Windows runners default to autocrlf=true, which rewrites checkouts as CRLF
+    await git(dir, 'config', 'core.autocrlf', 'false');
     return dir;
 }
 
@@ -125,7 +129,7 @@ describe('against a git repository', () => {
         const file = write(repo, 'sub/notes.org', '* Notes\n');
         const untracked = await getFileStatus(file);
         expect(untracked.state).toBe('untracked');
-        expect(fs.realpathSync(untracked.repoRoot!)).toBe(fs.realpathSync(repo));
+        expect(fs.realpathSync.native(untracked.repoRoot!)).toBe(fs.realpathSync.native(repo));
 
         await stageFile(file);
         expect((await getFileStatus(file)).state).toBe('edited');
