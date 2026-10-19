@@ -107,6 +107,7 @@ import { initializeLogging, extensionLogger, getLoggingService } from './utils/l
 import { recordActivationFailure, getActivationFailures } from './utils/activationStatus';
 import { registerDiredCommands, DiredPanel } from './dired';
 import { registerFindFileCommands } from './findFile';
+import { registerVcCommands } from './vc';
 import { registerLinkGraphCommands } from './linkGraph';
 import { isMarkdownLike } from './shared/markdownLike';
 
@@ -810,6 +811,9 @@ async function activateScimax(context: vscode.ExtensionContext) {
 
     // Register Find File Commands (C-x C-f, Emacs-style file navigation)
     activationStep('registerFindFileCommands', () => registerFindFileCommands(context));
+
+    // Register Version Control Commands (C-x v, Emacs-style vc-next-action)
+    activationStep('registerVcCommands', () => registerVcCommands(context));
 
     // Register Image Overlay Commands (inline image thumbnails)
     activationStep('registerImageOverlayCommands', () => registerImageOverlayCommands(context));

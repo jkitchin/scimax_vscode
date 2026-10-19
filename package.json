@@ -3962,6 +3962,60 @@
         "command": "scimax.marp.help",
         "title": "Scimax: Marp Help",
         "icon": "$(question)"
+      },
+      {
+        "command": "scimax.vc.nextAction",
+        "title": "Scimax: VC Next Action (register, commit, resolve, or sync file)",
+        "icon": "$(source-control)"
+      },
+      {
+        "command": "scimax.vc.logFinish",
+        "title": "Scimax: VC Log - Commit (finish log buffer)"
+      },
+      {
+        "command": "scimax.vc.logCancel",
+        "title": "Scimax: VC Log - Cancel"
+      },
+      {
+        "command": "scimax.vc.push",
+        "title": "Scimax: VC Push",
+        "icon": "$(cloud-upload)"
+      },
+      {
+        "command": "scimax.vc.pull",
+        "title": "Scimax: VC Pull",
+        "icon": "$(cloud-download)"
+      },
+      {
+        "command": "scimax.vc.diff",
+        "title": "Scimax: VC Diff File Against HEAD",
+        "icon": "$(diff)"
+      },
+      {
+        "command": "scimax.vc.log",
+        "title": "Scimax: VC File History",
+        "icon": "$(history)"
+      },
+      {
+        "command": "scimax.vc.revert",
+        "title": "Scimax: VC Revert File (discard changes)",
+        "icon": "$(discard)"
+      },
+      {
+        "command": "scimax.vc.annotate",
+        "title": "Scimax: VC Annotate (toggle blame)"
+      },
+      {
+        "command": "scimax.vc.status",
+        "title": "Scimax: VC Status (edamagit or Source Control)"
+      },
+      {
+        "command": "scimax.vc.dir",
+        "title": "Scimax: VC Directory (Source Control view)"
+      },
+      {
+        "command": "scimax.hydra.vc",
+        "title": "Scimax: Version Control Menu"
       }
     ],
     "keybindings": [
@@ -6526,6 +6580,78 @@
         "key": "ctrl+x ctrl+w",
         "mac": "ctrl+x ctrl+w",
         "when": "resourceScheme == org-agenda && editorTextFocus"
+      },
+      {
+        "command": "scimax.vc.nextAction",
+        "key": "ctrl+x v v",
+        "mac": "ctrl+x v v",
+        "when": "!terminalFocus"
+      },
+      {
+        "command": "scimax.vc.push",
+        "key": "ctrl+x v p",
+        "mac": "ctrl+x v p",
+        "when": "!terminalFocus"
+      },
+      {
+        "command": "scimax.vc.pull",
+        "key": "ctrl+x v shift+p",
+        "mac": "ctrl+x v shift+p",
+        "when": "!terminalFocus"
+      },
+      {
+        "command": "scimax.vc.status",
+        "key": "ctrl+x v t",
+        "mac": "ctrl+x v t",
+        "when": "!terminalFocus"
+      },
+      {
+        "command": "scimax.vc.dir",
+        "key": "ctrl+x v d",
+        "mac": "ctrl+x v d",
+        "when": "!terminalFocus"
+      },
+      {
+        "command": "scimax.vc.diff",
+        "key": "ctrl+x v =",
+        "mac": "ctrl+x v =",
+        "when": "!terminalFocus"
+      },
+      {
+        "command": "scimax.vc.log",
+        "key": "ctrl+x v l",
+        "mac": "ctrl+x v l",
+        "when": "!terminalFocus"
+      },
+      {
+        "command": "scimax.vc.revert",
+        "key": "ctrl+x v u",
+        "mac": "ctrl+x v u",
+        "when": "!terminalFocus"
+      },
+      {
+        "command": "scimax.vc.annotate",
+        "key": "ctrl+x v g",
+        "mac": "ctrl+x v g",
+        "when": "!terminalFocus"
+      },
+      {
+        "command": "scimax.hydra.vc",
+        "key": "ctrl+x v m",
+        "mac": "ctrl+x v m",
+        "when": "!terminalFocus"
+      },
+      {
+        "command": "scimax.vc.logFinish",
+        "key": "ctrl+c ctrl+c",
+        "mac": "ctrl+c ctrl+c",
+        "when": "editorTextFocus && scimax.vcLogActive"
+      },
+      {
+        "command": "scimax.vc.logCancel",
+        "key": "ctrl+c ctrl+k",
+        "mac": "ctrl+c ctrl+k",
+        "when": "editorTextFocus && scimax.vcLogActive"
       }
     ],
     "configuration": {
@@ -8510,6 +8636,10 @@
       {
         "id": "scimax.marp.themeMenu",
         "label": "Theme"
+      },
+      {
+        "id": "scimax.vc.contextMenu",
+        "label": "Version Control"
       }
     ],
     "menus": {
@@ -8529,6 +8659,11 @@
         {
           "command": "scimax.agenda.ignoreFileFromTab",
           "group": "2_files"
+        },
+        {
+          "submenu": "scimax.vc.contextMenu",
+          "when": "resourceScheme == file",
+          "group": "9_scimaxVc@1"
         }
       ],
       "explorer/context": [
@@ -8539,6 +8674,11 @@
         {
           "command": "scimax.openExternalTerminalHere",
           "group": "navigation@11"
+        },
+        {
+          "submenu": "scimax.vc.contextMenu",
+          "when": "resourceScheme == file && !explorerResourceIsFolder",
+          "group": "7_modification@90"
         }
       ],
       "editor/context": [
@@ -8616,6 +8756,11 @@
           "command": "scimax.agenda.buffer.today",
           "when": "resourceScheme == org-agenda",
           "group": "agendaBufferNav@3"
+        },
+        {
+          "submenu": "scimax.vc.contextMenu",
+          "when": "resourceScheme == file",
+          "group": "9_scimaxVc@1"
         }
       ],
       "scimax.marp.exportSubmenu": [
@@ -9274,6 +9419,14 @@
         {
           "command": "scimax.marp.help",
           "when": "editorLangId == markdown"
+        },
+        {
+          "command": "scimax.vc.logFinish",
+          "when": "scimax.vcLogActive"
+        },
+        {
+          "command": "scimax.vc.logCancel",
+          "when": "scimax.vcLogActive"
         }
       ],
       "view/title": [
@@ -9665,6 +9818,40 @@
         {
           "command": "scimax.marp.theme.styleBlock",
           "group": "1@4"
+        }
+      ],
+      "scimax.vc.contextMenu": [
+        {
+          "command": "scimax.vc.nextAction",
+          "group": "1_file@1"
+        },
+        {
+          "command": "scimax.vc.diff",
+          "group": "1_file@2"
+        },
+        {
+          "command": "scimax.vc.log",
+          "group": "1_file@3"
+        },
+        {
+          "command": "scimax.vc.annotate",
+          "group": "1_file@4"
+        },
+        {
+          "command": "scimax.vc.revert",
+          "group": "1_file@9"
+        },
+        {
+          "command": "scimax.vc.push",
+          "group": "2_repo@1"
+        },
+        {
+          "command": "scimax.vc.pull",
+          "group": "2_repo@2"
+        },
+        {
+          "command": "scimax.vc.status",
+          "group": "2_repo@3"
         }
       ]
     }

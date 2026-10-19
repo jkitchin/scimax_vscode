@@ -93,42 +93,44 @@ Select a result to see details or open the documentation file at that location.
 
 * 👀 Emacs-Style Editor Keybindings
 
-| Key             | Action                         |
-|-----------------+--------------------------------|
-| M-x             | Show command palette           |
-| C-x C-f         | Quick open file                |
-| C-x d           | Open Dired (directory editor)  |
-| C-x C-s         | Save file                      |
-| C-x s           | Save all files                 |
-| C-x k           | Close active editor            |
-| C-x b           | Fuzzy-pick recent org/md file  |
-| C-x 3           | Split editor right             |
-| C-x 2           | Split editor down              |
-| C-x 1           | Make this the only window      |
-| C-x 0           | Close all editors              |
-| C-x o           | Focus next editor group        |
-| C-x 5 f         | Find file in a new window      |
-| C-x 5 2         | Current file in a new window   |
-| C-x 5 0         | Close this window              |
-| C-x 5 o         | Switch to another window       |
-| C-x <left>      | Previous editor                |
-| C-x <right>     | Next editor                    |
-| C-x C-<left>    | Navigate back                  |
-| C-x C-<right>   | Navigate forward               |
-| C-/             | Undo                           |
-| C-y             | Yank from kill ring            |
-| M-y             | Yank pop / browse kill ring    |
-| C-w             | Kill region (with selection)   |
-| M-w             | Copy region to kill ring       |
-| C-;             | Toggle comment                 |
-| M-;             | DWIM comment (org/md, toggle =# =) |
-| M-c             | Capitalize word and move next  |
-| M-l             | Lowercase word and move next   |
-| M-u             | Uppercase word and move next   |
-| M-<             | Beginning of buffer            |
-| M->             | End of buffer                  |
-| M-S-%           | Query replace (interactive)    |
-| C-<delete>      | Delete word left               |
+| Key           | Action                             |
+|---------------+------------------------------------|
+| M-x           | Show command palette               |
+| C-x C-f       | Quick open file                    |
+| C-x d         | Open Dired (directory editor)      |
+| C-x v v       | VC next action (add, commit, sync) |
+| C-x v p       | VC push                            |
+| C-x C-s       | Save file                          |
+| C-x s         | Save all files                     |
+| C-x k         | Close active editor                |
+| C-x b         | Fuzzy-pick recent org/md file      |
+| C-x 3         | Split editor right                 |
+| C-x 2         | Split editor down                  |
+| C-x 1         | Make this the only window          |
+| C-x 0         | Close all editors                  |
+| C-x o         | Focus next editor group            |
+| C-x 5 f       | Find file in a new window          |
+| C-x 5 2       | Current file in a new window       |
+| C-x 5 0       | Close this window                  |
+| C-x 5 o       | Switch to another window           |
+| C-x <left>    | Previous editor                    |
+| C-x <right>   | Next editor                        |
+| C-x C-<left>  | Navigate back                      |
+| C-x C-<right> | Navigate forward                   |
+| C-/           | Undo                               |
+| C-y           | Yank from kill ring                |
+| M-y           | Yank pop / browse kill ring        |
+| C-w           | Kill region (with selection)       |
+| M-w           | Copy region to kill ring           |
+| C-;           | Toggle comment                     |
+| M-;           | DWIM comment (org/md, toggle =# =) |
+| M-c           | Capitalize word and move next      |
+| M-l           | Lowercase word and move next       |
+| M-u           | Uppercase word and move next       |
+| M-<           | Beginning of buffer                |
+| M->           | End of buffer                      |
+| M-S-%         | Query replace (interactive)        |
+| C-<delete>    | Delete word left                   |
 
 *Note for macOS:* Alt+u, Alt+c, and Alt+l are "dead keys" that insert accents (¨, ç, etc.) by default. To use these keybindings, disable the accent menu:
 
@@ -137,6 +139,25 @@ defaults write -g ApplePressAndHoldEnabled -bool false
 #+end_src
 
 Then restart VS Code.
+
+* ⚠️ Version Control (C-x v)
+
+| Key     | Command                | Action                                              |
+|---------+------------------------+-----------------------------------------------------|
+| C-x v v | =scimax.vc.nextAction= | Next logical step: register, commit, resolve, sync  |
+| C-x v p | =scimax.vc.push=       | Push the current branch                             |
+| C-x v P | =scimax.vc.pull=       | Pull the current branch                             |
+| C-x v t | =scimax.vc.status=     | Status (edamagit if installed, else Source Control) |
+| C-x v d | =scimax.vc.dir=        | Source Control view                                 |
+| C-x v = | =scimax.vc.diff=       | Diff file against HEAD                              |
+| C-x v l | =scimax.vc.log=        | File history                                        |
+| C-x v u | =scimax.vc.revert=     | Discard changes to the file                         |
+| C-x v g | =scimax.vc.annotate=   | Toggle blame                                        |
+| C-x v m | =scimax.hydra.vc=      | Version Control menu                                |
+| C-c C-c | =scimax.vc.logFinish=  | In a *vc-log* buffer: commit                        |
+| C-c C-k | =scimax.vc.logCancel=  | In a *vc-log* buffer: cancel                        |
+
+See [[file:47-version-control.org][Version Control]].
 
 * Navigation
 

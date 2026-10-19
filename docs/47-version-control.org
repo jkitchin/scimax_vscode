@@ -1,0 +1,124 @@
+#+TITLE: Version Control (C-x v)
+#+STARTUP: showall
+#+TODO: ⚠️ 👀 | ✅
+
+* ⚠️ Version Control (C-x v)
+
+Scimax brings the Emacs VC keymap to VS Code. The centerpiece is ~C-x v v~
+(=scimax.vc.nextAction=), the counterpart of Emacs =vc-next-action=: it looks
+at the current file's git state and does the next logical thing (register it,
+commit it, mark a conflict resolved, or push/pull the branch). The rest of the
+~C-x v~ prefix covers the scimax additions to =vc-prefix-map= (push, pull,
+magit-status) and the standard Emacs bindings for diff, log, revert, and blame.
+
+The commands work on the file in the active editor. From a right-click menu
+they work on the file you clicked.
+
+** ⚠️ C-x v v: Next Action
+
+| File state                  | What C-x v v does                                                          |
+|-----------------------------+----------------------------------------------------------------------------|
+| Not in a git repository     | Offers to create a repository (in the workspace folder) and register it    |
+| Untracked                   | Registers the file (=git add=)                                             |
+| Modified, added, or staged  | Opens a =*vc-log*= buffer for the commit message, then commits *this file* |
+| Conflicted, markers remain  | Warns you and offers to open the merge editor                              |
+| Conflicted, markers gone    | Marks the file resolved (=git add=)                                        |
+| Edited during a merge       | Opens a log buffer to conclude the merge (commits everything staged)       |
+| Ignored by =.gitignore=     | Tells you the file is ignored                                              |
+| Up to date, branch ahead    | Offers to push                                                             |
+| Up to date, branch behind   | Offers to pull                                                             |
+| Up to date, branch diverged | Offers to sync (pull then push)                                            |
+| Up to date, in sync         | Reports that the file is up to date                                        |
+
+Unsaved changes are saved before the file's state is checked.
+
+Like Emacs, a commit includes only the current file: it runs
+=git commit -- <file>=, so the file's working-tree content is committed even
+if you never staged it, and anything else you staged stays staged for later.
+Git does not allow single-file commits while a merge is in progress, so in
+that case the log buffer commits all staged changes to conclude the merge.
+
+Ahead/behind counts come from the last fetch. Run Fetch from the menu
+(=C-x v m f=) to refresh them.
+
+** ⚠️ The *vc-log* Buffer
+
+When a commit is next, ~C-x v v~ opens a new =git-commit= buffer. Write the
+message on the first lines; the =#= lines below show the file, the repository,
+and a diffstat, and are left out of the message.
+
+| Key       | Command               | Action                                     |
+|-----------+-----------------------+--------------------------------------------|
+| ~C-c C-c~ | =scimax.vc.logFinish= | Commit with the buffer text as the message |
+| ~C-c C-k~ | =scimax.vc.logCancel= | Close the buffer without committing        |
+
+If the commit fails (for example, a pre-commit hook rejects it) the error is
+shown and the buffer stays open so you can try again. An empty message
+commits nothing.
+
+** ⚠️ Keybindings
+
+| Keybinding | Command                | Emacs equivalent       | Description                                       |
+|------------+------------------------+------------------------+---------------------------------------------------|
+| ~C-x v v~  | =scimax.vc.nextAction= | =vc-next-action=       | Do the next logical VC step on the file           |
+| ~C-x v p~  | =scimax.vc.push=       | =vc-git-push= (scimax) | Push the current branch                           |
+| ~C-x v P~  | =scimax.vc.pull=       | =vc-git-pull= (scimax) | Pull the current branch                           |
+| ~C-x v t~  | =scimax.vc.status=     | =magit-status=         | edamagit status if installed, else Source Control |
+| ~C-x v d~  | =scimax.vc.dir=        | =vc-dir=               | Open the Source Control view                      |
+| ~C-x v =~  | =scimax.vc.diff=       | =vc-diff=              | Diff the file against HEAD                        |
+| ~C-x v l~  | =scimax.vc.log=        | =vc-print-log=         | Pick a commit from the file's history and diff it |
+| ~C-x v u~  | =scimax.vc.revert=     | =vc-revert=            | Discard the file's changes (asks first)           |
+| ~C-x v g~  | =scimax.vc.annotate=   | =vc-annotate=          | Toggle line-by-line blame                         |
+| ~C-x v m~  | =scimax.hydra.vc=      | scimax VC hydra        | Open the Version Control menu                     |
+
+~C-x v P~ is =Ctrl+X V Shift+P=.
+
+** ⚠️ Right-Click Menus
+
+A *Version Control* submenu appears when you right-click a file tab, a file in
+the Explorer, or inside an editor. It has Next Action, Diff, File History,
+Blame, Revert, Push, Pull, and Status, all acting on the file you clicked.
+
+** ⚠️ Version Control Menu (scimax.vc)
+
+Open with ~C-x v m~, or press ~v~ in the main menu (~C-c m~). It mirrors the
+=scimax-version-control= hydra from Emacs scimax.
+
+#+begin_example
+Version Control
+
+File:
+  [n] Next Action  - Register, commit, resolve, or sync this file
+  [s] Stage        - Stage the current file
+  [d] Diff         - Diff the file against HEAD
+  [l] Log          - History of the current file
+  [r] Revert       - Discard changes to the file
+  [g] Blame        - Toggle line-by-line blame
+
+Repository:
+  [c] Commit       - Commit staged changes (Source Control)
+  [p] Push         - Push the current branch
+  [u] Pull         - Pull the current branch
+  [f] Fetch        - Fetch from remotes
+  [b] Branch       - Create a branch
+  [k] Checkout     - Switch branches
+  [v] Status       - Repository status (edamagit or Source Control)
+#+end_example
+
+** ⚠️ How It Works
+
+- State detection, single-file commits, revert, and file history run the git
+  CLI directly with argument arrays (no shell).
+- Push, pull, sync, diff, merge editor, and blame are handed to VS Code's
+  built-in Git extension, which handles credentials, progress, and the
+  Source Control view.
+- For a magit-like status buffer, install the edamagit extension
+  (=kahole.magit=); ~C-x v t~ uses it automatically.
+
+** ⚠️ Related Topics
+
+- [[file:22-hydra-menus.org][Hydra Menus]] - The Version Control menu and others
+- [[file:24-keybindings.org][Keybindings]] - All keyboard shortcuts
+- [[file:25-commands.org][Commands]] - All commands
+- [[file:37-dired.org][Dired]] - Emacs-style directory editor (C-x d)
+- [[file:17-projectile.org][Projectile]] - Project management

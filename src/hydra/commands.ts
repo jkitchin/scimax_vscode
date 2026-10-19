@@ -87,6 +87,13 @@ export function registerHydraCommands(
         })
     );
 
+    // Show the version control menu
+    context.subscriptions.push(
+        vscode.commands.registerCommand('scimax.hydra.vc', async () => {
+            await manager.show('scimax.vc');
+        })
+    );
+
     // Show the database menu
     context.subscriptions.push(
         vscode.commands.registerCommand('scimax.hydra.database', async () => {
