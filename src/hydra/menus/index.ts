@@ -26,6 +26,7 @@ import {
     toggleBodyOnlyMode,
 } from './exportMenu';
 import { rectangleMenu } from './rectangleMenu';
+import { vcMenu } from './vcMenu';
 
 /**
  * All pre-built Scimax menus
@@ -42,6 +43,7 @@ export const scimaxMenus: HydraMenuDefinition[] = [
     templateMenu,
     applicationsMenu,
     rectangleMenu,
+    vcMenu,
     ...exportMenus,
 ];
 
@@ -57,6 +59,7 @@ export {
     templateMenu,
     applicationsMenu,
     rectangleMenu,
+    vcMenu,
     exportMenu,
     htmlExportMenu,
     latexExportMenu,

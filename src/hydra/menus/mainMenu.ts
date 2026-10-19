@@ -60,6 +60,14 @@ export const mainMenu: HydraMenuDefinition = {
                     exit: 'submenu',
                     action: 'scimax.applications',
                 },
+                {
+                    key: 'v',
+                    label: 'Version Control',
+                    description: 'Git: next action, commit, push, pull',
+                    icon: 'source-control',
+                    exit: 'submenu',
+                    action: 'scimax.vc',
+                },
             ],
         },
         {

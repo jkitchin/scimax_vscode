@@ -1068,16 +1068,35 @@ CLOSED: [2026-01-17 Sat 12:47]
 | [[cmd:scimax.editmarks.prev]]      | Previous Edit Mark      | C-c e [            |
 | [[cmd:scimax.editmarks.summary]]   | Show Edit Marks Summary | C-c e s            |
 
+* ⚠️ Version Control
+
+See [[file:47-version-control.org][Version Control]].
+
+| Command ID                   | Description                                      | Default Keybinding   |
+|------------------------------+--------------------------------------------------+----------------------|
+| [[cmd:scimax.vc.nextAction]] | VC Next Action (register, commit, resolve, sync) | C-x v v              |
+| [[cmd:scimax.vc.logFinish]]  | VC Log - Commit                                  | C-c C-c (log buffer) |
+| [[cmd:scimax.vc.logCancel]]  | VC Log - Cancel                                  | C-c C-k (log buffer) |
+| [[cmd:scimax.vc.push]]       | VC Push                                          | C-x v p              |
+| [[cmd:scimax.vc.pull]]       | VC Pull                                          | C-x v P              |
+| [[cmd:scimax.vc.status]]     | VC Status (edamagit or Source Control)           | C-x v t              |
+| [[cmd:scimax.vc.dir]]        | VC Directory (Source Control view)               | C-x v d              |
+| [[cmd:scimax.vc.diff]]       | VC Diff File Against HEAD                        | C-x v =              |
+| [[cmd:scimax.vc.log]]        | VC File History                                  | C-x v l              |
+| [[cmd:scimax.vc.revert]]     | VC Revert File                                   | C-x v u              |
+| [[cmd:scimax.vc.annotate]]   | VC Annotate (toggle blame)                       | C-x v g              |
+
 * 👀 Hydra
 
-| Command ID                       | Description     | Default Keybinding |
-|----------------------------------+-----------------+--------------------|
-| [[cmd:scimax.hydra.show]]        | Show Hydra Menu | -                  |
-| [[cmd:scimax.hydra.hide]]        | Hide Hydra Menu | -                  |
-| [[cmd:scimax.hydra.back]]        | Hydra Menu Back | -                  |
-| [[cmd:scimax.hydra.main]]        | Main Menu       | C-c m              |
-| [[cmd:scimax.hydra.database]]    | Database Menu   | C-c d d            |
-| [[cmd:scimax.hydra.contextMenu]] | Context Menu    | C-c C-m            |
+| Command ID                       | Description          | Default Keybinding |
+|----------------------------------+----------------------+--------------------|
+| [[cmd:scimax.hydra.show]]        | Show Hydra Menu      | -                  |
+| [[cmd:scimax.hydra.hide]]        | Hide Hydra Menu      | -                  |
+| [[cmd:scimax.hydra.back]]        | Hydra Menu Back      | -                  |
+| [[cmd:scimax.hydra.main]]        | Main Menu            | C-c m              |
+| [[cmd:scimax.hydra.database]]    | Database Menu        | C-c d d            |
+| [[cmd:scimax.hydra.vc]]          | Version Control Menu | C-x v m            |
+| [[cmd:scimax.hydra.contextMenu]] | Context Menu         | C-c C-m            |
 
 * ✅ Markup
 CLOSED: [2026-01-17 Sat 12:48]
