@@ -141,8 +141,10 @@ Repository:
   folder (when =git.openRepositoryInParentFolders= is at its default, it asks
   first), and its commands then report "There are no available repositories".
   Before handing off, scimax finds the file's repository and opens it in the
-  Git extension, so ~C-x v p~, the menu's Stage, Commit, Fetch, Branch, and
-  Checkout, and the others work from any folder inside a repository.
+  Git extension, so ~C-x v p~, ~C-x v t~ and ~C-x v d~ (the Source Control
+  view and edamagit only show repositories it has opened), the menu's Stage,
+  Commit, Fetch, Branch, and Checkout, and the others work from any folder
+  inside a repository.
 - For a magit-like status buffer, install the edamagit extension
   (=kahole.magit=); ~C-x v t~ uses it automatically.
 

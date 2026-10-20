@@ -393,8 +393,17 @@ async function annotate(uri?: vscode.Uri): Promise<void> {
     vscode.window.showWarningMessage('No blame command available; enable the built-in Git extension');
 }
 
+/** Open the active file's repository in the git extension, if there is one */
+async function openActiveRepository(): Promise<void> {
+    const uri = vscode.window.activeTextEditor?.document.uri;
+    if (uri) await ensureRepositoryOpen(uri);
+}
+
 /** C-x v t: magit-status via edamagit when installed, else the Source Control view */
 async function status(): Promise<void> {
+    // edamagit, like the Source Control view, only sees repositories the git
+    // extension has opened
+    await openActiveRepository();
     if (vscode.extensions.getExtension('kahole.magit')) {
         await vscode.commands.executeCommand('magit.status');
     } else {
@@ -446,6 +455,7 @@ export function registerVcCommands(context: vscode.ExtensionContext): void {
         })),
         vscode.commands.registerCommand('scimax.vc.status', guarded('status', status)),
         vscode.commands.registerCommand('scimax.vc.dir', guarded('dir', async () => {
+            await openActiveRepository();
             await vscode.commands.executeCommand('workbench.view.scm');
         }))
     );
