@@ -27,7 +27,8 @@ export const vcMenu: HydraMenuDefinition = {
                     description: 'Stage the current file',
                     icon: 'add',
                     exit: 'exit',
-                    action: 'git.stage',
+                    action: 'scimax.vc.git',
+                    args: ['git.stage'],
                 },
                 {
                     key: 'd',
@@ -61,6 +62,14 @@ export const vcMenu: HydraMenuDefinition = {
                     exit: 'exit',
                     action: 'scimax.vc.annotate',
                 },
+                {
+                    key: 'i',
+                    label: 'Ignore',
+                    description: 'Add the file to .gitignore',
+                    icon: 'eye-closed',
+                    exit: 'exit',
+                    action: 'scimax.vc.ignore',
+                },
             ],
         },
         {
@@ -72,7 +81,8 @@ export const vcMenu: HydraMenuDefinition = {
                     description: 'Commit staged changes (Source Control)',
                     icon: 'check',
                     exit: 'exit',
-                    action: 'git.commit',
+                    action: 'scimax.vc.git',
+                    args: ['git.commit'],
                 },
                 {
                     key: 'p',
@@ -96,7 +106,8 @@ export const vcMenu: HydraMenuDefinition = {
                     description: 'Fetch from remotes',
                     icon: 'sync',
                     exit: 'exit',
-                    action: 'git.fetch',
+                    action: 'scimax.vc.git',
+                    args: ['git.fetch'],
                 },
                 {
                     key: 'b',
@@ -104,7 +115,8 @@ export const vcMenu: HydraMenuDefinition = {
                     description: 'Create a branch',
                     icon: 'git-branch',
                     exit: 'exit',
-                    action: 'git.branch',
+                    action: 'scimax.vc.git',
+                    args: ['git.branch'],
                 },
                 {
                     key: 'k',
@@ -112,7 +124,8 @@ export const vcMenu: HydraMenuDefinition = {
                     description: 'Switch branches',
                     icon: 'git-compare',
                     exit: 'exit',
-                    action: 'git.checkout',
+                    action: 'scimax.vc.git',
+                    args: ['git.checkout'],
                 },
                 {
                     key: 'v',

@@ -153,6 +153,7 @@ Then restart VS Code.
 | C-x v l | =scimax.vc.log=        | File history                                        |
 | C-x v u | =scimax.vc.revert=     | Discard changes to the file                         |
 | C-x v g | =scimax.vc.annotate=   | Toggle blame                                        |
+| C-x v i | =scimax.vc.ignore=     | Add the file to .gitignore                          |
 | C-x v m | =scimax.hydra.vc=      | Version Control menu                                |
 | C-c C-c | =scimax.vc.logFinish=  | In a *vc-log* buffer: commit                        |
 | C-c C-k | =scimax.vc.logCancel=  | In a *vc-log* buffer: cancel                        |

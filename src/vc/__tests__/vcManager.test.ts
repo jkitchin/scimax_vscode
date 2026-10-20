@@ -8,20 +8,25 @@ import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
 import {
+    addToGitignore,
     classifyStatusCode,
     cleanCommitMessage,
     commit,
+    commitStaged,
     decideNextAction,
     fileLog,
     getAheadBehind,
     getFileStatus,
     hasConflictMarkers,
+    ignorePatternFor,
     isMergeInProgress,
     parseLog,
     parsePorcelainCode,
     revertFile,
     runGit,
     stageFile,
+    stagedFiles,
+    untrackFile,
 } from '../vcManager';
 
 async function git(repo: string, ...args: string[]): Promise<string> {
@@ -60,6 +65,12 @@ describe('pure helpers', () => {
         expect(classifyStatusCode('A ')).toBe('edited');
         expect(classifyStatusCode('MM')).toBe('edited');
         expect(classifyStatusCode(' D')).toBe('edited');
+    });
+
+    it('builds an anchored, escaped .gitignore pattern for one file', () => {
+        const root = path.join(os.tmpdir(), 'repo');
+        expect(ignorePatternFor(root, path.join(root, 'notes', 'a.pptx'))).toBe('/notes/a.pptx');
+        expect(ignorePatternFor(root, path.join(root, '#draft[1]*.org'))).toBe('/\\#draft\\[1\\]\\*.org');
     });
 
     it('reads the first porcelain -z record', () => {
@@ -250,5 +261,49 @@ describe('against a git repository', () => {
         } finally {
             fs.rmSync(remote, { recursive: true, force: true });
         }
+    });
+
+    it('ignores a file through .gitignore and untracks it on request', async () => {
+        const deck = write(repo, 'notes/deck.pptx', 'x');
+        expect((await getFileStatus(deck)).state).toBe('untracked');
+
+        write(repo, '.gitignore', 'node_modules');
+        expect(await addToGitignore(repo, ignorePatternFor(repo, deck))).toBe(true);
+        expect(fs.readFileSync(path.join(repo, '.gitignore'), 'utf8')).toBe('node_modules\n/notes/deck.pptx\n');
+        expect((await getFileStatus(deck)).state).toBe('ignored');
+        // A second add is a no-op
+        expect(await addToGitignore(repo, '/notes/deck.pptx')).toBe(false);
+
+        // A tracked file stays tracked until it leaves the index
+        const data = write(repo, 'data.csv', '1\n');
+        await git(repo, 'add', 'data.csv');
+        await git(repo, 'commit', '-q', '-m', 'data');
+        await addToGitignore(repo, ignorePatternFor(repo, data));
+        expect((await getFileStatus(data)).state).toBe('up-to-date');
+        await untrackFile(data);
+        await git(repo, 'commit', '-q', '-m', 'untrack');
+        expect((await getFileStatus(data)).state).toBe('ignored');
+        expect(fs.existsSync(data)).toBe(true);
+    });
+
+    it('commits everything staged together with the current file', async () => {
+        write(repo, 'a.txt', '1\n');
+        write(repo, 'b.txt', '1\n');
+        const c = write(repo, 'c.txt', '1\n');
+        await git(repo, 'add', '.');
+        await git(repo, 'commit', '-q', '-m', 'first');
+
+        write(repo, 'a.txt', '2\n');
+        write(repo, 'sub/new.txt', 'n\n');
+        await git(repo, 'add', 'a.txt', 'sub/new.txt');
+        write(repo, 'b.txt', '2\n');   // edited but not staged: stays out
+        write(repo, 'c.txt', '2\n');   // the current file, unstaged
+        expect(await stagedFiles(repo)).toEqual(['a.txt', 'sub/new.txt']);
+
+        await commitStaged(repo, 'batch', c);
+        const changed = (await git(repo, 'show', '--name-only', '--format=', 'HEAD')).trim().split('\n');
+        expect(changed.sort()).toEqual(['a.txt', 'c.txt', 'sub/new.txt']);
+        expect(await stagedFiles(repo)).toEqual([]);
+        expect((await getFileStatus(path.join(repo, 'b.txt'))).state).toBe('edited');
     });
 });

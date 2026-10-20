@@ -189,9 +189,57 @@ export async function commit(repoRoot: string, message: string, filePath?: strin
     return (await runGit(['rev-parse', '--short', 'HEAD'], repoRoot)).trim();
 }
 
+/** Repository-relative paths of the files with staged changes */
+export async function stagedFiles(repoRoot: string): Promise<string[]> {
+    const output = await runGit(['diff', '--cached', '--name-only', '-z'], repoRoot);
+    return output.split('\0').filter(Boolean);
+}
+
+/**
+ * Commit everything staged, plus `filePath`'s working-tree changes when it is
+ * given (it is staged first). Returns the new commit's short hash.
+ */
+export async function commitStaged(repoRoot: string, message: string, filePath?: string): Promise<string> {
+    if (filePath) await stageFile(filePath);
+    return commit(repoRoot, message);
+}
+
 /** Discard working-tree and staged changes to a tracked file */
 export async function revertFile(filePath: string): Promise<void> {
     await runGit(['checkout', 'HEAD', '--', path.basename(filePath)], path.dirname(filePath));
+}
+
+/**
+ * The .gitignore pattern that matches exactly `filePath`: its path relative
+ * to the repository root, anchored with a leading '/', with glob and comment
+ * characters escaped.
+ */
+export function ignorePatternFor(repoRoot: string, filePath: string): string {
+    const relative = path.relative(repoRoot, filePath).split(path.sep).join('/');
+    return '/' + relative.replace(/[\\*?[\]!#]/g, '\\$&').replace(/ $/, '\\ ');
+}
+
+/**
+ * Append `pattern` to the repository's top-level .gitignore, creating it if
+ * needed. Returns false when the exact pattern is already listed.
+ */
+export async function addToGitignore(repoRoot: string, pattern: string): Promise<boolean> {
+    const file = path.join(repoRoot, '.gitignore');
+    let existing = '';
+    try {
+        existing = await fs.promises.readFile(file, 'utf8');
+    } catch {
+        // No .gitignore yet
+    }
+    if (existing.split(/\r?\n/).some((line) => line.trim() === pattern)) return false;
+    const separator = existing && !existing.endsWith('\n') ? '\n' : '';
+    await fs.promises.appendFile(file, `${separator}${pattern}\n`);
+    return true;
+}
+
+/** Remove a tracked file from the index, keeping it on disk (git rm --cached) */
+export async function untrackFile(filePath: string): Promise<void> {
+    await runGit(['rm', '--cached', '-q', '--', path.basename(filePath)], path.dirname(filePath));
 }
 
 /** Commits the current branch is ahead of / behind its upstream */

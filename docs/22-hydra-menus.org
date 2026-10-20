@@ -388,6 +388,7 @@ File:
   [l] Log          - History of the current file
   [r] Revert       - Discard changes to the file
   [g] Blame        - Toggle line-by-line blame
+  [i] Ignore       - Add the file to .gitignore
 
 Repository:
   [c] Commit       - Commit staged changes (Source Control)

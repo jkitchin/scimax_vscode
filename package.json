@@ -4006,6 +4006,10 @@
         "title": "Scimax: VC Annotate (toggle blame)"
       },
       {
+        "command": "scimax.vc.ignore",
+        "title": "Scimax: VC Ignore File (add to .gitignore)"
+      },
+      {
         "command": "scimax.vc.status",
         "title": "Scimax: VC Status (edamagit or Source Control)"
       },
@@ -6633,6 +6637,12 @@
         "command": "scimax.vc.annotate",
         "key": "ctrl+x v g",
         "mac": "ctrl+x v g",
+        "when": "!terminalFocus"
+      },
+      {
+        "command": "scimax.vc.ignore",
+        "key": "ctrl+x v i",
+        "mac": "ctrl+x v i",
         "when": "!terminalFocus"
       },
       {
@@ -9836,6 +9846,10 @@
         {
           "command": "scimax.vc.annotate",
           "group": "1_file@4"
+        },
+        {
+          "command": "scimax.vc.ignore",
+          "group": "1_file@5"
         },
         {
           "command": "scimax.vc.revert",

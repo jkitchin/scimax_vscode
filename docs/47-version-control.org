@@ -21,6 +21,8 @@ they work on the file you clicked.
 | Not in a git repository     | Offers to create a repository (in the workspace folder) and register it    |
 | Untracked                   | Registers the file (=git add=)                                             |
 | Modified, added, or staged  | Opens a =*vc-log*= buffer for the commit message, then commits *this file* |
+| Modified, others staged     | Opens a log buffer that commits *all staged changes plus this file*        |
+| Up to date, others staged   | Opens a log buffer that commits all staged changes                         |
 | Conflicted, markers remain  | Warns you and offers to open the merge editor                              |
 | Conflicted, markers gone    | Marks the file resolved (=git add=)                                        |
 | Edited during a merge       | Opens a log buffer to conclude the merge (commits everything staged)       |
@@ -32,9 +34,15 @@ they work on the file you clicked.
 
 Unsaved changes are saved before the file's state is checked.
 
-Like Emacs, a commit includes only the current file: it runs
-=git commit -- <file>=, so the file's working-tree content is committed even
-if you never staged it, and anything else you staged stays staged for later.
+When nothing else is staged, a commit includes only the current file, as in
+Emacs: it runs =git commit -- <file>=, so the file's working-tree content is
+committed even if you never staged it.
+
+When other files are already staged (for example, you staged several files in
+the Source Control view), ~C-x v v~ commits them all in one commit: it stages
+the current file's changes, if any, and commits the whole index. The log
+buffer lists every file that will be committed. Edited files you did not stage
+are left out.
 Git does not allow single-file commits while a merge is in progress, so in
 that case the log buffer commits all staged changes to conclude the merge.
 
@@ -69,15 +77,31 @@ commits nothing.
 | ~C-x v l~  | =scimax.vc.log=        | =vc-print-log=         | Pick a commit from the file's history and diff it |
 | ~C-x v u~  | =scimax.vc.revert=     | =vc-revert=            | Discard the file's changes (asks first)           |
 | ~C-x v g~  | =scimax.vc.annotate=   | =vc-annotate=          | Toggle line-by-line blame                         |
+| ~C-x v i~  | =scimax.vc.ignore=     | =vc-ignore=            | Add the file to =.gitignore=                      |
 | ~C-x v m~  | =scimax.hydra.vc=      | scimax VC hydra        | Open the Version Control menu                     |
 
-~C-x v P~ is =Ctrl+X V Shift+P=.
+~C-x v P~ is =Ctrl+X V Shift+P=. In Emacs, =vc-ignore= is on ~C-x v G~ and
+~C-x v i~ is =vc-register=; scimax uses ~C-x v i~ for ignore because ~C-x v v~
+already registers untracked files.
+
+** ⚠️ C-x v i: Ignore a File
+
+~C-x v i~ (=scimax.vc.ignore=) adds the current file to the =.gitignore= at the
+repository root. It prompts with the file's path relative to the root, anchored
+with a leading =/= (for example =/meeting-notes/deck.pptx=); edit it into a
+broader pattern such as =*.pptx= before pressing Enter. The pattern is not added
+twice.
+
+=.gitignore= only affects untracked files. If the file is staged as new, it is
+unstaged. If it is already committed, scimax offers *Stop Tracking*, which runs
+=git rm --cached= so the file leaves the repository (in your next commit) but
+stays on disk.
 
 ** ⚠️ Right-Click Menus
 
 A *Version Control* submenu appears when you right-click a file tab, a file in
 the Explorer, or inside an editor. It has Next Action, Diff, File History,
-Blame, Revert, Push, Pull, and Status, all acting on the file you clicked.
+Blame, Ignore, Revert, Push, Pull, and Status, all acting on the file you clicked.
 
 ** ⚠️ Version Control Menu (scimax.vc)
 
@@ -94,6 +118,7 @@ File:
   [l] Log          - History of the current file
   [r] Revert       - Discard changes to the file
   [g] Blame        - Toggle line-by-line blame
+  [i] Ignore       - Add the file to .gitignore
 
 Repository:
   [c] Commit       - Commit staged changes (Source Control)
@@ -112,6 +137,12 @@ Repository:
 - Push, pull, sync, diff, merge editor, and blame are handed to VS Code's
   built-in Git extension, which handles credentials, progress, and the
   Source Control view.
+- The Git extension does not open a repository that sits above your workspace
+  folder (when =git.openRepositoryInParentFolders= is at its default, it asks
+  first), and its commands then report "There are no available repositories".
+  Before handing off, scimax finds the file's repository and opens it in the
+  Git extension, so ~C-x v p~, the menu's Stage, Commit, Fetch, Branch, and
+  Checkout, and the others work from any folder inside a repository.
 - For a magit-like status buffer, install the edamagit extension
   (=kahole.magit=); ~C-x v t~ uses it automatically.
 

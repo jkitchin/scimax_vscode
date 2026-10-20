@@ -1085,6 +1085,7 @@ See [[file:47-version-control.org][Version Control]].
 | [[cmd:scimax.vc.log]]        | VC File History                                  | C-x v l              |
 | [[cmd:scimax.vc.revert]]     | VC Revert File                                   | C-x v u              |
 | [[cmd:scimax.vc.annotate]]   | VC Annotate (toggle blame)                       | C-x v g              |
+| [[cmd:scimax.vc.ignore]]     | VC Ignore File (add to .gitignore)               | C-x v i              |
 
 * 👀 Hydra
 
