@@ -29,7 +29,7 @@ function isOrg(doc: vscode.TextDocument): boolean {
 }
 
 /** Read a heading's title, CUSTOM_ID, and ID from its line and property drawer. */
-function readHeadingTarget(lines: string[], headingLine: number, todoStates: Set<string>): Target {
+function readHeadingTarget(lines: string[], headingLine: number, todoStates: Set<string>, filePath: string): Target {
     // Title with the TODO keyword stripped, so [[Title]] resolves against
     // headings that carry a custom/emoji keyword (e.g. "* ⚠️ Overview").
     const title = extractHeadingTitle(lines[headingLine], todoStates);
@@ -43,7 +43,7 @@ function readHeadingTarget(lines: string[], headingLine: number, todoStates: Set
         if (d) id = d[1];
         if (/^\s*:END:/i.test(lines[i])) break;
     }
-    return { kind: 'heading', title: title || undefined, customId, id };
+    return { kind: 'heading', title: title || undefined, customId, id, filePath };
 }
 
 /** Resolve the back-link target at a position: an anchor on the line, else the containing heading. */
@@ -60,7 +60,7 @@ function resolveTargetAt(document: vscode.TextDocument, position: vscode.Positio
     const lines = fullText.split('\n');
     const todoStates = getTodoStatesFromText(fullText);
     for (let i = position.line; i >= 0; i--) {
-        if (isHeadingLine(lines[i])) return readHeadingTarget(lines, i, todoStates);
+        if (isHeadingLine(lines[i])) return readHeadingTarget(lines, i, todoStates, document.uri.fsPath);
     }
     return undefined;
 }
@@ -69,7 +69,7 @@ async function queryBacklinks(target: Target): Promise<BacklinkRow[]> {
     const db = await getDatabase();
     if (!db) return [];
     if (target.kind === 'anchor') return db.getAnchorBacklinks(target.text);
-    return db.getHeadingBacklinks({ title: target.title, customId: target.customId, id: target.id });
+    return db.getHeadingBacklinks({ title: target.title, customId: target.customId, id: target.id, filePath: target.filePath });
 }
 
 function toLocations(rows: BacklinkRow[]): vscode.Location[] {
@@ -144,7 +144,7 @@ class BacklinksCodeLensProvider implements vscode.CodeLensProvider {
             if (isHeadingLine(lines[i])) {
                 candidates.push({
                     range: new vscode.Range(i, 0, i, 0),
-                    target: readHeadingTarget(lines, i, todoStates),
+                    target: readHeadingTarget(lines, i, todoStates, document.uri.fsPath),
                     anchorPos: new vscode.Position(i, 0),
                 });
             }

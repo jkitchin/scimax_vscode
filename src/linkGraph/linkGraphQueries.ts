@@ -9,6 +9,9 @@ import type { Client } from '@libsql/client';
 import { databaseLogger as log } from '../utils/logger';
 import { graphDataRegistry, type GraphDataContext, type CustomEdge } from '../adapters/graphDataAdapter';
 
+/** A link's target file: l.target without any ::search suffix. */
+const LINK_TARGET_FILE = `(CASE WHEN instr(l.target, '::') > 0 THEN substr(l.target, 1, instr(l.target, '::') - 1) ELSE l.target END)`;
+
 /**
  * Filters for graph queries
  */
@@ -306,9 +309,9 @@ export class LinkGraphQueryService {
         this.addFilterConditions(conditions, args, filters);
 
         const sql = `
-            SELECT DISTINCT l.target
+            SELECT DISTINCT ${LINK_TARGET_FILE} AS target
             FROM links l
-            LEFT JOIN files f ON l.target = f.path
+            LEFT JOIN files f ON ${LINK_TARGET_FILE} = f.path
             LEFT JOIN headings h ON l.heading_id = h.id
             WHERE ${conditions.join(' AND ')}
               AND f.id IS NOT NULL

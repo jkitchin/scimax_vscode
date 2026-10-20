@@ -348,9 +348,12 @@ async function findPaths(
         // Get neighbors (files this file links to)
         try {
             const result = await db.execute({
-                sql: `SELECT DISTINCT target FROM links
-                      WHERE file_path = ? AND link_type = 'file'
-                      AND target IN (SELECT path FROM files)`,
+                sql: `SELECT DISTINCT target FROM (
+                          SELECT CASE WHEN instr(target, '::') > 0
+                                      THEN substr(target, 1, instr(target, '::') - 1)
+                                      ELSE target END AS target
+                          FROM links WHERE file_path = ? AND link_type = 'file')
+                      WHERE target IN (SELECT path FROM files)`,
                 args: [current]
             });
 
@@ -382,9 +385,12 @@ async function findRelatedFiles(
     try {
         // Files that this file links to (outgoing)
         const outgoing = await db.execute({
-            sql: `SELECT target, COUNT(*) as count FROM links
-                  WHERE file_path = ? AND link_type = 'file'
-                  AND target IN (SELECT path FROM files)
+            sql: `SELECT target, COUNT(*) as count FROM (
+                      SELECT CASE WHEN instr(target, '::') > 0
+                                  THEN substr(target, 1, instr(target, '::') - 1)
+                                  ELSE target END AS target
+                      FROM links WHERE file_path = ? AND link_type = 'file')
+                  WHERE target IN (SELECT path FROM files)
                   GROUP BY target`,
             args: [filePath]
         });

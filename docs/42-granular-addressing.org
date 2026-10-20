@@ -122,7 +122,7 @@ Place the cursor where you want an addressable point and run *Link to Here*. It:
 4. Inserts =<<name>>= at the cursor and copies =[[name]]= to the clipboard, ready
    to paste wherever you want the reference.
 
-** Back-links (Find All References)
+** 👀 Back-links (Find All References)
 
 Back-links are surfaced through VS Code's native /references/ machinery, so there
 is no extra panel to manage. Put the cursor on an anchor (=<<name>>=,
@@ -132,6 +132,12 @@ is no extra panel to manage. Put the cursor on an anchor (=<<name>>=,
   to see every link that points at that object, in the inline peek and the
   References view. Anchors resolve by name; headings resolve by their
   =CUSTOM_ID=, =ID=, or title.
+- Heading back-links follow org's link scope. A title or =CUSTOM_ID= link
+  (=[[*Summary]]=, =[[#summary]]=) only reaches a heading in the file it is
+  written in, so it counts only there; a link from another file counts when it
+  names this file (=[[file:notes.org::*Summary]]=). =[[id:...]]= links count
+  from any file. Two files that each have a =* Summary= heading do not share
+  each other's back-links.
 - A *← N references* CodeLens appears above anchored lines and headings that have
   back-links; click it to open the same peek. Lines with no back-links show no
   lens. The counts for a whole file come from one indexed database query, so

@@ -245,10 +245,15 @@ export interface BacklinkRow {
     heading_title: string | null;
 }
 
-/** What a back-link points at: an anchor's text, or a heading's title, CUSTOM_ID or ID. */
+/**
+ * What a back-link points at: an anchor's text, or a heading's title, CUSTOM_ID
+ * or ID. A heading's filePath scopes title and CUSTOM_ID matches to links that
+ * resolve to that file: [[*Title]] and [[#id]] only ever reach a heading in the
+ * file they are written in, so a same-named heading elsewhere is not a target.
+ */
 export type BacklinkTarget =
     | { kind: 'anchor'; text: string }
-    | { kind: 'heading'; title?: string; customId?: string; id?: string };
+    | { kind: 'heading'; title?: string; customId?: string; id?: string; filePath?: string };
 
 /** Indexed expressions (migration 8); queries must repeat them exactly. */
 const LINK_TARGET_KEY = 'lower(trim(l.raw_target))';
@@ -259,16 +264,34 @@ const BACKLINK_KEYS_PER_QUERY = 500;
 
 const INTERNAL_TYPES = new Set(['internal', 'fuzzy']);
 const ANCHOR_TYPES = new Set(['internal', 'file', 'fuzzy']);
+const FILE_LINK_TYPES = new Set(['file', 'internal']);
+
+/** A links row as the back-link matcher sees it. */
+interface BacklinkCandidate {
+    link_type: string;
+    file_path: string;
+    /** Resolved target (absolute path, plus any ::search, for file links). */
+    target: string;
+    /** lower(trim(raw_target)). */
+    k: string;
+    /** For links with a ::, the lower-cased text after it. */
+    sk: string | null;
+}
+
+/** The file a resolved file link (path::search) points at. */
+function linkTargetFile(target: string): string {
+    const i = target.indexOf('::');
+    return path.resolve(i >= 0 ? target.slice(0, i) : target);
+}
 
 /**
- * The lower-cased raw targets a back-link target matches, and the test a
- * link must pass: its type, lower(trim(raw_target)) (k) and, for links with
- * a ::, the lower-cased text after it (sk).
+ * The lower-cased raw targets (exact, and ::suffix) a back-link target
+ * matches, and the test a candidate link must pass.
  */
 function backlinkMatcher(target: BacklinkTarget): {
     exact: string[];
     suffix: string[];
-    matches: (type: string, k: string, sk: string | null) => boolean;
+    matches: (c: BacklinkCandidate) => boolean;
 } {
     if (target.kind === 'anchor') {
         const key = normalizeAnchorText(target.text);
@@ -276,25 +299,34 @@ function backlinkMatcher(target: BacklinkTarget): {
         return {
             exact: [key],
             suffix: [key],
-            matches: (type, k, sk) => ANCHOR_TYPES.has(type) && (k === key || sk === key),
+            matches: c => ANCHOR_TYPES.has(c.link_type) && (c.k === key || c.sk === key),
         };
     }
     // CUSTOM_ID links ([[#id]]) are internal links whose raw_target keeps the
     // leading '#'; ID links ([[id:uuid]]) have type 'id' and the bare uuid;
     // fuzzy title links ([[Title]] / [[*Title]]) are internal links whose
-    // raw_target is the title, optionally prefixed with '*'.
+    // raw_target is the title, optionally prefixed with '*'. With a filePath,
+    // those internal links count only from the heading's own file, and
+    // [[file:x.org::*Title]] / [[file:x.org::#id]] count when x.org is it.
     const customId = target.customId ? '#' + target.customId.trim().toLowerCase() : undefined;
     const id = target.id ? target.id.trim().toLowerCase() : undefined;
     const title = target.title ? target.title.trim().toLowerCase() : undefined;
-    const exact = [customId, id, title, title !== undefined ? '*' + title : undefined]
-        .filter((k): k is string => k !== undefined);
+    const starTitle = title !== undefined ? '*' + title : undefined;
+    const file = target.filePath ? path.resolve(target.filePath) : undefined;
+    const exact = [customId, id, title, starTitle].filter((k): k is string => k !== undefined);
+    const suffix = file ? [customId, starTitle].filter((k): k is string => k !== undefined) : [];
+    const local = (c: BacklinkCandidate) => file === undefined || path.resolve(c.file_path) === file;
     return {
         exact,
-        suffix: [],
-        matches: (type, k) =>
-            (customId !== undefined && INTERNAL_TYPES.has(type) && k === customId) ||
-            (id !== undefined && type === 'id' && k === id) ||
-            (title !== undefined && INTERNAL_TYPES.has(type) && (k === title || k === '*' + title)),
+        suffix,
+        matches: c =>
+            (id !== undefined && c.link_type === 'id' && c.k === id) ||
+            (INTERNAL_TYPES.has(c.link_type) && local(c) &&
+                ((customId !== undefined && c.k === customId) ||
+                 (title !== undefined && (c.k === title || c.k === starTitle)))) ||
+            (file !== undefined && c.sk !== null && FILE_LINK_TYPES.has(c.link_type) &&
+                (c.sk === customId || c.sk === starTitle) &&
+                linkTargetFile(c.target) === file),
     };
 }
 
@@ -1449,11 +1481,12 @@ export class ScimaxDbCore {
     /**
      * Object-level back-links to a heading: links that target it by CUSTOM_ID
      * ([[#id]]), ID ([[id:uuid]]), or fuzzy title ([[Title]] / [[*Title]]).
-     * Matching is by the raw (unresolved) link target, so a same-named heading
-     * elsewhere can appear (the documented uniqueness limitation for v1).
+     * Pass filePath, the heading's file, so that title and CUSTOM_ID links
+     * count only where they resolve to that file; without it a same-named
+     * heading elsewhere picks up the same links.
      */
     public async getHeadingBacklinks(
-        target: { title?: string; customId?: string; id?: string }
+        target: { title?: string; customId?: string; id?: string; filePath?: string }
     ): Promise<BacklinkRow[]> {
         return (await this.getBacklinksBatch([{ kind: 'heading', ...target }]))[0];
     }
@@ -1481,9 +1514,9 @@ export class ScimaxDbCore {
             for (const k of m.suffix) suffixKeys.add(k);
         }
 
-        type Row = BacklinkRow & { id: number; link_type: string; k: string; sk: string | null };
+        type Row = BacklinkRow & BacklinkCandidate & { id: number };
         const rows = new Map<number, Row>();
-        const select = `SELECT l.id, l.file_path, l.line_number, l.description, l.link_type,
+        const select = `SELECT l.id, l.file_path, l.line_number, l.description, l.link_type, l.target,
                                h.title AS heading_title,
                                ${LINK_TARGET_KEY} AS k,
                                CASE WHEN instr(l.raw_target, '::') > 0 THEN ${LINK_SUFFIX_KEY} END AS sk
@@ -1505,6 +1538,7 @@ export class ScimaxDbCore {
                         description: (r.description as string) ?? null,
                         heading_title: (r.heading_title as string) ?? null,
                         link_type: r.link_type as string,
+                        target: (r.target as string) ?? '',
                         k: r.k as string,
                         sk: (r.sk as string) ?? null,
                     });
@@ -1519,7 +1553,7 @@ export class ScimaxDbCore {
             a.file_path < b.file_path ? -1 : a.file_path > b.file_path ? 1 : a.line_number - b.line_number);
         matchers.forEach((m, i) => {
             results[i] = sorted
-                .filter(r => m.matches(r.link_type, r.k, r.sk))
+                .filter(r => m.matches(r))
                 .map(({ file_path, line_number, description, heading_title }) =>
                     ({ file_path, line_number, description, heading_title }));
         });

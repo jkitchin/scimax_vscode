@@ -39,10 +39,16 @@ describe('heading back-links (integration)', () => {
             'By id [[id:11111111-1111-1111]].',
         ].join('\n'));
 
+        // Two files that each have a "Summary" heading and link to their own.
+        fs.writeFileSync(path.join(dir, 'c.org'), '* Summary\nSee [[*Summary]].\n');
+        fs.writeFileSync(path.join(dir, 'd.org'), '* Summary\n[[*Summary]] and [[#storage]].\n');
+        fs.writeFileSync(path.join(dir, 'e.org'), '* Notes\n[[file:c.org::*Summary]] and [[./a.org::#storage]].\n');
+
         db = new ScimaxDbCore({ dbPath: path.join(dir, 'test.db') });
         await db.initialize();
-        await db.indexFile(aPath);
-        await db.indexFile(bPath);
+        for (const f of ['a.org', 'b.org', 'c.org', 'd.org', 'e.org']) {
+            await db.indexFile(path.join(dir, f));
+        }
     }, SETUP_TIMEOUT_MS);
 
     afterAll(async () => {
@@ -75,8 +81,8 @@ describe('heading back-links (integration)', () => {
             customId: 'storage',
             id: '11111111-1111-1111',
         });
-        expect(back.length).toBeGreaterThanOrEqual(3);
-        expect(back.every(b => b.file_path === bPath)).toBe(true);
+        // Unscoped (no filePath), so d.org's local [[#storage]] matches too.
+        expect(back.filter(b => b.file_path === bPath)).toHaveLength(3);
     });
 
     it('batches anchors and headings, one result list per target, like the single lookups', async () => {
@@ -105,6 +111,23 @@ describe('heading back-links (integration)', () => {
         expect(await plan('lower(trim(l.raw_target)) IN (?)')).toContain('idx_links_target_key');
         expect(await plan(`instr(l.raw_target, '::') > 0 AND lower(trim(substr(l.raw_target, instr(l.raw_target, '::') + 2))) IN (?)`))
             .toContain('idx_links_target_suffix');
+    });
+
+    it('scopes title links to the heading\'s own file, plus file:: links into it', async () => {
+        const cPath = path.join(dir, 'c.org');
+        const back = await db.getHeadingBacklinks({ title: 'Summary', filePath: cPath });
+        expect(back.map(b => [path.basename(b.file_path), b.line_number]))
+            .toEqual([['c.org', 2], ['e.org', 2]]);
+    });
+
+    it('scopes CUSTOM_ID links to the heading\'s file, but not ID links', async () => {
+        const back = await db.getHeadingBacklinks({
+            customId: 'storage', id: '11111111-1111-1111', filePath: aPath,
+        });
+        // b.org: [[#storage]] is local to b.org, so only the id link counts;
+        // d.org's [[#storage]] is local to d.org; e.org targets a.org explicitly.
+        expect(back.map(b => [path.basename(b.file_path), b.line_number]))
+            .toEqual([['b.org', 4], ['e.org', 2]]);
     });
 
     it('returns nothing for an unknown heading', async () => {

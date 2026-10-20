@@ -267,7 +267,10 @@ function extractLink(link: LinkObject): LegacyLink {
     if (linkType === 'https' || linkType === 'http') {
         // Already correct
     } else if (linkType === 'file') {
-        // Parser already identified as file link, target already has prefix stripped
+        // Parser already identified as file link, target already has prefix
+        // stripped. It splits off the ::search too; keep it so the index can
+        // tell [[file:x.org::*Heading]] from a link to the whole file.
+        if (props.searchOption) target += '::' + props.searchOption;
     } else if (target.match(/^https?:/)) {
         linkType = target.startsWith('https:') ? 'https' : 'http';
     } else if (target.match(/^file:/)) {
