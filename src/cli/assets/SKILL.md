@@ -1,6 +1,6 @@
 ---
 name: scimax
-version: "0.12.0"
+version: "0.13.0"
 description: |
   Searches org-mode notes, displays agenda and TODOs, exports org files to
   HTML/PDF/LaTeX, validates citations, opens journal entries, maintains the
@@ -8,8 +8,11 @@ description: |
   reference for org-mode syntax and scimax editor features (links, anchors,
   back-links, source blocks, tables, citations, task dependencies, project
   management (task tables, Gantt charts, people/assignees), and the entity
-  selector for contacts/locations). Use when the user works with org-mode
-  notes, asks about org syntax, or runs scimax CLI tasks.
+  selector for contacts/locations). Also makes slide decks: org to Beamer, and
+  Marp decks built with marp-present (single-file HTML with pen, laser,
+  spotlight, sticky notes, save-with-annotations, and live Python cells).
+  Use when the user works with org-mode notes, asks about org syntax, makes
+  presentations, or runs scimax CLI tasks.
   Triggers: "find notes about", "search my notes", "what's on my agenda",
   "show my todos", "what's overdue", "export this file", "check my citations",
   "rebuild my index", "how many notes", "publish my docs", "index my org files",
@@ -25,10 +28,13 @@ description: |
   "assign task", "assignee", "who's working on", "what's blocked", "what's ready",
   "project status", "critical path", "who's overloaded", "unblock", "what can I work on", "add a person", "new person",
   "contact", "contacts", "contact manager", "location", "address", "reagent",
-  "resource", "pick entity", "insert email", "insert address", "entity selector"
+  "resource", "pick entity", "insert email", "insert address", "entity selector",
+  "presentation", "slides", "slide deck", "lecture slides", "marp", "marp-present",
+  "beamer", "make a talk", "present", "laser pointer", "annotate slides",
+  "live python in slides", "pyodide"
 allowed-tools: ["Bash(scimax*)", "Bash(code --goto*)", "Bash(sqlite3*)", "Read", "Glob", "Grep", "Write"]
 ---
-<!-- scimax-skill v0.12.0 -->
+<!-- scimax-skill v0.13.0 -->
 
 # Scimax Skill
 
@@ -43,6 +49,9 @@ You are an executive assistant and expert for the **scimax-vscode** extension. Y
    tool to load `~/.claude/skills/scimax/pm-reference.md`. It covers the `scimax task`
    commands and how to pick the right project file; do not improvise database queries.
 4. **Read org-mode reference** — When helping with org-mode syntax, citations, source blocks, document structure, links, granular addressing (anchors, radio targets, `#+NAME`, back-links, orphan diagnostics), task dependencies (`:DEPENDS:`, `:ORDERED:`, blocking/triggering), project management (`project-table`/`gantt` dynamic blocks, `:person:`/`:ASSIGNEE:`), or entities (contacts/locations/reagents via `:person:`/`:location:` tags and the Pick Entity selector), use the Read tool to load `~/.claude/skills/scimax/orgmode-reference.md`.
+5. **Read presentations reference** — When the user wants to make, convert, build, present or
+   fix slides (Marp, Beamer, `marp-present`, live Python cells, presenter pen/laser/notes),
+   use the Read tool to load `~/.claude/skills/scimax/presentations-reference.md`.
 
 ## Quick Reference
 
@@ -57,6 +66,7 @@ You are an executive assistant and expert for the **scimax-vscode** extension. Y
 | Export to PDF | `scimax export file.org --format pdf` |
 | Export to Beamer slides | `scimax export slides.org --format beamer` |
 | Compile Beamer to PDF | `scimax export slides.org --format beamer-pdf` |
+| Build a Marp deck (one HTML file + presenter tools) | `marp-present talk.md --open` |
 | Tangle source blocks | `scimax tangle setup.org` |
 | Check citations | `scimax cite check file.org` |
 | Extract citations | `scimax cite extract file.org` |
@@ -196,6 +206,23 @@ Three things to get right:
 
 Effort totals only count `Nd`/`Nh`; `task who` reports an `unestimated` column.
 Mention it rather than presenting a total as complete.
+
+## Presentations
+
+Two routes; load `~/.claude/skills/scimax/presentations-reference.md` before making or fixing a deck.
+
+- **org → Beamer** (`scimax export slides.org --format beamer-pdf`): LaTeX-quality PDF slides
+  from an org file.
+- **Marp + `marp-present`** (the scimax customization): Markdown slides built into one
+  self-contained HTML file. It works offline and can be emailed. The presenter tools work while
+  you talk: pen and highlighter, laser pointer, hold-to-spotlight, Markdown sticky notes and a
+  right-click menu. `s` saves an annotated standalone copy, and Cmd+P prints with annotations.
+  ```` ```python run ```` blocks become editable, runnable Python cells (Pyodide), warmed up in the
+  background when the deck opens.
+
+Default to Marp + `marp-present` for lectures and talks shown from a browser, and to Beamer when
+the source is org or the output must be a PDF. When handing over a Marp deck, list the
+presenter keys from the reference.
 
 ## Learnings Loop
 
