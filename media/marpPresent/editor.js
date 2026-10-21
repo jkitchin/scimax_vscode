@@ -302,6 +302,7 @@
   const ask = (op, key, after) => parent.postMessage({ marpSlides: { op, key, after } }, "*");
   // For presenter.js's right-click menu, on a thumbnail
   function overviewItems(svg) {
+    if (sorting && svg && svg.dataset.mpGhost) return [{ label: "Show this slide again", run: () => ask("show", svg.dataset.mpGhost) }];
     if (!sorting || !fpOf(svg)) return [];
     const all = slides(), i = all.indexOf(svg), fp = fpOf(svg);
     return [
@@ -315,13 +316,42 @@
     ];
   }
   if (sorting) {
+    // Hidden slides, greyed out where they were: not Marp's slides, so its numbering is not changed.
+    // A click shows one again.
+    const ghostOf = el => (el && el.closest && el.closest("svg[data-mp-ghost]")) || null;
+    const anchors = {};
+    slides().forEach(svg => { anchors[fpOf(svg)] = svg; });
+    for (const h of hiddenSlides()) {
+      if (!h.el) continue;
+      const ghost = h.el.cloneNode(true);
+      ghost.removeAttribute("data-marpit-svg");
+      ghost.removeAttribute("data-mp-fp");
+      ghost.dataset.mpGhost = h.fp;
+      ghost.setAttribute("role", "button");
+      ghost.setAttribute("aria-label", `Hidden slide ${h.n}: click to show it again`);
+      const tip = document.createElementNS("http://www.w3.org/2000/svg", "title");
+      tip.textContent = `Hidden slide ${h.n}: click to show it again`;
+      ghost.prepend(tip);
+      const at = h.after ? anchors[h.after] : null, box = document.getElementById(":$p");
+      if (at) at.after(ghost); else if (!h.after && box) box.prepend(ghost); else continue;
+      anchors[h.fp] = ghost;                                 // a hidden slide can follow another
+    }
+    addEventListener("click", e => {
+      const ghost = ghostOf(e.target);
+      if (!ghost) return;
+      e.preventDefault(); e.stopImmediatePropagation();
+      ask("show", ghost.dataset.mpGhost);
+    }, true);
     const thumbOf = el => (el && el.closest && el.closest("svg[data-marpit-svg]")) || null;
     const marker = document.createElement("div");
     marker.style.cssText = "position:fixed;z-index:100002;width:5px;border-radius:3px;background:#2563eb;pointer-events:none;display:none";
     document.body.appendChild(marker);
     const css = document.createElement("style");
     css.textContent = ".mp-sorting, .mp-sorting * { user-select: none !important; cursor: grabbing !important; }\n" +
-      "svg[data-marpit-svg].mp-dragged { opacity: .35; }";
+      "svg[data-marpit-svg].mp-dragged { opacity: .35; }\n" +
+      "svg[data-mp-ghost] { width: 100%; margin: -6px; padding: 6px; box-sizing: content-box; cursor: pointer; opacity: .3; filter: grayscale(1); outline: 2px dashed #888; outline-offset: -2px; }\n" +
+      "svg[data-mp-ghost]:hover { opacity: .6; }\n" +
+      "svg[data-mp-ghost] * { pointer-events: none; }";
     document.head.appendChild(css);
     // Where a drop goes: before or after the slide under the pointer (or the nearest one)
     const slotAt = (x, y, dragged) => {

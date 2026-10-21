@@ -1031,7 +1031,7 @@
   function onContextMenu(e, x, y) {
     if (e.shiftKey || (e.target && e.target.closest && e.target.closest(NATIVE_MENU))) return;
     if (overview) {
-      menuThumb = e.target && e.target.closest && e.target.closest("svg[data-marpit-svg]");
+      menuThumb = e.target && e.target.closest && e.target.closest("svg[data-marpit-svg], svg[data-mp-ghost]");   // a hidden slide's greyed-out copy too
       if (!window.__marpEdits || !window.__marpEdits.overviewItems || !window.__marpEdits.overviewItems(menuThumb).length) return;
       e.preventDefault();
       menuNote = null;

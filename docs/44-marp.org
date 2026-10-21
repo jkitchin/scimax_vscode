@@ -753,9 +753,13 @@ The edits stay in the HTML; they do not change the Markdown.
 - In Marp's overview (the four squares), drag a thumbnail to move that
   slide: a blue bar shows where it will go. Right-clicking a thumbnail
   offers Go to this slide, Add a slide after this one, Hide this slide (or
-  Delete), Move to the start, Move to the end, and Show hidden slide. Each
-  change reloads the slideshow and opens the overview again, except Add,
-  which goes to the new slide so you can type its title.
+  Delete), Move to the start, Move to the end, and Show hidden slide. Slides
+  hidden in the slideshow stay in the overview, greyed out with a dashed
+  border where they were; click one (or right-click, Show this slide again)
+  to bring it back. Each change reloads the slideshow and opens the overview
+  again, except Add, which goes to the new slide so you can type its title.
+  Slides hidden in the Markdown are not in the slideshow at all, so the
+  overview does not show them.
 - Like the other edits, added, hidden and moved slides are kept in the HTML, not
   the Markdown: =s= saves them in the copy of the deck, and Marp's presenter
   view shows them too. Ink and notes stay with their slide; speaker notes

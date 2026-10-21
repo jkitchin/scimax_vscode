@@ -10,7 +10,7 @@
  * Each slide is stamped with data-mp-fp (its fingerprint, as editor.js knows it) and data-mp-slide
  * (what ink and notes are kept under: its number as built, or its id if added), so neither moves
  * when slides are added or hidden. Marp's speaker notes and page numbers follow the new order.
- * window.__marpSlides tells the other tools what was done.
+ * window.__marpSlides tells the other tools what was done; Marp's overview shows the hidden slides greyed out.
  */
 (() => {
   const parent = document.getElementById(":$p");
@@ -99,9 +99,10 @@
   const notes = {};
   document.querySelectorAll(".bespoke-marp-note[data-index]").forEach(n => { notes[+n.dataset.index] = n; });
   if (order.every(svg => hide.has(svg.dataset.mpFp))) hide.clear();   // never hide every slide
-  const shown = order.filter(svg => {
+  const shown = order.filter((svg, i) => {
     if (!hide.has(svg.dataset.mpFp)) return true;
-    info.hidden.push({ fp: svg.dataset.mpFp, n: +svg.dataset.mpSlide, title: titleOf(svg) });
+    // el and after (the slide it follows, "" = first) let the overview show it greyed out (editor.js)
+    info.hidden.push({ fp: svg.dataset.mpFp, n: +svg.dataset.mpSlide, title: titleOf(svg), el: svg, after: i ? order[i - 1].dataset.mpFp : "" });
     const note = notes[+svg.dataset.mpSlide - 1];
     if (note) note.remove();
     svg.remove();
