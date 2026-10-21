@@ -107,7 +107,7 @@ export function marpHtmlEnabled(document: SettingsScope): boolean {
 }
 
 /**
- * True for a deck with `presenter: true` (or `offline`) in a trusted workspace.
+ * True for a deck that gets presenter tools (see presenterWanted) in a trusted workspace.
  * Its slideshow is built with all HTML allowed (for widgets such as iframes), so
  * the thumbnails and previews allow it too. The Markdown preview gives only a
  * URI, so the text is taken from the open document with that URI.
@@ -120,7 +120,20 @@ function presenterDeck(scope: SettingsScope): boolean {
     const text = typeof withText.getText === 'function'
         ? withText.getText()
         : vscode.workspace.textDocuments.find(doc => doc.uri.toString() === scope.uri.toString())?.getText();
-    return text !== undefined && presenterRequested(frontMatterValue(text.split(/\r?\n/), 'presenter'));
+    return text !== undefined && presenterWanted(scope, text);
+}
+
+/**
+ * True if a deck with Markdown `text` asks for presenter tools: its
+ * `presenter:` front matter when it has one (so `presenter: false` turns them
+ * off), else the `scimax.marp.presenter` setting.
+ */
+export function presenterWanted(scope: SettingsScope, text: string): boolean {
+    const value = frontMatterValue(text.split(/\r?\n/), 'presenter');
+    if (value !== undefined && value.trim() !== '') {
+        return presenterRequested(value);
+    }
+    return vscode.workspace.getConfiguration('scimax.marp', scope.uri).get<boolean>('presenter', false);
 }
 
 /** Math typesetting for rendered slides (`scimax.marp.mathTypesetting`). */

@@ -557,7 +557,7 @@ after it. Claude Code's link can only fill in a prompt in a new tab, which is
 why an open chat gets the @-mention rather than the full sentence. A chat open
 only in the Claude Code side bar is not detected, so a new tab opens.
 
-* Presenter Tools and Live Python
+* 👀 Presenter Tools and Live Python
 
 A deck can opt in to presenter tools in the HTML slideshow: a pen to draw on
 slides, a laser pointer, sticky notes, a spotlight, and Python code cells that
@@ -572,7 +572,10 @@ presenter: true
 
 or choose Deck → Presenter Tools... in the Marp menu
 ([[cmd:scimax.marp.deck.presenter]]). Decks without the key are presented and
-exported exactly as before. The tools are added when you present (see
+exported exactly as before, unless you turn on ~scimax.marp.presenter~: then
+every deck without a ~presenter:~ line gets the tools too, and a deck's own
+~presenter: false~ still turns them off. Either way the tools are added only in
+a trusted workspace; an untrusted one gets the plain slideshow. The tools are added when you present (see
 [[*Slideshow][Slideshow]]) and when you export HTML with =h= (see [[*Exporting Slides][Exporting Slides]]).
 ~examples/marp-present/demo.md~ in the Scimax repository shows all of them, along with
 the rest of Scimax's Marp support: builds, transitions, notes, hidden slides,
@@ -1023,7 +1026,7 @@ upload the file (New > File upload), then open it with Google Slides.
 | ~scimax.marp.allowLocalFiles~    | ~true~  | Include local images (~--allow-local-files~), trusted workspaces only |
 | ~scimax.marp.pandocReferenceDoc~ | (empty) | PowerPoint template for the Pandoc export (=d=)                       |
 
-* Configuration
+* 👀 Configuration
 
 | Setting                       | Default   | Effect                                                     |
 |-------------------------------+-----------+------------------------------------------------------------|
@@ -1031,6 +1034,7 @@ upload the file (New > File upload), then open it with Google Slides.
 | ~scimax.marp.enableHtml~      | ~false~   | Allow all raw HTML in slides                               |
 | ~scimax.marp.mathTypesetting~ | ~mathjax~ | ~mathjax~, ~katex~ or ~off~                                |
 | ~scimax.marp.liveReload~      | ~true~    | Reload an open slideshow when the deck is saved            |
+| ~scimax.marp.presenter~       | ~false~   | Presenter tools for decks with no ~presenter:~ line        |
 
 Each falls back to Marp for VS Code's ~markdown.marp.themes~,
 ~markdown.marp.html~ or ~markdown.marp.mathTypesetting~ when it is not set

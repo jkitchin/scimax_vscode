@@ -17,7 +17,7 @@ import { checkPandoc } from '../markdown/markdownExport';
 import { isMarpText, slideStarts } from './slideRenderer';
 import { previewedMarkdownDocument } from '../markdown/previewSource';
 import { currentMarpDeck } from './currentDeck';
-import { marpHtmlEnabled, marpThemeUris } from './marpSettings';
+import { marpHtmlEnabled, marpThemeUris, presenterWanted } from './marpSettings';
 import {
     buildMarpArgs, buildPandocPptxArgs, describeMarpFailure, localFilesWereBlocked,
     liveReloadVersionScript, MARP_FORMATS, MarpExportFormat, marpOutputPath, marpToPandocMarkdown, prepareSlideshowHtml,
@@ -26,7 +26,7 @@ import { parseDeck } from './slideModel';
 import { frontMatterValue } from './marpAuthoring';
 import {
     BundleReport, bundlePresenterDeck, inlineDeck, OfflineCheck, offlineIssues, OfflinePlan, planOfflinePython,
-    parseTimer, presenterAssets, presenterOffline, presenterRequested, pyodideBaseUrl, PyodideLock,
+    parseTimer, presenterAssets, presenterOffline, pyodideBaseUrl, PyodideLock,
 } from './presenterBundle';
 
 /** Marp CLI major version run through npx. */
@@ -260,11 +260,12 @@ async function activeDeck(): Promise<vscode.TextDocument | undefined> {
 
 /**
  * True if the deck asks for presenter tools (`presenter: true` in its front
- * matter) and they may run here. They inline local files and run the deck's
- * Python in the browser, so an untrusted workspace gets the plain slideshow.
+ * matter, or the `scimax.marp.presenter` setting) and they may run here. They
+ * inline local files and run the deck's Python in the browser, so an untrusted
+ * workspace gets the plain slideshow.
  */
 function presenterEnabled(document: vscode.TextDocument): boolean {
-    if (!presenterRequested(frontMatterValue(document.getText().split(/\r?\n/), 'presenter'))) {
+    if (!presenterWanted(document, document.getText())) {
         return false;
     }
     if (!vscode.workspace.isTrusted) {
@@ -860,7 +861,7 @@ async function rebuildLiveShow(context: vscode.ExtensionContext, document: vscod
         do {
             show.again = false;
             await buildSlideshow(context, document, show.output, {
-                presenter: show.presenter && presenterRequested(frontMatterValue(document.getText().split(/\r?\n/), 'presenter')),
+                presenter: show.presenter && presenterWanted(document, document.getText()),
                 jumpTo: slideUnderCursor(document), liveReload: true, quiet: true,
             });
         } while (show.again);

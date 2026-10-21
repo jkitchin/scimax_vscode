@@ -8611,6 +8611,11 @@
           "default": "biber",
           "description": "Path to biber executable"
         },
+        "scimax.marp.presenter": {
+          "type": "boolean",
+          "default": false,
+          "markdownDescription": "Add the presenter tools (pen, laser, notes, timer, live Python) when presenting or exporting HTML from a deck with no `presenter:` front matter. A deck's own `presenter: true` or `presenter: false` always wins. Trusted workspaces only."
+        },
         "scimax.marp.liveReload": {
           "type": "boolean",
           "default": true,
