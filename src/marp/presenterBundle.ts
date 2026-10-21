@@ -32,6 +32,9 @@ const PYCELLS_MARK = 'marp-present: live, editable Python cells';
 const TIMER_MARK = 'marp-present: talk timer';
 const SHOW_MARK = 'marp-present: show tools';
 const EDIT_MARK = 'marp-present: slide editing';
+const SLIDES_MARK = 'marp-present: slide structure';
+/** The start of Marp CLI's slideshow (bespoke) script, which takes the slides as they are when it runs. */
+const BESPOKE_SCRIPT = /<script>(?=\/\*!! License: [^\n]*marp-cli)/;
 const INK_EMPTY = '<script type="application/json" id="marp-ink-data">{}</script>';
 const SELF_EMPTY = '<script type="text/plain" id="marp-self"></script>';
 const PYODIDE_EMPTY = '<script type="application/json" id="marp-pyodide"></script>';
@@ -58,6 +61,8 @@ export interface PresenterAssets {
     show: string;
     /** Editing the slides' text and layout in the slideshow. */
     edit: string;
+    /** Slides added and hidden in the slideshow; runs before Marp's own script. */
+    slides: string;
 }
 
 /** What inlining did. */
@@ -297,10 +302,24 @@ export function hasRunCells(html: string): boolean {
 }
 
 /**
+ * Put the slide structure script (slides added and hidden in the slideshow)
+ * just before Marp's slideshow script, which fixes the list of slides when it
+ * runs. A page without Marp's slideshow script is left as it is.
+ */
+export function addSlidesScript(html: string, assets: PresenterAssets): string {
+    const at = html.includes(SLIDES_MARK) ? -1 : html.search(BESPOKE_SCRIPT);
+    if (at < 0) {
+        return html;
+    }
+    return html.slice(0, at) + `<script>${scriptSafe(fs.readFileSync(assets.slides, 'utf8'))}</script>` + html.slice(at);
+}
+
+/**
  * Add the presenter tools (and the Python cell runner, if the deck has run
  * cells) before the last </body>. Scripts already in the page are not added again.
  */
 export function addPresenterScripts(html: string, assets: PresenterAssets, timer = false): string {
+    html = addSlidesScript(html, assets);
     const files: string[] = [];
     // The editor goes first: while editing, it takes every key and mouse press before the other tools
     if (!html.includes(EDIT_MARK)) {
@@ -401,6 +420,7 @@ export function presenterAssets(mediaDir: string): PresenterAssets {
         timer: path.join(mediaDir, 'timer.js'),
         show: path.join(mediaDir, 'showtools.js'),
         edit: path.join(mediaDir, 'editor.js'),
+        slides: path.join(mediaDir, 'slides.js'),
     };
 }
 

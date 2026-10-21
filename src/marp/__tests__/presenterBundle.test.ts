@@ -45,8 +45,10 @@ beforeAll(() => {
         timer: path.join(fake, 'timer.js'),
         show: path.join(fake, 'showtools.js'),
         edit: path.join(fake, 'editor.js'),
+        slides: path.join(fake, 'slides.js'),
     };
     fs.writeFileSync(assets.edit, '/* marp-present: slide editing */ window.E = 1;');
+    fs.writeFileSync(assets.slides, '/* marp-present: slide structure */ window.S = 1;');
     fs.writeFileSync(assets.show, '/* marp-present: show tools for Marp HTML decks */ window.W = 1;');
     fs.writeFileSync(assets.timer, '/* marp-present: talk timer */ window.T = 1;');
     fs.writeFileSync(assets.presenter, '/* marp-present: presenter tools for Marp HTML decks */ window.P = 1;');
@@ -182,6 +184,17 @@ describe('talk timer', () => {
         const once = addPresenterScripts(page('<p>x</p>'), assets, true);
         expect(once).toContain('window.T = 1');
         expect(addPresenterScripts(once, assets, true)).toBe(once);
+    });
+
+    it('puts the slide structure script just before Marp\'s slideshow script, once', () => {
+        const marp = page('<div id=":$p"><svg data-marpit-svg=""></svg></div><script>/*!! License: https://unpkg.com/@marp-team/marp-cli@4.5.1/lib/bespoke.js */ window.B = 1;</script>');
+        const once = addPresenterScripts(marp, assets);
+        expect(once.indexOf('window.S = 1')).toBeGreaterThan(once.indexOf('</svg>'));
+        expect(once.indexOf('window.S = 1')).toBeLessThan(once.indexOf('window.B = 1'));
+        expect(once.indexOf('window.B = 1')).toBeLessThan(once.indexOf('window.E = 1'));
+        expect(addPresenterScripts(once, assets).split('window.S = 1').length).toBe(2);
+        // Without Marp's slideshow there is nothing to rearrange
+        expect(addPresenterScripts(page('<p>x</p>'), assets)).not.toContain('window.S = 1');
     });
 
     it('puts the length in the bundled deck', async () => {
@@ -337,6 +350,7 @@ describe('presenter settings', () => {
         expect(fs.readFileSync(path.join(MEDIA, 'timer.js'), 'utf8')).toContain('marp-present: talk timer');
         expect(fs.readFileSync(path.join(MEDIA, 'showtools.js'), 'utf8')).toContain('marp-present: show tools');
         expect(fs.readFileSync(path.join(MEDIA, 'editor.js'), 'utf8')).toContain('marp-present: slide editing');
+        expect(fs.readFileSync(path.join(MEDIA, 'slides.js'), 'utf8')).toContain('marp-present: slide structure');
     });
 });
 

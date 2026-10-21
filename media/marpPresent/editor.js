@@ -23,6 +23,11 @@
  *   Cmd/Ctrl+C / X   copy / cut the selection (cutting hides a slide's own element, removes an inserted one)
  *   Cmd/Ctrl+V       paste it as a new element, on this slide or another; or paste an image, or text as a new text box
  *
+ * The bar at the top (and the right-click menu) also adds a slide after the current one, hides a
+ * slide (deletes one that was added) and shows hidden slides again. In Marp's overview, dragging
+ * a slide moves it, and right-clicking one offers the same. slides.js puts the slides in place
+ * before Marp's slideshow starts, so these reload the page.
+ *
  * The bar at the top inserts text, an image (from a file) or a table, and sets the font, size,
  * bold, italic, underline, strikethrough and colour: of the words selected while typing, or else
  * of the selected heading, paragraph, text box, ... Selecting words while typing also shows those
@@ -61,7 +66,8 @@
     const sig = [...section.querySelectorAll("*")].map(e => e.tagName).join(",") + "|" + section.textContent;
     const h = hash(sig);
     seen[h] = (seen[h] || 0) + 1;
-    deck.push({ section, pristine: section.cloneNode(true), fp: h + (seen[h] > 1 ? "-" + seen[h] : "") });
+    // slides.js stamps the fingerprint (and gives added slides their id) before Marp runs
+    deck.push({ section, pristine: section.cloneNode(true), fp: svg.dataset.mpFp || h + (seen[h] > 1 ? "-" + seen[h] : "") });
   });
   const slideOf = svg => deck[slides().indexOf(svg)] || null;
   const find = (slide, path) => slide.section.querySelector(`[data-mpe="${path}"]`);
@@ -71,21 +77,32 @@
   // ---- the edits: { <slide fingerprint>: { <path>: { html, dx, dy, w, fs, px, color, ff, b, i, u, hide } } } ----
   // An inserted element has a path "n<k>" and also { add: <its empty tag>, x, y, img }. Inserted
   // images live once in a pool, "@images": { <id>: <data URL> }, kept out of the undo history.
-  const IMAGES = "@images";
+  // Slides added, hidden and moved (slides.js) are "@slides": { hide: [fp], add: [{ id, after, from, html }], move: [{ id, after }], next }.
+  const IMAGES = "@images", SLIDES = "@slides";
   const validOp = o => o && typeof o === "object" && ["dx", "dy", "w", "fs", "px", "x", "y"].every(k => o[k] === undefined || isFinite(o[k])) &&
     ["html", "add", "img", "color", "ff"].every(k => o[k] === undefined || typeof o[k] === "string") &&
     ["b", "i", "u", "s"].every(k => o[k] === undefined || typeof o[k] === "boolean");
   const validImages = im => im === undefined || (im && typeof im === "object" && !Array.isArray(im) &&
     Object.values(im).every(u => typeof u === "string" && /^data:image\/[\w.+-]+[;,]/.test(u)));
-  const validEdits = e => e && typeof e === "object" && !Array.isArray(e) && validImages(e[IMAGES]) &&
-    Object.keys(e).every(fp => fp === IMAGES || (e[fp] && typeof e[fp] === "object" && Object.values(e[fp]).every(validOp)));
-  let edits = {};
+  const validPlan = p => p === undefined || (p && typeof p === "object" && Array.isArray(p.hide) && p.hide.every(f => typeof f === "string") &&
+    Array.isArray(p.add) && p.add.every(a => a && /^new-\d+$/.test(a.id) && ["after", "from", "html"].every(k => typeof a[k] === "string")) &&
+    (p.move === undefined || (Array.isArray(p.move) && p.move.every(m => m && typeof m.id === "string" && typeof m.after === "string"))) &&
+    (p.next === undefined || Number.isInteger(p.next)));
+  const validEdits = e => e && typeof e === "object" && !Array.isArray(e) && validImages(e[IMAGES]) && validPlan(e[SLIDES]) &&
+    Object.keys(e).every(fp => fp === IMAGES || fp === SLIDES || (e[fp] && typeof e[fp] === "object" && Object.values(e[fp]).every(validOp)));
+  let edits = {}, plan = null;
   const images = {};
-  const take = v => { const e = Object.assign({}, v); Object.assign(images, e[IMAGES] || {}); delete e[IMAGES]; return e; };
+  const take = v => {
+    const e = Object.assign({}, v);
+    Object.assign(images, e[IMAGES] || {}); plan = e[SLIDES] || null;
+    delete e[IMAGES]; delete e[SLIDES];
+    return e;
+  };
+  const planSize = () => plan ? plan.hide.length + plan.add.length + (plan.move || []).length : 0;
   const withImages = e => {
     const used = {};
     Object.values(e).forEach(s => Object.values(s).forEach(o => { if (o.img && images[o.img]) used[o.img] = images[o.img]; }));
-    return Object.keys(used).length ? Object.assign({}, e, { [IMAGES]: used }) : e;
+    return Object.assign({}, e, Object.keys(used).length ? { [IMAGES]: used } : {}, planSize() ? { [SLIDES]: plan } : {});
   };
   const added = path => path[0] === "n";
   const isAdded = el => !!(el && el.hasAttribute && el.hasAttribute("data-mpe-add"));
@@ -105,7 +122,8 @@
 
   let full = false;
   const store = () => {
-    try { localStorage.setItem(KEY, JSON.stringify(withImages(edits))); full = false; }
+    // (the plan's id counter is kept even when nothing is added, so an id is never reused)
+    try { localStorage.setItem(KEY, JSON.stringify(Object.assign(withImages(edits), plan ? { [SLIDES]: plan } : {}))); full = false; }
     catch (e) {                                             // storage blocked, or full (images)
       if (!full && e && e.name === "QuotaExceededError") say("The browser's storage is full, so a reload would lose the latest edits: press s to save the deck with them");
       full = true;
@@ -181,6 +199,183 @@
     if (getComputedStyle(slide.section).position === "static") slide.section.style.position = "relative";
     slide.section.appendChild(el);
     return el;
+  }
+
+  // ---- slides added and hidden: slides.js puts them in place as the page loads, so each change reloads it ----
+  const slidesOn = () => canEdit && !!window.__marpSlides;
+  const hiddenSlides = () => (window.__marpSlides && window.__marpSlides.hidden) || [];
+  const isNew = svg => !!(svg && /^new-/.test(svg.dataset.mpFp || ""));
+  const NEW_SLIDE = "<h1>Title</h1>\n<p>Text</p>";
+  function restructure(fn, hash, resume) {
+    endTyping(); select(null);
+    const p = plan ? JSON.parse(JSON.stringify(plan)) : { hide: [], add: [], next: 1 };
+    p.move = p.move || [];
+    fn(p);
+    if (!p.move.length) delete p.move;
+    plan = p;
+    store();
+    if (full) return;                                       // not stored, so a reload would lose it
+    try { sessionStorage.setItem(KEY + ":resume", JSON.stringify(resume)); } catch (e) { /* storage blocked */ }
+    // An absolute URL: a bare '#n' would resolve against the <base> (the deck's folder)
+    if (hash) history.replaceState(null, "", location.href.split("#")[0] + "#" + hash);
+    location.reload();
+  }
+  const fpOf = svg => (svg && svg.dataset.mpFp) || "";
+  function addSlide(svg = activeSvg()) {
+    if (!slidesOn() || !fpOf(svg)) return;
+    const n = slides().indexOf(svg) + 1, id = "new-" + ((plan && plan.next) || 1);
+    restructure(p => {
+      p.next = (p.next || 1) + 1;
+      p.add.push({ id, after: svg.dataset.mpFp, from: svg.dataset.mpFp, html: NEW_SLIDE });
+      // slides are added before any are moved: put this one after its slide, wherever that went
+      if (p.move.length) p.move.push({ id, after: svg.dataset.mpFp });
+    }, n + 1, { goto: id, edit: true, type: true });
+  }
+  // Hide a slide of the deck; delete one added here (and its edits). From the overview, stay there
+  function hideSlide(svg = activeSvg(), inOverview = false) {
+    const all = slides();
+    if (!slidesOn() || !fpOf(svg)) return;
+    if (all.length < 2) { say("This is the only slide"); return; }
+    const i = all.indexOf(svg), fp = svg.dataset.mpFp, next = all[i + 1] || all[i - 1];
+    const msg = isNew(svg) ? "Slide deleted" : "Slide hidden: Hidden in the bar (or the right-click menu) shows it again";
+    const stay = inOverview && activeSvg() !== svg;
+    restructure(p => {
+      if (!isNew(svg)) { p.hide.push(fp); return; }
+      const gone = p.add.find(a => a.id === fp);
+      p.add = p.add.filter(a => a !== gone);
+      p.add.forEach(a => { if (a.after === fp) a.after = gone.after; if (a.from === fp) a.from = gone.from; });
+      p.move = p.move.filter(m => m.id !== fp);
+      p.move.forEach(m => { if (m.after === fp) m.after = fpOf(all[i - 1]); });
+      delete edits[fp];
+    }, stay ? null : i + 1 < all.length ? i + 1 : i,
+    { goto: stay ? fpOf(activeSvg()) : next.dataset.mpFp, edit: editing, say: msg, overview: inOverview });
+  }
+  function showSlide(fp, inOverview = false) {
+    restructure(p => { p.hide = p.hide.filter(f => f !== fp); }, null,
+      { goto: inOverview ? fpOf(activeSvg()) : fp, edit: editing, say: "Slide shown again", overview: inOverview });
+  }
+  // Move a slide to just after another ("" = first), from the overview
+  function moveSlide(svg, after) {
+    const all = slides(), i = all.indexOf(svg), fp = fpOf(svg);
+    if (!slidesOn() || !fp || after === fp || (after && !all.some(s => fpOf(s) === after))) return;
+    if (fpOf(all[i - 1]) === after) return;                  // already there
+    restructure(p => { p.move.push({ id: fp, after }); }, null, { goto: fpOf(activeSvg()), say: "Slide moved", overview: true });
+  }
+  // The overview (a frame of its own) asks for these
+  addEventListener("message", e => {
+    const f = canEdit && document.querySelector(".bespoke-marp-overview iframe");
+    const m = f && e.source === f.contentWindow && e.data && e.data.marpSlides;
+    if (!m || typeof m !== "object" || typeof m.key !== "string") return;
+    const svg = slides().find(s => fpOf(s) === m.key);
+    if (m.op === "add" && svg) addSlide(svg);
+    else if (m.op === "hide" && svg) hideSlide(svg, true);
+    else if (m.op === "show" && hiddenSlides().some(h => h.fp === m.key)) showSlide(m.key, true);
+    else if (m.op === "move" && svg && typeof m.after === "string") moveSlide(svg, m.after);
+  });
+  function slideControls() {
+    bar.querySelectorAll(".slide-ctl").forEach(el => { el.style.display = slidesOn() ? "" : "none"; });
+    if (!slidesOn()) return;
+    const svg = activeSvg(), hide = bar.querySelector('[data-a="hide"]'), pick = bar.querySelector('[data-a="hidden"]');
+    hide.textContent = isNew(svg) ? "Delete slide" : "Hide slide";
+    hide.title = isNew(svg) ? "Delete this slide (added here)" : "Leave this slide out of the show (the Markdown is not changed)";
+    hide.disabled = slides().length < 2;
+    const list = hiddenSlides();
+    pick.style.display = list.length ? "" : "none";
+    if (pick.options.length !== list.length + 1) {
+      pick.replaceChildren(new Option(`Hidden (${list.length})`, ""), ...list.map(h => new Option(`Show ${h.n}: ${h.title || "(untitled)"}`, h.fp)));
+    }
+    pick.value = "";
+  }
+  // For presenter.js's right-click menu
+  function slideItems() {
+    if (!slidesOn()) return [];
+    const svg = activeSvg();
+    return [
+      { label: "Add a slide after this one", run: addSlide },
+      { label: isNew(svg) ? "Delete this slide" : "Hide this slide", off: slides().length < 2, run: hideSlide },
+      ...hiddenSlides().slice(0, 12).map(h => ({ label: `Show hidden slide ${h.n}: ${h.title || "(untitled)"}`, run: () => showSlide(h.fp) })),
+    ];
+  }
+
+  // ---- in Marp's overview, a frame of its own: the slideshow around it makes the changes ----
+  const sorting = view === "overview" && parent !== window && !!window.__marpSlides;
+  const ask = (op, key, after) => parent.postMessage({ marpSlides: { op, key, after } }, "*");
+  // For presenter.js's right-click menu, on a thumbnail
+  function overviewItems(svg) {
+    if (!sorting || !fpOf(svg)) return [];
+    const all = slides(), i = all.indexOf(svg), fp = fpOf(svg);
+    return [
+      { label: "Go to this slide", run: () => svg.click() },
+      { label: "Add a slide after this one", run: () => ask("add", fp) },
+      { label: isNew(svg) ? "Delete this slide" : "Hide this slide", off: all.length < 2, run: () => ask("hide", fp) },
+      { label: "Move to the start", off: i === 0, run: () => ask("move", fp, "") },
+      { label: "Move to the end", off: i === all.length - 1, run: () => ask("move", fp, fpOf(all[all.length - 1])) },
+      ...hiddenSlides().slice(0, 12).map(h => ({ label: `Show hidden slide ${h.n}: ${h.title || "(untitled)"}`, run: () => ask("show", h.fp) })),
+      { note: "Drag a slide to move it" },
+    ];
+  }
+  if (sorting) {
+    const thumbOf = el => (el && el.closest && el.closest("svg[data-marpit-svg]")) || null;
+    const marker = document.createElement("div");
+    marker.style.cssText = "position:fixed;z-index:100002;width:5px;border-radius:3px;background:#2563eb;pointer-events:none;display:none";
+    document.body.appendChild(marker);
+    const css = document.createElement("style");
+    css.textContent = ".mp-sorting, .mp-sorting * { user-select: none !important; cursor: grabbing !important; }\n" +
+      "svg[data-marpit-svg].mp-dragged { opacity: .35; }";
+    document.head.appendChild(css);
+    // Where a drop goes: before or after the slide under the pointer (or the nearest one)
+    const slotAt = (x, y, dragged) => {
+      const all = slides();
+      let best = null, dist = Infinity;
+      all.forEach((svg, i) => {
+        const r = svg.getBoundingClientRect(), d = Math.hypot(x - Math.max(r.left, Math.min(x, r.right)), y - Math.max(r.top, Math.min(y, r.bottom)));
+        if (d < dist) { dist = d; best = { svg, i, r }; }
+      });
+      if (!best) return null;
+      const before = x < best.r.left + best.r.width / 2, prev = before ? all[best.i - 1] : best.svg;
+      if (best.svg === dragged || prev === dragged) return null;   // where it is now
+      return { after: fpOf(prev), x: before ? best.r.left : best.r.right, r: best.r };
+    };
+    let drag = null, swallowClick = false;
+    const stop = () => {
+      if (!drag) return;
+      drag.svg.classList.remove("mp-dragged");
+      document.documentElement.classList.remove("mp-sorting");
+      marker.style.display = "none";
+      drag = null;
+    };
+    addEventListener("pointerdown", e => {
+      if (e.button !== 0 || e.ctrlKey || e.metaKey || e.altKey) return;
+      const svg = thumbOf(e.target);
+      if (svg && fpOf(svg)) drag = { svg, x: e.clientX, y: e.clientY, id: e.pointerId, on: false, slot: null };
+    }, true);
+    addEventListener("pointermove", e => {
+      if (!drag || e.pointerId !== drag.id) return;
+      if (!drag.on) {
+        if (Math.hypot(e.clientX - drag.x, e.clientY - drag.y) < 8) return;
+        drag.on = true;
+        try { drag.svg.setPointerCapture(e.pointerId); } catch (err) { /* already released */ }
+        drag.svg.classList.add("mp-dragged");
+        document.documentElement.classList.add("mp-sorting");
+      }
+      e.preventDefault();
+      if (e.clientY < 40) scrollBy(0, -20); else if (e.clientY > innerHeight - 40) scrollBy(0, 20);
+      drag.slot = slotAt(e.clientX, e.clientY, drag.svg);
+      const t = drag.slot;
+      if (!t) { marker.style.display = "none"; return; }
+      Object.assign(marker.style, { display: "block", left: t.x - 2.5 + "px", top: t.r.top + "px", height: t.r.height + "px" });
+    }, true);
+    addEventListener("pointerup", e => {
+      if (!drag || e.pointerId !== drag.id) return;
+      const d = drag;
+      stop();
+      if (!d.on) return;
+      swallowClick = true; setTimeout(() => { swallowClick = false; }, 0);   // the click that ends a drag is not a "go to"
+      if (d.slot) ask("move", fpOf(d.svg), d.slot.after);
+    }, true);
+    addEventListener("pointercancel", stop, true);
+    addEventListener("click", e => { if (swallowClick) { e.preventDefault(); e.stopImmediatePropagation(); } }, true);
+    addEventListener("dragstart", e => { if (thumbOf(e.target)) e.preventDefault(); }, true);   // images would drag instead
   }
 
   // ---- history ----
@@ -279,6 +474,8 @@ table[data-mpe-add] :is(td, th) { min-width: 3em; height: 1.4em; }
   bar.innerHTML = `<div class="row">` +
     `<button data-a="text" title="New text box (t)">+ Text</button><button data-a="image" title="Insert an image from a file (or paste one with Cmd/Ctrl+V)">+ Image</button>` +
     `<button data-a="table" title="Insert a table">+ Table</button><span class="sep"></span>` +
+    `<span class="slide-ctl"><button data-a="slide" title="A new slide after this one">+ Slide</button> <button data-a="hide"></button> ` +
+    `<select data-a="hidden" title="Hidden slides: pick one to show it again"></select></span><span class="sep slide-ctl"></span>` +
     STYLE_CONTROLS + `<span class="sep"></span>` +
     `<button data-a="undo" title="Cmd/Ctrl+Z">Undo</button><button data-a="reset" title="Undo every edit on this slide">Reset slide</button>` +
     `<button class="done" data-a="done" title="d or Esc">Done</button></div><div class="tip"></div>` +
@@ -321,8 +518,11 @@ table[data-mpe-add] :is(td, th) { min-width: 3em; height: 1.4em; }
     else if (a === "text") addText();
     else if (a === "image") { endTyping(); imagePicker.click(); }
     else if (a === "table") { grid.hidden = !grid.hidden; grid.style.left = b.offsetLeft + "px"; showGrid(1, 1); }
+    else if (a === "slide") addSlide();
+    else if (a === "hide") hideSlide();
     else if (b.dataset.s) toggleStyle(b.dataset.s);
   });
+  bar.querySelector('[data-a="hidden"]').addEventListener("change", e => { if (e.target.value) showSlide(e.target.value); });
   const showGrid = (r, c) => {
     [...grid.querySelectorAll("i")].forEach((cell, k) => cell.classList.toggle("on", Math.floor(k / COLS) < r && k % COLS < c));
     grid.querySelector("span").textContent = `${r} × ${c}`;
@@ -349,6 +549,7 @@ table[data-mpe-add] :is(td, th) { min-width: 3em; height: 1.4em; }
     } else tip.textContent = "Editing slides · click to select, drag to move, double-click to edit text · d or Esc when done";
     const n = Object.keys(opsFor(slideOf(activeSvg()) || { fp: "" })).length;
     bar.querySelector('[data-a="reset"]').disabled = !n;
+    slideControls();
     controls();
   }
   // The text controls show the font, size, ... of the text being typed in, or of the selection
@@ -635,13 +836,14 @@ table[data-mpe-add] :is(td, th) { min-width: 3em; height: 1.4em; }
 
   // ---- mouse ----
   let drag = null, lastDown = { el: null, t: 0 };
-  const ours = t => t && t.closest && (t.closest(".mp-edit-bar, .mp-edit-pop, .mp-menu, .mp-goto") || t === handle);
+  // Sticky notes (presenter.js) keep working while editing: drag them, open them, type in them
+  const ours = t => t && t.closest && (t.closest(".mp-edit-bar, .mp-edit-pop, .mp-menu, .mp-goto, .mp-note, .mp-note-icon") || t === handle);
   addEventListener("pointerdown", e => {
     if (!editing) return;
     const t = e.target;
     if (!t.closest(".mp-edit-grid, [data-a=table]")) grid.hidden = true;
     if (ours(t)) { if (t === handle) startResize(e); return; }
-    e.stopImmediatePropagation();                            // no spotlight, notes or pen while editing
+    e.stopImmediatePropagation();                            // no spotlight or pen while editing
     if (e.button !== 0) return;
     if (typing && typing.contains(t)) return;                // moving the caret
     endTyping();
@@ -755,7 +957,7 @@ table[data-mpe-add] :is(td, th) { min-width: 3em; height: 1.4em; }
       else if (k === "Enter" && e.shiftKey) { e.preventDefault(); document.execCommand("insertLineBreak"); }
       return;
     }
-    if (e.target && e.target.closest && e.target.closest(".mp-menu, .mp-goto")) return;
+    if (e.target && e.target.closest && e.target.closest(".mp-menu, .mp-goto, .mp-note")) return;
     if (!selected && NAV.test(k) && !mod) return;           // change slide
     if (mod && (k === "s" || k === "p" || k === "P")) return;   // the browser's save and print
     if (k === "s" || k === "S") return;                     // presenter.js saves the deck
@@ -794,30 +996,48 @@ table[data-mpe-add] :is(td, th) { min-width: 3em; height: 1.4em; }
   const live = () => {                                      // only the edits that apply to this build
     const out = {};
     deck.forEach(s => { if (s && edits[s.fp]) out[s.fp] = edits[s.fp]; });
+    hiddenSlides().forEach(h => { if (edits[h.fp]) out[h.fp] = edits[h.fp]; });
     return out;
   };
   window.__marpEdits = {
     data: () => withImages(live()),
-    count: () => Object.values(live()).reduce((n, s) => n + Object.keys(s).length, 0),
-    replace: e => { if (!validEdits(e)) return false; change(() => { edits = take(e); }); return true; },
+    count: () => Object.values(live()).reduce((n, s) => n + Object.keys(s).length, 0) + planSize(),
+    replace: e => {
+      if (!validEdits(e)) return false;
+      const before = JSON.stringify(plan);
+      change(() => { edits = take(e); });
+      if (JSON.stringify(plan) !== before) location.reload();   // slides.js puts the slides in place
+      return true;
+    },
+    slideItems,
+    overviewItems,
     toggle: () => setEditing(!editing),
     get editing() { return editing; },
     canEdit,
   };
-  addEventListener("storage", e => { if (e.key === KEY) { try { const v = JSON.parse(e.newValue || "{}"); if (validEdits(v)) { edits = take(v); applyAll(); badge(); } } catch (err) { /* ignore */ } } });
+  addEventListener("storage", e => {
+    if (e.key !== KEY) return;
+    try {
+      const v = JSON.parse(e.newValue || "{}"), before = JSON.stringify(plan);
+      if (!validEdits(v)) return;
+      edits = take(v);
+      if (JSON.stringify(plan) !== before) { location.reload(); return; }   // another window added or hid a slide
+      applyAll(); badge();
+    } catch (err) { /* ignore */ }
+  });
 
   // Slide change: drop the selection; keep the handle on the element as the window resizes
   let lastSlide = activeSvg();
   setInterval(() => {
     const a = activeSvg();
-    if (a !== lastSlide) { lastSlide = a; endTyping(); select(null); }
+    if (a !== lastSlide) { lastSlide = a; endTyping(); select(null); slideControls(); }
     if (editing) placeHandle();
   }, 250);
   addEventListener("resize", placeHandle);
 
   // Edits for slides this build no longer has (the slide changed, or was deleted) move to
   // "<key>:set-aside", once, so they are not lost but do not linger
-  const gone = Object.keys(edits).filter(fp => !deck.some(s => s && s.fp === fp));
+  const gone = Object.keys(edits).filter(fp => !deck.some(s => s && s.fp === fp) && !hiddenSlides().some(h => h.fp === fp));
   if (gone.length && canEdit) {
     try {
       const aside = JSON.parse(localStorage.getItem(KEY + ":set-aside") || "{}");
@@ -828,4 +1048,21 @@ table[data-mpe-add] :is(td, th) { min-width: 3em; height: 1.4em; }
     say(`Edits on ${gone.length} slide${gone.length === 1 ? "" : "s"} were set aside: ${gone.length === 1 ? "that slide has" : "those slides have"} changed since`);
   }
   applyAll();
+
+  // After adding, hiding or showing a slide (the page reloaded): go to the slide, keep editing
+  let resume = null;
+  try { resume = JSON.parse(sessionStorage.getItem(KEY + ":resume") || "null"); sessionStorage.removeItem(KEY + ":resume"); } catch (e) { /* storage blocked */ }
+  if (resume && canEdit) setTimeout(() => {
+    const i = slides().findIndex(s => s.dataset.mpFp === resume.goto);
+    if (i >= 0 && slides().indexOf(activeSvg()) !== i) location.hash = "#" + (i + 1);   // Marp follows the hash
+    if (resume.edit) setEditing(true);
+    if (resume.overview) document.dispatchEvent(new KeyboardEvent("keydown", { key: "o", bubbles: true, cancelable: true }));   // Marp's overview key
+    if (resume.say) say(resume.say);
+    const slide = i >= 0 && slideOf(slides()[i]), first = slide && slide.section.querySelector("[data-mpe]");
+    // Type once the slide change (if any) is seen, or it ends the typing: Marp may open on the
+    // slide its overview last showed rather than the one in the address
+    let tries = 0;
+    const type = () => { if (lastSlide !== slides()[i] && tries++ < 30) setTimeout(type, 100); else startTyping(first, true); };
+    if (resume.type && first) setTimeout(type, 150);
+  }, 0);
 })();

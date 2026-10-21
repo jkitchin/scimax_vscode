@@ -178,9 +178,9 @@
   addEventListener("beforeprint", () => {
     document.querySelectorAll("svg.marp-ink:not(.print-ink)").forEach(el => { el.dataset.hidden = "1"; el.style.display = "none"; });
     slides().forEach((svg, i) => {
-      const strokes = ink[String(i + 1)], sec = sectionOf(svg);
+      const strokes = ink[idOf(svg, i)], sec = sectionOf(svg);
       if (strokes && strokes.length && sec) sec.insertAdjacentHTML("beforeend", inkSvg(strokes, " print-ink"));
-      if (sec) (notes[String(i + 1)] || []).forEach(n => sec.appendChild(printNote(n)));
+      if (sec) (notes[idOf(svg, i)] || []).forEach(n => sec.appendChild(printNote(n)));
     });
   });
   addEventListener("afterprint", () => {
@@ -221,7 +221,8 @@
     }
     const clean = kept.join("\n");
     const { head, chunks, seps } = splitSlides(clean);
-    const n = slides().length;
+    // The Markdown has the slides as built: hidden ones too, not ones added in the slideshow
+    const n = window.__marpSlides ? window.__marpSlides.original : slides().length;
     if (n && chunks.length !== n) throw new Error(`the Markdown has ${chunks.length} slides but the deck shows ${n}`);
     chunks.forEach((c, i) => {
       const strokes = ink[String(i + 1)], nts = notes[String(i + 1)], add = [];
@@ -241,7 +242,7 @@
     let text;
     try { text = annotatedMarkdown(source); } catch (e) { say("Could not save Markdown: " + e.message + ". Press S to save the ink as JSON."); return; }
     const name = DECK.replace(/-annotated$/, "") + "-annotated.md";
-    const lost = editCount() ? " Text and layout edits are not in Markdown: press s to keep them." : "";
+    const lost = editCount() ? " Text and layout edits, and slides added, hidden or moved, are not in Markdown: press s to keep them." : "";
     await writeFile(text, name, "Markdown", "text/markdown", ".md",
       `Saved ${name} to Downloads. Build it next to the original .md so its images and widgets resolve.${lost}`);
   }
@@ -375,10 +376,10 @@
       svg.querySelectorAll("svg.marp-ink:not(.print-ink) polyline").forEach(pl => {
         const pen = +pl.getAttribute("data-pen"), pts = (pl.getAttribute("points") || "").trim().split(/\s+/)
           .map(p => p.split(",").map(Number)).filter(p => p.length === 2 && p.every(isFinite)).map(([x, y]) => [x / SW, y / SH]);
-        if (PENS[pen] && pts.length) (bInk[String(i + 1)] = bInk[String(i + 1)] || []).push({ pen, pts });
+        if (PENS[pen] && pts.length) (bInk[idOf(svg, i)] = bInk[idOf(svg, i)] || []).push({ pen, pts });
       });
       svg.querySelectorAll("script.marp-notes").forEach(sc => {
-        try { const v = JSON.parse(sc.textContent); if (validNotes({ x: v })) bNotes[String(i + 1)] = (bNotes[String(i + 1)] || []).concat(v); } catch (e) { /* ignore */ }
+        try { const v = JSON.parse(sc.textContent); if (validNotes({ x: v })) bNotes[idOf(svg, i)] = (bNotes[idOf(svg, i)] || []).concat(v); } catch (e) { /* ignore */ }
       });
     });
     const sig = JSON.stringify({ ink: bInk, notes: bNotes });
@@ -416,9 +417,14 @@
   // the URL with history.replaceState, which fires no hashchange, so we watch the class.)
   const slides = () => [...document.querySelectorAll("svg[data-marpit-svg]")];
   const activeSvg = () => document.querySelector("svg[data-marpit-svg].bespoke-marp-active");
+  // Ink and notes are kept by slide: its number as built, or its id if added in the slideshow
+  // (slides.js stamps both), so they stay with their slide when slides are added or hidden
+  const idOf = (svg, i) => (svg && svg.dataset.mpSlide) || String(i + 1);
   const slideId = () => {
-    const i = slides().indexOf(activeSvg());
-    return i >= 0 ? String(i + 1) : (location.hash.match(/^#(\d+)/) || [, "1"])[1];
+    const all = slides(), i = all.indexOf(activeSvg());
+    if (i >= 0) return idOf(all[i], i);
+    const n = +(location.hash.match(/^#(\d+)/) || [, "1"])[1];
+    return idOf(all[n - 1], n - 1);
   };
   const slideRect = () => {
     const el = activeSvg();
@@ -738,6 +744,7 @@
 
   // ---- laser pointer ----
   const iframes = () => [...document.querySelectorAll("iframe")];
+  const FRAME_NAV = /^(ArrowLeft|ArrowRight|ArrowUp|ArrowDown|PageUp|PageDown|Home|End)$/;
   // The tail is the pointer's recent path, drawn as a stroke that thins and fades with age.
   const TRAIL_MS = 350, tctx = trail.getContext("2d");
   let tail = [], tailFrame = 0;
@@ -798,6 +805,17 @@
       onContextMenu(e, r.left + e.clientX * sx, r.top + e.clientY * sy);
     }, true);
     w.addEventListener("pointerdown", () => closeMenu(), true);
+    // Marp changes slides on keys, and shows its controls on mouse moves, in the deck's own
+    // document: hand it those the widget leaves alone, and leave the frame once its slide is gone
+    w.addEventListener("keydown", e => {
+      if (e.defaultPrevented || e.ctrlKey || e.metaKey || e.altKey || !FRAME_NAV.test(e.key)) return;
+      const t = e.target;
+      if (t && (/^(INPUT|TEXTAREA|SELECT|BUTTON|AUDIO|VIDEO)$/.test(t.nodeName) || t.isContentEditable)) return;
+      e.preventDefault();
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: e.key, code: e.code, shiftKey: e.shiftKey, bubbles: true, cancelable: true }));
+      if (!f.closest(".bespoke-marp-active")) { f.blur(); focus(); }
+    });
+    w.addEventListener("mousemove", () => document.dispatchEvent(new MouseEvent("mousemove")), true);
     acceptDrops(w);
   }
   const hookAll = () => iframes().forEach(f => { hookFrame(f); f.addEventListener("load", () => hookFrame(f)); });
@@ -858,8 +876,8 @@
     canvas.style.cursor = erasing ? ERASER_CURSOR : "";
   }
   function onKey(e) {
+    if (e.key === "Escape" && menuOpen()) { e.preventDefault(); e.stopPropagation(); closeMenu(); return; }   // not Marp's overview too
     if (overview) return;
-    if (e.key === "Escape" && menuOpen()) { e.preventDefault(); closeMenu(); return; }
     if (e.ctrlKey || e.metaKey || e.altKey) return;
     if (/^(TEXTAREA|SELECT)$/.test((e.target && e.target.tagName) || "")) return;
     if (e.target && e.target.tagName === "INPUT" && e.target.type !== "range") return;
@@ -936,6 +954,7 @@
   const menuOpen = () => menu.style.display !== "none";
   function closeMenu() { menu.style.display = "none"; }
   function menuItems() {
+    if (overview) return window.__marpEdits.overviewItems(menuThumb);   // a thumbnail: add, hide, move
     const here = ink[slideId()] && ink[slideId()].length, fs = !!document.fullscreenElement;
     const noteItems = menuNote ? [{ header: "Note colour" }, { noteSwatches: menuNote },
       { label: menuNote.min ? "Open note" : "Minimize note", run: () => { menuNote.min = !menuNote.min; saveNotes(); buildNotes(); } },
@@ -947,6 +966,7 @@
       { label: "Laser pointer", key: "l", check: laserOn, run: () => act("l") },
       { label: "Add a note here", key: "n", run: () => { lastX = menuX; lastY = menuY; act("n"); } },
       ...(window.__marpEdits && window.__marpEdits.canEdit ? [{ label: "Edit text and layout", key: "d", check: window.__marpEdits.editing, run: () => window.__marpEdits.toggle() }] : []),
+      ...(window.__marpEdits && window.__marpEdits.slideItems ? window.__marpEdits.slideItems() : []),
       "-",
       { label: "Undo last stroke", key: "z", off: !here, run: () => act("z") },
       { label: "Clear ink on this slide", key: "c", off: !here, run: () => act("c") },
@@ -1004,10 +1024,20 @@
     menu.style.top = Math.max(4, Math.min(y, innerHeight - h - 4)) + "px";
   }
   // Text you can type in keeps the browser's own menu (copy/paste); Shift+right-click too.
-  const NATIVE_MENU = "textarea, input, select, [contenteditable], .cm-editor, .mp-menu";
+  // The talk timer (timer.js) has a menu of its own.
+  const NATIVE_MENU = "textarea, input, select, [contenteditable], .cm-editor, .mp-menu, .marp-timer, .marp-timer-set";
   let menuNote = null;                                   // the note that was right-clicked, if any
+  let menuThumb = null;                                  // in the overview: the slide that was right-clicked
   function onContextMenu(e, x, y) {
-    if (overview || e.shiftKey || (e.target && e.target.closest && e.target.closest(NATIVE_MENU))) return;
+    if (e.shiftKey || (e.target && e.target.closest && e.target.closest(NATIVE_MENU))) return;
+    if (overview) {
+      menuThumb = e.target && e.target.closest && e.target.closest("svg[data-marpit-svg]");
+      if (!window.__marpEdits || !window.__marpEdits.overviewItems || !window.__marpEdits.overviewItems(menuThumb).length) return;
+      e.preventDefault();
+      menuNote = null;
+      openMenu(x, y);
+      return;
+    }
     e.preventDefault();
     const host = e.target && e.target.closest && e.target.closest("[data-note-id]");
     menuNote = host ? (notes[slideId()] || []).find(n => n.id === host.dataset.noteId) || null : null;
@@ -1062,9 +1092,9 @@
     document.querySelectorAll(".annotate-layer").forEach(el => { el.style.display = "none"; });
     document.querySelectorAll("svg.thumb-ink, .mp-print-note").forEach(el => el.remove());
     slides().forEach((svg, i) => {
-      const strokes = ink[String(i + 1)], sec = sectionOf(svg);
+      const strokes = ink[idOf(svg, i)], sec = sectionOf(svg);
       if (strokes && strokes.length && sec) sec.insertAdjacentHTML("beforeend", inkSvg(strokes, " thumb-ink"));
-      if (sec) (notes[String(i + 1)] || []).forEach(n => sec.appendChild(printNote(n)));
+      if (sec) (notes[idOf(svg, i)] || []).forEach(n => sec.appendChild(printNote(n)));
     });
   }
   document.readyState === "loading" ? addEventListener("DOMContentLoaded", ready) : ready();
