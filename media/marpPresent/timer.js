@@ -1,5 +1,6 @@
 /* marp-present: talk timer. A countdown in the corner of every slide, for a deck built by scimax
- * with `presenter: true` and `timer: 20` (minutes; also 20m, 45:00, 1h30m, 90s).
+ * with `presenter: true` and `timer: 20` (minutes; also 20m, 45:00, 1h30m, 90s). A deck without
+ * `timer:` can have one added in the slideshow: "Add a talk timer…" in the right-click menu, or Alt+T.
  *
  *   t        start / pause the timer (or click it)
  *   T        reset it to the full time
@@ -12,29 +13,34 @@
  * overtime up as -m:ss. The state lives in localStorage ("marp-timer:<path>"), so the audience
  * window, the presenter view (where it sits with Marp's own clock) and a reload all show the
  * same time. A clock left for 12 hours, or a deck rebuilt with a different time, starts afresh.
+ * A timer added in the slideshow is kept there (marked `added`) until it is removed from its menu.
  */
 (() => {
   const view = new URLSearchParams(location.search).get("view");
   if (view === "next" || view === "overview" || window.__marpTimer) return;   // the presenter view's next-slide preview, Marp's overview
-  const DURATION = Math.round(+window.__MARP_TIMER__);
-  if (!(DURATION > 0)) return;
-  window.__marpTimer = true;
+  const DURATION = Math.round(+window.__MARP_TIMER__) || 0;   // the deck's time; 0 = none (one can be added)
 
   const KEY = "marp-timer:" + location.pathname;
   const STALE = 12 * 3600 * 1000;
   // `base` is the deck's time, `duration` the full time now (changed with Alt+T or the menu)
-  const fresh = (duration = DURATION) => ({ base: DURATION, duration, running: false, remaining: duration * 1000, endAt: 0, started: false, savedAt: Date.now() });
+  const fresh = (duration = DURATION) => ({ base: DURATION, duration, running: false, remaining: duration * 1000, endAt: 0, started: false,
+    savedAt: Date.now(), ...(DURATION ? {} : { added: true }) });
 
+  // null: no timer (the deck has no time and none was added here)
   function load() {
     let s = null;
     try { s = JSON.parse(localStorage.getItem(KEY) || "null"); } catch (e) { /* storage blocked */ }
-    if (!s || (s.base || s.duration) !== DURATION || !(s.duration > 0) || !(Date.now() - (s.savedAt || 0) < STALE)) s = fresh();
+    const stale = !s || !(Date.now() - (s.savedAt || 0) < STALE);
+    if (!DURATION) return s && s.added && s.duration > 0 ? (stale ? fresh(s.duration) : s) : null;
+    if (stale || s.added || (s.base || s.duration) !== DURATION || !(s.duration > 0)) s = fresh();
     return s;
   }
   let state = load();
   function save() {
-    state.savedAt = Date.now();
-    try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) { /* storage blocked */ }
+    try {
+      if (state) { state.savedAt = Date.now(); localStorage.setItem(KEY, JSON.stringify(state)); }
+      else localStorage.removeItem(KEY);
+    } catch (e) { /* storage blocked */ }
     render();
   }
   const left = () => state.running ? state.endAt - Date.now() : state.remaining;
@@ -60,6 +66,13 @@
     state.started = started;
     if (running) start(); else save();
   }
+  // A timer for a deck without one, from the slideshow; it starts when the talk moves on, as the deck's would
+  function add(seconds) {
+    state = fresh(seconds);
+    opened = location.hash;
+    save();
+  }
+  function remove() { state = null; save(); }
   // Add (or take off) time left; the full time grows with it, so the colours keep their meaning
   function adjust(seconds) {
     if (state.running) state.endAt += seconds * 1000; else state.remaining += seconds * 1000;
@@ -118,6 +131,7 @@ body:has(.bespoke-marp-overview[data-open="1"]) .marp-timer { visibility: hidden
   el.addEventListener("pointerdown", e => e.stopPropagation());   // not a pen stroke or a spotlight
 
   function place() {
+    if (!state) { if (el.parentNode) el.remove(); return; }
     // In Marp's presenter view, sit next to its own clock and elapsed time
     const info = view === "presenter" && document.querySelector(".bespoke-marp-presenter-info-container");
     if (info) {
@@ -148,7 +162,8 @@ body:has(.bespoke-marp-overview[data-open="1"]) .marp-timer { visibility: hidden
       { label: "Add a minute", key: "+", run: () => adjust(60) },
       { label: "Take off a minute", key: "-", run: () => adjust(-60) },
       { label: "Set time…", key: MAC ? "⌥T" : "Alt+T", run: () => openSet() },
-      ...(state.duration !== DURATION ? [{ label: "Back to the deck's " + format(DURATION * 1000), run: () => setTime(DURATION) }] : []),
+      ...(DURATION && state.duration !== DURATION ? [{ label: "Back to the deck's " + format(DURATION * 1000), run: () => setTime(DURATION) }] : []),
+      ...(state.added ? ["-", { label: "Remove the timer", run: remove }] : []),
     ];
     menu.replaceChildren();
     for (const item of items) {
@@ -181,8 +196,9 @@ body:has(.bespoke-marp-overview[data-open="1"]) .marp-timer { visibility: hidden
   function openSet() {
     closeMenu();
     input.value = "";
+    hint.textContent = (state ? "" : "Length of the talk: ") + "Minutes, m:ss or 1h30m · Enter sets, Esc cancels";
     setBox.style.display = "flex";
-    const r = el.getBoundingClientRect();
+    const r = state ? el.getBoundingClientRect() : { right: innerWidth - 12, bottom: 10 };
     popAt(setBox, r.right - setBox.offsetWidth, r.bottom + 6);
     input.focus();
   }
@@ -192,7 +208,7 @@ body:has(.bespoke-marp-overview[data-open="1"]) .marp-timer { visibility: hidden
     else if (e.key === "Enter") {
       e.preventDefault();
       const s = parse(input.value);
-      if (s) { closeSet(); setTime(s); } else input.classList.add("bad");
+      if (s) { closeSet(); if (state) setTime(s); else add(s); } else input.classList.add("bad");
     }
   });
   input.addEventListener("input", () => input.classList.remove("bad"));
@@ -205,6 +221,8 @@ body:has(.bespoke-marp-overview[data-open="1"]) .marp-timer { visibility: hidden
   addEventListener("resize", () => { closeMenu(); closeSet(); });
 
   function render() {
+    place();
+    if (!state) return;
     const ms = left(), full = state.duration;
     const warnAt = Math.min(5 * 60 * 1000, full * 1000 / 5);
     el.textContent = format(ms);
@@ -218,7 +236,7 @@ body:has(.bespoke-marp-overview[data-open="1"]) .marp-timer { visibility: hidden
     // Alt+T: e.code, since on a Mac Option+T types a dagger
     const setKey = e.altKey && e.code === "KeyT" && !e.shiftKey;
     if (!setKey && !["t", "T", "+", "=", "-", "_"].includes(e.key)) return;
-    if (e.ctrlKey || e.metaKey || (e.altKey && !setKey)) return;
+    if (e.ctrlKey || e.metaKey || (e.altKey && !setKey) || (!state && !setKey)) return;
     const t = e.target;
     if (t && /^(TEXTAREA|SELECT)$/.test(t.tagName || "")) return;
     if (t && t.tagName === "INPUT" && t.type !== "range") return;
@@ -236,13 +254,15 @@ body:has(.bespoke-marp-overview[data-open="1"]) .marp-timer { visibility: hidden
 
   // Start the first time the talk moves on from the slide it opened on (Marp changes the hash
   // with history.replaceState, which fires no hashchange, so watch it)
-  const opened = location.hash;
-  const moved = () => { if (!state.started && location.hash !== opened) start(); };
+  let opened = location.hash;
+  const moved = () => { if (state && !state.started && location.hash !== opened) start(); };
 
   // Another window (audience or presenter view) changed the timer
   addEventListener("storage", e => { if (e.key === KEY) { state = load(); render(); } });
 
-  place();
+  // For presenter.js's right-click menu
+  window.__marpTimer = { active: () => !!state, add: () => openSet() };
+
   render();
-  setInterval(() => { moved(); place(); render(); }, 250);
+  setInterval(() => { moved(); render(); }, 250);
 })();

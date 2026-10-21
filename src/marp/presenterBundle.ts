@@ -317,8 +317,10 @@ export function addSlidesScript(html: string, assets: PresenterAssets): string {
 /**
  * Add the presenter tools (and the Python cell runner, if the deck has run
  * cells) before the last </body>. Scripts already in the page are not added again.
+ * The talk timer is always added: without `window.__MARP_TIMER__` it shows
+ * nothing until one is added in the slideshow.
  */
-export function addPresenterScripts(html: string, assets: PresenterAssets, timer = false): string {
+export function addPresenterScripts(html: string, assets: PresenterAssets): string {
     html = addSlidesScript(html, assets);
     const files: string[] = [];
     // The editor goes first: while editing, it takes every key and mouse press before the other tools
@@ -331,7 +333,7 @@ export function addPresenterScripts(html: string, assets: PresenterAssets, timer
     if (!html.includes(SHOW_MARK)) {
         files.push(assets.show);
     }
-    if (timer && !html.includes(TIMER_MARK)) {
+    if (!html.includes(TIMER_MARK)) {
         files.push(assets.timer);
     }
     if (hasRunCells(html) && !html.includes(PYCELLS_MARK)) {
@@ -387,7 +389,7 @@ export async function bundlePresenterDeck(html: string, options: BundleOptions):
     // In <head>, so it is in the page before pycells.js (at the end of <body>) runs
     head += INK_EMPTY + SELF_EMPTY + (pyodide ? PYODIDE_EMPTY : '');
     text = text.replace('</head>', () => head + '</head>');
-    text = addPresenterScripts(text, options.assets, timer !== undefined);
+    text = addPresenterScripts(text, options.assets);
     inlined.report.counts.presenter = 1;
     if (timer) {
         inlined.report.counts.timer = 1;

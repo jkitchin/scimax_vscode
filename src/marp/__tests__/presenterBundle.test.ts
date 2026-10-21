@@ -179,11 +179,11 @@ describe('talk timer', () => {
         }
     });
 
-    it('adds the timer script only when asked, once', () => {
-        expect(addPresenterScripts(page('<p>x</p>'), assets)).not.toContain('window.T = 1');
-        const once = addPresenterScripts(page('<p>x</p>'), assets, true);
+    it('always adds the timer script (a timer can be added in the slideshow), once', () => {
+        const once = addPresenterScripts(page('<p>x</p>'), assets);
         expect(once).toContain('window.T = 1');
-        expect(addPresenterScripts(once, assets, true)).toBe(once);
+        expect(once.split('window.T = 1').length).toBe(2);
+        expect(addPresenterScripts(once, assets)).toBe(once);
     });
 
     it('puts the slide structure script just before Marp\'s slideshow script, once', () => {
@@ -206,7 +206,9 @@ describe('talk timer', () => {
 
         const plain = await bundlePresenterDeck(page('<p>x</p>'), { baseDir: dir, assets });
         expect(plain.html).not.toContain('__MARP_TIMER__');
-        expect(plain.html).not.toContain('window.T = 1');
+        // Still there, so a timer can be added in the slideshow
+        expect(plain.html).toContain('window.T = 1');
+        expect(plain.report.counts.timer).toBeUndefined();
     });
 
     it('is a deck directive', () => {

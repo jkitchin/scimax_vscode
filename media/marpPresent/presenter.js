@@ -981,6 +981,8 @@
       "-",
       { label: fs ? "Exit fullscreen" : "Fullscreen", key: "f",
         run: () => fs ? document.exitFullscreen() : document.documentElement.requestFullscreen().catch(() => {}) },
+      // timer.js: a deck without a timer can have one added (one it has is right-clicked on itself)
+      ...(window.__marpTimer && !window.__marpTimer.active() ? [{ label: "Add a talk timer…", key: MAC ? "⌥T" : "Alt+T", run: () => window.__marpTimer.add() }] : []),
       { note: "Hold the mouse button on a slide for a spotlight · Shift+right-click for the browser's menu" },
     ];
   }

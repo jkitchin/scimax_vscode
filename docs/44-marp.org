@@ -601,7 +601,7 @@ layouts, the Slide Sorter, the Marp menu and exports.
 | =i=                       | Load ink from such a JSON file (or drag the file onto the deck)                |
 | =t= / =T=                 | Start or pause the talk timer / reset it to the full time                      |
 | =+= / =-=                 | Add a minute to the talk timer / take one off                                  |
-| =Alt+T= (=Option+T=)      | Type a new time for the talk timer (=20=, =12:30=, =90s=)                      |
+| =Alt+T= (=Option+T=)      | Type a new time for the talk timer (=20=, =12:30=, =90s=), or add one          |
 | =e= / =E=                 | Start or pause this slide's exercise countdown / reset it                      |
 | =b= / =w=                 | Black / white screen, to pause for discussion; again, =Esc= or a click returns |
 | =x=                       | Zoom: drag a box (or click) to magnify it; =x= or =Esc= zooms out              |
@@ -638,6 +638,14 @@ A bare number is minutes; ~20m~, ~45:00~, ~1h30m~ and ~90s~ also work. Deck →
 Talk Timer... in the Marp menu ([[cmd:scimax.marp.deck.timer]]) sets it, and
 turns on the presenter tools if the deck does not have them (the timer is one
 of them).
+
+A deck with presenter tools but no ~timer~ can get one during the show:
+right-click a slide and choose Add a talk timer..., or press =Alt+T=
+(=Option+T= on a Mac), then type the length and press Enter. It behaves like a
+timer from the deck, starting when you move to the next slide. It is kept for
+that slideshow in the browser until you right-click the timer and choose
+Remove the timer; the deck file is not changed, so add ~timer:~ to keep it
+for good.
 
 - It starts by itself the first time you move off the slide the show opened
   on. =t= (or a click on the timer) starts and pauses it; =T= resets it to
