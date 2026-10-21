@@ -54,6 +54,12 @@ function storedDay(raw: string | null | undefined): Date | undefined {
     return isNaN(date.getTime()) ? undefined : date;
 }
 
+/** The repeater of stored timestamp text ("2024-01-27 Sat +1w -3d" -> "+1w"). */
+function storedRepeater(raw: string | null | undefined): string | undefined {
+    const m = raw ? /(?:^|\s)(\.\+|\+\+|\+)(\d+)([hdwmy])/.exec(raw) : null;
+    return m ? `${m[1]}${m[2]}${m[3]}` : undefined;
+}
+
 function storedTime(raw: string | null | undefined): string | undefined {
     const m = raw ? /(\d{1,2}:\d{2})/.exec(raw) : null;
     return m ? m[1] : undefined;
@@ -101,6 +107,8 @@ export function headingToAgendaItem(heading: HeadingRecord, isDone?: boolean): A
         scheduled: storedDay(heading.scheduled),
         deadline: storedDay(heading.deadline),
         closed: storedDay(heading.closed),
+        // As in orgAgenda: SCHEDULED's repeater, else DEADLINE's.
+        repeater: storedRepeater(heading.scheduled) ?? storedRepeater(heading.deadline),
         category: headingCategory(heading.file_path, properties),
         headline: minimalHeadline(heading, tags),
         agendaType: 'todo',
@@ -125,6 +133,7 @@ export function dbItemToAgendaItem(dbItem: DbAgendaItem): AgendaItem {
         overdue: dbItem.overdue,
         agendaType,
         time: storedTime(dbItem.date),
+        repeater: storedRepeater(dbItem.date) ?? base.repeater,
     };
 }
 
