@@ -4262,9 +4262,15 @@
         "when": "editorTextFocus && editorLangId =~ /org|markdown|latex|tex/ && !terminalFocus"
       },
       {
-        "command": "scimax.agenda.menu",
+        "command": "scimax.agenda.openBuffer",
         "key": "ctrl+c a a",
         "mac": "ctrl+c a a",
+        "when": "!terminalFocus"
+      },
+      {
+        "command": "scimax.agenda.menu",
+        "key": "ctrl+c a c",
+        "mac": "ctrl+c a c",
         "when": "!terminalFocus"
       },
       {

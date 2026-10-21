@@ -731,7 +731,7 @@ is in one of =todoStates=, carries one of =tags=, or has a title matching
 
 ** ⚠️ Agenda Menu Keys
 
-The agenda menu ([[cmd:scimax.agenda.menu]], =C-c a a=) is a dispatcher like
+The agenda menu ([[cmd:scimax.agenda.menu]], =C-c a c=) is a dispatcher like
 Emacs' =C-c a=. Typing a key that names a single entry runs it at once.
 
 | Key | Action                                   |
@@ -819,15 +819,15 @@ AGENDA
    └─ ⚪ TODO Update documentation
 #+END_EXAMPLE
 
-** ✅ Agenda Buffer
+** 👀 Agenda Buffer
 CLOSED: [2026-10-02 Fri 06:56]
 
 The agenda buffer is a persistent, refreshable agenda in a full editor tab —
 the closest analogue to Emacs =org-agenda-mode=. Unlike the quick pick, it
 stays open; unlike the tree view, it gets the whole editor.
 
-Open it with =C-c a v= ([[cmd:scimax.agenda.openBuffer]]), or from the agenda menu
-(=C-c a a=), then choose a span (day, week, fortnight, or month):
+Open it with =C-c a a= or =C-c a v= ([[cmd:scimax.agenda.openBuffer]]), or from
+the agenda menu (=C-c a c=), then choose a span (day, week, fortnight, or month):
 
 #+BEGIN_EXAMPLE
 Agenda for Jun 3 - Jun 9, 2024

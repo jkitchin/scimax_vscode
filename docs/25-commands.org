@@ -657,7 +657,7 @@ CLOSED: [2026-01-17 Sat 12:51]
 
 | Command ID                            | Description              | Default Keybinding |
 |---------------------------------------+--------------------------+--------------------|
-| [[cmd:scimax.agenda.menu]]            | Open Agenda Menu         | -                  |
+| [[cmd:scimax.agenda.menu]]            | Open Agenda Menu         | C-c a c            |
 | [[cmd:scimax.agenda.day]]             | Day Agenda               | -                  |
 | [[cmd:scimax.agenda.week]]            | Week Agenda              | -                  |
 | [[cmd:scimax.agenda.fortnight]]       | Fortnight Agenda         | -                  |
@@ -681,7 +681,7 @@ CLOSED: [2026-01-17 Sat 12:51]
 | [[cmd:scimax.agenda.ignoreFileFromItem]]| Ignore File from Agenda Item | -            |
 | [[cmd:scimax.agenda.ignoreFileFromTab]] | Ignore File from Editor Tab  | -            |
 | [[cmd:scimax.agenda.unignoreFile]]    | Unignore File in Agenda  | -                  |
-| [[cmd:scimax.agenda.openBuffer]]      | Open Agenda Buffer       | C-c a v            |
+| [[cmd:scimax.agenda.openBuffer]]      | Open Agenda Buffer       | C-c a a, C-c a v   |
 | [[cmd:scimax.agenda.custom]]          | Run Custom Agenda Command | -                 |
 | [[cmd:scimax.agenda.match]]           | Agenda Match (Tags/Properties) | m (agenda menu) |
 | [[cmd:scimax.agenda.storeViews]]      | Store Agenda Views       | e (agenda menu)    |

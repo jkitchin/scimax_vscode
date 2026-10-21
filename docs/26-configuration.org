@@ -1830,7 +1830,7 @@ CLOSED: [2026-10-02 Fri 06:59]
 - *Description*: Custom agenda commands, after =org-agenda-custom-commands=.
   Each has a =key=, a =description=, and either a single block (=type= and
   =match=) or a list of =blocks=. A command with neither is a prefix key. Run
-  them from the agenda menu (=C-c a a=) or with =scimax.agenda.custom=. See
+  them from the agenda menu (=C-c a c=) or with =scimax.agenda.custom=. See
   [[file:13-agenda.org::*Custom Agenda Commands][Custom Agenda Commands]] for block types, match strings, skip
   conditions, sorting and export.
 

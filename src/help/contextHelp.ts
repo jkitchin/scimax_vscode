@@ -762,7 +762,7 @@ function getGeneralHelp(): ContextHelp {
             { command: 'scimax.db.searchSemantic', title: 'Semantic Search', category: 'Search' },
 
             // Agenda
-            { command: 'scimax.agenda.menu', title: 'Agenda Menu', keybinding: 'C-c a', category: 'Agenda' },
+            { command: 'scimax.agenda.menu', title: 'Agenda Menu', keybinding: 'C-c a c', category: 'Agenda' },
         ]
     };
 }
