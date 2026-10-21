@@ -263,6 +263,7 @@ function extractAgendaItems(
         line: headline.properties.lineNumber,
         category: headline.propertiesDrawer?.CATEGORY || file.split('/').pop()?.replace('.org', ''),
         headline,
+        repeater: headingRepeater(headline),
     };
 
     // Check planning element - include all items with scheduled/deadline
@@ -277,7 +278,7 @@ function extractAgendaItems(
                     agendaType: 'scheduled',
                     time: getTimeString(headline.planning.properties.scheduled),
                     daysUntil: differenceInDays(date, new Date()),
-                    repeater: getRepeaterString(headline.planning.properties.scheduled),
+                    repeater: getRepeaterString(headline.planning.properties.scheduled) ?? baseItem.repeater,
                 });
             }
         }
@@ -305,7 +306,7 @@ function extractAgendaItems(
                         daysUntil,
                         overdue,
                         warningStart: warnFrom,
-                        repeater: getRepeaterString(headline.planning.properties.deadline),
+                        repeater: getRepeaterString(headline.planning.properties.deadline) ?? baseItem.repeater,
                     });
                 }
             }
@@ -722,6 +723,7 @@ export function generateTodoList(
             category: headline.propertiesDrawer?.CATEGORY,
             headline,
             agendaType: 'todo',
+            repeater: headingRepeater(headline),
         };
 
         // Add planning info if present
@@ -807,6 +809,15 @@ function getRepeaterString(ts: TimestampObject): string | undefined {
     return `${repeaterType}${repeaterValue}${repeaterUnit}`;
 }
 
+/**
+ * The repeater that marking this heading done would advance: SCHEDULED's, else
+ * DEADLINE's (cycling to a done state repeats if either has one).
+ */
+function headingRepeater(headline: HeadlineElement): string | undefined {
+    const { scheduled, deadline } = headline.planning?.properties ?? {};
+    return (scheduled && getRepeaterString(scheduled)) ?? (deadline && getRepeaterString(deadline)) ?? undefined;
+}
+
 function isInRange(date: Date, start: Date, end: Date): boolean {
     return !isBefore(date, start) && !isAfter(date, end);
 }
@@ -878,6 +889,11 @@ export function formatAgendaItem(item: AgendaItem): string {
         case 'todo':
             parts.push('');
             break;
+    }
+
+    // Repeater: marking it done moves the date on instead of closing it
+    if (item.repeater) {
+        parts.push(`↻${item.repeater}`);
     }
 
     // TODO state

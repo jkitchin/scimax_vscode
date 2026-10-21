@@ -867,6 +867,7 @@ export function formatCustomItem(item: AgendaItem, prefix: string | undefined): 
         return n < 0 ? value.padEnd(-n) : value.padStart(n);
     });
     const parts: string[] = [];
+    if (item.repeater) parts.push(`↻${item.repeater}`);
     if (item.todoState) parts.push(item.todoState);
     if (item.priority) parts.push(`[#${item.priority}]`);
     parts.push(item.blocked ? `🔒 ${item.title}` : item.title);

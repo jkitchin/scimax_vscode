@@ -942,6 +942,48 @@ describe('orgAgenda', () => {
 
             const items = view.groups.flatMap(g => g.items);
             expect(items[0].repeater).toBe('+1w');
+            expect(formatAgendaItem(items[0])).toContain('Scheduled: ↻+1w TODO Weekly meeting');
+        });
+
+        it("marks a scheduled item that repeats through its deadline's repeater", () => {
+            const scheduled = createTimestamp(2024, 6, 3);
+            const deadline = createTimestamp(2024, 6, 20, undefined, undefined, {
+                repeaterType: '.+',
+                repeaterValue: 1,
+                repeaterUnit: 'm',
+            });
+            const headline = createHeadline({
+                title: 'Monthly report',
+                todoKeyword: 'TODO',
+                lineNumber: 1,
+                planning: createPlanning({ scheduled, deadline }),
+            });
+
+            const view = generateAgendaView([headline], createFilesMap([headline]), {
+                startDate: new Date(2024, 5, 1),
+                days: 7,
+            });
+
+            const item = view.groups.flatMap(g => g.items).find(i => i.agendaType === 'scheduled');
+            expect(item?.repeater).toBe('.+1m');
+        });
+
+        it('does not mark an item without a repeater', () => {
+            const headline = createHeadline({
+                title: 'One-off',
+                todoKeyword: 'TODO',
+                lineNumber: 1,
+                planning: createPlanning({ scheduled: createTimestamp(2024, 6, 3) }),
+            });
+
+            const view = generateAgendaView([headline], createFilesMap([headline]), {
+                startDate: new Date(2024, 5, 1),
+                days: 7,
+            });
+
+            const items = view.groups.flatMap(g => g.items);
+            expect(items[0].repeater).toBeUndefined();
+            expect(formatAgendaItem(items[0])).not.toContain('↻');
         });
     });
 
