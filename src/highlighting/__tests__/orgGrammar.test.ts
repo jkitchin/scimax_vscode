@@ -46,6 +46,85 @@ describe('org TextMate grammar', () => {
         });
     });
 
+    describe('source blocks end at #+END_SRC even if the embedded code is unfinished', () => {
+        it('closes a python block containing an unclosed triple-quoted string', async () => {
+            const tokens = await tokenizeOrg(
+                '#+BEGIN_SRC python\n' +
+                's = """unclosed\n' +
+                '#+END_SRC\n' +
+                'after the block'
+            );
+            expect(hasScopeFor(tokens, 'unclosed', /string\.quoted\.multi\.python/)).toBe(true);
+            expect(hasScopeFor(tokens, '#+END_SRC', /keyword\.control\.block\.end\.org/)).toBe(true);
+            const after = tokens.filter(t => t.line === 3);
+            expect(after.every(t => !t.scopes.some(s => /python|meta\.embedded/.test(s)))).toBe(true);
+        });
+
+        it('closes a latex block whose $ opens math that never closes', async () => {
+            const tokens = await tokenizeOrg(
+                '#+BEGIN_SRC latex\n' +
+                '$0\n' +
+                '#+END_SRC\n' +
+                '1. Select text in the editor'
+            );
+            expect(hasScopeFor(tokens, '#+END_SRC', /keyword\.control\.block\.end\.org/)).toBe(true);
+            const after = tokens.filter(t => t.line === 3);
+            expect(after.every(t => !t.scopes.some(s => /tex|meta\.embedded/.test(s)))).toBe(true);
+        });
+    });
+
+    describe('latex environments and fragments end even if the TeX inside is unfinished', () => {
+        // The stub text.tex.latex opens math at "$" and only closes at the next
+        // "$", so a stray "$" inside swallows the org closer unless the grammar
+        // guards against it.
+        const notTex = (tokens: Awaited<ReturnType<typeof tokenizeOrg>>, line: number) =>
+            tokens.filter(t => t.line === line).every(t => !t.scopes.some(s => /tex|markup\.math/.test(s)));
+
+        it('closes a \\begin{equation} environment containing a stray $', async () => {
+            const tokens = await tokenizeOrg('\\begin{equation}\nx = $y\n\\end{equation}\nafter the math');
+            expect(hasScopeFor(tokens, '\\end{', /keyword\.control\.end\.latex\.org/)).toBe(true);
+            expect(notTex(tokens, 3)).toBe(true);
+        });
+
+        it('closes the outer environment after a nested \\end{cases}', async () => {
+            const tokens = await tokenizeOrg(
+                '\\begin{align}\n\\begin{cases}\na\n\\end{cases}\nb = $c\n\\end{align}\nafter the math'
+            );
+            expect(notTex(tokens, 6)).toBe(true);
+        });
+
+        it('still runs the TeX grammar on interior lines of an environment', async () => {
+            const tokens = await tokenizeOrg('\\begin{equation}\nx = $y$\n\\end{equation}');
+            expect(hasScopeFor(tokens, 'y', /meta\.math\.block\.tex/)).toBe(true);
+        });
+
+        it('closes a multi-line \\[ fragment containing a stray $', async () => {
+            const tokens = await tokenizeOrg('\\[\na $ b\n\\]\nafter the math');
+            expect(notTex(tokens, 3)).toBe(true);
+        });
+
+        it('closes a multi-line \\( fragment containing a stray $', async () => {
+            const tokens = await tokenizeOrg('text \\(\na $ b\n\\) more\nafter the math');
+            expect(notTex(tokens, 3)).toBe(true);
+        });
+
+        it('closes a multi-line $$ fragment containing a stray $', async () => {
+            const tokens = await tokenizeOrg('$$\na $ b\n$$\nafter the math');
+            expect(notTex(tokens, 3)).toBe(true);
+        });
+
+        it('closes a one-line \\( fragment containing a stray $', async () => {
+            const tokens = await tokenizeOrg('see \\( a $ b \\) here\nafter the math');
+            expect(hasScopeFor(tokens, ' here', /markup\.math/)).toBe(false);
+            expect(notTex(tokens, 1)).toBe(true);
+        });
+
+        it('still colors TeX commands in a one-line fragment', async () => {
+            const tokens = await tokenizeOrg('see \\( \\alpha + 1 \\) here');
+            expect(hasScopeFor(tokens, 'alpha', /support\.function/)).toBe(true);
+        });
+    });
+
     describe('single-line raw markup still works', () => {
         it('highlights ~code~ as inline raw', async () => {
             const tokens = await tokenizeOrg('use the ~printf~ function here');

@@ -2509,6 +2509,10 @@
         "title": "Scimax: Show Back-links to Anchor"
       },
       {
+        "command": "scimax.org.toggleLinkDisplay",
+        "title": "Scimax: Toggle Link Display (descriptive/literal)"
+      },
+      {
         "command": "scimax.org.addNote",
         "title": "Scimax: Add Note (Decision/Question) on Selection"
       },
@@ -8536,6 +8540,11 @@
           "default": [],
           "description": "List of org-lint checker IDs to disable. Available checkers: duplicate-custom-id, duplicate-name, missing-language-in-src-block, invalid-block, incomplete-drawer, broken-link, undefined-footnote-reference, unreferenced-footnote-definition, timestamp-syntax, clock-issues, orphaned-affiliated-keywords, wrong-header-argument, planning-inactive, heading-level-skip, literal-dollar"
         },
+        "scimax.org.descriptiveLinks": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show org links by their description only, hiding the brackets and target (like Emacs org-link-descriptive). [[target][description]] displays as \"description\" and [[target]] as \"target\". The literal link is revealed while the cursor is inside it. Toggle with scimax.org.toggleLinkDisplay."
+        },
         "scimax.org.diagnostics.orphanLinks": {
           "type": "boolean",
           "default": true,
@@ -8725,6 +8734,11 @@
         },
         {
           "command": "scimax.org.addNote",
+          "when": "editorLangId == org",
+          "group": "scimax"
+        },
+        {
+          "command": "scimax.org.toggleLinkDisplay",
           "when": "editorLangId == org",
           "group": "scimax"
         },

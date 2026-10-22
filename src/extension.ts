@@ -35,6 +35,7 @@ import { registerSemanticTokenProvider } from './highlighting/semanticTokenProvi
 import { registerFoldingProvider } from './highlighting/foldingProvider';
 import { registerBlockDecorations } from './highlighting/blockDecorations';
 import { registerCommandMarkupDecorations } from './highlighting/commandMarkupDecoration';
+import { registerLinkDisplayDecorations } from './highlighting/linkDisplayDecoration';
 import { registerCheckboxFeatures } from './markdown/checkboxProvider';
 import { registerMarkdownExportCommands } from './markdown/markdownExportCommands';
 import { registerTaskCommands } from './markdown/taskCommands';
@@ -681,6 +682,7 @@ async function activateScimax(context: vscode.ExtensionContext) {
 
     // Register Emacs-style `command' markup decorations (theme-independent)
     activationStep('registerCommandMarkupDecorations', () => registerCommandMarkupDecorations(context));
+    activationStep('registerLinkDisplayDecorations', () => registerLinkDisplayDecorations(context));
 
     // Register Markdown Checkbox Features
     activationStep('registerCheckboxFeatures', () => registerCheckboxFeatures(context));

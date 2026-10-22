@@ -225,7 +225,11 @@
             "2": { "name": "keyword.control.block.end.org" }
           },
           "contentName": "meta.embedded.block.python",
-          "patterns": [{ "include": "source.python" }]
+          "patterns": [{
+            "begin": "(^|\\G)",
+            "while": "(?i)(^|\\G)(?!\\s*#\\+END_SRC\\s*$)",
+            "patterns": [{ "include": "source.python" }]
+          }]
         },
         {
           "name": "meta.embedded.block.bash.org",
@@ -240,7 +244,11 @@
             "2": { "name": "keyword.control.block.end.org" }
           },
           "contentName": "meta.embedded.block.shellscript",
-          "patterns": [{ "include": "source.shell" }]
+          "patterns": [{
+            "begin": "(^|\\G)",
+            "while": "(?i)(^|\\G)(?!\\s*#\\+END_SRC\\s*$)",
+            "patterns": [{ "include": "source.shell" }]
+          }]
         },
         {
           "name": "meta.embedded.block.latex.org",
@@ -255,7 +263,11 @@
             "2": { "name": "keyword.control.block.end.org" }
           },
           "contentName": "meta.embedded.block.latex",
-          "patterns": [{ "include": "text.tex.latex" }]
+          "patterns": [{
+            "begin": "(^|\\G)",
+            "while": "(?i)(^|\\G)(?!\\s*#\\+END_SRC\\s*$)",
+            "patterns": [{ "include": "text.tex.latex" }]
+          }]
         },
         {
           "name": "meta.embedded.block.json.org",
@@ -270,7 +282,11 @@
             "2": { "name": "keyword.control.block.end.org" }
           },
           "contentName": "meta.embedded.block.json",
-          "patterns": [{ "include": "source.json" }]
+          "patterns": [{
+            "begin": "(^|\\G)",
+            "while": "(?i)(^|\\G)(?!\\s*#\\+END_SRC\\s*$)",
+            "patterns": [{ "include": "source.json" }]
+          }]
         },
         {
           "name": "meta.embedded.block.javascript.org",
@@ -285,7 +301,11 @@
             "2": { "name": "keyword.control.block.end.org" }
           },
           "contentName": "meta.embedded.block.javascript",
-          "patterns": [{ "include": "source.js" }]
+          "patterns": [{
+            "begin": "(^|\\G)",
+            "while": "(?i)(^|\\G)(?!\\s*#\\+END_SRC\\s*$)",
+            "patterns": [{ "include": "source.js" }]
+          }]
         },
         {
           "name": "meta.embedded.block.typescript.org",
@@ -300,7 +320,11 @@
             "2": { "name": "keyword.control.block.end.org" }
           },
           "contentName": "meta.embedded.block.typescript",
-          "patterns": [{ "include": "source.ts" }]
+          "patterns": [{
+            "begin": "(^|\\G)",
+            "while": "(?i)(^|\\G)(?!\\s*#\\+END_SRC\\s*$)",
+            "patterns": [{ "include": "source.ts" }]
+          }]
         },
         {
           "name": "meta.embedded.block.sql.org",
@@ -315,7 +339,11 @@
             "2": { "name": "keyword.control.block.end.org" }
           },
           "contentName": "meta.embedded.block.sql",
-          "patterns": [{ "include": "source.sql" }]
+          "patterns": [{
+            "begin": "(^|\\G)",
+            "while": "(?i)(^|\\G)(?!\\s*#\\+END_SRC\\s*$)",
+            "patterns": [{ "include": "source.sql" }]
+          }]
         },
         {
           "name": "meta.embedded.block.yaml.org",
@@ -330,7 +358,11 @@
             "2": { "name": "keyword.control.block.end.org" }
           },
           "contentName": "meta.embedded.block.yaml",
-          "patterns": [{ "include": "source.yaml" }]
+          "patterns": [{
+            "begin": "(^|\\G)",
+            "while": "(?i)(^|\\G)(?!\\s*#\\+END_SRC\\s*$)",
+            "patterns": [{ "include": "source.yaml" }]
+          }]
         },
         {
           "name": "meta.embedded.block.r.org",
@@ -345,7 +377,11 @@
             "2": { "name": "keyword.control.block.end.org" }
           },
           "contentName": "meta.embedded.block.r",
-          "patterns": [{ "include": "source.r" }]
+          "patterns": [{
+            "begin": "(^|\\G)",
+            "while": "(?i)(^|\\G)(?!\\s*#\\+END_SRC\\s*$)",
+            "patterns": [{ "include": "source.r" }]
+          }]
         },
         {
           "name": "meta.embedded.block.julia.org",
@@ -360,7 +396,11 @@
             "2": { "name": "keyword.control.block.end.org" }
           },
           "contentName": "meta.embedded.block.julia",
-          "patterns": [{ "include": "source.julia" }]
+          "patterns": [{
+            "begin": "(^|\\G)",
+            "while": "(?i)(^|\\G)(?!\\s*#\\+END_SRC\\s*$)",
+            "patterns": [{ "include": "source.julia" }]
+          }]
         },
         {
           "comment": "Lean blocks highlight only when a Lean extension (e.g. leanprover.lean4, scope source.lean4) is installed; otherwise they fall back to raw text.",
@@ -376,7 +416,11 @@
             "2": { "name": "keyword.control.block.end.org" }
           },
           "contentName": "meta.embedded.block.lean4",
-          "patterns": [{ "include": "source.lean4" }]
+          "patterns": [{
+            "begin": "(^|\\G)",
+            "while": "(?i)(^|\\G)(?!\\s*#\\+END_SRC\\s*$)",
+            "patterns": [{ "include": "source.lean4" }]
+          }]
         },
         {
           "name": "meta.embedded.block.c.org",
@@ -391,7 +435,11 @@
             "2": { "name": "keyword.control.block.end.org" }
           },
           "contentName": "meta.embedded.block.c",
-          "patterns": [{ "include": "source.c" }]
+          "patterns": [{
+            "begin": "(^|\\G)",
+            "while": "(?i)(^|\\G)(?!\\s*#\\+END_SRC\\s*$)",
+            "patterns": [{ "include": "source.c" }]
+          }]
         },
         {
           "name": "meta.embedded.block.cpp.org",
@@ -406,7 +454,11 @@
             "2": { "name": "keyword.control.block.end.org" }
           },
           "contentName": "meta.embedded.block.cpp",
-          "patterns": [{ "include": "source.cpp" }]
+          "patterns": [{
+            "begin": "(^|\\G)",
+            "while": "(?i)(^|\\G)(?!\\s*#\\+END_SRC\\s*$)",
+            "patterns": [{ "include": "source.cpp" }]
+          }]
         },
         {
           "name": "meta.embedded.block.java.org",
@@ -421,7 +473,11 @@
             "2": { "name": "keyword.control.block.end.org" }
           },
           "contentName": "meta.embedded.block.java",
-          "patterns": [{ "include": "source.java" }]
+          "patterns": [{
+            "begin": "(^|\\G)",
+            "while": "(?i)(^|\\G)(?!\\s*#\\+END_SRC\\s*$)",
+            "patterns": [{ "include": "source.java" }]
+          }]
         },
         {
           "name": "meta.embedded.block.rust.org",
@@ -436,7 +492,11 @@
             "2": { "name": "keyword.control.block.end.org" }
           },
           "contentName": "meta.embedded.block.rust",
-          "patterns": [{ "include": "source.rust" }]
+          "patterns": [{
+            "begin": "(^|\\G)",
+            "while": "(?i)(^|\\G)(?!\\s*#\\+END_SRC\\s*$)",
+            "patterns": [{ "include": "source.rust" }]
+          }]
         },
         {
           "name": "meta.embedded.block.go.org",
@@ -451,7 +511,11 @@
             "2": { "name": "keyword.control.block.end.org" }
           },
           "contentName": "meta.embedded.block.go",
-          "patterns": [{ "include": "source.go" }]
+          "patterns": [{
+            "begin": "(^|\\G)",
+            "while": "(?i)(^|\\G)(?!\\s*#\\+END_SRC\\s*$)",
+            "patterns": [{ "include": "source.go" }]
+          }]
         },
         {
           "name": "meta.embedded.block.ruby.org",
@@ -466,7 +530,11 @@
             "2": { "name": "keyword.control.block.end.org" }
           },
           "contentName": "meta.embedded.block.ruby",
-          "patterns": [{ "include": "source.ruby" }]
+          "patterns": [{
+            "begin": "(^|\\G)",
+            "while": "(?i)(^|\\G)(?!\\s*#\\+END_SRC\\s*$)",
+            "patterns": [{ "include": "source.ruby" }]
+          }]
         },
         {
           "name": "meta.embedded.block.perl.org",
@@ -481,7 +549,11 @@
             "2": { "name": "keyword.control.block.end.org" }
           },
           "contentName": "meta.embedded.block.perl",
-          "patterns": [{ "include": "source.perl" }]
+          "patterns": [{
+            "begin": "(^|\\G)",
+            "while": "(?i)(^|\\G)(?!\\s*#\\+END_SRC\\s*$)",
+            "patterns": [{ "include": "source.perl" }]
+          }]
         },
         {
           "name": "meta.embedded.block.elisp.org",
@@ -496,7 +568,11 @@
             "2": { "name": "keyword.control.block.end.org" }
           },
           "contentName": "meta.embedded.block.lisp",
-          "patterns": [{ "include": "source.lisp" }]
+          "patterns": [{
+            "begin": "(^|\\G)",
+            "while": "(?i)(^|\\G)(?!\\s*#\\+END_SRC\\s*$)",
+            "patterns": [{ "include": "source.lisp" }]
+          }]
         },
         {
           "name": "meta.embedded.block.css.org",
@@ -511,7 +587,11 @@
             "2": { "name": "keyword.control.block.end.org" }
           },
           "contentName": "meta.embedded.block.css",
-          "patterns": [{ "include": "source.css" }]
+          "patterns": [{
+            "begin": "(^|\\G)",
+            "while": "(?i)(^|\\G)(?!\\s*#\\+END_SRC\\s*$)",
+            "patterns": [{ "include": "source.css" }]
+          }]
         },
         {
           "name": "meta.embedded.block.html.org",
@@ -526,7 +606,11 @@
             "2": { "name": "keyword.control.block.end.org" }
           },
           "contentName": "meta.embedded.block.html",
-          "patterns": [{ "include": "text.html.basic" }]
+          "patterns": [{
+            "begin": "(^|\\G)",
+            "while": "(?i)(^|\\G)(?!\\s*#\\+END_SRC\\s*$)",
+            "patterns": [{ "include": "text.html.basic" }]
+          }]
         },
         {
           "name": "meta.embedded.block.xml.org",
@@ -541,7 +625,11 @@
             "2": { "name": "keyword.control.block.end.org" }
           },
           "contentName": "meta.embedded.block.xml",
-          "patterns": [{ "include": "text.xml" }]
+          "patterns": [{
+            "begin": "(^|\\G)",
+            "while": "(?i)(^|\\G)(?!\\s*#\\+END_SRC\\s*$)",
+            "patterns": [{ "include": "text.xml" }]
+          }]
         },
         {
           "name": "meta.embedded.block.markdown.org",
@@ -556,7 +644,11 @@
             "2": { "name": "keyword.control.block.end.org" }
           },
           "contentName": "meta.embedded.block.markdown",
-          "patterns": [{ "include": "text.html.markdown" }]
+          "patterns": [{
+            "begin": "(^|\\G)",
+            "while": "(?i)(^|\\G)(?!\\s*#\\+END_SRC\\s*$)",
+            "patterns": [{ "include": "text.html.markdown" }]
+          }]
         },
         {
           "comment": "Fallback for unrecognized languages",
@@ -980,7 +1072,23 @@
         "3": { "name": "keyword.control.end.latex.org" }
       },
       "contentName": "markup.math.block.latex.org",
-      "patterns": [{ "include": "text.tex.latex" }]
+      "patterns": [
+        {
+          "comment": "Full TeX grammar only on lines without the closer; while is re-checked each line so an unclosed inner rule cannot swallow it",
+          "begin": "(^|\\G)(?!\\s*\\\\end\\{)",
+          "while": "(^|\\G)(?!\\s*\\\\end\\{)",
+          "patterns": [{ "include": "text.tex.latex" }]
+        },
+        { "include": "#latex-commands" }
+      ]
+    },
+    "latex-commands": {
+      "comment": "Closer lines of LaTeX environments/fragments: color commands with a match rule that cannot stay open",
+      "name": "support.function.general.tex",
+      "match": "(\\\\)[A-Za-z@]+",
+      "captures": {
+        "1": { "name": "punctuation.definition.function.tex" }
+      }
     },
     "inline-elements": {
       "patterns": [
@@ -1187,7 +1295,15 @@
           "begin": "\\$\\$",
           "end": "\\$\\$",
           "contentName": "markup.math.content.org",
-          "patterns": [{ "include": "text.tex.latex" }]
+          "patterns": [
+            {
+              "comment": "Full TeX grammar only on lines without the closer; while is re-checked each line so an unclosed inner rule cannot swallow it",
+              "begin": "(^|\\G)(?!.*\\$\\$)",
+              "while": "(^|\\G)(?!.*\\$\\$)",
+              "patterns": [{ "include": "text.tex.latex" }]
+            },
+            { "include": "#latex-commands" }
+          ]
         },
         {
           "name": "markup.math.inline.latex.org",
@@ -1201,14 +1317,30 @@
           "begin": "\\\\\\[",
           "end": "\\\\\\]",
           "contentName": "markup.math.content.org",
-          "patterns": [{ "include": "text.tex.latex" }]
+          "patterns": [
+            {
+              "comment": "Full TeX grammar only on lines without the closer; while is re-checked each line so an unclosed inner rule cannot swallow it",
+              "begin": "(^|\\G)(?!.*\\\\\\])",
+              "while": "(^|\\G)(?!.*\\\\\\])",
+              "patterns": [{ "include": "text.tex.latex" }]
+            },
+            { "include": "#latex-commands" }
+          ]
         },
         {
           "name": "markup.math.inline.paren.latex.org",
           "begin": "\\\\\\(",
           "end": "\\\\\\)",
           "contentName": "markup.math.content.org",
-          "patterns": [{ "include": "text.tex.latex" }]
+          "patterns": [
+            {
+              "comment": "Full TeX grammar only on lines without the closer; while is re-checked each line so an unclosed inner rule cannot swallow it",
+              "begin": "(^|\\G)(?!.*\\\\\\))",
+              "while": "(^|\\G)(?!.*\\\\\\))",
+              "patterns": [{ "include": "text.tex.latex" }]
+            },
+            { "include": "#latex-commands" }
+          ]
         }
       ]
     },

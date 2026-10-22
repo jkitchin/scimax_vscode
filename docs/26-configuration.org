@@ -129,6 +129,7 @@ CLOSED: [2026-01-24 Sat 17:41]
 |------------------------------------+----------------------+----------+-----------------------------------|
 | scimax.org.logRepeat               | string (enum)        | "false"  | Enable progress logging           |
 | scimax.org.logIntoDrawer           | boolean or string    | false    | Where to log state changes        |
+| scimax.org.descriptiveLinks        | boolean              | true     | Show links by description only    |
 | scimax.org.diagnostics.orphanLinks | boolean              | true     | Warn on unresolved internal links |
 | scimax.org.backlinks.codeLens      | boolean              | true     | Show "← N references" lenses      |
 | scimax.org.notes.excludeFromExport | boolean              | true     | Strip dialog notes from exports   |

@@ -17,6 +17,22 @@ import * as vsctm from 'vscode-textmate';
 const GRAMMAR_PATH = path.resolve(__dirname, '../../../syntaxes/org.tmLanguage.json');
 const SCOPE_NAME = 'source.org';
 
+/**
+ * Minimal stand-ins for embedded-language grammars VS Code ships. Each has a
+ * multi-line rule an unfinished block can leave open, so tests can check that
+ * #+END_SRC still terminates a source block.
+ */
+const STUB_GRAMMARS: Record<string, object> = {
+    'source.python': {
+        scopeName: 'source.python',
+        patterns: [{ name: 'string.quoted.multi.python', begin: '"""', end: '"""' }],
+    },
+    'text.tex.latex': {
+        scopeName: 'text.tex.latex',
+        patterns: [{ name: 'meta.math.block.tex', begin: '\\$', end: '\\$' }],
+    },
+};
+
 let registryPromise: Promise<vsctm.IGrammar | null> | undefined;
 
 function loadGrammar(): Promise<vsctm.IGrammar | null> {
@@ -35,6 +51,10 @@ function loadGrammar(): Promise<vsctm.IGrammar | null> {
                 if (scopeName === SCOPE_NAME) {
                     const data = fs.readFileSync(GRAMMAR_PATH, 'utf8');
                     return vsctm.parseRawGrammar(data, GRAMMAR_PATH);
+                }
+                const stub = STUB_GRAMMARS[scopeName];
+                if (stub) {
+                    return vsctm.parseRawGrammar(JSON.stringify(stub), `${scopeName}.json`);
                 }
                 return null;
             },

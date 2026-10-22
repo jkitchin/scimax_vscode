@@ -164,6 +164,23 @@ CLOSED: [2026-01-15 Thu 19:40]
 | id:          | Jumps to entry with that ID property  |
 | nb:          | Opens file in a notebook project      |
 
+** Link Display (Descriptive vs Literal)
+
+By default org links are shown by their description only, like Emacs
+=org-link-descriptive=. The brackets and target are hidden, so
+=[[file:25-commands.org::1868][* Utilities]]= reads as just =* Utilities=, and a
+link without a description such as =[[https://orgmode.org]]= reads as
+=https://orgmode.org=. The text stays clickable.
+
+The literal link reappears while the cursor is inside it, so you can still edit
+the target. Links inside source and example blocks are always shown literally.
+
+| Action                      | How                                                  |
+|-----------------------------+------------------------------------------------------|
+| Toggle descriptive/literal  | =scimax.org.toggleLinkDisplay= (command palette)     |
+| Toggle from the editor      | Right-click > Scimax: Toggle Link Display            |
+| Set the default             | =scimax.org.descriptiveLinks= (default: true)        |
+
 * ✅ Link Targets and Anchors
 CLOSED: [2026-01-14 Wed 20:53]
 
