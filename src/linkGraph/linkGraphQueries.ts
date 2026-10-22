@@ -305,10 +305,12 @@ export class LinkGraphQueryService {
         // Add filter conditions
         this.addFilterConditions(conditions, args, filters);
 
+        // A file::search link's target keeps the ::search; join on the path.
         const sql = `
-            SELECT DISTINCT l.target
+            SELECT DISTINCT f.path AS target
             FROM links l
-            LEFT JOIN files f ON l.target = f.path
+            LEFT JOIN files f ON f.path = CASE WHEN instr(l.target, '::') > 0
+                THEN substr(l.target, 1, instr(l.target, '::') - 1) ELSE l.target END
             LEFT JOIN headings h ON l.heading_id = h.id
             WHERE ${conditions.join(' AND ')}
               AND f.id IS NOT NULL

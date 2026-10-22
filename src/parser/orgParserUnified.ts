@@ -1248,7 +1248,7 @@ export class OrgParserUnified {
         const maxEndLine = Math.min(lines.length, startLine + MAX_BLOCK_LINES);
 
         // Safety limit to prevent unbounded consumption for unclosed drawers
-        while (i < maxEndLine && lines[i].trim() !== ':END:') {
+        while (i < maxEndLine && lines[i].trim().toUpperCase() !== RE_DRAWER_END) {
             contentLines.push(lines[i]);
             i++;
         }
@@ -1287,7 +1287,7 @@ export class OrgParserUnified {
         const maxEndLine = Math.min(lines.length, startLine + 1000);
 
         // Safety limit to prevent unbounded consumption for unclosed properties drawers
-        while (i < maxEndLine && lines[i].trim() !== RE_DRAWER_END) {
+        while (i < maxEndLine && lines[i].trim().toUpperCase() !== RE_DRAWER_END) {
             // Use pre-compiled pattern
             const propMatch = lines[i].match(RE_PROPERTY_LINE);
             if (propMatch) {

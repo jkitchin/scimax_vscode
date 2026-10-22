@@ -245,10 +245,14 @@ export interface BacklinkRow {
     heading_title: string | null;
 }
 
-/** What a back-link points at: an anchor's text, or a heading's title, CUSTOM_ID or ID. */
+/**
+ * What a back-link points at: an anchor's text, or a heading's title,
+ * CUSTOM_ID or ID. `filePath` is the file the target lives in; when given,
+ * links are only counted if they resolve to that file (see backlinkMatcher).
+ */
 export type BacklinkTarget =
-    | { kind: 'anchor'; text: string }
-    | { kind: 'heading'; title?: string; customId?: string; id?: string };
+    | { kind: 'anchor'; text: string; filePath?: string }
+    | { kind: 'heading'; title?: string; customId?: string; id?: string; filePath?: string };
 
 /** Indexed expressions (migration 8); queries must repeat them exactly. */
 const LINK_TARGET_KEY = 'lower(trim(l.raw_target))';
@@ -260,23 +264,56 @@ const BACKLINK_KEYS_PER_QUERY = 500;
 const INTERNAL_TYPES = new Set(['internal', 'fuzzy']);
 const ANCHOR_TYPES = new Set(['internal', 'file', 'fuzzy']);
 
+/** A candidate link, as backlinkMatcher tests it. */
+interface BacklinkCandidate {
+    type: string;
+    /** lower(trim(raw_target)) */
+    k: string;
+    /** For links with a ::, the lower-cased text after it; else null. */
+    sk: string | null;
+    /** The file the link is in. */
+    filePath: string;
+    /** For links with a ::, the resolved file before it; else null. */
+    targetFile: string | null;
+}
+
+function samePath(a: string, b: string): boolean {
+    const norm = (p: string) => {
+        const n = path.normalize(p);
+        return process.platform === 'win32' ? n.toLowerCase() : n;
+    };
+    return norm(a) === norm(b);
+}
+
 /**
  * The lower-cased raw targets a back-link target matches, and the test a
- * link must pass: its type, lower(trim(raw_target)) (k) and, for links with
- * a ::, the lower-cased text after it (sk).
+ * link must pass.
+ *
+ * With a target filePath, links are scoped the way they resolve when
+ * followed: [[Title]], [[*Title]] and [[#custom-id]] only search their own
+ * file, so they must be in the target's file; file::*Title, file::#custom-id
+ * and file::anchor links must name it. [[id:uuid]] is global, and so is a bare
+ * [[anchor]], which falls back to a workspace-wide anchor lookup. Without a
+ * filePath every same-named link matches.
  */
 function backlinkMatcher(target: BacklinkTarget): {
     exact: string[];
     suffix: string[];
-    matches: (type: string, k: string, sk: string | null) => boolean;
+    matches: (link: BacklinkCandidate) => boolean;
 } {
+    const scope = target.filePath;
+    const inFile = (link: BacklinkCandidate) => scope === undefined || samePath(link.filePath, scope);
+    const toFile = (link: BacklinkCandidate) =>
+        scope === undefined || (link.targetFile !== null && samePath(link.targetFile, scope));
+
     if (target.kind === 'anchor') {
         const key = normalizeAnchorText(target.text);
         if (!key) return { exact: [], suffix: [], matches: () => false };
         return {
             exact: [key],
             suffix: [key],
-            matches: (type, k, sk) => ANCHOR_TYPES.has(type) && (k === key || sk === key),
+            matches: link => ANCHOR_TYPES.has(link.type) &&
+                (link.k === key || (link.sk === key && toFile(link))),
         };
     }
     // CUSTOM_ID links ([[#id]]) are internal links whose raw_target keeps the
@@ -288,13 +325,21 @@ function backlinkMatcher(target: BacklinkTarget): {
     const title = target.title ? target.title.trim().toLowerCase() : undefined;
     const exact = [customId, id, title, title !== undefined ? '*' + title : undefined]
         .filter((k): k is string => k !== undefined);
+    // Cross-file forms (file::#custom-id, file::*Title) only count when scoped,
+    // since without a file there is nothing to check them against.
+    const suffix = scope === undefined ? [] : [customId, title !== undefined ? '*' + title : undefined]
+        .filter((k): k is string => k !== undefined);
     return {
         exact,
-        suffix: [],
-        matches: (type, k) =>
-            (customId !== undefined && INTERNAL_TYPES.has(type) && k === customId) ||
-            (id !== undefined && type === 'id' && k === id) ||
-            (title !== undefined && INTERNAL_TYPES.has(type) && (k === title || k === '*' + title)),
+        suffix,
+        matches: link => {
+            if (id !== undefined && link.type === 'id' && link.k === id) return true;
+            if (INTERNAL_TYPES.has(link.type) && link.sk === null && inFile(link) &&
+                ((customId !== undefined && link.k === customId) ||
+                 (title !== undefined && (link.k === title || link.k === '*' + title)))) return true;
+            return scope !== undefined && ANCHOR_TYPES.has(link.type) && link.sk !== null &&
+                suffix.includes(link.sk) && toFile(link);
+        },
     };
 }
 
@@ -1439,21 +1484,25 @@ export class ScimaxDbCore {
      * ([[file::text]]) via the raw (unresolved) link target. Each result names
      * the source file, line, and the heading that contains the link.
      *
-     * Note: matching is by anchor text, so a same-named anchor in another file
-     * can appear; this is the documented uniqueness limitation for v1.
+     * Pass the anchor's filePath to count [[file::text]] links only when they
+     * name that file. Bare [[text]] links match from any file (they fall back
+     * to a workspace-wide anchor lookup), so a same-named anchor in another
+     * file can still share them.
      */
-    public async getAnchorBacklinks(text: string): Promise<BacklinkRow[]> {
-        return (await this.getBacklinksBatch([{ kind: 'anchor', text }]))[0];
+    public async getAnchorBacklinks(text: string, filePath?: string): Promise<BacklinkRow[]> {
+        return (await this.getBacklinksBatch([{ kind: 'anchor', text, filePath }]))[0];
     }
 
     /**
      * Object-level back-links to a heading: links that target it by CUSTOM_ID
      * ([[#id]]), ID ([[id:uuid]]), or fuzzy title ([[Title]] / [[*Title]]).
-     * Matching is by the raw (unresolved) link target, so a same-named heading
-     * elsewhere can appear (the documented uniqueness limitation for v1).
+     * Pass the heading's filePath to count only links that resolve to it: the
+     * CUSTOM_ID and title forms in that file, and [[file::#id]] /
+     * [[file::*Title]] links naming it. Without it, a same-named heading
+     * elsewhere shares the links.
      */
     public async getHeadingBacklinks(
-        target: { title?: string; customId?: string; id?: string }
+        target: { title?: string; customId?: string; id?: string; filePath?: string }
     ): Promise<BacklinkRow[]> {
         return (await this.getBacklinksBatch([{ kind: 'heading', ...target }]))[0];
     }
@@ -1481,9 +1530,9 @@ export class ScimaxDbCore {
             for (const k of m.suffix) suffixKeys.add(k);
         }
 
-        type Row = BacklinkRow & { id: number; link_type: string; k: string; sk: string | null };
+        type Row = BacklinkRow & { id: number; link_type: string; target: string; k: string; sk: string | null };
         const rows = new Map<number, Row>();
-        const select = `SELECT l.id, l.file_path, l.line_number, l.description, l.link_type,
+        const select = `SELECT l.id, l.file_path, l.line_number, l.description, l.link_type, l.target,
                                h.title AS heading_title,
                                ${LINK_TARGET_KEY} AS k,
                                CASE WHEN instr(l.raw_target, '::') > 0 THEN ${LINK_SUFFIX_KEY} END AS sk
@@ -1505,6 +1554,7 @@ export class ScimaxDbCore {
                         description: (r.description as string) ?? null,
                         heading_title: (r.heading_title as string) ?? null,
                         link_type: r.link_type as string,
+                        target: r.target as string,
                         k: r.k as string,
                         sk: (r.sk as string) ?? null,
                     });
@@ -1517,9 +1567,18 @@ export class ScimaxDbCore {
 
         const sorted = [...rows.values()].sort((a, b) =>
             a.file_path < b.file_path ? -1 : a.file_path > b.file_path ? 1 : a.line_number - b.line_number);
+        const candidates = sorted.map(r => ({
+            type: r.link_type,
+            k: r.k,
+            sk: r.sk,
+            filePath: r.file_path,
+            // indexLinks stores file and internal links with the path before
+            // the :: resolved; other link types keep their raw target.
+            targetFile: r.sk !== null && r.target.includes('::') ? r.target.slice(0, r.target.indexOf('::')) : null,
+        }));
         matchers.forEach((m, i) => {
             results[i] = sorted
-                .filter(r => m.matches(r.link_type, r.k, r.sk))
+                .filter((_, j) => m.matches(candidates[j]))
                 .map(({ file_path, line_number, description, heading_title }) =>
                     ({ file_path, line_number, description, heading_title }));
         });

@@ -147,6 +147,24 @@ index, which refreshes on save. For whole-file relationship views, see the
 The command =scimax.org.showBacklinks= remains as a Command Palette alternative
 that lists anchor back-links in a quick picker.
 
+*** ⚠️ Which links count as back-links
+
+A link counts only if following it would land on the target, so a heading does
+not collect links that merely share its title:
+
+| Link form                              | Counts for a target in file F when…         |
+|----------------------------------------+---------------------------------------------|
+| =[[Title]]=, =[[*Title]]=, =[[#id]]=   | the link is in F (these resolve in-file)    |
+| =[[file:F::*Title]]=, =[[F::#id]]=     | the path before =::= is F                   |
+| =[[id:uuid]]=                          | always (IDs are global)                     |
+| =[[name]]= to an anchor                | always (falls back to the workspace index)  |
+| =[[F::name]]= to an anchor             | the path before =::= is F                   |
+
+Links inside Babel output (the element after =#+RESULTS:=) are not indexed,
+except =file:= links such as generated images. Output like JSON's
+={"date-parts":[[2025]]}= would otherwise read as a link to every heading
+titled =2025=.
+
 ** Following links across files
 
 Following a =[[name]]= link first searches the current file. If the anchor is

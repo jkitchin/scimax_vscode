@@ -1180,7 +1180,7 @@ export function registerOrgLinkCommands(context: vscode.ExtensionContext): void 
                 vscode.window.showWarningMessage('Database not available.');
                 return;
             }
-            const backlinks = await db.getAnchorBacklinks(anchorText);
+            const backlinks = await db.getAnchorBacklinks(anchorText, editor.document.uri.fsPath);
             if (backlinks.length === 0) {
                 vscode.window.showInformationMessage(`No back-links to "${anchorText}".`);
                 return;
