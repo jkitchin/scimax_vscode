@@ -138,6 +138,13 @@ is no extra panel to manage. Put the cursor on an anchor (=<<name>>=,
   names this file (=[[file:notes.org::*Summary]]=). =[[id:...]]= links count
   from any file. Two files that each have a =* Summary= heading do not share
   each other's back-links.
+- Anchor back-links count a bare =[[name]]= from any file, since following it
+  falls back to a workspace-wide anchor lookup. =[[notes.org::name]]= counts
+  only for the anchor in =notes.org=.
+- Links inside Babel output (the element after =#+RESULTS:=) are not indexed,
+  except =file:= links such as generated images. Output like JSON's
+  ={"date-parts":[[2025]]}= would otherwise read as a link to a heading titled
+  =2025=.
 - A *← N references* CodeLens appears above anchored lines and headings that have
   back-links; click it to open the same peek. Lines with no back-links show no
   lens. The counts for a whole file come from one indexed database query, so

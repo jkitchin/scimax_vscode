@@ -52,15 +52,16 @@ function resolveTargetAt(document: vscode.TextDocument, position: vscode.Positio
     const radio = line.match(/<<<([^<>]+)>>>/);
     const target = line.match(/<<([^<>]+)>>/);
     const name = line.match(/^\s*#\+NAME:\s*(.+?)\s*$/i);
-    if (radio) return { kind: 'anchor', text: radio[1].trim() };
-    if (target) return { kind: 'anchor', text: target[1].trim() };
-    if (name) return { kind: 'anchor', text: name[1].trim() };
+    const filePath = document.uri.fsPath;
+    if (radio) return { kind: 'anchor', text: radio[1].trim(), filePath };
+    if (target) return { kind: 'anchor', text: target[1].trim(), filePath };
+    if (name) return { kind: 'anchor', text: name[1].trim(), filePath };
 
     const fullText = document.getText();
     const lines = fullText.split('\n');
     const todoStates = getTodoStatesFromText(fullText);
     for (let i = position.line; i >= 0; i--) {
-        if (isHeadingLine(lines[i])) return readHeadingTarget(lines, i, todoStates, document.uri.fsPath);
+        if (isHeadingLine(lines[i])) return readHeadingTarget(lines, i, todoStates, filePath);
     }
     return undefined;
 }
@@ -68,7 +69,7 @@ function resolveTargetAt(document: vscode.TextDocument, position: vscode.Positio
 async function queryBacklinks(target: Target): Promise<BacklinkRow[]> {
     const db = await getDatabase();
     if (!db) return [];
-    if (target.kind === 'anchor') return db.getAnchorBacklinks(target.text);
+    if (target.kind === 'anchor') return db.getAnchorBacklinks(target.text, target.filePath);
     return db.getHeadingBacklinks({ title: target.title, customId: target.customId, id: target.id, filePath: target.filePath });
 }
 
@@ -134,7 +135,7 @@ class BacklinksCodeLensProvider implements vscode.CodeLensProvider {
         for (const a of extractAnchors(text)) {
             candidates.push({
                 range: new vscode.Range(a.lineNumber - 1, 0, a.lineNumber - 1, 0),
-                target: { kind: 'anchor', text: a.text },
+                target: { kind: 'anchor', text: a.text, filePath: document.uri.fsPath },
                 anchorPos: new vscode.Position(a.lineNumber - 1, a.column),
             });
         }

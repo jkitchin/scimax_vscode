@@ -107,14 +107,20 @@ export function extractLegacyDocument(doc: OrgDocumentNode, content: string): Le
 }
 
 /**
- * Extract data from a node and its children
+ * Extract data from a node and its children.
+ *
+ * `inResults` marks Babel output (an element under #+RESULTS:). Links there
+ * are generated text — e.g. JSON's [[2025]] reads as a fuzzy link — so only
+ * file links (output images and files) are kept from it.
  */
 function extractFromNode(
     node: OrgDocumentNode | OrgElement | OrgObject,
     result: LegacyDocument,
-    lines: string[]
+    lines: string[],
+    inResults = false
 ): void {
     if (!node) return;
+    if (!inResults && (node as OrgElement).affiliated?.results !== undefined) inResults = true;
 
     switch (node.type) {
         case 'org-data':
@@ -133,9 +139,7 @@ function extractFromNode(
         case 'section':
             const section = node as SectionElement;
             if (section.children) {
-                for (const child of section.children) {
-                    extractFromNode(child, result, lines);
-                }
+                extractFromChildren(section.children, result, lines, inResults);
             }
             break;
 
@@ -158,8 +162,8 @@ function extractFromNode(
             break;
 
         case 'link':
-            const link = node as LinkObject;
-            result.links.push(extractLink(link));
+            const link = extractLink(node as LinkObject);
+            if (!inResults || link.type === 'file') result.links.push(link);
             break;
 
         case 'timestamp':
@@ -170,10 +174,32 @@ function extractFromNode(
         default:
             // Check for children in any element
             if ('children' in node && Array.isArray((node as any).children)) {
-                for (const child of (node as any).children) {
-                    extractFromNode(child, result, lines);
-                }
+                extractFromChildren((node as any).children, result, lines, inResults);
             }
+    }
+}
+
+/**
+ * Extract data from sibling nodes. The parser leaves #+RESULTS: as a keyword
+ * sibling rather than attaching it to the output element, so the element that
+ * starts on the next line is treated as results.
+ */
+function extractFromChildren(
+    children: (OrgElement | OrgObject)[],
+    result: LegacyDocument,
+    lines: string[],
+    inResults: boolean
+): void {
+    let resultsLine: number | undefined;
+    for (const child of children) {
+        const startLine = child.position?.start?.line;
+        const isResults = inResults ||
+            (resultsLine !== undefined && startLine !== undefined && startLine === resultsLine + 1);
+        extractFromNode(child, result, lines, isResults);
+        resultsLine = child.type === 'keyword' &&
+            (child as KeywordElement).properties?.key?.toUpperCase() === 'RESULTS'
+            ? startLine
+            : undefined;
     }
 }
 
