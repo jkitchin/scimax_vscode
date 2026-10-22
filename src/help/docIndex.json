@@ -1,6 +1,6 @@
 {
-  "buildDate": "2026-10-19T13:19:45.422Z",
-  "count": 3693,
+  "buildDate": "2026-10-22T12:06:27.801Z",
+  "count": 3694,
   "entries": [
     {
       "heading": "Scimax VS Code",
@@ -1249,7 +1249,7 @@
       "heading": "Quick Start by Use Case",
       "level": 1,
       "file": "00-index.org",
-      "line": 518,
+      "line": 519,
       "content": "",
       "path": [],
       "commands": [],
@@ -1264,7 +1264,7 @@
       "heading": "I want to...",
       "level": 2,
       "file": "00-index.org",
-      "line": 520,
+      "line": 521,
       "content": "",
       "path": [
         "Quick Start by Use Case"
@@ -1279,7 +1279,7 @@
       "heading": "Take notes and organize information",
       "level": 3,
       "file": "00-index.org",
-      "line": 522,
+      "line": 523,
       "content": "- Start with [[file:01-getting-started.org][Getting Started]] - Learn [[file:01.5-basic-syntax.org][Basic Syntax]] for formatting text - Learn [[file:02-document-structure.org][Document Structure]] for headings and organization - Use [[file:15-capture.org][Capture]] for quick note-taking - Search with [[file:18-database-search.org][Database and Search]]",
       "path": [
         "Quick Start by Use Case",
@@ -1314,7 +1314,7 @@
       "heading": "Manage tasks and projects",
       "level": 3,
       "file": "00-index.org",
-      "line": 529,
+      "line": 530,
       "content": "- Set up tasks with [[file:03-todo-items.org][TODO Items]] - Add dates with [[file:06-timestamps.org][Timestamps]] - View agenda with [[file:13-agenda.org][Agenda]] - Organize projects with [[file:17-projectile.org][Projectile]] or [[file:16-notebook.org][Notebook]]",
       "path": [
         "Quick Start by Use Case",
@@ -1348,7 +1348,7 @@
       "heading": "Write scientific documents",
       "level": 3,
       "file": "00-index.org",
-      "line": 535,
+      "line": 536,
       "content": "- Execute code with [[file:07-source-blocks.org][Source Code Blocks]] - Preview math with [[file:11-latex-preview.org][LaTeX Preview]] - Manage citations with [[file:19-references.org][References]] - Export with [[file:10-export.org][Export]]",
       "path": [
         "Quick Start by Use Case",
@@ -1381,7 +1381,7 @@
       "heading": "Keep a journal",
       "level": 3,
       "file": "00-index.org",
-      "line": 541,
+      "line": 542,
       "content": "- Set up with [[file:14-journal.org][Journal]] - Use templates from [[file:15-capture.org][Capture]] - Navigate entries with [[file:21-navigation.org][Navigation]]",
       "path": [
         "Quick Start by Use Case",
@@ -1407,7 +1407,7 @@
       "heading": "Navigate efficiently",
       "level": 3,
       "file": "00-index.org",
-      "line": 546,
+      "line": 547,
       "content": "- Learn [[file:21-navigation.org][Navigation]] techniques - Master [[file:23-speed-commands.org][Speed Commands]] - Use [[file:22-hydra-menus.org][Hydra Menus]] for discovery - Reference [[file:24-keybindings.org][Keybindings]]",
       "path": [
         "Quick Start by Use Case",
@@ -1439,7 +1439,7 @@
       "heading": "Programmatically modify org files",
       "level": 3,
       "file": "00-index.org",
-      "line": 552,
+      "line": 553,
       "content": "CLOSED: [2026-01-16 Fri 20:04] - Use the [[file:27-org-api.org][Org API]] in TypeScript source blocks - Bulk update TODO states, properties, and tags - Extract and transform table data - Automate repetitive org file operations",
       "path": [
         "Quick Start by Use Case",
@@ -1474,7 +1474,7 @@
       "heading": "Configure the extension",
       "level": 3,
       "file": "00-index.org",
-      "line": 559,
+      "line": 560,
       "content": "CLOSED: [2026-01-16 Fri 20:04] - See all options in [[file:26-configuration.org][Configuration]] - Set up keybindings with [[file:24-keybindings.org][Keybindings]] - Customize menus with [[file:22-hydra-menus.org][Hydra Menus]]",
       "path": [
         "Quick Start by Use Case",
@@ -1505,7 +1505,7 @@
       "heading": "Navigation",
       "level": 1,
       "file": "00-index.org",
-      "line": 565,
+      "line": 566,
       "content": "- Index: [[file:00-index.org][Documentation Index]] - Next: [[file:01-getting-started.org][Getting Started]]",
       "path": [],
       "commands": [],
@@ -105565,10 +105565,45 @@
       ]
     },
     {
+      "heading": "Which links count as back-links",
+      "level": 3,
+      "file": "42-granular-addressing.org",
+      "line": 150,
+      "content": "A link counts only if following it would land on the target, so a heading does not collect links that merely share its title: | Link form                              | Counts for a target in file F when…         | |----------------------------------------+---------------------------------------------| | =[[Title]]=, =[[*Title]]=, =[[#id]]=   | the link is in F (these resolve in-file)    | | =[[file:F::*Title]]=, =[[F::#id]]=     | the path before =::= is F                   | | =[[id:uuid]]=   ",
+      "path": [
+        "Commands",
+        "Back-links (Find All References)"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "links",
+        "count",
+        "back-links",
+        "link",
+        "counts",
+        "following",
+        "land",
+        "target",
+        "heading",
+        "collect",
+        "merely",
+        "share",
+        "title",
+        "form",
+        "-------------------------------------------------------------------------------------",
+        "resolve",
+        "in-file",
+        "fileftitle",
+        "fid",
+        "path"
+      ]
+    },
+    {
       "heading": "Following links across files",
       "level": 2,
       "file": "42-granular-addressing.org",
-      "line": 150,
+      "line": 168,
       "content": "Following a =[[name]]= link first searches the current file. If the anchor is not in the current file, scimax consults the database and jumps to a matching anchor anywhere in the workspace. This is what makes the =[[name]]= link copied by *Link to Here* work even when the anchor lives in a different file.",
       "path": [
         "Commands"
@@ -105602,7 +105637,7 @@
       "heading": "The anchor index",
       "level": 1,
       "file": "42-granular-addressing.org",
-      "line": 157,
+      "line": 175,
       "content": "Anchors are stored in the scimax database (the same database used for search and the link graph), in an =anchors= table that records the anchor text, its kind (=target=, =radio=, or =name=), its file, line, character offset, and the heading that contains it. The index is: - *Derived, not authoritative*: the org file is the truth; the index is rebuilt on save and can be regenerated at any time with =scimax db sync=. - *Cross-file*: anchor names resolve across the whole indexed workspace. - *Colli",
       "path": [],
       "commands": [],
@@ -105634,7 +105669,7 @@
       "heading": "Orphan link diagnostics",
       "level": 1,
       "file": "42-granular-addressing.org",
-      "line": 173,
+      "line": 191,
       "content": "When the setting =scimax.org.diagnostics.orphanLinks= is enabled (the default), scimax warns when an internal link resolves to nothing. A link is flagged only when it is confidently unresolvable, so valid links are never marked: - =[[name]]= is flagged when there is no =<<name>>= / =<<<name>>>= / =#+NAME: name= anchor, no heading with that text, no matching =CUSTOM_ID=, the name does not appear as ordinary text in the file, and no anchor of that name exists elsewhere in the workspace. - =[[*Head",
       "path": [],
       "commands": [
@@ -105668,7 +105703,7 @@
       "heading": "Worked example",
       "level": 1,
       "file": "42-granular-addressing.org",
-      "line": 205,
+      "line": 223,
       "content": "#+BEGIN_SRC org # decisions.org",
       "path": [],
       "commands": [],
@@ -105685,7 +105720,7 @@
       "heading": "Architecture decisions",
       "level": 1,
       "file": "42-granular-addressing.org",
-      "line": 209,
+      "line": 227,
       "content": "We chose an embedded database <<why-sqlite>> to avoid a server dependency. # review.org (another file)",
       "path": [],
       "commands": [],
@@ -105708,7 +105743,7 @@
       "heading": "Review notes",
       "level": 1,
       "file": "42-granular-addressing.org",
-      "line": 213,
+      "line": 231,
       "content": "The reasoning for the storage choice is at [[why-sqlite]]. #+END_SRC - Following =[[why-sqlite]]= in =review.org= jumps to =decisions.org= (cross-file resolution via the index). - Running *Show Back-links* on the =<<why-sqlite>>= line in =decisions.org= lists the link in =review.org=. - If you delete the =<<why-sqlite>>= anchor and save, the link in =review.org= is flagged as an orphan.",
       "path": [],
       "commands": [],
@@ -105740,7 +105775,7 @@
       "heading": "Limitations",
       "level": 1,
       "file": "42-granular-addressing.org",
-      "line": 224,
+      "line": 242,
       "content": "- *Point, not region*: an anchor addresses the point where it sits. To address a paragraph you place an anchor in it; arbitrary elements are not addressable until anchored (\"intrinsic on demand\" rather than \"intrinsic always\"). - *Uniqueness*: anchor names should be unique within their resolution scope. *Link to Here* disambiguates automatically, but a hand-written duplicate name resolves to the first match. - *Cross-file fragments*: =[[file.org::name]]= links are followed but are not yet covere",
       "path": [],
       "commands": [],
@@ -105772,7 +105807,7 @@
       "heading": "Related Topics",
       "level": 1,
       "file": "42-granular-addressing.org",
-      "line": 235,
+      "line": 253,
       "content": "- [[file:05-links.org][Links]] - all link types and link following - [[file:39-link-graph.org][Link Graph]] - file-level relationship visualization - [[file:18-database-search.org][Database and Search]] - the index that powers anchor resolution - [[file:25-commands.org][Commands]] - full command reference - [[file:26-configuration.org][Configuration]] - the =orphanLinks= and other settings - [[file:02-document-structure.org][Document Structure]] - headings, CUSTOM_ID, and IDs",
       "path": [],
       "commands": [],
