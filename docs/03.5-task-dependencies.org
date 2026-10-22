@@ -16,8 +16,8 @@ You declare what a task /depends on/, and two behaviors follow automatically:
 - *Triggering* — when a task becomes DONE, any task that depended on it and is
   now fully unblocked is surfaced (and optionally promoted to a "ready" state).
 
-** 👀 Declaring a dependency
-CLOSED: [2026-07-02 Thu 08:06]
+** ✅ Declaring a dependency
+CLOSED: [2026-10-22 Thu 09:45]
 
 A dependency is one =:DEPENDS:= property holding whitespace-separated =id:=
 links to the tasks that must be completed first:

@@ -39,8 +39,8 @@ CLOSED: [2026-01-17 Sat 12:24]
 | [[cmd:scimax.heading.moveUp]]           | Move Heading Up        | M-UP                            |
 | [[cmd:scimax.heading.moveDown]]         | Move Heading Down      | M-DOWN                          |
 
-** 👀 Org-Mode Heading Navigation
-CLOSED: [2026-01-17 Sat 12:24]
+** ✅ Org-Mode Heading Navigation
+CLOSED: [2026-10-22 Thu 09:56]
 
 | Command ID                          | Description            | Default Keybinding |
 |-------------------------------------+------------------------+--------------------|
@@ -314,7 +314,7 @@ CLOSED: [2026-01-17 Sat 12:26]
 | [[cmd:scimax.ob.toggleResults]]       | Toggle Results Visibility       | -                  |
 | [[cmd:scimax.ob.editHeader]]          | Edit Block Header               | -                  |
 
-** 👀 Extended Babel Features
+** Extended Babel Features
 
 | Command ID                                  | Description                         | Default Keybinding |
 |---------------------------------------------+-------------------------------------+--------------------|
@@ -344,7 +344,7 @@ CLOSED: [2026-01-17 Sat 12:27]
 | [[cmd:scimax.org.exportMenu]]      | Export Menu (C-c C-e) | C-c C-e            |
 | [[cmd:scimax.org.previewHtml]]     | Preview HTML          | -                  |
 
-** 👀 Org Preview
+** Org Preview
 
 Live rendered preview of an org file. See [[file:46-org-preview.org][Org Preview]].
 
@@ -596,18 +596,18 @@ Loaded exporters are also listed in the export dispatcher (=C-c C-e=) under
 | [[cmd:scimax.export.insertExporterHeader]]  | Insert Custom Exporter Header    | -                  |
 
 * ✅ Links
-CLOSED: [2026-01-17 Sat 12:27]
+CLOSED: [2026-10-22 Thu 10:09]
 
-| Command ID                       | Description                            | Default Keybinding      |
-|----------------------------------+----------------------------------------+-------------------------|
-| [[cmd:scimax.org.insertLink]]    | Insert Link                            | C-c C-l                 |
-| [[cmd:scimax.org.openLink]]      | Open Link at Point                     | C-c C-o / RET (on link) |
-| [[cmd:scimax.org.storeLink]]     | Store Link (for later insertion)       | -                       |
-| [[cmd:scimax.org.deleteFileLink]]| Delete File Link (and optionally file) | -                       |
-| [[cmd:scimax.org.openExcalidraw]]| Open Excalidraw Drawing                | (via link click)        |
-| [[cmd:scimax.org.insertFinderLink]]| Insert Link from Finder Selection (macOS) | -                    |
-| [[cmd:scimax.org.insertChromeLink]]| Insert Link from Front Chrome Tab (macOS) | -                    |
-| [[cmd:scimax.org.toggleLinkDisplay]]| Toggle Link Display (descriptive/literal) | (right-click menu) |
+| Command ID                           | Description                               | Default Keybinding      |
+|--------------------------------------+-------------------------------------------+-------------------------|
+| [[cmd:scimax.org.insertLink]]        | Insert Link                               | C-c C-l                 |
+| [[cmd:scimax.org.openLink]]          | Open Link at Point                        | C-c C-o / RET (on link) |
+| [[cmd:scimax.org.storeLink]]         | Store Link (for later insertion)          | -                       |
+| [[cmd:scimax.org.deleteFileLink]]    | Delete File Link (and optionally file)    | -                       |
+| [[cmd:scimax.org.openExcalidraw]]    | Open Excalidraw Drawing                   | (via link click)        |
+| [[cmd:scimax.org.insertFinderLink]]  | Insert Link from Finder Selection (macOS) | -                       |
+| [[cmd:scimax.org.insertChromeLink]]  | Insert Link from Front Chrome Tab (macOS) | -                       |
+| [[cmd:scimax.org.toggleLinkDisplay]] | Toggle Link Display (descriptive/literal) | (right-click menu)      |
 
 * ✅ Timestamps
 CLOSED: [2026-01-17 Sat 12:27]
@@ -653,7 +653,7 @@ CLOSED: [2026-01-17 Sat 12:28]
 | [[cmd:scimax.db.deadlines]]      | Show Upcoming Deadlines | -                  |
 | [[cmd:scimax.agenda.currentFile]]| Agenda for Current File | C-c a <            |
 
-** 👀 Advanced Agenda
+** Advanced Agenda
 CLOSED: [2026-01-17 Sat 12:51]
 
 | Command ID                            | Description              | Default Keybinding |
@@ -701,8 +701,8 @@ CLOSED: [2026-01-17 Sat 12:51]
 * ✅ Journal
 CLOSED: [2026-01-17 Sat 12:51]
 
-** 👀 Basic Journal Operations
-CLOSED: [2026-01-17 Sat 12:51]
+** ✅ Basic Journal Operations
+CLOSED: [2026-10-22 Thu 09:56]
 
 | Command ID                          | Description              | Default Keybinding      |
 |-------------------------------------+--------------------------+-------------------------|
@@ -717,7 +717,7 @@ CLOSED: [2026-01-17 Sat 12:51]
 | [[cmd:scimax.journal.calendar]]     | Show Journal Calendar    | M-j c                   |
 | [[cmd:scimax.journal.listCommands]] | List Journal Commands    | M-j ?                   |
 
-** 👀 Journal Utilities
+** Journal Utilities
 
 | Command ID                             | Description             | Default Keybinding |
 |----------------------------------------+-------------------------+--------------------|
@@ -979,7 +979,7 @@ CLOSED: [2026-01-17 Sat 12:46]
 * ✅ Navigation
 CLOSED: [2026-01-17 Sat 12:47]
 
-** 👀 Fuzzy Search (Swiper)
+** Fuzzy Search (Swiper)
 
 | Command ID                             | Description                      | Default Keybinding |
 |----------------------------------------+----------------------------------+--------------------|
@@ -1019,7 +1019,7 @@ stays put cycles the cursor line through three scroll positions: center on the
 first press, top on the second, bottom on the third, then back to center.
 Moving the cursor or switching editors resets the cycle to center.
 
-* 👀 Projectile
+* Projectile
 CLOSED: [2026-01-17 Sat 12:47]
 
 | Command ID                            | Description                   | Default Keybinding |
@@ -1069,7 +1069,7 @@ CLOSED: [2026-01-17 Sat 12:47]
 | [[cmd:scimax.editmarks.prev]]      | Previous Edit Mark      | C-c e [            |
 | [[cmd:scimax.editmarks.summary]]   | Show Edit Marks Summary | C-c e s            |
 
-* ⚠️ Version Control
+* Version Control
 
 See [[file:47-version-control.org][Version Control]].
 
@@ -1088,7 +1088,7 @@ See [[file:47-version-control.org][Version Control]].
 | [[cmd:scimax.vc.annotate]]   | VC Annotate (toggle blame)                       | C-x v g              |
 | [[cmd:scimax.vc.ignore]]     | VC Ignore File (add to .gitignore)               | C-x v i              |
 
-* 👀 Hydra
+* Hydra
 
 | Command ID                       | Description          | Default Keybinding |
 |----------------------------------+----------------------+--------------------|
@@ -1230,7 +1230,7 @@ CLOSED: [2026-01-21 Wed 11:33]
 
 Comprehensive LaTeX editing support with structural navigation, environment manipulation, and compilation.
 
-** 👀 Section Navigation
+** Section Navigation
 
 | Command ID                                  | Description              | Default Keybinding |
 |---------------------------------------------+--------------------------+--------------------|
@@ -1273,7 +1273,7 @@ CLOSED: [2026-01-21 Wed 11:33]
 | [[cmd:scimax.latex.narrowToSection]]    | Narrow to Section  | -                  |
 | [[cmd:scimax.latex.widen]]              | Widen (Unfold All) | -                  |
 
-** 👀 Environment Manipulation
+** Environment Manipulation
 
 | Command ID                                    | Description                | Default Keybinding |
 |-----------------------------------------------+----------------------------+--------------------|
@@ -1415,7 +1415,7 @@ CLOSED: [2026-01-21 Wed 11:36]
 
 Insert and manage file templates for org, markdown, and LaTeX files.
 
-** 👀 Insert Templates
+** Insert Templates
 
 | Command ID                               | Description               | Default Keybinding |
 |------------------------------------------+---------------------------+--------------------|
@@ -1425,7 +1425,7 @@ Insert and manage file templates for org, markdown, and LaTeX files.
 | [[cmd:scimax.templates.insertLatex]]     | Insert LaTeX Template     | -                  |
 | [[cmd:scimax.templates.quickInsert]]     | Quick Insert Template     | C-c T i            |
 
-** 👀 New Files from Templates
+** New Files from Templates
 
 | Command ID                               | Description                  | Default Keybinding |
 |------------------------------------------+------------------------------+--------------------|
@@ -1543,7 +1543,7 @@ CLOSED: [2026-01-17 Sat 12:50]
 | C-c C-e l v | LaTeX live preview |
 | C-c C-e m m | Markdown           |
 
-** 👀 Babel/Source Block Keybindings
+** Babel/Source Block Keybindings
 
 | Keybinding | Action                 |
 |------------+------------------------|
@@ -1657,7 +1657,7 @@ Results appear in the Problems panel.
 
 Shows available lint checkers and allows enabling/disabling specific checks.
 
-* 👀 Mark Ring
+* Mark Ring
 :PROPERTIES:
 :CUSTOM_ID: mark-ring
 :END:
@@ -1709,7 +1709,7 @@ Emacs-style mark ring for navigation and selection. Save cursor positions (marks
 2. Quick pick shows local marks and global marks with line previews
 3. Select an entry to jump to that position
 
-* ⚠️ Kill Ring
+* Kill Ring
 :PROPERTIES:
 :CUSTOM_ID: kill-ring
 :END:
@@ -1727,7 +1727,7 @@ works, and you can yank kills older than the last one.
 | [[cmd:scimax.killRing.browse]]     | Browse Kill Ring                     | -                  |
 | [[cmd:scimax.killRing.clear]]      | Clear Kill Ring                      | -                  |
 
-** ⚠️ How It Works
+** How It Works
 
 =C-y= inserts the entry under the yank pointer, which is normally the newest
 kill. Pressing =M-y= straight after a yank replaces the yanked text with the
@@ -1866,8 +1866,8 @@ Interactive search and replace.
 
 Provides Emacs-style interactive query-replace with confirmation for each replacement.
 
-* 👀 Utilities
-CLOSED: [2026-01-21 Wed 13:21]
+* ✅ Utilities
+CLOSED: [2026-10-22 Thu 10:00]
 :PROPERTIES:
 :CUSTOM_ID: utilities
 :END:

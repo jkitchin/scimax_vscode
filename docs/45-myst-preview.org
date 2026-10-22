@@ -16,7 +16,7 @@ Scimax extends the preview so a MyST file reads roughly as it will in the
 built book. Nothing needs to be run: open the preview as usual
 (~Markdown: Open Preview to the Side~, =Cmd+K V= on macOS, =Ctrl+K V= elsewhere).
 
-* 👀 What Is Rendered
+* What Is Rendered
 
 Both fence styles work, with options as ~:key: value~ lines or a ~---~ YAML
 block at the top of the body:
@@ -71,7 +71,7 @@ caption; a directive with no title shows its kind (/Proposition/). The
 jumps to the section. A label defined in another file shows as the label. Scroll sync and VS Code's double-click-to-source still work
 inside directives.
 
-* ⚠️ Citations and Equation References
+* Citations and Equation References
 
 Citations render as author-year text, with the full reference as a tooltip:
 

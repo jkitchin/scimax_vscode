@@ -283,8 +283,8 @@ Deadlines show:
 - Priority and tags
 - File location
 
-** 👀 Warning Periods
-CLOSED: [2026-01-18 Sun 12:10]
+** ✅ Warning Periods
+CLOSED: [2026-10-22 Thu 09:47]
 
 A deadline shows when its date is in the agenda window, or once it is overdue.
 A warning period also brings it into a window that overlaps the time before it
@@ -321,7 +321,7 @@ Scheduled Items (12 items)
 📅 TODO Monthly review                           (in 5 days)
 #+END_EXAMPLE
 
-** 👀 Repeating Items
+** Repeating Items
 
 Recurring tasks with repeater syntax appear in the agenda:
 
@@ -522,7 +522,7 @@ Show TODOs:
 
 Use the database search commands for complex filtering.
 
-* ⚠️ Custom Agenda Commands
+* Custom Agenda Commands
 
 Custom agenda commands are saved views you define in =settings.json=, after
 Emacs' =org-agenda-custom-commands=. Each command has a dispatcher key. It can
@@ -533,7 +533,7 @@ stuck projects.
 Custom commands need the database, because they query indexed headings. They
 open in the agenda buffer, so =RET=, =t=, =g=, =f= / =b= and hover all work.
 
-** ⚠️ Defining Commands
+** Defining Commands
 
 A ready-to-try set of commands and org files is in
 [[file:../examples/custom-agenda/README.org][examples/custom-agenda]].
@@ -584,7 +584,7 @@ Invalid commands do not stop the others from loading. The problem, such as a
 bad match string with the column of the error, is written to the Scimax
 output channel and shown when you try to run that command.
 
-** ⚠️ Block Types
+** Block Types
 
 | Type        | Shows                                                         | =match= is            |
 |-------------+---------------------------------------------------------------+-----------------------|
@@ -596,7 +596,7 @@ output channel and shown when you try to run that command.
 | =search=    | Entries whose heading or body contain the words               | Search words          |
 | =stuck=     | Projects with no next action                                  | Not used (see below)  |
 
-** ⚠️ Block Settings
+** Block Settings
 
 | Setting       | Applies to   | Meaning                                                        |
 |---------------+--------------+----------------------------------------------------------------|
@@ -613,7 +613,7 @@ output channel and shown when you try to run that command.
 | =prefix=      | all          | Line prefix format (see below)                                 |
 | =limit=       | all          | Stop after this many entries                                   |
 
-** ⚠️ Match Strings
+** Match Strings
 
 Match strings use the Org syntax for matching tags and properties:
 
@@ -645,7 +645,7 @@ inherited tags.
 Try a match string without saving a command using [[cmd:scimax.agenda.match]]
 (=m= in the agenda menu).
 
-** ⚠️ Search Words
+** Search Words
 
 A =search= block's =match= is a list of words:
 
@@ -654,7 +654,7 @@ A =search= block's =match= is a list of words:
 - ="two words"= is a phrase
 - ={regex}= must match (case-insensitive)
 
-** ⚠️ Skip Conditions
+** Skip Conditions
 
 =skip= drops entries from a block, after =org-agenda-skip-entry-if=. An entry
 is skipped when *any* condition holds:
@@ -678,7 +678,7 @@ is skipped when *any* condition holds:
   "match": "+work", "skip": { "scheduled": true, "deadline": true } }
 #+END_SRC
 
-** ⚠️ Sorting
+** Sorting
 
 =sort= lists keys applied in order; later keys break ties. The default for
 list blocks is =["priority-down", "category-keep"]=.
@@ -696,7 +696,7 @@ list blocks is =["priority-down", "category-keep"]=.
 | =category-keep=                     | Keep categories in the order they first appear |
 | =level-up= / =level-down=           | Heading level                          |
 
-** ⚠️ Line Prefix
+** Line Prefix
 
 =prefix= formats the start of each line, after =org-agenda-prefix-format=:
 
@@ -711,7 +711,7 @@ list blocks is =["priority-down", "category-keep"]=.
 
 A number pads a field to a width, for example ="%-12c %e "=.
 
-** ⚠️ Stuck Projects
+** Stuck Projects
 
 A =stuck= block lists project headings that have no next action. Projects are
 defined by =scimax.agenda.stuckProjects=:
@@ -729,7 +729,7 @@ A heading matching =match= is a project. It is *not* stuck when a descendant
 is in one of =todoStates=, carries one of =tags=, or has a title matching
 =regexp=. Done projects are never stuck.
 
-** ⚠️ Agenda Menu Keys
+** Agenda Menu Keys
 
 The agenda menu ([[cmd:scimax.agenda.menu]], =C-c a c=) is a dispatcher like
 Emacs' =C-c a=. Typing a key that names a single entry runs it at once.
@@ -760,7 +760,7 @@ the key as its argument:
 { "key": "ctrl+c a w", "command": "scimax.agenda.custom", "args": "w" }
 #+END_SRC
 
-** ⚠️ Storing and Exporting Views
+** Storing and Exporting Views
 
 A command's =export= list names files to write. The format follows the
 extension:
@@ -778,7 +778,7 @@ extension:
 In a custom agenda buffer, =C-x C-w= ([[cmd:scimax.agenda.exportCurrent]])
 asks for a file name and writes the current view in the matching format.
 
-** ⚠️ From the Command Line
+** From the Command Line
 
 The CLI reads the same settings:
 
@@ -791,7 +791,7 @@ scimax agenda store             # write every command's export files
 
 See [[file:30-cli.org][CLI]].
 
-** ⚠️ Limitations
+** Limitations
 
 - Category comes from the =CATEGORY= property of the heading itself, or the
   file name. It is not inherited from ancestors, and =#+CATEGORY:= is not read.
@@ -819,8 +819,8 @@ AGENDA
    └─ ⚪ TODO Update documentation
 #+END_EXAMPLE
 
-** 👀 Agenda Buffer
-CLOSED: [2026-10-02 Fri 06:56]
+** ✅ Agenda Buffer
+CLOSED: [2026-10-22 Thu 09:49]
 
 The agenda buffer is a persistent, refreshable agenda in a full editor tab —
 the closest analogue to Emacs =org-agenda-mode=. Unlike the quick pick, it
@@ -889,8 +889,8 @@ A task with an unfinished dependency (see [[file:03.5-task-dependencies.org][Tas
 tasks instead. In a project agenda, blocking is worked out from the project's
 own files; elsewhere it comes from the database.
 
-*** 👀 Agenda Buffer Keys
-CLOSED: [2026-10-03 Sat 09:00]
+*** ✅ Agenda Buffer Keys
+CLOSED: [2026-10-22 Thu 09:49]
 
 These keys are active only inside an agenda buffer:
 
@@ -909,8 +909,8 @@ These keys are active only inside an agenda buffer:
 Paging with =f= and =b= updates the buffer *in place* rather than opening a
 new tab, so you can walk forward through weeks without accumulating editors.
 
-*** 👀 Mouse Interaction
-CLOSED: [2026-10-02 Fri 06:56]
+*** ✅ Mouse Interaction
+CLOSED: [2026-10-22 Thu 09:50]
 
 Every item line is a link. Ctrl+click (Cmd+click on macOS) opens the source
 heading — VS Code reserves plain click for cursor placement, so a modifier is
@@ -1690,8 +1690,8 @@ CLOSED: [2026-01-18 Sun 12:50]
 * ✅ Quick Reference
 CLOSED: [2026-01-18 Sun 12:46]
 
-** 👀 Main Agenda Commands
-CLOSED: [2026-01-18 Sun 12:47]
+** ✅ Main Agenda Commands
+CLOSED: [2026-10-22 Thu 09:50]
 
 | Command                           | Description            |
 |-----------------------------------+------------------------|
@@ -1802,8 +1802,8 @@ CLOSED: [2026-01-18 Sun 12:50]
 4. *Context work*: [[cmd:scimax.agenda.filterByTag]] - Focus by context
 5. *Review*: [[cmd:scimax.agenda.todoList]] - Review all TODOs
 
-* 👀 Related Topics
-CLOSED: [2026-01-18 Sun 11:49]
+* ✅ Related Topics
+CLOSED: [2026-10-22 Thu 09:51]
 
 - [[file:03-todo-items.org][TODO Items]] - Creating and managing TODO items
 - [[file:06-timestamps.org][Timestamps]] - Date formats, scheduling, deadlines, repeaters

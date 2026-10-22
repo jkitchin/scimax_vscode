@@ -2,7 +2,7 @@
 #+STARTUP: showall
 #+TODO: ⚠️ 👀 | ✅
 
-* ⚠️ Version Control (C-x v)
+* Version Control (C-x v)
 
 Scimax brings the Emacs VC keymap to VS Code. The centerpiece is ~C-x v v~
 (=scimax.vc.nextAction=), the counterpart of Emacs =vc-next-action=: it looks
@@ -14,7 +14,7 @@ magit-status) and the standard Emacs bindings for diff, log, revert, and blame.
 The commands work on the file in the active editor. From a right-click menu
 they work on the file you clicked.
 
-** ⚠️ C-x v v: Next Action
+** C-x v v: Next Action
 
 | File state                  | What C-x v v does                                                          |
 |-----------------------------+----------------------------------------------------------------------------|
@@ -49,7 +49,7 @@ that case the log buffer commits all staged changes to conclude the merge.
 Ahead/behind counts come from the last fetch. Run Fetch from the menu
 (=C-x v m f=) to refresh them.
 
-** ⚠️ The *vc-log* Buffer
+** The *vc-log* Buffer
 
 When a commit is next, ~C-x v v~ opens a new =git-commit= buffer. Write the
 message on the first lines; the =#= lines below show the file, the repository,
@@ -64,7 +64,7 @@ If the commit fails (for example, a pre-commit hook rejects it) the error is
 shown and the buffer stays open so you can try again. An empty message
 commits nothing.
 
-** ⚠️ Keybindings
+** Keybindings
 
 | Keybinding | Command                | Emacs equivalent       | Description                                       |
 |------------+------------------------+------------------------+---------------------------------------------------|
@@ -84,7 +84,7 @@ commits nothing.
 ~C-x v i~ is =vc-register=; scimax uses ~C-x v i~ for ignore because ~C-x v v~
 already registers untracked files.
 
-** ⚠️ C-x v i: Ignore a File
+** C-x v i: Ignore a File
 
 ~C-x v i~ (=scimax.vc.ignore=) adds the current file to the =.gitignore= at the
 repository root. It prompts with the file's path relative to the root, anchored
@@ -97,13 +97,13 @@ unstaged. If it is already committed, scimax offers *Stop Tracking*, which runs
 =git rm --cached= so the file leaves the repository (in your next commit) but
 stays on disk.
 
-** ⚠️ Right-Click Menus
+** Right-Click Menus
 
 A *Version Control* submenu appears when you right-click a file tab, a file in
 the Explorer, or inside an editor. It has Next Action, Diff, File History,
 Blame, Ignore, Revert, Push, Pull, and Status, all acting on the file you clicked.
 
-** ⚠️ Version Control Menu (scimax.vc)
+** Version Control Menu (scimax.vc)
 
 Open with ~C-x v m~, or press ~v~ in the main menu (~C-c m~). It mirrors the
 =scimax-version-control= hydra from Emacs scimax.
@@ -130,7 +130,7 @@ Repository:
   [v] Status       - Repository status (edamagit or Source Control)
 #+end_example
 
-** ⚠️ How It Works
+** How It Works
 
 - State detection, single-file commits, revert, and file history run the git
   CLI directly with argument arrays (no shell).
@@ -148,7 +148,7 @@ Repository:
 - For a magit-like status buffer, install the edamagit extension
   (=kahole.magit=); ~C-x v t~ uses it automatically.
 
-** ⚠️ Related Topics
+** Related Topics
 
 - [[file:22-hydra-menus.org][Hydra Menus]] - The Version Control menu and others
 - [[file:24-keybindings.org][Keybindings]] - All keyboard shortcuts

@@ -93,8 +93,8 @@ The database automatically watches for file changes:
 - Deleted files are removed from the index
 - Changes are queued and processed sequentially
 
-** 👀 Ignore Patterns
-CLOSED: [2026-01-17 Sat 11:46]
+** ✅ Ignore Patterns
+CLOSED: [2026-10-22 Thu 09:53]
 
 Some paths are *always* ignored. This baseline cannot be turned off, because
 indexing these directories produces duplicates of real notes rather than notes:
@@ -377,7 +377,8 @@ Results include:
 - Cosine distance (lower is more similar)
 - Up to 20 results by default
 
-** 👀 Syncing for Semantic Search
+** ✅ Syncing for Semantic Search
+CLOSED: [2026-10-22 Thu 09:53]
 
 After configuring an embedding provider, run `Scimax: Sync Files'
 (`scimax.db.reindex'). You do not need to rebuild the database:
@@ -666,7 +667,7 @@ To enable query expansion and reranking with Ollama:
 
 Beyond free-text search, the database supports structured queries for specific content types.
 
-** 👀 Heading Search
+** Heading Search
 
 Jump to any indexed heading by typing a few words from it:
 
@@ -1046,7 +1047,7 @@ CLOSED: [2026-01-17 Sat 12:08]
 
 `Scimax: Optimize Database' (`scimax.db.optimize'). [[cmd:scimax.db.optimize]]
 
-*** 👀 Operations
+*** Operations
 - Removes entries for deleted files
 - Runs VACUUM to reclaim space
 - Reports the file size before and after, for example
@@ -1465,7 +1466,7 @@ See [[file:17-projectile.org][Projectile]] for project management commands.
 
 * Troubleshooting
 
-** 👀 Semantic Search Not Working
+** Semantic Search Not Working
 
 *** Problem
 Semantic search returns no results, shows "unavailable", or displays an error.
@@ -1749,7 +1750,7 @@ Performance indexes on:
 - `hashtags.tag'
 - `files.file_type'
 
-** 👀 Vector Search
+** Vector Search
 
 Using libsql's vector functions:
 - Cosine similarity metric

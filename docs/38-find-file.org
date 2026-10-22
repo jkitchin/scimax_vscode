@@ -6,7 +6,7 @@
 
 Find File provides Emacs-style file navigation in VS Code. It displays a filterable directory listing in a webview panel where you can quickly navigate directories, open files, and perform actions like inserting file paths or org-links.
 
-** 👀 Opening Find File
+** Opening Find File
 
 | Keybinding | Command                      | Description                                         |
 |------------+------------------------------+-----------------------------------------------------|
@@ -45,7 +45,7 @@ Simply type to filter the file list. The filter uses fuzzy matching - characters
 
 Only works when filter is empty.
 
-** 👀 Actions Menu (M-o)
+** Actions Menu (M-o)
 
 Press ~M-o~ (Option+O on Mac) to open the actions menu. Then press a speed key to execute the action, or click on an action.
 
@@ -67,7 +67,7 @@ Press ~M-o~ (Option+O on Mac) to open the actions menu. Then press a speed key t
 
 Press ~M-o~ or ~Esc~ to cancel the actions menu.
 
-** ⚠️ New Windows (C-x 5)
+** New Windows (C-x 5)
 
 The Emacs frame commands open VS Code /floating editor windows/: separate OS
 windows that belong to the same VS Code window, so they keep the project,

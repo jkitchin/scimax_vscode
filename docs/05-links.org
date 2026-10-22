@@ -149,8 +149,8 @@ Click on a link or use this command to:
 - Open files in VS Code (or associated application)
 - Jump to internal targets
 
-** 👀 Link Behavior by Type
-CLOSED: [2026-01-15 Thu 19:40]
+** ✅ Link Behavior by Type
+CLOSED: [2026-10-22 Thu 09:46]
 
 | Link Type    | Behavior                              |
 |--------------+---------------------------------------|
@@ -263,8 +263,8 @@ ID links work across files:
 * ✅ File Links
 CLOSED: [2026-01-14 Wed 20:54]
 
-** 👀 Basic File Links
-CLOSED: [2026-01-17 Sat 19:53]
+** ✅ Basic File Links
+CLOSED: [2026-10-22 Thu 09:47]
 
 [[14-journal.org]]
 
@@ -338,7 +338,7 @@ Link to images (see also [[file:12-image-overlays.org][Image Overlays]]):
 
 Images are displayed in tooltips or overlays when hovering over the link.
 
-** 👀 Marp Slideshow Links
+** Marp Slideshow Links
 
 A ~marp:~ link presents a [[file:44-marp.org][Marp]] slide deck (a Markdown file with ~marp: true~)
 as a slideshow in the browser. Click it, or press =C-c C-o= on it.

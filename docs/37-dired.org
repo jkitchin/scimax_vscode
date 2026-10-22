@@ -43,7 +43,7 @@ Mark files for batch operations:
 
 Marked files appear with ~*~ indicator. Flagged files (for deletion) appear with ~D~ indicator.
 
-** 👀 File Operations
+** File Operations
 
 Operate on marked files (or current file if none marked):
 
@@ -55,7 +55,7 @@ Operate on marked files (or current file if none marked):
 | ~+~ | Create new directory                                    |
 | ~F~ | Open the current directory in Finder/Explorer           |
 
-** 👀 Actions Menu (M-o or right-click)
+** Actions Menu (M-o or right-click)
 
 Press ~M-o~ (Option+O on Mac), or right-click a row, to open a fuzzy picker of
 actions for that file. On ~.~ or ~..~ the menu offers only the directory action.

@@ -239,7 +239,7 @@ CLOSED: [2026-01-19 Mon 09:40]
 | C   | Show children        |
 | o   | Overview (fold all)  |
 
-** 👀 Folding
+** Folding
 CLOSED: [2026-01-19 Mon 09:40]
 
 Markdown headings support folding via the standard VS Code folding mechanism:
@@ -275,7 +275,7 @@ additions from Scimax:
 Files with ~marp: true~ in their front matter are previewed as slides; see
 [[file:44-marp.org][Marp Slides]].
 
-* ⚠️ Quarto Documents
+* Quarto Documents
 
 Quarto files (=.qmd=) are Pandoc Markdown with executable code chunks. Scimax
 works alongside the official [[https://marketplace.visualstudio.com/items?itemName=quarto.quarto][Quarto extension]] (=quarto.quarto=), which gives
@@ -297,7 +297,7 @@ works alongside the official [[https://marketplace.visualstudio.com/items?itemNa
 Everything in [[*Supported Features][Supported Features]] above works the same way in a =.qmd=
 file as in a =.md= file.
 
-** 👀 Code chunks
+** Code chunks
 
 Scimax recognizes Quarto's chunk fences (=```{python}=, =```{r, echo=FALSE}=)
 as code blocks, along with plain fences, =```{.python}= display blocks and
@@ -314,7 +314,7 @@ meanings, and =Cmd+Shift+K= on a citation still deletes it there.
 =Cmd+Shift+V= (=Ctrl+Shift+V=) in a =.qmd= file also runs Quarto's *Preview*
 (~quarto.preview~), so the preview key matches org and Markdown files.
 
-** ⚠️ Callouts and other divs
+** Callouts and other divs
 
 Fenced divs (callouts, =::: {.columns}=, panels, =::: {#fig-x}= figure divs)
 fold from the opening =:::= to its matching close, including nested divs.

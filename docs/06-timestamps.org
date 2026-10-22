@@ -225,7 +225,7 @@ Place cursor on a timestamp component and use:
 | S-<right> | Move to next day                  |
 | S-<left>  | Move to previous day              |
 
-** 👀 Component-Based Editing
+** Component-Based Editing
 
 The cursor position determines what changes. A cursor directly after a field
 also counts as on it, so with the cursor between =10= and =-= in
@@ -491,8 +491,8 @@ DEADLINE: <2026-04-15 Tue -7d>
 Due April 15, start warning 7 days early.
 #+END_SRC
 
-* 👀 Warning Periods
-CLOSED: [2026-01-17 Sat 08:40]
+* ✅ Warning Periods
+CLOSED: [2026-10-22 Thu 09:47]
 
 An agenda view covers the window you pick (day, week, fortnight, month), and a
 deadline shows in it when its date falls inside the window; an overdue deadline
@@ -502,8 +502,8 @@ It is listed on today's line (or, for a window that does not include today, on
 its first warned day) as =In N d.:=, and on its own date if that is in the
 window too.
 
-** 👀 Warning Period Syntax
-CLOSED: [2026-01-17 Sat 08:40]
+** ✅ Warning Period Syntax
+CLOSED: [2026-10-22 Thu 09:47]
 
 Add =-N= and a unit to a deadline: =d= days, =w= weeks, =m= months, =y= years
 (or =h= hours):
@@ -514,8 +514,8 @@ DEADLINE: <2026-01-25 Sat -7d>
 
 A week view that includes any day from January 18 on shows this deadline.
 
-** 👀 No Default Warning Period
-CLOSED: [2026-01-17 Sat 08:41]
+** ✅ No Default Warning Period
+CLOSED: [2026-10-22 Thu 09:47]
 
 There is no default warning period (Emacs uses ~org-deadline-warning-days~, 14
 days). The window you choose already sets how far ahead you look, so a deadline
@@ -533,8 +533,8 @@ CLOSED: [2026-01-17 Sat 08:41]
 | -1m     | Warn 1 month before       |
 | -0d     | Same as no warning        |
 
-** 👀 Warning Period Examples
-CLOSED: [2026-01-17 Sat 08:41]
+** ✅ Warning Period Examples
+CLOSED: [2026-10-22 Thu 09:47]
 
 #+BEGIN_SRC org
 ,* TODO Renew driver's license

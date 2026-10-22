@@ -112,8 +112,8 @@ CLOSED: [2026-01-16 Fri 07:42]
 
 Scimax comes with eight pre-built hydra menus covering all major features:
 
-** 👀 Main Menu (scimax.main)
-CLOSED: [2026-01-16 Fri 07:42]
+** ✅ Main Menu (scimax.main)
+CLOSED: [2026-10-22 Thu 09:54]
 
 The main entry point for all Scimax features.
 
@@ -370,7 +370,7 @@ Statistics:
 2. Press s to perform full-text search
 3. Enter your search query
 
-** ⚠️ Version Control Menu (scimax.vc)
+** Version Control Menu (scimax.vc)
 
 Git operations for the current file and repository, mirroring the
 =scimax-version-control= hydra from Emacs scimax.

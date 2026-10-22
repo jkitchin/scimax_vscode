@@ -11,7 +11,7 @@ This document provides a comprehensive reference for all keybindings in Scimax V
 
 *Note for Mac Users:* On macOS, most keybindings use Ctrl (not Cmd) to match Emacs conventions, except where explicitly noted with alternative Mac bindings.
 
-* 👀 Global Commands
+* Global Commands
 
 | Key     | Action                              |
 |---------+-------------------------------------|
@@ -31,7 +31,7 @@ This document provides a comprehensive reference for all keybindings in Scimax V
 | C-c S-/ | Context-sensitive help              |
 | C-c S-g | Show link graph for current file    |
 
-* ⚠️ Journal
+* Journal
 
 Journal commands live under the =M-j= (Option-J on Mac) prefix and work from
 anywhere, not only inside a journal file. Press =M-j ?= to pick from a list if
@@ -91,7 +91,7 @@ Search the documentation for keywords. Enter one or more search terms to find re
 
 Select a result to see details or open the documentation file at that location.
 
-* 👀 Emacs-Style Editor Keybindings
+* Emacs-Style Editor Keybindings
 
 | Key           | Action                             |
 |---------------+------------------------------------|
@@ -140,7 +140,7 @@ defaults write -g ApplePressAndHoldEnabled -bool false
 
 Then restart VS Code.
 
-* ⚠️ Version Control (C-x v)
+* Version Control (C-x v)
 
 | Key     | Command                | Action                                              |
 |---------+------------------------+-----------------------------------------------------|
@@ -181,7 +181,7 @@ See [[file:47-version-control.org][Version Control]].
 Note: Navigation keybindings (C-c C-n, C-c C-p, C-c C-f, C-c C-b, C-c C-j) work in
 org-mode, markdown, and LaTeX files with consistent behavior.
 
-* 👀 Headings
+* Headings
 
 | Key           | Action                         |
 |---------------+--------------------------------|
@@ -256,7 +256,7 @@ org-mode, markdown, and LaTeX files with consistent behavior.
 
 * Source Blocks (Babel)
 
-** 👀 Execution
+** Execution
 
 | Key          | Action                              |
 |--------------+-------------------------------------|
@@ -288,7 +288,7 @@ Quarto's preview (~quarto.preview~), the same as =Cmd+Shift+K=. See [[file:30-ma
 | S-<return>    | Execute and move to next block  |
 | M-S-<return>  | Execute and insert new block    |
 
-** 👀 Advanced Babel Operations
+** Advanced Babel Operations
 
 | Key       | Action                      |
 |-----------+-----------------------------|
@@ -320,7 +320,7 @@ of the Markdown preview; =Cmd+K V= still opens the Markdown preview beside the
 editor. =C-c C-c= in a ~```python run~ cell of a deck runs it in a Python panel
 beside the editor. See [[file:44-marp.org::*Exporting Slides][Exporting Slides]], [[file:44-marp.org::*Slideshow][Slideshow]] and [[file:44-marp.org::*Running cells in VS Code][Running cells in VS Code]].
 
-* 👀 Org Preview
+* Org Preview
 
 Like the Markdown preview, but for org files. See [[file:46-org-preview.org][Org Preview]].
 
@@ -373,7 +373,7 @@ Like the Markdown preview, but for org files. See [[file:46-org-preview.org][Org
 
 * Search & Navigation
 
-** 👀 Fuzzy Search (Swiper-style)
+** Fuzzy Search (Swiper-style)
 
 | Key     | Action                         |
 |---------+--------------------------------|
@@ -409,7 +409,7 @@ Emacs-style =recenter-top-bottom=. Press =C-l= repeatedly while the cursor
 stays put to cycle the cursor line through center, top, and bottom of the
 viewport. Moving the cursor resets the cycle to center.
 
-** 👀 Projectile
+** Projectile
 
 | Key       | Action                          |
 |-----------+---------------------------------|
@@ -421,7 +421,7 @@ viewport. Moving the cursor resets the cycle to center.
 | C-c p a   | Add project                     |
 | C-c p S-f | Find file in all known projects |
 
-** 👀 Database and Agenda
+** Database and Agenda
 
 | Key     | Action               |
 |---------+----------------------|
@@ -439,7 +439,7 @@ viewport. Moving the cursor resets the cycle to center.
 | C-c d t | Show TODOs           |
 | C-c d a | Show agenda          |
 
-** 👀 Agenda Buffer
+** Agenda Buffer
 CLOSED: [2026-10-03 Sat 09:01]
 
 Single keys, active only inside an agenda buffer (see [[file:13-agenda.org][Agenda]]).
@@ -460,7 +460,7 @@ The buffer is read-only, so these keys are never ambiguous with typing.
 Items are also links: Ctrl+click (Cmd+click on macOS) opens the source
 heading. Right-click any line for a context menu with the same actions.
 
-** 👀 Templates
+** Templates
 
 | Key       | Action                         |
 |-----------+--------------------------------|
@@ -518,7 +518,7 @@ are handled by the sorter, so they do not appear in Keyboard Shortcuts. Use
 | C-c e [ | Previous edit mark      |
 | C-c e s | Show edit marks summary |
 
-* 👀 Mark Ring (Emacs-style)
+* Mark Ring (Emacs-style)
 
 Emacs-style mark and region commands.
 
@@ -534,7 +534,7 @@ Emacs-style mark and region commands.
 | C-x C-x           | Exchange point and mark    |
 | C-c M             | Show mark ring             |
 
-* ⚠️ Kill Ring (Emacs-style)
+* Kill Ring (Emacs-style)
 
 Kills and copies go onto a kill ring as well as the system clipboard, so you can
 yank older kills, not just the last one. See [[file:25-commands.org::#kill-ring][Kill Ring commands]] for details.
@@ -728,7 +728,7 @@ CLOSED: [2026-01-19 Mon 18:19]
 * ✅ Additional Notes
 CLOSED: [2026-01-19 Mon 18:19]
 
-** 👀 Context-Dependent Keybindings
+** Context-Dependent Keybindings
 
 Many keybindings are context-aware and behave differently depending on cursor position:
 
@@ -762,7 +762,7 @@ CLOSED: [2026-01-19 Mon 18:20]
 
 These keybindings are active in LaTeX files (=.tex=):
 
-** 👀 Section Navigation
+** Section Navigation
 
 | Key     | Action                   |
 |---------+--------------------------|
@@ -786,7 +786,7 @@ CLOSED: [2026-01-19 Mon 18:20]
 | Alt+Down         | Move section down          |
 | C-c @            | Mark (select) section      |
 
-** 👀 Environment Commands
+** Environment Commands
 
 | Key     | Action                        |
 |---------+-------------------------------|

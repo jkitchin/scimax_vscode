@@ -80,8 +80,8 @@ not apply:
 ,#+END:
 #+end_src
 
-** 👀 Project view
-CLOSED: [2026-10-03 Sat 15:20]
+** ✅ Project view
+CLOSED: [2026-10-22 Thu 09:45]
 
 [[cmd:scimax.project.view]] (*Scimax: Project View (Gantt Chart)*) opens a panel
 with every TODO task in the active file's project on a graphical Gantt chart.
@@ -158,7 +158,7 @@ grouping keeps the order of the headings instead.
   =:scope project= too), list them in a =.projectileignore= or =.gitignore= at
   the project root.
 
-*** ⚠️ Progress, rollups and the behind flag
+*** Progress, rollups and the behind flag
 
 Tick *Progress* in the toolbar to show how far along each task is. It is off by
 default, and with it off the chart and its exports look exactly as before.
@@ -203,7 +203,7 @@ default, and with it off the chart and its exports look exactly as before.
 Weighted by effort, Aim 1 is (2d × 100% + 4d × 25%) / 6d = 50% done; the
 cancelled task does not count.
 
-**** ⚠️ Behind schedule
+**** Behind schedule
 
 A task is /behind/ when work remains and either its end date has passed, or it
 has started and its percentage is more than =scimax.project.behindTolerance=
@@ -216,7 +216,7 @@ Behind rows get a small amber dot by the title and a thin amber band under the
 bar, from the end of the hatch to today. The tooltip gives the expected and
 actual percentages.
 
-**** ⚠️ Finding your way in large charts
+**** Finding your way in large charts
 
 - *Outline* grouping lays rows out in the order of the headings in the files.
   Headings that are not shown tasks become group rows, and each file gets its
@@ -279,8 +279,8 @@ depend on this one are listed too. Tasks in other files are saved after they
 move; edits in the file you are in are left for you to save. Typing a new date
 by hand does not trigger it.
 
-*** 👀 Exporting the chart
-CLOSED: [2026-10-03 Sat 08:59]
+*** ✅ Exporting the chart
+CLOSED: [2026-10-22 Thu 09:46]
 
 The *Excel*, *PDF*, *SVG*, *PNG* and *HTML* buttons in the toolbar, the
 right-click menu on the chart, and the commands
@@ -311,7 +311,7 @@ current assignee and tag filters and grouping:
   =Fit= buttons, which appear in the top-right corner once you move the mouse
   (or =Ctrl=/=Cmd= + mouse wheel), zoom.
 
-**** ⚠️ A Gantt chart in a Marp slide
+**** A Gantt chart in a Marp slide
 
 Export the chart as HTML next to the deck and put it in a slide with an iframe:
 
@@ -347,8 +347,8 @@ arrows = "depends on"), colored by status:
 It is seeded from the active file's tasks and expands over the dependency edges
 to show the connected component. Click a node to jump to that task.
 
-** 👀 People and assignments
-CLOSED: [2026-07-11 Sat 09:05]
+** ✅ People and assignments
+CLOSED: [2026-10-22 Thu 09:46]
 
 A *person* is any heading tagged =:person:=, with contact properties:
 
@@ -382,8 +382,8 @@ A *person* is any heading tagged =:person:=, with contact properties:
 Assignees feed the table's =assignee= column and grouping (=:groupby assignee=),
 the project view's assignee filter and grouping, and the agenda's =@= filter.
 
-** 👀 Configuration
-CLOSED: [2026-07-02 Thu 08:07]
+** ✅ Configuration
+CLOSED: [2026-10-22 Thu 09:46]
 
 | Setting                            | Default | Description                                                  |
 |------------------------------------+---------+--------------------------------------------------------------|

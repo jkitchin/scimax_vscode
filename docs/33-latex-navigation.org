@@ -68,7 +68,7 @@ LaTeX sections are organized hierarchically:
 
 Starred variants (e.g., =\section*{...}=) are also recognized and marked in the outline.
 
-* 👀 Section Navigation
+* Section Navigation
 
 Navigate between sections in your LaTeX document using these commands:
 
@@ -130,7 +130,7 @@ Jump to the containing (parent) section:
 \subsubsection{Sampling}     % <- From here
 #+END_SRC
 
-** 👀 Jump to Section
+** Jump to Section
 
 The =jumpToSection= command (C-c C-j) opens a quick pick showing all sections with:
 
@@ -218,7 +218,7 @@ Content A...
 
 The entire section subtree (including all nested content) is moved.
 
-* 👀 Environment Commands
+* Environment Commands
 
 Work with LaTeX environments (=\begin{...}= / =\end{...}=):
 
@@ -246,7 +246,7 @@ Navigate between environments:
 | scimax.latex.previousEnvironment   | -           | Jump to previous environment |
 | scimax.latex.jumpToEnvironment     | -           | Quick pick all environments |
 
-** 👀 Change Environment
+** Change Environment
 
 The =changeEnvironment= command (C-c E) prompts to change the environment type:
 

@@ -130,7 +130,7 @@ left of its toolbar switch between one slide and the grid of all slides
 
 Hidden slides are shown (dimmed in the grid) so they can still be edited.
 
-* 👀 Slideshow
+* Slideshow
 
 To present, Scimax makes Marp's HTML slideshow of the deck and opens it in the
 browser. Marp CLI builds it (see [[*Marp CLI][Marp CLI]]), and it is written to a private folder
@@ -186,7 +186,7 @@ The page checks for a new build once a second by loading a small
 ~<name>.html.version.js~ file written next to it, so it needs no server. Turn it
 off with ~scimax.marp.liveReload~.
 
-** 👀 Presenting from an org file
+** Presenting from an org file
 
 A ~marp:~ link in an org file launches the slideshow when clicked (or with
 =C-c C-o= on it):
@@ -557,7 +557,7 @@ after it. Claude Code's link can only fill in a prompt in a new tab, which is
 why an open chat gets the @-mention rather than the full sentence. A chat open
 only in the Claude Code side bar is not detected, so a new tab opens.
 
-* 👀 Presenter Tools and Live Python
+* Presenter Tools and Live Python
 
 A deck can opt in to presenter tools in the HTML slideshow: a pen to draw on
 slides, a laser pointer, sticky notes, a spotlight, and Python code cells that
@@ -581,7 +581,7 @@ a trusted workspace; an untrusted one gets the plain slideshow. The tools are ad
 the rest of Scimax's Marp support: builds, transitions, notes, hidden slides,
 layouts, the Slide Sorter, the Marp menu and exports.
 
-** 👀 Keys in the slideshow
+** Keys in the slideshow
 
 | Key                       | Effect                                                                         |
 |---------------------------+--------------------------------------------------------------------------------|
@@ -621,7 +621,7 @@ note's bar drags it; its =●= picks a colour, =–= shrinks it to an icon and
 =×= deletes it, and right-clicking a note offers the same three. The
 right-click menu also has Fullscreen (=f=).
 
-** 👀 Talk timer
+** Talk timer
 
 Give the length of the talk with a ~timer~ key and a small countdown sits in
 the top-right corner of every slide:
@@ -707,7 +707,7 @@ adds one and turns on the presenter tools.
   Enter. Without the list, type a slide number and press Enter: =1= =2=
   Enter goes to slide 12.
 
-** 👀 Editing slides in the slideshow
+** Editing slides in the slideshow
 
 For last-minute polish just before a talk, =d= lets you fix the slides in
 the slideshow itself: correct a typo, move a heading, make a figure bigger,
@@ -780,7 +780,7 @@ The edits stay in the HTML; they do not change the Markdown.
 
 To keep a change for good, make it in the Markdown too.
 
-*** ⚠️ The editing toolbar
+*** The editing toolbar
 
 The bar at the top of the slide while you edit also adds things and styles
 text. *+ Text* puts a text box in the middle of the slide, ready to type in
@@ -1038,7 +1038,7 @@ upload the file (New > File upload), then open it with Google Slides.
 | ~scimax.marp.allowLocalFiles~    | ~true~  | Include local images (~--allow-local-files~), trusted workspaces only |
 | ~scimax.marp.pandocReferenceDoc~ | (empty) | PowerPoint template for the Pandoc export (=d=)                       |
 
-* 👀 Configuration
+* Configuration
 
 | Setting                       | Default   | Effect                                                     |
 |-------------------------------+-----------+------------------------------------------------------------|

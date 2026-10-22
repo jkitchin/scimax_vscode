@@ -383,8 +383,8 @@ However, only one file per date is stored. To use multiple templates in one day,
 * ✅ Navigating Journal Entries
 CLOSED: [2026-01-17 Sat 14:03]
 
-** 👀 Keyboard Navigation
-CLOSED: [2026-01-17 Sat 15:11]
+** ✅ Keyboard Navigation
+CLOSED: [2026-10-22 Thu 09:52]
 
 =M-j j= opens today's entry from anywhere, =M-j y= opens yesterday's and =M-j m=
 opens tomorrow's (handy for planning ahead). =M-j d= opens the date picker
@@ -395,7 +395,7 @@ existing entry. The older shortcuts M-[ and M-] (C-Cmd-[ and C-Cmd-] on Mac) do
 the same and only work when the current file is a journal entry (filename
 matches YYYY-MM-DD.org or .md).
 
-** 👀 Go to Specific Date
+** Go to Specific Date
 
 Run Scimax: Go to Journal Date to open a calendar picker: [[cmd:scimax.journal.goto]]
 
@@ -521,8 +521,8 @@ These commands search across your entire workspace, including journal entries.
 * ✅ Quick Capture and Logging
 CLOSED: [2026-01-17 Sat 14:17]
 
-** 👀 Quick Log Entry
-CLOSED: [2026-01-17 Sat 14:18]
+** ✅ Quick Log Entry
+CLOSED: [2026-10-22 Thu 09:52]
 
 The quick log feature lets you capture a timestamped note without opening a file: [[cmd:scimax.journal.quickLog]]
 
@@ -710,8 +710,8 @@ See [[file:19-references.org][References documentation]] for details.
 * ✅ Commands Reference
 CLOSED: [2026-01-17 Sat 14:20]
 
-** 👀 All Journal Commands
-CLOSED: [2026-01-17 Sat 14:20]
+** ✅ All Journal Commands
+CLOSED: [2026-10-22 Thu 09:52]
 
 | Command                          | Keybinding   | Description                          |
 |----------------------------------+--------------+--------------------------------------|
@@ -744,7 +744,7 @@ Access all commands via Command Palette (C-S-P):
 * ✅ Keyboard Shortcuts
 CLOSED: [2026-01-17 Sat 14:23]
 
-** ⚠️ The M-j Prefix
+** The M-j Prefix
 
 All journal commands are bound under =M-j= (Option-J on Mac), and they work
 from any file, not only from inside the journal. They are disabled while the
@@ -817,8 +817,8 @@ Add custom keybindings in keybindings.json (File > Preferences > Keyboard Shortc
 * ✅ Tips and Best Practices
 CLOSED: [2026-01-17 Sat 14:23]
 
-** 👀 Daily Journaling Workflow
-CLOSED: [2026-01-17 Sat 14:21]
+** ✅ Daily Journaling Workflow
+CLOSED: [2026-10-22 Thu 09:52]
 
 1. *Morning*: Open today's journal (M-j j), review yesterday's entry (M-j y), plan today's tasks
 2. *Throughout the day*: Use quick log (M-j l) to capture notes

@@ -123,24 +123,24 @@ Windows it uses Windows Terminal (=wt.exe=) when available and falls back to
 Settings for org-mode document behavior including TODO states, progress logging, and more.
 
 ** ✅ Settings Overview
-CLOSED: [2026-01-24 Sat 17:41]
+CLOSED: [2026-10-22 Thu 10:10]
 
-| Setting                            | Type                 | Default  | Description                       |
-|------------------------------------+----------------------+----------+-----------------------------------|
-| scimax.org.logRepeat               | string (enum)        | "false"  | Enable progress logging           |
-| scimax.org.logIntoDrawer           | boolean or string    | false    | Where to log state changes        |
-| scimax.org.descriptiveLinks        | boolean              | true     | Show links by description only    |
-| scimax.org.diagnostics.orphanLinks | boolean              | true     | Warn on unresolved internal links |
-| scimax.org.backlinks.codeLens      | boolean              | true     | Show "← N references" lenses      |
-| scimax.org.notes.excludeFromExport | boolean              | true     | Strip dialog notes from exports   |
-| scimax.org.notes.labelPrefix       | string               | "note-"  | Footnote label prefix for notes   |
-| scimax.org.notes.author            | string               | ""       | Author recorded on new notes      |
-| scimax.org.depend.enabled              | boolean | true  | Enable TODO task dependencies         |
-| scimax.org.depend.readyState           | string  | NEXT  | State to promote unblocked tasks to   |
-| scimax.org.depend.autoPromote          | boolean | true  | Promote on unblock (else notify only) |
-| scimax.org.depend.showIndicators       | boolean | true  | Blocked/ready CodeLens on TODO tasks  |
-| scimax.org.depend.hideBlockedInAgenda  | boolean | false | Hide blocked tasks from agenda        |
-| scimax.org.entities                    | array   | []    | Entity types for the Pick Entity selector |
+| Setting                               | Type              | Default | Description                               |
+|---------------------------------------+-------------------+---------+-------------------------------------------|
+| scimax.org.logRepeat                  | string (enum)     | "false" | Enable progress logging                   |
+| scimax.org.logIntoDrawer              | boolean or string | false   | Where to log state changes                |
+| scimax.org.descriptiveLinks           | boolean           | true    | Show links by description only            |
+| scimax.org.diagnostics.orphanLinks    | boolean           | true    | Warn on unresolved internal links         |
+| scimax.org.backlinks.codeLens         | boolean           | true    | Show "← N references" lenses              |
+| scimax.org.notes.excludeFromExport    | boolean           | true    | Strip dialog notes from exports           |
+| scimax.org.notes.labelPrefix          | string            | "note-" | Footnote label prefix for notes           |
+| scimax.org.notes.author               | string            | ""      | Author recorded on new notes              |
+| scimax.org.depend.enabled             | boolean           | true    | Enable TODO task dependencies             |
+| scimax.org.depend.readyState          | string            | NEXT    | State to promote unblocked tasks to       |
+| scimax.org.depend.autoPromote         | boolean           | true    | Promote on unblock (else notify only)     |
+| scimax.org.depend.showIndicators      | boolean           | true    | Blocked/ready CodeLens on TODO tasks      |
+| scimax.org.depend.hideBlockedInAgenda | boolean           | false   | Hide blocked tasks from agenda            |
+| scimax.org.entities                   | array             | []      | Entity types for the Pick Entity selector |
 
 ** ✅ Task Dependencies
 CLOSED: [2026-07-11 Sat 09:06]
@@ -154,7 +154,7 @@ children to be completed in order. Blocked/ready indicators
 (=hideBlockedInAgenda=), and dangling/cycle diagnostics surface the dependency
 graph. See [[file:03.5-task-dependencies.org][Task Dependencies]] for the full guide.
 
-** ⚠️ Project View Progress
+** Project View Progress
 
 The project view's *Progress* toggle rolls subtask progress up to parent tasks,
 hatches the done share of each bar, and flags tasks that are behind schedule.
@@ -185,7 +185,7 @@ Fields: =name= (required), =tag=/=property=/=value= (selection), =display=
 (shown in the picker), =email=/=address=/=url= (properties powering the
 mailto/maps/open-link actions). See [[file:03.7-contacts-and-locations.org][Contacts, Locations & Entity Selector]].
 
-** 👀 Orphan Link Diagnostics
+** Orphan Link Diagnostics
 CLOSED: [2026-07-02 Thu 08:05]
 
 When =scimax.org.diagnostics.orphanLinks= is enabled (the default), scimax
@@ -1617,7 +1617,7 @@ color must be opaque. Any CSS color works.
 - [[file:24-keybindings.org][Keybindings]] - Jump keybindings (=C-c j c=, =C-c j w=, …)
 - [[file:25-commands.org][Commands]] - Full command reference
 
-* ⚠️ Kill Ring Settings
+* Kill Ring Settings
 
 | Setting                 | Type   | Default | Description                                    |
 |-------------------------+--------+---------+------------------------------------------------|
@@ -1663,8 +1663,8 @@ When enabled, you can use single-key shortcuts (like `n', `p', `u') when the cur
 
 Configure the agenda view and TODO tracking.
 
-** 👀 Settings Overview
-CLOSED: [2026-10-03 Sat 09:01]
+** ✅ Settings Overview
+CLOSED: [2026-10-22 Thu 10:11]
 
 The agenda is now a *view over the Scimax database*. Indexing scope
 (what files exist in the database, and therefore what's eligible for
@@ -1824,7 +1824,7 @@ CLOSED: [2026-10-02 Fri 06:59]
 }
 #+end_src
 
-*** ⚠️ scimax.agenda.customCommands
+*** scimax.agenda.customCommands
 
 - *Type*: array of command objects
 - *Default*: =[]=
@@ -1854,7 +1854,7 @@ CLOSED: [2026-10-02 Fri 06:59]
 }
 #+end_src
 
-*** ⚠️ scimax.agenda.stuckProjects
+*** scimax.agenda.stuckProjects
 
 - *Type*: object
 - *Default*: ={ "match": "LEVEL=2", "todoStates": ["TODO", "NEXT", "NEXTACTION"], "tags": [] }=
@@ -2198,7 +2198,7 @@ set, Marp for VS Code's matching ~markdown.marp.*~ setting is used
 ~enableHtml~). See
 [[file:44-marp.org::*Configuration][Marp Slides]].
 
-* 👀 Marp Export Settings
+* Marp Export Settings
 
 | Setting                        | Type    | Default | Description                                                 |
 |--------------------------------+---------+---------+-------------------------------------------------------------|

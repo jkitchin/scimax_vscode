@@ -101,7 +101,7 @@ scimax task help
 scimax skill
 #+end_src
 
-** 👀 Agenda
+** Agenda
 
 View scheduled items, deadlines, and TODO items.
 
@@ -139,7 +139,7 @@ scimax agenda week --json
            projects/grant.org:15
 #+end_example
 
-*** ⚠️ Custom Agenda Commands
+*** Custom Agenda Commands
 
 The CLI runs the custom agenda commands defined in =scimax.agenda.customCommands=
 in your VS Code =settings.json= (see [[file:13-agenda.org::*Custom Agenda Commands][Custom Agenda Commands]]).
@@ -548,7 +548,7 @@ Output:
 
 Add =--json= for structured output.
 
-*** 👀 Optimize
+*** Optimize
 
 Remove entries for missing files and VACUUM:
 

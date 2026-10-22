@@ -17,14 +17,14 @@ The document template system provides yasnippet/skeleton-like functionality for 
 * ✅ Quick Start
 CLOSED: [2026-01-21 Wed 07:10]
 
-** 👀 Insert a Template
+** Insert a Template
 
 1. Open a file (org, markdown, or latex)
 2. Press =C-c T i= or run =Scimax: Quick Insert Template=
 3. Select a template from the list
 4. Tab through placeholders to fill in values
 
-** 👀 Create a New File from Template
+** Create a New File from Template
 
 1. Press =C-c T n= or run =Scimax: New File from Template=
 2. Select a template
@@ -296,7 +296,7 @@ ${3:Introduction paragraph}
 $0
 #+END_SRC
 
-** 👀 Create Template from Selection
+** Create Template from Selection
 
 1. Select text in the editor
 2. Press =C-c T s= or run =Scimax: Create Template from Selection=
@@ -304,7 +304,7 @@ $0
 4. Optionally add a description
 5. The template is saved to your templates directory
 
-* 👀 Commands
+* Commands
 
 | Command                                | Keybinding  | Description                          |
 |----------------------------------------+-------------+--------------------------------------|
