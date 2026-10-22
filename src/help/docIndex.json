@@ -1,5 +1,5 @@
 {
-  "buildDate": "2026-10-21T20:51:00.925Z",
+  "buildDate": "2026-10-22T12:49:47.339Z",
   "count": 3694,
   "entries": [
     {
@@ -105577,7 +105577,7 @@
       "heading": "Following links across files",
       "level": 2,
       "file": "42-granular-addressing.org",
-      "line": 156,
+      "line": 163,
       "content": "Following a =[[name]]= link first searches the current file. If the anchor is not in the current file, scimax consults the database and jumps to a matching anchor anywhere in the workspace. This is what makes the =[[name]]= link copied by *Link to Here* work even when the anchor lives in a different file.",
       "path": [
         "Commands"
@@ -105611,7 +105611,7 @@
       "heading": "The anchor index",
       "level": 1,
       "file": "42-granular-addressing.org",
-      "line": 163,
+      "line": 170,
       "content": "Anchors are stored in the scimax database (the same database used for search and the link graph), in an =anchors= table that records the anchor text, its kind (=target=, =radio=, or =name=), its file, line, character offset, and the heading that contains it. The index is: - *Derived, not authoritative*: the org file is the truth; the index is rebuilt on save and can be regenerated at any time with =scimax db sync=. - *Cross-file*: anchor names resolve across the whole indexed workspace. - *Colli",
       "path": [],
       "commands": [],
@@ -105643,7 +105643,7 @@
       "heading": "Orphan link diagnostics",
       "level": 1,
       "file": "42-granular-addressing.org",
-      "line": 179,
+      "line": 186,
       "content": "When the setting =scimax.org.diagnostics.orphanLinks= is enabled (the default), scimax warns when an internal link resolves to nothing. A link is flagged only when it is confidently unresolvable, so valid links are never marked: - =[[name]]= is flagged when there is no =<<name>>= / =<<<name>>>= / =#+NAME: name= anchor, no heading with that text, no matching =CUSTOM_ID=, the name does not appear as ordinary text in the file, and no anchor of that name exists elsewhere in the workspace. - =[[*Head",
       "path": [],
       "commands": [
@@ -105677,7 +105677,7 @@
       "heading": "Worked example",
       "level": 1,
       "file": "42-granular-addressing.org",
-      "line": 211,
+      "line": 218,
       "content": "#+BEGIN_SRC org # decisions.org",
       "path": [],
       "commands": [],
@@ -105694,7 +105694,7 @@
       "heading": "Architecture decisions",
       "level": 1,
       "file": "42-granular-addressing.org",
-      "line": 215,
+      "line": 222,
       "content": "We chose an embedded database <<why-sqlite>> to avoid a server dependency. # review.org (another file)",
       "path": [],
       "commands": [],
@@ -105717,7 +105717,7 @@
       "heading": "Review notes",
       "level": 1,
       "file": "42-granular-addressing.org",
-      "line": 219,
+      "line": 226,
       "content": "The reasoning for the storage choice is at [[why-sqlite]]. #+END_SRC - Following =[[why-sqlite]]= in =review.org= jumps to =decisions.org= (cross-file resolution via the index). - Running *Show Back-links* on the =<<why-sqlite>>= line in =decisions.org= lists the link in =review.org=. - If you delete the =<<why-sqlite>>= anchor and save, the link in =review.org= is flagged as an orphan.",
       "path": [],
       "commands": [],
@@ -105749,7 +105749,7 @@
       "heading": "Limitations",
       "level": 1,
       "file": "42-granular-addressing.org",
-      "line": 230,
+      "line": 237,
       "content": "- *Point, not region*: an anchor addresses the point where it sits. To address a paragraph you place an anchor in it; arbitrary elements are not addressable until anchored (\"intrinsic on demand\" rather than \"intrinsic always\"). - *Uniqueness*: anchor names should be unique within their resolution scope. *Link to Here* disambiguates automatically, but a hand-written duplicate name resolves to the first match. - *Cross-file fragments*: =[[file.org::name]]= links are followed but are not yet covere",
       "path": [],
       "commands": [],
@@ -105781,7 +105781,7 @@
       "heading": "Related Topics",
       "level": 1,
       "file": "42-granular-addressing.org",
-      "line": 241,
+      "line": 248,
       "content": "- [[file:05-links.org][Links]] - all link types and link following - [[file:39-link-graph.org][Link Graph]] - file-level relationship visualization - [[file:18-database-search.org][Database and Search]] - the index that powers anchor resolution - [[file:25-commands.org][Commands]] - full command reference - [[file:26-configuration.org][Configuration]] - the =orphanLinks= and other settings - [[file:02-document-structure.org][Document Structure]] - headings, CUSTOM_ID, and IDs",
       "path": [],
       "commands": [],

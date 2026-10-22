@@ -252,7 +252,7 @@ export interface BacklinkRow {
  * file they are written in, so a same-named heading elsewhere is not a target.
  */
 export type BacklinkTarget =
-    | { kind: 'anchor'; text: string }
+    | { kind: 'anchor'; text: string; filePath?: string }
     | { kind: 'heading'; title?: string; customId?: string; id?: string; filePath?: string };
 
 /** Indexed expressions (migration 8); queries must repeat them exactly. */
@@ -296,10 +296,16 @@ function backlinkMatcher(target: BacklinkTarget): {
     if (target.kind === 'anchor') {
         const key = normalizeAnchorText(target.text);
         if (!key) return { exact: [], suffix: [], matches: () => false };
+        // A bare [[text]] falls back to a workspace-wide anchor lookup, so it
+        // matches from any file; with a filePath, [[x.org::text]] counts only
+        // when x.org is the anchor's file.
+        const file = target.filePath ? path.resolve(target.filePath) : undefined;
         return {
             exact: [key],
             suffix: [key],
-            matches: c => ANCHOR_TYPES.has(c.link_type) && (c.k === key || c.sk === key),
+            matches: c => ANCHOR_TYPES.has(c.link_type) && (c.k === key ||
+                (c.sk === key && (file === undefined ||
+                    (FILE_LINK_TYPES.has(c.link_type) && linkTargetFile(c.target) === file)))),
         };
     }
     // CUSTOM_ID links ([[#id]]) are internal links whose raw_target keeps the
@@ -1471,11 +1477,13 @@ export class ScimaxDbCore {
      * ([[file::text]]) via the raw (unresolved) link target. Each result names
      * the source file, line, and the heading that contains the link.
      *
-     * Note: matching is by anchor text, so a same-named anchor in another file
-     * can appear; this is the documented uniqueness limitation for v1.
+     * Pass the anchor's filePath to count [[file::text]] links only when they
+     * name that file. Bare [[text]] links match from any file (they fall back
+     * to a workspace-wide anchor lookup), so a same-named anchor in another
+     * file can still share them.
      */
-    public async getAnchorBacklinks(text: string): Promise<BacklinkRow[]> {
-        return (await this.getBacklinksBatch([{ kind: 'anchor', text }]))[0];
+    public async getAnchorBacklinks(text: string, filePath?: string): Promise<BacklinkRow[]> {
+        return (await this.getBacklinksBatch([{ kind: 'anchor', text, filePath }]))[0];
     }
 
     /**
