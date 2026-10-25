@@ -336,7 +336,7 @@ class AgendaWebview implements vscode.Disposable {
   <span id="range" class="muted"></span>
   <span id="count" class="muted"></span>
   <span class="spacer"></span>
-  <span class="muted">Click or Enter opens an item; hover (or Space) shows its context; right-click for more. n/p move, f/b page, t cycles TODO, q closes.</span>
+  <span class="muted">Double-click or Enter opens an item; hover (or Space) shows its context; right-click for more. n/p move, f/b page, t cycles TODO, q closes.</span>
 </div>
 <div id="list" class="list" tabindex="0" role="listbox" aria-label="Agenda items"></div>
 <div id="preview" class="preview" role="tooltip" hidden></div>
