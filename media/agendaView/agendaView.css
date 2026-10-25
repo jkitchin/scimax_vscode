@@ -324,6 +324,16 @@ body {
     border: 1px solid var(--grid);
 }
 
+/* On a selected row the chips take the selection's text color, since the
+   badge and editor colors can vanish against the selection background. */
+.row.selected .tag,
+.row.selected .tag.assignee {
+    color: inherit;
+    background: transparent;
+    border: 1px solid currentColor;
+    opacity: 1;
+}
+
 .row .tag:hover,
 .row .tag.inc {
     opacity: 1;
