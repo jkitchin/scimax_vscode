@@ -7,6 +7,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.10.0] - 2026-10-25
+
+### Added
+
+- **Agenda view** - `C-c a a` opens the agenda in a panel laid out like the project view's Gantt chart, as an alternative to the agenda buffer (which stays on `C-c a v`). It shows a day, week, fortnight or month with paging, the TODO list, or any custom agenda, and a *Project* menu limits it to one of the `C-c p p` projects. Menus with counts filter by tag (require or exclude), file, TODO state, priority, assignee (own or inherited `:ASSIGNEE:` and `@tags`), property value and text, and the choices are kept per workspace. Click selects an item; double-click or `Enter` opens it beside the view. Hovering or `Space` shows its outline path and the start of its entry, and `q` closes the view.
+- **Shared task actions** - Right-clicking a task in the agenda view or the project view gives the same menu: open, cycle TODO, priority, tags, assign, effort, schedule, deadline, later or earlier by a day, clock in, refile, archive and store link.
+- **Custom agenda commands** - Saved agenda views in `scimax.agenda.customCommands`, like Emacs `org-agenda-custom-commands`. They support org match strings (tag logic and regexes, properties, dates, `/TODO`), the agenda, todo, tags, tags-todo, search and stuck block types, composite views, skip conditions, sorting, grouping, line prefix formats and file or directory restrictions. Run them from the agenda menu (`C-c a c`), `scimax.agenda.custom` or `scimax agenda custom` in the CLI. *Store Agenda Views* writes each one's export files (.txt, .org, .html, .ics, .json). Examples are in `examples/custom-agenda`.
+- **Emacs-style version control (`C-x v`)** - `C-x v v` does the next sensible thing for the file: register it, commit it through a `*vc-log*` buffer (`C-c C-c` commits, `C-c C-k` cancels), mark conflicts resolved, conclude a merge, or offer push, pull and sync. The prefix also has push (`p`), pull (`P`), status (`t`, edamagit if installed), Source Control (`d`), diff (`=`), history (`l`), revert (`u`), blame (`g`), ignore (`i`) and a menu (`m`). There is a Version Control hydra and right-click submenu, and repositories above the workspace folder are opened as needed.
+- **Descriptive links** - `[[target][description]]` displays as just the description, as in Emacs, and the literal link shows while the cursor is inside it. Set `scimax.org.descriptiveLinks` to turn it off, or toggle it with `scimax.org.toggleLinkDisplay`.
+- **Repeaters in the agenda** - Repeating items show their repeater (for example ↻+1w) before the TODO state, so you can tell whether marking one done closes it or moves it to its next date.
+- **Marp slideshow** - Slides can be added, hidden, deleted and reordered (drag in the overview), and hidden slides show greyed out in the overview. Any deck can get a talk timer during the show (right-click or `Alt+T`), with a menu to pause, reset and adjust it. `scimax.marp.presenter` gives every deck the presenter tools unless it says `presenter: false`.
+
+### Changed
+
+- **Agenda keys** - `C-c a a` opens the new agenda view, `C-c a v` the agenda buffer, and `C-c a c` the agenda menu (built-in views and custom commands).
+- **Task menu command ids** - The project view's `scimax.project.task.*` menu commands for open, cycle TODO, assign, priority, effort, schedule and deadline are now `scimax.task.*`. Update any keybindings you made for the old ids.
+- **Back-links are scoped** - Heading title and `CUSTOM_ID` links count only from the heading's own file or from `file:` links that name it (`id:` links stay global), so `[[*Summary]]` no longer counts toward every "Summary" heading. Links inside Babel results are not indexed, except `file:` links such as generated images.
+
+### Fixed
+
+- **Highlighting no longer runs away** - An unclosed string or a stray `$` inside a source block, LaTeX environment or math fragment could swallow `#+END_SRC` or the closer and highlight the rest of the file.
+- **`#+FILETAGS` are inherited in matches** - `+work` missed entries tagged only by the file. Existing databases reindex org files once to pick this up.
+- **Custom agenda restrictions in large databases** - File and directory restrictions were applied after the 5000-row limit, so a restricted block could find nothing.
+- **Drawers closed by a lowercase `:end:`** - Babel's `:results:` drawers swallowed the rest of the file.
+- **`scimax skill update`** kept dropping the presentations reference. The bundled skill is now v0.13.0 and includes it.
+
 ## [0.9.0] - 2026-10-17
 
 ### Added
