@@ -81,7 +81,7 @@ not apply:
 #+end_src
 
 ** ✅ Project view
-CLOSED: [2026-10-22 Thu 09:45]
+CLOSED: [2026-10-24 Sat 20:49]
 
 [[cmd:scimax.project.view]] (*Scimax: Project View (Gantt Chart)*) opens a panel
 with every TODO task in the active file's project on a graphical Gantt chart.
@@ -108,11 +108,14 @@ grouping keeps the order of the headings instead.
   chart. The arrow keys move the selection.
 - *Drag* a task's bar to move it, or the right end of a bar that ends on its
   deadline to move just the deadline. See [[*Dragging tasks on the chart]].
-- *Right-click* a task for: Open Task, Cycle TODO State, Assign..., Set
-  Priority..., Set Effort..., Schedule..., and Set Deadline.... Each runs the
-  ordinary Scimax command on the task's heading (so repeaters, CLOSED
-  timestamps and dependency blocking behave as usual), saves the file, and
-  comes back to the chart.
+- *Right-click* a task for: Open Task, Cycle TODO State, Set Priority..., Set
+  Tags..., Assign..., Set Effort..., Schedule..., Set Deadline..., Later by a
+  Day, Earlier by a Day, Clock In, Refile..., Archive Subtree and Store Link.
+  Each runs the ordinary Scimax command on the task's heading (so repeaters,
+  CLOSED timestamps and dependency blocking behave as usual), saves the file,
+  and comes back to the chart. The agenda view has the same menu (see
+  [[file:13-agenda.org::*Agenda View][Agenda View]]); the two date moves shift
+  both the =SCHEDULED= and =DEADLINE= dates here.
 - *Depends On...* in the right-click menu lists the project's other tasks (not
   done first, with their dates and files). Pick the task that must be done
   first: it is added to this task's =:DEPENDS:=, both headings get an =:ID:= if
@@ -410,10 +413,11 @@ CLOSED: [2026-10-03 Sat 08:59]
   "Unknown dynamic block type"; delete it and use the project view instead.
 
 ** ✅ Related Topics
-CLOSED: [2026-07-02 Thu 08:07]
+CLOSED: [2026-10-24 Sat 20:49]
 
 - [[file:03.5-task-dependencies.org][Task Dependencies]]: the dependency layer this builds on
 - [[file:13-agenda.org][Agenda]]: the project agenda and the assignee filter (=@=)
+- [[file:13-agenda.org::*Agenda View][Agenda View]]: the agenda in a panel, with the same task menu as the chart
 - [[file:30-cli.org][CLI]] — =scimax task next/who/path= answers the same questions from the terminal
 - [[file:03-todo-items.org][TODO Items]] — TODO states, priorities, effort, tags and =#+FILETAGS=
 - [[file:06-timestamps.org][Timestamps]] — SCHEDULED/DEADLINE and clocking

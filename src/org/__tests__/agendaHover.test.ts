@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { escapeMarkdown, renderSnippetLine, renderSnippetMarkdown } from '../agendaHover';
+import { entrySnippet, escapeMarkdown, outlinePath, renderSnippetLine, renderSnippetMarkdown } from '../agendaHover';
 
 const cmd = (ref: { line: number; column: number }) => `command:x?${ref.line}:${ref.column}`;
 
@@ -37,5 +37,38 @@ describe('agenda hover snippet', () => {
             cmd
         );
         expect(out).toBe('**\\* TODO Task**  \none  \n&nbsp;&nbsp;two\n\nthree');
+    });
+});
+
+describe('entry context', () => {
+    const lines = [
+        '* Projects  :work:',
+        '** Grant renewal',
+        'Notes on the grant.',
+        '*** TODO Write budget  :admin:',
+        'SCHEDULED: <2026-10-26 Mon>',
+        ':PROPERTIES:',
+        ':EFFORT: 2h',
+        ':END:',
+        'Ask the office for last year.',
+        '*** TODO Next one',
+        '* Other',
+    ];
+
+    it('takes the heading and its body, without the property drawer', () => {
+        expect(entrySnippet(lines, 4, 10)!.map(l => l.text)).toEqual([
+            '*** TODO Write budget  :admin:',
+            'SCHEDULED: <2026-10-26 Mon>',
+            'Ask the office for last year.',
+        ]);
+        expect(entrySnippet(lines, 4, 1)!.map(l => l.line)).toEqual([4, 5]);
+        expect(entrySnippet(lines, 99, 10)).toBeUndefined();
+    });
+
+    it('lists the headings above, outermost first, without tags', () => {
+        expect(outlinePath(lines, 4)).toEqual(['Projects', 'Grant renewal']);
+        expect(outlinePath(lines, 10)).toEqual(['Projects', 'Grant renewal']);
+        expect(outlinePath(lines, 1)).toEqual([]);
+        expect(outlinePath(lines, 3)).toEqual([]);
     });
 });

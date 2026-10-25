@@ -729,26 +729,28 @@ A heading matching =match= is a project. It is *not* stuck when a descendant
 is in one of =todoStates=, carries one of =tags=, or has a title matching
 =regexp=. Done projects are never stuck.
 
+
 ** Agenda Menu Keys
 
 The agenda menu ([[cmd:scimax.agenda.menu]], =C-c a c=) is a dispatcher like
 Emacs' =C-c a=. Typing a key that names a single entry runs it at once.
 
-| Key | Action                                   |
-|-----+------------------------------------------|
-| =a= | Agenda buffer                            |
-| =d= | Day agenda                               |
-| =w= | Week agenda                              |
-| =f= | Fortnight agenda                         |
-| =M= | Month agenda                             |
-| =t= | TODO list                                |
-| =D= | Upcoming deadlines                       |
-| =S= | Scheduled items                          |
-| =c= | Clock report                             |
-| =m= | Match tags/properties ([[cmd:scimax.agenda.match]]) |
-| =T= | Filter by tag                            |
+| Key | Action                                                |
+|-----+-------------------------------------------------------|
+| =a= | Agenda buffer                                         |
+| =v= | Agenda view ([[cmd:scimax.agenda.view]])              |
+| =d= | Day agenda                                            |
+| =w= | Week agenda                                           |
+| =f= | Fortnight agenda                                      |
+| =M= | Month agenda                                          |
+| =t= | TODO list                                             |
+| =D= | Upcoming deadlines                                    |
+| =S= | Scheduled items                                       |
+| =c= | Clock report                                          |
+| =m= | Match tags/properties ([[cmd:scimax.agenda.match]])   |
+| =T= | Filter by tag                                         |
 | =e= | Store agenda views ([[cmd:scimax.agenda.storeViews]]) |
-| =r= | Refresh                                  |
+| =r= | Refresh                                               |
 
 Your custom commands are listed alongside these. A custom command with the
 same key as a built-in replaces it.
@@ -820,13 +822,13 @@ AGENDA
 #+END_EXAMPLE
 
 ** ✅ Agenda Buffer
-CLOSED: [2026-10-22 Thu 09:49]
+CLOSED: [2026-10-24 Sat 20:31]
 
 The agenda buffer is a persistent, refreshable agenda in a full editor tab —
 the closest analogue to Emacs =org-agenda-mode=. Unlike the quick pick, it
 stays open; unlike the tree view, it gets the whole editor.
 
-Open it with =C-c a a= or =C-c a v= ([[cmd:scimax.agenda.openBuffer]]), or from
+Open it with =C-c a v= ([[cmd:scimax.agenda.openBuffer]]), or from
 the agenda menu (=C-c a c=), then choose a span (day, week, fortnight, or month):
 
 #+BEGIN_EXAMPLE
@@ -935,6 +937,108 @@ which would hold if the agenda edited the file directly.
 
 The buffer also refreshes itself whenever the database is reindexed, so it
 never shows a stale snapshot. Press =g= to force a refresh.
+
+** ⚠️ Agenda View
+
+The agenda view ([[cmd:scimax.agenda.view]], =C-c a a=, or =v= in the agenda
+menu =C-c a c=) is the agenda in a panel of its own, laid out like the project
+view's Gantt chart: a toolbar of filters on top and the items below. It is an alternative
+to the agenda buffer, not a replacement; both read the same agenda files and
+both stay open side by side if you like.
+
+*** ⚠️ Choosing what is shown
+
+The *Day*, *Week*, *Fortnight* and *Month* buttons show that many days from
+today, grouped by date, with today highlighted. The =‹=, *Today* and =›=
+buttons page by one span. *TODO* shows every open TODO, grouped by keyword and
+sorted by priority within each keyword.
+
+*Custom* lists the commands in =scimax.agenda.customCommands= (see [[*Custom
+Agenda Commands]]). Picking one shows its blocks one after another, each under
+its own header, and the paging buttons move its agenda blocks. Pick *(none)*
+or a span button to go back.
+
+*Project* limits the items to one project, from the same list =C-c p p=
+([[cmd:scimax.projectile.switch]]) offers. Spans and the TODO list read the
+project's own org files, so a file the database has not indexed yet still
+shows; a custom agenda is limited to the items it found under the project's
+folder.
+
+*** ⚠️ Filtering
+
+The filters work on the items already loaded, so they apply at once and each
+menu shows how many items have each value:
+
+- *Tags*: click a tag once to require it, again to exclude it, and a third
+  time to clear it. Several required tags must all be present. Inherited tags
+  and =#+FILETAGS= count. Clicking a tag on an item line requires it too.
+- *Files*, *States* and *Priority*: uncheck a value to hide its items. *Show
+  all* and *Hide all* set every box at once.
+- *Assignee*: check people to see only their items; *(unassigned)* is the items
+  nobody has. Assignees come from =:ASSIGNEE:= and =@tags=, on the heading or
+  inherited from the nearest heading above that has any, as in [[*Filtering by
+  Assignee]]. Items show their assignees as =@name= chips; click one to filter
+  by that person.
+- *Properties*: one section per property found in the items' own drawers
+  (=:ID:=, =:CUSTOM_ID:= and =:ASSIGNEE:= are left out). Check values to keep
+  the items with one of them; *(not set)* is the items without the property.
+  Checked values of different properties must all match. A section lists the
+  40 most common values; type a rarer one in the text box.
+- The text box (=/=) keeps items whose title, TODO keyword, category, file
+  name, tags, =@assignees= or property values contain every word typed.
+
+*Clear filters* resets all of them. The span, project, custom agenda and
+filters are remembered for the workspace, and the view always reopens at
+today.
+
+*** ⚠️ Acting on items
+
+Click an item, or select it and press =Enter=, to open its heading beside the
+view. Right-click an item for these actions, which it shares with the project
+view's chart: *Open Task*, *Cycle TODO State*, *Set Priority...*, *Set
+Tags...*, *Assign...*, *Set Effort...*, *Schedule...*, *Set Deadline...*,
+*Later by a Day*, *Earlier by a Day*, *Clock In*, *Refile...*, *Archive
+Subtree*, *Store Link*, and *Ignore This File in the Agenda*.
+
+Each action (except the two date moves) runs the ordinary Scimax command on the
+heading, so repeaters, CLOSED timestamps and dependency blocking behave as
+usual. Then it saves the file and comes back to the view, as cycling a TODO
+from the agenda buffer does. *Later by a Day* and *Earlier by a Day* move the
+date that the item's line shows: its =SCHEDULED= date on a "Scheduled:" line,
+its =DEADLINE= on a deadline line. In the TODO list, where no date is shown,
+they move both. *Ignore This File in the Agenda* adds the file to
+=scimax.agenda.exclude=, as *Ignore File* in the buffer does.
+
+Rest the pointer on an item, or select it and press =Space=, for a tooltip
+with its context from the file it lives in: the headings above it (as
+=Projects › Grant renewal=), the heading itself and the first ten lines of its
+entry (property drawers left out), whether it is blocked or assigned, and its
+file and line. It reads an open editor's unsaved text when there is one, as the
+agenda buffer's hover does. =Escape= or moving on hides it.
+
+The view reloads when the agenda refreshes and whenever an org file is saved.
+
+*** ⚠️ Agenda View Keys
+
+The keys follow the agenda buffer where it has the same action:
+
+| Key              | Action                               |
+|------------------+--------------------------------------|
+| =Down=, =n=, =j= | Next item                            |
+| =Up=, =p=, =k=   | Previous item                        |
+| =Home=, =End=    | First, last item                     |
+| =Enter=          | Open the item beside the view        |
+| =Space=          | Show or hide the item's tooltip      |
+| =t=              | Cycle the item's TODO state          |
+| =f=, =b=         | Page forward, back                   |
+| =.=              | Back to today                        |
+| =d=, =w=, =m=    | Day, week, month span                |
+| =/=              | Focus the text filter (=Esc= leaves) |
+| =g=, =r=         | Refresh                              |
+| =q=              | Close the view                       |
+
+=Shift+F10= or the context-menu key opens the right-click menu for the
+selected item.
 
 ** ✅ Opening Items
 CLOSED: [2026-01-18 Sun 12:53]
@@ -1803,7 +1907,7 @@ CLOSED: [2026-01-18 Sun 12:50]
 5. *Review*: [[cmd:scimax.agenda.todoList]] - Review all TODOs
 
 * ✅ Related Topics
-CLOSED: [2026-10-22 Thu 09:51]
+CLOSED: [2026-10-24 Sat 20:49]
 
 - [[file:03-todo-items.org][TODO Items]] - Creating and managing TODO items
 - [[file:06-timestamps.org][Timestamps]] - Date formats, scheduling, deadlines, repeaters
@@ -1812,6 +1916,8 @@ CLOSED: [2026-10-22 Thu 09:51]
 - [[file:26-configuration.org][Configuration]] - Extension settings
 - [[file:30-cli.org][CLI]] - Running custom agenda commands from the terminal
 - [[file:03.5-task-dependencies.org][Task Dependencies]] - Blocked tasks and the =blocked= skip condition
+- [[file:03.6-project-management.org][Project Management]] - The project view, whose task menu the agenda view shares
+- [[file:17-projectile.org][Projectile]] - The projects the agenda view's Project filter lists
 - [[file:01-getting-started.org][Getting Started]] - Basic usage guide
 
 * Navigation

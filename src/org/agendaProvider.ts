@@ -421,6 +421,31 @@ export class AgendaManager {
         );
     }
 
+    /**
+     * Fill in the assignees (own or inherited :ASSIGNEE: and @tags) of the
+     * items that do not have them yet, from the database's headings of each
+     * file. Items the database does not know keep none.
+     */
+    async resolveAssignees(items: AgendaItem[]): Promise<void> {
+        const pending = items.filter(i => i.assignees === undefined);
+        if (pending.length === 0) return;
+        const db = this.db || await getDatabase();
+        const fileRows = new Map<string, HeadingRecord[]>();
+        for (const item of pending) {
+            let rows = fileRows.get(item.file);
+            if (!rows) {
+                try {
+                    rows = db ? await db.getHeadingsInFile(item.file) : [];
+                } catch {
+                    rows = [];
+                }
+                fileRows.set(item.file, rows);
+            }
+            const row = rows.find(r => r.line_number === item.line);
+            item.assignees = row ? getRowAssignees(row, rows) : [];
+        }
+    }
+
     /** Whether scimax.org.depend.hideBlockedInAgenda is in effect. */
     private hideBlockedInAgenda(): boolean {
         const dependConfig = vscode.workspace.getConfiguration('scimax.org.depend');
@@ -1163,7 +1188,8 @@ function warnDeprecatedAgendaSettings(): void {
     });
 }
 
-export function registerAgendaCommands(context: vscode.ExtensionContext): void {
+/** Register the agenda's views and commands; the manager is returned for the agenda view. */
+export function registerAgendaCommands(context: vscode.ExtensionContext): AgendaManager {
     warnDeprecatedAgendaSettings();
     const manager = new AgendaManager(context);
     const treeProvider = new AgendaTreeProvider(manager);
@@ -1851,6 +1877,7 @@ ${reportLines.join('\n')}
         vscode.commands.registerCommand('scimax.agenda.menu', async () => {
             const builtins: DispatchEntry[] = [
                 { key: 'a', label: 'Agenda Buffer', description: 'Persistent, refreshable agenda in an editor tab', run: () => vscode.commands.executeCommand('scimax.agenda.openBuffer') },
+                { key: 'v', label: 'Agenda View', description: 'Agenda with filter menus and right-click actions', run: () => vscode.commands.executeCommand('scimax.agenda.view') },
                 { key: 'd', label: 'Day Agenda', description: 'Today\'s agenda', run: () => vscode.commands.executeCommand('scimax.agenda.day') },
                 { key: 'w', label: 'Week Agenda', description: '7-day view', run: () => vscode.commands.executeCommand('scimax.agenda.week') },
                 { key: 'f', label: 'Fortnight', description: '14-day view', run: () => vscode.commands.executeCommand('scimax.agenda.fortnight') },
@@ -2025,6 +2052,7 @@ ${reportLines.join('\n')}
             }
         })
     );
+    return manager;
 }
 
 // =============================================================================

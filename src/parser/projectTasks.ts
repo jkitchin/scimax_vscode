@@ -54,6 +54,8 @@ export interface ProjectTask {
     tags: string[];
     /** Normalized ids this task depends on (from :DEPENDS:). */
     dependsIds: string[];
+    /** The heading's own property drawer. */
+    properties?: Record<string, string>;
     /** 1-based line number of the heading. */
     line: number;
     /** File the task lives in (set when tasks span several files). */
@@ -231,6 +233,7 @@ export function extractProjectTasks(
             assignees: getAssignees(doc, h),
             tags: getInheritedTags(doc, h),
             dependsIds: parseDependsIds(drawerProp(h, DEPENDS_PROPERTY)),
+            properties: h.propertiesDrawer ?? {},
             line: (h.position?.start.line ?? 0) + 1,
             file: options.file,
             parentTitle: parent ? (parent.properties.rawValue || '').trim() || undefined : undefined,

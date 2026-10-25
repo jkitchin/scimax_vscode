@@ -68,7 +68,9 @@ import { registerRefileCommands } from './org/refileProvider';
 import { registerSpeedCommands } from './org/speedCommands';
 import { parseStartupOptions, applyStartupVisibility } from './org/speedCommands/visibility';
 import { registerImageOverlayCommands } from './org/imageOverlayProvider';
-import { registerAgendaCommands } from './org/agendaProvider';
+import { registerAgendaCommands, type AgendaManager } from './org/agendaProvider';
+import { registerAgendaView } from './org/agendaView';
+import { registerTaskActions } from './org/taskActions';
 import { registerTableFormulaCommands } from './org/tableFormula';
 import { registerCaptureCommands } from './org/captureProvider';
 import { OrgLintProvider, registerOrgLintCommands } from './org/orgLintProvider';
@@ -821,7 +823,8 @@ async function activateScimax(context: vscode.ExtensionContext) {
     activationStep('registerImageOverlayCommands', () => registerImageOverlayCommands(context));
 
     // Register Native Agenda Commands (file-scanning based agenda)
-    activationStep('registerAgendaCommands', () => registerAgendaCommands(context));
+    let agendaManager: AgendaManager | undefined;
+    activationStep('registerAgendaCommands', () => { agendaManager = registerAgendaCommands(context); });
 
     // Register Table Formula Commands (spreadsheet-like calculations)
     activationStep('registerTableFormulaCommands', () => registerTableFormulaCommands(context));
@@ -860,6 +863,7 @@ async function activateScimax(context: vscode.ExtensionContext) {
 
     // Task dependency graph webview.
     activationStep('registerTaskGraph', () => registerTaskGraph(context));
+    activationStep('registerTaskActions', () => registerTaskActions(context));
     activationStep('registerProjectView', () => registerProjectView(context));
 
     // Entity selector: fuzzy-pick a tagged/propertied heading (contacts,
@@ -948,6 +952,11 @@ async function activateScimax(context: vscode.ExtensionContext) {
 
     // Register Projectile Commands
     activationStep('registerProjectileCommands', () => registerProjectileCommands(context, projectileManager));
+
+    // Agenda view: needs projectile's project list for its Project filter.
+    activationStep('registerAgendaView', () => {
+        if (agendaManager) registerAgendaView(context, agendaManager, projectileManager);
+    });
 
     // Initialize Notebook Manager
     await activationStepAsync('NotebookManager', async () => {

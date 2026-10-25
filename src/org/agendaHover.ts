@@ -24,6 +24,51 @@ export interface SnippetLine {
     line: number;
 }
 
+/**
+ * The heading at 1-based `line` and up to `maxBody` lines of its entry, with
+ * property drawers left out and long lines cut. Undefined if the line is
+ * outside the file.
+ */
+export function entrySnippet(lines: string[], line: number, maxBody: number): SnippetLine[] | undefined {
+    const start = line - 1;
+    if (start < 0 || start >= lines.length) return undefined;
+
+    const out: SnippetLine[] = [{ text: lines[start], line }];
+    let inDrawer = false;
+    for (let i = start + 1; i < lines.length && out.length <= maxBody; i++) {
+        const text = lines[i];
+        if (/^\*+\s/.test(text)) break;
+        if (/^\s*:PROPERTIES:\s*$/i.test(text)) {
+            inDrawer = true;
+            continue;
+        }
+        if (inDrawer) {
+            if (/^\s*:END:\s*$/i.test(text)) inDrawer = false;
+            continue;
+        }
+        out.push({ text: text.length > 200 ? `${text.slice(0, 200)}...` : text, line: i + 1 });
+    }
+    return out;
+}
+
+/**
+ * Titles of the headings above the one at 1-based `line`, outermost first,
+ * without their stars and tags. Empty for a top-level heading.
+ */
+export function outlinePath(lines: string[], line: number): string[] {
+    const level = (text: string) => /^(\*+)\s/.exec(text)?.[1].length ?? 0;
+    let below = level(lines[line - 1] ?? '');
+    if (below === 0) return [];
+    const path: string[] = [];
+    for (let i = line - 2; i >= 0 && below > 1; i--) {
+        const l = level(lines[i]);
+        if (l === 0 || l >= below) continue;
+        path.unshift(lines[i].replace(/^\*+\s+/, '').replace(/\s+:[\w@#%:-]+:\s*$/, '').trim());
+        below = l;
+    }
+    return path;
+}
+
 /** The same link forms as getLinkAtPoint, so a followed link is the one shown. */
 const LINK_PATTERN = new RegExp(
     [

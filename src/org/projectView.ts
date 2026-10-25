@@ -9,7 +9,8 @@
  * Interaction: double-click a task to jump to it; drag a bar to move the task
  * (or its right end to move the deadline); right-click for VS Code's own
  * context menu (webview/context in package.json), whose commands run the
- * ordinary editing commands on the task's heading and come back here. Drags
+ * ordinary editing commands on the task's heading and come back here (the
+ * actions are shared with the agenda view, see taskActions.ts). Drags
  * (with the dependents they moved) can be undone and redone from the view. The
  * view reloads when an org file in the project is saved.
  */
@@ -30,17 +31,11 @@ import {
 } from './projectGantt';
 import { ganttToHtml, ganttToSvg, ganttToSvgFile } from './projectGanttSvg';
 import { parseEffort } from '../parser/orgClocking';
-import { runOnSourceHeading } from './agendaDocumentProvider';
+import { registerTaskHost, revealTask, type TaskContext } from './taskActions';
 import { addDependencyBetween, removeDependencies } from './dependencyCommands';
 import { addPlanningDate, planningLines, shiftPlanningLine } from '../parser/planningShift';
 import { chooseAndShiftDependents } from './shiftDependents';
 import { redoOps, undoOps, type LineChange, type LineOp } from './lineChanges';
-
-/** What VS Code passes to a webview/context command: the row's data-vscode-context. */
-interface TaskContext {
-    filePath?: string;
-    line?: number;
-}
 
 /** Options the webview controls; sent back on every change. */
 interface ViewOptions {
@@ -87,6 +82,9 @@ interface MoveRecord {
 }
 
 const MAX_UNDO = 50;
+
+/** The webview's viewType: webviewId in package.json when-clauses, and the rows' `view`. */
+const PROJECT_VIEW_TYPE = 'scimax.projectView';
 
 /** globalState key holding a project's hidden files, so they stay hidden. */
 const hiddenFilesKey = (root: string) => `scimax.projectView.hiddenFiles:${root}`;
@@ -219,15 +217,9 @@ class ProjectView implements vscode.Disposable {
         }
     }
 
-    /** Run an editing command on a task's heading, then come back and reload. */
-    async runOnTask(arg: TaskContext | undefined, command: string): Promise<void> {
-        if (!arg?.filePath || !arg.line) return;
-        const changed = await runOnSourceHeading(
-            { file: arg.filePath, line: arg.line },
-            command,
-            () => this.panel?.reveal()
-        );
-        if (changed) await this.reload();
+    /** Bring the view back after a task action (taskActions.ts). */
+    reveal(): void {
+        this.panel?.reveal();
     }
 
     /**
@@ -613,38 +605,12 @@ function isInside(file: string, root: string): boolean {
     return rel !== '' && !rel.startsWith('..') && !path.isAbsolute(rel);
 }
 
-async function revealTask(filePath: string, line: number): Promise<void> {
-    try {
-        const doc = await vscode.workspace.openTextDocument(filePath);
-        const pos = new vscode.Position(Math.max(0, line - 1), 0);
-        const editor = await vscode.window.showTextDocument(doc, {
-            viewColumn: vscode.ViewColumn.Beside,
-            selection: new vscode.Range(pos, pos),
-        });
-        editor.revealRange(new vscode.Range(pos, pos), vscode.TextEditorRevealType.InCenter);
-    } catch {
-        vscode.window.showErrorMessage(`Could not open ${filePath}`);
-    }
-}
-
 export function registerProjectView(context: vscode.ExtensionContext): void {
     const view = new ProjectView(context.extensionUri, context.globalState);
 
-    const priority = async (arg?: TaskContext) => {
-        const picked = await vscode.window.showQuickPick(
-            [
-                { label: 'A', command: 'scimax.speed.priorityA' },
-                { label: 'B', command: 'scimax.speed.priorityB' },
-                { label: 'C', command: 'scimax.speed.priorityC' },
-                { label: 'None', command: 'scimax.speed.priorityNone' },
-            ],
-            { placeHolder: 'Priority' }
-        );
-        if (picked) await view.runOnTask(arg, picked.command);
-    };
-
     context.subscriptions.push(
         view,
+        registerTaskHost(PROJECT_VIEW_TYPE, view),
         vscode.commands.registerCommand('scimax.project.view', () => view.open()),
         vscode.commands.registerCommand('scimax.project.exportExcel', () => view.export('xlsx')),
         vscode.commands.registerCommand('scimax.project.exportPdf', () => view.export('pdf')),
@@ -652,24 +618,11 @@ export function registerProjectView(context: vscode.ExtensionContext): void {
         vscode.commands.registerCommand('scimax.project.exportPng', () => view.export('png')),
         vscode.commands.registerCommand('scimax.project.exportHtml', () => view.export('html')),
         vscode.commands.registerCommand('scimax.project.refresh', () => view.reload()),
-        // Task context menu (webview/context).
-        vscode.commands.registerCommand('scimax.project.task.open', (arg?: TaskContext) =>
-            arg?.filePath && arg.line ? revealTask(arg.filePath, arg.line) : undefined),
-        vscode.commands.registerCommand('scimax.project.task.cycleTodo', (arg?: TaskContext) =>
-            view.runOnTask(arg, 'scimax.org.cycleTodo')),
-        vscode.commands.registerCommand('scimax.project.task.assign', (arg?: TaskContext) =>
-            view.runOnTask(arg, 'scimax.org.assignTask')),
-        vscode.commands.registerCommand('scimax.project.task.priority', priority),
+        // Task context menu (webview/context); the shared actions are in taskActions.ts.
         vscode.commands.registerCommand('scimax.project.task.addDependency', (arg?: TaskContext) =>
             view.addDependency(arg)),
         vscode.commands.registerCommand('scimax.project.task.removeDependency', (arg?: TaskContext) =>
             view.removeDependency(arg)),
-        vscode.commands.registerCommand('scimax.project.task.effort', (arg?: TaskContext) =>
-            view.runOnTask(arg, 'scimax.speed.setEffort')),
-        vscode.commands.registerCommand('scimax.project.task.schedule', (arg?: TaskContext) =>
-            view.runOnTask(arg, 'scimax.speed.schedule')),
-        vscode.commands.registerCommand('scimax.project.task.deadline', (arg?: TaskContext) =>
-            view.runOnTask(arg, 'scimax.speed.deadline')),
     );
 }
 

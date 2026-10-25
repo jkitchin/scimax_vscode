@@ -2453,20 +2453,68 @@
         "title": "Scimax: Refresh Project View"
       },
       {
-        "command": "scimax.project.task.open",
+        "command": "scimax.task.open",
         "title": "Open Task"
       },
       {
-        "command": "scimax.project.task.cycleTodo",
+        "command": "scimax.task.cycleTodo",
         "title": "Cycle TODO State"
       },
       {
-        "command": "scimax.project.task.assign",
+        "command": "scimax.task.priority",
+        "title": "Set Priority..."
+      },
+      {
+        "command": "scimax.task.setTags",
+        "title": "Set Tags..."
+      },
+      {
+        "command": "scimax.task.assign",
         "title": "Assign..."
       },
       {
-        "command": "scimax.project.task.priority",
-        "title": "Set Priority..."
+        "command": "scimax.task.effort",
+        "title": "Set Effort..."
+      },
+      {
+        "command": "scimax.task.schedule",
+        "title": "Schedule..."
+      },
+      {
+        "command": "scimax.task.deadline",
+        "title": "Set Deadline..."
+      },
+      {
+        "command": "scimax.task.later",
+        "title": "Later by a Day"
+      },
+      {
+        "command": "scimax.task.earlier",
+        "title": "Earlier by a Day"
+      },
+      {
+        "command": "scimax.task.clockIn",
+        "title": "Clock In"
+      },
+      {
+        "command": "scimax.task.refile",
+        "title": "Refile..."
+      },
+      {
+        "command": "scimax.task.archive",
+        "title": "Archive Subtree"
+      },
+      {
+        "command": "scimax.task.storeLink",
+        "title": "Store Link"
+      },
+      {
+        "command": "scimax.agendaView.ignoreFile",
+        "title": "Ignore This File in the Agenda"
+      },
+      {
+        "command": "scimax.agendaView.refresh",
+        "title": "Refresh"
       },
       {
         "command": "scimax.project.task.addDependency",
@@ -2475,18 +2523,6 @@
       {
         "command": "scimax.project.task.removeDependency",
         "title": "Remove Dependency..."
-      },
-      {
-        "command": "scimax.project.task.effort",
-        "title": "Set Effort..."
-      },
-      {
-        "command": "scimax.project.task.schedule",
-        "title": "Schedule..."
-      },
-      {
-        "command": "scimax.project.task.deadline",
-        "title": "Set Deadline..."
       },
       {
         "command": "scimax.org.newPerson",
@@ -2992,6 +3028,10 @@
         "command": "scimax.agenda.refresh",
         "title": "Scimax: Refresh Agenda",
         "icon": "$(refresh)"
+      },
+      {
+        "command": "scimax.agenda.view",
+        "title": "Scimax: Agenda View"
       },
       {
         "command": "scimax.agenda.openBuffer",
@@ -4266,7 +4306,7 @@
         "when": "editorTextFocus && editorLangId =~ /org|markdown|latex|tex/ && !terminalFocus"
       },
       {
-        "command": "scimax.agenda.openBuffer",
+        "command": "scimax.agenda.view",
         "key": "ctrl+c a a",
         "mac": "ctrl+c a a",
         "when": "!terminalFocus"
@@ -8838,24 +8878,29 @@
       ],
       "webview/context": [
         {
-          "command": "scimax.project.task.open",
-          "when": "webviewId == 'scimax.projectView' && webviewSection == 'task'",
+          "command": "scimax.task.open",
+          "when": "(webviewId == 'scimax.projectView' || webviewId == 'scimax.agendaView') && webviewSection == 'task'",
           "group": "1_open@1"
         },
         {
-          "command": "scimax.project.task.cycleTodo",
-          "when": "webviewId == 'scimax.projectView' && webviewSection == 'task'",
+          "command": "scimax.task.cycleTodo",
+          "when": "(webviewId == 'scimax.projectView' || webviewId == 'scimax.agendaView') && webviewSection == 'task'",
           "group": "2_edit@1"
         },
         {
-          "command": "scimax.project.task.assign",
-          "when": "webviewId == 'scimax.projectView' && webviewSection == 'task'",
+          "command": "scimax.task.priority",
+          "when": "(webviewId == 'scimax.projectView' || webviewId == 'scimax.agendaView') && webviewSection == 'task'",
           "group": "2_edit@2"
         },
         {
-          "command": "scimax.project.task.priority",
-          "when": "webviewId == 'scimax.projectView' && webviewSection == 'task'",
+          "command": "scimax.task.setTags",
+          "when": "(webviewId == 'scimax.projectView' || webviewId == 'scimax.agendaView') && webviewSection == 'task'",
           "group": "2_edit@3"
+        },
+        {
+          "command": "scimax.task.assign",
+          "when": "(webviewId == 'scimax.projectView' || webviewId == 'scimax.agendaView') && webviewSection == 'task'",
+          "group": "2_edit@4"
         },
         {
           "command": "scimax.project.task.addDependency",
@@ -8868,19 +8913,59 @@
           "group": "3_plan@2"
         },
         {
-          "command": "scimax.project.task.effort",
-          "when": "webviewId == 'scimax.projectView' && webviewSection == 'task'",
+          "command": "scimax.task.effort",
+          "when": "(webviewId == 'scimax.projectView' || webviewId == 'scimax.agendaView') && webviewSection == 'task'",
           "group": "3_plan@3"
         },
         {
-          "command": "scimax.project.task.schedule",
-          "when": "webviewId == 'scimax.projectView' && webviewSection == 'task'",
+          "command": "scimax.task.schedule",
+          "when": "(webviewId == 'scimax.projectView' || webviewId == 'scimax.agendaView') && webviewSection == 'task'",
           "group": "3_plan@4"
         },
         {
-          "command": "scimax.project.task.deadline",
-          "when": "webviewId == 'scimax.projectView' && webviewSection == 'task'",
+          "command": "scimax.task.deadline",
+          "when": "(webviewId == 'scimax.projectView' || webviewId == 'scimax.agendaView') && webviewSection == 'task'",
           "group": "3_plan@5"
+        },
+        {
+          "command": "scimax.task.later",
+          "when": "(webviewId == 'scimax.projectView' || webviewId == 'scimax.agendaView') && webviewSection == 'task'",
+          "group": "3_plan@6"
+        },
+        {
+          "command": "scimax.task.earlier",
+          "when": "(webviewId == 'scimax.projectView' || webviewId == 'scimax.agendaView') && webviewSection == 'task'",
+          "group": "3_plan@7"
+        },
+        {
+          "command": "scimax.task.clockIn",
+          "when": "(webviewId == 'scimax.projectView' || webviewId == 'scimax.agendaView') && webviewSection == 'task'",
+          "group": "4_act@1"
+        },
+        {
+          "command": "scimax.task.refile",
+          "when": "(webviewId == 'scimax.projectView' || webviewId == 'scimax.agendaView') && webviewSection == 'task'",
+          "group": "4_act@2"
+        },
+        {
+          "command": "scimax.task.archive",
+          "when": "(webviewId == 'scimax.projectView' || webviewId == 'scimax.agendaView') && webviewSection == 'task'",
+          "group": "4_act@3"
+        },
+        {
+          "command": "scimax.task.storeLink",
+          "when": "(webviewId == 'scimax.projectView' || webviewId == 'scimax.agendaView') && webviewSection == 'task'",
+          "group": "4_act@4"
+        },
+        {
+          "command": "scimax.agendaView.ignoreFile",
+          "when": "webviewId == 'scimax.agendaView' && webviewSection == 'task'",
+          "group": "5_agenda@1"
+        },
+        {
+          "command": "scimax.agendaView.refresh",
+          "when": "webviewId == 'scimax.agendaView'",
+          "group": "8_view@1"
         },
         {
           "command": "scimax.project.refresh",
@@ -9060,19 +9145,67 @@
           "when": "activeWebviewPanelId == 'markdown.preview'"
         },
         {
-          "command": "scimax.project.task.open",
+          "command": "scimax.task.open",
           "when": "false"
         },
         {
-          "command": "scimax.project.task.cycleTodo",
+          "command": "scimax.task.cycleTodo",
           "when": "false"
         },
         {
-          "command": "scimax.project.task.assign",
+          "command": "scimax.task.priority",
           "when": "false"
         },
         {
-          "command": "scimax.project.task.priority",
+          "command": "scimax.task.setTags",
+          "when": "false"
+        },
+        {
+          "command": "scimax.task.assign",
+          "when": "false"
+        },
+        {
+          "command": "scimax.task.effort",
+          "when": "false"
+        },
+        {
+          "command": "scimax.task.schedule",
+          "when": "false"
+        },
+        {
+          "command": "scimax.task.deadline",
+          "when": "false"
+        },
+        {
+          "command": "scimax.task.later",
+          "when": "false"
+        },
+        {
+          "command": "scimax.task.earlier",
+          "when": "false"
+        },
+        {
+          "command": "scimax.task.clockIn",
+          "when": "false"
+        },
+        {
+          "command": "scimax.task.refile",
+          "when": "false"
+        },
+        {
+          "command": "scimax.task.archive",
+          "when": "false"
+        },
+        {
+          "command": "scimax.task.storeLink",
+          "when": "false"
+        },
+        {
+          "command": "scimax.agendaView.ignoreFile",
+          "when": "false"
+        },
+        {
+          "command": "scimax.agendaView.refresh",
           "when": "false"
         },
         {
@@ -9081,18 +9214,6 @@
         },
         {
           "command": "scimax.project.task.removeDependency",
-          "when": "false"
-        },
-        {
-          "command": "scimax.project.task.effort",
-          "when": "false"
-        },
-        {
-          "command": "scimax.project.task.schedule",
-          "when": "false"
-        },
-        {
-          "command": "scimax.project.task.deadline",
           "when": "false"
         },
         {

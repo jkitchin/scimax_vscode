@@ -497,6 +497,8 @@
 
             r.setAttribute('data-vscode-context', JSON.stringify({
                 webviewSection: 'task',
+                // Which view the shared task actions (taskActions.ts) return to.
+                view: 'scimax.projectView',
                 filePath: row.filePath,
                 line: row.line,
                 preventDefaultContextMenuItems: true,

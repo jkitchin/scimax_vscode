@@ -26,7 +26,7 @@ import {
     type AgendaViewConfig,
 } from '../parser/orgAgenda';
 import { renderCustomCommand, type CustomAgendaCommand, type CustomCommandResult } from '../parser/orgAgendaCustom';
-import { renderSnippetMarkdown, type SnippetLine } from './agendaHover';
+import { entrySnippet, renderSnippetMarkdown, type SnippetLine } from './agendaHover';
 import type { AgendaManager } from './agendaProvider';
 
 /** URI scheme for agenda buffers. Matches `resourceScheme` in when-clauses. */
@@ -343,42 +343,23 @@ export class AgendaDocumentProvider
 }
 
 /**
- * The heading at a 1-based line and the first few lines of its entry, with
- * property drawers left out. Reads an open editor's text when there is one, so
- * unsaved edits show; otherwise reads the file.
+ * A file's lines, from an open editor's text when there is one, so unsaved
+ * edits show; otherwise from the disk. Undefined if it cannot be read.
  */
-async function readEntrySnippet(file: string, line: number): Promise<SnippetLine[] | undefined> {
-    let lines: string[];
+export async function readSourceLines(file: string): Promise<string[] | undefined> {
     const open = vscode.workspace.textDocuments.find(d => d.uri.fsPath === file);
-    if (open) {
-        lines = open.getText().split(/\r?\n/);
-    } else {
-        try {
-            lines = (await fs.promises.readFile(file, 'utf8')).split(/\r?\n/);
-        } catch {
-            return undefined;
-        }
+    if (open) return open.getText().split(/\r?\n/);
+    try {
+        return (await fs.promises.readFile(file, 'utf8')).split(/\r?\n/);
+    } catch {
+        return undefined;
     }
+}
 
-    const start = line - 1;
-    if (start < 0 || start >= lines.length) return undefined;
-
-    const out: SnippetLine[] = [{ text: lines[start], line }];
-    let inDrawer = false;
-    for (let i = start + 1; i < lines.length && out.length <= HOVER_BODY_LINES; i++) {
-        const text = lines[i];
-        if (/^\*+\s/.test(text)) break;
-        if (/^\s*:PROPERTIES:\s*$/i.test(text)) {
-            inDrawer = true;
-            continue;
-        }
-        if (inDrawer) {
-            if (/^\s*:END:\s*$/i.test(text)) inDrawer = false;
-            continue;
-        }
-        out.push({ text: text.length > 200 ? `${text.slice(0, 200)}...` : text, line: i + 1 });
-    }
-    return out;
+/** The heading at a 1-based line and the first few lines of its entry. */
+async function readEntrySnippet(file: string, line: number): Promise<SnippetLine[] | undefined> {
+    const lines = await readSourceLines(file);
+    return lines ? entrySnippet(lines, line, HOVER_BODY_LINES) : undefined;
 }
 
 /**

@@ -147,33 +147,40 @@ Express dependencies between TODO tasks (org-depend style). See
 | [[cmd:scimax.org.showDependencies]]   | Show Task Dependencies       | -                  |
 
 ** ✅ Project Management
-CLOSED: [2026-07-11 Sat 09:59]
+CLOSED: [2026-10-24 Sat 20:49]
 
 Task tables, a project view with a Gantt chart, a dependency graph, and a people database. See
 [[file:03.6-project-management.org][Project Management]] for the full guide.
 
-| Command ID                             | Description                | Default Keybinding |
-|----------------------------------------+----------------------------+--------------------|
-| [[cmd:scimax.org.insertProjectTable]]  | Insert Project Task Table  | -                  |
-| [[cmd:scimax.org.showTaskGraph]]       | Show Task Dependency Graph | -                  |
-| [[cmd:scimax.project.view]]            | Project View (Gantt Chart) | -                  |
-| [[cmd:scimax.project.exportExcel]]     | Export Project Gantt to Excel | -               |
-| [[cmd:scimax.project.exportPdf]]       | Export Project Gantt to PDF | -                 |
-| [[cmd:scimax.project.exportSvg]]       | Export Project Gantt to SVG | -                 |
-| [[cmd:scimax.project.exportPng]]       | Export Project Gantt to PNG | -                 |
-| [[cmd:scimax.project.exportHtml]]      | Export Project Gantt to Interactive HTML | -    |
-| [[cmd:scimax.project.refresh]]         | Refresh Project View       | -                  |
-| [[cmd:scimax.project.task.open]]       | Open Task (project view menu) | -               |
-| [[cmd:scimax.project.task.cycleTodo]]  | Cycle TODO State (project view menu) | -        |
-| [[cmd:scimax.project.task.assign]]     | Assign... (project view menu) | -               |
-| [[cmd:scimax.project.task.priority]]   | Set Priority... (project view menu) | -         |
-| [[cmd:scimax.project.task.addDependency]] | Depends On... (project view menu) | -          |
-| [[cmd:scimax.project.task.removeDependency]] | Remove Dependency... (project view menu) | - |
-| [[cmd:scimax.project.task.effort]]     | Set Effort... (project view menu) | -           |
-| [[cmd:scimax.project.task.schedule]]   | Schedule... (project view menu) | -             |
-| [[cmd:scimax.project.task.deadline]]   | Set Deadline... (project view menu) | -         |
-| [[cmd:scimax.org.newPerson]]           | New Person                 | -                  |
-| [[cmd:scimax.org.assignTask]]          | Assign Task to Person      | -                  |
+| Command ID                                   | Description                              | Default Keybinding |
+|----------------------------------------------+------------------------------------------+--------------------|
+| [[cmd:scimax.org.insertProjectTable]]        | Insert Project Task Table                | -                  |
+| [[cmd:scimax.org.showTaskGraph]]             | Show Task Dependency Graph               | -                  |
+| [[cmd:scimax.project.view]]                  | Project View (Gantt Chart)               | -                  |
+| [[cmd:scimax.project.exportExcel]]           | Export Project Gantt to Excel            | -                  |
+| [[cmd:scimax.project.exportPdf]]             | Export Project Gantt to PDF              | -                  |
+| [[cmd:scimax.project.exportSvg]]             | Export Project Gantt to SVG              | -                  |
+| [[cmd:scimax.project.exportPng]]             | Export Project Gantt to PNG              | -                  |
+| [[cmd:scimax.project.exportHtml]]            | Export Project Gantt to Interactive HTML | -                  |
+| [[cmd:scimax.project.refresh]]               | Refresh Project View                     | -                  |
+| [[cmd:scimax.task.open]]                     | Open Task (task menu)                    | -                  |
+| [[cmd:scimax.task.cycleTodo]]                | Cycle TODO State (task menu)             | -                  |
+| [[cmd:scimax.task.priority]]                 | Set Priority... (task menu)              | -                  |
+| [[cmd:scimax.task.setTags]]                  | Set Tags... (task menu)                  | -                  |
+| [[cmd:scimax.task.assign]]                   | Assign... (task menu)                    | -                  |
+| [[cmd:scimax.project.task.addDependency]]    | Depends On... (project view menu)        | -                  |
+| [[cmd:scimax.project.task.removeDependency]] | Remove Dependency... (project view menu) | -                  |
+| [[cmd:scimax.task.effort]]                   | Set Effort... (task menu)                | -                  |
+| [[cmd:scimax.task.schedule]]                 | Schedule... (task menu)                  | -                  |
+| [[cmd:scimax.task.deadline]]                 | Set Deadline... (task menu)              | -                  |
+| [[cmd:scimax.task.later]]                    | Later by a Day (task menu)               | -                  |
+| [[cmd:scimax.task.earlier]]                  | Earlier by a Day (task menu)             | -                  |
+| [[cmd:scimax.task.clockIn]]                  | Clock In (task menu)                     | -                  |
+| [[cmd:scimax.task.refile]]                   | Refile... (task menu)                    | -                  |
+| [[cmd:scimax.task.archive]]                  | Archive Subtree (task menu)              | -                  |
+| [[cmd:scimax.task.storeLink]]                | Store Link (task menu)                   | -                  |
+| [[cmd:scimax.org.newPerson]]                 | New Person                               | -                  |
+| [[cmd:scimax.org.assignTask]]                | Assign Task to Person                    | -                  |
 
 ** ✅ Contacts & Entities
 CLOSED: [2026-07-02 Thu 08:03]
@@ -653,50 +660,53 @@ CLOSED: [2026-01-17 Sat 12:28]
 | [[cmd:scimax.db.deadlines]]      | Show Upcoming Deadlines | -                  |
 | [[cmd:scimax.agenda.currentFile]]| Agenda for Current File | C-c a <            |
 
-** Advanced Agenda
-CLOSED: [2026-01-17 Sat 12:51]
+** ✅ Advanced Agenda
+CLOSED: [2026-10-24 Sat 20:31]
 
-| Command ID                            | Description              | Default Keybinding |
-|---------------------------------------+--------------------------+--------------------|
-| [[cmd:scimax.agenda.menu]]            | Open Agenda Menu         | C-c a c            |
-| [[cmd:scimax.agenda.day]]             | Day Agenda               | -                  |
-| [[cmd:scimax.agenda.week]]            | Week Agenda              | -                  |
-| [[cmd:scimax.agenda.fortnight]]       | Fortnight Agenda         | -                  |
-| [[cmd:scimax.agenda.month]]           | Month Agenda             | -                  |
-| [[cmd:scimax.agenda.todoList]]        | TODO List                | -                  |
-| [[cmd:scimax.agenda.deadlines]]       | Upcoming Deadlines       | -                  |
-| [[cmd:scimax.agenda.scheduled]]       | Scheduled Items          | -                  |
-| [[cmd:scimax.agenda.filterByTag]]     | Agenda Filter by Tag     | -                  |
-| [[cmd:scimax.agenda.clockReport]]     | Agenda Clock Report      | -                  |
-| [[cmd:scimax.agenda.refresh]]         | Refresh Agenda           | -                  |
-| [[cmd:scimax.agenda.showAgenda]]      | Show Agenda View         | -                  |
-| [[cmd:scimax.agenda.showTodos]]       | Show TODO List View      | -                  |
-| [[cmd:scimax.agenda.groupByDate]]     | Group Agenda by Date     | -                  |
-| [[cmd:scimax.agenda.groupByCategory]] | Group Agenda by Category | -                  |
-| [[cmd:scimax.agenda.groupByPriority]] | Group Agenda by Priority | -                  |
-| [[cmd:scimax.agenda.configure]]       | Configure Agenda Files   | -                  |
-| [[cmd:scimax.agenda.gotoItem]]        | Go to Agenda Item        | -                  |
-| [[cmd:scimax.agenda.search]]          | Search Agenda Items      | -                  |
-| [[cmd:scimax.agenda.toggleVerbose]]   | Toggle Verbose Mode      | -                  |
-| [[cmd:scimax.agenda.ignoreFile]]      | Ignore File in Agenda    | -                  |
-| [[cmd:scimax.agenda.ignoreFileFromItem]]| Ignore File from Agenda Item | -            |
-| [[cmd:scimax.agenda.ignoreFileFromTab]] | Ignore File from Editor Tab  | -            |
-| [[cmd:scimax.agenda.unignoreFile]]    | Unignore File in Agenda  | -                  |
-| [[cmd:scimax.agenda.openBuffer]]      | Open Agenda Buffer       | C-c a a, C-c a v   |
-| [[cmd:scimax.agenda.custom]]          | Run Custom Agenda Command | -                 |
-| [[cmd:scimax.agenda.match]]           | Agenda Match (Tags/Properties) | m (agenda menu) |
-| [[cmd:scimax.agenda.storeViews]]      | Store Agenda Views       | e (agenda menu)    |
-| [[cmd:scimax.agenda.exportCurrent]]   | Export Agenda View       | C-x C-w (in buffer) |
-| [[cmd:scimax.agenda.buffer.goto]]     | Agenda Buffer - Go to Item   | RET (in buffer) |
-| [[cmd:scimax.agenda.buffer.refresh]]  | Agenda Buffer - Refresh      | g (in buffer)   |
-| [[cmd:scimax.agenda.buffer.next]]     | Agenda Buffer - Next Period  | f (in buffer)   |
-| [[cmd:scimax.agenda.buffer.previous]] | Agenda Buffer - Prev Period  | b (in buffer)   |
-| [[cmd:scimax.agenda.buffer.today]]    | Agenda Buffer - Back to Today | . (in buffer)  |
-| [[cmd:scimax.agenda.buffer.cycleTodo]]| Agenda Buffer - Cycle TODO State | t (in buffer) |
-| [[cmd:scimax.agenda.buffer.filterAssignee]] | Agenda Buffer - Filter by Assignee | @ (in buffer) |
-| [[cmd:scimax.agenda.buffer.openToSide]] | Agenda Buffer - Open Item to the Side | -      |
-| [[cmd:scimax.agenda.buffer.ignoreFile]] | Agenda Buffer - Ignore Item's File | -         |
-| [[cmd:scimax.agenda.buffer.openEntryLink]] | Agenda Buffer - Open Link in Item Preview | hover link |
+| Command ID                                  | Description                                  | Default Keybinding  |
+|---------------------------------------------+----------------------------------------------+---------------------|
+| [[cmd:scimax.agenda.menu]]                  | Open Agenda Menu                             | C-c a c             |
+| [[cmd:scimax.agenda.day]]                   | Day Agenda                                   | -                   |
+| [[cmd:scimax.agenda.week]]                  | Week Agenda                                  | -                   |
+| [[cmd:scimax.agenda.fortnight]]             | Fortnight Agenda                             | -                   |
+| [[cmd:scimax.agenda.month]]                 | Month Agenda                                 | -                   |
+| [[cmd:scimax.agenda.todoList]]              | TODO List                                    | -                   |
+| [[cmd:scimax.agenda.deadlines]]             | Upcoming Deadlines                           | -                   |
+| [[cmd:scimax.agenda.scheduled]]             | Scheduled Items                              | -                   |
+| [[cmd:scimax.agenda.filterByTag]]           | Agenda Filter by Tag                         | -                   |
+| [[cmd:scimax.agenda.clockReport]]           | Agenda Clock Report                          | -                   |
+| [[cmd:scimax.agenda.refresh]]               | Refresh Agenda                               | -                   |
+| [[cmd:scimax.agenda.showAgenda]]            | Show Agenda View                             | -                   |
+| [[cmd:scimax.agenda.showTodos]]             | Show TODO List View                          | -                   |
+| [[cmd:scimax.agenda.groupByDate]]           | Group Agenda by Date                         | -                   |
+| [[cmd:scimax.agenda.groupByCategory]]       | Group Agenda by Category                     | -                   |
+| [[cmd:scimax.agenda.groupByPriority]]       | Group Agenda by Priority                     | -                   |
+| [[cmd:scimax.agenda.configure]]             | Configure Agenda Files                       | -                   |
+| [[cmd:scimax.agenda.gotoItem]]              | Go to Agenda Item                            | -                   |
+| [[cmd:scimax.agenda.search]]                | Search Agenda Items                          | -                   |
+| [[cmd:scimax.agenda.toggleVerbose]]         | Toggle Verbose Mode                          | -                   |
+| [[cmd:scimax.agenda.ignoreFile]]            | Ignore File in Agenda                        | -                   |
+| [[cmd:scimax.agenda.ignoreFileFromItem]]    | Ignore File from Agenda Item                 | -                   |
+| [[cmd:scimax.agenda.ignoreFileFromTab]]     | Ignore File from Editor Tab                  | -                   |
+| [[cmd:scimax.agenda.unignoreFile]]          | Unignore File in Agenda                      | -                   |
+| [[cmd:scimax.agenda.openBuffer]]            | Open Agenda Buffer                           | C-c a v             |
+| [[cmd:scimax.agenda.view]]                  | Agenda View                                  | C-c a a             |
+| [[cmd:scimax.agendaView.refresh]]           | Agenda View - Refresh                        | g (in view)         |
+| [[cmd:scimax.agendaView.ignoreFile]]        | Agenda View - Ignore This File in the Agenda | -                   |
+| [[cmd:scimax.agenda.custom]]                | Run Custom Agenda Command                    | -                   |
+| [[cmd:scimax.agenda.match]]                 | Agenda Match (Tags/Properties)               | m (agenda menu)     |
+| [[cmd:scimax.agenda.storeViews]]            | Store Agenda Views                           | e (agenda menu)     |
+| [[cmd:scimax.agenda.exportCurrent]]         | Export Agenda View                           | C-x C-w (in buffer) |
+| [[cmd:scimax.agenda.buffer.goto]]           | Agenda Buffer - Go to Item                   | RET (in buffer)     |
+| [[cmd:scimax.agenda.buffer.refresh]]        | Agenda Buffer - Refresh                      | g (in buffer)       |
+| [[cmd:scimax.agenda.buffer.next]]           | Agenda Buffer - Next Period                  | f (in buffer)       |
+| [[cmd:scimax.agenda.buffer.previous]]       | Agenda Buffer - Prev Period                  | b (in buffer)       |
+| [[cmd:scimax.agenda.buffer.today]]          | Agenda Buffer - Back to Today                | . (in buffer)       |
+| [[cmd:scimax.agenda.buffer.cycleTodo]]      | Agenda Buffer - Cycle TODO State             | t (in buffer)       |
+| [[cmd:scimax.agenda.buffer.filterAssignee]] | Agenda Buffer - Filter by Assignee           | @ (in buffer)       |
+| [[cmd:scimax.agenda.buffer.openToSide]]     | Agenda Buffer - Open Item to the Side        | -                   |
+| [[cmd:scimax.agenda.buffer.ignoreFile]]     | Agenda Buffer - Ignore Item's File           | -                   |
+| [[cmd:scimax.agenda.buffer.openEntryLink]]  | Agenda Buffer - Open Link in Item Preview    | hover link          |
 
 * ✅ Journal
 CLOSED: [2026-01-17 Sat 12:51]

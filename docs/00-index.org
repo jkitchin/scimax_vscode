@@ -370,7 +370,8 @@ This section provides a comprehensive index of all documentation topics with lin
 |----------------------------------------------+-------------------------------------|
 | [[file:26-configuration.org][Configuration]] | All settings, customization options |
 
-* Topic Index
+* ✅ Topic Index
+CLOSED: [2026-10-24 Sat 20:49]
 
 Quick reference to find specific features across documentation.
 
@@ -481,6 +482,7 @@ Quick reference to find specific features across documentation.
 | Project view, Gantt   | [[file:03.6-project-management.org][Project Management]]       | [[file:13-agenda.org][Agenda]] - webview chart, Excel and PDF export                                                        |
 | Assignee filter       | [[file:13-agenda.org][Agenda]]                               | [[file:03.6-project-management.org][Project Management]] - @ in the agenda buffer                                                |
 | Agenda item hover     | [[file:13-agenda.org][Agenda]]                               | [[file:03-todo-items.org][TODO Items]] - entry preview, open, cycle TODO, ignore file                                       |
+| Agenda view           | [[file:13-agenda.org::*Agenda View][Agenda View]]          | [[file:03.6-project-management.org][Project Management]] - filter menus, custom agendas, right-click task actions |
 | Version control (git) | [[file:47-version-control.org][Version Control]]             | [[file:24-keybindings.org][Keybindings]] - C-x v v next action, C-x v p push                                               |
 | Commit message buffer | [[file:47-version-control.org][Version Control]]             | [[file:22-hydra-menus.org][Hydra Menus]] - *vc-log* buffer, C-c C-c to commit                                              |
 | Directory links       | [[file:05-links.org][Links]]                                 | [[file:37-dired.org][Dired]] - a link to a folder opens it in dired                                                         |

@@ -421,11 +421,12 @@ viewport. Moving the cursor resets the cycle to center.
 | C-c p a   | Add project                     |
 | C-c p S-f | Find file in all known projects |
 
-** Database and Agenda
+** ✅ Database and Agenda
+CLOSED: [2026-10-24 Sat 20:49]
 
 | Key     | Action               |
 |---------+----------------------|
-| C-c a a | Agenda buffer        |
+| C-c a a | Agenda view          |
 | C-c a c | Agenda menu          |
 | C-c a v | Agenda buffer        |
 | C-c a w | Week agenda          |
