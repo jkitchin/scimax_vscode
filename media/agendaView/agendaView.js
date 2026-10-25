@@ -613,6 +613,10 @@
         if (i < 0) return;
         select(i);
         list.focus();
+    });
+    // A single click only selects; opening takes a double click.
+    list.addEventListener('dblclick', e => {
+        if (indexOf(e.target) < 0) return;
         openSelected();
     });
     // Select on right-click too, so the highlighted row is the one the menu acts on.
