@@ -1,6 +1,6 @@
 {
-  "buildDate": "2026-10-25T11:55:23.520Z",
-  "count": 3700,
+  "buildDate": "2026-10-25T18:24:13.334Z",
+  "count": 3701,
   "entries": [
     {
       "heading": "Scimax VS Code",
@@ -14700,10 +14700,47 @@
       ]
     },
     {
-      "heading": "SCHEDULED vs DEADLINE",
+      "heading": "Moving the Date with the Keyboard in the Calendar Picker",
       "level": 2,
       "file": "06-timestamps.org",
       "line": 467,
+      "content": "The calendar picker that opens for SCHEDULED and DEADLINE highlights a day, starting at today. The arrow keys move the highlight, and Enter picks the highlighted day. The view follows the highlight into the next or previous month. | Key                      | Moves the highlight to    | |--------------------------+---------------------------| | Left / Right             | Previous / next day       | | Up / Down                | Previous / next week      | | Shift+Left / Shift+Up    | Previous mon",
+      "path": [
+        "SCHEDULED and DEADLINE"
+      ],
+      "commands": [],
+      "keybindings": [
+        "Shift+Left",
+        "Shift+Up"
+      ],
+      "keywords": [
+        "moving",
+        "date",
+        "keyboard",
+        "calendar",
+        "picker",
+        "opens",
+        "scheduled",
+        "deadline",
+        "highlights",
+        "day",
+        "starting",
+        "today",
+        "arrow",
+        "keys",
+        "move",
+        "highlight",
+        "enter",
+        "picks",
+        "highlighted",
+        "view"
+      ]
+    },
+    {
+      "heading": "SCHEDULED vs DEADLINE",
+      "level": 2,
+      "file": "06-timestamps.org",
+      "line": 487,
       "content": "CLOSED: [2026-01-15 Thu 15:05] | Aspect      | SCHEDULED                      | DEADLINE                    | |-------------+--------------------------------+-----------------------------| | Meaning     | When to START                  | When to FINISH              | | Agenda      | Shows starting this day        | Shows with warnings         | | Past dates  | Appears every day until done   | Shows days overdue          | | Use for     | Planning, time-blocking        | Hard deadlines, due dates",
       "path": [
         "SCHEDULED and DEADLINE"
@@ -14737,7 +14774,7 @@
       "heading": "Examples with Context",
       "level": 2,
       "file": "06-timestamps.org",
-      "line": 477,
+      "line": 497,
       "content": "CLOSED: [2026-01-17 Sat 15:25] #+BEGIN_SRC org ,* TODO Review contract SCHEDULED: <2026-01-15 Wed> DEADLINE: <2026-01-17 Fri> Need to finish before weekend. ,* TODO Weekly team meeting SCHEDULED: <2026-02-13 Fri 10:00 +1w> Recurring Thursday meeting. ,* TODO File taxes DEADLINE: <2026-04-15 Tue -7d> Due April 15, start warning 7 days early. #+END_SRC",
       "path": [
         "SCHEDULED and DEADLINE"
@@ -14771,7 +14808,7 @@
       "heading": "Warning Periods",
       "level": 1,
       "file": "06-timestamps.org",
-      "line": 494,
+      "line": 514,
       "content": "CLOSED: [2026-10-22 Thu 09:47] An agenda view covers the window you pick (day, week, fortnight, month), and a deadline shows in it when its date falls inside the window; an overdue deadline always shows on today. A warning period extends this: a deadline with =-2w= also shows in any window that includes one of the two weeks before it is due. It is listed on today's line (or, for a window that does not include today, on its first warned day) as =In N d.:=, and on its own date if that is in the wi",
       "path": [],
       "commands": [],
@@ -14803,7 +14840,7 @@
       "heading": "Warning Period Syntax",
       "level": 2,
       "file": "06-timestamps.org",
-      "line": 505,
+      "line": 525,
       "content": "CLOSED: [2026-10-22 Thu 09:47] Add =-N= and a unit to a deadline: =d= days, =w= weeks, =m= months, =y= years (or =h= hours): #+BEGIN_SRC org DEADLINE: <2026-01-25 Sat -7d> #+END_SRC A week view that includes any day from January 18 on shows this deadline.",
       "path": [
         "Warning Periods"
@@ -14837,7 +14874,7 @@
       "heading": "No Default Warning Period",
       "level": 2,
       "file": "06-timestamps.org",
-      "line": 517,
+      "line": 537,
       "content": "CLOSED: [2026-10-22 Thu 09:47] There is no default warning period (Emacs uses ~org-deadline-warning-days~, 14 days). The window you choose already sets how far ahead you look, so a deadline without a warning appears only when its date is inside the window, or once it is overdue.",
       "path": [
         "Warning Periods"
@@ -14871,7 +14908,7 @@
       "heading": "Setting Custom Warnings",
       "level": 2,
       "file": "06-timestamps.org",
-      "line": 525,
+      "line": 545,
       "content": "CLOSED: [2026-01-17 Sat 08:41] | Warning | Meaning                   | |---------+---------------------------| | -3d     | Warn 3 days before        | | -1w     | Warn 1 week before        | | -2w     | Warn 2 weeks before       | | -1m     | Warn 1 month before       | | -0d     | Same as no warning        |",
       "path": [
         "Warning Periods"
@@ -14905,7 +14942,7 @@
       "heading": "Warning Period Examples",
       "level": 2,
       "file": "06-timestamps.org",
-      "line": 536,
+      "line": 556,
       "content": "CLOSED: [2026-10-22 Thu 09:47] #+BEGIN_SRC org ,* TODO Renew driver's license DEADLINE: <2026-06-30 Tue -30d> ; Start warning 30 days early ,* TODO Submit conference paper DEADLINE: <2026-02-15 Sun -14d> ; Two week warning ,* TODO Pay rent DEADLINE: <2026-02-01 Sun -0d> ; Only in a window that contains the day it's due #+END_SRC Warnings apply to deadlines. On a =SCHEDULED= timestamp, org-mode reads =-7d= as a /delay/ (keep the item out of the agenda until 7 days after the scheduled date), not a",
       "path": [
         "Warning Periods"
@@ -14939,7 +14976,7 @@
       "heading": "Combining Repeaters and Warnings",
       "level": 2,
       "file": "06-timestamps.org",
-      "line": 558,
+      "line": 578,
       "content": "CLOSED: [2026-01-17 Sat 08:41] You can use both repeaters and warnings: #+BEGIN_SRC org ,* TODO Monthly expense report DEADLINE: <2026-01-31 Fri +1m -3d> ; Due monthly, warn 3 days before #+END_SRC",
       "path": [
         "Warning Periods"
@@ -14973,7 +15010,7 @@
       "heading": "Time Clocking",
       "level": 1,
       "file": "06-timestamps.org",
-      "line": 569,
+      "line": 589,
       "content": "CLOSED: [2026-01-17 Sat 08:41] Track how much time you spend on tasks with clock entries.",
       "path": [],
       "commands": [],
@@ -14997,7 +15034,7 @@
       "heading": "Clocking In and Out",
       "level": 2,
       "file": "06-timestamps.org",
-      "line": 574,
+      "line": 594,
       "content": "CLOSED: [2026-01-16 Fri 19:47] :LOGBOOK: CLOCK: [2026-01-17 Sat 08:55]--[2026-01-17 Sat 08:55] => 0:00 :END: Start and stop the clock for a task: | Command             | Key Binding | Action                     | |---------------------+-------------+----------------------------| | scimax.org.clockIn  | I           | Clock in via speed command | | scimax.org.clockOut | O           | Clock out via command      | Click to clock in: [[cmd:scimax.speed.clockIn][Clock In]] Click to clock in: [[cmd:sci",
       "path": [
         "Time Clocking"
@@ -15035,7 +15072,7 @@
       "heading": "Clock Entry Format",
       "level": 2,
       "file": "06-timestamps.org",
-      "line": 592,
+      "line": 612,
       "content": "CLOSED: [2026-01-16 Fri 19:49] Clock entries are stored in the LOGBOOK drawer: #+BEGIN_SRC org ,* TODO Write documentation :LOGBOOK: CLOCK: [2026-01-14 Tue 09:00]--[2026-01-14 Tue 10:30] =>  1:30 CLOCK: [2026-01-13 Mon 14:00]--[2026-01-13 Mon 16:00] =>  2:00 :END: #+END_SRC Format: CLOCK: [start]--[end] => duration",
       "path": [
         "Time Clocking"
@@ -15069,7 +15106,7 @@
       "heading": "Active Clock",
       "level": 2,
       "file": "06-timestamps.org",
-      "line": 607,
+      "line": 627,
       "content": "CLOSED: [2026-01-17 Sat 08:41] :LOGBOOK: CLOCK: [2026-01-17 Sat 08:41]--[2026-01-17 Sat 08:41] => 0:00 :END: When clocked in, the current clock has no end time: #+BEGIN_SRC org ,* TODO Working on feature implementation :LOGBOOK: CLOCK: [2026-01-14 Tue 14:00] CLOCK: [2026-01-14 Tue 09:00]--[2026-01-14 Tue 12:00] =>  3:00 :END: #+END_SRC The CLOCK: [2026-01-14 Tue 14:00] entry is the currently running clock.",
       "path": [
         "Time Clocking"
@@ -15103,7 +15140,7 @@
       "heading": "Clock Workflow Example",
       "level": 2,
       "file": "06-timestamps.org",
-      "line": 625,
+      "line": 645,
       "content": "CLOSED: [2026-01-17 Sat 08:41] 1. Start working: #+BEGIN_SRC org ,* TODO Implement login feature :LOGBOOK: CLOCK: [2026-01-14 Tue 09:00] :END: #+END_SRC 2. Take a break (clock out): #+BEGIN_SRC org ,* TODO Implement login feature :LOGBOOK: CLOCK: [2026-01-14 Tue 09:00]--[2026-01-14 Tue 11:00] =>  2:00 :END: #+END_SRC 3. Resume work (clock in again): #+BEGIN_SRC org ,* TODO Implement login feature :LOGBOOK: CLOCK: [2026-01-14 Tue 13:00] CLOCK: [2026-01-14 Tue 09:00]--[2026-01-14 Tue 11:00] =>  2:",
       "path": [
         "Time Clocking"
@@ -15137,7 +15174,7 @@
       "heading": "Clock Reports",
       "level": 2,
       "file": "06-timestamps.org",
-      "line": 664,
+      "line": 684,
       "content": "CLOSED: [2026-01-17 Sat 14:57] :LOGBOOK: CLOCK: [2026-01-17 Sat 15:30]--[2026-01-17 Sat 15:35] => 0:05 :END: View time summaries: | Command                   | Description            | |---------------------------+------------------------| | scimax.org.clockReport    | Generate clock report  | | scimax.agenda.clockReport | Clock report in agenda | [[cmd:scimax.org.clockReport]] [[cmd:scimax.agenda.clockReport]]",
       "path": [
         "Time Clocking"
@@ -15174,7 +15211,7 @@
       "heading": "Clock Table",
       "level": 2,
       "file": "06-timestamps.org",
-      "line": 682,
+      "line": 702,
       "content": "CLOSED: [2026-01-17 Sat 15:32] SCHEDULED: <2026-01-17 Sat> DEADLINE: <2026-01-18 Sun> :LOGBOOK: CLOCK: [2026-01-17 Sat 15:30]--[2026-01-17 Sat 15:31] => 0:02 :END: Insert a dynamic table showing time spent: #+BEGIN: clocktable :maxlevel 2 :scope file | Headline | Time | |---+---| | ** ✅ Clock Reports | 0:05 | | ** ✅ Clock Table | 0:02 | |---+---| | *Total* | 0:07 | #+END: This creates a table like: #+BEGIN_EXAMPLE | Headline                  | Time   | |---------------------------+--------| | * ",
       "path": [
         "Time Clocking"
@@ -15208,7 +15245,7 @@
       "heading": "The LOGBOOK Drawer",
       "level": 1,
       "file": "06-timestamps.org",
-      "line": 710,
+      "line": 730,
       "content": "CLOSED: [2026-01-17 Sat 08:44] The LOGBOOK drawer stores time-tracking and state-change information.",
       "path": [],
       "commands": [],
@@ -15230,7 +15267,7 @@
       "heading": "LOGBOOK Contents",
       "level": 2,
       "file": "06-timestamps.org",
-      "line": 715,
+      "line": 735,
       "content": "CLOSED: [2026-01-17 Sat 08:44] The LOGBOOK can contain: 1. Clock entries (CLOCK: lines) 2. State change notes 3. Other time-related metadata",
       "path": [
         "The LOGBOOK Drawer"
@@ -15259,7 +15296,7 @@
       "heading": "LOGBOOK Example",
       "level": 2,
       "file": "06-timestamps.org",
-      "line": 723,
+      "line": 743,
       "content": "CLOSED: [2026-01-17 Sat 08:44] #+BEGIN_SRC org ,* DONE Review pull request CLOSED: [2026-01-14 Tue 15:00] :LOGBOOK: - State \"DONE\"       from \"TODO\"       [2026-01-14 Tue 15:00] Approved all changes, ready to merge. CLOCK: [2026-01-14 Tue 14:00]--[2026-01-14 Tue 15:00] =>  1:00 CLOCK: [2026-01-14 Tue 09:30]--[2026-01-14 Tue 10:00] =>  0:30 - State \"TODO\"       from \"WAITING\"    [2026-01-14 Tue 09:00] Developer finished addressing comments. :END: #+END_SRC This shows: - Task completed at 15:00 - ",
       "path": [
         "The LOGBOOK Drawer"
@@ -15293,7 +15330,7 @@
       "heading": "LOGBOOK Benefits",
       "level": 2,
       "file": "06-timestamps.org",
-      "line": 745,
+      "line": 765,
       "content": "CLOSED: [2026-01-17 Sat 08:44] 1. *Complete history* - See all work on a task 2. *Time accountability* - Track actual time spent 3. *State audit trail* - Understand task progression 4. *Billing records* - For client work time tracking",
       "path": [
         "The LOGBOOK Drawer"
@@ -15327,7 +15364,7 @@
       "heading": "Creating LOGBOOK",
       "level": 2,
       "file": "06-timestamps.org",
-      "line": 753,
+      "line": 773,
       "content": "CLOSED: [2026-01-17 Sat 08:44] The LOGBOOK drawer is created automatically when: - You clock in for the first time - State change logging is enabled - You manually add it Manual LOGBOOK: #+BEGIN_SRC org ,* TODO Task :LOGBOOK: :END: #+END_SRC",
       "path": [
         "The LOGBOOK Drawer"
@@ -15361,7 +15398,7 @@
       "heading": "CLOSED Timestamps",
       "level": 1,
       "file": "06-timestamps.org",
-      "line": 769,
+      "line": 789,
       "content": "CLOSED: [2026-01-17 Sat 08:44] When a task is marked DONE, a CLOSED timestamp is automatically added: #+BEGIN_SRC org ,* DONE Complete documentation CLOSED: [2026-01-14 Tue 16:30] #+END_SRC",
       "path": [],
       "commands": [],
@@ -15392,7 +15429,7 @@
       "heading": "CLOSED Properties",
       "level": 2,
       "file": "06-timestamps.org",
-      "line": 779,
+      "line": 799,
       "content": "CLOSED: [2026-01-17 Sat 14:58] - Always an inactive timestamp [...] - Records the exact completion time - Appears before the task content - Can be used to calculate completion statistics",
       "path": [
         "CLOSED Timestamps"
@@ -15424,7 +15461,7 @@
       "heading": "Diary Sexp Timestamps",
       "level": 1,
       "file": "06-timestamps.org",
-      "line": 787,
+      "line": 807,
       "content": "CLOSED: [2026-01-16 Fri 19:49] Diary sexps (symbolic expressions) are a powerful feature for specifying complex date patterns that can't be expressed with simple repeaters.",
       "path": [],
       "commands": [],
@@ -15455,7 +15492,7 @@
       "heading": "Diary Sexp Syntax",
       "level": 2,
       "file": "06-timestamps.org",
-      "line": 793,
+      "line": 813,
       "content": "CLOSED: [2026-01-18 Sun 12:53] Diary sexps use the %%( ) syntax, optionally within angle brackets: %%(diary-anniversary 1 20 1990) John's Birthday #+BEGIN_SRC org %%(diary-anniversary 1 15 1990) <%%((diary-float t 1 2))> #+END_SRC",
       "path": [
         "Diary Sexp Timestamps"
@@ -15489,7 +15526,7 @@
       "heading": "Common Diary Functions",
       "level": 2,
       "file": "06-timestamps.org",
-      "line": 804,
+      "line": 824,
       "content": "CLOSED: [2026-01-17 Sat 15:27] | Function          | Description                    | Example                             | |-------------------+--------------------------------+-------------------------------------| | diary-anniversary | Annual date (month day year)   | %%(diary-anniversary 3 15 1990)     | | diary-float       | Floating day (month week day)  | %%(diary-float 11 4 4)              | | diary-cyclic      | Every N days from a date       | %%(diary-cyclic 14 1 1 2026)        | | di",
       "path": [
         "Diary Sexp Timestamps"
@@ -15523,7 +15560,7 @@
       "heading": "Diary Sexp Examples",
       "level": 2,
       "file": "06-timestamps.org",
-      "line": 815,
+      "line": 835,
       "content": "CLOSED: [2026-01-17 Sat 15:29]",
       "path": [
         "Diary Sexp Timestamps"
@@ -15544,7 +15581,7 @@
       "heading": "Annual Events (Birthdays, Anniversaries)",
       "level": 3,
       "file": "06-timestamps.org",
-      "line": 818,
+      "line": 838,
       "content": "CLOSED: [2026-01-18 Sun 12:53] #+BEGIN_SRC org %%(diary-anniversary 3 15 1990) John's birthday (age %d) %%(diary-anniversary 6 22 2010) Wedding anniversary (%d years) #+END_SRC The %d is replaced with the calculated age/years.",
       "path": [
         "Diary Sexp Timestamps",
@@ -15579,7 +15616,7 @@
       "heading": "Floating Holidays",
       "level": 3,
       "file": "06-timestamps.org",
-      "line": 829,
+      "line": 849,
       "content": "CLOSED: [2026-01-18 Sun 12:53] Holidays that occur on \"the Nth weekday of month\": #+BEGIN_SRC org %%(diary-float 11 4 4) Thanksgiving (4th Thursday of November) %%(diary-float 5 0 2) Mother's Day (2nd Sunday of May) %%(diary-float 1 1 3) MLK Day (3rd Monday of January) #+END_SRC Parameters: (month weekday occurrence) - weekday: 0`Sunday, 1'Monday, ... 6=Saturday - occurrence: 1`first, 2'second, -1=last, etc.",
       "path": [
         "Diary Sexp Timestamps",
@@ -15614,7 +15651,7 @@
       "heading": "Class Schedules",
       "level": 3,
       "file": "06-timestamps.org",
-      "line": 846,
+      "line": 866,
       "content": "CLOSED: [2026-01-18 Sun 12:53] #+BEGIN_SRC org %%(org-class 2026 1 15 2026 5 15 1) Monday lecture (10:00-11:30) %%(org-class 2026 1 15 2026 5 15 3) Wednesday lab (14:00-16:00) #+END_SRC Parameters: (start-year start-month start-day end-year end-month end-day weekday)",
       "path": [
         "Diary Sexp Timestamps",
@@ -15649,7 +15686,7 @@
       "heading": "Cyclic Events",
       "level": 3,
       "file": "06-timestamps.org",
-      "line": 857,
+      "line": 877,
       "content": "CLOSED: [2026-01-18 Sun 13:09] Events that repeat every N days: #+BEGIN_SRC org %%(diary-cyclic 14 1 1 2026) Bi-weekly team meeting #+END_SRC Parameters: (interval month day year) - repeats every 14 days from Jan 1, 2026.",
       "path": [
         "Diary Sexp Timestamps",
@@ -15684,7 +15721,7 @@
       "heading": "Block Dates (Date Ranges)",
       "level": 3,
       "file": "06-timestamps.org",
-      "line": 868,
+      "line": 888,
       "content": "CLOSED: [2026-01-18 Sun 13:09] #+BEGIN_SRC org %%(diary-block 6 1 2026 8 31 2026) Summer break #+END_SRC Shows for all dates within the range (June 1 to August 31, 2026).",
       "path": [
         "Diary Sexp Timestamps",
@@ -15719,7 +15756,7 @@
       "heading": "When to Use Diary Sexps",
       "level": 2,
       "file": "06-timestamps.org",
-      "line": 877,
+      "line": 897,
       "content": "CLOSED: [2026-01-18 Sun 13:09] Use diary sexps when simple repeaters (+1d, +1w, etc.) can't express your needs: | Scenario                        | Solution                        | |---------------------------------+---------------------------------| | \"Every other Tuesday\"           | %%(diary-cyclic 14 ...)         | | \"Second Monday of each month\"   | %%(diary-float t 1 2)           | | \"Last Friday of each month\"     | %%(diary-float t 5 -1)          | | \"January 15 every year\"         | %%",
       "path": [
         "Diary Sexp Timestamps"
@@ -15753,7 +15790,7 @@
       "heading": "CLOSED with Other Timestamps",
       "level": 2,
       "file": "06-timestamps.org",
-      "line": 891,
+      "line": 911,
       "content": "CLOSED: [2026-01-18 Sun 13:09] #+BEGIN_SRC org ,* DONE Write monthly report CLOSED: [2026-01-14 Tue 16:30] SCHEDULED: <2026-01-10 Fri> DEADLINE: <2026-01-15 Wed> :LOGBOOK: CLOCK: [2026-01-14 Tue 14:00]--[2026-01-14 Tue 16:30] =>  2:30 :END: Completed on time with 2.5 hours of work. #+END_SRC This shows: - Task was scheduled for Jan 10 - Deadline was Jan 15 - Actually completed Jan 14 at 16:30 - Took 2.5 hours of actual work time",
       "path": [
         "Diary Sexp Timestamps"
@@ -15787,7 +15824,7 @@
       "heading": "Speed Commands for Timestamps",
       "level": 1,
       "file": "06-timestamps.org",
-      "line": 912,
+      "line": 932,
       "content": "CLOSED: [2026-01-16 Fri 19:49] Speed commands provide quick access when cursor is at the beginning of a headline.",
       "path": [],
       "commands": [],
@@ -15812,7 +15849,7 @@
       "heading": "Timestamp Speed Commands",
       "level": 2,
       "file": "06-timestamps.org",
-      "line": 918,
+      "line": 938,
       "content": "CLOSED: [2026-01-16 Fri 19:50] | Key | Command            | |-----+--------------------| | .   | Insert timestamp   | | s   | Add/edit SCHEDULED | | d   | Add/edit DEADLINE  | | I   | Clock in           | | O   | Clock out          |",
       "path": [
         "Speed Commands for Timestamps"
@@ -15842,7 +15879,7 @@
       "heading": "Using Speed Commands",
       "level": 2,
       "file": "06-timestamps.org",
-      "line": 929,
+      "line": 949,
       "content": "CLOSED: [2026-01-16 Fri 19:51] 1. Place cursor at the very start of a headline (before the *) 2. Press the key 3. Command executes immediately #+BEGIN_EXAMPLE",
       "path": [
         "Speed Commands for Timestamps"
@@ -15873,7 +15910,7 @@
       "heading": "TODO Task                      ; <- cursor here",
       "level": 1,
       "file": "06-timestamps.org",
-      "line": 937,
+      "line": 957,
       "content": "^ cursor position - press 's' to schedule #+END_EXAMPLE",
       "path": [],
       "commands": [],
@@ -15893,7 +15930,7 @@
       "heading": "Speed Command Example Workflow",
       "level": 2,
       "file": "06-timestamps.org",
-      "line": 942,
+      "line": 962,
       "content": "CLOSED: [2026-01-16 Fri 20:42] #+BEGIN_SRC org ,* TODO Write documentation #+END_SRC 1. Cursor at start of headline 2. Press s - schedule for tomorrow 3. Press I - clock in 4. Work on task... 5. Press O - clock out Result: #+BEGIN_SRC org ,* TODO Write documentation SCHEDULED: <2026-01-15 Wed> :LOGBOOK: CLOCK: [2026-01-14 Tue 10:00]--[2026-01-14 Tue 11:30] =>  1:30 :END: #+END_SRC",
       "path": [
         "TODO Task                      ; <- cursor here"
@@ -15927,7 +15964,7 @@
       "heading": "Timestamp Formats Summary",
       "level": 1,
       "file": "06-timestamps.org",
-      "line": 965,
+      "line": 985,
       "content": "CLOSED: [2026-01-16 Fri 19:51]",
       "path": [],
       "commands": [],
@@ -15946,7 +15983,7 @@
       "heading": "Format Reference Table",
       "level": 2,
       "file": "06-timestamps.org",
-      "line": 968,
+      "line": 988,
       "content": "CLOSED: [2026-01-16 Fri 19:51] | Format                       | Type       | Example                            | |------------------------------+------------+------------------------------------| | <YYYY-MM-DD Day>             | Active     | <2026-01-15 Wed>                   | | [YYYY-MM-DD Day]             | Inactive   | [2026-01-15 Wed]                   | | <YYYY-MM-DD Day HH:MM>       | With time  | <2026-01-15 Wed 14:30>             | | <YYYY-MM-DD Day HH:MM-HH:MM> | Time range | <2026-01",
       "path": [
         "Timestamp Formats Summary"
@@ -15983,7 +16020,7 @@
       "heading": "Repeater Units",
       "level": 2,
       "file": "06-timestamps.org",
-      "line": 984,
+      "line": 1004,
       "content": "CLOSED: [2026-01-16 Fri 20:42] | Unit | Full Name | Example | Increments by      | |------+-----------+---------+--------------------| | h    | Hour      | +2h     | Hours              | | d    | Day       | +1d     | Days               | | w    | Week      | +1w     | Weeks (7 days)     | | m    | Month     | +1m     | Months (same date) | | y    | Year      | +1y     | Years (same date)  |",
       "path": [
         "Timestamp Formats Summary"
@@ -16017,7 +16054,7 @@
       "heading": "Practical Examples",
       "level": 1,
       "file": "06-timestamps.org",
-      "line": 997,
+      "line": 1017,
       "content": "CLOSED: [2026-01-16 Fri 20:42]",
       "path": [],
       "commands": [],
@@ -16035,7 +16072,7 @@
       "heading": "Meeting Schedule",
       "level": 2,
       "file": "06-timestamps.org",
-      "line": 1000,
+      "line": 1020,
       "content": "CLOSED: [2026-01-17 Sat 14:59] #+BEGIN_SRC org ,* TODO Weekly team sync SCHEDULED: <2026-01-23 Fri 10:00 +1w> Recurring every Thursday at 10am. #+END_SRC",
       "path": [
         "Practical Examples"
@@ -16069,7 +16106,7 @@
       "heading": "Project with Multiple Timestamps",
       "level": 2,
       "file": "06-timestamps.org",
-      "line": 1010,
+      "line": 1030,
       "content": "CLOSED: [2026-01-18 Sun 13:09] #+BEGIN_SRC org ,* TODO Q1 Planning Document SCHEDULED: <2026-01-15 Wed> DEADLINE: <2026-01-31 Fri -7d> :PROPERTIES: :EFFORT: 8:00 :END: :LOGBOOK: CLOCK: [2026-01-14 Tue 14:00]--[2026-01-14 Tue 16:30] =>  2:30 CLOCK: [2026-01-13 Mon 09:00]--[2026-01-13 Mon 11:00] =>  2:00 :END: Start Jan 15, due Jan 31 (warn 7 days early). Estimated 8 hours, 4.5 hours logged so far. #+END_SRC",
       "path": [
         "Practical Examples"
@@ -16103,7 +16140,7 @@
       "heading": "Recurring Maintenance Task",
       "level": 2,
       "file": "06-timestamps.org",
-      "line": 1028,
+      "line": 1048,
       "content": "CLOSED: [2026-01-18 Sun 13:10] #+BEGIN_SRC org ,* TODO Update dependencies SCHEDULED: <2026-01-15 Wed .+14d> Update npm packages every 2 weeks after completion. #+END_SRC",
       "path": [
         "Practical Examples"
@@ -16137,7 +16174,7 @@
       "heading": "Event with Time Range",
       "level": 2,
       "file": "06-timestamps.org",
-      "line": 1038,
+      "line": 1058,
       "content": "CLOSED: [2026-01-18 Sun 13:10] #+BEGIN_SRC org ,* Conference keynote speech <2026-03-15 Sun 09:00-10:30> Opening keynote at tech conference. #+END_SRC",
       "path": [
         "Practical Examples"
@@ -16168,7 +16205,7 @@
       "heading": "Multi-day Event",
       "level": 2,
       "file": "06-timestamps.org",
-      "line": 1048,
+      "line": 1068,
       "content": "CLOSED: [2026-01-18 Sun 13:10] #+BEGIN_SRC org ,* Annual company retreat <2026-06-10 Wed>--<2026-06-12 Fri> Three-day offsite in Lake Tahoe. #+END_SRC",
       "path": [
         "Practical Examples"
@@ -16201,7 +16238,7 @@
       "heading": "Task with Complete History",
       "level": 2,
       "file": "06-timestamps.org",
-      "line": 1058,
+      "line": 1078,
       "content": "CLOSED: [2026-01-18 Sun 13:10] #+BEGIN_SRC org ,* DONE Implement user authentication CLOSED: [2026-01-14 Tue 17:00] SCHEDULED: <2026-01-10 Fri> DEADLINE: <2026-01-15 Wed> :PROPERTIES: :EFFORT: 6:00 :END: :LOGBOOK: - State \"DONE\"       from \"TODO\"       [2026-01-14 Tue 17:00] All tests passing, ready for review. CLOCK: [2026-01-14 Tue 14:00]--[2026-01-14 Tue 17:00] =>  3:00 CLOCK: [2026-01-13 Mon 10:00]--[2026-01-13 Mon 12:30] =>  2:30 CLOCK: [2026-01-11 Sat 15:00]--[2026-01-11 Sat 16:00] =>  1:0",
       "path": [
         "Practical Examples"
@@ -16235,7 +16272,7 @@
       "heading": "Timestamp Best Practices",
       "level": 1,
       "file": "06-timestamps.org",
-      "line": 1082,
+      "line": 1102,
       "content": "CLOSED: [2026-01-16 Fri 20:44]",
       "path": [],
       "commands": [],
@@ -16254,7 +16291,7 @@
       "heading": "When to Use Active vs Inactive",
       "level": 2,
       "file": "06-timestamps.org",
-      "line": 1085,
+      "line": 1105,
       "content": "CLOSED: [2026-01-16 Fri 20:44] *Use active timestamps when:* - Scheduling tasks to work on - Setting deadlines - Planning appointments or events - You want it to appear in the agenda *Use inactive timestamps when:* - Recording when something happened - Documenting note-taking time - Logging state changes - You DON'T want it in the agenda",
       "path": [
         "Timestamp Best Practices"
@@ -16288,7 +16325,7 @@
       "heading": "Choosing Repeater Types",
       "level": 2,
       "file": "06-timestamps.org",
-      "line": 1100,
+      "line": 1120,
       "content": "CLOSED: [2026-01-16 Fri 20:44] | Scenario                        | Repeater Type | Example                    | |---------------------------------+---------------+----------------------------| | Fixed appointment               | +            | Team meeting every Monday  | | Daily habit                     | ++           | Morning exercise           | | Maintenance after completion    | .+           | Change oil 90 days after   | | Regular review                  | +            | Monthly report l",
       "path": [
         "Timestamp Best Practices"
@@ -16322,7 +16359,7 @@
       "heading": "Time Tracking Tips",
       "level": 2,
       "file": "06-timestamps.org",
-      "line": 1111,
+      "line": 1131,
       "content": "CLOSED: [2026-01-16 Fri 20:44] 1. *Clock in when starting* - Build the habit immediately 2. *Clock out when stopping* - Even for short breaks 3. *Review clock reports* - Weekly time analysis 4. *Compare estimate vs actual* - Improve future estimates 5. *Use LOGBOOK for notes* - Document blockers or issues",
       "path": [
         "Timestamp Best Practices"
@@ -16356,7 +16393,7 @@
       "heading": "Scheduling Strategies",
       "level": 2,
       "file": "06-timestamps.org",
-      "line": 1120,
+      "line": 1140,
       "content": "CLOSED: [2026-01-16 Fri 20:44] #+BEGIN_SRC org ; Don't over-schedule ,* TODO Ambiguous big task SCHEDULED: <2026-01-15 Wed> ; Too vague, will cause procrastination ; Instead: Break down with specific times ,* TODO Project: Website Redesign ,** TODO Design mockups [1:30] SCHEDULED: <2026-01-15 Wed 09:00> ,** TODO Review with stakeholders [0:45] SCHEDULED: <2026-01-15 Wed 14:00> ,** TODO Implement changes [3:00] SCHEDULED: <2026-01-16 Thu 09:00> #+END_SRC",
       "path": [
         "Timestamp Best Practices"
@@ -16390,7 +16427,7 @@
       "heading": "Warning Period Guidelines",
       "level": 2,
       "file": "06-timestamps.org",
-      "line": 1139,
+      "line": 1159,
       "content": "CLOSED: [2026-01-16 Fri 20:44] | Task Type          | Suggested Warning | Reason                    | |--------------------+-------------------+---------------------------| | Daily task         | -0d              | Show only on day          | | Weekly deadline    | -2d              | 2 day heads up            | | Monthly deadline   | -1w              | One week notice           | | Quarterly deadline | -2w              | Two week preparation      | | Annual deadline    | -1m              | One m",
       "path": [
         "Timestamp Best Practices"
@@ -16424,7 +16461,7 @@
       "heading": "Common Patterns",
       "level": 1,
       "file": "06-timestamps.org",
-      "line": 1151,
+      "line": 1171,
       "content": "CLOSED: [2026-01-16 Fri 20:44]",
       "path": [],
       "commands": [],
@@ -16442,7 +16479,7 @@
       "heading": "Weekly Review",
       "level": 2,
       "file": "06-timestamps.org",
-      "line": 1154,
+      "line": 1174,
       "content": "CLOSED: [2026-01-17 Sat 15:07] #+BEGIN_SRC org ,* TODO Weekly review SCHEDULED: <2026-01-26 Mon 18:00 +1w> Review accomplishments, plan next week. #+END_SRC",
       "path": [
         "Common Patterns"
@@ -16474,7 +16511,7 @@
       "heading": "Birthday Reminders",
       "level": 2,
       "file": "06-timestamps.org",
-      "line": 1164,
+      "line": 1184,
       "content": "CLOSED: [2026-01-16 Fri 20:44] #+BEGIN_SRC org ,* John's birthday <2026-03-15 Sun +1y -7d> Annual reminder, warn 7 days early. #+END_SRC",
       "path": [
         "Common Patterns"
@@ -16506,7 +16543,7 @@
       "heading": "Bill Payments",
       "level": 2,
       "file": "06-timestamps.org",
-      "line": 1174,
+      "line": 1194,
       "content": "CLOSED: [2026-01-16 Fri 20:44] #+BEGIN_SRC org ,* TODO Pay electricity bill DEADLINE: <2026-01-31 Fri +1m -3d> Due monthly on last day, 3 day warning. #+END_SRC",
       "path": [
         "Common Patterns"
@@ -16540,7 +16577,7 @@
       "heading": "Exercise Habit",
       "level": 2,
       "file": "06-timestamps.org",
-      "line": 1184,
+      "line": 1204,
       "content": "CLOSED: [2026-01-17 Sat 15:07] #+BEGIN_SRC org ,* TODO Morning workout SCHEDULED: <2026-01-18 Sun 07:00 ++1d> Daily exercise, catch up if missed day. #+END_SRC",
       "path": [
         "Common Patterns"
@@ -16574,7 +16611,7 @@
       "heading": "Car Maintenance",
       "level": 2,
       "file": "06-timestamps.org",
-      "line": 1194,
+      "line": 1214,
       "content": "CLOSED: [2026-01-17 Sat 15:06] #+BEGIN_SRC org ,* TODO Oil change SCHEDULED: <2026-01-20 Mon .+90d> Every 90 days after previous change. #+END_SRC",
       "path": [
         "Common Patterns"
@@ -16607,7 +16644,7 @@
       "heading": "Project Phases",
       "level": 2,
       "file": "06-timestamps.org",
-      "line": 1204,
+      "line": 1224,
       "content": "CLOSED: [2026-01-17 Sat 15:04] SCHEDULED: <2026-01-24 Sat> DEADLINE: <2026-02-17 Tue> #+BEGIN_SRC org ,* TODO Project: Mobile App Launch ,** DONE Research phase CLOSED: [2026-01-05 Sun 14:00] SCHEDULED: <2026-01-01 Wed> DEADLINE: <2026-01-05 Sun> ,** TODO Design phase SCHEDULED: <2026-01-06 Mon> DEADLINE: <2026-01-19 Sun> ,** TODO Development phase SCHEDULED: <2026-01-20 Mon> DEADLINE: <2026-03-15 Sun> ,** TODO Testing phase SCHEDULED: <2026-03-16 Mon> DEADLINE: <2026-03-31 Mon> #+END_SRC",
       "path": [
         "Common Patterns"
@@ -16641,7 +16678,7 @@
       "heading": "Integration with TODO Items",
       "level": 1,
       "file": "06-timestamps.org",
-      "line": 1222,
+      "line": 1242,
       "content": "CLOSED: [2026-01-17 Sat 15:04] Timestamps work seamlessly with TODO items. See [[file:03-todo-items.org][TODO Items]] for more on task management.",
       "path": [],
       "commands": [],
@@ -16666,7 +16703,7 @@
       "heading": "Scheduled TODOs",
       "level": 2,
       "file": "06-timestamps.org",
-      "line": 1228,
+      "line": 1248,
       "content": "CLOSED: [2026-01-17 Sat 15:03] #+BEGIN_SRC org ,* TODO [#A] Finish proposal SCHEDULED: <2026-01-15 Wed> :PROPERTIES: :EFFORT: 3:00 :END: High priority task scheduled for tomorrow. #+END_SRC",
       "path": [
         "Integration with TODO Items"
@@ -16700,7 +16737,7 @@
       "heading": "Deadline Warnings in Agenda",
       "level": 2,
       "file": "06-timestamps.org",
-      "line": 1241,
+      "line": 1261,
       "content": "CLOSED: [2026-01-17 Sat 15:03] Tasks with approaching deadlines appear in the agenda with warning indicators. See [[file:13-agenda.org][Agenda]] for details on agenda views.",
       "path": [
         "Integration with TODO Items"
@@ -16730,7 +16767,7 @@
       "heading": "Combining All Features",
       "level": 2,
       "file": "06-timestamps.org",
-      "line": 1247,
+      "line": 1267,
       "content": "CLOSED: [2026-01-17 Sat 15:03] #+BEGIN_SRC org ,* TODO [#A] Quarterly report                              :work:report: SCHEDULED: <2026-01-20 Mon> DEADLINE: <2026-01-31 Fri -7d> :PROPERTIES: :EFFORT: 12:00 :CATEGORY: Reports :END: :LOGBOOK: CLOCK: [2026-01-14 Tue 14:00]--[2026-01-14 Tue 16:30] =>  2:30 :END: Due end of month with 7-day warning. Priority A, work context, 12 hour estimate. Already logged 2:30 hours. #+END_SRC",
       "path": [
         "Integration with TODO Items"
@@ -16764,7 +16801,7 @@
       "heading": "Quick Reference",
       "level": 1,
       "file": "06-timestamps.org",
-      "line": 1266,
+      "line": 1286,
       "content": "CLOSED: [2026-01-17 Sat 15:03]",
       "path": [],
       "commands": [],
@@ -16782,7 +16819,7 @@
       "heading": "Keybindings",
       "level": 2,
       "file": "06-timestamps.org",
-      "line": 1269,
+      "line": 1289,
       "content": "CLOSED: [2026-01-17 Sat 15:03] | Key            | Action                       | |----------------+------------------------------| | C-c .          | Insert active timestamp      | | C-c ,          | Insert inactive timestamp    | | S-<up>         | Increase timestamp component | | S-<down>       | Decrease timestamp component | | S-<right>      | Next day                     | | S-<left>       | Previous day                 |",
       "path": [
         "Quick Reference"
@@ -16818,7 +16855,7 @@
       "heading": "Speed Commands (at heading start)",
       "level": 2,
       "file": "06-timestamps.org",
-      "line": 1281,
+      "line": 1301,
       "content": "CLOSED: [2026-01-17 Sat 15:03] | Key | Action           | |-----+------------------| | .   | Insert timestamp | | s   | Schedule task    | | d   | Set deadline     | | I   | Clock in         | | O   | Clock out        |",
       "path": [
         "Quick Reference"
@@ -16851,7 +16888,7 @@
       "heading": "Commands",
       "level": 2,
       "file": "06-timestamps.org",
-      "line": 1292,
+      "line": 1312,
       "content": "CLOSED: [2026-01-17 Sat 15:03] | Command                    | Description                     | |----------------------------+---------------------------------| | scimax.org.insertTimestamp | Insert timestamp              | | scimax.org.schedule        | Add SCHEDULED timestamp       | | scimax.org.deadline        | Add DEADLINE timestamp        | | scimax.org.clockIn         | Start time tracking           | | scimax.org.clockOut        | Stop time tracking            | | scimax.org.clockReport",
       "path": [
         "Quick Reference"
@@ -16889,7 +16926,7 @@
       "heading": "Timestamp Format Quick Reference",
       "level": 2,
       "file": "06-timestamps.org",
-      "line": 1304,
+      "line": 1324,
       "content": "CLOSED: [2026-01-17 Sat 15:03] #+BEGIN_EXAMPLE <2026-01-15 Wed>                    Active date [2026-01-15 Wed]                    Inactive date <2026-01-15 Wed 14:30>              With time <2026-01-15 Wed 09:00-17:00>        Time range <2026-01-15 Wed>--<2026-01-17 Fri>  Date range <2026-01-15 Wed +1w>                Weekly repeater <2026-01-15 Wed ++1d>               Daily catch-up <2026-01-15 Wed .+30d>              30-day restart <2026-01-25 Sat -7d>                7-day warning #+END_EXAMP",
       "path": [
         "Quick Reference"
@@ -16923,7 +16960,7 @@
       "heading": "Related Topics",
       "level": 1,
       "file": "06-timestamps.org",
-      "line": 1320,
+      "line": 1340,
       "content": "CLOSED: [2026-01-17 Sat 15:03] - [[file:03-todo-items.org][TODO Items]] - Task management with timestamps - [[file:13-agenda.org][Agenda]] - Viewing scheduled tasks and deadlines - [[file:02-document-structure.org][Document Structure]] - Headlines and organization - [[file:01-getting-started.org][Getting Started]] - Basic Scimax VS Code usage",
       "path": [],
       "commands": [],
@@ -16955,7 +16992,7 @@
       "heading": "Navigation",
       "level": 1,
       "file": "06-timestamps.org",
-      "line": 1328,
+      "line": 1348,
       "content": "- Previous: [[file:05-links.org][Links]] - Index: [[file:00-index.org][Documentation Index]] - Next: [[file:07-source-blocks.org][Source Blocks]]",
       "path": [],
       "commands": [],
@@ -44169,13 +44206,12 @@
       "level": 2,
       "file": "14-journal.org",
       "line": 398,
-      "content": "Run Scimax: Go to Journal Date to open a calendar picker: [[cmd:scimax.journal.goto]] - Days that already have a journal entry are shown in bold with a dot underneath - Months containing entries are bold in the month picker (click the month name) - Click any day to open its entry, or create one if it does not exist yet - Type a date expression (=yesterday=, =-3d=, =jan 15=, =last friday=) and press Enter - The grid follows the =scimax.journal.weekStartsOn= setting - Press Escape (in the text box",
+      "content": "Run Scimax: Go to Journal Date to open a calendar picker: [[cmd:scimax.journal.goto]] - Days that already have a journal entry are shown in bold with a dot underneath - Months containing entries are bold in the month picker (click the month name) - Click any day to open its entry, or create one if it does not exist yet - Type a date expression (=yesterday=, =-3d=, =jan 15=, =last friday=) and press Enter - With the text box empty, the arrow keys move the highlighted day (Left/Right a day, Up/Dow",
       "path": [
         "Navigating Journal Entries"
       ],
       "commands": [
-        "scimax.journal.goto",
-        "scimax.journal.weekStartsOn"
+        "scimax.journal.goto"
       ],
       "keybindings": [],
       "keywords": [
@@ -44205,7 +44241,7 @@
       "heading": "Calendar View",
       "level": 2,
       "file": "14-journal.org",
-      "line": 409,
+      "line": 412,
       "content": "CLOSED: [2026-01-17 Sat 14:06] The calendar view provides a visual way to navigate entries:",
       "path": [
         "Navigating Journal Entries"
@@ -44230,7 +44266,7 @@
       "heading": "Accessing the Calendar",
       "level": 3,
       "file": "14-journal.org",
-      "line": 414,
+      "line": 417,
       "content": "- Look for \"Journal Calendar\" in the Scimax sidebar (Activity Bar) - Or run: Scimax: Show Journal Calendar [[cmd:scimax.journal.calendar]]",
       "path": [
         "Navigating Journal Entries",
@@ -44258,7 +44294,7 @@
       "heading": "Calendar Features",
       "level": 3,
       "file": "14-journal.org",
-      "line": 419,
+      "line": 422,
       "content": "CLOSED: [2026-01-18 Sun 12:06] The calendar shows: - Current month with clickable days - Days with entries are highlighted with a blue dot - Today is marked with a border - Past days without entries are dimmed Calendar controls: - Click any day to open/create entry - ← → buttons - Navigate months - Today's Journal button - Jump to today - Month picker - Click month name to show month selector - Year navigation - Click year buttons to jump years",
       "path": [
         "Navigating Journal Entries",
@@ -44293,7 +44329,7 @@
       "heading": "Quick Actions in Calendar",
       "level": 3,
       "file": "14-journal.org",
-      "line": 437,
+      "line": 440,
       "content": "CLOSED: [2026-01-18 Sun 12:52] At the bottom of the calendar view: - This Week - Show this week's entries - Search - Search journal entries - Stats - Show journal statistics",
       "path": [
         "Navigating Journal Entries",
@@ -44324,7 +44360,7 @@
       "heading": "Week View",
       "level": 2,
       "file": "14-journal.org",
-      "line": 447,
+      "line": 450,
       "content": "CLOSED: [2026-01-18 Sun 12:08] To see all entries for the current week: Run Scimax: This Week's Entries [[cmd:scimax.journal.weekView]] This shows a quick-pick list with: - Each day of the current week that has an entry - Word count for each entry - Task completion statistics #+begin_example This week: 5 entries 📅 Tue 2026-01-14    450 words    3/5 tasks completed 📅 Mon 2026-01-13    320 words    5/5 tasks completed 📅 Sun 2026-01-12    280 words ... #+end_example",
       "path": [
         "Navigating Journal Entries"
@@ -44360,7 +44396,7 @@
       "heading": "Searching Journal Entries",
       "level": 1,
       "file": "14-journal.org",
-      "line": 468,
+      "line": 471,
       "content": "CLOSED: [2026-01-17 Sat 14:11]",
       "path": [],
       "commands": [],
@@ -44379,7 +44415,7 @@
       "heading": "Full-Text Search",
       "level": 2,
       "file": "14-journal.org",
-      "line": 471,
+      "line": 474,
       "content": "CLOSED: [2026-01-18 Sun 12:52] Run Scimax: Search Journal to search your entries: [[cmd:scimax.journal.search]] 1. Select a date range: - All entries - This week - This month - This year 2. Enter your search term 3. Browse results showing: - Date of entry - Matching lines (up to 3 per entry) - Line numbers 4. Select a result to jump to that entry and line Example search results: #+begin_example 3 entries found for \"machine learning\" 📄 2026-01-14    ...worked on machine learning model...    Line",
       "path": [
         "Searching Journal Entries"
@@ -44415,7 +44451,7 @@
       "heading": "Search Tips",
       "level": 2,
       "file": "14-journal.org",
-      "line": 502,
+      "line": 505,
       "content": "CLOSED: [2026-01-17 Sat 14:11] - Searches are case-insensitive - Partial word matching is supported - Search scans the entire content including headings and metadata - Results are limited to preserve performance",
       "path": [
         "Searching Journal Entries"
@@ -44449,7 +44485,7 @@
       "heading": "Advanced Search",
       "level": 2,
       "file": "14-journal.org",
-      "line": 510,
+      "line": 513,
       "content": "CLOSED: [2026-01-17 Sat 14:11] For more advanced searching, you can use the global Scimax search commands which index all journal entries: - Scimax: Search All Files - Full-text search with BM25 ranking - Scimax: Semantic Search - AI-powered semantic search - Scimax: Search Headings - Search only heading text These commands search across your entire workspace, including journal entries.",
       "path": [
         "Searching Journal Entries"
@@ -44483,7 +44519,7 @@
       "heading": "Quick Capture and Logging",
       "level": 1,
       "file": "14-journal.org",
-      "line": 521,
+      "line": 524,
       "content": "CLOSED: [2026-01-17 Sat 14:17]",
       "path": [],
       "commands": [],
@@ -44502,7 +44538,7 @@
       "heading": "Quick Log Entry",
       "level": 2,
       "file": "14-journal.org",
-      "line": 524,
+      "line": 527,
       "content": "CLOSED: [2026-10-22 Thu 09:52] The quick log feature lets you capture a timestamped note without opening a file: [[cmd:scimax.journal.quickLog]] 1. Press =M-j l= (or run Scimax: Quick Log Entry) 2. Type your note 3. Press Enter The note is automatically appended to today's journal under the * Log section with a timestamp: #+begin_src org ,* Log - [14:30] Started work on documentation - [15:45] Meeting with team about project timeline - [16:20] Fixed bug in parser module #+end_src This is perfect",
       "path": [
         "Quick Capture and Logging"
@@ -44540,7 +44576,7 @@
       "heading": "Insert Timestamp",
       "level": 2,
       "file": "14-journal.org",
-      "line": 548,
+      "line": 551,
       "content": "CLOSED: [2026-01-17 Sat 14:18] When editing a journal entry, run Scimax: Insert Timestamp to insert a timestamp at the cursor: Org format: #+begin_example [2026-01-14 10:30] #+end_example Markdown format: #+begin_example 2026-01-14 10:30 #+end_example Useful for: - Manual time tracking - Marking when you started/finished tasks - Adding temporal context to notes",
       "path": [
         "Quick Capture and Logging"
@@ -44574,7 +44610,7 @@
       "heading": "Journal Statistics",
       "level": 1,
       "file": "14-journal.org",
-      "line": 568,
+      "line": 571,
       "content": "CLOSED: [2026-01-17 Sat 14:18]",
       "path": [],
       "commands": [],
@@ -44592,7 +44628,7 @@
       "heading": "Viewing Statistics",
       "level": 2,
       "file": "14-journal.org",
-      "line": 571,
+      "line": 574,
       "content": "CLOSED: [2026-01-17 Sat 14:18] Run Scimax: Show Journal Statistics to see:  [[cmd:scimax.journal.stats]] #+begin_example Total entries: 45 | Total words: 32,450 | Current streak: 7 days | Longest streak: 12 days #+end_example",
       "path": [
         "Journal Statistics"
@@ -44628,7 +44664,7 @@
       "heading": "Statistics Tracked",
       "level": 2,
       "file": "14-journal.org",
-      "line": 580,
+      "line": 583,
       "content": "CLOSED: [2026-01-17 Sat 14:18]",
       "path": [
         "Journal Statistics"
@@ -44648,7 +44684,7 @@
       "heading": "Entry Count",
       "level": 3,
       "file": "14-journal.org",
-      "line": 583,
+      "line": 586,
       "content": "CLOSED: [2026-01-17 Sat 14:18] Total number of journal entries you've written.",
       "path": [
         "Journal Statistics",
@@ -44674,7 +44710,7 @@
       "heading": "Total Words",
       "level": 3,
       "file": "14-journal.org",
-      "line": 587,
+      "line": 590,
       "content": "CLOSED: [2026-01-17 Sat 14:18] Combined word count across all entries. Only counts actual words, not markup.",
       "path": [
         "Journal Statistics",
@@ -44703,7 +44739,7 @@
       "heading": "Current Streak",
       "level": 3,
       "file": "14-journal.org",
-      "line": 591,
+      "line": 594,
       "content": "CLOSED: [2026-01-17 Sat 14:18] Number of consecutive days you've written an entry (including today or ending yesterday).",
       "path": [
         "Journal Statistics",
@@ -44733,7 +44769,7 @@
       "heading": "Longest Streak",
       "level": 3,
       "file": "14-journal.org",
-      "line": 595,
+      "line": 598,
       "content": "CLOSED: [2026-01-17 Sat 14:18] Your best streak of consecutive journaling days.",
       "path": [
         "Journal Statistics",
@@ -44758,7 +44794,7 @@
       "heading": "Streak Calculation",
       "level": 2,
       "file": "14-journal.org",
-      "line": 599,
+      "line": 602,
       "content": "CLOSED: [2026-01-17 Sat 14:18] A streak is maintained if you create entries on consecutive days: - Writing today extends your streak - Missing today but having written yesterday keeps the streak at yesterday's count - Missing two days in a row breaks the streak The streak counter helps build a journaling habit through positive reinforcement.",
       "path": [
         "Journal Statistics"
@@ -44792,7 +44828,7 @@
       "heading": "Status Bar Integration",
       "level": 2,
       "file": "14-journal.org",
-      "line": 610,
+      "line": 613,
       "content": "CLOSED: [2026-01-18 Sun 12:52] The status bar (bottom of window) shows journal information: When viewing a journal entry: #+begin_example 📓 Tue 01/14 | 450 words | 3/5 tasks #+end_example When viewing other files: #+begin_example 📓 Journal | 7 day streak #+end_example Click the status bar item to quickly open today's journal. Hover over it to see: - Total entries - Total words - Quick link to today's entry",
       "path": [
         "Journal Statistics"
@@ -44826,7 +44862,7 @@
       "heading": "Integration with Other Features",
       "level": 1,
       "file": "14-journal.org",
-      "line": 632,
+      "line": 635,
       "content": "CLOSED: [2026-01-17 Sat 14:20]",
       "path": [],
       "commands": [],
@@ -44844,7 +44880,7 @@
       "heading": "Agenda Integration",
       "level": 2,
       "file": "14-journal.org",
-      "line": 635,
+      "line": 638,
       "content": "CLOSED: [2026-01-17 Sat 14:20] Journal entries are automatically indexed by the Scimax database if your journal directory is included in the search scope. This means journal entries with TODO items, scheduled items, and deadlines will appear in: - Scimax: Show Agenda - Daily agenda view - Scimax: Show TODO Items - All TODO items - Scimax: Show Upcoming Deadlines - Deadline tracking The journal directory is automatically indexed in the database by default (via =scimax.db.includeJournal=). Because",
       "path": [
         "Integration with Other Features"
@@ -44880,7 +44916,7 @@
       "heading": "Cross-Referencing",
       "level": 2,
       "file": "14-journal.org",
-      "line": 655,
+      "line": 658,
       "content": "CLOSED: [2026-01-17 Sat 14:20] Use org-mode links to cross-reference between journal entries: #+begin_src org ,* Follow-up from yesterday See [[file:2026/01/13/2026-01-13.org::*Meeting Notes][yesterday's meeting notes]] for context. #+end_src Or use relative paths: #+begin_src org [[file:../13/2026-01-13.org][Previous entry]] #+end_src",
       "path": [
         "Integration with Other Features"
@@ -44914,7 +44950,7 @@
       "heading": "Embedding Code Blocks",
       "level": 2,
       "file": "14-journal.org",
-      "line": 672,
+      "line": 675,
       "content": "CLOSED: [2026-01-17 Sat 14:20] Journal entries support full Babel functionality. Execute code blocks directly in your journal: #+begin_src org ,* Analysis for Today ,#+begin_src python import pandas as pd data = pd.read_csv('daily_metrics.csv') print(data.describe()) ,#+end_src #+end_src Press C-<return> (s-<return> on Mac) to execute blocks. See [[file:07-source-blocks.org][Source Blocks documentation]] for details.",
       "path": [
         "Integration with Other Features"
@@ -44948,7 +44984,7 @@
       "heading": "Citations and References",
       "level": 2,
       "file": "14-journal.org",
-      "line": 691,
+      "line": 694,
       "content": "CLOSED: [2026-01-17 Sat 14:20] Use org-ref features to add citations to journal entries: #+begin_src org ,* Reading Notes Read interesting paper about neural networks cite:lecun2015deep. The architecture described in cite:he2016deep could be useful for our project. ,* References bibliography:~/references.bib #+end_src Press C-c ] to insert citations. See [[file:19-references.org][References documentation]] for details.",
       "path": [
         "Integration with Other Features"
@@ -44984,7 +45020,7 @@
       "heading": "Commands Reference",
       "level": 1,
       "file": "14-journal.org",
-      "line": 710,
+      "line": 713,
       "content": "CLOSED: [2026-01-17 Sat 14:20]",
       "path": [],
       "commands": [],
@@ -45002,7 +45038,7 @@
       "heading": "All Journal Commands",
       "level": 2,
       "file": "14-journal.org",
-      "line": 713,
+      "line": 716,
       "content": "CLOSED: [2026-10-22 Thu 09:52] | Command                          | Keybinding   | Description                          | |----------------------------------+--------------+--------------------------------------| | Scimax: Open Today's Journal     | M-j j, C-S-J | Open or create today's entry         | | Scimax: Open Yesterday's Journal | M-j y        | Open or create yesterday's entry     | | Scimax: Open Tomorrow's Journal  | M-j m        | Open or create tomorrow's entry      | | Scimax: New ",
       "path": [
         "Commands Reference"
@@ -45039,7 +45075,7 @@
       "heading": "Command Palette",
       "level": 2,
       "file": "14-journal.org",
-      "line": 735,
+      "line": 738,
       "content": "CLOSED: [2026-01-17 Sat 14:23] Access all commands via Command Palette (C-S-P): 1. Press C-S-P 2. Type \"journal\" 3. Select command from filtered list",
       "path": [
         "Commands Reference"
@@ -45071,7 +45107,7 @@
       "heading": "Keyboard Shortcuts",
       "level": 1,
       "file": "14-journal.org",
-      "line": 744,
+      "line": 747,
       "content": "CLOSED: [2026-01-17 Sat 14:23]",
       "path": [],
       "commands": [],
@@ -45089,7 +45125,7 @@
       "heading": "The M-j Prefix",
       "level": 2,
       "file": "14-journal.org",
-      "line": 747,
+      "line": 750,
       "content": "All journal commands are bound under =M-j= (Option-J on Mac), and they work from any file, not only from inside the journal. They are disabled while the terminal has focus, so the terminal still receives Option-J. If you forget a key, =M-j ?= lists the journal commands with their keys and runs the one you choose; the keys it shows are read from the extension manifest, so they always match what is bound. | Key     | Action                                   | |---------+---------------------------",
       "path": [
         "Keyboard Shortcuts"
@@ -45125,7 +45161,7 @@
       "heading": "Default Keybindings",
       "level": 2,
       "file": "14-journal.org",
-      "line": 772,
+      "line": 775,
       "content": "CLOSED: [2026-01-17 Sat 14:23] #+begin_src json { \"command\": \"scimax.journal.today\", \"key\": \"ctrl+shift+j\", \"mac\": \"cmd+shift+j\" } { \"command\": \"scimax.journal.prev\", \"key\": \"alt+[\", \"when\": \"resourceFilename =~ /^\\\\d{4}-\\\\d{2}-\\\\d{2}\\\\.(org|md)$/\" } { \"command\": \"scimax.journal.next\", \"key\": \"alt+]\", \"when\": \"resourceFilename =~ /^\\\\d{4}-\\\\d{2}-\\\\d{2}\\\\.(org|md)$/\" } #+end_src",
       "path": [
         "Keyboard Shortcuts"
@@ -45160,7 +45196,7 @@
       "heading": "Custom Keybindings",
       "level": 2,
       "file": "14-journal.org",
-      "line": 795,
+      "line": 798,
       "content": "CLOSED: [2026-01-17 Sat 14:23] Add custom keybindings in keybindings.json (File > Preferences > Keyboard Shortcuts, then click the icon in the top right): #+begin_src json { \"key\": \"ctrl+alt+l\", \"command\": \"scimax.journal.quickLog\" } { \"key\": \"ctrl+alt+t\", \"command\": \"scimax.journal.insertTimestamp\" } { \"key\": \"ctrl+alt+c\", \"command\": \"scimax.journal.calendar\" } #+end_src",
       "path": [
         "Keyboard Shortcuts"
@@ -45198,7 +45234,7 @@
       "heading": "Tips and Best Practices",
       "level": 1,
       "file": "14-journal.org",
-      "line": 817,
+      "line": 820,
       "content": "CLOSED: [2026-01-17 Sat 14:23]",
       "path": [],
       "commands": [],
@@ -45217,7 +45253,7 @@
       "heading": "Daily Journaling Workflow",
       "level": 2,
       "file": "14-journal.org",
-      "line": 820,
+      "line": 823,
       "content": "CLOSED: [2026-10-22 Thu 09:52] 1. *Morning*: Open today's journal (M-j j), review yesterday's entry (M-j y), plan today's tasks 2. *Throughout the day*: Use quick log (M-j l) to capture notes 3. *Evening*: Review entry, mark tasks complete, add reflections 4. *Weekly*: Use This Week's Entries to review the week",
       "path": [
         "Tips and Best Practices"
@@ -45253,7 +45289,7 @@
       "heading": "Building the Habit",
       "level": 2,
       "file": "14-journal.org",
-      "line": 828,
+      "line": 831,
       "content": "CLOSED: [2026-01-17 Sat 14:21] - Set a reminder to journal at the same time each day - Start small - even a single sentence counts - Watch your streak grow for motivation - Use the minimal template if the default feels overwhelming - Pin the Journal tree view for easy access",
       "path": [
         "Tips and Best Practices"
@@ -45287,7 +45323,7 @@
       "heading": "Organizing Information",
       "level": 2,
       "file": "14-journal.org",
-      "line": 837,
+      "line": 840,
       "content": "CLOSED: [2026-01-17 Sat 14:21] - Use consistent heading structures for easier searching - Tag entries with hashtags: #projectname #meeting #idea - Link related entries together - Use the Log section for quick captures, Notes for longer form - Create custom templates for recurring entry types",
       "path": [
         "Tips and Best Practices"
@@ -45321,7 +45357,7 @@
       "heading": "Performance Tips",
       "level": 2,
       "file": "14-journal.org",
-      "line": 846,
+      "line": 849,
       "content": "CLOSED: [2026-01-17 Sat 14:21] - The journal system caches entries for 30 seconds, so browsing is fast - Large journals (1000+ entries) may take a moment to load the tree view - Search is optimized but searching \"all entries\" on large journals may be slow - Statistics are cached for 1 minute and updated asynchronously",
       "path": [
         "Tips and Best Practices"
@@ -45355,7 +45391,7 @@
       "heading": "Backup and Sync",
       "level": 2,
       "file": "14-journal.org",
-      "line": 854,
+      "line": 857,
       "content": "CLOSED: [2026-01-17 Sat 14:21] Since journal entries are plain text files in a standard directory structure: - Easy to backup with any file backup system - Can sync via Dropbox, iCloud, or git - Simple to migrate or export - Future-proof format (plain text) Example git setup for version control: #+begin_src bash cd ~/scimax-journal git init echo \".scimax/cache\" > .gitignore git add . git commit -m \"Initial journal\" #+end_src Then periodically: #+begin_src bash cd ~/scimax-journal git add . git c",
       "path": [
         "Tips and Best Practices"
@@ -45389,7 +45425,7 @@
       "heading": "Privacy and Security",
       "level": 2,
       "file": "14-journal.org",
-      "line": 883,
+      "line": 886,
       "content": "CLOSED: [2026-01-17 Sat 14:21] Journal entries are stored as plain text on your local filesystem. For sensitive information: - Encrypt your journal directory using OS-level encryption - Use a private git repository if syncing - Consider using org-crypt for encrypting specific entries - Be mindful of what you commit to version control",
       "path": [
         "Tips and Best Practices"
@@ -45423,7 +45459,7 @@
       "heading": "Troubleshooting",
       "level": 1,
       "file": "14-journal.org",
-      "line": 893,
+      "line": 896,
       "content": "CLOSED: [2026-01-17 Sat 14:21]",
       "path": [],
       "commands": [],
@@ -45440,7 +45476,7 @@
       "heading": "Journal Directory Not Found",
       "level": 2,
       "file": "14-journal.org",
-      "line": 896,
+      "line": 899,
       "content": "CLOSED: [2026-01-17 Sat 14:21] If you see errors about missing directory: 1. Check scimax.journal.directory setting 2. Ensure the parent directory exists 3. Restart VS Code 4. The directory will be created automatically on first use",
       "path": [
         "Troubleshooting"
@@ -45476,7 +45512,7 @@
       "heading": "Templates Not Working",
       "level": 2,
       "file": "14-journal.org",
-      "line": 906,
+      "line": 909,
       "content": "CLOSED: [2026-01-17 Sat 14:22] If custom templates aren't appearing: 1. Verify template location: <journal-directory>/.scimax/templates/ 2. Check file extension matches format (.org for org-mode, .md for Markdown) 3. Run Scimax: Refresh Journal View 4. Restart VS Code",
       "path": [
         "Troubleshooting"
@@ -45510,7 +45546,7 @@
       "heading": "Navigation Shortcuts Not Working",
       "level": 2,
       "file": "14-journal.org",
-      "line": 916,
+      "line": 919,
       "content": "CLOSED: [2026-01-17 Sat 14:22] M-[ and M-] only work when: - Current file is a journal entry - Filename matches YYYY-MM-DD.org or YYYY-MM-DD.md - File is inside the configured journal directory",
       "path": [
         "Troubleshooting"
@@ -45544,7 +45580,7 @@
       "heading": "Statistics Not Updating",
       "level": 2,
       "file": "14-journal.org",
-      "line": 925,
+      "line": 928,
       "content": "CLOSED: [2026-01-17 Sat 14:22] Statistics are cached for performance: - Refresh calendar view to force update - Statistics update automatically after 1 minute - Saving a journal file triggers update",
       "path": [
         "Troubleshooting"
@@ -45577,7 +45613,7 @@
       "heading": "Calendar Not Showing Entries",
       "level": 2,
       "file": "14-journal.org",
-      "line": 934,
+      "line": 937,
       "content": "CLOSED: [2026-01-17 Sat 14:22] If the calendar appears empty: 1. Check that entries exist in the correct directory structure 2. Run Scimax: Refresh Journal View 3. Verify file naming matches YYYY-MM-DD.org or .md 4. Check for file system permissions issues",
       "path": [
         "Troubleshooting"
@@ -45613,7 +45649,7 @@
       "heading": "Advanced Usage",
       "level": 1,
       "file": "14-journal.org",
-      "line": 944,
+      "line": 947,
       "content": "CLOSED: [2026-01-17 Sat 14:22]",
       "path": [],
       "commands": [],
@@ -45631,7 +45667,7 @@
       "heading": "Scripting and Automation",
       "level": 2,
       "file": "14-journal.org",
-      "line": 947,
+      "line": 950,
       "content": "CLOSED: [2026-01-17 Sat 14:22] Since journal entries are plain text files in a predictable structure, you can script operations:",
       "path": [
         "Advanced Usage"
@@ -45660,7 +45696,7 @@
       "heading": "Auto-generate Weekly Summary",
       "level": 3,
       "file": "14-journal.org",
-      "line": 952,
+      "line": 955,
       "content": "CLOSED: [2026-01-17 Sat 14:22] #+begin_src python #!/usr/bin/env python3 import os from datetime import datetime, timedelta import glob journal_dir = os.path.expanduser(\"~/scimax-journal\") today = datetime.now() week_start = today - timedelta(days=today.weekday()) # Collect this week's entries entries = [] for i in range(7): day = week_start + timedelta(days=i) path = os.path.join( journal_dir, f\"{day.year}/{day.month:02d}/{day.day:02d}\", f\"{day.year}-{day.month:02d}-{day.day:02d}.org\"",
       "path": [
         "Advanced Usage",
@@ -45695,7 +45731,7 @@
       "heading": "Export to PDF",
       "level": 3,
       "file": "14-journal.org",
-      "line": 989,
+      "line": 992,
       "content": "CLOSED: [2026-01-17 Sat 14:22] #+begin_src bash #!/bin/bash # Export recent journal entries to PDF cd ~/scimax-journal # Find entries from last 30 days find . -name \"*.org\" -mtime -30 | while read file; do pandoc \"$file\" -o \"${file%.org}.pdf\" done #+end_src",
       "path": [
         "Advanced Usage",
@@ -45730,7 +45766,7 @@
       "heading": "Custom Template Variables",
       "level": 2,
       "file": "14-journal.org",
-      "line": 1004,
+      "line": 1007,
       "content": "CLOSED: [2026-01-17 Sat 14:22] Currently, template variables are fixed, but you can post-process entries: #+begin_src bash # Add custom metadata after creation sed -i '3i#+TAGS: daily' ~/scimax-journal/2026/01/14/2026-01-14.org #+end_src",
       "path": [
         "Advanced Usage"
@@ -45764,7 +45800,7 @@
       "heading": "Integration with External Tools",
       "level": 2,
       "file": "14-journal.org",
-      "line": 1014,
+      "line": 1017,
       "content": "CLOSED: [2026-01-17 Sat 14:22]",
       "path": [
         "Advanced Usage"
@@ -45785,7 +45821,7 @@
       "heading": "Obsidian Daily Notes",
       "level": 3,
       "file": "14-journal.org",
-      "line": 1017,
+      "line": 1020,
       "content": "CLOSED: [2026-01-17 Sat 14:22] To use the same directory structure with Obsidian: 1. Set Obsidian's daily notes folder to your journal directory 2. Use the same date format (YYYY-MM-DD) 3. Adjust template format as needed",
       "path": [
         "Advanced Usage",
@@ -45820,7 +45856,7 @@
       "heading": "Emacs org-journal",
       "level": 3,
       "file": "14-journal.org",
-      "line": 1026,
+      "line": 1029,
       "content": "CLOSED: [2026-01-17 Sat 14:22] The directory structure is compatible with some org-journal configurations: #+begin_src elisp (setq org-journal-dir \"~/scimax-journal\" org-journal-file-format \"%Y-%m-%d.org\" org-journal-file-type 'daily) #+end_src",
       "path": [
         "Advanced Usage",
@@ -45855,7 +45891,7 @@
       "heading": "Future Enhancements",
       "level": 1,
       "file": "14-journal.org",
-      "line": 1037,
+      "line": 1040,
       "content": "CLOSED: [2026-01-17 Sat 14:22] Potential future features under consideration: - Weekly and monthly journal entries (not just daily) - Journal entry templates based on day of week - Automatic tagging based on content - Integration with time tracking - Habit tracking visualizations - Export entire journal to single file - Import from other journal systems - Template preview before creation - AI-powered journal prompts and summaries",
       "path": [],
       "commands": [],
@@ -45887,7 +45923,7 @@
       "heading": "See Also",
       "level": 1,
       "file": "14-journal.org",
-      "line": 1052,
+      "line": 1055,
       "content": "CLOSED: [2026-01-17 Sat 14:22] - [[file:13-agenda.org][Agenda]] - Task management and scheduling - [[file:07-source-blocks.org][Source Blocks]] - Execute code in journal entries - [[file:19-references.org][References]] - Citations in journal entries - [[file:18-database-search.org][Database Search]] - Search and indexing system - [[file:24-keybindings.org][Keybindings]] - The =M-j= journal keys alongside every other binding",
       "path": [],
       "commands": [],
@@ -45921,7 +45957,7 @@
       "heading": "Navigation",
       "level": 1,
       "file": "14-journal.org",
-      "line": 1061,
+      "line": 1064,
       "content": "- Previous: [[file:13-agenda.org][Agenda]] - Index: [[file:00-index.org][Documentation Index]] - Next: [[file:15-capture.org][Capture]]",
       "path": [],
       "commands": [],

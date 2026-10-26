@@ -26,6 +26,19 @@ export function dateKey(date: Date): string {
 }
 
 /**
+ * Move a date by a number of days and/or months. Month moves clamp the day to
+ * the end of the target month (Jan 31 + 1 month is Feb 28/29).
+ */
+export function moveDate(date: Date, days: number = 0, months: number = 0): Date {
+    if (months) {
+        const target = new Date(date.getFullYear(), date.getMonth() + months, 1);
+        const lastDay = new Date(target.getFullYear(), target.getMonth() + 1, 0).getDate();
+        date = new Date(target.getFullYear(), target.getMonth(), Math.min(date.getDate(), lastDay));
+    }
+    return new Date(date.getFullYear(), date.getMonth(), date.getDate() + days);
+}
+
+/**
  * Show a calendar date picker and return the selected date
  */
 export async function showCalendarDatePicker(
@@ -46,11 +59,13 @@ export async function showCalendarDatePicker(
         );
 
         const today = new Date();
-        let currentYear = today.getFullYear();
-        let currentMonth = today.getMonth();
+        // The highlighted date that arrow keys move and Enter selects.
+        // The displayed month always follows it.
+        let cursor = new Date(today.getFullYear(), today.getMonth(), today.getDate());
 
         function updateContent() {
-            panel.webview.html = getCalendarHtml(currentYear, currentMonth, today, title, options);
+            panel.webview.html = getCalendarHtml(
+                cursor.getFullYear(), cursor.getMonth(), today, title, options, cursor);
         }
 
         updateContent();
@@ -64,20 +79,20 @@ export async function showCalendarDatePicker(
                     panel.dispose();
                     break;
                 case 'prevMonth':
-                    currentMonth--;
-                    if (currentMonth < 0) {
-                        currentMonth = 11;
-                        currentYear--;
-                    }
+                    cursor = moveDate(cursor, 0, -1);
                     updateContent();
                     break;
                 case 'nextMonth':
-                    currentMonth++;
-                    if (currentMonth > 11) {
-                        currentMonth = 0;
-                        currentYear++;
-                    }
+                    cursor = moveDate(cursor, 0, 1);
                     updateContent();
+                    break;
+                case 'moveCursor':
+                    cursor = moveDate(cursor, message.days ?? 0, message.months ?? 0);
+                    updateContent();
+                    break;
+                case 'selectCursor':
+                    resolve(cursor);
+                    panel.dispose();
                     break;
                 case 'today':
                     resolve(today);
@@ -96,11 +111,11 @@ export async function showCalendarDatePicker(
                     panel.dispose();
                     break;
                 case 'goToMonth':
-                    currentMonth = message.month;
+                    cursor = moveDate(cursor, 0, message.month - cursor.getMonth());
                     updateContent();
                     break;
                 case 'goToYear':
-                    currentYear = message.year;
+                    cursor = moveDate(cursor, 0, 12 * (message.year - cursor.getFullYear()));
                     updateContent();
                     break;
                 case 'parseInput':
@@ -135,7 +150,8 @@ export function getCalendarHtml(
     month: number,
     today: Date,
     title: string,
-    options: CalendarDatePickerOptions = {}
+    options: CalendarDatePickerOptions = {},
+    cursor?: Date
 ): string {
     const marked = options.markedDates ?? new Set<string>();
     const markedTooltip = options.markedTooltip ?? '';
@@ -150,6 +166,8 @@ export function getCalendarHtml(
                               'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
     const isCurrentMonth = today.getFullYear() === year && today.getMonth() === month;
+    const cursorDay = cursor && cursor.getFullYear() === year && cursor.getMonth() === month
+        ? cursor.getDate() : -1;
 
     // Build calendar grid
     const firstDay = new Date(year, month, 1);
@@ -188,6 +206,7 @@ export function getCalendarHtml(
 
         let classes = 'day';
         if (isToday) classes += ' today';
+        if (day === cursorDay) classes += ' cursor';
         if (isMarked) classes += ' marked';
         else if (isPast) classes += ' past';
 
@@ -430,6 +449,12 @@ export function getCalendarHtml(
             color: var(--vscode-textLink-foreground);
         }
 
+        .day.cursor {
+            background: var(--vscode-list-activeSelectionBackground);
+            color: var(--vscode-list-activeSelectionForeground);
+            opacity: 1;
+        }
+
         .day.past {
             opacity: 0.5;
         }
@@ -485,7 +510,8 @@ export function getCalendarHtml(
             <input type="text" class="text-input" id="dateInput"
                    placeholder="friday, next friday, +2d, jan 15..."
                    onkeydown="handleInputKeydown(event)">
-            <div class="input-hint">Type a date expression and press Enter</div>
+            <div class="input-hint">Type a date expression and press Enter, or use the arrow keys
+                (Shift for a month) and Enter to pick the highlighted day</div>
             <div class="input-error" id="inputError">Invalid date expression</div>
         </div>
 
@@ -557,11 +583,41 @@ export function getCalendarHtml(
                 const value = input.value.trim();
                 if (value) {
                     vscode.postMessage({ command: 'parseInput', value });
+                } else {
+                    vscode.postMessage({ command: 'selectCursor' });
                 }
             } else if (event.key === 'Escape') {
                 cancel();
             }
         }
+
+        // Arrow keys move the highlighted day: left/right by a day, up/down by
+        // a week, and with Shift, back (left/up) or forward (right/down) a month.
+        // They are left alone while the text input holds text, so the caret
+        // still moves when editing an expression.
+        const ARROW_MOVES = {
+            ArrowLeft: [-1, -1], ArrowRight: [1, 1],
+            ArrowUp: [-7, -1], ArrowDown: [7, 1]
+        };
+        document.addEventListener('keydown', event => {
+            const move = ARROW_MOVES[event.key];
+            if (!move || event.altKey || event.ctrlKey || event.metaKey) return;
+            const input = document.getElementById('dateInput');
+            if (event.target === input && input.value !== '') return;
+            event.preventDefault();
+            if (event.shiftKey) {
+                vscode.postMessage({ command: 'moveCursor', months: move[1] });
+            } else {
+                vscode.postMessage({ command: 'moveCursor', days: move[0] });
+            }
+        });
+
+        // Enter selects the highlighted day when focus is outside the input
+        document.addEventListener('keydown', event => {
+            if (event.key === 'Enter' && event.target === document.body) {
+                vscode.postMessage({ command: 'selectCursor' });
+            }
+        });
 
         function cancel() {
             vscode.postMessage({ command: 'cancel' });

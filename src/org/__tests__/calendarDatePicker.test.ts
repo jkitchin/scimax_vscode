@@ -2,7 +2,7 @@ import { describe, it, expect, vi } from 'vitest';
 
 vi.mock('vscode', () => ({}));
 
-import { getCalendarHtml, dateKey } from '../calendarDatePicker';
+import { getCalendarHtml, dateKey, moveDate } from '../calendarDatePicker';
 
 /** Extract the day cells (class list and day number) from the rendered grid */
 function dayCells(html: string): { classes: string; day: string }[] {
@@ -57,5 +57,27 @@ describe('calendarDatePicker', () => {
 
     it('renders no marks by default', () => {
         expect(getCalendarHtml(2026, 9, today, 'Go')).not.toMatch(/class="day[^"]*marked/);
+    });
+
+    it('moveDate moves by days and weeks across month boundaries', () => {
+        expect(dateKey(moveDate(new Date(2026, 9, 31), 1))).toBe('2026-11-01');
+        expect(dateKey(moveDate(new Date(2026, 9, 1), -1))).toBe('2026-09-30');
+        expect(dateKey(moveDate(new Date(2026, 11, 28), 7))).toBe('2027-01-04');
+        expect(dateKey(moveDate(new Date(2026, 9, 3), -7))).toBe('2026-09-26');
+    });
+
+    it('moveDate moves by months, clamping to the end of the month', () => {
+        expect(dateKey(moveDate(new Date(2026, 9, 15), 0, 1))).toBe('2026-11-15');
+        expect(dateKey(moveDate(new Date(2026, 0, 31), 0, 1))).toBe('2026-02-28');
+        expect(dateKey(moveDate(new Date(2028, 2, 31), 0, -1))).toBe('2028-02-29');
+        expect(dateKey(moveDate(new Date(2026, 11, 10), 0, 1))).toBe('2027-01-10');
+        expect(dateKey(moveDate(new Date(2026, 0, 10), 0, -1))).toBe('2025-12-10');
+    });
+
+    it('highlights the cursor day only when it is in the displayed month', () => {
+        const cells = dayCells(getCalendarHtml(2026, 9, today, 'Go', {}, new Date(2026, 9, 12)));
+        expect(cells.filter(c => c.classes.includes('cursor')).map(c => c.day)).toEqual(['12']);
+        const other = getCalendarHtml(2026, 9, today, 'Go', {}, new Date(2026, 10, 12));
+        expect(other).not.toMatch(/class="day[^"]*cursor/);
     });
 });

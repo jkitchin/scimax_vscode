@@ -395,7 +395,7 @@ existing entry. The older shortcuts M-[ and M-] (C-Cmd-[ and C-Cmd-] on Mac) do
 the same and only work when the current file is a journal entry (filename
 matches YYYY-MM-DD.org or .md).
 
-** Go to Specific Date
+** 👀 Go to Specific Date
 
 Run Scimax: Go to Journal Date to open a calendar picker: [[cmd:scimax.journal.goto]]
 
@@ -403,6 +403,9 @@ Run Scimax: Go to Journal Date to open a calendar picker: [[cmd:scimax.journal.g
 - Months containing entries are bold in the month picker (click the month name)
 - Click any day to open its entry, or create one if it does not exist yet
 - Type a date expression (=yesterday=, =-3d=, =jan 15=, =last friday=) and press Enter
+- With the text box empty, the arrow keys move the highlighted day (Left/Right a
+  day, Up/Down a week, Shift+Left/Up and Shift+Right/Down a month) and Enter
+  opens it. See [[file:06-timestamps.org::*Moving the Date with the Keyboard in the Calendar Picker][the calendar picker keys]]
 - The grid follows the =scimax.journal.weekStartsOn= setting
 - Press Escape (in the text box) or Cancel to close without jumping
 
