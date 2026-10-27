@@ -25,9 +25,10 @@ import {
 import { parseDeck } from './slideModel';
 import { frontMatterValue } from './marpAuthoring';
 import {
-    BundleReport, bundlePresenterDeck, inlineDeck, OfflineCheck, offlineIssues, OfflinePlan, planOfflinePython,
-    parseTimer, presenterAssets, presenterOffline, pyodideBaseUrl, PyodideLock,
+    BundleReport, bundlePresenterDeck, inlineDeck, OfflineCheck, offlineIssues, OfflinePlan,
+    parseTimer, presenterAssets, presenterOffline,
 } from './presenterBundle';
+import { fetchFontCached, offlinePythonFiles as fetchOfflinePython } from './presenterDownloads';
 
 /** Marp CLI major version run through npx. */
 const NPX_PACKAGE = '@marp-team/marp-cli@4';
@@ -275,104 +276,30 @@ function presenterEnabled(document: vscode.TextDocument): boolean {
     return true;
 }
 
-/** Download a KaTeX font once, caching it in the extension's global storage. */
-async function fetchFontCached(context: vscode.ExtensionContext, url: string): Promise<Buffer> {
-    const dir = path.join(context.globalStorageUri.fsPath, 'marp-present-fonts');
-    const file = path.join(dir, path.basename(new URL(url).pathname));
-    try {
-        return await fs.promises.readFile(file);
-    } catch {
-        // Not cached yet.
-    }
-    const response = await fetch(url, { signal: AbortSignal.timeout(30000) });
-    if (!response.ok) {
-        throw new Error(`Could not download ${url}: HTTP ${response.status}`);
-    }
-    const data = Buffer.from(await response.arrayBuffer());
-    await fs.promises.mkdir(dir, { recursive: true });
-    await fs.promises.writeFile(file, data);
-    return data;
-}
-
-/** Download a file, failing on an HTTP error. */
-async function download(url: string, timeoutMs: number): Promise<Buffer> {
-    const response = await fetch(url, { signal: AbortSignal.timeout(timeoutMs) });
-    if (!response.ok) {
-        throw new Error(`Could not download ${url}: HTTP ${response.status}`);
-    }
-    return Buffer.from(await response.arrayBuffer());
-}
-
 /**
- * The Pyodide files an offline deck (`presenter: offline`) embeds: Pyodide
- * itself and the packages its run cells import. They are downloaded once
- * into the extension's global storage (wheels checked against the lock
- * file's sha256), so later builds work without a network.
+ * The Pyodide files an offline deck (`presenter: offline`) embeds, cached in
+ * the extension's global storage, with a progress notification while the
+ * missing ones download.
  */
 export async function offlinePythonFiles(
     context: vscode.ExtensionContext,
     markdown: string
 ): Promise<{ files: Record<string, Buffer>; plan: OfflinePlan }> {
-    const pycells = await fs.promises.readFile(context.asAbsolutePath(path.join('media', 'marpPresent', 'pycells.js')), 'utf8');
-    const base = pyodideBaseUrl(pycells);
-    const version = base.match(/\/(v[^/]+)\//)?.[1] ?? 'pyodide';
-    const dir = path.join(context.globalStorageUri.fsPath, 'pyodide', version);
-    await fs.promises.mkdir(dir, { recursive: true });
-
-    const cached = async (name: string, sha256?: string): Promise<Buffer | undefined> => {
-        try {
-            const data = await fs.promises.readFile(path.join(dir, name));
-            if (!sha256 || createHash('sha256').update(data).digest('hex') === sha256) {
-                return data;
-            }
-        } catch {
-            // Not cached yet.
-        }
-        return undefined;
-    };
-    const save = async (name: string, data: Buffer): Promise<void> => {
-        const tmp = path.join(dir, `.${name}.${randomBytes(8).toString('hex')}`);
-        await fs.promises.writeFile(tmp, data);
-        await fs.promises.rename(tmp, path.join(dir, name));
-    };
-
-    let lockData = await cached('pyodide-lock.json');
-    if (!lockData) {
-        lockData = await download(base + 'pyodide-lock.json', 60000);
-        await save('pyodide-lock.json', lockData);
-    }
-    const lock = JSON.parse(lockData.toString('utf8')) as PyodideLock;
-    const plan = planOfflinePython(markdown, lock);
-    const sha = new Map(plan.packages.map(name => [lock.packages[name].file_name, lock.packages[name].sha256]));
-
-    const files: Record<string, Buffer> = {};
-    const missing: string[] = [];
-    for (const name of plan.files) {
-        const data = await cached(name, sha.get(name));
-        if (data) {
-            files[name] = data;
-        } else {
-            missing.push(name);
-        }
-    }
-    if (missing.length > 0) {
-        await vscode.window.withProgress({
+    const { files, plan, version } = await fetchOfflinePython(
+        context.asAbsolutePath(path.join('media', 'marpPresent', 'pycells.js')),
+        context.globalStorageUri.fsPath,
+        markdown,
+        (missing, fetchOne) => Promise.resolve(vscode.window.withProgress({
             location: vscode.ProgressLocation.Notification,
             title: 'Downloading Python for offline slides (once)',
             cancellable: false,
         }, async progress => {
             for (const [i, name] of missing.entries()) {
                 progress.report({ message: `${name} (${i + 1} of ${missing.length})`, increment: 100 / missing.length });
-                const data = await download(base + name, 300000);
-                const expected = sha.get(name);
-                if (expected && createHash('sha256').update(data).digest('hex') !== expected) {
-                    throw new Error(`${name} does not match its checksum in pyodide-lock.json`);
-                }
-                await save(name, data);
-                files[name] = data;
+                await fetchOne(name);
             }
-        });
-    }
+        }))
+    );
 
     const size = Object.values(files).reduce((sum, data) => sum + data.length, 0);
     log().appendLine(`Offline Python: Pyodide ${version} with ${plan.packages.join(', ')} (${(size / 1e6).toFixed(1)} MB before encoding)`);
@@ -428,7 +355,7 @@ async function addPresenterTools(
             pyodide,
             timer: parseTimer(frontMatterValue(markdown.split(/\r?\n/), 'timer')),
             assets: presenterAssets(context.asAbsolutePath(path.join('media', 'marpPresent'))),
-            fetchFont: url => fetchFontCached(context, url),
+            fetchFont: url => fetchFontCached(context.globalStorageUri.fsPath, url),
         });
         await fs.promises.writeFile(htmlPath, bundled, 'utf8');
         const counts = Object.entries(report.counts).map(([what, n]) => `${n} ${what}`).join(', ');
@@ -508,7 +435,7 @@ async function checkOffline(context: vscode.ExtensionContext): Promise<void> {
             check = { markdown: document.getText(), ...build };
         } else {
             const html = await fs.promises.readFile(htmlPath, 'utf8');
-            const { report } = await inlineDeck(html, path.dirname(document.uri.fsPath), { fetchFont: url => fetchFontCached(context, url) });
+            const { report } = await inlineDeck(html, path.dirname(document.uri.fsPath), { fetchFont: url => fetchFontCached(context.globalStorageUri.fsPath, url) });
             check = { markdown: document.getText(), report };
         }
         const count = showOfflineIssues(document, check);

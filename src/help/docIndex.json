@@ -1,6 +1,6 @@
 {
-  "buildDate": "2026-10-27T12:31:56.935Z",
-  "count": 3705,
+  "buildDate": "2026-10-27T13:13:00.398Z",
+  "count": 3706,
   "entries": [
     {
       "heading": "Scimax VS Code",
@@ -1252,7 +1252,7 @@
       "heading": "Quick Start by Use Case",
       "level": 1,
       "file": "00-index.org",
-      "line": 522,
+      "line": 523,
       "content": "",
       "path": [],
       "commands": [],
@@ -1267,7 +1267,7 @@
       "heading": "I want to...",
       "level": 2,
       "file": "00-index.org",
-      "line": 524,
+      "line": 525,
       "content": "",
       "path": [
         "Quick Start by Use Case"
@@ -1282,7 +1282,7 @@
       "heading": "Take notes and organize information",
       "level": 3,
       "file": "00-index.org",
-      "line": 526,
+      "line": 527,
       "content": "- Start with [[file:01-getting-started.org][Getting Started]] - Learn [[file:01.5-basic-syntax.org][Basic Syntax]] for formatting text - Learn [[file:02-document-structure.org][Document Structure]] for headings and organization - Use [[file:15-capture.org][Capture]] for quick note-taking - Search with [[file:18-database-search.org][Database and Search]]",
       "path": [
         "Quick Start by Use Case",
@@ -1317,7 +1317,7 @@
       "heading": "Manage tasks and projects",
       "level": 3,
       "file": "00-index.org",
-      "line": 533,
+      "line": 534,
       "content": "- Set up tasks with [[file:03-todo-items.org][TODO Items]] - Add dates with [[file:06-timestamps.org][Timestamps]] - View agenda with [[file:13-agenda.org][Agenda]] - Organize projects with [[file:17-projectile.org][Projectile]] or [[file:16-notebook.org][Notebook]]",
       "path": [
         "Quick Start by Use Case",
@@ -1351,7 +1351,7 @@
       "heading": "Write scientific documents",
       "level": 3,
       "file": "00-index.org",
-      "line": 539,
+      "line": 540,
       "content": "- Execute code with [[file:07-source-blocks.org][Source Code Blocks]] - Preview math with [[file:11-latex-preview.org][LaTeX Preview]] - Manage citations with [[file:19-references.org][References]] - Export with [[file:10-export.org][Export]]",
       "path": [
         "Quick Start by Use Case",
@@ -1384,7 +1384,7 @@
       "heading": "Keep a journal",
       "level": 3,
       "file": "00-index.org",
-      "line": 545,
+      "line": 546,
       "content": "- Set up with [[file:14-journal.org][Journal]] - Use templates from [[file:15-capture.org][Capture]] - Navigate entries with [[file:21-navigation.org][Navigation]]",
       "path": [
         "Quick Start by Use Case",
@@ -1410,7 +1410,7 @@
       "heading": "Navigate efficiently",
       "level": 3,
       "file": "00-index.org",
-      "line": 550,
+      "line": 551,
       "content": "- Learn [[file:21-navigation.org][Navigation]] techniques - Master [[file:23-speed-commands.org][Speed Commands]] - Use [[file:22-hydra-menus.org][Hydra Menus]] for discovery - Reference [[file:24-keybindings.org][Keybindings]]",
       "path": [
         "Quick Start by Use Case",
@@ -1442,7 +1442,7 @@
       "heading": "Programmatically modify org files",
       "level": 3,
       "file": "00-index.org",
-      "line": 556,
+      "line": 557,
       "content": "CLOSED: [2026-01-16 Fri 20:04] - Use the [[file:27-org-api.org][Org API]] in TypeScript source blocks - Bulk update TODO states, properties, and tags - Extract and transform table data - Automate repetitive org file operations",
       "path": [
         "Quick Start by Use Case",
@@ -1477,7 +1477,7 @@
       "heading": "Configure the extension",
       "level": 3,
       "file": "00-index.org",
-      "line": 563,
+      "line": 564,
       "content": "CLOSED: [2026-01-16 Fri 20:04] - See all options in [[file:26-configuration.org][Configuration]] - Set up keybindings with [[file:24-keybindings.org][Keybindings]] - Customize menus with [[file:22-hydra-menus.org][Hydra Menus]]",
       "path": [
         "Quick Start by Use Case",
@@ -1508,7 +1508,7 @@
       "heading": "Navigation",
       "level": 1,
       "file": "00-index.org",
-      "line": 569,
+      "line": 570,
       "content": "- Index: [[file:00-index.org][Documentation Index]] - Next: [[file:01-getting-started.org][Getting Started]]",
       "path": [],
       "commands": [],
@@ -92340,10 +92340,44 @@
       ]
     },
     {
-      "heading": "Citations",
+      "heading": "Marp Slides",
       "level": 2,
       "file": "30-cli.org",
       "line": 298,
+      "content": "Build a Marp deck into one self-contained HTML file with the presenter tools (pen, laser, spotlight, sticky notes, talk timer, saving with ink, live Python cells). It is the same build as exporting HTML (=h=) from the Marp menu in VS Code, using the scripts that ship with the extension, so nothing else needs to be installed except Marp CLI (=marp= on the PATH, or =npx=, which downloads it the first time). #+begin_src bash # deck.md -> deck.html with presenter tools scimax marp build talk.md # Bu",
+      "path": [
+        "Commands"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "marp",
+        "slides",
+        "build",
+        "deck",
+        "into",
+        "one",
+        "self-contained",
+        "html",
+        "presenter",
+        "tools",
+        "pen",
+        "laser",
+        "spotlight",
+        "sticky",
+        "notes",
+        "talk",
+        "timer",
+        "saving",
+        "ink",
+        "live"
+      ]
+    },
+    {
+      "heading": "Citations",
+      "level": 2,
+      "file": "30-cli.org",
+      "line": 343,
       "content": "Citation-related operations. =extract=, =check=, and =list= accept =--json= (or =--format json=) for structured output.",
       "path": [
         "Commands"
@@ -92369,7 +92403,7 @@
       "heading": "Extract Citations",
       "level": 3,
       "file": "30-cli.org",
-      "line": 303,
+      "line": 348,
       "content": "List all citation keys used in a document: #+begin_src bash scimax cite extract paper.org # JSON output scimax cite extract paper.org --format json #+end_src Output: #+begin_example Found 12 citation(s) with 8 unique key(s): doe-2020 jones-2021 smith-2019 ... #+end_example",
       "path": [
         "Commands",
@@ -92404,7 +92438,7 @@
       "heading": "Check Citations",
       "level": 3,
       "file": "30-cli.org",
-      "line": 324,
+      "line": 369,
       "content": "Validate citations against a bibliography file: #+begin_src bash scimax cite check paper.org --bib references.bib #+end_src Output: #+begin_example Citation Check: paper.org Citations found: 12 Bibliography entries: 15 MISSING (2 cited but not in .bib): - nonexistent-2020 - typo-key UNUSED (5 in .bib but not cited): - old-reference-2010 - unused-entry ... #+end_example This is useful in CI pipelines to catch citation errors before publishing.",
       "path": [
         "Commands",
@@ -92439,7 +92473,7 @@
       "heading": "Convert Citation Syntax",
       "level": 3,
       "file": "30-cli.org",
-      "line": 351,
+      "line": 396,
       "content": "Convert between org-ref v2, v3, and org-cite syntax: #+begin_src bash # Convert v2 to v3 scimax cite convert paper.org --from v2 --to v3 # Convert to org-cite scimax cite convert paper.org --from v3 --to org-cite # Modify file in place scimax cite convert paper.org --from v2 --to v3 --inplace # Output to new file scimax cite convert paper.org --from v2 --to v3 --output paper-v3.org #+end_src",
       "path": [
         "Commands",
@@ -92474,7 +92508,7 @@
       "heading": "List Bibliography",
       "level": 3,
       "file": "30-cli.org",
-      "line": 369,
+      "line": 414,
       "content": "List entries in a BibTeX file: #+begin_src bash scimax cite list references.bib # JSON output scimax cite list references.bib --format json #+end_src",
       "path": [
         "Commands",
@@ -92502,7 +92536,7 @@
       "heading": "Journal",
       "level": 2,
       "file": "30-cli.org",
-      "line": 380,
+      "line": 425,
       "content": "Open or create journal entries from the terminal. #+begin_src bash # Open today's journal (creates if needed) scimax journal # Open a specific date scimax journal tomorrow scimax journal yesterday scimax journal friday scimax journal --date \"next monday\" scimax journal --date 2026-03-15 scimax journal --date +2d scimax journal --date -1w # JSON output (for scripting) scimax journal --json #+end_src The journal directory is configured via =scimax.journal.directory= in VS Code settings. New entrie",
       "path": [
         "Commands"
@@ -92538,7 +92572,7 @@
       "heading": "Project",
       "level": 2,
       "file": "30-cli.org",
-      "line": 405,
+      "line": 450,
       "content": "Fuzzy-select and open a known project in VS Code. #+begin_src bash # Interactive fuzzy selection (uses fzf if available) scimax project # Pre-filter with a query scimax project scimax # List all known projects scimax project --list # Add a new project (creates directory if needed, opens in VS Code) scimax project --add ~/projects/new-project # JSON output scimax project --json # Remove projects whose directories no longer exist scimax project --cleanup # Remove one project by path scimax project",
       "path": [
         "Commands"
@@ -92572,7 +92606,7 @@
       "heading": "Tasks",
       "level": 2,
       "file": "30-cli.org",
-      "line": 439,
+      "line": 484,
       "content": "Project management over org task graphs. Answers \"what should I work on next\", who is overloaded, what is blocked, and what the long pole is. Note that =scimax task= and =scimax project= are unrelated despite the similar-sounding names: =scimax project= opens VS Code workspaces, while =scimax task= reads task metadata inside org files. #+begin_src bash # What to work on now, ranked and explained scimax task next # Open tasks, filtered scimax task list --ready scimax task list --blocked scimax ta",
       "path": [
         "Commands"
@@ -92606,7 +92640,7 @@
       "heading": "Task Model",
       "level": 3,
       "file": "30-cli.org",
-      "line": 474,
+      "line": 519,
       "content": "A task is a heading carrying an =:ID:= property. The relevant properties are: | Property    | Meaning                              | Example              | |-------------+--------------------------------------+----------------------| | =:ID:=      | Task identifier (required)           | =synth=              | | =:ASSIGNEE:=| Who owns it                          | =liam=               | | =:EFFORT:=  | Estimated work, =Nd= or =Nh=         | =5d=                 | | =:DEPENDS:= | Explicit blocker",
       "path": [
         "Commands",
@@ -92641,7 +92675,7 @@
       "heading": "File Selection",
       "level": 3,
       "file": "30-cli.org",
-      "line": 490,
+      "line": 535,
       "content": "File selection is global by default. The database spans every indexed file, so =scimax task next= gives the same answer from any directory: it picks the file with the most task metadata anywhere. | Flag            | Effect                                            | |-----------------+---------------------------------------------------| | (none)          | The file with the most tasks, anywhere            | | =--local=       | Only files under the current directory            | | =--file <path>",
       "path": [
         "Commands",
@@ -92676,7 +92710,7 @@
       "heading": "Options",
       "level": 3,
       "file": "30-cli.org",
-      "line": 504,
+      "line": 549,
       "content": "| Option          | Description                              | |-----------------+------------------------------------------| | =--file <path>= | Project file to operate on               | | =--local=       | Confine discovery to the current directory | | =--json=        | Structured output                        | | =--force=       | Allow =done= on a blocked task           |",
       "path": [
         "Commands",
@@ -92711,7 +92745,7 @@
       "heading": "Limitations",
       "level": 3,
       "file": "30-cli.org",
-      "line": 513,
+      "line": 558,
       "content": "- =done= does not write a =CLOSED:= timestamp, and does not regenerate =project-table= dynamic blocks; refresh those in the editor. - =:ORDERED:= sequences direct children only, not deeper descendants. - Task ids resolve within one file, so cross-file =:DEPENDS:= is not followed. - Effort totals count only =Nd= and =Nh=; anything else is reported as unestimated.",
       "path": [
         "Commands",
@@ -92746,7 +92780,7 @@
       "heading": "Database",
       "level": 2,
       "file": "30-cli.org",
-      "line": 522,
+      "line": 567,
       "content": "Database maintenance operations.",
       "path": [
         "Commands"
@@ -92763,7 +92797,7 @@
       "heading": "Statistics",
       "level": 3,
       "file": "30-cli.org",
-      "line": 526,
+      "line": 571,
       "content": "Show database statistics: #+begin_src bash scimax db stats #+end_src Output: #+begin_example === Database Statistics === Database: /home/user/.config/Code/User/globalStorage/jkitchin.scimax-vscode/scimax-db.sqlite Root: /home/user/project Files indexed: 42 Headings: 1234 Source blocks: 317 Has embeddings: No Org files: 40 Markdown files: 2 #+end_example Add =--json= for structured output.",
       "path": [
         "Commands",
@@ -92798,7 +92832,7 @@
       "heading": "Optimize",
       "level": 3,
       "file": "30-cli.org",
-      "line": 551,
+      "line": 596,
       "content": "Remove entries for missing files and VACUUM: #+begin_src bash scimax db optimize #+end_src Close VS Code first: VACUUM needs the database to itself. It rewrites the file, so it needs free disk space about the size of the database. The output reports the size before and after: #+begin_example Database optimized: 47.0 GB -> 1.9 GB #+end_example The same as *Scimax: Optimize Database* in VS Code. See [[file:18-database-search.org][Database Search]].",
       "path": [
         "Commands",
@@ -92833,7 +92867,7 @@
       "heading": "Check Integrity",
       "level": 3,
       "file": "30-cli.org",
-      "line": 570,
+      "line": 615,
       "content": "Check for missing or stale files: #+begin_src bash scimax db check #+end_src Output: #+begin_example Checking database integrity... MISSING: old-file.org MISSING: deleted-folder/notes.org Total files in database: 42 Missing files: 2 Open VS Code to rebuild the index. #+end_example When nothing is missing, the last line is =Database looks good.= Running =scimax db sync= also removes the missing entries.",
       "path": [
         "Commands",
@@ -92868,7 +92902,7 @@
       "heading": "Sync",
       "level": 3,
       "file": "30-cli.org",
-      "line": 594,
+      "line": 639,
       "content": "Bring the database into agreement with the configured scan roots and the filesystem in one pass: pick up new files, refresh changed files (mtime-based), refresh in-scope files that are stale, and prune entries for files that no longer exist. Scan roots are unioned from: 1. =scimax.db.include= (VS Code settings) 2. =scimax.journal.directory= 3. =scimax.agenda.include= 4. NotebookManager projects (every project you have opened in VS Code, persisted in =notebooks.json=) Files in the database that d",
       "path": [
         "Commands",
@@ -92907,7 +92941,7 @@
       "heading": "Embeddings During Sync",
       "level": 4,
       "file": "30-cli.org",
-      "line": 647,
+      "line": 692,
       "content": "CLOSED: [2026-10-02 Fri 07:34] Sync uses =scimax.db.embeddingProvider=, =scimax.db.ollamaUrl=, and =scimax.db.ollamaModel= from your VS Code =settings.json=. When the provider is =ollama=, sync: 1. Tests the connection by embedding a short string and checking the vector has the size expected for the model. If the test fails, sync prints =FAILED (embeddings will be skipped)= and indexes without embeddings. 2. Queues embeddings for every file it indexes. 3. After the summary, also queues every ind",
       "path": [
         "Commands",
@@ -92947,7 +92981,7 @@
       "heading": "Clear",
       "level": 3,
       "file": "30-cli.org",
-      "line": 684,
+      "line": 729,
       "content": "CLOSED: [2026-07-11 Sat 09:08] Wipe the database. Use this before a full re-sync, after a schema change, or when troubleshooting suspected corruption. Requires confirmation. #+begin_src bash # Interactive confirmation scimax db clear # Skip the prompt scimax db clear --yes # Typical reset workflow scimax db clear --yes && scimax db sync #+end_src Output: #+begin_example Database: ~/Library/Application Support/Code/User/globalStorage/jkitchin.scimax-vscode/scimax-db.sqlite This will delete 1853 f",
       "path": [
         "Commands",
@@ -92982,7 +93016,7 @@
       "heading": "Remove and Ignore Files",
       "level": 3,
       "file": "30-cli.org",
-      "line": 709,
+      "line": 754,
       "content": "CLOSED: [2026-10-02 Fri 07:34] Remove files from the database by path or glob. Relative paths are resolved against the current directory. #+begin_src bash # Remove one file scimax db remove notes/scratch.org # Remove everything matching a glob scimax db remove \"~/Dropbox/archive/**\" # Remove from the database AND add to scimax.db.exclude in settings.json scimax db ignore \"~/Dropbox/archive/**\" #+end_src =remove= only deletes database entries, so a later sync adds the files back if they are under",
       "path": [
         "Commands",
@@ -93019,7 +93053,7 @@
       "heading": "Prune Excluded Files",
       "level": 3,
       "file": "30-cli.org",
-      "line": 731,
+      "line": 776,
       "content": "Remove database entries that the current exclude rules would reject. =scimax db sync= deliberately keeps an entry whose file still exists on disk, even when that file is outside the configured scan roots — otherwise files added by other means would vanish on every sync. The consequence is that tightening =scimax.db.exclude=, or upgrading to a version that adds a new built-in exclusion, leaves the old rows in place. =prune= is what clears them. #+begin_src bash # See what would go, grouped by the",
       "path": [
         "Commands",
@@ -93056,7 +93090,7 @@
       "heading": "Scan Directory",
       "level": 3,
       "file": "30-cli.org",
-      "line": 771,
+      "line": 816,
       "content": "CLOSED: [2026-01-22 Thu 20:57] Scan a specific directory and add its files to the database. This is a simplified command that takes the directory as a direct argument, making it ideal for cron jobs and scripts. #+begin_src bash # Scan a specific directory scimax db scan /path/to/org-files # Scan multiple directories (run sequentially) scimax db scan ~/work/org-files scimax db scan ~/personal/notes #+end_src Output: #+begin_example Scanning directory: /path/to/org-files Database path: /home/user/",
       "path": [
         "Commands",
@@ -93091,7 +93125,7 @@
       "heading": "Scheduling Automatic Syncs",
       "level": 4,
       "file": "30-cli.org",
-      "line": 800,
+      "line": 845,
       "content": "Prefer =db sync= over =db scan= for scheduled runs: it covers every configured scan root at once, refreshes changed files, and prunes entries whose files are gone. =db scan= only adds one directory.",
       "path": [
         "Commands",
@@ -93127,7 +93161,7 @@
       "heading": "macOS (launchd)",
       "level": 5,
       "file": "30-cli.org",
-      "line": 806,
+      "line": 851,
       "content": "On a laptop, use =launchd= rather than =cron=. If the machine is asleep at the scheduled time, launchd runs the job at the next wake; cron simply misses it. A wrapper script keeps the log timestamped, bounded, and free of overlapping runs. Save it as =~/.local/bin/scimax-db-sync.sh= and =chmod +x= it: #+begin_src bash #!/bin/bash set -uo pipefail # launchd starts jobs with a bare environment, so spell out the PATH. export PATH=\"/opt/homebrew/bin:/usr/bin:/bin:/usr/sbin:/sbin\" LOG_DIR=\"$HOME/Libr",
       "path": [
         "Commands",
@@ -93164,7 +93198,7 @@
       "heading": "Linux (cron)",
       "level": 5,
       "file": "30-cli.org",
-      "line": 906,
+      "line": 951,
       "content": "#+begin_src bash crontab -e # 6am and 5pm daily 0 6,17 * * * /usr/local/bin/scimax db sync >> ~/.local/state/scimax/db-sync.log 2>&1 #+end_src Use an absolute path to the binary: cron's =PATH= is minimal and will not find a =scimax= installed via =npm link=.",
       "path": [
         "Commands",
@@ -93201,7 +93235,7 @@
       "heading": "Command Comparison",
       "level": 4,
       "file": "30-cli.org",
-      "line": 918,
+      "line": 963,
       "content": "| Command                | Use Case                                                  | |------------------------+-----------------------------------------------------------| | =scimax db sync=       | Daily driver: discover, refresh, and prune in one pass    | | =scimax db clear=      | Wipe the database (followed by =sync= for a full rebuild) | | =scimax db scan <dir>= | Ad-hoc scan of a single directory                         | | =scimax db check=      | Read-only integrity report (no changes",
       "path": [
         "Commands",
@@ -93237,7 +93271,7 @@
       "heading": "Publish",
       "level": 2,
       "file": "30-cli.org",
-      "line": 939,
+      "line": 984,
       "content": "CLOSED: [2026-10-02 Fri 07:34] Publish org projects to HTML, using the same configuration as the editor's publishing commands (=_config.yml= or =.org-publish.json= in the current directory). See [[file:31-publishing.org][Publishing]] for the configuration format. #+begin_src bash # Publish all projects scimax publish # Publish one project scimax publish docs # Republish every file, even if up to date scimax publish docs --force # Show what would be published without writing files scimax publish ",
       "path": [
         "Commands"
@@ -93271,7 +93305,7 @@
       "heading": "Initializing a Configuration",
       "level": 3,
       "file": "30-cli.org",
-      "line": 973,
+      "line": 1018,
       "content": "=--init= writes a starter configuration to the current directory. It refuses to overwrite an existing =_config.yml= or =.org-publish.json= unless =--force= is given. #+begin_src bash # .org-publish.json with defaults scimax publish --init # _config.yml instead scimax publish --init --yaml # Custom names and directories scimax publish --init --name docs --base ./docs --output ./_build/html #+end_src | Option           | Default         | Description                                | |-------------",
       "path": [
         "Commands",
@@ -93306,7 +93340,7 @@
       "heading": "Skill",
       "level": 2,
       "file": "30-cli.org",
-      "line": 1002,
+      "line": 1047,
       "content": "Scimax ships four agent skills that let an AI coding agent use the CLI and answer questions about your notes, agenda, projects, org syntax and slides: | Skill                    | What it covers                                                   | |--------------------------+------------------------------------------------------------------| | =scimax=                 | Search, agenda, TODOs, journal, export, citations, database      | | =scimax-org=             | Org-mode syntax, links, source b",
       "path": [
         "Commands"
@@ -93340,7 +93374,7 @@
       "heading": "Installing",
       "level": 3,
       "file": "30-cli.org",
-      "line": 1018,
+      "line": 1063,
       "content": "Any of these gives the same result: #+begin_src bash scimax skill install                          # bundled with the extension, no Python needed uvx knowhow add jkitchin/scimax_vscode -g -y  # from GitHub with knowhow npx skills add jkitchin/scimax_vscode -g -y   # from GitHub with npx skills #+end_src In VS Code, run *Scimax: Install AI Agent Skills* ([[cmd:scimax.skills.install]]) and choose all projects or this workspace. Each skill is copied to =~/.agents/skills/<name>=, which VS Code, Code",
       "path": [
         "Commands",
@@ -93377,7 +93411,7 @@
       "heading": "Commands",
       "level": 3,
       "file": "30-cli.org",
-      "line": 1036,
+      "line": 1081,
       "content": "#+begin_src bash scimax skill install [name...]    # Install skills (default: all four) scimax skill update [name...]     # Reinstall the bundled version scimax skill uninstall [name...]  # Remove skills installed from scimax scimax skill list                 # Bundled skills and whether they are installed scimax skill show [name]          # Print a bundled SKILL.md (default: scimax) scimax skill path                 # Print the installation directory #+end_src | Option      | Description       ",
       "path": [
         "Commands",
@@ -93412,7 +93446,7 @@
       "heading": "Learnings",
       "level": 3,
       "file": "30-cli.org",
-      "line": 1056,
+      "line": 1101,
       "content": "When you correct the agent, it appends the correction to =~/.config/scimax/learnings.md= (=$XDG_CONFIG_HOME/scimax/learnings.md= if set), and all four skills read that file before answering. It lives outside the skill folders, so updates and uninstalls never touch it. Before 0.14 the skill was a single folder at =~/.claude/skills/scimax= with its own =learnings.md=. The first =scimax skill install= or =update= moves those entries to the new file and replaces the old folder.",
       "path": [
         "Commands",
@@ -93447,7 +93481,7 @@
       "heading": "Scripting Examples",
       "level": 1,
       "file": "30-cli.org",
-      "line": 1067,
+      "line": 1112,
       "content": "",
       "path": [],
       "commands": [],
@@ -93461,7 +93495,7 @@
       "heading": "Export All Org Files to HTML",
       "level": 2,
       "file": "30-cli.org",
-      "line": 1069,
+      "line": 1114,
       "content": "#+begin_src bash #!/bin/bash for f in docs/*.org; do scimax export \"$f\" --format html --output \"build/$(basename \"$f\" .org).html\" done #+end_src",
       "path": [
         "Scripting Examples"
@@ -93489,7 +93523,7 @@
       "heading": "Check Citations in CI",
       "level": 2,
       "file": "30-cli.org",
-      "line": 1078,
+      "line": 1123,
       "content": "#+begin_src yaml # .github/workflows/check-citations.yml name: Check Citations on: [push, pull_request] jobs: check: runs-on: ubuntu-latest steps: - uses: actions/checkout@v3 - uses: actions/setup-node@v3 with: node-version: '18' - run: npm ci - run: npm run compile - run: node out/cli/index.js cite check paper.org --bib refs.bib #+end_src",
       "path": [
         "Scripting Examples"
@@ -93523,7 +93557,7 @@
       "heading": "Daily Agenda Email",
       "level": 2,
       "file": "30-cli.org",
-      "line": 1097,
+      "line": 1142,
       "content": "#+begin_src bash #!/bin/bash # Send daily agenda via email scimax agenda today | mail -s \"Today's Agenda\" user@example.com #+end_src",
       "path": [
         "Scripting Examples"
@@ -93550,7 +93584,7 @@
       "heading": "Find Files with Specific Tags",
       "level": 2,
       "file": "30-cli.org",
-      "line": 1105,
+      "line": 1150,
       "content": "#+begin_src bash # Using search (if tag is in heading) scimax search \":research:\" --limit 50 #+end_src",
       "path": [
         "Scripting Examples"
@@ -93576,7 +93610,7 @@
       "heading": "Limitations",
       "level": 1,
       "file": "30-cli.org",
-      "line": 1112,
+      "line": 1157,
       "content": "The CLI has some limitations compared to the VS Code extension: 1. *Semantic Search*: Requires embeddings, which need an Ollama embedding provider configured in your VS Code settings (see [[*Embeddings During Sync][Embeddings During Sync]]). 2. *Live Updates*: The CLI reads a snapshot of the database. Changes made to org files won't be reflected until you run =scimax db sync= or VS Code re-indexes them. 3. *Interactive Features*: No support for interactive features like completion or live previe",
       "path": [],
       "commands": [],
@@ -93608,7 +93642,7 @@
       "heading": "Related Topics",
       "level": 1,
       "file": "30-cli.org",
-      "line": 1122,
+      "line": 1167,
       "content": "- [[file:18-database-search.org][Database & Search]] - How the database indexing works - [[file:31-publishing.org][Publishing]] - Publishing projects and the book theme - [[file:10-export.org][Export]] - Export options and configuration - [[file:19-references.org][References & Citations]] - Citation syntax and bibliography management - [[file:13-agenda.org][Agenda]] - Agenda views in VS Code - [[file:03.5-task-dependencies.org][Task Dependencies]] - =:DEPENDS:= and =:ORDERED:= in the editor - [[",
       "path": [],
       "commands": [],
@@ -107515,7 +107549,7 @@
       "heading": "Keys in the slideshow",
       "level": 2,
       "file": "44-marp.org",
-      "line": 584,
+      "line": 589,
       "content": "| Key                       | Effect                                                                         | |---------------------------+--------------------------------------------------------------------------------| | =a=                       | Turn the pen on or off (widgets cannot be clicked while it is on)              | | =1= to =5=                | Pen colour while the pen is on: red, blue, green, black, yellow highlighter    | | =r=                       | Eraser: drag over strokes ",
       "path": [
         "Presenter Tools and Live Python"
@@ -107549,7 +107583,7 @@
       "heading": "Talk timer",
       "level": 2,
       "file": "44-marp.org",
-      "line": 624,
+      "line": 629,
       "content": "Give the length of the talk with a ~timer~ key and a small countdown sits in the top-right corner of every slide: #+begin_src markdown --- marp: true presenter: true timer: 20 --- #+end_src A bare number is minutes; ~20m~, ~45:00~, ~1h30m~ and ~90s~ also work. Deck → Talk Timer... in the Marp menu ([[cmd:scimax.marp.deck.timer]]) sets it, and turns on the presenter tools if the deck does not have them (the timer is one of them). A deck with presenter tools but no ~timer~ can get one during the s",
       "path": [
         "Presenter Tools and Live Python"
@@ -107585,7 +107619,7 @@
       "heading": "Exercise countdowns",
       "level": 2,
       "file": "44-marp.org",
-      "line": 669,
+      "line": 674,
       "content": "A ~countdown~ fence puts a countdown box on a slide, for an exercise or a discussion. The first line is the time, the rest is the label (Markdown): #+begin_src markdown ```countdown 3:00 Discuss with your neighbour: *which step is rate limiting?* ``` #+end_src The time is written as for the talk timer: a bare number is minutes, and ~3:00~, ~90s~ and ~2m30s~ also work (the default is 5 minutes). Insert → Exercise Countdown... in the Marp menu ([[cmd:scimax.marp.insert.countdown]]) adds one and tu",
       "path": [
         "Presenter Tools and Live Python"
@@ -107621,7 +107655,7 @@
       "heading": "Blank, zoom and go to a slide",
       "level": 2,
       "file": "44-marp.org",
-      "line": 693,
+      "line": 698,
       "content": "- *Blank screen.* =b= turns the audience screen black and =w= white, so the room looks at you instead of the slide. Press the key again, =Esc=, or click to bring the slide back. Pressed in Marp's presenter view, it blanks the audience window and the presenter view shows a reminder instead of going blank itself. - *Zoom.* =x= then drag a box over a dense figure or table to magnify that part to fill the screen (a click magnifies 2.5 times around that point). The audience window zooms too. =x= or =",
       "path": [
         "Presenter Tools and Live Python"
@@ -107655,7 +107689,7 @@
       "heading": "Editing slides in the slideshow",
       "level": 2,
       "file": "44-marp.org",
-      "line": 710,
+      "line": 715,
       "content": "For last-minute polish just before a talk, =d= lets you fix the slides in the slideshow itself: correct a typo, move a heading, make a figure bigger, or hide a line. A bar at the top says what is selected and what you can do. The edits stay in the HTML; they do not change the Markdown. | Key or action       | Effect                                                                      | |---------------------+-----------------------------------------------------------------------------| | =d=    ",
       "path": [
         "Presenter Tools and Live Python"
@@ -107689,7 +107723,7 @@
       "heading": "The editing toolbar",
       "level": 3,
       "file": "44-marp.org",
-      "line": 783,
+      "line": 788,
       "content": "The bar at the top of the slide while you edit also adds things and styles text. *+ Text* puts a text box in the middle of the slide, ready to type in (or press =t=). *+ Image* opens a file picker; you can also paste an image from the clipboard with =Cmd+V=. Pictures larger than 1920 pixels are scaled down so the deck stays small. *+ Table* shows a grid: pick the number of rows and columns and start typing. In a table, Tab and Shift+Tab move between cells, and Tab in the last cell adds a row. In",
       "path": [
         "Presenter Tools and Live Python",
@@ -107726,7 +107760,7 @@
       "heading": "Keeping the ink",
       "level": 2,
       "file": "44-marp.org",
-      "line": 810,
+      "line": 815,
       "content": "Ink and notes belong to the slide they were drawn on and are kept in the browser's local storage, so a reload does not lose them. Scimax presents a deck with presenter tools from the same private folder every time, so the ink is still there when you present it again. To keep the ink for good, move it to another machine or share it, press =s=: the browser downloads one HTML file with the theme, images, iframes, fonts, tools and ink inside. Open it anywhere, keep annotating, and press =s= again.",
       "path": [
         "Presenter Tools and Live Python"
@@ -107760,7 +107794,7 @@
       "heading": "Live Python cells",
       "level": 2,
       "file": "44-marp.org",
-      "line": 820,
+      "line": 825,
       "content": "Mark a Python code block with ~run~ to make it a cell you can edit and run during the talk: #+begin_src markdown ```python run import numpy as np np.linspace(0, 1, 5) ``` #+end_src | Fence                  | Cell                                              | |------------------------+---------------------------------------------------| | ~```python run~        | Editable, with a Run button                       | | ~```python run auto~   | Runs by itself the first time its slide is shown  | | ~",
       "path": [
         "Presenter Tools and Live Python"
@@ -107794,7 +107828,7 @@
       "heading": "Running cells in VS Code",
       "level": 2,
       "file": "44-marp.org",
-      "line": 860,
+      "line": 865,
       "content": "Press =C-c C-c= in a ~run~ cell to run it while you write the deck, without presenting. The output shows in a /Python/ panel beside the editor, from the same Pyodide the slideshow uses, so code that works there works in the talk. | Command                                                               | Key       | Effect                                              | |-----------------------------------------------------------------------+-----------+---------------------------------------------",
       "path": [
         "Presenter Tools and Live Python"
@@ -107830,7 +107864,7 @@
       "heading": "Offline Python",
       "level": 2,
       "file": "44-marp.org",
-      "line": 886,
+      "line": 891,
       "content": "Set ~presenter: offline~ instead of ~presenter: true~ (or choose \"On, with offline Python\" in Deck → Presenter Tools...) to put Python inside the deck, so its cells run with no internet connection: #+begin_src markdown --- marp: true presenter: offline --- #+end_src - When you present or export HTML (=h=), Scimax adds Pyodide and the packages the deck's ~run~ cells import (with their dependencies) to the HTML file. Pyodide is downloaded once per version and cached in the extension's storage, so ",
       "path": [
         "Presenter Tools and Live Python"
@@ -107864,7 +107898,7 @@
       "heading": "Checking a deck for offline use",
       "level": 2,
       "file": "44-marp.org",
-      "line": 920,
+      "line": 925,
       "content": "~Scimax Marp: Check for Offline Use~ ([[cmd:scimax.marp.checkOffline]], also Deck → Check for Offline Use in the Marp menu) builds the deck in a temporary folder and lists in the Problems panel what would not work without an internet connection, each on the line it comes from: - Python cells in a deck with ~presenter: true~ (Python is downloaded when the deck opens; use ~presenter: offline~) - ~%pip~ lines, and imports of packages that are not part of Pyodide, in an offline deck - images and oth",
       "path": [
         "Presenter Tools and Live Python"
@@ -107900,7 +107934,7 @@
       "heading": "Notes",
       "level": 2,
       "file": "44-marp.org",
-      "line": 939,
+      "line": 944,
       "content": "- The tools are added only in a trusted workspace, since the deck's HTML and Python run in the browser. In an untrusted workspace Scimax warns and shows the plain slideshow. - A deck with ~presenter: true~ is built with Marp CLI's ~--html~ option, so raw HTML in its slides is rendered. The slide thumbnails and previews allow all HTML for these decks too (in a trusted workspace), so an ~<iframe>~ widget shows there as well, whatever ~scimax.marp.enableHtml~ says. - Scimax passes its own markdown-",
       "path": [
         "Presenter Tools and Live Python"
@@ -107936,7 +107970,7 @@
       "heading": "Exporting Slides",
       "level": 1,
       "file": "44-marp.org",
-      "line": 956,
+      "line": 961,
       "content": "Press =C-c C-e= in a Marp deck (or click the export button in the Marp Slides view's title bar) for the Marp export menu. In other Markdown files =C-c C-e= still opens the Markdown (Pandoc) export menu, which is also =m= in this one. Exports are written next to the deck, and the deck is saved first. When an export finishes, a notification offers to open the file or show it in its folder. | Key | Export                                               | Output                 | Needs                ",
       "path": [],
       "commands": [],
@@ -107970,7 +108004,7 @@
       "heading": "Marp CLI",
       "level": 2,
       "file": "44-marp.org",
-      "line": 983,
+      "line": 988,
       "content": "All exports except =d= run [[https://github.com/marp-team/marp-cli][Marp CLI]], the tool behind Marp for VS Code's own export. Scimax uses ~scimax.marp.cliPath~ if set, then ~marp~ on the PATH (=npm install -g @marp-team/marp-cli=). Failing both, it offers to run it with ~npx~, which downloads Marp CLI the first time. It asks once and remembers the answer. PDF, PowerPoint and image exports render the slides in Google Chrome, Microsoft Edge or Firefox, so one of them must be installed. Local imag",
       "path": [
         "Exporting Slides"
@@ -108006,7 +108040,7 @@
       "heading": "Which PowerPoint",
       "level": 2,
       "file": "44-marp.org",
-      "line": 998,
+      "line": 1003,
       "content": "There are three PowerPoint exports: |                        | PowerPoint (=s=) | Editable, Marp (=e=)    | Editable, Pandoc (=d=)                  | |------------------------+------------------+-------------------------+-----------------------------------------| | Looks like the preview | Exactly          | Mostly                  | No: PowerPoint default or your template | | Text editable          | No (pictures)    | Yes                     | Yes                                     | | Presen",
       "path": [
         "Exporting Slides"
@@ -108039,7 +108073,7 @@
       "heading": "Google Slides",
       "level": 2,
       "file": "44-marp.org",
-      "line": 1023,
+      "line": 1028,
       "content": "Google Slides has no import from Marp, but it opens PowerPoint files, and editable ones import best. The =g= export makes Marp's editable PowerPoint when LibreOffice is installed, otherwise the Pandoc one, otherwise (after asking) the picture PowerPoint. The notification links to Google Drive: upload the file (New > File upload), then open it with Google Slides.",
       "path": [
         "Exporting Slides"
@@ -108073,7 +108107,7 @@
       "heading": "Export settings",
       "level": 2,
       "file": "44-marp.org",
-      "line": 1031,
+      "line": 1036,
       "content": "| Setting                          | Default | Effect                                                                | |----------------------------------+---------+-----------------------------------------------------------------------| | ~scimax.marp.cliPath~            | (empty) | Marp CLI executable; empty means ~marp~ on the PATH, else ~npx~       | | ~scimax.marp.browserPath~        | (empty) | Browser for PDF, PowerPoint and images; empty lets Marp find one      | | ~scimax.marp.libreOffi",
       "path": [
         "Exporting Slides"
@@ -108111,7 +108145,7 @@
       "heading": "Configuration",
       "level": 1,
       "file": "44-marp.org",
-      "line": 1041,
+      "line": 1046,
       "content": "| Setting                       | Default   | Effect                                                     | |-------------------------------+-----------+------------------------------------------------------------| | ~scimax.marp.themes~          | ~[]~      | Custom theme CSS files for thumbnails, preview and exports | | ~scimax.marp.enableHtml~      | ~false~   | Allow all raw HTML in slides                               | | ~scimax.marp.mathTypesetting~ | ~mathjax~ | ~mathjax~, ~katex~ or ~off",
       "path": [],
       "commands": [
@@ -108146,7 +108180,7 @@
       "heading": "Marp CLI configuration files",
       "level": 2,
       "file": "44-marp.org",
-      "line": 1059,
+      "line": 1064,
       "content": "A deck set up for Marp CLI often keeps its themes and options in a configuration file beside it rather than in VS Code settings: #+begin_src yaml # .marprc.yml themeSet: ./theme html: true #+end_src Scimax reads the same file, so the thumbnails, the slide preview, the Markdown preview and exports show the deck the way Marp CLI renders it. It uses the nearest ~.marprc~, ~.marprc.json~, ~.marprc.yaml~, ~.marprc.yml~ or ~marp~ key of ~package.json~, looking in the deck's folder and then each folder",
       "path": [
         "Configuration"
@@ -108180,7 +108214,7 @@
       "heading": "Double-click in the Markdown preview",
       "level": 2,
       "file": "44-marp.org",
-      "line": 1088,
+      "line": 1093,
       "content": "Double-click in the Markdown preview follows VS Code's own setting for double-clicking in the Markdown preview. Current VS Code releases turn it off by default, so enable it once in your user settings: #+begin_src json \"markdown.preview.doubleClickToSwitchToEditor\": true #+end_src | Setting                                        | Default | Effect                                      | |------------------------------------------------+---------+---------------------------------------------| | ~m",
       "path": [
         "Configuration"
@@ -108214,7 +108248,7 @@
       "heading": "How It Works",
       "level": 1,
       "file": "44-marp.org",
-      "line": 1107,
+      "line": 1112,
       "content": "",
       "path": [],
       "commands": [],
@@ -108227,7 +108261,7 @@
       "heading": "Slides in the Markdown preview",
       "level": 2,
       "file": "44-marp.org",
-      "line": 1109,
+      "line": 1114,
       "content": "Scimax contributes a markdown-it plugin (~markdown.markdownItPlugins~, ~src/marp/marpPreviewPlugin.ts~). For a file with ~marp: true~ in its front matter it parses and renders with Marp Core instead of plain markdown-it, adds VS Code's ~code-line~ class and ~data-line~ source line to each block (for scroll sync and double-click), and puts the deck's theme CSS in front. The preview script ~media/marp/marpPreviewMode.js~ then turns off VS Code's own Markdown styles for that preview, since they wou",
       "path": [
         "How It Works"
@@ -108261,7 +108295,7 @@
       "heading": "Double-click in the Markdown preview",
       "level": 2,
       "file": "44-marp.org",
-      "line": 1121,
+      "line": 1126,
       "content": "Scimax contributes a preview script (~media/marp/marpPreview.js~) through the ~markdown.previewScripts~ contribution point. Marp already tags each rendered element with its source line (~data-line~). On double-click inside a slide the script: 1. finds the nearest element carrying a line number; 2. adds the number of source line breaks between the start of that element and the caret (and one for the opening fence of a code block); 3. sends the preview's own ~didClick~ message with that line, so V",
       "path": [
         "How It Works"
@@ -108295,7 +108329,7 @@
       "heading": "Related Topics",
       "level": 1,
       "file": "44-marp.org",
-      "line": 1140,
+      "line": 1145,
       "content": "- [[file:30-markdown-compatibility.org][Markdown Compatibility]] - Scimax editing features in Markdown files - [[file:45-myst-preview.org][MyST Markdown Preview]] - Jupyter Book directives and roles in the preview - [[file:41-export-beamer.org][Beamer Export]] - slides from org files via LaTeX Beamer - [[file:26-configuration.org][Configuration Reference]] - [[https://marpit.marp.app/markdown][Marpit Markdown]] - slide syntax reference",
       "path": [],
       "commands": [],
@@ -112726,7 +112760,7 @@
       "level": 1,
       "file": "index.org",
       "line": 33,
-      "content": "- [[file:export.html][Org Export System]] - [[file:export-beamer.html][Beamer Export]] - [[file:marp.html][Marp Slides]] - [[file:publishing.html][Org Publishing System]] - [[file:latex-preview.html][LaTeX Preview]] - [[file:latex-navigation.html][LaTeX Navigation and Structure]] - [[file:image-overlays.html][Image Overlays]]",
+      "content": "- [[file:export.html][Org Export System]] - [[file:export-beamer.html][Beamer Export]] - [[file:marp.html][Marp Slides]] - [[file:cli.html::#marp-slides][Marp Slides from the Command Line (=scimax marp build=)]] - [[file:publishing.html][Org Publishing System]] - [[file:latex-preview.html][LaTeX Preview]] - [[file:latex-navigation.html][LaTeX Navigation and Structure]] - [[file:image-overlays.html][Image Overlays]]",
       "path": [],
       "commands": [],
       "keybindings": [],
@@ -112741,23 +112775,23 @@
         "filemarphtml",
         "marp",
         "slides",
+        "fileclihtmlmarp-slides",
+        "command",
+        "line",
+        "scimax",
+        "build",
         "filepublishinghtml",
         "filelatex-previewhtml",
         "latex",
         "preview",
-        "filelatex-navigationhtml",
-        "navigation",
-        "structure",
-        "fileimage-overlayshtml",
-        "image",
-        "overlays"
+        "filelatex-navigationhtml"
       ]
     },
     {
       "heading": "Advanced Features",
       "level": 1,
       "file": "index.org",
-      "line": 42,
+      "line": 43,
       "content": "- [[file:database-search.html][Database and Search]] - [[file:references.html][References and Citations]] - [[file:journal.html][Journal]] - [[file:notebook.html][Notebook (Project Organization)]] - [[file:projectile.html][Projectile (Project Management)]] - [[file:dired.html][Dired (Directory Editor)]] - [[file:find-file.html][Find File (C-x C-f)]] - [[file:version-control.html][Version Control (C-x v)]] - [[file:hydra-menus.html][Hydra Menus]] - [[file:editmarks.html][Editmarks (Track Changes)",
       "path": [],
       "commands": [],
@@ -112792,7 +112826,7 @@
       "heading": "Reference",
       "level": 1,
       "file": "index.org",
-      "line": 55,
+      "line": 56,
       "content": "- [[file:org-api.html][Org API]] - [[file:cli.html][Command Line Interface (CLI)]]",
       "path": [],
       "commands": [],
@@ -112813,7 +112847,7 @@
       "heading": "Development",
       "level": 1,
       "file": "index.org",
-      "line": 59,
+      "line": 60,
       "content": "- [[file:extension-points.html][Extension Points for Plugin Development]]",
       "path": [],
       "commands": [],

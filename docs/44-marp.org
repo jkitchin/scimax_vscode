@@ -557,7 +557,7 @@ after it. Claude Code's link can only fill in a prompt in a new tab, which is
 why an open chat gets the @-mention rather than the full sentence. A chat open
 only in the Claude Code side bar is not detected, so a new tab opens.
 
-* Presenter Tools and Live Python
+* 👀 Presenter Tools and Live Python
 
 A deck can opt in to presenter tools in the HTML slideshow: a pen to draw on
 slides, a laser pointer, sticky notes, a spotlight, and Python code cells that
@@ -580,6 +580,11 @@ a trusted workspace; an untrusted one gets the plain slideshow. The tools are ad
 ~examples/marp-present/demo.md~ in the Scimax repository shows all of them, along with
 the rest of Scimax's Marp support: builds, transitions, notes, hidden slides,
 layouts, the Slide Sorter, the Marp menu and exports.
+
+To build a deck with the presenter tools from a terminal, a Makefile or Claude
+Code, use the CLI: ~scimax marp build talk.md --open~ (see
+[[file:30-cli.org::*Marp Slides][Marp Slides in the CLI]]). It uses the same
+scripts and makes the same HTML as the =h= export.
 
 ** Keys in the slideshow
 

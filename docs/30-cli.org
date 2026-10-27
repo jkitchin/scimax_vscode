@@ -295,6 +295,51 @@ scimax tangle setup.org --json
 
 Relative =:tangle= paths are resolved against the directory of the source file, and parent directories are created as needed. Note that =--only= filters *named* blocks; unnamed blocks with a =:tangle= target are always tangled.
 
+** ⚠️ Marp Slides
+
+Build a Marp deck into one self-contained HTML file with the presenter tools
+(pen, laser, spotlight, sticky notes, talk timer, saving with ink, live Python
+cells). It is the same build as exporting HTML (=h=) from the Marp menu in VS
+Code, using the scripts that ship with the extension, so nothing else needs to
+be installed except Marp CLI (=marp= on the PATH, or =npx=, which downloads it
+the first time).
+
+#+begin_src bash
+# deck.md -> deck.html with presenter tools
+scimax marp build talk.md
+
+# Build and open it in the browser
+scimax marp build talk.md --open
+
+# Choose the output file
+scimax marp build talk.md -o build/talk.html
+
+# Also write a PDF (plain Marp output)
+scimax marp build talk.md --pdf
+
+# Plain Marp HTML, without the presenter tools
+scimax marp build talk.md --plain
+
+# Anything after -- goes to Marp CLI, for example a custom theme
+scimax marp build talk.md -- --theme-set theme/custom.css
+
+# JSON result (output, inlined counts, missing files, web references, offline issues)
+scimax marp build talk.md --json
+#+end_src
+
+From the CLI every deck gets the presenter tools unless its front matter says
+~presenter: false~. ~presenter: offline~ embeds Python and the packages the
+cells import, so they run without a network, and ~timer: 20~ adds a 20-minute
+talk timer. Marp runs from the deck's folder, so relative paths and a
+~.marprc~ apply. Local images, iframes, scripts, stylesheets and KaTeX fonts
+are inlined; the build lists files it could not find and anything still loaded
+from the web.
+
+KaTeX fonts and offline Python files are downloaded once and cached in the
+extension's global storage, which the extension's own exports share.
+
+See [[file:44-marp.org::*Presenter Tools and Live Python][Presenter Tools and Live Python]] for the keys while presenting.
+
 ** Citations
 
 Citation-related operations. =extract=, =check=, and =list= accept =--json= (or
@@ -1009,7 +1054,7 @@ questions about your notes, agenda, projects, org syntax and slides:
 | =scimax=                 | Search, agenda, TODOs, journal, export, citations, database      |
 | =scimax-org=             | Org-mode syntax, links, source blocks, tables, citations         |
 | =scimax-projects=        | =scimax task=, =:DEPENDS:=/=:ORDERED:=, Gantt charts, assignees  |
-| =scimax-presentations=   | Beamer and Marp decks built with =marp-present=                  |
+| =scimax-presentations=   | Beamer and Marp decks built with =scimax marp build=             |
 
 They live in =skills/<name>/SKILL.md= in the repository and follow the
 [[https://agentskills.io/specification][Agent Skills specification]], so they work with
