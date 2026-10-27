@@ -104,6 +104,7 @@ import { registerPublishCommands } from './publishing';
 import { registerHelpCommands } from './help';
 import { activateLatexFeatures } from './latex/commands';
 import { registerDiagnosticCommands } from './diagnostic';
+import { registerAgentSkillCommands } from './agentSkills/commands';
 import { TemplateManager, registerTemplateCommands } from './templates';
 import { registerManuscriptCommands } from './manuscript';
 import { initializeLogging, extensionLogger, getLoggingService } from './utils/logger';
@@ -809,6 +810,9 @@ async function activateScimax(context: vscode.ExtensionContext) {
 
     // Register Diagnostic Commands (show debug/system info)
     activationStep('registerDiagnosticCommands', () => registerDiagnosticCommands(context));
+
+    // Register Agent Skill Commands (install the scimax skills for Claude Code, Copilot, ...)
+    activationStep('registerAgentSkillCommands', () => registerAgentSkillCommands(context));
 
     // Register Dired Commands (C-x d, Emacs-style directory editor)
     activationStep('registerDiredCommands', () => registerDiredCommands(context));

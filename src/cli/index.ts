@@ -159,7 +159,7 @@ COMMANDS:
     project [query]         Fuzzy-select and open a known project in VS Code
     task <subcommand>       Project tasks (next, list, who, show, path, done, assign)
     publish [project]       Publish org project(s) to HTML
-    skill <subcommand>      Manage the scimax Claude Code skill
+    skill <subcommand>      Manage the scimax agent skills (Claude Code, VS Code, Codex, ...)
     help                    Show this help message
 
 EXAMPLES:

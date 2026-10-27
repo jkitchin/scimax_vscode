@@ -1468,6 +1468,10 @@
         "title": "Scimax: Report Issue on GitHub"
       },
       {
+        "command": "scimax.skills.install",
+        "title": "Scimax: Install AI Agent Skills"
+      },
+      {
         "command": "scimax.openLogDirectory",
         "title": "Scimax: Open Log File Directory"
       },
@@ -10021,7 +10025,7 @@
     "compile": "npm run build-doc-index && tsc -p ./ && npm run bundle && npm run copy-assets",
     "bundle": "esbuild src/extension.ts --bundle --platform=node --format=cjs --target=node18 --packages=external --external:vscode --outfile=out/extension.js --log-level=warning",
     "build-doc-index": "npx ts-node scripts/build-doc-index.ts",
-    "copy-assets": "shx cp src/help/docIndex.json out/help/ && shx mkdir -p out/publishing/themes/bookTheme/assets && shx cp -r src/publishing/themes/bookTheme/assets/* out/publishing/themes/bookTheme/assets/ && shx mkdir -p out/cli/assets && shx cp src/cli/assets/* out/cli/assets/",
+    "copy-assets": "shx cp src/help/docIndex.json out/help/ && shx mkdir -p out/publishing/themes/bookTheme/assets && shx cp -r src/publishing/themes/bookTheme/assets/* out/publishing/themes/bookTheme/assets/",
     "watch": "tsc -watch -p ./",
     "lint": "eslint src --ext ts",
     "test": "vitest",

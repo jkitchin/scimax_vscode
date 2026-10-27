@@ -999,22 +999,70 @@ scimax publish --init --name docs --base ./docs --output ./_build/html
 
 If the source directory has no =_toc.yml=, =--init= prints an example one.
 
-** Skill
+** 👀 Skill
 
-Install the scimax skill for Claude Code, which lets Claude use the CLI to
-answer questions about your notes, agenda, citations, and journal.
+Scimax ships four agent skills that let an AI coding agent use the CLI and answer
+questions about your notes, agenda, projects, org syntax and slides:
+
+| Skill                    | What it covers                                                   |
+|--------------------------+------------------------------------------------------------------|
+| =scimax=                 | Search, agenda, TODOs, journal, export, citations, database      |
+| =scimax-org=             | Org-mode syntax, links, source blocks, tables, citations         |
+| =scimax-projects=        | =scimax task=, =:DEPENDS:=/=:ORDERED:=, Gantt charts, assignees  |
+| =scimax-presentations=   | Beamer and Marp decks built with =marp-present=                  |
+
+They live in =skills/<name>/SKILL.md= in the repository and follow the
+[[https://agentskills.io/specification][Agent Skills specification]], so they work with
+Claude Code, VS Code (GitHub Copilot), Codex, Cursor, OpenCode and Gemini CLI.
+
+*** ⚠️ Installing
+
+Any of these gives the same result:
 
 #+begin_src bash
-scimax skill install     # Install to ~/.claude/skills/scimax/
-scimax skill update      # Overwrite bundled files, keep learnings.md
-scimax skill show        # Print the bundled SKILL.md to stdout
-scimax skill path        # Print the installation directory
-scimax skill uninstall   # Remove ~/.claude/skills/scimax/
+scimax skill install                          # bundled with the extension, no Python needed
+uvx knowhow add jkitchin/scimax_vscode -g -y  # from GitHub with knowhow
+npx skills add jkitchin/scimax_vscode -g -y   # from GitHub with npx skills
 #+end_src
 
-=install= does nothing if the skill is already installed; use =update= to get
-the bundled version. =learnings.md=, where corrections you give Claude are
-recorded, is preserved by =update=.
+In VS Code, run *Scimax: Install AI Agent Skills* ([[cmd:scimax.skills.install]]) and
+choose all projects or this workspace.
+
+Each skill is copied to =~/.agents/skills/<name>=, which VS Code, Codex, Cursor,
+OpenCode and Gemini CLI read, and =~/.claude/skills/<name>= is a symlink to it for
+Claude Code. The install is recorded in =~/.agents/.skill-lock.json=, so
+=knowhow check=, =knowhow upgrade= and =npx skills update= can keep it current.
+
+*** 👀 Commands
+
+#+begin_src bash
+scimax skill install [name...]    # Install skills (default: all four)
+scimax skill update [name...]     # Reinstall the bundled version
+scimax skill uninstall [name...]  # Remove skills installed from scimax
+scimax skill list                 # Bundled skills and whether they are installed
+scimax skill show [name]          # Print a bundled SKILL.md (default: scimax)
+scimax skill path                 # Print the installation directory
+#+end_src
+
+| Option      | Description                                                                 |
+|-------------+-----------------------------------------------------------------------------|
+| =--project= | Install into the current directory (=.agents/skills=, =.claude/skills=, =skills-lock.json=) |
+| =--force=   | Replace skill folders that were not installed from scimax                   |
+
+=install= and =update= stop rather than replace a skill folder of the same name that
+was installed by something else, unless you pass =--force=. =uninstall= only removes
+skills whose lock entry says they came from =jkitchin/scimax_vscode=.
+
+*** ⚠️ Learnings
+
+When you correct the agent, it appends the correction to
+=~/.config/scimax/learnings.md= (=$XDG_CONFIG_HOME/scimax/learnings.md= if set), and
+all four skills read that file before answering. It lives outside the skill folders, so
+updates and uninstalls never touch it.
+
+Before 0.14 the skill was a single folder at =~/.claude/skills/scimax= with its own
+=learnings.md=. The first =scimax skill install= or =update= moves those entries to
+the new file and replaces the old folder.
 
 * Scripting Examples
 
@@ -1080,3 +1128,5 @@ The CLI has some limitations compared to the VS Code extension:
 - [[file:13-agenda.org][Agenda]] - Agenda views in VS Code
 - [[file:03.5-task-dependencies.org][Task Dependencies]] - =:DEPENDS:= and =:ORDERED:= in the editor
 - [[file:03.6-project-management.org][Project Management]] - Task tables, Gantt charts, assignees
+- [[file:25-commands.org::*AI Agent Skills][AI Agent Skills command]] - Install the skills from VS Code
+- [[file:44-marp.org][Marp Slides]] - Slides the scimax-presentations skill builds
