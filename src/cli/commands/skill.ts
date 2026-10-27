@@ -1,17 +1,35 @@
 /**
- * Skill command - install/update/remove the scimax Claude Code skill
+ * Skill command - install/update/remove the scimax agent skills
+ *
+ * The skills live in skills/<name>/SKILL.md at the package root, in the Agent
+ * Skills layout used by knowhow and npx skills. Installs match theirs:
+ * ~/.agents/skills/<name> plus a ~/.claude/skills/<name> symlink, recorded in
+ * ~/.agents/.skill-lock.json (or ./.agents, ./.claude and ./skills-lock.json
+ * with --project).
  *
  * Usage:
- *   scimax skill install     Install skill to ~/.claude/skills/scimax/
- *   scimax skill update      Update SKILL.md + reference.md (preserves learnings.md)
- *   scimax skill uninstall   Remove ~/.claude/skills/scimax/
- *   scimax skill show        Print skill content to stdout
- *   scimax skill path        Print installation path
+ *   scimax skill install [name...]    Install skills (all by default)
+ *   scimax skill update [name...]     Reinstall the bundled version
+ *   scimax skill uninstall [name...]  Remove skills installed from scimax
+ *   scimax skill list                 Show bundled skills and install status
+ *   scimax skill show [name]          Print a bundled SKILL.md to stdout
+ *   scimax skill path                 Print installation path
  */
 
 import * as fs from 'fs';
 import * as path from 'path';
-import * as os from 'os';
+
+import {
+    SKILL_SOURCE,
+    SkillScope,
+    installSkills,
+    learningsPath,
+    listBundledSkills,
+    skillLocations,
+    skillStatus,
+    skillVersion,
+    uninstallSkills,
+} from '../skillInstaller';
 
 interface CliConfig {
     dbPath: string;
@@ -25,166 +43,151 @@ interface ParsedArgs {
     flags: Record<string, string | boolean>;
 }
 
-const SKILL_INSTALL_DIR = path.join(os.homedir(), '.claude', 'skills', 'scimax');
-const SKILL_FILE = path.join(SKILL_INSTALL_DIR, 'SKILL.md');
-const REFERENCE_FILE = path.join(SKILL_INSTALL_DIR, 'reference.md');
-const LEARNINGS_FILE = path.join(SKILL_INSTALL_DIR, 'learnings.md');
-
-/** Files that get overwritten on update */
-const UPDATABLE_ASSETS = ['SKILL.md', 'reference.md', 'orgmode-reference.md', 'pm-reference.md', 'presentations-reference.md'];
-
-/** Files that are only created if missing (never overwritten) */
-const PRESERVED_ASSETS = ['learnings.md'];
-
 /**
- * Read a bundled asset from the package assets directory.
- * At runtime this resolves to out/cli/assets/<filename>.
+ * Bundled skills directory. At runtime this file is out/cli/commands/skill.js,
+ * so the package root is three levels up.
  */
-function readBundledAsset(filename: string): string {
-    const assetPath = path.join(__dirname, '..', 'assets', filename);
-    if (!fs.existsSync(assetPath)) {
-        throw new Error(`Bundled asset not found at: ${assetPath}\nTry rebuilding the extension with 'make compile'.`);
-    }
-    return fs.readFileSync(assetPath, 'utf-8');
+function bundledSkillsDir(): string {
+    return path.join(__dirname, '..', '..', '..', 'skills');
 }
 
-/**
- * Extract the version from a SKILL.md file.
- * Checks YAML frontmatter `version:` field first, then HTML comment fallback.
- */
-function extractVersion(content: string): string | null {
-    const yamlMatch = content.match(/^version:\s*["']?([\d.]+)["']?/m);
-    if (yamlMatch) return yamlMatch[1];
-    const commentMatch = content.match(/<!--\s*scimax-skill\s+v([\d.]+)\s*-->/);
-    return commentMatch ? commentMatch[1] : null;
-}
-
-async function installSkill(force = false): Promise<void> {
-    if (fs.existsSync(SKILL_FILE) && !force) {
-        const existing = fs.readFileSync(SKILL_FILE, 'utf-8');
-        const version = extractVersion(existing);
-        const versionStr = version ? `v${version}` : 'unknown version';
-        console.log(`Skill already installed (${versionStr}) at:`);
-        console.log(`  ${SKILL_INSTALL_DIR}`);
-        console.log();
-        console.log('To update to the latest bundled version, run:');
-        console.log('  scimax skill update');
-        console.log();
-        console.log('To customize the skill, edit the files directly.');
-        return;
-    }
-
-    // Ensure target directory exists
-    fs.mkdirSync(SKILL_INSTALL_DIR, { recursive: true });
-
-    // Write updatable assets (always overwritten)
-    for (const filename of UPDATABLE_ASSETS) {
-        const content = readBundledAsset(filename);
-        fs.writeFileSync(path.join(SKILL_INSTALL_DIR, filename), content, 'utf-8');
-    }
-
-    // Write preserved assets (only if missing)
-    for (const filename of PRESERVED_ASSETS) {
-        const targetPath = path.join(SKILL_INSTALL_DIR, filename);
-        if (!fs.existsSync(targetPath)) {
-            const content = readBundledAsset(filename);
-            fs.writeFileSync(targetPath, content, 'utf-8');
-        } else if (force) {
-            console.log(`  Preserved ${filename} (not overwritten)`);
+function printInstallResult(result: ReturnType<typeof installSkills>, action: string): void {
+    const sourceDir = bundledSkillsDir();
+    if (result.installed.length > 0) {
+        console.log(`${action} scimax skills:`);
+        for (const name of result.installed) {
+            const skillMd = fs.readFileSync(path.join(sourceDir, name, 'SKILL.md'), 'utf-8');
+            const version = skillVersion(skillMd);
+            console.log(`  ${name}${version ? ` v${version}` : ''}`);
         }
+        console.log();
+        console.log(`  ${result.locations.agentsDir}   (VS Code/Copilot, Codex, Cursor, OpenCode, ...)`);
+        console.log(`  ${result.locations.claudeDir}   (Claude Code, symlinks)`);
+        console.log(`  ${result.locations.lockFile}`);
     }
-
-    const skillContent = readBundledAsset('SKILL.md');
-    const version = extractVersion(skillContent);
-    const versionStr = version ? `v${version}` : '';
-    const action = force ? 'Updated' : 'Installed';
-
-    console.log(`${action} scimax skill ${versionStr} to:`);
-    console.log(`  ${SKILL_INSTALL_DIR}`);
-    console.log();
-    console.log('Files:');
-    console.log('  SKILL.md              - Main skill instructions');
-    console.log('  reference.md          - Detailed command reference');
-    console.log('  orgmode-reference.md  - Org-mode syntax and citation reference');
-    console.log('  pm-reference.md       - Project management queries (ready/blocked, workload)');
-    console.log('  presentations-reference.md - Slide decks: Beamer, Marp, and marp-present');
-    console.log('  learnings.md          - User corrections (preserved across updates)');
-    console.log();
-    console.log('In Claude Code, use /scimax to activate the skill.');
-    console.log('Or just describe what you want — Claude will trigger it automatically.');
+    for (const { name, reason } of result.skipped) {
+        console.log(`Skipped ${name}: ${reason}`);
+    }
+    if (result.migratedLearnings) {
+        console.log();
+        console.log(`Moved your learnings from the old install to ${result.migratedLearnings}`);
+    }
+    if (result.installed.length > 0) {
+        console.log();
+        console.log(`Learnings are kept in ${learningsPath()} and survive updates.`);
+        console.log('In Claude Code, use /scimax to activate the skill,');
+        console.log('or just describe what you want — the agent will pick the right skill.');
+    }
+    if (result.skipped.length > 0) {
+        process.exitCode = 1;
+    }
 }
 
-async function uninstallSkill(): Promise<void> {
-    if (!fs.existsSync(SKILL_INSTALL_DIR)) {
-        console.log('Skill not installed — nothing to remove.');
-        return;
+function listSkills(scope: SkillScope): void {
+    const status = skillStatus({ sourceDir: bundledSkillsDir(), scope });
+    for (const s of status) {
+        const state = !s.installed ? 'not installed'
+            : !s.ours ? 'installed (not from scimax)'
+            : s.outdated ? 'installed (differs from bundled; run scimax skill update)'
+            : 'installed';
+        console.log(`  ${s.name.padEnd(24)} ${state}`);
     }
-
-    fs.rmSync(SKILL_INSTALL_DIR, { recursive: true, force: true });
-    console.log(`Removed: ${SKILL_INSTALL_DIR}`);
+    console.log();
+    console.log(`Location: ${skillLocations({ scope }).agentsDir}`);
 }
 
-function showSkill(): void {
-    const content = readBundledAsset('SKILL.md');
-    process.stdout.write(content);
+function showSkill(name: string): void {
+    const file = path.join(bundledSkillsDir(), name, 'SKILL.md');
+    if (!fs.existsSync(file)) {
+        throw new Error(`No bundled skill named '${name}'. Available: ${listBundledSkills(bundledSkillsDir()).join(', ')}`);
+    }
+    process.stdout.write(fs.readFileSync(file, 'utf-8'));
 }
 
 function printSkillHelp(): void {
     console.log(`
-scimax skill - Manage the scimax Claude Code skill
+scimax skill - Manage the scimax agent skills
 
 USAGE:
-    scimax skill install     Install skill to ~/.claude/skills/scimax/
-    scimax skill update      Update SKILL.md + reference.md (preserves learnings.md)
-    scimax skill uninstall   Remove ~/.claude/skills/scimax/ directory
-    scimax skill show        Print bundled SKILL.md to stdout
-    scimax skill path        Print the installation path
+    scimax skill install [name...]    Install skills (default: all)
+    scimax skill update [name...]     Reinstall the bundled version over an install
+    scimax skill uninstall [name...]  Remove skills installed from scimax
+    scimax skill list                 Show bundled skills and whether they are installed
+    scimax skill show [name]          Print a bundled SKILL.md (default: scimax)
+    scimax skill path                 Print the installation directory
 
-FILES:
-    SKILL.md              Main skill instructions (overwritten on update)
-    reference.md          Detailed command reference (overwritten on update)
-    orgmode-reference.md  Org-mode syntax and citation reference (overwritten on update)
-    pm-reference.md       Project management query recipes (overwritten on update)
-    presentations-reference.md
-                          Slide decks: Beamer, Marp, marp-present (overwritten on update)
-    learnings.md          User corrections and preferences (preserved on update)
+OPTIONS:
+    --project    Install into the current directory (.agents/skills, .claude/skills,
+                 skills-lock.json) instead of your home directory
+    --force      Replace skill folders that were not installed from scimax
+
+SKILLS:
+    scimax                 Notes, agenda, TODOs, journal, export, citations, database
+    scimax-org             Org-mode syntax and citation reference
+    scimax-projects        Task dependencies, scimax task, Gantt charts, assignees
+    scimax-presentations   Beamer and Marp slide decks
 
 ABOUT:
-    The scimax skill enables Claude Code to interact with your org-mode notes,
-    agenda, citations, journal, and the scimax database directly from conversations.
+    Each skill is copied to ~/.agents/skills/<name>, which VS Code (GitHub Copilot),
+    Codex, Cursor, OpenCode and Gemini CLI read, and linked from ~/.claude/skills/<name>
+    for Claude Code. Installs are recorded in ~/.agents/.skill-lock.json, so knowhow
+    and npx skills can check and upgrade them. The same skills install from GitHub with:
 
-    After installing, Claude Code will automatically use scimax commands when
-    you ask about your notes, agenda, TODOs, or org files.
+        uvx knowhow add ${SKILL_SOURCE} -g -y
+        npx skills add ${SKILL_SOURCE} -g -y
 
-    The skill improves over time: when you correct Claude's behavior, the
-    correction is saved to learnings.md and applied in future conversations.
+    When you correct the agent, the correction is saved to ~/.config/scimax/learnings.md
+    and applied in future conversations. Updates never touch that file.
 
 EXAMPLES:
     scimax skill install
+    scimax skill install scimax-org --project
     scimax skill update
-    scimax skill show > ~/my-custom-skill.md   # Export for customization
-    scimax skill path
+    scimax skill show scimax-projects
 `);
 }
 
 export async function skillCommand(_config: CliConfig, args: ParsedArgs): Promise<void> {
     const subcommand = args.subcommand || '';
+    const names = args.args.slice(1);
+    // `--project NAME` parses NAME as the flag's value; treat it as a skill name
+    for (const flag of ['project', 'force']) {
+        if (typeof args.flags[flag] === 'string') names.push(args.flags[flag] as string);
+    }
+    const scope: SkillScope = args.flags.project ? 'project' : 'global';
+    const sourceDir = bundledSkillsDir();
 
     switch (subcommand) {
         case 'install':
-            await installSkill(false);
+        case 'update': {
+            const result = installSkills({
+                sourceDir,
+                scope,
+                skills: names,
+                // update replaces our own installs; --force also replaces foreign ones
+                force: !!args.flags.force,
+            });
+            printInstallResult(result, subcommand === 'update' ? 'Updated' : 'Installed');
             break;
-        case 'update':
-            await installSkill(true);
+        }
+        case 'uninstall': {
+            const removed = uninstallSkills({ scope, skills: names });
+            if (removed.length === 0) {
+                console.log('No scimax skills installed — nothing to remove.');
+            } else {
+                console.log(`Removed: ${removed.join(', ')}`);
+                console.log(`Your learnings in ${learningsPath()} were kept.`);
+            }
             break;
-        case 'uninstall':
-            await uninstallSkill();
+        }
+        case 'list':
+            listSkills(scope);
             break;
         case 'show':
-            showSkill();
+            showSkill(names[0] || 'scimax');
             break;
         case 'path':
-            console.log(SKILL_INSTALL_DIR);
+            console.log(skillLocations({ scope }).agentsDir);
             break;
         default:
             printSkillHelp();

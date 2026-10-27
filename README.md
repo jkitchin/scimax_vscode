@@ -40,6 +40,22 @@ Then install the generated `.vsix` file.
 - VS Code 1.85.0 or later
 - Node.js 22+ (for development)
 
+### AI Agent Skills
+
+Four [Agent Skills](https://agentskills.io/specification) in [`skills/`](skills/) let Claude Code,
+VS Code (GitHub Copilot), Codex, Cursor and other agents use the `scimax` CLI: `scimax`
+(notes, agenda, journal, export), `scimax-org` (org syntax and citations), `scimax-projects`
+(task dependencies, Gantt charts) and `scimax-presentations` (Beamer and Marp). Install them with
+any of:
+
+```bash
+scimax skill install                          # bundled with the extension
+uvx knowhow add jkitchin/scimax_vscode -g -y  # with knowhow
+npx skills add jkitchin/scimax_vscode -g -y   # with npx skills
+```
+
+or run *Scimax: Install AI Agent Skills* in VS Code. See [docs/30-cli.org](docs/30-cli.org).
+
 ---
 
 ## Features
@@ -930,12 +946,12 @@ This package almost achieves feature parity with Emacs Scimax. If there are feat
 
 | Metric              | Count    |
 |---------------------|----------|
-| TypeScript files    | 491      |
-| Lines of TypeScript | ~221,000 |
-| Test files          | 157      |
-| Unit tests          | 3777     |
+| TypeScript files    | 494      |
+| Lines of TypeScript | ~222,000 |
+| Test files          | 158      |
+| Unit tests          | 3802     |
 | Documentation files | 57       |
-| Commands            | 1487     |
+| Commands            | 1488     |
 | Keybindings         | 486      |
 
 ### Supported Languages (Babel Execution)

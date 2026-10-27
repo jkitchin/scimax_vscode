@@ -1,0 +1,23 @@
+name: Validate skills
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'skills/**'
+      - '.github/workflows/validate-skills.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'skills/**'
+      - '.github/workflows/validate-skills.yml'
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v5
+      # Checks skills/*/SKILL.md against the Agent Skills spec and how
+      # knowhow / npx skills will discover and install them
+      - run: uvx --from git+https://github.com/jkitchin/knowhow knowhow validate . --strict

@@ -821,6 +821,15 @@ Commands for debugging issues and reporting problems.
 | [[cmd:scimax.reportIssue]]     | Report Issue on GitHub     | -                  |
 | [[cmd:scimax.contextHelp]]     | Context-Sensitive Help     | -                  |
 | [[cmd:scimax.openLogDirectory]]| Open Log Files Directory   | -                  |
+
+** ⚠️ AI Agent Skills
+
+Install the bundled scimax skills for Claude Code, VS Code (GitHub Copilot), Codex,
+Cursor and other agents. See [[file:30-cli.org::*Skill][CLI: Skill]].
+
+| Command ID                  | Description                    | Default Keybinding |
+|-----------------------------+--------------------------------+--------------------|
+| [[cmd:scimax.skills.install]] | Install AI Agent Skills        | -                  |
 | [[cmd:scimax.setLogLevel]]     | Set Logging Level          | -                  |
 | [[cmd:scimax.db.searchCapabilities]] | Show Search Capabilities | -                |
 

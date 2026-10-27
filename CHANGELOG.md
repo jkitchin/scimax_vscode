@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **Agent skills for any agent** - The scimax skill is now four skills in `skills/`, following the Agent Skills specification: `scimax` (notes, agenda, journal, export, database), `scimax-org` (org syntax and citations), `scimax-projects` (`scimax task`, dependencies, Gantt charts) and `scimax-presentations` (Beamer and Marp). They install with `uvx knowhow add jkitchin/scimax_vscode` or `npx skills add jkitchin/scimax_vscode`, as well as `scimax skill install` and the new *Scimax: Install AI Agent Skills* command, and work in Claude Code, VS Code (GitHub Copilot), Codex, Cursor, OpenCode and Gemini CLI.
+
+### Changed
+
+- **`scimax skill install`** - Installs like knowhow and npx skills: a copy in `~/.agents/skills/<name>`, a symlink in `~/.claude/skills/<name>` and an entry in `~/.agents/.skill-lock.json`, so `knowhow check`/`upgrade` keep it current. `--project` installs into the current directory, `list` shows what is installed, and `install`/`update` won't replace a skill folder something else installed without `--force`.
+- **Skill learnings** - Corrections are kept in `~/.config/scimax/learnings.md`, outside the skill folders, so updates never overwrite them. Learnings from an old `~/.claude/skills/scimax` install are moved there on the next install or update.
+
 ## [0.10.0] - 2026-10-25
 
 ### Added
