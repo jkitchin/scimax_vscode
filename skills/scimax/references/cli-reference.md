@@ -91,6 +91,20 @@ scimax tangle setup.org --json               # Machine-readable summary of what 
 
 ---
 
+## Marp Slides
+
+Build a Marp deck into one self-contained HTML file with presenter tools.
+
+```bash
+scimax marp build talk.md --open             # talk.html, opened in the browser
+scimax marp build talk.md --pdf              # also talk.pdf
+scimax marp build talk.md -- --theme-set theme.css   # args after -- go to Marp CLI
+```
+
+For writing and fixing decks, use the **scimax-presentations** skill.
+
+---
+
 ## Citations
 
 Manage and validate bibliography citations in org files.

@@ -7,7 +7,7 @@ Load this when the user wants to make, convert, build, present or fix a slide de
 | Need | Use |
 |---|---|
 | Slides from an org file, LaTeX-heavy, printed handouts | org → Beamer: `scimax export slides.org --format beamer-pdf` |
-| A lecture or talk in the browser: animations, live widgets, editable Python, pen/laser/notes while presenting | **Marp** Markdown built with **`marp-present`** (below) |
+| A lecture or talk in the browser: animations, live widgets, editable Python, pen/laser/notes while presenting | **Marp** Markdown built with **`scimax marp build`** (below) |
 | An editable PowerPoint for someone else | Marp `--pptx` (slides become images) or python-pptx |
 
 The rest of this file is about Marp.
@@ -60,38 +60,40 @@ footer: My course · Lecture 3
 - **Content sits too low.** The default theme sets `align-content: safe center` on `section`, which Chrome applies to block layout, so content ends up vertically centred. Add `align-content: start` to your `section` rule.
 - **`section::before` collapses.** It's the default theme's clearfix (`display: table`), so a decorative `::before` band needs `display: block` and an explicit height.
 
-**Marp CLI pitfalls** (only relevant when calling `marp` directly; `marp-present` handles them):
+**Marp CLI pitfalls** (only relevant when calling `marp` directly; `scimax marp build` handles them):
 - **Pass `--no-stdin`.** Without it, Marp waits on stdin forever when there is no terminal (under `make`, a background shell, or Claude Code).
 - **Put the input file before `--theme-set`.** That option takes several values and swallows a following `slides.md`, and then Marp just prints its help.
 - **Raw HTML needs `--html`.** That covers `<div>`, `<iframe>` and `<script>`. A plain Markdown preview, or Marp for VS Code without HTML enabled, shows such HTML as text.
 - **`--allow-local-files`** is needed for local images in PDF/PPTX output.
 - **PNG previews of every slide:** `marp deck.md --images png -o out/s.png`. These are good for checking layout, but iframes render blank in them.
 
-## The scimax customization: `marp-present`
+## The scimax customization: `scimax marp build`
 
-`marp-present` turns any Marp deck into **one self-contained HTML file with presenter tools**. The slides need no changes and no script tags.
+`scimax marp build` turns any Marp deck into **one self-contained HTML file with presenter tools**. The slides need no changes and no script tags. It is the same build as the VS Code extension's HTML export, with the scripts that ship in the extension (it replaces the old standalone `marp-present` tool).
 
-- **Location:** the toolkit is in `~/Dropbox/projects/marp-present`; its README has full details.
-- **Command:** `marp-present`, linked into `~/.local/bin`.
-- **Fallback:** if `which marp-present` fails, build with plain Marp CLI instead and mention that the presenter tools are missing.
+- **Command:** `scimax marp build`, part of the scimax CLI. Marp CLI comes from `marp` on the PATH, else `npx` (downloaded the first time).
+- **Fallback:** if `scimax marp` is not available, build with plain Marp CLI instead and mention that the presenter tools are missing.
 
 ```bash
-marp-present talk.md                       # -> talk.html (one file: email it, open it offline)
-marp-present talk.md --open                # build and open in the browser
-marp-present talk.md --pdf                 # also talk.pdf (plain Marp PDF, not bundled)
-marp-present talk.md -- --theme-set theme/custom.css    # args after -- go to Marp
-marp-present talk.md --max-width 1190      # shrink large raster images (Pillow)
-marp-present talk.md --features ink,laser  # choose tools (default: ink,laser,spotlight,notes)
+scimax marp build talk.md                       # -> talk.html (one file: email it, open it offline)
+scimax marp build talk.md --open                # build and open in the browser
+scimax marp build talk.md -o build/talk.html    # choose the output file
+scimax marp build talk.md --pdf                 # also talk.pdf (plain Marp PDF, not bundled)
+scimax marp build talk.md --plain               # plain Marp HTML, no presenter tools
+scimax marp build talk.md -- --theme-set theme/custom.css    # args after -- go to Marp
+scimax marp build talk.md --json                # result as JSON (missing files, web refs, offline issues)
 ```
+
+**Front matter it reads:** `presenter: false` leaves the tools out; `presenter: offline` embeds Python and the packages the cells import, so they run with no network (the file gets large, ~20 MB+); `timer: 20` adds a 20-minute talk timer.
 
 **What the build does:**
 - It runs Marp with `--html --allow-local-files --no-stdin`, plus an engine plugin for runnable Python cells. Marp runs from the deck's folder, so relative paths and any `.marprc` apply.
-- It inlines everything local into the HTML: images (including `![bg]`), `<iframe src="local.html">` pages (as `srcdoc`, with their own CSS, JS and data), scripts, stylesheets, and KaTeX fonts (downloaded once, cached).
-- After the build, it lists any remaining web references.
+- It inlines everything local into the HTML: images (including `![bg]`), `<iframe src="local.html">` pages (as `srcdoc`, with their own CSS, JS and data), scripts, stylesheets, and KaTeX fonts (downloaded once, cached in the extension's global storage).
+- After the build, it lists files it could not find and any remaining web references, as `deck.md:LINE: message`.
 - It embeds a copy of the Markdown and a pristine base64 copy of the page, which the `s` key uses to save an annotated copy.
 - The file is about 2.3× the size of its content, typically 1–4 MB.
 
-**From a Makefile:** `html: ; marp-present slides.md -- --theme-set theme/x.css`. Set `PYTHON=` if the bundler should use a particular Python. Pillow is optional.
+**From a Makefile:** `html: ; scimax marp build slides.md -- --theme-set theme/x.css`.
 
 ### Presenter tools (tell the user these when you hand over a deck)
 
@@ -165,7 +167,7 @@ plt.plot(x, np.sin(x))
 ### Interactive widgets (iframes)
 
 For explorables (sliders, animations, step-through demos):
-- **The pattern:** write each one as a small standalone HTML page using vanilla JS and SVG, then embed it with `<iframe class="w" src="interactive/x.html">`. `marp-present` inlines it, with its scripts.
+- **The pattern:** write each one as a small standalone HTML page using vanilla JS and SVG, then embed it with `<iframe class="w" src="interactive/x.html">`. `scimax marp build` inlines it, with its scripts.
 - **Data:** put numbers computed in Python into `interactive/data/x.js` as `window.X = {...}` and load it with `<script src>`. Use a script rather than `fetch()`, because `fetch()` fails from `file://`.
 - **PDF fallbacks:**
   1. Screenshot each widget with headless Chrome. Add a `?static` URL mode that renders the final state with no animation.
@@ -178,7 +180,7 @@ For explorables (sliders, animations, step-through demos):
 1. **Outline first.** Write about one slide per 1.5–2 minutes, so roughly 30 slides for an hour. Give each section the same structure, for example question → premise → case study → code.
 2. **Write the deck** with a custom theme if it has sections (a colour per section, badges, `_class: divider` section openers). Keep text density low, since slides are visual aids.
 3. **Make every code snippet real.** Keep runnable copies in `code/*.py`, check them with `make check` or similar, and paste them into slides. Or use `python run` cells.
-4. **Build with `marp-present`.**
+4. **Build with `scimax marp build`.**
 5. **Verify the layout:**
    - Render PNGs (`marp --images png`) and look at contact sheets.
    - Check overflow in the browser: for each `section`, the bottom of the last child should be ≤ 700 px in slide coordinates. Ignore KaTeX SVG paths.
@@ -194,6 +196,6 @@ For explorables (sliders, animations, step-through demos):
 | `<script>`/`<div>` shown as text | The output wasn't built with `--html`, or a plain Markdown preview is being used |
 | Content vertically centred / colour band missing | The default theme's `align-content` / `::before` clearfix; see Custom theme |
 | Python cell: "could not start" | No internet (Pyodide comes from jsdelivr) |
-| Text or plot cut off at the slide bottom | Rebuild with the current `marp-present`: cells fit the slide. Plain HTML still overflows, so split the slide |
+| Text or plot cut off at the slide bottom | Rebuild with `scimax marp build`: cells fit the slide. Plain HTML still overflows, so split the slide |
 | Widget blank in PDF | Iframes don't print; use the fallback-image pattern |
-| `s` saves Markdown instead of HTML | The deck wasn't built with `marp-present` (no embedded copy) |
+| `s` saves Markdown instead of HTML | The deck wasn't built with `scimax marp build` (no embedded copy) |

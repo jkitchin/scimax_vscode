@@ -48,6 +48,7 @@ Related skills, installed alongside this one: **scimax-org** (org-mode syntax an
 | Export to HTML | `scimax export file.org --format html` |
 | Export to PDF | `scimax export file.org --format pdf` |
 | Tangle source blocks | `scimax tangle setup.org` |
+| Build a Marp deck (HTML + presenter tools) | `scimax marp build talk.md --open` |
 | Check citations | `scimax cite check file.org` |
 | Extract citations | `scimax cite extract file.org` |
 | Database stats | `scimax db stats` |

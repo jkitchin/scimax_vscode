@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - **Agent skills for any agent** - The scimax skill is now four skills in `skills/`, following the Agent Skills specification: `scimax` (notes, agenda, journal, export, database), `scimax-org` (org syntax and citations), `scimax-projects` (`scimax task`, dependencies, Gantt charts) and `scimax-presentations` (Beamer and Marp). They install with `uvx knowhow add jkitchin/scimax_vscode` or `npx skills add jkitchin/scimax_vscode`, as well as `scimax skill install` and the new *Scimax: Install AI Agent Skills* command, and work in Claude Code, VS Code (GitHub Copilot), Codex, Cursor, OpenCode and Gemini CLI.
+- **`scimax marp build`** - Builds a Marp deck into one self-contained HTML file with the presenter tools from the command line (`--open`, `--pdf`, `--plain`, `-o`, `--json`, and Marp options after `--`). It uses the same scripts and bundler as the HTML export in VS Code and shares its font and offline-Python caches, so the standalone `marp-present` tool is no longer needed. The `scimax-presentations` skill now builds decks with it.
 
 ### Changed
 

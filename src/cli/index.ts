@@ -13,6 +13,7 @@
  *   scimax project [query] [--add path] [--list]
  *   scimax task [next|list|who|show|path|done|assign|files]
  *   scimax publish [project] [--init|--list]
+ *   scimax marp build <deck.md> [--open] [--pdf] [-- marp options]
  */
 
 // Must be first: installs a 'vscode' module stub so CLI can load code that
@@ -34,6 +35,8 @@ import { skillCommand } from './commands/skill';
 import { journalCommand } from './commands/journal';
 import { projectCommand } from './commands/project';
 import { taskCommand } from './commands/task';
+import { marpCommand } from './commands/marp';
+import { scimaxGlobalStorageDir } from './globalStorage';
 
 interface CliConfig {
     dbPath: string;
@@ -41,23 +44,10 @@ interface CliConfig {
 }
 
 /**
- * Get the VS Code global storage path for the scimax extension
+ * Get the VS Code global storage path for the scimax extension's database
  */
 function getVSCodeGlobalStoragePath(): string {
-    const home = process.env.HOME || process.env.USERPROFILE || '';
-    const platform = process.platform;
-
-    let basePath: string;
-    if (platform === 'darwin') {
-        basePath = path.join(home, 'Library', 'Application Support', 'Code', 'User', 'globalStorage');
-    } else if (platform === 'win32') {
-        basePath = path.join(process.env.APPDATA || '', 'Code', 'User', 'globalStorage');
-    } else {
-        // Linux and others
-        basePath = path.join(home, '.config', 'Code', 'User', 'globalStorage');
-    }
-
-    return path.join(basePath, 'jkitchin.scimax-vscode', 'scimax-db.sqlite');
+    return path.join(scimaxGlobalStorageDir(), 'scimax-db.sqlite');
 }
 
 /**
@@ -101,7 +91,11 @@ function findConfig(): CliConfig {
 /**
  * Parse command-line arguments into structured format
  */
-function parseArgs(args: string[]): { command: string; subcommand?: string; args: string[]; flags: Record<string, string | boolean> } {
+function parseArgs(argv: string[]): { command: string; subcommand?: string; args: string[]; flags: Record<string, string | boolean>; passthrough: string[] } {
+    // Everything after `--` is left as is, for commands that hand it on (marp)
+    const dashes = argv.indexOf('--');
+    const args = dashes >= 0 ? argv.slice(0, dashes) : argv;
+    const passthrough = dashes >= 0 ? argv.slice(dashes + 1) : [];
     const flags: Record<string, string | boolean> = {};
     const positional: string[] = [];
 
@@ -137,6 +131,7 @@ function parseArgs(args: string[]): { command: string; subcommand?: string; args
         subcommand: positional[1],
         args: positional.slice(1),
         flags,
+        passthrough,
     };
 }
 
@@ -159,6 +154,7 @@ COMMANDS:
     project [query]         Fuzzy-select and open a known project in VS Code
     task <subcommand>       Project tasks (next, list, who, show, path, done, assign)
     publish [project]       Publish org project(s) to HTML
+    marp build <deck.md>    Build a Marp deck into one HTML file with presenter tools
     skill <subcommand>      Manage the scimax agent skills (Claude Code, VS Code, Codex, ...)
     help                    Show this help message
 
@@ -199,6 +195,8 @@ EXAMPLES:
     scimax task assign xrd priya
     scimax publish
     scimax publish --init
+    scimax marp build talk.md --open
+    scimax marp build talk.md --pdf -- --theme-set theme/custom.css
     scimax skill install
     scimax skill update
 
@@ -258,6 +256,9 @@ async function main(): Promise<void> {
                 break;
             case 'publish':
                 await publishCommand(config, args);
+                break;
+            case 'marp':
+                await marpCommand(config, args);
                 break;
             case 'skill':
                 await skillCommand(config, args);
