@@ -284,6 +284,17 @@ CLOSED: [2026-01-24 Sat 17:41]
 
 *File-level override*: Use =#+STARTUP: logdrawer= or =#+STARTUP: nologdrawer=
 
+* ⚠️ Crucible Settings
+
+Settings for browsing [[https://github.com/jkitchin/crucible][crucible]] knowledge bases
+(see [[file:48-crucible.org][Crucible Knowledge Bases]]).
+
+| Setting                     | Type   | Default    | Description                                 |
+|-----------------------------+--------+------------+---------------------------------------------|
+| scimax.crucible.command     | string | "crucible" | The crucible CLI (full path if not on PATH) |
+| scimax.crucible.searchMode  | string | "auto"     | auto, fts, semantic or hybrid               |
+| scimax.crucible.searchLimit | number | 20         | Most search results shown                   |
+
 * ✅ Journal Settings
 CLOSED: [2026-01-17 Sat 17:36]
 

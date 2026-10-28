@@ -76,6 +76,7 @@ import { registerCaptureCommands } from './org/captureProvider';
 import { OrgLintProvider, registerOrgLintCommands } from './org/orgLintProvider';
 import { registerOrphanLinkDiagnostics } from './org/orphanLinkDiagnostics';
 import { registerNotesProvider } from './org/notesProvider';
+import { registerCrucible } from './crucible/crucibleProvider';
 import { registerBacklinksProvider } from './org/backlinksProvider';
 import { registerDependencyCommands } from './org/dependencyCommands';
 import { registerDependencyProviders } from './org/dependencyProviders';
@@ -501,6 +502,9 @@ async function activateScimax(context: vscode.ExtensionContext) {
         console.error('Scimax: Failed to initialize ReferenceManager:', errorMsg, error?.stack);
         vscode.window.showErrorMessage(`Scimax reference initialization failed: ${errorMsg}`);
     }
+
+    // Crucible knowledge bases: panel, search, article graph, bibliographies.
+    activationStep('registerCrucible', () => registerCrucible(context, referenceManager));
 
 
     // Register Citation Hover Provider (for org, markdown, quarto and latex)

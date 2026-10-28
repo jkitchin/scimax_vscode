@@ -32,6 +32,8 @@ export class ReferenceManager {
     private config: ReferenceConfig;
     private context: vscode.ExtensionContext;
     private fileWatchers: vscode.FileSystemWatcher[] = [];
+    /** Bibliographies added by other features (e.g. a crucible's references.bib). */
+    private extraBibliographyFiles = new Set<string>();
     private _onDidUpdateEntries = new vscode.EventEmitter<void>();
     readonly onDidUpdateEntries = this._onDidUpdateEntries.event;
 
@@ -99,6 +101,10 @@ export class ReferenceManager {
             await this.loadBibFile(resolvedPath);
         }
 
+        for (const bibPath of this.extraBibliographyFiles) {
+            await this.loadBibFile(bibPath);
+        }
+
         // Also look for .bib files in workspace
         const workspaceFolders = vscode.workspace.workspaceFolders;
         if (workspaceFolders) {
@@ -115,6 +121,17 @@ export class ReferenceManager {
             }
         }
 
+        this._onDidUpdateEntries.fire();
+    }
+
+    /**
+     * Add a bibliography file that is not configured or in the workspace,
+     * and load it (again, if it was added before, to pick up changes). It
+     * stays loaded across reloads.
+     */
+    public async addBibliographyFile(filePath: string): Promise<void> {
+        this.extraBibliographyFiles.add(filePath);
+        await this.loadBibFile(filePath);
         this._onDidUpdateEntries.fire();
     }
 
