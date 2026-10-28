@@ -54,7 +54,23 @@ describe('firstSlideSvg', () => {
 
     it('writes XHTML void elements', () => {
         const { svg } = firstSlideSvg('---\nmarp: true\n---\n\nA<br>B\n\n---\n\nC\n', os.tmpdir());
-        expect(svg).toContain('<br />');
+        expect(svg).toMatch(/<br ?\/>/);
+    });
+
+    it('writes raw HTML as well-formed XML', () => {
+        const text = '---\nmarp: true\n---\n\n<div>jaxsr & discopt</div>\n';
+        const { svg } = firstSlideSvg(text, os.tmpdir());
+        expect(svg).toContain('<div>jaxsr &amp; discopt</div>');
+        expect(svg).toContain('<foreignObject');
+        expect(svg).toContain('viewBox=');
+    });
+
+    it('drops web font imports whose URL holds semicolons', () => {
+        const theme = '/* @theme t */\n@import url("https://fonts.example.org/css2?family=A:wght@0,400;0,600&display=swap");\nsection { color: red; }';
+        const { svg } = firstSlideSvg('---\nmarp: true\ntheme: t\n---\n\nA\n', os.tmpdir(), { themes: [theme] });
+        expect(svg).not.toContain('@import');
+        expect(svg).not.toContain('0,600');
+        expect(svg).toContain('color:red');
     });
 
     it('inlines local images and leaves remote ones', () => {

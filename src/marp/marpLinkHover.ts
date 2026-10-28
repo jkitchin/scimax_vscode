@@ -4,6 +4,7 @@
  */
 
 import * as vscode from 'vscode';
+import * as crypto from 'crypto';
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
@@ -16,12 +17,26 @@ const PREVIEW_WIDTH = 400;
 
 interface CachedSlide {
     key: string;
+    /** Path of the rendered slide's SVG file. */
     image: string;
     slides: number;
 }
 
 /** Rendered first slides by deck path, reused until the deck text changes. */
 const cache = new Map<string, CachedSlide>();
+
+/**
+ * Directory for the rendered slide files, in the extension's storage: hover
+ * images must come from a folder VS Code serves, which the temp dir is not.
+ */
+let imageDir: string | undefined;
+
+/** Set up the slide image directory, removing files from earlier sessions. */
+export function initMarpLinkHover(context: vscode.ExtensionContext): void {
+    imageDir = path.join(context.globalStorageUri.fsPath, 'marp-hover');
+    fs.rmSync(imageDir, { recursive: true, force: true });
+    fs.mkdirSync(imageDir, { recursive: true });
+}
 
 function commandLink(label: string, command: string, args: unknown[], tooltip: string): string {
     return `[${label}](command:${command}?${encodeURIComponent(JSON.stringify(args))} "${tooltip}")`;
@@ -41,9 +56,21 @@ function renderedSlide(file: string, text: string): CachedSlide {
         return cached;
     }
     const { svg } = firstSlideSvg(text, path.dirname(file), options);
+    // The slide goes in a file rather than a data: URI: slides embed their
+    // images, and VS Code truncates hover markdown at 100,000 characters,
+    // which cuts the <img> tag off and shows it as text.
+    if (!imageDir) {
+        throw new Error('initMarpLinkHover has not run');
+    }
+    const name = crypto.createHash('sha256').update(file).update(key).digest('hex').slice(0, 32);
+    const imageFile = path.join(imageDir, `${name}.svg`);
+    fs.writeFileSync(imageFile, svg);
+    if (cached && cached.image !== imageFile) {
+        fs.rmSync(cached.image, { force: true });
+    }
     const entry = {
         key,
-        image: `data:image/svg+xml;base64,${Buffer.from(svg).toString('base64')}`,
+        image: imageFile,
         slides: slideStarts(text).length,
     };
     cache.set(file, entry);
@@ -82,7 +109,7 @@ export function getMarpLinkHover(
             if (isMarpText(text)) {
                 const slide = renderedSlide(args.file, text);
                 slides = slide.slides;
-                markdown.appendMarkdown(`<img src="${slide.image}" width="${PREVIEW_WIDTH}" />\n\n`);
+                markdown.appendMarkdown(`<img src="${vscode.Uri.file(slide.image).toString()}" width="${PREVIEW_WIDTH}" />\n\n`);
             } else {
                 markdown.appendMarkdown('*Not a Marp deck (no `marp: true` in its front matter)*\n\n');
             }

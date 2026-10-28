@@ -12,6 +12,8 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import type { Marp, MarpOptions } from '@marp-team/marp-core';
+import render from 'dom-serializer';
+import { parseDocument } from 'htmlparser2';
 
 export interface RenderedDeck {
     html: string;
@@ -182,14 +184,24 @@ function imageDataUri(src: string, baseDir: string): string | undefined {
 }
 
 /**
+ * HTML as well-formed XHTML. Tag and attribute case is kept, since SVG names
+ * such as `foreignObject` and `viewBox` are case sensitive in XML.
+ */
+function toXhtml(html: string): string {
+    const dom = parseDocument(html, { lowerCaseTags: false, lowerCaseAttributeNames: false, recognizeSelfClosing: true });
+    return render(dom, { xmlMode: true, encodeEntities: 'utf8' });
+}
+
+/**
  * The first slide of a deck as a standalone SVG document, for showing as an
  * image (e.g. `<img src="data:image/svg+xml;base64,...">` in a hover).
  *
  * The slide is Marp's inline SVG with its theme CSS, wrapped so it is valid
- * XML: markdown-it writes XHTML, the slide elements get their namespaces, the
- * browser script is left out and the CSS goes in a CDATA section. Raw HTML is
- * limited to Marp's safe allowlist, whatever the deck's settings, so it stays
- * well formed. Local images are inlined from `baseDir`; remote images and web
+ * XML: the slide HTML is re-serialized as XHTML (raw HTML in a deck, even
+ * within Marp's safe allowlist, can have a bare `&` or an unclosed `<br>`),
+ * the slide elements get their namespaces, the browser script is left out and
+ * the CSS goes in a CDATA section. Raw HTML is limited to Marp's safe
+ * allowlist, whatever the deck's settings. Local images are inlined from `baseDir`; remote images and web
  * fonts do not load in an SVG image.
  */
 export function firstSlideSvg(text: string, baseDir: string, options: RenderOptions = {}): { svg: string; width: number; height: number } {
@@ -203,7 +215,7 @@ export function firstSlideSvg(text: string, baseDir: string, options: RenderOpti
     const width = viewBox ? Number(viewBox[1]) : 1280;
     const height = viewBox ? Number(viewBox[2]) : 720;
 
-    const body = html
+    const body = toXhtml(html)
         .replace(/^<div class="marpit">/, '<div xmlns="http://www.w3.org/1999/xhtml" class="marpit">')
         .replace(/<svg data-marpit-svg=""/g, '<svg xmlns="http://www.w3.org/2000/svg" data-marpit-svg=""')
         .replace(/(<foreignObject[^>]*>)<section/g, '$1<section xmlns="http://www.w3.org/1999/xhtml"')
@@ -215,8 +227,10 @@ export function firstSlideSvg(text: string, baseDir: string, options: RenderOpti
             const uri = imageDataUri(src.replace(/&amp;/g, '&'), baseDir);
             return uri ? `url(&quot;${uri}&quot;)` : whole;
         });
-    // @charset is invalid inside <style>; @import (web fonts) cannot load.
-    const style = css.replace(/@charset "[^"]*";/g, '').replace(/@import [^;]+;/g, '').replace(/]]>/g, ']] >');
+    // @charset is invalid inside <style>; @import (web fonts) cannot load. A
+    // font URL can itself hold `;` (`wght@0,400;0,600`), so match its quotes.
+    const style = css.replace(/@charset "[^"]*";/g, '')
+        .replace(/@import\s+(?:url\((?:"[^"]*"|'[^']*'|[^)]*)\)|"[^"]*"|'[^']*')[^;]*;/g, '').replace(/]]>/g, ']] >');
 
     const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">`
         + `<foreignObject width="${width}" height="${height}">`

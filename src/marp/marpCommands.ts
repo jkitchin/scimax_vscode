@@ -9,6 +9,7 @@ import * as vscode from 'vscode';
 import { registerMarpDirectiveProviders } from './marpDirectiveProvider';
 import { registerClaudeEditCommand } from './claudeEdit';
 import { registerMarpEditorMenu } from './marpEditorMenu';
+import { initMarpLinkHover } from './marpLinkHover';
 
 /** Webview tabs of the built-in Markdown preview have a viewType ending in this. */
 const MARKDOWN_PREVIEW_VIEW_TYPE = 'markdown.preview';
@@ -134,4 +135,6 @@ export function registerMarpCommands(context: vscode.ExtensionContext): void {
     registerClaudeEditCommand(context);
     // The Marp menu in the editor's right-click menu.
     registerMarpEditorMenu(context);
+    // Where marp: link hovers keep their rendered slides.
+    initMarpLinkHover(context);
 }

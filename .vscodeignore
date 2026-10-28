@@ -107,6 +107,12 @@ node_modules/**
 !node_modules/util-deprecate/**
 !node_modules/wicked-good-xpath/**
 !node_modules/xss/**
+# htmlparser2 (Marp slide SVGs as XHTML) and dependencies
+!node_modules/htmlparser2/**
+!node_modules/dom-serializer/**
+!node_modules/domhandler/**
+!node_modules/domelementtype/**
+!node_modules/domutils/**
 # date-fns: include all (selective inclusion is too fragile)
 !node_modules/date-fns/**
 !node_modules/minimatch/**
