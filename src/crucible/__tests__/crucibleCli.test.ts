@@ -12,6 +12,13 @@ beforeEach(() => {
     tmp = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), 'crucible-')));
 });
 
+/**
+ * A fake crucible executable: a shell script. Windows cannot run a shell
+ * script as an executable (pip installs a real crucible.exe there), so the
+ * tests that use it are POSIX only.
+ */
+const posixIt = it.skipIf(process.platform === 'win32');
+
 /** A fake crucible executable: a shell script that prints `stdout`. */
 function fakeCli(script: string): string {
     const file = path.join(tmp, 'crucible');
@@ -48,19 +55,19 @@ describe('wiki listing', () => {
 });
 
 describe('runCrucibleJson', () => {
-    it('adds --json and parses the output', async () => {
+    posixIt('adds --json and parses the output', async () => {
         const cli = fakeCli('echo "[\\"$@\\"]"');
         const result = await runCrucibleJson<string[]>(['concepts'], { command: cli, cwd: tmp });
         expect(result).toEqual(['concepts --json']);
     });
 
-    it('reports the last stderr line of a failed run', async () => {
+    posixIt('reports the last stderr line of a failed run', async () => {
         const cli = fakeCli('echo "Error: Not inside a crucible project." >&2; exit 1');
         await expect(runCrucibleJson(['stats'], { command: cli, cwd: tmp }))
             .rejects.toThrow('crucible stats: Not inside a crucible project.');
     });
 
-    it('says when the output is not JSON (crucible too old for --json)', async () => {
+    posixIt('says when the output is not JSON (crucible too old for --json)', async () => {
         const cli = fakeCli('echo "Sources: 3"');
         await expect(runCrucibleJson(['stats'], { command: cli, cwd: tmp })).rejects.toThrow(/too old/);
     });
@@ -74,7 +81,7 @@ describe('runCrucibleJson', () => {
 });
 
 describe('runCrucible', () => {
-    it('returns the trimmed output without adding --json', async () => {
+    posixIt('returns the trimmed output without adding --json', async () => {
         const cli = fakeCli('echo "ran $@"');
         expect(await runCrucible(['sync'], { command: cli, cwd: tmp })).toBe('ran sync');
     });
