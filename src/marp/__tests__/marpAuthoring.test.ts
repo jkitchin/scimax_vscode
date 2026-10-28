@@ -103,11 +103,12 @@ describe('themes', () => {
 });
 
 describe('MARP_HEADER_SNIPPET', () => {
-    it('is front matter with marp: true and theme and paginate choices', async () => {
+    it('is front matter with marp: true, theme and paginate choices and presenter tools', async () => {
         const { MARP_HEADER_SNIPPET } = await import('../marpAuthoring');
         const lines = MARP_HEADER_SNIPPET.split('\n');
         expect(lines.slice(0, 2)).toEqual(['---', 'marp: true']);
         expect(lines[2]).toBe('theme: ${1|default,gaia,uncover|}');
-        expect(lines[4]).toBe('---');
+        expect(lines[4]).toBe('presenter: true');
+        expect(lines[5]).toBe('---');
     });
 });

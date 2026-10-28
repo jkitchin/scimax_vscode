@@ -126,9 +126,9 @@ async function pickValue(title: string, values: string[], current: string | unde
 // =============================================================================
 
 /**
- * Turn the Markdown file into a Marp deck: add `marp: true` to its front
- * matter, or insert a Marp header (with theme and page number choices) if it
- * has none.
+ * Turn the Markdown file into a Marp deck: add `marp: true` (and
+ * `presenter: true`, unless it sets `presenter`) to its front matter, or
+ * insert a Marp header (with theme and page number choices) if it has none.
  */
 async function insertMarpHeader(): Promise<void> {
     const editor = vscode.window.activeTextEditor;
@@ -142,7 +142,11 @@ async function insertMarpHeader(): Promise<void> {
         return;
     }
     if (frontMatterRange(text.split(/\r?\n/))) {
-        await editLines(editor, lines => setFrontMatterValue(lines, 'marp', 'true'));
+        await editLines(editor, lines => {
+            const deck = setFrontMatterValue(lines, 'marp', 'true');
+            return frontMatterValue(deck, 'presenter') === undefined
+                ? setFrontMatterValue(deck, 'presenter', 'true') : deck;
+        });
         vscode.window.setStatusBarMessage('Added marp: true to the front matter', 4000);
         return;
     }

@@ -12,7 +12,7 @@ description: >-
 license: MIT
 compatibility: Beamer needs the scimax CLI and a LaTeX install; Marp decks need the scimax CLI and marp-cli (or npx).
 metadata:
-  version: "0.14.0"
+  version: "0.15.0"
   author: John Kitchin
 allowed-tools: Bash(scimax:*) Bash(marp:*) Bash(npx:*) Bash(which:*) Read Glob Grep Write
 ---
@@ -47,7 +47,8 @@ allowed-tools: Bash(scimax:*) Bash(marp:*) Bash(npx:*) Bash(which:*) Read Glob G
 
 Default to Marp + `scimax marp build` for lectures and talks shown from a browser, and to Beamer when
 the source is org or the output must be a PDF. If `scimax marp` is not available, build with plain
-Marp CLI and say that the presenter tools are missing. When handing over a Marp deck, list the
+Marp CLI and say that the presenter tools are missing. Put `presenter: true` in the front matter of every new
+Marp deck (unless the user asks for a plain slideshow). When handing over a Marp deck, list the
 presenter keys from the reference.
 
 For org syntax inside a Beamer source file, use the **scimax-org** skill.

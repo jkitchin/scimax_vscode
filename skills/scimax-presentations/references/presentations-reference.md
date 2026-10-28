@@ -21,6 +21,7 @@ A deck is one Markdown file. The front matter switches Marp on, and `---` on its
 marp: true
 theme: default          # default | gaia | uncover | a custom theme (see below)
 paginate: true
+presenter: true         # presenter tools (see below); always include it in a new deck
 size: 16:9              # 1280 x 720 slides
 math: katex             # $inline$ and $$display$$
 transition: fade        # slide transitions in the HTML output
@@ -84,7 +85,7 @@ scimax marp build talk.md -- --theme-set theme/custom.css    # args after -- go 
 scimax marp build talk.md --json                # result as JSON (missing files, web refs, offline issues)
 ```
 
-**Front matter it reads:** `presenter: false` leaves the tools out; `presenter: offline` embeds Python and the packages the cells import, so they run with no network (the file gets large, ~20 MB+); `timer: 20` adds a 20-minute talk timer.
+**Front matter it reads:** `presenter: true` adds the tools (the build adds them anyway, but the VS Code Present and HTML export only do with this key, so put it in every new deck); `presenter: false` leaves the tools out; `presenter: offline` embeds Python and the packages the cells import, so they run with no network (the file gets large, ~20 MB+); `timer: 20` adds a 20-minute talk timer.
 
 **What the build does:**
 - It runs Marp with `--html --allow-local-files --no-stdin`, plus an engine plugin for runnable Python cells. Marp runs from the deck's folder, so relative paths and any `.marprc` apply.

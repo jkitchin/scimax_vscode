@@ -165,12 +165,14 @@ export function imageMarkdown(file: string, placement: ImagePlacement, filter: I
 /**
  * Marp front matter for a file that has none, as a snippet: theme and page
  * numbers are choices (`${1|a,b|}`), and the cursor ends after the header.
+ * New decks get the presenter tools.
  */
 export const MARP_HEADER_SNIPPET = [
     '---',
     'marp: true',
     `theme: \${1|${BUILTIN_THEMES.join(',')}|}`,
     'paginate: ${2|true,false|}',
+    'presenter: true',
     '---',
     '',
     '$0',

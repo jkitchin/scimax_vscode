@@ -5,7 +5,7 @@
 #+OPTIONS: toc:t num:t
 #+TODO: ⚠️ 👀 | ✅
 
-* Overview
+* 👀 Overview
 
 Scimax supports [[https://marp.app/][Marp]] slide decks on its own: a Markdown file whose front
 matter has ~marp: true~. It renders the slides with its own copy of Marp Core,
@@ -27,8 +27,11 @@ syntax, fragmented lists, theme CSS, the built-in themes and Marp CLI.
 To make a Markdown file a deck, run *Scimax: Make Marp Deck*
 ([[cmd:scimax.marp.insertHeader]]), also in the editor's right-click menu of
 a Markdown file that is not a deck yet. It inserts the header below, with the
-theme and page numbers as choices (=Tab= moves between them); if the file
-already has front matter, it adds ~marp: true~ to it.
+theme and page numbers as choices (=Tab= moves between them), and
+~presenter: true~ so the deck gets the presenter tools (see
+[[*Presenter Tools and Live Python][Presenter Tools and Live Python]]); delete that line for a plain slideshow. If the file
+already has front matter, it adds ~marp: true~ to it, and ~presenter: true~
+unless the front matter already sets ~presenter~.
 
 A minimal deck:
 
@@ -37,6 +40,7 @@ A minimal deck:
 marp: true
 theme: default
 paginate: true
+presenter: true
 ---
 
 # Title slide
