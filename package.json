@@ -145,6 +145,11 @@
           "icon": "$(comment-discussion)"
         },
         {
+          "id": "scimax.crucible",
+          "name": "Crucible",
+          "icon": "$(library)"
+        },
+        {
           "id": "scimaxDependencies",
           "name": "Dependencies",
           "icon": "$(type-hierarchy)"
@@ -2559,6 +2564,42 @@
       {
         "command": "scimax.org.addNote",
         "title": "Scimax: Add Note (Decision/Question) on Selection"
+      },
+      {
+        "command": "scimax.crucible.refresh",
+        "title": "Scimax: Refresh Crucible Panel",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "scimax.crucible.search",
+        "title": "Scimax: Search Crucible",
+        "icon": "$(search)"
+      },
+      {
+        "command": "scimax.crucible.searchAll",
+        "title": "Scimax: Search All Crucibles"
+      },
+      {
+        "command": "scimax.crucible.backlinks",
+        "title": "Scimax: Crucible Back-links to This Article"
+      },
+      {
+        "command": "scimax.crucible.related",
+        "title": "Scimax: Crucible Articles Related to This One"
+      },
+      {
+        "command": "scimax.crucible.history",
+        "title": "Scimax: Crucible Derivation History of This Article"
+      },
+      {
+        "command": "scimax.crucible.openIndex",
+        "title": "Scimax: Open Crucible Index",
+        "icon": "$(book)"
+      },
+      {
+        "command": "scimax.crucible.sync",
+        "title": "Scimax: Sync Crucible Database",
+        "icon": "$(sync)"
       },
       {
         "command": "scimax.notes.refresh",
@@ -8619,6 +8660,29 @@
           "default": "note-",
           "description": "Footnote label prefix that marks a footnote as a dialog note (e.g. note- means [fn:note-why-db])."
         },
+        "scimax.crucible.command": {
+          "type": "string",
+          "default": "crucible",
+          "markdownDescription": "The [crucible](https://github.com/jkitchin/crucible) command-line tool (`pip install crucible-llm`). Set the full path if VS Code does not find it on its `PATH`, e.g. when it lives in a virtual environment. Needs a crucible with `--json` output."
+        },
+        "scimax.crucible.searchMode": {
+          "type": "string",
+          "enum": ["auto", "fts", "semantic", "hybrid"],
+          "enumDescriptions": [
+            "Hybrid when the crucible has embeddings, keyword search otherwise",
+            "Keyword search (FTS5)",
+            "Meaning-based search (needs crucible embed and ollama)",
+            "Keyword and meaning-based results combined"
+          ],
+          "default": "auto",
+          "description": "How Scimax: Search Crucible searches."
+        },
+        "scimax.crucible.searchLimit": {
+          "type": "number",
+          "default": 20,
+          "minimum": 1,
+          "description": "Most results Scimax: Search Crucible shows."
+        },
         "scimax.org.notes.author": {
           "type": "string",
           "default": "",
@@ -9151,6 +9215,18 @@
       ],
       "commandPalette": [
         {
+          "command": "scimax.crucible.backlinks",
+          "when": "scimax.inCrucible"
+        },
+        {
+          "command": "scimax.crucible.related",
+          "when": "scimax.inCrucible"
+        },
+        {
+          "command": "scimax.crucible.history",
+          "when": "scimax.inCrucible"
+        },
+        {
           "command": "scimax.agenda.buffer.openEntryLink",
           "when": "false"
         },
@@ -9601,6 +9677,17 @@
       ],
       "view/title": [
         {
+          "command": "scimax.crucible.searchAll",
+          "when": "view == scimax.crucible",
+          "group": "navigation@1",
+          "icon": "$(search)"
+        },
+        {
+          "command": "scimax.crucible.refresh",
+          "when": "view == scimax.crucible",
+          "group": "navigation@2"
+        },
+        {
           "command": "scimax.notes.refresh",
           "when": "view == scimax.notes",
           "group": "navigation"
@@ -9707,6 +9794,21 @@
         }
       ],
       "view/item/context": [
+        {
+          "command": "scimax.crucible.search",
+          "when": "view == scimax.crucible && viewItem == crucible",
+          "group": "inline@1"
+        },
+        {
+          "command": "scimax.crucible.openIndex",
+          "when": "view == scimax.crucible && viewItem == crucible",
+          "group": "inline@2"
+        },
+        {
+          "command": "scimax.crucible.sync",
+          "when": "view == scimax.crucible && viewItem == crucible",
+          "group": "inline@3"
+        },
         {
           "command": "scimax.agenda.gotoItem",
           "when": "view == scimax.agenda && viewItem == agendaItem",

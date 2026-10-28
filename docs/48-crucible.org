@@ -1,0 +1,113 @@
+#+TITLE: Crucible Knowledge Bases
+#+STARTUP: showall
+#+TODO: ⚠️ 👀 | ✅
+
+* ⚠️ Crucible Knowledge Bases
+
+[[https://github.com/jkitchin/crucible][Crucible]] keeps a knowledge base as an interlinked org-mode wiki: primary
+sources (papers, notebooks, data) are distilled by an LLM into concept,
+summary, comparison and method articles, and a database tracks the concepts,
+sources, links and derivations between them. Scimax lets you browse and
+search crucibles from VS Code, and shows the graph around the article you
+are reading.
+
+Scimax works through the crucible command-line tool, so install it first:
+
+#+begin_src bash
+pip install crucible-llm
+#+end_src
+
+Scimax uses the CLI's =--json= output, which needs a recent crucible. If
+VS Code does not find =crucible= on its =PATH= (for example when it lives in
+a virtual environment), set ~scimax.crucible.command~ to its full path.
+
+** ⚠️ The Crucible Panel
+
+The *Crucible* panel in the Scimax sidebar lists the crucibles in your
+workspace (marked /workspace/ and expanded), then the others in the global
+registry (=~/.crucible/registry.json=), which =crucible init= adds each new
+crucible to. Under each crucible:
+
+- *Concepts* lists the crucible's concepts with their article counts;
+  expand one to see the articles on it.
+- *Concept articles*, *Summaries*, *Comparisons* and *Methods* list the
+  articles of each kind by title.
+
+Click an article to open it. A crucible's row has buttons to search it, open
+its index (=index.org=) and sync its database. The panel's title bar has
+*Search All Crucibles* and *Refresh*.
+
+** ⚠️ Searching
+
+*Scimax: Search Crucible* ([[cmd:scimax.crucible.search]]) searches the
+crucible of the file you are in, the only crucible in the workspace, or one
+you pick. *Scimax: Search All Crucibles* ([[cmd:scimax.crucible.searchAll]])
+searches every registered crucible, and labels each result with the crucible
+it came from. Results show the article's title, kind and abstract; pick one
+to open it.
+
+~scimax.crucible.searchMode~ chooses the search: =auto= (the default) uses
+hybrid search when the crucible has embeddings and keyword search otherwise,
+=fts= is keyword search, =semantic= finds articles by meaning (it needs
+=crucible embed= and ollama), and =hybrid= combines the two.
+~scimax.crucible.searchLimit~ caps the number of results (20).
+
+** ⚠️ The Graph Around an Article
+
+In a crucible article, three commands show its neighbours in the knowledge
+graph. Each lists articles to pick from and opens the one you choose:
+
+| Command                           | Shows                                                         |
+|-----------------------------------+---------------------------------------------------------------|
+| [[cmd:scimax.crucible.backlinks]] | Articles that link to this one, with the text around the link |
+| [[cmd:scimax.crucible.related]]   | Related articles, with why (shared concepts, sources, links)  |
+| [[cmd:scimax.crucible.history]]   | The articles it was derived from, and those derived from it   |
+
+They appear in the command palette only when the active file is in a
+crucible.
+
+** ⚠️ Citations
+
+Crucible articles cite their sources with org-ref links (=citep:key=), and
+the entries live in the crucible's =.crucible/references.bib=. Opening an
+article loads that bibliography, so citation hovers, completion and
+navigation work in it (see [[file:19-references.org][References]]).
+
+** ⚠️ Keeping the Database Current
+
+Crucible's database is updated by =crucible sync=, not when a wiki file is
+saved. *Scimax: Sync Crucible Database* ([[cmd:scimax.crucible.sync]]) runs it
+for the current crucible (or the one whose sync button you click), refreshes
+the panel and reloads the bibliography. Run it after you or an agent edit
+articles, so search and the article graph see the changes.
+
+** ⚠️ Commands
+
+| Command                           | Description                               |
+|-----------------------------------+-------------------------------------------|
+| [[cmd:scimax.crucible.search]]    | Search a crucible                         |
+| [[cmd:scimax.crucible.searchAll]] | Search all registered crucibles           |
+| [[cmd:scimax.crucible.backlinks]] | Articles that link to the current article |
+| [[cmd:scimax.crucible.related]]   | Articles related to the current article   |
+| [[cmd:scimax.crucible.history]]   | Derivation history of the current article |
+| [[cmd:scimax.crucible.openIndex]] | Open a crucible's index.org               |
+| [[cmd:scimax.crucible.sync]]      | Run crucible sync                         |
+| [[cmd:scimax.crucible.refresh]]   | Refresh the Crucible panel                |
+
+None has a default keybinding.
+
+** ⚠️ Settings
+
+| Setting                     | Default    | Description                                 |
+|-----------------------------+------------+---------------------------------------------|
+| scimax.crucible.command     | "crucible" | The crucible CLI (full path if not on PATH) |
+| scimax.crucible.searchMode  | "auto"     | auto, fts, semantic or hybrid               |
+| scimax.crucible.searchLimit | 20         | Most search results shown                   |
+
+** ⚠️ Related Topics
+
+- [[file:19-references.org][References]] - Citations and bibliographies
+- [[file:18-database-search.org][Database Search]] - Scimax's own full-text and semantic search of your org files
+- [[file:39-link-graph.org][Link Graph]] - Visualize the links between your files
+- [[file:25-commands.org][Commands]] - All commands
+- [[file:26-configuration.org][Configuration]] - All settings
