@@ -75,11 +75,31 @@ navigation work in it (see [[file:19-references.org][References]]).
 
 ** ⚠️ Keeping the Database Current
 
-Crucible's database is updated by =crucible sync=, not when a wiki file is
-saved. *Scimax: Sync Crucible Database* ([[cmd:scimax.crucible.sync]]) runs it
-for the current crucible (or the one whose sync button you click), refreshes
-the panel and reloads the bibliography. Run it after you or an agent edit
-articles, so search and the article graph see the changes.
+Crucible's database is updated by =crucible sync=. When you save an article
+in a crucible wiki, Scimax runs it in the background once your saves pause,
+then refreshes the panel, the bibliography and the lint issues; set
+~scimax.crucible.syncOnSave~ to =false= to turn this off. A failed background
+sync shows a warning in the status bar (and in the Scimax log), not a pop-up.
+
+*Scimax: Sync Crucible Database* ([[cmd:scimax.crucible.sync]]) runs it for
+the current crucible (or the one whose sync button you click). Run it after
+an agent or another program edits articles, since only saves in VS Code
+trigger the automatic sync.
+
+** ⚠️ Lint Issues in the Problems Panel
+
+Scimax shows =crucible lint= issues in the Problems panel: broken links,
+citation keys missing from =references.bib=, articles without
+=ARTICLE_TYPE= or file tags, wiki files not yet synced, orphan articles and
+undigested sources. Each issue is on the file it concerns, at the broken link
+or citation when there is one; issues about the crucible as a whole (a
+concept with no article of its own) are on its =index.org=. Errors, warnings
+and notes keep crucible's severity.
+
+The issues are checked when you first open an article in a crucible and
+after each sync. *Scimax: Lint Crucible* ([[cmd:scimax.crucible.lint]], also
+on a crucible's right-click menu in the panel) checks again and opens the
+Problems panel. Set ~scimax.crucible.showLint~ to =false= to hide them.
 
 ** ⚠️ Commands
 
@@ -92,6 +112,7 @@ articles, so search and the article graph see the changes.
 | [[cmd:scimax.crucible.history]]   | Derivation history of the current article |
 | [[cmd:scimax.crucible.openIndex]] | Open a crucible's index.org               |
 | [[cmd:scimax.crucible.sync]]      | Run crucible sync                         |
+| [[cmd:scimax.crucible.lint]]      | Show crucible lint issues in Problems     |
 | [[cmd:scimax.crucible.refresh]]   | Refresh the Crucible panel                |
 
 None has a default keybinding.
@@ -103,6 +124,8 @@ None has a default keybinding.
 | scimax.crucible.command     | "crucible" | The crucible CLI (full path if not on PATH) |
 | scimax.crucible.searchMode  | "auto"     | auto, fts, semantic or hybrid               |
 | scimax.crucible.searchLimit | 20         | Most search results shown                   |
+| scimax.crucible.syncOnSave  | true       | Run crucible sync after saving an article   |
+| scimax.crucible.showLint    | true       | Show lint issues in the Problems panel      |
 
 ** ⚠️ Related Topics
 

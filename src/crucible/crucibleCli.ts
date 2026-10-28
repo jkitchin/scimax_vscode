@@ -41,6 +41,19 @@ export interface RegistryEntry {
     db: string | null;
 }
 
+/** An issue from `crucible lint --json`. */
+export interface CrucibleLintIssue {
+    type: string;
+    severity: 'error' | 'warning' | 'info';
+    message: string;
+    /** File the issue concerns, relative to the crucible root (absent for crucible-wide issues). */
+    path?: string;
+    /** `broken_link`: the link target as written. */
+    link?: string;
+    /** `missing_citation`: the cite key. */
+    key?: string;
+}
+
 export interface CrucibleHistory {
     derived_from: CrucibleArticle[];
     derivatives: CrucibleArticle[];
@@ -205,4 +218,28 @@ export function orgTitle(file: string): string | undefined {
     }
     const match = /^#\+TITLE:[ \t]*(.+?)[ \t]*$/im.exec(head);
     return match ? match[1] : undefined;
+}
+
+/** Where in a file's text a lint issue belongs: [line, start column, end column]. */
+export function lintIssueRange(issue: CrucibleLintIssue, text: string): [number, number, number] {
+    const needle = issue.link !== undefined ? `[[file:${issue.link}`
+        : issue.key !== undefined ? issue.key
+        : undefined;
+    if (needle) {
+        const lines = text.split(/\r?\n/);
+        for (let i = 0; i < lines.length; i++) {
+            const col = issue.key !== undefined ? citeKeyColumn(lines[i], issue.key) : lines[i].indexOf(needle);
+            if (col >= 0) {
+                return [i, col, col + needle.length];
+            }
+        }
+    }
+    return [0, 0, 0];
+}
+
+/** Column of `key` as a whole cite key on `line` (not inside a longer key), or -1. */
+function citeKeyColumn(line: string, key: string): number {
+    const escaped = key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const match = new RegExp(`(?<=[:,;\\s])${escaped}(?![\\w-])`).exec(line);
+    return match ? match.index : -1;
 }

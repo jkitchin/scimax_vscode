@@ -2602,6 +2602,11 @@
         "icon": "$(sync)"
       },
       {
+        "command": "scimax.crucible.lint",
+        "title": "Scimax: Lint Crucible (Show Issues in Problems)",
+        "icon": "$(checklist)"
+      },
+      {
         "command": "scimax.notes.refresh",
         "title": "Scimax: Refresh Notes Panel",
         "icon": "$(refresh)"
@@ -8683,6 +8688,16 @@
           "minimum": 1,
           "description": "Most results Scimax: Search Crucible shows."
         },
+        "scimax.crucible.syncOnSave": {
+          "type": "boolean",
+          "default": true,
+          "markdownDescription": "Run `crucible sync` in the background after you save an article in a crucible wiki, so search, the Crucible panel and lint issues stay current."
+        },
+        "scimax.crucible.showLint": {
+          "type": "boolean",
+          "default": true,
+          "markdownDescription": "Show `crucible lint` issues (broken links, missing citations and properties, undigested sources) in the Problems panel. They are checked when you first open an article in a crucible and after each sync."
+        },
         "scimax.org.notes.author": {
           "type": "string",
           "default": "",
@@ -9808,6 +9823,11 @@
           "command": "scimax.crucible.sync",
           "when": "view == scimax.crucible && viewItem == crucible",
           "group": "inline@3"
+        },
+        {
+          "command": "scimax.crucible.lint",
+          "when": "view == scimax.crucible && viewItem == crucible",
+          "group": "crucible@1"
         },
         {
           "command": "scimax.agenda.gotoItem",

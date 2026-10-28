@@ -3,7 +3,7 @@ import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
 import {
-    CrucibleCliError, findCrucibleRoot, listWikiArticles, orgTitle, runCrucible, runCrucibleJson,
+    CrucibleCliError, findCrucibleRoot, lintIssueRange, listWikiArticles, orgTitle, runCrucible, runCrucibleJson,
 } from '../crucibleCli';
 
 let tmp: string;
@@ -84,5 +84,25 @@ describe('runCrucible', () => {
     posixIt('returns the trimmed output without adding --json', async () => {
         const cli = fakeCli('echo "ran $@"');
         expect(await runCrucible(['sync'], { command: cli, cwd: tmp })).toBe('ran sync');
+    });
+});
+
+describe('lintIssueRange', () => {
+    const text = '#+TITLE: A\n\nSee [[file:missing.org][it]] and citep:smith2024,jones2020a.\n';
+
+    it('finds a broken link by its target', () => {
+        expect(lintIssueRange({ type: 'broken_link', severity: 'warning', message: '', link: 'missing.org' }, text))
+            .toEqual([2, 4, 22]);
+    });
+
+    it('finds a cite key, not a longer key that contains it', () => {
+        const issue = { type: 'missing_citation', severity: 'warning' as const, message: '', key: 'jones2020' };
+        expect(lintIssueRange(issue, text)).toEqual([0, 0, 0]);
+        expect(lintIssueRange({ ...issue, key: 'jones2020a' }, text)).toEqual([2, 49, 59]);
+        expect(lintIssueRange({ ...issue, key: 'smith2024' }, text)).toEqual([2, 39, 48]);
+    });
+
+    it('puts other issues on the first line', () => {
+        expect(lintIssueRange({ type: 'missing_tags', severity: 'warning', message: '' }, text)).toEqual([0, 0, 0]);
     });
 });

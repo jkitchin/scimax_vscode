@@ -5,7 +5,8 @@
  *
  * The data comes from the crucible CLI's JSON output (crucibleCli.ts) and
  * the wiki's org files. Opening a crucible article also loads the crucible's
- * references.bib, so its citations resolve.
+ * references.bib, so its citations resolve, and shows `crucible lint` issues
+ * in the Problems panel. Saving an article runs `crucible sync`.
  */
 
 import * as vscode from 'vscode';
@@ -13,9 +14,11 @@ import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
 import type { ReferenceManager } from '../references/referenceManager';
+import { extensionLogger as log } from '../utils/logger';
 import {
-    ARTICLE_TYPES, CrucibleArticle, CrucibleCliError, CrucibleConcept, CrucibleHistory, RegistryEntry,
-    SearchMode, cruciblePaths, findCrucibleRoot, listWikiArticles, runCrucible, runCrucibleJson,
+    ARTICLE_TYPES, CrucibleArticle, CrucibleCliError, CrucibleConcept, CrucibleHistory, CrucibleLintIssue,
+    RegistryEntry, SearchMode, cruciblePaths, findCrucibleRoot, lintIssueRange, listWikiArticles, runCrucible,
+    runCrucibleJson,
 } from './crucibleCli';
 
 interface Crucible {
@@ -38,6 +41,8 @@ function config() {
         command: c.get<string>('command', 'crucible') || 'crucible',
         searchMode: c.get<SearchMode>('searchMode', 'auto'),
         searchLimit: c.get<number>('searchLimit', 20),
+        syncOnSave: c.get<boolean>('syncOnSave', true),
+        showLint: c.get<boolean>('showLint', true),
     };
 }
 
@@ -285,6 +290,67 @@ async function showHistory(): Promise<void> {
 }
 
 // =============================================================================
+// Lint issues in the Problems panel
+// =============================================================================
+
+const SEVERITY: Record<CrucibleLintIssue['severity'], vscode.DiagnosticSeverity> = {
+    error: vscode.DiagnosticSeverity.Error,
+    warning: vscode.DiagnosticSeverity.Warning,
+    info: vscode.DiagnosticSeverity.Information,
+};
+
+class CrucibleLint {
+    private collection = vscode.languages.createDiagnosticCollection('crucible');
+    /** Files given diagnostics, by crucible root, so a re-lint can clear them. */
+    private files = new Map<string, vscode.Uri[]>();
+
+    /** Run `crucible lint` and show its issues; crucible-wide ones go on index.org. */
+    async lint(root: string): Promise<void> {
+        const issues = await cli<CrucibleLintIssue[]>(['lint'], root);
+        this.clear(root);
+        if (!config().showLint) {
+            return;
+        }
+        const byFile = new Map<string, CrucibleLintIssue[]>();
+        for (const issue of issues) {
+            const file = issue.path ? path.join(root, issue.path) : cruciblePaths(root).index;
+            byFile.set(file, [...(byFile.get(file) ?? []), issue]);
+        }
+        const uris: vscode.Uri[] = [];
+        for (const [file, fileIssues] of byFile) {
+            let text = '';
+            try {
+                text = fs.readFileSync(file, 'utf8');
+            } catch {
+                // A missing file (e.g. a deleted article) still gets its issue on line 1.
+            }
+            const uri = vscode.Uri.file(file);
+            this.collection.set(uri, fileIssues.map(issue => {
+                const [line, start, end] = lintIssueRange(issue, text);
+                const diagnostic = new vscode.Diagnostic(
+                    new vscode.Range(line, start, line, end), issue.message, SEVERITY[issue.severity]);
+                diagnostic.source = 'crucible';
+                diagnostic.code = issue.type;
+                return diagnostic;
+            }));
+            uris.push(uri);
+        }
+        this.files.set(root, uris);
+    }
+
+    clear(root: string): void {
+        for (const uri of this.files.get(root) ?? []) {
+            this.collection.delete(uri);
+        }
+        this.files.delete(root);
+    }
+
+    dispose(): void {
+        this.collection.dispose();
+    }
+}
+
+// =============================================================================
 // Tree view
 // =============================================================================
 
@@ -395,7 +461,9 @@ class CrucibleTreeProvider implements vscode.TreeDataProvider<CrucibleNode> {
 
 export function registerCrucible(context: vscode.ExtensionContext, referenceManager?: ReferenceManager): void {
     const tree = new CrucibleTreeProvider();
+    const lint = new CrucibleLint();
     const loadedBibliographies = new Set<string>();
+    const opened = new Set<string>();
 
     /** Load the crucible's references.bib so citations in its articles resolve. */
     const loadBibliography = async (root: string, reload = false) => {
@@ -407,21 +475,94 @@ export function registerCrucible(context: vscode.ExtensionContext, referenceMana
         await referenceManager.addBibliographyFile(bib);
     };
 
+    /** Lint a crucible in the background; failures are logged, not shown. */
+    const lintQuietly = (root: string) => {
+        lint.lint(root).catch(error => log.warn(`crucible lint failed in ${root}`, { error: String(error) }));
+    };
+
     const onEditor = (editor: vscode.TextEditor | undefined) => {
         const uri = editor?.document.uri;
         const root = uri?.scheme === 'file' ? findCrucibleRoot(uri.fsPath) : undefined;
         void vscode.commands.executeCommand('setContext', 'scimax.inCrucible', !!root);
         if (root) {
             void loadBibliography(root);
+            if (!opened.has(root)) {
+                opened.add(root);
+                lintQuietly(root);
+            }
         }
     };
     onEditor(vscode.window.activeTextEditor);
 
+    // ---- Sync ----------------------------------------------------------------
+
+    const syncing = new Set<string>();
+    const syncAgain = new Set<string>();
+    let reportedMissingCli = false;
+
+    /**
+     * Run `crucible sync`, then refresh the panel, bibliography and lint
+     * issues. A sync asked for while one runs in the same crucible runs after it.
+     */
+    const syncCrucible = async (root: string, name: string, quiet: boolean): Promise<void> => {
+        if (syncing.has(root)) {
+            syncAgain.add(root);
+            return;
+        }
+        syncing.add(root);
+        try {
+            const run = () => runCrucible(['sync'], { command: config().command, cwd: root });
+            const output = quiet
+                ? await vscode.window.withProgress(
+                    { location: vscode.ProgressLocation.Window, title: `Syncing ${name}` }, run)
+                : await vscode.window.withProgress(
+                    { location: vscode.ProgressLocation.Notification, title: `Syncing ${name}` }, run);
+            vscode.window.setStatusBarMessage(output.split('\n').pop() || `Synced ${name}`, 5000);
+            tree.refresh();
+            await loadBibliography(root, true);
+            lintQuietly(root);
+        } catch (error) {
+            const missingCli = error instanceof CrucibleCliError && error.notFound;
+            if (!quiet || (missingCli && !reportedMissingCli)) {
+                reportedMissingCli ||= missingCli;
+                await showCliError(error);
+            } else {
+                log.warn(`crucible sync failed in ${root}`, { error: String(error) });
+                vscode.window.setStatusBarMessage(`$(warning) crucible sync failed in ${name}`, 5000);
+            }
+        } finally {
+            syncing.delete(root);
+            if (syncAgain.delete(root)) {
+                void syncCrucible(root, name, quiet);
+            }
+        }
+    };
+
+    // Saving a wiki article syncs its crucible, once saves pause.
+    const saveTimers = new Map<string, NodeJS.Timeout>();
+    const onSave = (document: vscode.TextDocument) => {
+        if (!config().syncOnSave || document.uri.scheme !== 'file' || !document.fileName.endsWith('.org')) {
+            return;
+        }
+        const root = findCrucibleRoot(document.fileName);
+        if (!root || !document.fileName.startsWith(cruciblePaths(root).wiki + path.sep)) {
+            return;
+        }
+        clearTimeout(saveTimers.get(root));
+        saveTimers.set(root, setTimeout(() => {
+            saveTimers.delete(root);
+            void syncCrucible(root, path.basename(root), true);
+        }, 1500));
+    };
+
     const nodeCrucible = (node?: CrucibleNode) => node?.kind === 'crucible' ? node.crucible : undefined;
 
     context.subscriptions.push(
+        lint,
+        { dispose: () => saveTimers.forEach(timer => clearTimeout(timer)) },
         vscode.window.registerTreeDataProvider('scimax.crucible', tree),
         vscode.window.onDidChangeActiveTextEditor(onEditor),
+        vscode.workspace.onDidSaveTextDocument(onSave),
         vscode.workspace.onDidChangeWorkspaceFolders(() => tree.refresh()),
         vscode.commands.registerCommand('scimax.crucible.refresh', () => tree.refresh()),
         vscode.commands.registerCommand('scimax.crucible.search', (node?: CrucibleNode) => search(nodeCrucible(node), false)),
@@ -443,16 +584,20 @@ export function registerCrucible(context: vscode.ExtensionContext, referenceMana
         }),
         vscode.commands.registerCommand('scimax.crucible.sync', async (node?: CrucibleNode) => {
             const crucible = nodeCrucible(node) ?? await chooseCrucible('Sync which crucible?');
+            if (crucible) {
+                await syncCrucible(crucible.root, crucible.name, false);
+            }
+        }),
+        vscode.commands.registerCommand('scimax.crucible.lint', async (node?: CrucibleNode) => {
+            const crucible = nodeCrucible(node) ?? await chooseCrucible('Lint which crucible?');
             if (!crucible) {
                 return;
             }
             try {
-                const output = await vscode.window.withProgress(
-                    { location: vscode.ProgressLocation.Notification, title: `Syncing ${crucible.name}` },
-                    () => runCrucible(['sync'], { command: config().command, cwd: crucible.root }));
-                vscode.window.setStatusBarMessage(output.split('\n').pop() || `Synced ${crucible.name}`, 5000);
-                tree.refresh();
-                await loadBibliography(crucible.root, true);
+                await vscode.window.withProgress(
+                    { location: vscode.ProgressLocation.Window, title: `Linting ${crucible.name}` },
+                    () => lint.lint(crucible.root));
+                await vscode.commands.executeCommand('workbench.actions.view.problems');
             } catch (error) {
                 await showCliError(error);
             }
