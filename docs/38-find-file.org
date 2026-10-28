@@ -67,18 +67,19 @@ Press ~M-o~ (Option+O on Mac) to open the actions menu. Then press a speed key t
 
 Press ~M-o~ or ~Esc~ to cancel the actions menu.
 
-** New Windows (C-x 5)
+** 👀 New Windows (C-x 5)
 
 The Emacs frame commands open VS Code /floating editor windows/: separate OS
 windows that belong to the same VS Code window, so they keep the project,
 sidebar and extensions.
 
-| Key       | Command                                  | Emacs                   | Action                                   |
-|-----------+------------------------------------------+-------------------------+------------------------------------------|
-| ~C-x 5 f~ | =scimax.findFileOtherWindow=             | ~find-file-other-frame~ | Find a file and open it in a new window  |
-| ~C-x 5 2~ | =workbench.action.copyEditorToNewWindow= | ~make-frame-command~    | Show the current file in a new window    |
-| ~C-x 5 0~ | =workbench.action.closeWindow=           | ~delete-frame~          | Close the window you are in              |
-| ~C-x 5 o~ | =workbench.action.switchWindow=          | ~other-frame~           | Pick an open window to switch to         |
+| Key       | Command                                    | Emacs                          | Action                                                |
+|-----------+--------------------------------------------+--------------------------------+-------------------------------------------------------|
+| ~C-x 5 f~ | =scimax.findFileOtherWindow=               | ~find-file-other-frame~        | Find a file and open it in a new window               |
+| ~C-x 5 b~ | =scimax.fuzzySearchRecentFilesOtherWindow= | ~switch-to-buffer-other-frame~ | Pick a recent org/md file and open it in a new window |
+| ~C-x 5 2~ | =workbench.action.copyEditorToNewWindow=   | ~make-frame-command~           | Show the current file in a new window                 |
+| ~C-x 5 0~ | =workbench.action.closeWindow=             | ~delete-frame~                 | Close the window you are in                           |
+| ~C-x 5 o~ | =workbench.action.switchWindow=            | ~other-frame~                  | Pick an open window to switch to                      |
 
 ~C-x 5 0~ in the main window closes the whole VS Code window, as
 ~delete-frame~ does for the last frame.

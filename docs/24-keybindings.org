@@ -91,7 +91,7 @@ Search the documentation for keywords. Enter one or more search terms to find re
 
 Select a result to see details or open the documentation file at that location.
 
-* Emacs-Style Editor Keybindings
+* 👀 Emacs-Style Editor Keybindings
 
 | Key           | Action                             |
 |---------------+------------------------------------|
@@ -110,6 +110,7 @@ Select a result to see details or open the documentation file at that location.
 | C-x 0         | Close all editors                  |
 | C-x o         | Focus next editor group            |
 | C-x 5 f       | Find file in a new window          |
+| C-x 5 b       | Recent file in a new window        |
 | C-x 5 2       | Current file in a new window       |
 | C-x 5 0       | Close this window                  |
 | C-x 5 o       | Switch to another window           |

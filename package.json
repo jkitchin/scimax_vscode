@@ -2069,6 +2069,10 @@
         "title": "Scimax: Recent Files"
       },
       {
+        "command": "scimax.fuzzySearchRecentFilesOtherWindow",
+        "title": "Scimax: Recent Files in New Window"
+      },
+      {
         "command": "scimax.recenterTopBottom",
         "title": "Scimax: Recenter Top Bottom"
       },
@@ -4179,6 +4183,12 @@
         "command": "scimax.findFileOtherWindow",
         "key": "ctrl+x 5 f",
         "mac": "ctrl+x 5 f",
+        "when": "!terminalFocus"
+      },
+      {
+        "command": "scimax.fuzzySearchRecentFilesOtherWindow",
+        "key": "ctrl+x 5 b",
+        "mac": "ctrl+x 5 b",
         "when": "!terminalFocus"
       },
       {

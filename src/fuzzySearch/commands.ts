@@ -380,8 +380,9 @@ interface RecentFileItem extends vscode.QuickPickItem {
 /**
  * Fuzzy-search recently opened org/md files tracked in ScimaxDb.
  * Files are ordered by mtime (most recently modified first).
+ * With newWindow (C-x 5 b) the chosen file opens in a new floating window.
  */
-async function fuzzySearchRecentFiles(): Promise<void> {
+async function fuzzySearchRecentFiles(newWindow = false): Promise<void> {
     const db = await getDatabase();
     if (!db) {
         vscode.window.showWarningMessage('Scimax database not available');
@@ -418,7 +419,9 @@ async function fuzzySearchRecentFiles(): Promise<void> {
     }
 
     const quickPick = vscode.window.createQuickPick<RecentFileItem>();
-    quickPick.placeholder = 'Recent org/md files (type to filter)';
+    quickPick.placeholder = newWindow
+        ? 'Recent org/md files, open in new window (type to filter)'
+        : 'Recent org/md files (type to filter)';
     quickPick.matchOnDescription = true;
     quickPick.items = items;
 
@@ -426,14 +429,20 @@ async function fuzzySearchRecentFiles(): Promise<void> {
         quickPick.items = filterItems(items, value);
     });
 
-    quickPick.onDidAccept(() => {
+    quickPick.onDidAccept(async () => {
         const selected = quickPick.selectedItems[0];
-        if (selected) {
-            vscode.workspace.openTextDocument(selected.filePath).then(doc =>
-                vscode.window.showTextDocument(doc)
-            );
-        }
         quickPick.hide();
+        if (!selected) return;
+        const doc = await vscode.workspace.openTextDocument(selected.filePath);
+        await vscode.window.showTextDocument(doc);
+        if (newWindow) {
+            try {
+                await vscode.commands.executeCommand('workbench.action.moveEditorToNewWindow');
+            } catch {
+                // Floating editor windows need a newer VS Code; the file stays open here.
+                vscode.window.showInformationMessage('This VS Code cannot open editors in a new window.');
+            }
+        }
     });
 
     quickPick.onDidHide(() => quickPick.dispose());
@@ -460,6 +469,7 @@ export function registerFuzzySearchCommands(context: vscode.ExtensionContext): v
         vscode.commands.registerCommand('scimax.fuzzySearch', fuzzySearch),
         vscode.commands.registerCommand('scimax.fuzzySearchOpenFiles', fuzzySearchOpenFiles),
         vscode.commands.registerCommand('scimax.fuzzySearchOutline', fuzzySearchOutline),
-        vscode.commands.registerCommand('scimax.fuzzySearchRecentFiles', fuzzySearchRecentFiles)
+        vscode.commands.registerCommand('scimax.fuzzySearchRecentFiles', () => fuzzySearchRecentFiles()),
+        vscode.commands.registerCommand('scimax.fuzzySearchRecentFilesOtherWindow', () => fuzzySearchRecentFiles(true))
     );
 }
