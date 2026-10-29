@@ -125,7 +125,7 @@ describe('live reload', () => {
             .replace(/^<script>/, '').replace(/<\/script>$/, '');
         vm.runInNewContext(`window = this.window; ${script.replace(/window\./g, 'this.window.')}`, sandbox);
         const version_ = (text: string) => vm.runInNewContext(text.replace(/window\./g, 'w.'), { w: window });
-        return { calls, tick: () => tick(), versionScript: version_ };
+        return { calls, window, tick: () => tick(), versionScript: version_ };
     }
 
     it('polls the version script', () => {
@@ -141,6 +141,17 @@ describe('live reload', () => {
         p.versionScript(liveReloadVersionScript('v2', 4));
         expect(p.calls.reloads).toBe(1);
         expect(p.calls.hash).toBe('file:///shows/deck.html#4');
+    });
+
+    it('waits while the talk is being recorded', () => {
+        const p = page('v1');
+        let recording = true;
+        p.window.__marpHoldReload = () => recording;
+        p.versionScript(liveReloadVersionScript('v2', 4));
+        expect(p.calls.reloads).toBe(0);
+        recording = false;
+        p.versionScript(liveReloadVersionScript('v2', 4));
+        expect(p.calls.reloads).toBe(1);
     });
 
     it('reloads without a slide', () => {

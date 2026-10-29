@@ -33,6 +33,8 @@ const TIMER_MARK = 'marp-present: talk timer';
 const SHOW_MARK = 'marp-present: show tools';
 const EDIT_MARK = 'marp-present: slide editing';
 const SLIDES_MARK = 'marp-present: slide structure';
+const CAPTIONS_MARK = 'marp-present: live captions';
+const RECORDER_MARK = 'marp-present: record the talk';
 /** The start of Marp CLI's slideshow (bespoke) script, which takes the slides as they are when it runs. */
 const BESPOKE_SCRIPT = /<script>(?=\/\*!! License: [^\n]*marp-cli)/;
 const INK_EMPTY = '<script type="application/json" id="marp-ink-data">{}</script>';
@@ -63,6 +65,10 @@ export interface PresenterAssets {
     edit: string;
     /** Slides added and hidden in the slideshow; runs before Marp's own script. */
     slides: string;
+    /** Live captions from the microphone. */
+    captions: string;
+    /** Recording the talk as a video. */
+    recorder: string;
 }
 
 /** What inlining did. */
@@ -318,7 +324,8 @@ export function addSlidesScript(html: string, assets: PresenterAssets): string {
  * Add the presenter tools (and the Python cell runner, if the deck has run
  * cells) before the last </body>. Scripts already in the page are not added again.
  * The talk timer is always added: without `window.__MARP_TIMER__` it shows
- * nothing until one is added in the slideshow.
+ * nothing until one is added in the slideshow. So are live captions and
+ * recording, which show nothing until they are turned on.
  */
 export function addPresenterScripts(html: string, assets: PresenterAssets): string {
     html = addSlidesScript(html, assets);
@@ -335,6 +342,12 @@ export function addPresenterScripts(html: string, assets: PresenterAssets): stri
     }
     if (!html.includes(TIMER_MARK)) {
         files.push(assets.timer);
+    }
+    if (!html.includes(CAPTIONS_MARK)) {
+        files.push(assets.captions);
+    }
+    if (!html.includes(RECORDER_MARK)) {
+        files.push(assets.recorder);
     }
     if (hasRunCells(html) && !html.includes(PYCELLS_MARK)) {
         files.push(assets.codemirror, assets.pycells);
@@ -423,6 +436,8 @@ export function presenterAssets(mediaDir: string): PresenterAssets {
         show: path.join(mediaDir, 'showtools.js'),
         edit: path.join(mediaDir, 'editor.js'),
         slides: path.join(mediaDir, 'slides.js'),
+        captions: path.join(mediaDir, 'captions.js'),
+        recorder: path.join(mediaDir, 'recorder.js'),
     };
 }
 

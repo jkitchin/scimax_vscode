@@ -6,7 +6,8 @@
  *   z        undo the last stroke on this slide
  *   r        toggle the eraser: drag over strokes to remove them (z puts them back)
  *   c        clear this slide        shift+C  clear every slide
- *   l        toggle the laser pointer (a red dot with a fading tail that follows the mouse, also over widgets)
+ *   l        toggle the laser pointer (a dot with a fading tail that follows the mouse, also over widgets);
+ *            while it is on, 1-5 pick its colour: red, blue, green, black, yellow (remembered)
  *   n        new sticky note at the mouse: type Markdown, click away to render it; drag its bar
  *            to move it, ● picks a colour (yellow, pink, blue, green, orange), – shrinks it to a
  *            📝 icon (click to reopen), × deletes it; right-click a note for the same options
@@ -58,6 +59,11 @@
     { color: "#111827", width: 4 },
     { color: "rgba(250, 204, 21, 0.45)", width: 22 },       // highlighter
   ];
+  // The laser pointer's colours, as "r,g,b": the pens' colours
+  const LASERS = [["255,32,48", "red"], ["37,99,235", "blue"], ["5,150,105", "green"], ["17,24,39", "black"], ["250,204,21", "yellow"]];
+  const LASER_PREF = "marp-laser-colour";
+  let laserColour = 0;
+  try { laserColour = Math.min(LASERS.length - 1, Math.max(0, +localStorage.getItem(LASER_PREF) || 0)); } catch (e) { /* storage blocked */ }
   const KEY = "marp-ink:" + location.pathname;
   try {                                               // ink saved by the first (DOE) version
     const old = "doe-slides-ink:" + location.pathname;
@@ -85,9 +91,13 @@
   Object.assign(laser.style, {
     position: "fixed", left: "0", top: "0", zIndex: "100001", pointerEvents: "none", display: "none",
     width: "22px", height: "22px", margin: "-11px 0 0 -11px", borderRadius: "50%",
-    background: "radial-gradient(circle, #fff 0 18%, #ff2030 32%, rgba(255,32,48,.55) 60%, rgba(255,32,48,0) 72%)",
-    boxShadow: "0 0 14px 6px rgba(255,32,48,.45)",
   });
+  function paintLaser() {
+    const c = LASERS[laserColour][0];
+    laser.style.background = `radial-gradient(circle, #fff 0 18%, rgb(${c}) 32%, rgba(${c},.55) 60%, rgba(${c},0) 72%)`;
+    laser.style.boxShadow = `0 0 14px 6px rgba(${c},.45)`;
+  }
+  paintLaser();
   const trail = document.createElement("canvas");     // the laser's fading tail
   Object.assign(trail.style, {
     position: "fixed", inset: "0", zIndex: "100000", pointerEvents: "none", display: "none",
@@ -112,6 +122,7 @@
     toast.textContent = msg; toast.style.opacity = "1";
     clearTimeout(toastTimer); toastTimer = setTimeout(() => { toast.style.opacity = "0"; }, 3500);
   };
+  window.__marpSay = say;                             // captions.js and recorder.js report here too
   const ctx = canvas.getContext("2d");
 
   let ink = {}, notes = {};           // per slide ("1", "2", ...): strokes, and sticky notes
@@ -761,10 +772,11 @@
     tctx.setTransform(scale, 0, 0, scale, 0, 0);
     tctx.clearRect(0, 0, innerWidth, innerHeight);
     tctx.lineCap = "round";
-    tctx.shadowColor = "rgba(255,32,48,.6)"; tctx.shadowBlur = 10;
+    const c = LASERS[laserColour][0];
+    tctx.shadowColor = `rgba(${c},.6)`; tctx.shadowBlur = 10;
     for (let i = 1; i < tail.length; i++) {
       const life = 1 - (now - tail[i].t) / TRAIL_MS;
-      tctx.strokeStyle = `rgba(255,32,48,${(0.85 * life).toFixed(3)})`;
+      tctx.strokeStyle = `rgba(${c},${(0.85 * life).toFixed(3)})`;
       tctx.lineWidth = 2 + 8 * life;
       tctx.beginPath(); tctx.moveTo(tail[i - 1].x, tail[i - 1].y); tctx.lineTo(tail[i].x, tail[i].y); tctx.stroke();
     }
@@ -784,7 +796,13 @@
     laser.style.display = trail.style.display = on ? "block" : "none";
     if (!on) { tail = []; tctx.clearRect(0, 0, trail.width, trail.height); }
     document.documentElement.classList.toggle("laser-on", on);
+    if (on) say(`Laser pointer (${LASERS[laserColour][1]}): 1-5 change its colour, l turns it off`);
     iframes().forEach(f => { try { f.contentDocument.documentElement.classList.toggle("laser-on", on); } catch (e) { /* cross-origin */ } });
+  }
+  function setLaserColour(i) {
+    laserColour = i;
+    try { localStorage.setItem(LASER_PREF, String(i)); } catch (e) { /* storage blocked */ }
+    paintLaser();
   }
   // Widgets live in same-origin iframes, which swallow mouse and key events: follow the
   // mouse into them (scaled by how Marp has resized the slide) and forward the keys.
@@ -920,6 +938,9 @@
       ink[id].pop(); save(); redraw();
     } else if (enabled && k >= "1" && k <= String(PENS.length)) {
       pen = +k - 1;
+    } else if (laserOn && k >= "1" && k <= String(LASERS.length)) {
+      setLaserColour(+k - 1);
+      say("Laser pointer: " + LASERS[laserColour][1]);
     } else return false;
     showBadge();
     return true;
@@ -964,6 +985,7 @@
       { swatches: true },
       { label: "Eraser", key: "r", check: erasing, off: !total().strokes && !erasing, run: () => act("r") },
       { label: "Laser pointer", key: "l", check: laserOn, run: () => act("l") },
+      { laserSwatches: true },
       { label: "Add a note here", key: "n", run: () => { lastX = menuX; lastY = menuY; act("n"); } },
       ...(window.__marpEdits && window.__marpEdits.canEdit ? [{ label: "Edit text and layout", key: "d", check: window.__marpEdits.editing, run: () => window.__marpEdits.toggle() }] : []),
       ...(window.__marpEdits && window.__marpEdits.slideItems ? window.__marpEdits.slideItems() : []),
@@ -983,6 +1005,10 @@
         run: () => fs ? document.exitFullscreen() : document.documentElement.requestFullscreen().catch(() => {}) },
       // timer.js: a deck without a timer can have one added (one it has is right-clicked on itself)
       ...(window.__marpTimer && !window.__marpTimer.active() ? [{ label: "Add a talk timer…", key: MAC ? "⌥T" : "Alt+T", run: () => window.__marpTimer.add() }] : []),
+      // captions.js and recorder.js: live captions, recording the talk
+      ...(window.__marpCaptions || window.__marpRecorder ? ["-"] : []),
+      ...(window.__marpCaptions ? window.__marpCaptions.menuItems() : []),
+      ...(window.__marpRecorder ? window.__marpRecorder.menuItems() : []),
       { note: "Hold the mouse button on a slide for a spotlight · Shift+right-click for the browser's menu" },
     ];
   }
@@ -1007,6 +1033,16 @@
           b.title = (i === 4 ? "highlighter" : "pen colour") + " (" + (i + 1) + ")";
           if (enabled && pen === i) b.className = "on";
           b.addEventListener("click", () => { closeMenu(); pen = i; if (!enabled) act("a"); else showBadge(); });
+          row.appendChild(b);
+        });
+      } else if (item.laserSwatches) {
+        row = document.createElement("div"); row.className = "sw";
+        LASERS.forEach(([c, name], i) => {
+          const b = document.createElement("button");
+          b.style.background = `rgb(${c})`;
+          b.title = "laser " + name + " (l, then " + (i + 1) + ")";
+          if (laserOn && laserColour === i) b.className = "on";
+          b.addEventListener("click", () => { closeMenu(); setLaserColour(i); if (!laserOn) act("l"); });
           row.appendChild(b);
         });
       } else {

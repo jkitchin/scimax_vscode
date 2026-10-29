@@ -590,7 +590,7 @@ Code, use the CLI: ~scimax marp build talk.md --open~ (see
 [[file:30-cli.org::*Marp Slides][Marp Slides in the CLI]]). It uses the same
 scripts and makes the same HTML as the =h= export.
 
-** Keys in the slideshow
+** 👀 Keys in the slideshow
 
 | Key                       | Effect                                                                         |
 |---------------------------+--------------------------------------------------------------------------------|
@@ -599,7 +599,8 @@ scripts and makes the same HTML as the =h= export.
 | =r=                       | Eraser: drag over strokes to remove them; =r= again turns it off               |
 | =z=                       | Undo the last stroke (or the last erase) on this slide                         |
 | =c= / =C=                 | Clear this slide / every slide                                                 |
-| =l=                       | Laser pointer: a red dot that follows the mouse                                |
+| =l=                       | Laser pointer: a dot that follows the mouse                                    |
+| =1= to =5=                | Laser colour while the laser is on: red, blue, green, black, yellow            |
 | =n=                       | New sticky note at the mouse; type Markdown, click away to render it           |
 | Right-click               | A menu with all of these (Shift+right-click gives the browser's own menu)      |
 | Hold the mouse on a slide | Spotlight: the screen darkens except a circle around the cursor (not on        |
@@ -617,6 +618,8 @@ scripts and makes the same HTML as the =h= export.
 | =g=                       | Go to a slide: type a number or words from its title or text, then Enter       |
 | A number, then Enter      | Jump to that slide (=12= Enter goes to slide 12)                               |
 | =d=                       | Edit the slides' text and layout in place (see below)                          |
+| =v=                       | Live captions on or off (see below)                                            |
+| =V= (=Shift+V=)           | Start recording the talk / stop and save the video (see below)                 |
 | =Cmd+P= / =Ctrl+P=        | Print; "Save as PDF" keeps every slide's ink as vector graphics                |
 
 Marp's own keys (=F= full screen, =P= presenter view, arrows) still work, also
@@ -715,6 +718,83 @@ adds one and turns on the presenter tools.
   number or words from a slide's title or text, use the arrows, and press
   Enter. Without the list, type a slide number and press Enter: =1= =2=
   Enter goes to slide 12.
+
+** ⚠️ Live captions
+
+=v= shows what you say as captions at the bottom of the slides, two lines at
+a time. Words still being recognised are grey. The captions fade out after a
+pause. Press =v= again to turn them off. "Captions at the top" in the
+right-click menu moves them out of the way of a slide's footer.
+
+The captions use the browser's speech recognition. Chrome and Edge send the
+audio to their speech service, so they need a network connection. Firefox has
+no speech recognition. The first time, Chrome asks to use the microphone.
+The language comes from the deck's ~lang:~ directive (for example
+~lang: de-DE~), or from the browser's language if the deck has none.
+
+Press =v= in the window you are working in. If you present from Marp's
+presenter view (=P=), press it there: the presenter view listens, and the
+captions show on the audience screen and, smaller, in the presenter view.
+Live reload keeps them on, but Chrome may ask for the microphone again.
+
+Until the first words are heard, the caption bar says "Listening…". If
+something goes wrong, the bar says what it is instead: the microphone is
+blocked, there is no microphone, or the speech service can't be reached. The
+browser console (=Cmd+Option+J=) logs each problem with a ~[marp-captions]~
+prefix. If the bar says "Listening…" but nothing appears while you speak,
+check which microphone Chrome uses: click the icon at the right of the
+address bar, or open ~chrome://settings/content/microphone~.
+
+Everything that is recognised is kept, with the time and the slide, so
+"Save transcript…" in the right-click menu writes it as Markdown, with one
+section per slide:
+
+#+begin_example
+## Slide 3: Reaction mechanism
+
+[00:04:12] The rate-limiting step here is the C–H activation.
+#+end_example
+
+The transcript grows over every talk given from the deck until "Clear
+transcript" empties it.
+
+** ⚠️ Recording the talk
+
+=V= (=Shift+V=) records the slideshow, the mouse and your voice as a video.
+Chrome asks you to share "this tab". Press =V= again to stop. Chrome then
+asks where to save the video (=<deck>-<date>-<time>.mp4=). If you cancel,
+"Save the recording…" in the right-click menu asks again, until the next
+recording.
+
+- *Format.* Chrome and Edge write MP4 (H.264 video, AAC audio) that QuickTime
+  and other players can play. Firefox writes WebM. The video is the size of
+  the tab when recording starts, at most 1080p. If the window changes size
+  later (for example going full screen), the picture is scaled to fit, with
+  black bars. A tab only sends a new frame when something changes, so a talk
+  made of slides gives a small file.
+- *Sound.* Your microphone is mixed with any sound the deck plays (videos,
+  audio). Captions and the recording share one microphone, so Chrome asks
+  for it once per page. Chrome does not remember the microphone permission
+  for slideshows opened from a file, so it asks again after a reload.
+- *The mouse.* A recording of a tab does not show the mouse pointer, so while
+  recording the slideshow draws a yellow ring around it, which shrinks when
+  you click. It is hidden while the laser pointer (=l=) is on. Turn it off
+  with "Highlight the mouse while recording" in the right-click menu.
+- *Captions.* Captions on the screen (=v=) are in the video. "Save captions of
+  the recording (.vtt)…" also saves what was said during the recording as
+  WebVTT subtitles, which video players and ffmpeg can use:
+  #+begin_src sh
+  ffmpeg -i talk.mp4 -i talk.vtt -c copy -c:s mov_text talk-captioned.mp4
+  #+end_src
+- *Presenter view.* Pressing =V= in Marp's presenter view asks which tab to
+  share: pick the slideshow. The presenter view shows =● REC= and the time,
+  and is not recorded itself.
+
+Start recording before you go full screen: the sharing dialog can take the
+browser out of full screen. The video stays in the browser until you stop.
+Closing the tab while recording asks first, and live reload waits until the
+recording is saved. If you stop with Chrome's own "Stop sharing" button, the
+video goes to the Downloads folder.
 
 ** Editing slides in the slideshow
 

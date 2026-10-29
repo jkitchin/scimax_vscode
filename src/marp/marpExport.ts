@@ -346,6 +346,8 @@ export function liveReloadScript(reload: LiveReload): string {
         `const url = ${url}, mine = ${version};` +
         'window.__marpLiveReload = (version, slide) => {' +
         'if (version === mine) return;' +
+        // Not while recording the talk (recorder.js): the next check after it is saved reloads
+        'if (window.__marpHoldReload && window.__marpHoldReload()) return;' +
         // An absolute URL: '#n' alone would resolve against the <base> (the deck's folder).
         "if (slide) history.replaceState(null, '', location.href.split('#')[0] + '#' + slide);" +
         'location.reload();' +

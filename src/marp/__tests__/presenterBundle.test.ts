@@ -46,11 +46,15 @@ beforeAll(() => {
         show: path.join(fake, 'showtools.js'),
         edit: path.join(fake, 'editor.js'),
         slides: path.join(fake, 'slides.js'),
+        captions: path.join(fake, 'captions.js'),
+        recorder: path.join(fake, 'recorder.js'),
     };
     fs.writeFileSync(assets.edit, '/* marp-present: slide editing */ window.E = 1;');
     fs.writeFileSync(assets.slides, '/* marp-present: slide structure */ window.S = 1;');
     fs.writeFileSync(assets.show, '/* marp-present: show tools for Marp HTML decks */ window.W = 1;');
     fs.writeFileSync(assets.timer, '/* marp-present: talk timer */ window.T = 1;');
+    fs.writeFileSync(assets.captions, '/* marp-present: live captions */ window.V = 1;');
+    fs.writeFileSync(assets.recorder, '/* marp-present: record the talk */ window.R = 1;');
     fs.writeFileSync(assets.presenter, '/* marp-present: presenter tools for Marp HTML decks */ window.P = 1;');
     fs.writeFileSync(assets.marked, 'var marked = {};');
     fs.writeFileSync(assets.pycells, '/* marp-present: live, editable Python cells in Marp slides */ window.C = 1;');
@@ -183,6 +187,16 @@ describe('talk timer', () => {
         const once = addPresenterScripts(page('<p>x</p>'), assets);
         expect(once).toContain('window.T = 1');
         expect(once.split('window.T = 1').length).toBe(2);
+        expect(addPresenterScripts(once, assets)).toBe(once);
+    });
+
+    it('always adds live captions and recording, once', () => {
+        const once = addPresenterScripts(page('<p>x</p>'), assets);
+        expect(once.split('window.V = 1').length).toBe(2);
+        expect(once.split('window.R = 1').length).toBe(2);
+        // the menu entries come from presenter.js, which must be in the page first
+        expect(once.indexOf('window.P = 1')).toBeLessThan(once.indexOf('window.V = 1'));
+        expect(once.indexOf('window.V = 1')).toBeLessThan(once.indexOf('window.R = 1'));
         expect(addPresenterScripts(once, assets)).toBe(once);
     });
 
@@ -353,6 +367,8 @@ describe('presenter settings', () => {
         expect(fs.readFileSync(path.join(MEDIA, 'showtools.js'), 'utf8')).toContain('marp-present: show tools');
         expect(fs.readFileSync(path.join(MEDIA, 'editor.js'), 'utf8')).toContain('marp-present: slide editing');
         expect(fs.readFileSync(path.join(MEDIA, 'slides.js'), 'utf8')).toContain('marp-present: slide structure');
+        expect(fs.readFileSync(path.join(MEDIA, 'captions.js'), 'utf8')).toContain('marp-present: live captions');
+        expect(fs.readFileSync(path.join(MEDIA, 'recorder.js'), 'utf8')).toContain('marp-present: record the talk');
     });
 });
 
