@@ -166,12 +166,13 @@ Toggle image overlays for all org files:
 
 
 ** ✅ Per-File Toggle
-CLOSED: [2026-01-17 Sat 09:54]
+CLOSED: [2026-10-30 Fri 07:58]
 
-Toggle image overlays for the current file only:
+Toggle image overlays for the current file only (like Emacs =org-toggle-inline-images=):
 
 - *Command:* Scimax: Toggle Image Overlays for Current File
 - *Command ID:* scimax.imageOverlays.toggleCurrentFile
+- *Keybinding:* =C-c C-x C-v=
 
 This is useful when you want overlays disabled for one specific large document but enabled globally.
 
@@ -234,17 +235,18 @@ Maximum height in pixels for thumbnail icons.
 #+END_SRC
 
 ** ✅ scimax.imageOverlays.renderMode
-CLOSED: [2026-01-17 Sat 09:31]
+CLOSED: [2026-10-30 Fri 07:58]
 
 *Type:* string (enum)
 *Default:* "gutter"
-*Options:* gutter, after, both
+*Options:* gutter, after, both, hover-only
 
 Controls where image thumbnails are displayed:
 
 - gutter - Show thumbnail in the editor gutter (line margin) - *recommended*
 - after - Show emoji and dimensions inline after the link text
 - both - Show both gutter thumbnail and inline decoration
+- hover-only - No decorations; the image only appears in the hover tooltip
 
 #+BEGIN_SRC json
 {
@@ -257,13 +259,12 @@ Controls where image thumbnails are displayed:
 - Use after if you prefer inline indicators
 - Use both for maximum visibility
 
-** ✅ scimax.imageOverlays.onlyWhenCursorNotInLink
-CLOSED: [2026-01-17 Sat 10:01]
+** 👀 scimax.imageOverlays.onlyWhenCursorNotInLink
 
 *Type:* boolean
 *Default:* true
 
-Hide the overlay when your cursor is inside the image link. This prevents the thumbnail from obscuring the link text you're editing.
+Hide the inline overlay (the =after= marker) when your cursor is inside the image link. This prevents the overlay from obscuring the link text you're editing. Gutter icons are never hidden: they sit beside the text, not over it.
 
 #+BEGIN_SRC json
 {
@@ -445,10 +446,9 @@ If image overlays aren't displaying:
    - Review scimax.imageOverlays.excludePatterns setting
    - Ensure your image path doesn't match an exclude pattern
 
-** ✅ Overlays Disappear When Editing
-CLOSED: [2026-01-17 Sat 09:51]
+** 👀 Overlays Disappear When Editing
 
-This is *normal behavior* when scimax.imageOverlays.onlyWhenCursorNotInLink is true (default). The overlay hides when your cursor is inside the link to prevent obscuring the text you're editing.
+This is *normal behavior* for the inline (=after=) overlay when scimax.imageOverlays.onlyWhenCursorNotInLink is true (default). The overlay hides when your cursor is inside the link to prevent obscuring the text you're editing. Gutter icons stay visible.
 
 To always show overlays:
 
@@ -457,6 +457,17 @@ To always show overlays:
   "scimax.imageOverlays.onlyWhenCursorNotInLink": false
 }
 #+END_SRC
+
+** ⚠️ Hover Preview Size
+
+The image in a hover is scaled to fit inside 480×260 pixels, keeping its shape, so the whole image is visible without scrolling. Small images are not enlarged. The first line shows the name, the pixel size, and the actions:
+
+- *Open* opens the image in an editor tab, where you can zoom it.
+- *Reveal* shows the file in Finder (or the system file manager).
+
+** ⚠️ Gutter Icon Looks Blank
+
+Raster gutter icons have their uniform margins trimmed (when ImageMagick is installed) and are drawn with a thin grey frame. A mostly white image, such as a plot from a =#+RESULTS:= block, therefore still shows as a framed box in a light theme. VS Code gives a gutter icon a fixed slot about one line tall, and an extension can't enlarge it, so a plot's detail won't be legible there. Hover over the link to see the image, or use Open in the hover.
 
 ** ✅ Performance Issues
 CLOSED: [2026-01-17 Sat 09:51]

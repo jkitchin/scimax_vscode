@@ -5,6 +5,7 @@
 
 import * as vscode from 'vscode';
 import * as path from 'path';
+import { imageHoverMarkdown } from './imageHover';
 import * as fs from 'fs';
 import { ORG_ENTITIES } from '../parser/orgEntities';
 import {
@@ -593,10 +594,11 @@ export class OrgHoverProvider implements vscode.HoverProvider {
                 // Use file URI for the image
                 const imageUri = vscode.Uri.file(absolutePath);
 
-                // Add image with max dimensions for readability
-                markdown.appendMarkdown(`**${description || path.basename(imagePath)}**\n\n`);
-                markdown.appendMarkdown(`<img src="${imageUri.toString()}" width="400" />\n\n`);
-                markdown.appendMarkdown(`*${path.basename(imagePath)}* (${sizeKB} KB)`);
+                // Image fitted to the hover, with the actions above it
+                markdown.appendMarkdown(imageHoverMarkdown(absolutePath, imageUri, {
+                    title: description || path.basename(imagePath),
+                    info: `${sizeKB} KB`,
+                }));
 
                 const range = new vscode.Range(
                     position.line, startCol,
@@ -633,9 +635,7 @@ export class OrgHoverProvider implements vscode.HoverProvider {
                 const sizeKB = (stats.size / 1024).toFixed(1);
                 const imageUri = vscode.Uri.file(absolutePath);
 
-                markdown.appendMarkdown(`**${path.basename(imagePath)}**\n\n`);
-                markdown.appendMarkdown(`<img src="${imageUri.toString()}" width="400" />\n\n`);
-                markdown.appendMarkdown(`*${sizeKB} KB*`);
+                markdown.appendMarkdown(imageHoverMarkdown(absolutePath, imageUri, { info: `${sizeKB} KB` }));
 
                 const range = new vscode.Range(
                     position.line, startCol,

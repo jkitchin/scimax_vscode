@@ -3,15 +3,18 @@
  *
  * When enabled, [[target][description]] renders as just "description" and
  * [[target]] renders as "target": the brackets and target are hidden with a
- * display:none decoration. The full link is revealed while the cursor is inside
- * it, so it can still be edited. The text stays clickable because the
+ * display:none decoration. The text stays clickable because the
  * OrgLinkProvider's DocumentLink covers the whole bracketed range.
  *
  * Controlled by `scimax.org.descriptiveLinks`; `scimax.org.toggleLinkDisplay`
- * flips it.
+ * flips it. `scimax.org.descriptiveLinksReveal` chooses whether the literal
+ * link opens up while the cursor is inside it ("cursor") or stays collapsed
+ * ("never"; edit it with C-c C-l). With links collapsed, the cursor skips
+ * over the hidden parts (see hiddenCursor.ts).
  */
 
 import * as vscode from 'vscode';
+import { HiddenRange, skipHidden } from './hiddenCursor';
 
 const LINK_PATTERN = /\[\[((?:[^\]\\]|\\.)+)\](?:\[([^\]]+)\])?\]/g;
 const BLOCK_BEGIN = /^\s*#\+begin_(src|example)\b/i;
@@ -33,6 +36,10 @@ const spanCache = new WeakMap<vscode.TextDocument, { version: number; spans: Lin
 
 function isEnabled(): boolean {
     return vscode.workspace.getConfiguration('scimax.org').get<boolean>('descriptiveLinks', true);
+}
+
+function revealAtCursor(): boolean {
+    return vscode.workspace.getConfiguration('scimax.org').get<string>('descriptiveLinksReveal', 'never') === 'cursor';
 }
 
 function findLinkSpans(document: vscode.TextDocument): LinkSpan[] {
@@ -86,15 +93,65 @@ function updateDecorations(editor: vscode.TextEditor): void {
         return;
     }
 
+    const reveal = revealAtCursor();
     const hidden: vscode.Range[] = [];
     for (const span of findLinkSpans(editor.document)) {
-        // Reveal the literal link while any cursor touches it
-        const touched = editor.selections.some(sel => span.range.intersection(sel) !== undefined);
+        // Optionally reveal the literal link while any cursor touches it
+        const touched = reveal && editor.selections.some(sel => span.range.intersection(sel) !== undefined);
         if (!touched) {
             hidden.push(span.prefix, span.suffix);
         }
     }
     editor.setDecorations(hiddenDecoration, hidden);
+}
+
+/** Each editor's cursor positions after the last selection change */
+const lastActive = new WeakMap<vscode.TextEditor, readonly vscode.Position[]>();
+
+/**
+ * Move cursors that landed inside hidden link text to the visible text, in
+ * the direction they were moving (see skipHidden).
+ */
+function skipHiddenText(event: vscode.TextEditorSelectionChangeEvent): void {
+    const editor = event.textEditor;
+    const previous = lastActive.get(editor);
+    lastActive.set(editor, event.selections.map(sel => sel.active));
+    if (editor.document.languageId !== 'org' || !isEnabled() || revealAtCursor()) {
+        return;
+    }
+
+    const spans = findLinkSpans(editor.document);
+    if (spans.length === 0) return;
+
+    const keyboard = event.kind === vscode.TextEditorSelectionChangeKind.Keyboard;
+    let changed = false;
+    const selections = event.selections.map((sel, i) => {
+        const active = sel.active;
+        const hidden: HiddenRange[] = [];
+        for (const span of spans) {
+            if (span.range.start.line !== active.line) continue;
+            hidden.push(
+                { start: span.prefix.start.character, end: span.prefix.end.character },
+                { start: span.suffix.start.character, end: span.suffix.end.character },
+            );
+        }
+        if (hidden.length === 0) return sel;
+
+        const prev = previous?.[i];
+        const from = keyboard && prev && prev.line === active.line ? prev.character : undefined;
+        const lineLength = editor.document.lineAt(active.line).text.length;
+        const col = skipHidden(hidden, from, active.character, lineLength);
+        if (col === active.character) return sel;
+
+        changed = true;
+        const moved = active.with(undefined, col);
+        return sel.isEmpty ? new vscode.Selection(moved, moved) : new vscode.Selection(sel.anchor, moved);
+    });
+
+    if (changed) {
+        editor.selections = selections;
+        lastActive.set(editor, selections.map(sel => sel.active));
+    }
 }
 
 const updateTimeouts = new WeakMap<vscode.TextEditor, NodeJS.Timeout>();
@@ -144,9 +201,14 @@ export function registerLinkDisplayDecorations(context: vscode.ExtensionContext)
             }
         }),
         // Selection changes update immediately so the link opens up as the cursor enters
-        vscode.window.onDidChangeTextEditorSelection(event => updateDecorations(event.textEditor)),
+        // (only matters when descriptiveLinksReveal is "cursor")
+        vscode.window.onDidChangeTextEditorSelection(event => {
+            skipHiddenText(event);
+            updateDecorations(event.textEditor);
+        }),
         vscode.workspace.onDidChangeConfiguration(event => {
-            if (event.affectsConfiguration('scimax.org.descriptiveLinks')) {
+            if (event.affectsConfiguration('scimax.org.descriptiveLinks') ||
+                event.affectsConfiguration('scimax.org.descriptiveLinksReveal')) {
                 for (const editor of vscode.window.visibleTextEditors) {
                     updateDecorations(editor);
                 }

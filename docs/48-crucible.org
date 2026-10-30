@@ -2,7 +2,7 @@
 #+STARTUP: showall
 #+TODO: ⚠️ 👀 | ✅
 
-* ⚠️ Crucible Knowledge Bases
+* Crucible Knowledge Bases
 
 [[https://github.com/jkitchin/crucible][Crucible]] keeps a knowledge base as an interlinked org-mode wiki: primary
 sources (papers, notebooks, data) are distilled by an LLM into concept,
@@ -21,7 +21,7 @@ Scimax uses the CLI's =--json= output, which needs a recent crucible. If
 VS Code does not find =crucible= on its =PATH= (for example when it lives in
 a virtual environment), set ~scimax.crucible.command~ to its full path.
 
-** ⚠️ The Crucible Panel
+** The Crucible Panel
 
 The *Crucible* panel in the Scimax sidebar lists the crucibles in your
 workspace (marked /workspace/ and expanded), then the others in the global
@@ -37,7 +37,7 @@ Click an article to open it. A crucible's row has buttons to search it, open
 its index (=index.org=) and sync its database. The panel's title bar has
 *Search All Crucibles* and *Refresh*.
 
-** ⚠️ Searching
+** Searching
 
 *Scimax: Search Crucible* ([[cmd:scimax.crucible.search]]) searches the
 crucible of the file you are in, the only crucible in the workspace, or one
@@ -52,7 +52,7 @@ hybrid search when the crucible has embeddings and keyword search otherwise,
 =crucible embed= and ollama), and =hybrid= combines the two.
 ~scimax.crucible.searchLimit~ caps the number of results (20).
 
-** ⚠️ The Graph Around an Article
+** The Graph Around an Article
 
 In a crucible article, three commands show its neighbours in the knowledge
 graph. Each lists articles to pick from and opens the one you choose:
@@ -66,14 +66,14 @@ graph. Each lists articles to pick from and opens the one you choose:
 They appear in the command palette only when the active file is in a
 crucible.
 
-** ⚠️ Citations
+** Citations
 
 Crucible articles cite their sources with org-ref links (=citep:key=), and
 the entries live in the crucible's =.crucible/references.bib=. Opening an
 article loads that bibliography, so citation hovers, completion and
 navigation work in it (see [[file:19-references.org][References]]).
 
-** ⚠️ Keeping the Database Current
+** Keeping the Database Current
 
 Crucible's database is updated by =crucible sync=. When you save an article
 in a crucible wiki, Scimax runs it in the background once your saves pause,
@@ -86,7 +86,7 @@ the current crucible (or the one whose sync button you click). Run it after
 an agent or another program edits articles, since only saves in VS Code
 trigger the automatic sync.
 
-** ⚠️ Lint Issues in the Problems Panel
+** Lint Issues in the Problems Panel
 
 Scimax shows =crucible lint= issues in the Problems panel: broken links,
 citation keys missing from =references.bib=, articles without
@@ -101,7 +101,7 @@ after each sync. *Scimax: Lint Crucible* ([[cmd:scimax.crucible.lint]], also
 on a crucible's right-click menu in the panel) checks again and opens the
 Problems panel. Set ~scimax.crucible.showLint~ to =false= to hide them.
 
-** ⚠️ Commands
+** Commands
 
 | Command                           | Description                               |
 |-----------------------------------+-------------------------------------------|
@@ -117,7 +117,7 @@ Problems panel. Set ~scimax.crucible.showLint~ to =false= to hide them.
 
 None has a default keybinding.
 
-** ⚠️ Settings
+** Settings
 
 | Setting                     | Default    | Description                                 |
 |-----------------------------+------------+---------------------------------------------|
@@ -127,7 +127,7 @@ None has a default keybinding.
 | scimax.crucible.syncOnSave  | true       | Run crucible sync after saving an article   |
 | scimax.crucible.showLint    | true       | Show lint issues in the Problems panel      |
 
-** ⚠️ Related Topics
+** Related Topics
 
 - [[file:19-references.org][References]] - Citations and bibliographies
 - [[file:18-database-search.org][Database Search]] - Scimax's own full-text and semantic search of your org files

@@ -91,7 +91,8 @@ Search the documentation for keywords. Enter one or more search terms to find re
 
 Select a result to see details or open the documentation file at that location.
 
-* 👀 Emacs-Style Editor Keybindings
+* ✅ Emacs-Style Editor Keybindings
+CLOSED: [2026-10-30 Fri 08:02]
 
 | Key           | Action                             |
 |---------------+------------------------------------|
@@ -226,7 +227,7 @@ org-mode, markdown, and LaTeX files with consistent behavior.
 
 *Note:* S-<arrow> keys work on timestamps. When on a citation, they have different behavior (see Citations section).
 
-* Tables
+* 👀 Tables
 
 | Key                 | Action                            |
 |---------------------+-----------------------------------|
@@ -235,6 +236,7 @@ org-mode, markdown, and LaTeX files with consistent behavior.
 | C-c -               | Insert table separator row        |
 | C-c ^               | Sort table by column              |
 | C-c S-6             | Sort table by column (alt)        |
+| C-c C-c             | Align table (in a table row)      |
 | C-c C-c             | Recalculate table (on TBLFM line) |
 | C-c *               | Recalculate table (alternative)   |
 | C-c S-8             | Recalculate table (alt)           |
@@ -333,12 +335,13 @@ Like the Markdown preview, but for org files. See [[file:46-org-preview.org][Org
 
 * Links
 
-| Key        | Action                   |
-|------------+--------------------------|
-| C-c C-l    | Insert link              |
-| C-c C-o    | Open link                |
-| <return>   | Open link (when on link) |
-| F10        | Insert screenshot        |
+| Key         | Action                                 |
+|-------------+----------------------------------------|
+| C-c C-l     | Insert link, or edit the link at point |
+| C-c C-o     | Open link                              |
+| <return>    | Open link (when on link)               |
+| F10         | Insert screenshot                      |
+| C-c C-x C-v | Toggle inline image thumbnails in file |
 
 *Note:* On macOS, =F10= requires screen recording permission. See [[file:12-image-overlays.org::*Inserting Screenshots][Inserting Screenshots]].
 
@@ -730,11 +733,11 @@ CLOSED: [2026-01-19 Mon 18:19]
 * ✅ Additional Notes
 CLOSED: [2026-01-19 Mon 18:19]
 
-** Context-Dependent Keybindings
+** 👀 Context-Dependent Keybindings
 
 Many keybindings are context-aware and behave differently depending on cursor position:
 
-- C-c C-c toggles checkboxes normally, sets tags on a headline line (like C-c C-q; on a statistics cookie it updates the cookie instead), executes source blocks inside code blocks, recalculates tables on TBLFM lines, and runs a Marp deck's ~```python run~ cell in the Python panel
+- C-c C-c toggles checkboxes normally, sets tags on a headline line (like C-c C-q; on a statistics cookie it updates the cookie instead), executes source blocks inside code blocks, aligns a table in a table row, recalculates tables on TBLFM lines, and runs a Marp deck's ~```python run~ cell in the Python panel
 - S-<arrow> keys modify timestamps normally, but transpose/sort citations when on a citation
 - M-S-<left>/M-S-<right> promote/demote subtrees normally, but delete/insert columns when in a table
 - <return> opens links when cursor is on a link
@@ -884,7 +887,7 @@ CLOSED: [2026-01-19 Mon 18:20]
 | Hydra menu         | C-c m        |
 
 ** ✅ Most Common Speed Commands
-CLOSED: [2026-01-19 Mon 18:20]
+CLOSED: [2026-10-30 Fri 08:02]
 
 | Speed Key | Action                 |
 |-----------+------------------------|
@@ -893,7 +896,7 @@ CLOSED: [2026-01-19 Mon 18:20]
 | u         | Up to parent           |
 | j         | Jump to heading        |
 | t         | Cycle TODO             |
-| l/r       | Promote/Demote subtree |
+| l/r       | Promote/Demote heading |
 
 * Related Topics
 

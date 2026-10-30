@@ -5,7 +5,7 @@
 #+OPTIONS: toc:t num:t
 #+TODO: ⚠️ 👀 | ✅
 
-* 👀 Overview
+* Overview
 
 Scimax supports [[https://marp.app/][Marp]] slide decks on its own: a Markdown file whose front
 matter has ~marp: true~. It renders the slides with its own copy of Marp Core,
@@ -561,7 +561,7 @@ after it. Claude Code's link can only fill in a prompt in a new tab, which is
 why an open chat gets the @-mention rather than the full sentence. A chat open
 only in the Claude Code side bar is not detected, so a new tab opens.
 
-* 👀 Presenter Tools and Live Python
+* Presenter Tools and Live Python
 
 A deck can opt in to presenter tools in the HTML slideshow: a pen to draw on
 slides, a laser pointer, sticky notes, a spotlight, and Python code cells that
@@ -590,7 +590,7 @@ Code, use the CLI: ~scimax marp build talk.md --open~ (see
 [[file:30-cli.org::*Marp Slides][Marp Slides in the CLI]]). It uses the same
 scripts and makes the same HTML as the =h= export.
 
-** 👀 Keys in the slideshow
+** Keys in the slideshow
 
 | Key                       | Effect                                                                         |
 |---------------------------+--------------------------------------------------------------------------------|
@@ -719,7 +719,7 @@ adds one and turns on the presenter tools.
   Enter. Without the list, type a slide number and press Enter: =1= =2=
   Enter goes to slide 12.
 
-** ⚠️ Live captions
+** Live captions
 
 =v= shows what you say as captions at the bottom of the slides, two lines at
 a time. Words still being recognised are grey. The captions fade out after a
@@ -758,7 +758,7 @@ section per slide:
 The transcript grows over every talk given from the deck until "Clear
 transcript" empties it.
 
-** ⚠️ Recording the talk
+** Recording the talk
 
 =V= (=Shift+V=) records the slideshow, the mouse and your voice as a video.
 Chrome asks you to share "this tab". Press =V= again to stop. Chrome then

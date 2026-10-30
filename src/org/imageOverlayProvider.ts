@@ -17,6 +17,7 @@
 
 import * as vscode from 'vscode';
 import * as path from 'path';
+import { imageHoverMarkdown } from './imageHover';
 import * as fs from 'fs';
 import * as crypto from 'crypto';
 import { spawn } from 'child_process';
@@ -105,6 +106,12 @@ const IMAGE_EXTENSIONS = new Set([
 
 // Regex for org image links - handles various formats
 // [[file:path]] or [[path]] or [[file:path][desc]] or [[path][desc]]
+/** Raster thumbnail types that get a framed SVG gutter icon */
+const GUTTER_FRAME_MIME: Record<string, string> = {
+    '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg',
+    '.gif': 'image/gif', '.webp': 'image/webp', '.bmp': 'image/bmp',
+};
+
 const IMAGE_LINK_PATTERN = /\[\[(?:file:)?([^\]]+?\.(?:png|jpe?g|gif|webp|svg|bmp|ico|tiff?))(?:\]\[([^\]]*))?\]\]/gi;
 
 // Alternative simpler pattern for just the path
@@ -164,7 +171,7 @@ export class ImageOverlayManager {
             enabled: config.get<boolean>('enabled', true),
             maxWidth: config.get<number>('maxWidth', 96),
             maxHeight: config.get<number>('maxHeight', 96),
-            renderMode: config.get<'after' | 'gutter' | 'both' | 'hover-only'>('renderMode', 'hover-only'),
+            renderMode: config.get<'after' | 'gutter' | 'both' | 'hover-only'>('renderMode', 'gutter'),
             onlyWhenCursorNotInLink: config.get<boolean>('onlyWhenCursorNotInLink', true),
             excludePatterns: config.get<string[]>('excludePatterns', []),
             maxOverlaysPerDocument: config.get<number>('maxOverlaysPerDocument', 200),
@@ -248,7 +255,9 @@ export class ImageOverlayManager {
         // Selection changes (for cursor-in-link detection)
         this.disposables.push(
             vscode.window.onDidChangeTextEditorSelection((e: vscode.TextEditorSelectionChangeEvent) => {
-                if (this.config.onlyWhenCursorNotInLink && this.isOrgDocument(e.textEditor.document)) {
+                // Gutter icons don't depend on the cursor, so gutter mode needn't re-render
+                if (this.config.onlyWhenCursorNotInLink && this.config.renderMode !== 'gutter'
+                    && this.isOrgDocument(e.textEditor.document)) {
                     this.updateEditorOverlays(e.textEditor);
                 }
             })
@@ -322,10 +331,12 @@ export class ImageOverlayManager {
             imageLinks.splice(this.config.maxOverlaysPerDocument);
         }
 
-        // Filter by cursor position if configured
-        const filteredLinks = this.config.onlyWhenCursorNotInLink
-            ? this.filterByCursorPosition(imageLinks, editor.selections)
-            : imageLinks;
+        // Links whose inline overlay is hidden because the cursor is in them.
+        // Gutter icons stay: they sit beside the text rather than over it.
+        const visible = this.config.onlyWhenCursorNotInLink
+            ? new Set(this.filterByCursorPosition(imageLinks, editor.selections))
+            : new Set(imageLinks);
+        const cursorHidden = new Set(imageLinks.filter(link => !visible.has(link)));
 
         // Create or update state
         if (!state) {
@@ -335,7 +346,7 @@ export class ImageOverlayManager {
         state.imageLinks = imageLinks;
 
         // Generate decorations
-        await this.applyDecorations(editor, filteredLinks, state);
+        await this.applyDecorations(editor, imageLinks, state, cursorHidden);
     }
 
     /**
@@ -502,7 +513,8 @@ export class ImageOverlayManager {
     private async applyDecorations(
         editor: vscode.TextEditor,
         links: ImageLink[],
-        state: EditorState
+        state: EditorState,
+        cursorHidden: Set<ImageLink> = new Set()
     ): Promise<void> {
         // Dispose old gutter decoration types
         for (const decType of state.gutterDecorationTypes) {
@@ -513,7 +525,9 @@ export class ImageOverlayManager {
         const afterDecorations: vscode.DecorationOptions[] = [];
 
         for (const link of links) {
+            const showInline = !cursorHidden.has(link);
             if (!link.exists) {
+                if (!showInline) continue;
                 // Show error decoration for missing files
                 afterDecorations.push({
                     range: link.range,
@@ -536,19 +550,14 @@ export class ImageOverlayManager {
             hoverMd.isTrusted = true;
             hoverMd.supportHtml = true;
 
-            if (link.dimensions) {
-                hoverMd.appendMarkdown(`**${path.basename(link.resolvedPath)}** (${link.dimensions.width}×${link.dimensions.height})\n\n`);
-            } else {
-                hoverMd.appendMarkdown(`**${path.basename(link.resolvedPath)}**\n\n`);
-            }
-
-            // Add clickable image
-            const imageUri = vscode.Uri.file(link.resolvedPath);
-            hoverMd.appendMarkdown(`<img src="${imageUri.toString()}" width="300" />\n\n`);
-            hoverMd.appendMarkdown(`[Open in editor](command:vscode.open?${encodeURIComponent(JSON.stringify([imageUri]))})`);
+            // Image fitted to the hover, with the actions above it
+            hoverMd.appendMarkdown(imageHoverMarkdown(link.resolvedPath, vscode.Uri.file(link.resolvedPath), {
+                title: link.description || undefined,
+                size: link.dimensions,
+            }));
 
             // Hover-only mode - just add hover message without any visible decoration
-            if (this.config.renderMode === 'hover-only') {
+            if (this.config.renderMode === 'hover-only' && showInline) {
                 afterDecorations.push({
                     range: link.range,
                     hoverMessage: hoverMd,
@@ -556,7 +565,7 @@ export class ImageOverlayManager {
             }
 
             // After-content decoration
-            if (this.config.renderMode === 'after' || this.config.renderMode === 'both') {
+            if ((this.config.renderMode === 'after' || this.config.renderMode === 'both') && showInline) {
                 const dimText = link.dimensions && this.config.showDimensions
                     ? ` [${link.dimensions.width}×${link.dimensions.height}]`
                     : '';
@@ -576,8 +585,9 @@ export class ImageOverlayManager {
             // Gutter decoration - create a per-image decoration type since gutterIconPath
             // must be set on the decoration type, not per-decoration instance
             if ((this.config.renderMode === 'gutter' || this.config.renderMode === 'both') && thumbnailPath) {
+                const gutterIcon = await this.framedGutterIcon(thumbnailPath, link);
                 const gutterDecType = vscode.window.createTextEditorDecorationType({
-                    gutterIconPath: vscode.Uri.file(thumbnailPath),
+                    gutterIconPath: vscode.Uri.file(gutterIcon),
                     gutterIconSize: 'contain',
                 });
                 state.gutterDecorationTypes.push(gutterDecType);
@@ -593,6 +603,40 @@ export class ImageOverlayManager {
     }
 
     /**
+     * Wrap a raster thumbnail in an SVG with a thin grey frame, so a mostly
+     * white image (e.g. a plot) is still visible in the gutter of a light
+     * theme. Falls back to the thumbnail itself if the SVG can't be written.
+     */
+    private async framedGutterIcon(thumbnailPath: string, link: ImageLink): Promise<string> {
+        const ext = path.extname(thumbnailPath).toLowerCase();
+        const mime = GUTTER_FRAME_MIME[ext];
+        if (!mime) return thumbnailPath;
+
+        const svgPath = thumbnailPath.slice(0, -ext.length) + '_framed.svg';
+        try {
+            const thumbMtime = fs.statSync(thumbnailPath).mtimeMs;
+            if (fs.existsSync(svgPath) && fs.statSync(svgPath).mtimeMs >= thumbMtime) {
+                return svgPath;
+            }
+            // The thumbnail's own size: trimming changes the aspect ratio
+            const dims = await this.getImageDimensions(thumbnailPath) || link.dimensions;
+            const w = dims?.width || this.config.maxWidth;
+            const h = dims?.height || this.config.maxHeight;
+            const stroke = Math.max(2, Math.round(Math.max(w, h) / 40));
+            const data = fs.readFileSync(thumbnailPath).toString('base64');
+            const svg = `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 ${w} ${h}">`
+                + `<image width="${w}" height="${h}" preserveAspectRatio="xMidYMid meet" xlink:href="data:${mime};base64,${data}"/>`
+                + `<rect x="${stroke / 2}" y="${stroke / 2}" width="${w - stroke}" height="${h - stroke}" fill="none" stroke="#888" stroke-width="${stroke}"/>`
+                + '</svg>';
+            fs.writeFileSync(svgPath, svg);
+            return svgPath;
+        } catch (err) {
+            this.outputChannel.appendLine(`Failed to frame gutter icon for ${link.resolvedPath}: ${err}`);
+            return thumbnailPath;
+        }
+    }
+
+    /**
      * Get or generate thumbnail for an image
      */
     private async getThumbnail(link: ImageLink): Promise<string | null> {
@@ -605,11 +649,12 @@ export class ImageOverlayManager {
             .update(link.resolvedPath)
             .digest('hex');
         const ext = path.extname(link.resolvedPath).toLowerCase();
-        const thumbnailPath = path.join(this.cacheDir, `${hash}_${this.config.maxWidth}x${this.config.maxHeight}${ext}`);
+        const thumbnailPath = path.join(this.cacheDir, `${hash}_${this.config.maxWidth}x${this.config.maxHeight}_trim${ext}`);
 
         // Check cache
         const cached = this.thumbnailCache.get(link.resolvedPath);
-        if (cached && cached.originalMtime === link.mtime && fs.existsSync(cached.thumbnailPath)) {
+        if (cached && cached.thumbnailPath === thumbnailPath
+            && cached.originalMtime === link.mtime && fs.existsSync(cached.thumbnailPath)) {
             return cached.thumbnailPath;
         }
 
@@ -674,6 +719,9 @@ export class ImageOverlayManager {
         return new Promise((resolve, reject) => {
             const args = [
                 sourcePath,
+                // Trim uniform margins (e.g. a plot's white border) so the
+                // content fills the small gutter icon
+                '-fuzz', '2%', '-trim', '+repage',
                 '-thumbnail', `${this.config.maxWidth}x${this.config.maxHeight}>`,
                 '-quality', '85',
                 destPath,

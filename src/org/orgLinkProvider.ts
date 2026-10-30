@@ -4,6 +4,7 @@ import * as fs from 'fs';
 import { getDatabase } from '../database/lazyDb';
 import { slugifyAnchor } from '../parser/orgAnchors';
 import { extractCiteKeysFromPath } from '../references/citationParser';
+import { findBareRefs, REF_LINK_PATH_RE } from '../references/refLinks';
 import { marpLinkArgs } from '../marp/marpExport';
 import * as os from 'os';
 import { expandTilde } from '../utils/pathResolver';
@@ -13,6 +14,15 @@ import { expandTilde } from '../utils/pathResolver';
  * Not global: it is used with .exec() on a whole link path.
  */
 const CITE_LINK_PATH_RE = /^(cite[pt]?|citeauthor|citeyear|Citep|Citet|citealp|citealt|citenum):(.+)$/;
+
+/**
+ * command: URI that jumps to the definition of a ref label
+ */
+function refLabelUri(file: string, label: string): vscode.Uri {
+    return vscode.Uri.parse(
+        `command:scimax.ref.gotoLabel?${encodeURIComponent(JSON.stringify({ file, label }))}`
+    );
+}
 
 // Excalidraw file extensions
 const EXCALIDRAW_EXTENSIONS = ['.excalidraw', '.excalidraw.json', '.excalidraw.svg', '.excalidraw.png'];
@@ -167,6 +177,18 @@ export class OrgLinkProvider implements vscode.DocumentLinkProvider {
             links.push(link);
         }
 
+        // Find bare reference links: ref:label, eqref:label, etc. (also in tables)
+        const textLines = text.split('\n');
+        for (let lineNum = 0; lineNum < textLines.length; lineNum++) {
+            if (!textLines[lineNum].includes('ref:')) continue;
+            for (const ref of findBareRefs(textLines[lineNum])) {
+                const link = new vscode.DocumentLink(new vscode.Range(lineNum, ref.start, lineNum, ref.end));
+                link.target = refLabelUri(document.uri.fsPath, ref.label);
+                link.tooltip = `Go to ${ref.type}: ${ref.label}`;
+                links.push(link);
+            }
+        }
+
         // Find footnote references: [fn:label] or [fn:label:definition] or [fn::definition]
         // Make them clickable to jump to their definitions
         const footnoteRegex = /\[fn:([^:\]]*)?(?::([^\]]*))?\]/g;
@@ -255,6 +277,12 @@ export class OrgLinkProvider implements vscode.DocumentLinkProvider {
                     }))}`
                 );
             }
+        }
+
+        // References written as org links, [[ref:label]]
+        const refMatch = REF_LINK_PATH_RE.exec(target);
+        if (refMatch) {
+            return refLabelUri(document.uri.fsPath, refMatch[2]);
         }
 
         // DOI links
@@ -473,6 +501,10 @@ export class OrgLinkProvider implements vscode.DocumentLinkProvider {
             if (keys.length > 0) {
                 return `Citation: ${keys.join(', ')}`;
             }
+        }
+        const refMatch = REF_LINK_PATH_RE.exec(target);
+        if (refMatch) {
+            return `Go to ${refMatch[1]}: ${refMatch[2]}`;
         }
         if (target.startsWith('doi:')) {
             return `Open DOI: ${target.slice(4)}`;

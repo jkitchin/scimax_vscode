@@ -55,8 +55,7 @@ Additional states available:
 | HOLD       | On hold / paused                     |
 | CANCELLED  | Task cancelled (won't be done)       |
 
-** ✅ Logging Completion
-CLOSED: [2026-01-17 Sat 19:41]
+** 👀 Logging Completion
 
 When you mark a task as DONE, a CLOSED timestamp is automatically added:
 
@@ -64,6 +63,8 @@ When you mark a task as DONE, a CLOSED timestamp is automatically added:
 ,* DONE Write introduction
 CLOSED: [2026-01-13 Mon 15:30]
 #+END_SRC
+
+Changing a heading to any state that is not done (another TODO keyword, or no keyword) removes the CLOSED timestamp. Other planning keywords on the same line (SCHEDULED, DEADLINE) are kept. As in org-mode this happens in either direction (S-<left> or S-<right>), whatever the previous state was.
 
 * ✅ Priorities
 

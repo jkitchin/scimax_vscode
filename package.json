@@ -5652,22 +5652,22 @@
         "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/ && scimax.atHeadingStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
-        "command": "scimax.heading.demoteSubtree",
+        "command": "scimax.heading.demote",
         "key": "r",
         "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/ && scimax.atHeadingStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
-        "command": "scimax.heading.promoteSubtree",
+        "command": "scimax.heading.promote",
         "key": "l",
         "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/ && scimax.atHeadingStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
-        "command": "scimax.heading.demote",
+        "command": "scimax.heading.demoteSubtree",
         "key": "shift+r",
         "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/ && scimax.atHeadingStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
-        "command": "scimax.heading.promote",
+        "command": "scimax.heading.promoteSubtree",
         "key": "shift+l",
         "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/ && scimax.atHeadingStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
@@ -5833,6 +5833,12 @@
         "key": "ctrl+c ctrl+x s",
         "mac": "ctrl+c ctrl+x s",
         "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/ && !terminalFocus"
+      },
+      {
+        "command": "scimax.imageOverlays.toggleCurrentFile",
+        "key": "ctrl+c ctrl+x ctrl+v",
+        "mac": "ctrl+c ctrl+x ctrl+v",
+        "when": "editorTextFocus && editorLangId == 'org' && !terminalFocus"
       },
       {
         "command": "scimax.latex.speedCommand",
@@ -8566,13 +8572,13 @@
             "after",
             "both"
           ],
-          "default": "hover-only",
+          "default": "gutter",
           "description": "Where to display image thumbnails: hover-only (just hover preview, no icons), gutter (line margin), after (inline emoji), or both"
         },
         "scimax.imageOverlays.onlyWhenCursorNotInLink": {
           "type": "boolean",
           "default": true,
-          "description": "Hide overlay when cursor is inside the image link"
+          "description": "Hide the inline (after) overlay when the cursor is inside the image link. Gutter icons are always shown."
         },
         "scimax.imageOverlays.excludePatterns": {
           "type": "array",
@@ -8643,7 +8649,20 @@
         "scimax.org.descriptiveLinks": {
           "type": "boolean",
           "default": true,
-          "description": "Show org links by their description only, hiding the brackets and target (like Emacs org-link-descriptive). [[target][description]] displays as \"description\" and [[target]] as \"target\". The literal link is revealed while the cursor is inside it. Toggle with scimax.org.toggleLinkDisplay."
+          "description": "Show org links by their description only, hiding the brackets and target (like Emacs org-link-descriptive). [[target][description]] displays as \"description\" and [[target]] as \"target\". See scimax.org.descriptiveLinksReveal for when the literal link is shown. Toggle with scimax.org.toggleLinkDisplay."
+        },
+        "scimax.org.descriptiveLinksReveal": {
+          "type": "string",
+          "enum": [
+            "never",
+            "cursor"
+          ],
+          "enumDescriptions": [
+            "Links always show only their description. Edit a link with C-c C-l (scimax.org.insertLink) on it, or show all links literally with scimax.org.toggleLinkDisplay.",
+            "The literal [[target][description]] is revealed while the cursor is inside the link."
+          ],
+          "default": "never",
+          "description": "When descriptive links show their literal [[target][description]] text."
         },
         "scimax.org.diagnostics.orphanLinks": {
           "type": "boolean",

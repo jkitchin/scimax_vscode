@@ -81,13 +81,17 @@ If no description is provided, the link target is displayed:
 [[https://www.example.com]]
 #+END_SRC
 
-** ✅ Insert Link Command
-CLOSED: [2026-01-15 Thu 19:40]
+** Insert Link Command
 
-| Key     | Command                             |
-|---------+-------------------------------------|
-| C-c l   | Store link (scimax.org.storeLink)   |
-| C-c C-l | Insert link (scimax.org.insertLink) |
+| Key     | Command                                      |
+|---------+----------------------------------------------|
+| C-c l   | Store link (scimax.org.storeLink)            |
+| C-c C-l | Insert or edit link (scimax.org.insertLink)  |
+
+With the cursor on an existing =[[target][description]]= link, C-c C-l edits
+that link instead of inserting a new one: it prompts for the target and then
+the description, both prefilled. Clear the description to leave a bare
+=[[target]]=; press Escape to leave the link unchanged.
 
 
 This opens a dialog to enter:
@@ -164,7 +168,7 @@ CLOSED: [2026-10-22 Thu 09:46]
 | id:          | Jumps to entry with that ID property  |
 | nb:          | Opens file in a notebook project      |
 
-** Link Display (Descriptive vs Literal)
+** 👀 Link Display (Descriptive vs Literal)
 
 By default org links are shown by their description only, like Emacs
 =org-link-descriptive=. The brackets and target are hidden, so
@@ -172,14 +176,25 @@ By default org links are shown by their description only, like Emacs
 link without a description such as =[[https://orgmode.org]]= reads as
 =https://orgmode.org=. The text stays clickable.
 
-The literal link reappears while the cursor is inside it, so you can still edit
-the target. Links inside source and example blocks are always shown literally.
+Links stay collapsed when the cursor moves into them. To change a link, put the
+cursor on it and press C-c C-l (see [[*Insert Link Command]]). Set
+=scimax.org.descriptiveLinksReveal= to =cursor= to have the literal link
+reappear while the cursor is inside it instead. Links inside source and example
+blocks are always shown literally.
 
-| Action                      | How                                                  |
-|-----------------------------+------------------------------------------------------|
-| Toggle descriptive/literal  | =scimax.org.toggleLinkDisplay= (command palette)     |
-| Toggle from the editor      | Right-click > Scimax: Toggle Link Display            |
-| Set the default             | =scimax.org.descriptiveLinks= (default: true)        |
+The hidden brackets and target are still in the text, but the cursor skips
+over them, as Emacs skips invisible text. Arrow keys move one visible character
+at a time, and a click never leaves the cursor inside the hidden part.
+Tables measure links as displayed, so a table of links lines up on screen (see
+the Tables chapter).
+
+| Action                       | How                                                     |
+|------------------------------+---------------------------------------------------------|
+| Edit the link at the cursor  | C-c C-l (=scimax.org.insertLink=)                       |
+| Toggle descriptive/literal   | =scimax.org.toggleLinkDisplay= (command palette)        |
+| Toggle from the editor       | Right-click > Scimax: Toggle Link Display               |
+| Set the default              | =scimax.org.descriptiveLinks= (default: true)           |
+| Reveal links at the cursor   | =scimax.org.descriptiveLinksReveal= (default: =never=)  |
 
 * ✅ Link Targets and Anchors
 CLOSED: [2026-01-14 Wed 20:53]
@@ -651,12 +666,12 @@ CLOSED: [2026-01-15 Thu 19:48]
 | C-c ]      | Insert citation  (org-ref) |
 
 ** ✅ Commands
-CLOSED: [2026-01-15 Thu 19:53]
+CLOSED: [2026-10-30 Fri 08:09]
 
 | Command                       | Description                                |
 |-------------------------------+--------------------------------------------|
 | scimax.org.storeLink          | Store a new link                           |
-| scimax.org.insertLink         | Insert a new link                          |
+| scimax.org.insertLink         | Insert a link or edit the one at point     |
 | scimax.org.openLink           | Open link at cursor                        |
 | scimax.org.insertFinderLink   | Insert link from Finder selection (macOS)  |
 | scimax.org.insertChromeLink   | Insert link from front Chrome tab (macOS)  |

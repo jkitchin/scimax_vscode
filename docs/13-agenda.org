@@ -938,7 +938,7 @@ which would hold if the agenda edited the file directly.
 The buffer also refreshes itself whenever the database is reindexed, so it
 never shows a stale snapshot. Press =g= to force a refresh.
 
-** ⚠️ Agenda View
+** Agenda View
 
 The agenda view ([[cmd:scimax.agenda.view]], =C-c a a=, or =v= in the agenda
 menu =C-c a c=) is the agenda in a panel of its own, laid out like the project
@@ -946,7 +946,7 @@ view's Gantt chart: a toolbar of filters on top and the items below. It is an al
 to the agenda buffer, not a replacement; both read the same agenda files and
 both stay open side by side if you like.
 
-*** ⚠️ Choosing what is shown
+*** Choosing what is shown
 
 The *Day*, *Week*, *Fortnight* and *Month* buttons show that many days from
 today, grouped by date, with today highlighted. The =‹=, *Today* and =›=
@@ -964,7 +964,7 @@ project's own org files, so a file the database has not indexed yet still
 shows; a custom agenda is limited to the items it found under the project's
 folder.
 
-*** ⚠️ Filtering
+*** Filtering
 
 The filters work on the items already loaded, so they apply at once and each
 menu shows how many items have each value:
@@ -991,7 +991,7 @@ menu shows how many items have each value:
 filters are remembered for the workspace, and the view always reopens at
 today.
 
-*** ⚠️ Acting on items
+*** Acting on items
 
 Click an item to select it. Double-click it, or press =Enter= on the selected
 item, to open its heading beside the view. Right-click an item for these actions, which it shares with the project
@@ -1018,7 +1018,7 @@ agenda buffer's hover does. =Escape= or moving on hides it.
 
 The view reloads when the agenda refreshes and whenever an org file is saved.
 
-*** ⚠️ Agenda View Keys
+*** Agenda View Keys
 
 The keys follow the agenda buffer where it has the same action:
 

@@ -123,13 +123,14 @@ Windows it uses Windows Terminal (=wt.exe=) when available and falls back to
 Settings for org-mode document behavior including TODO states, progress logging, and more.
 
 ** ✅ Settings Overview
-CLOSED: [2026-10-22 Thu 10:10]
+CLOSED: [2026-10-30 Fri 08:12]
 
 | Setting                               | Type              | Default | Description                               |
 |---------------------------------------+-------------------+---------+-------------------------------------------|
 | scimax.org.logRepeat                  | string (enum)     | "false" | Enable progress logging                   |
 | scimax.org.logIntoDrawer              | boolean or string | false   | Where to log state changes                |
 | scimax.org.descriptiveLinks           | boolean           | true    | Show links by description only            |
+| scimax.org.descriptiveLinksReveal     | string (enum)     | "never" | Reveal literal link at cursor ("cursor")  |
 | scimax.org.diagnostics.orphanLinks    | boolean           | true    | Warn on unresolved internal links         |
 | scimax.org.backlinks.codeLens         | boolean           | true    | Show "← N references" lenses              |
 | scimax.org.notes.excludeFromExport    | boolean           | true    | Strip dialog notes from exports           |
@@ -284,7 +285,7 @@ CLOSED: [2026-01-24 Sat 17:41]
 
 *File-level override*: Use =#+STARTUP: logdrawer= or =#+STARTUP: nologdrawer=
 
-* ⚠️ Crucible Settings
+* Crucible Settings
 
 Settings for browsing [[https://github.com/jkitchin/crucible][crucible]] knowledge bases
 (see [[file:48-crucible.org][Crucible Knowledge Bases]]).
@@ -1950,11 +1951,12 @@ Configure inline image thumbnails in org-mode files.
 
 - *Type*: string (enum)
 - *Default*: `"gutter"'
-- *Options*: `"gutter"', `"after"', `"both"'
+- *Options*: `"gutter"', `"after"', `"both"', `"hover-only"'
 - *Description*: Where to display image thumbnails
   - `gutter': In the line margin (gutter)
   - `after': Inline emoji after the link
   - `both': Both locations
+  - `hover-only': No decorations, hover tooltip only
 
 *Example*:
 #+begin_src json

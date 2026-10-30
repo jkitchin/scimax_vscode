@@ -138,11 +138,37 @@ function getDisplayWidth(str: string): number {
     return width;
 }
 
+const BRACKET_LINK = /\[\[((?:[^\]\\]|\\.)+)\](?:\[([^\]]+)\])?\]/g;
+
+/**
+ * Whether cells are measured as displayed with descriptive links on
+ * (scimax.org.descriptiveLinks): [[target][desc]] shows as "desc" and
+ * [[target]] as "target". Set per table by setLinkCollapse, so a table with
+ * links lines up on screen, as org-table-align does with invisible text.
+ */
+let collapseLinks = false;
+
+function setLinkCollapse(isOrg: boolean): void {
+    collapseLinks = isOrg
+        && vscode.workspace.getConfiguration('scimax.org').get<boolean>('descriptiveLinks', true);
+}
+
+/**
+ * Display width of a cell's content, with links collapsed when they are
+ * shown collapsed
+ */
+function cellWidth(str: string): number {
+    if (collapseLinks && str.includes('[[')) {
+        str = str.replace(BRACKET_LINK, (_m, target: string, desc?: string) => desc ?? target);
+    }
+    return getDisplayWidth(str);
+}
+
 /**
  * Pad a string to a target display width (left-aligned, padding on right)
  */
 function padEndDisplayWidth(str: string, targetWidth: number): string {
-    const currentWidth = getDisplayWidth(str);
+    const currentWidth = cellWidth(str);
     if (currentWidth >= targetWidth) {
         return str;
     }
@@ -153,7 +179,7 @@ function padEndDisplayWidth(str: string, targetWidth: number): string {
  * Pad a string to a target display width (right-aligned, padding on left)
  */
 function padStartDisplayWidth(str: string, targetWidth: number): string {
-    const currentWidth = getDisplayWidth(str);
+    const currentWidth = cellWidth(str);
     if (currentWidth >= targetWidth) {
         return str;
     }
@@ -164,7 +190,7 @@ function padStartDisplayWidth(str: string, targetWidth: number): string {
  * Center a string to a target display width
  */
 function centerDisplayWidth(str: string, targetWidth: number): string {
-    const currentWidth = getDisplayWidth(str);
+    const currentWidth = cellWidth(str);
     if (currentWidth >= targetWidth) {
         return str;
     }
@@ -190,11 +216,20 @@ function alignCell(str: string, targetWidth: number, alignment: ColumnAlignment)
 }
 
 /**
- * Check if a line is a table row
+ * Check if a line is a table row. As in org-mode, a leading | is enough, so a
+ * row still being typed (no closing |) or a bare |- separator is part of the
+ * table; aligning closes it.
  */
 function isTableRow(line: string): boolean {
-    const trimmed = line.trim();
-    return trimmed.startsWith('|') && trimmed.endsWith('|');
+    return line.trim().startsWith('|');
+}
+
+/**
+ * The text between a row's leading | and its closing | (if it has one)
+ */
+function rowInner(trimmed: string): string {
+    const closed = trimmed.length > 1 && trimmed.endsWith('|') && !trimmed.endsWith('\\|');
+    return trimmed.slice(1, closed ? -1 : undefined);
 }
 
 interface ColumnSpec {
@@ -218,9 +253,7 @@ function isColumnSpecRow(line: string): boolean {
  * Simple row parser that doesn't handle markup (used before full parseRow is defined)
  */
 function parseRowSimple(line: string): string[] {
-    const trimmed = line.trim();
-    const inner = trimmed.slice(1, -1); // Remove leading and trailing |
-    return inner.split('|').map(cell => cell.trim());
+    return rowInner(line.trim()).split('|').map(cell => cell.trim());
 }
 
 /**
@@ -275,8 +308,8 @@ function isSeparatorRow(line: string): boolean {
     const trimmed = line.trim();
     if (!isTableRow(line)) return false;
 
-    // Standard org separator: |---+---| or |---|---|
-    if (/^\|[\s\-+:]+\|$/.test(trimmed.replace(/\|/g, '|'))) {
+    // Standard org separator: |---+---| or |---|---|, or the |- shorthand
+    if (/^\|-/.test(trimmed) || /^\|[\s\-+:]+\|$/.test(trimmed)) {
         return true;
     }
 
@@ -435,9 +468,7 @@ function mathSpanEnd(str: string, pos: number, prevChar: string): number {
  * and escaped pipes (\|)
  */
 export function parseRow(line: string): string[] {
-    const trimmed = line.trim();
-    // Remove leading and trailing |
-    const inner = trimmed.slice(1, -1);
+    const inner = rowInner(line.trim());
 
     const cells: string[] = [];
     let current = '';
@@ -518,8 +549,9 @@ export function parseRow(line: string): string[] {
 
 /**
  * Constrain a column width to its spec cookie: the column must be wide enough
- * to show the cookie itself, at least minWidth, and no wider than maxWidth
- * (but never narrower than the cookie).
+ * to show the cookie itself and at least minWidth. A <N> maxWidth does not
+ * narrow the column in the buffer; it only narrows the display (see
+ * computeShrinkRanges), so the cell text is never cut.
  */
 function applyColumnSpecWidth(width: number, spec: ColumnSpec): number {
     // Width of the cookie as rendered, e.g. "<l>" = 3, "<15>" = 4
@@ -536,9 +568,6 @@ function applyColumnSpecWidth(width: number, spec: ColumnSpec): number {
     if (spec.minWidth !== undefined) {
         result = Math.max(result, spec.minWidth);
     }
-    if (spec.maxWidth !== undefined) {
-        result = Math.max(Math.min(result, spec.maxWidth), cookieWidth);
-    }
     return result;
 }
 
@@ -546,6 +575,7 @@ function applyColumnSpecWidth(width: number, spec: ColumnSpec): number {
  * Find the table boundaries around the cursor
  */
 function findTableAtCursor(document: vscode.TextDocument, position: vscode.Position): TableInfo | null {
+    setLinkCollapse(document.languageId === 'org');
     const currentLine = document.lineAt(position.line).text;
 
     // Check if we're on a #+TBLFM line - if so, look for table above
@@ -602,7 +632,7 @@ function findTableAtCursor(document: vscode.TextDocument, position: vscode.Posit
         if (i === specRow) continue; // Skip spec row for width calculation
         const row = rows[i];
         for (let j = 0; j < row.length; j++) {
-            columnWidths[j] = Math.max(columnWidths[j], getDisplayWidth(row[j]));
+            columnWidths[j] = Math.max(columnWidths[j], cellWidth(row[j]));
         }
     }
 
@@ -638,48 +668,17 @@ function findTableAtCursor(document: vscode.TextDocument, position: vscode.Posit
 }
 
 /**
- * Truncate a string to a maximum display width, adding '>' indicator when truncated
- */
-function truncateToWidth(str: string, maxWidth: number): string {
-    const displayWidth = getDisplayWidth(str);
-    if (displayWidth <= maxWidth) {
-        return str;
-    }
-
-    // Need to truncate - leave room for '>' indicator
-    const targetWidth = maxWidth - 1;
-    let result = '';
-    let currentWidth = 0;
-
-    for (const char of str) {
-        const charWidth = getCharWidth(char);
-        if (currentWidth + charWidth > targetWidth) {
-            break;
-        }
-        result += char;
-        currentWidth += charWidth;
-    }
-
-    return result + '>';
-}
-
-/**
  * Format a row with proper alignment
- * Truncates content when maxWidth is specified in column specs
  */
 function formatRow(
     cells: string[],
     columnWidths: number[],
-    columnAlignments?: ColumnAlignment[],
-    columnMaxWidths?: (number | undefined)[]
+    columnAlignments?: ColumnAlignment[]
 ): string {
     const paddedCells = cells.map((cell, i) => {
-        const width = columnWidths[i] || getDisplayWidth(cell);
+        const width = columnWidths[i] || cellWidth(cell);
         const alignment = columnAlignments?.[i] || 'l';
-        // Truncate cell content if maxWidth is specified
-        const maxWidth = columnMaxWidths?.[i];
-        const truncatedCell = maxWidth !== undefined ? truncateToWidth(cell, maxWidth) : cell;
-        return alignCell(truncatedCell, width, alignment);
+        return alignCell(cell, width, alignment);
     });
     return '| ' + paddedCells.join(' | ') + ' |';
 }
@@ -926,7 +925,7 @@ export async function moveColumnLeft(): Promise<boolean> {
     const newColumnWidths: number[] = [];
     for (const row of newRows) {
         for (let i = 0; i < row.length; i++) {
-            newColumnWidths[i] = Math.max(newColumnWidths[i] || 0, getDisplayWidth(row[i]), 1);
+            newColumnWidths[i] = Math.max(newColumnWidths[i] || 0, cellWidth(row[i]), 1);
         }
     }
 
@@ -1002,7 +1001,7 @@ export async function moveColumnRight(): Promise<boolean> {
     const newColumnWidths: number[] = [];
     for (const row of newRows) {
         for (let i = 0; i < row.length; i++) {
-            newColumnWidths[i] = Math.max(newColumnWidths[i] || 0, getDisplayWidth(row[i]), 1);
+            newColumnWidths[i] = Math.max(newColumnWidths[i] || 0, cellWidth(row[i]), 1);
         }
     }
 
@@ -1133,7 +1132,7 @@ async function moveCell(dRow: number, dCol: number): Promise<boolean> {
     for (const row of swap.rows) {
         if (!row) continue;
         for (let i = 0; i < row.length; i++) {
-            columnWidths[i] = Math.max(columnWidths[i] || 0, getDisplayWidth(row[i]), 1);
+            columnWidths[i] = Math.max(columnWidths[i] || 0, cellWidth(row[i]), 1);
         }
     }
     for (let i = 0; i < columnWidths.length; i++) {
@@ -1155,7 +1154,7 @@ async function moveCell(dRow: number, dCol: number): Promise<boolean> {
             while (cells.length < columnWidths.length) {
                 cells.push('');
             }
-            newLines.push(formatRow(cells, columnWidths, table.columnAlignments, table.columnMaxWidths));
+            newLines.push(formatRow(cells, columnWidths, table.columnAlignments));
         }
     }
 
@@ -1448,9 +1447,14 @@ export async function deleteColumn(): Promise<boolean> {
 export async function alignTable(): Promise<boolean> {
     const editor = vscode.window.activeTextEditor;
     if (!editor) return false;
+    return alignTableAt(editor, editor.selection.active);
+}
 
+/**
+ * Align the table containing position (not necessarily the cursor's table)
+ */
+async function alignTableAt(editor: vscode.TextEditor, position: vscode.Position): Promise<boolean> {
     const document = editor.document;
-    const position = editor.selection.active;
     const table = findTableAtCursor(document, position);
 
     if (!table) return false;
@@ -1477,7 +1481,7 @@ export async function alignTable(): Promise<boolean> {
             while (cells.length < columnWidths.length) {
                 cells.push('');
             }
-            newLines.push(formatRow(cells, columnWidths, table.columnAlignments, table.columnMaxWidths));
+            newLines.push(formatRow(cells, columnWidths, table.columnAlignments));
         }
     }
 
@@ -1500,89 +1504,221 @@ export async function alignTable(): Promise<boolean> {
 }
 
 /**
- * Create a new table or convert selected text to a table
- * - With selection: converts text to table (auto-detects separator: comma, tab, or spaces)
- * - Without selection: prompts for columns and creates empty single-row table
+ * Split delimited text into records, honouring CSV-style "..." quoting:
+ * delimiters and newlines inside quotes belong to the field, "" is a quote.
+ */
+function splitDelimited(text: string, delimiter: string): string[][] {
+    const rows: string[][] = [];
+    let row: string[] = [];
+    let field = '';
+    let inQuotes = false;
+
+    for (let i = 0; i < text.length; i++) {
+        const char = text[i];
+        if (inQuotes) {
+            if (char === '"' && text[i + 1] === '"') {
+                field += '"';
+                i++;
+            } else if (char === '"') {
+                inQuotes = false;
+            } else {
+                field += char;
+            }
+        } else if (char === '"' && field.trim() === '') {
+            inQuotes = true;
+            field = '';
+        } else if (char === delimiter) {
+            row.push(field.trim());
+            field = '';
+        } else if (char === '\n') {
+            row.push(field.trim());
+            rows.push(row);
+            row = [];
+            field = '';
+        } else {
+            field += char;
+        }
+    }
+    row.push(field.trim());
+    rows.push(row);
+    return rows;
+}
+
+/**
+ * Parse pasted or selected text into table rows. Recognises Markdown/org
+ * tables, then tab-, comma- or semicolon-separated values (CSV quoting
+ * included), then columns separated by runs of spaces (e.g. a terminal or
+ * pandas printout), and finally single whitespace. Rows are padded to the
+ * same length and newlines inside a quoted field become spaces.
+ */
+export function parseTableText(text: string): string[][] {
+    const normalized = text.replace(/\r\n?/g, '\n').replace(/^\n+|\s+$/g, '');
+    if (!normalized) return [];
+    const lines = normalized.split('\n').filter(line => line.trim() !== '');
+
+    let rows: string[][];
+    if (lines.every(line => isTableRow(line))) {
+        // Already a table: drop separator rules (|---+---| or | --- | :-: |)
+        rows = lines.filter(line => !isSeparatorRow(line)).map(line => parseRow(line));
+    } else {
+        // Pick the delimiter that splits the most lines into the same number
+        // (> 1) of fields. Ties go to the earlier one, so "1,5;2,3" splits on
+        // ";" (prose has far more commas than semicolons or tabs).
+        let best: string[][] | undefined;
+        let bestScore = 0;
+        for (const delimiter of ['\t', ';', ',']) {
+            const candidate = splitDelimited(normalized, delimiter).filter(r => r.some(c => c !== ''));
+            const frequency = new Map<number, number>();
+            for (const r of candidate) frequency.set(r.length, (frequency.get(r.length) ?? 0) + 1);
+            const [mode, modeCount] = [...frequency].reduce((a, b) => (b[1] > a[1] ? b : a));
+            if (mode < 2) continue;
+            const score = modeCount / candidate.length;
+            if (score > bestScore) {
+                best = candidate;
+                bestScore = score;
+            }
+        }
+        if (best) {
+            rows = best;
+        } else {
+            const spaceSplit = (re: RegExp) => lines.map(line => line.trim().split(re));
+            const wide = spaceSplit(/\s{2,}/);
+            rows = wide.some(r => r.length > 1) ? wide : spaceSplit(/\s+/);
+        }
+    }
+
+    const width = Math.max(...rows.map(r => r.length));
+    return rows.map(r => {
+        const cells = r.map(c => c.replace(/\s*\n\s*/g, ' '));
+        while (cells.length < width) cells.push('');
+        return cells;
+    });
+}
+
+/**
+ * Format parsed rows as aligned table lines, with a rule under the first row
+ * when there is more than one. Literal pipes in cells are escaped (\vert{} in
+ * org, \| in Markdown) so they do not start a new column.
+ */
+export function formatTableLines(rows: string[][], isOrg: boolean): string[] {
+    setLinkCollapse(isOrg);
+    const escaped = rows.map(r => r.map(c => c.replace(/\|/g, isOrg ? '\\vert{}' : '\\|')));
+    const columnWidths: number[] = [];
+    for (const row of escaped) {
+        row.forEach((cell, i) => {
+            columnWidths[i] = Math.max(columnWidths[i] || 1, cellWidth(cell));
+        });
+    }
+    const lines = escaped.map(row => formatRow(row, columnWidths));
+    if (lines.length > 1) {
+        lines.splice(1, 0, formatSeparator(columnWidths, isOrg));
+    }
+    return lines;
+}
+
+/**
+ * Insert table lines in place of range, or on their own lines at the cursor:
+ * a mid-line cursor gets a line break first so the table starts a line.
+ */
+async function insertTableLines(editor: vscode.TextEditor, lines: string[], range?: vscode.Range): Promise<void> {
+    const position = editor.selection.active;
+    let text = lines.join('\n');
+    let target: vscode.Range;
+    let firstLine: number;
+    if (range) {
+        target = range;
+        firstLine = range.start.line;
+    } else {
+        const lineText = editor.document.lineAt(position.line).text;
+        const before = lineText.slice(0, position.character).trim() !== '';
+        const after = lineText.slice(position.character).trim() !== '';
+        if (before) text = '\n' + text;
+        if (after || !before) text += '\n';
+        target = new vscode.Range(position, position);
+        firstLine = before ? position.line + 1 : position.line;
+    }
+    await editor.edit(editBuilder => editBuilder.replace(target, text));
+    const firstCell = new vscode.Position(firstLine, 2);
+    editor.selection = new vscode.Selection(firstCell, firstCell);
+}
+
+/**
+ * True when text is clearly tabular (not just prose with a comma): two or
+ * more lines that are already table rows, or that a tab, semicolon or comma
+ * splits into the same number (> 1) of fields on every line.
+ */
+export function looksLikeTable(text: string): boolean {
+    const normalized = text.replace(/\r\n?/g, '\n').trim();
+    const lines = normalized.split('\n').filter(line => line.trim() !== '');
+    if (lines.length < 2) return false;
+    if (lines.every(line => isTableRow(line))) return true;
+    return ['\t', ';', ','].some(delimiter => {
+        const counts = splitDelimited(normalized, delimiter)
+            .filter(r => r.some(c => c !== ''))
+            .map(r => r.length);
+        return counts[0] > 1 && counts.every(n => n === counts[0]);
+    });
+}
+
+/**
+ * Create a table (C-c |, like Emacs org-table-create-or-convert-from-region):
+ * convert the selected text, or offer the clipboard when it holds table
+ * data, otherwise insert an empty table.
  */
 export async function createTable(): Promise<void> {
     const editor = vscode.window.activeTextEditor;
     if (!editor) return;
 
     const selection = editor.selection;
+    const isOrg = editor.document.languageId === 'org';
 
     if (!selection.isEmpty) {
-        // Convert selected text to table
-        const text = editor.document.getText(selection);
-        const lines = text.split('\n').filter(line => line.trim() !== '');
-
-        if (lines.length === 0) return;
-
-        // Auto-detect separator: tab, comma, or multiple spaces
-        let separator: RegExp;
-        const firstLine = lines[0];
-        if (firstLine.includes('\t')) {
-            separator = /\t+/;
-        } else if (firstLine.includes(',')) {
-            separator = /,\s*/;
-        } else {
-            separator = /\s{2,}|\s+/;  // Multiple spaces or any whitespace
-        }
-
-        // Parse all rows
-        const rows = lines.map(line => line.split(separator).map(cell => cell.trim()));
-
-        // Calculate column widths
-        const maxCols = Math.max(...rows.map(row => row.length));
-        const columnWidths: number[] = new Array(maxCols).fill(1);
-
-        for (const row of rows) {
-            for (let i = 0; i < row.length; i++) {
-                columnWidths[i] = Math.max(columnWidths[i], row[i].length);
-            }
-        }
-
-        // Build table
-        const tableLines: string[] = [];
-        for (const row of rows) {
-            // Pad row to have all columns
-            while (row.length < maxCols) {
-                row.push('');
-            }
-            tableLines.push(formatRow(row, columnWidths));
-        }
-
-        await editor.edit(editBuilder => {
-            editBuilder.replace(selection, tableLines.join('\n'));
-        });
-
-        // Move cursor to first cell
-        const firstCellPos = new vscode.Position(selection.start.line, 2);
-        editor.selection = new vscode.Selection(firstCellPos, firstCellPos);
-    } else {
-        // No selection - create empty table
-        const colsInput = await vscode.window.showInputBox({
-            prompt: 'Number of columns',
-            value: '3',
-            validateInput: (v) => /^\d+$/.test(v) ? null : 'Enter a number'
-        });
-        if (!colsInput) return;
-
-        const cols = parseInt(colsInput);
-        const columnWidths = new Array(cols).fill(10);
-        const emptyCells = new Array(cols).fill('');
-
-        // Create a single row table
-        const line = formatRow([...emptyCells], columnWidths);
-        const insertPos = editor.selection.active;
-
-        await editor.edit(editBuilder => {
-            editBuilder.insert(insertPos, line + '\n');
-        });
-
-        // Move cursor to first cell (after the first "| ")
-        const firstCellPos = new vscode.Position(insertPos.line, 2);
-        editor.selection = new vscode.Selection(firstCellPos, firstCellPos);
+        const rows = parseTableText(editor.document.getText(selection));
+        if (rows.length === 0) return;
+        await insertTableLines(editor, formatTableLines(rows, isOrg), selection);
+        return;
     }
+
+    const clipboardText = await vscode.env.clipboard.readText();
+    if (looksLikeTable(clipboardText)) {
+        const rows = parseTableText(clipboardText);
+        const choice = await vscode.window.showQuickPick([
+            {
+                label: `Insert table from clipboard (${rows.length} × ${rows[0].length})`,
+                description: rows[0].join(' | '),
+                fromClipboard: true
+            },
+            { label: 'Create empty table', fromClipboard: false }
+        ], { placeHolder: 'Create table' });
+        if (!choice) return;
+        if (choice.fromClipboard) {
+            await insertTableLines(editor, formatTableLines(rows, isOrg));
+            return;
+        }
+    }
+
+    const colsInput = await vscode.window.showInputBox({
+        prompt: 'Number of columns',
+        value: '3',
+        validateInput: (v) => /^\d+$/.test(v) ? null : 'Enter a number'
+    });
+    if (!colsInput) return;
+
+    const cols = parseInt(colsInput);
+    const columnWidths = new Array(cols).fill(10);
+    const emptyCells = new Array(cols).fill('');
+
+    // Create a single row table
+    const line = formatRow([...emptyCells], columnWidths);
+    const insertPos = editor.selection.active;
+
+    await editor.edit(editBuilder => {
+        editBuilder.insert(insertPos, line + '\n');
+    });
+
+    // Move cursor to first cell (after the first "| ")
+    const firstCellPos = new vscode.Position(insertPos.line, 2);
+    editor.selection = new vscode.Selection(firstCellPos, firstCellPos);
 }
 
 /**
@@ -1598,15 +1734,22 @@ export async function nextCell(): Promise<boolean> {
 
     if (!isInTable(document, position)) return false;
 
+    // Remember the cell by index: aligning can move cells along the line, so
+    // the old column may land in a different cell afterwards
+    const cellIdx = cellPipes(document.lineAt(position.line).text)
+        .filter(p => p < position.character).length - 1;
+
     // First align the table to ensure consistent formatting
     await alignTable();
 
     const line = document.lineAt(position.line).text;
+    const pipes = cellPipes(line);
 
-    // Find next | after cursor
-    const nextPipe = line.indexOf('|', position.character + 1);
+    // The | closing the current cell, if another cell follows it
+    const nextPipe = !isSeparatorRow(line) && cellIdx + 2 < pipes.length
+        ? pipes[cellIdx + 1] : -1;
 
-    if (nextPipe === -1 || nextPipe >= line.length - 1) {
+    if (nextPipe === -1) {
         // At end of row - try to move to next row
         if (position.line < document.lineCount - 1) {
             // Skip separator rows
@@ -1651,6 +1794,17 @@ export async function nextCell(): Promise<boolean> {
     const newPos = new vscode.Position(position.line, nextPipe + 2);
     editor.selection = new vscode.Selection(newPos, newPos);
     return true;
+}
+
+/**
+ * Columns of the cell-separating | characters in a row (escaped \| excluded)
+ */
+function cellPipes(line: string): number[] {
+    const pipes: number[] = [];
+    for (let i = 0; i < line.length; i++) {
+        if (line[i] === '|' && line[i - 1] !== '\\') pipes.push(i);
+    }
+    return pipes;
 }
 
 /**
@@ -2043,71 +2197,13 @@ export async function importTableFromClipboard(): Promise<void> {
     const editor = vscode.window.activeTextEditor;
     if (!editor) return;
 
-    const clipboardText = await vscode.env.clipboard.readText();
-    if (!clipboardText.trim()) {
+    const rows = parseTableText(await vscode.env.clipboard.readText());
+    if (rows.length === 0) {
         vscode.window.showInformationMessage('Clipboard is empty');
         return;
     }
 
-    // Detect delimiter (tab or comma)
-    const hasTab = clipboardText.includes('\t');
-    const delimiter = hasTab ? '\t' : ',';
-
-    // Parse the data
-    const lines = clipboardText.trim().split('\n');
-    const rows: string[][] = lines.map(line => {
-        if (delimiter === ',') {
-            // Handle CSV with quoted fields
-            const cells: string[] = [];
-            let current = '';
-            let inQuotes = false;
-
-            for (let i = 0; i < line.length; i++) {
-                const char = line[i];
-                if (char === '"') {
-                    if (inQuotes && line[i + 1] === '"') {
-                        current += '"';
-                        i++;
-                    } else {
-                        inQuotes = !inQuotes;
-                    }
-                } else if (char === ',' && !inQuotes) {
-                    cells.push(current.trim());
-                    current = '';
-                } else {
-                    current += char;
-                }
-            }
-            cells.push(current.trim());
-            return cells;
-        } else {
-            return line.split('\t').map(c => c.trim());
-        }
-    });
-
-    // Calculate column widths (using display width for emojis)
-    const columnWidths: number[] = [];
-    for (const row of rows) {
-        for (let i = 0; i < row.length; i++) {
-            columnWidths[i] = Math.max(columnWidths[i] || 0, getDisplayWidth(row[i]), 1);
-        }
-    }
-
-    // Format as org table
-    const isOrg = editor.document.languageId === 'org';
-    const tableLines: string[] = [];
-
-    for (let i = 0; i < rows.length; i++) {
-        tableLines.push(formatRow(rows[i], columnWidths));
-        // Add separator after first row (header)
-        if (i === 0) {
-            tableLines.push(formatSeparator(columnWidths, isOrg));
-        }
-    }
-
-    await editor.edit(editBuilder => {
-        editBuilder.insert(editor.selection.active, tableLines.join('\n') + '\n');
-    });
+    await insertTableLines(editor, formatTableLines(rows, editor.document.languageId === 'org'));
 }
 
 /**
@@ -2149,72 +2245,11 @@ export async function importTableFromFile(): Promise<void> {
         return;
     }
 
-    // Detect delimiter: count tabs vs commas in first few lines
-    const sampleLines = fileContent.split('\n').slice(0, 5).join('\n');
-    const tabCount = (sampleLines.match(/\t/g) || []).length;
-    const commaCount = (sampleLines.match(/,/g) || []).length;
-
-    // Use tab if there are more tabs than commas, otherwise use comma
-    const delimiter = tabCount > commaCount ? '\t' : ',';
-
-    // Parse the data
-    const lines = fileContent.trim().split('\n');
-    const rows: string[][] = lines.map(line => {
-        if (delimiter === ',') {
-            // Handle CSV with quoted fields
-            const cells: string[] = [];
-            let current = '';
-            let inQuotes = false;
-
-            for (let i = 0; i < line.length; i++) {
-                const char = line[i];
-                if (char === '"') {
-                    if (inQuotes && line[i + 1] === '"') {
-                        current += '"';
-                        i++;
-                    } else {
-                        inQuotes = !inQuotes;
-                    }
-                } else if (char === ',' && !inQuotes) {
-                    cells.push(current.trim());
-                    current = '';
-                } else {
-                    current += char;
-                }
-            }
-            cells.push(current.trim());
-            return cells;
-        } else {
-            return line.split('\t').map(c => c.trim());
-        }
-    });
-
-    // Calculate column widths (using display width for emojis)
-    const columnWidths: number[] = [];
-    for (const row of rows) {
-        for (let i = 0; i < row.length; i++) {
-            columnWidths[i] = Math.max(columnWidths[i] || 0, getDisplayWidth(row[i]), 1);
-        }
-    }
-
-    // Format as org table
-    const isOrg = editor.document.languageId === 'org';
-    const tableLines: string[] = [];
-
-    for (let i = 0; i < rows.length; i++) {
-        tableLines.push(formatRow(rows[i], columnWidths));
-        // Add separator after first row (header)
-        if (i === 0) {
-            tableLines.push(formatSeparator(columnWidths, isOrg));
-        }
-    }
-
-    await editor.edit(editBuilder => {
-        editBuilder.insert(editor.selection.active, tableLines.join('\n') + '\n');
-    });
+    const rows = parseTableText(fileContent);
+    await insertTableLines(editor, formatTableLines(rows, editor.document.languageId === 'org'));
 
     vscode.window.showInformationMessage(
-        `Imported ${rows.length} rows from ${filePath.split('/').pop()} (${delimiter === '\t' ? 'tab' : 'comma'}-delimited)`
+        `Imported ${rows.length} rows from ${filePath.split('/').pop()}`
     );
 }
 
@@ -2446,9 +2481,9 @@ export async function sortByColumn(): Promise<void> {
 function initTruncationDecorations(): void {
     if (!truncationDecorationType) {
         truncationDecorationType = vscode.window.createTextEditorDecorationType({
-            // Hide text completely
-            opacity: '0',
-            letterSpacing: '-0.6em', // Collapse characters together
+            // Remove the hidden text from layout entirely; opacity or negative
+            // letter-spacing leave a residual width that misaligns the columns
+            textDecoration: 'none; display: none;',
         });
     }
     // ellipsisDecorationType is now created dynamically per cell
@@ -2481,61 +2516,114 @@ function findAllTables(document: vscode.TextDocument): TableInfo[] {
 }
 
 /**
- * Calculate the character position for a given column in a table row
- * Returns content boundaries and full cell boundaries (including padding)
+ * A span of a table line to hide when a <N> column is shown narrowed.
+ * `line` is relative to the first line passed to computeShrinkRanges, and
+ * start/end are string indices. `ellipsis` marks a cut cell whose hidden span
+ * starts with a ">" indicator.
  */
-function getCellPositionInRow(line: string, colIndex: number): {
-    contentStart: number;
-    contentEnd: number;
-    cellStart: number;  // After the leading |
-    cellEnd: number;    // Before the trailing | (includes padding)
-} | null {
-    if (!isTableRow(line)) return null;
-
-    let pipeCount = 0;
-    let cellStart = -1;
-    let cellEnd = -1;
-    let contentStart = -1;
-    let contentEnd = -1;
-
-    for (let i = 0; i < line.length; i++) {
-        if (line[i] === '|') {
-            if (pipeCount === colIndex) {
-                // Found the start pipe for this column
-                cellStart = i + 1;
-                contentStart = cellStart;
-                // Skip leading space for content start
-                while (contentStart < line.length && line[contentStart] === ' ') {
-                    contentStart++;
-                }
-            } else if (pipeCount === colIndex + 1) {
-                // Found the end pipe for this column
-                cellEnd = i;  // Full cell ends here (before the |)
-                contentEnd = cellEnd;
-                // Trim trailing space for content end
-                while (contentEnd > contentStart && line[contentEnd - 1] === ' ') {
-                    contentEnd--;
-                }
-                break;
-            }
-            pipeCount++;
-        }
-    }
-
-    if (cellStart === -1 || cellEnd === -1 || contentStart === -1) {
-        return null;
-    }
-
-    // Handle empty cells
-    if (contentEnd <= contentStart) {
-        contentEnd = contentStart;
-    }
-
-    return { contentStart, contentEnd, cellStart, cellEnd };
+export interface ShrinkRange {
+    line: number;
+    start: number;
+    end: number;
+    ellipsis: boolean;
 }
 
 /**
- * Apply truncation decorations to all tables in the active editor
+ * Compute the spans to hide so that each <N> column displays N wide while the
+ * buffer keeps the full cell text (like Emacs org-table-shrink).
+ *
+ * Each column is hidden inside its own cell, so the columns after it stay
+ * lined up. Lines that are not aligned to columnWidths (e.g. mid-edit) and the
+ * lines in skipLines are left untouched.
+ */
+export function computeShrinkRanges(
+    lines: string[],
+    columnWidths: number[],
+    maxWidths: (number | undefined)[],
+    specRow?: number,
+    skipLines: Set<number> = new Set()
+): ShrinkRange[] {
+    const ranges: ShrinkRange[] = [];
+
+    for (let lineIdx = 0; lineIdx < lines.length; lineIdx++) {
+        if (skipLines.has(lineIdx)) continue;
+        const line = lines[lineIdx];
+
+        // Map display columns to string indices: indexAt[col] is the index of
+        // the character starting at display column col (or the next one)
+        const startCol: number[] = [];
+        let col = 0;
+        for (let i = 0; i < line.length; i++) {
+            startCol.push(col);
+            col += getCharWidth(line[i]);
+        }
+        startCol.push(col);
+        const indexAt = (target: number): number => {
+            const idx = startCol.findIndex(c => c >= target);
+            return idx === -1 ? line.length : idx;
+        };
+
+        // Cell boundaries of an aligned row: | c0 | c1 | ... with interiors W+2 wide
+        const indent = line.length - line.trimStart().length;
+        const bounds: number[] = [indent];
+        for (const w of columnWidths) {
+            bounds.push(bounds[bounds.length - 1] + w + 3);
+        }
+        const aligned = bounds.every(b => {
+            const ch = line[indexAt(b)];
+            return startCol[indexAt(b)] === b && (ch === '|' || ch === '+');
+        });
+        if (!aligned) continue;
+        const isSeparator = isSeparatorRow(line);
+
+        for (let j = 0; j < columnWidths.length; j++) {
+            const maxWidth = maxWidths[j];
+            if (maxWidth === undefined || maxWidth < 1) continue;
+
+            const left = bounds[j] + 1;      // first display column inside the cell
+            const right = bounds[j + 1];     // display column of the closing pipe
+            const startIdx = indexAt(left);
+            const endIdx = indexAt(right);
+            const cellText = line.slice(startIdx, endIdx);
+            const content = cellText.trim();
+            const contentWidth = getDisplayWidth(content);
+
+            // Visible width: N, but always wide enough to show the cookie
+            const visible = lineIdx === specRow ? Math.max(maxWidth, contentWidth) : maxWidth;
+            if (columnWidths[j] <= visible) continue;
+
+            if (lineIdx === specRow) {
+                // Keep the cookie centred in the narrowed cell
+                const contentStart = left + (cellText.length - cellText.trimStart().length);
+                const pad = 1 + Math.floor((visible - contentWidth) / 2);
+                const keepFrom = contentStart - pad;
+                const keepTo = keepFrom + visible + 2;
+                if (keepFrom > left) {
+                    ranges.push({ line: lineIdx, start: startIdx, end: indexAt(keepFrom), ellipsis: false });
+                }
+                if (keepTo < right) {
+                    ranges.push({ line: lineIdx, start: indexAt(keepTo), end: endIdx, ellipsis: false });
+                }
+                continue;
+            }
+
+            // Data and separator rows: keep " " + N columns, hide the rest up
+            // to the closing " |". A cut cell shows N-1 characters and ">".
+            const cut = !isSeparator && contentWidth > maxWidth;
+            const hideFrom = indexAt(left + 1 + (cut ? maxWidth - 1 : maxWidth));
+            const hideTo = indexAt(right - 1);
+            if (hideFrom < hideTo) {
+                ranges.push({ line: lineIdx, start: hideFrom, end: hideTo, ellipsis: cut });
+            }
+        }
+    }
+
+    return ranges;
+}
+
+/**
+ * Apply truncation decorations to all tables in the active editor.
+ * The line with the cursor is shown in full so its text can be edited.
  */
 export function updateTruncationDecorations(editor: vscode.TextEditor): void {
     initTruncationDecorations();
@@ -2549,176 +2637,36 @@ export function updateTruncationDecorations(editor: vscode.TextEditor): void {
         return;
     }
 
-    const tables = findAllTables(document);
+    const cursorLine = editor.selection.active.line;
     const truncationRanges: vscode.DecorationOptions[] = [];
     const ellipsisRanges: vscode.DecorationOptions[] = [];
 
-    for (const table of tables) {
-        // Check if this table has any max width specifications
-        const hasMaxWidths = table.columnMaxWidths.some(w => w !== undefined);
-        if (!hasMaxWidths) continue;
+    for (const table of findAllTables(document)) {
+        if (!table.columnMaxWidths.some(w => w !== undefined)) continue;
 
-        // Adjust spec row to match truncated data width (center the cookie)
-        if (table.specRow !== undefined) {
-            const specLineNum = table.startLine + table.specRow;
-            const specLine = document.lineAt(specLineNum).text;
-
-            for (let colIdx = 0; colIdx < table.columnMaxWidths.length; colIdx++) {
-                const maxWidth = table.columnMaxWidths[colIdx];
-                if (maxWidth === undefined) continue;
-
-                const cellPos = getCellPositionInRow(specLine, colIdx);
-                if (!cellPos) continue;
-
-                // Target visible width = maxWidth + 1 (for ">" indicator on data rows)
-                const targetWidth = maxWidth + 1;
-
-                // Get the cookie content width
-                const cookieContent = specLine.slice(cellPos.contentStart, cellPos.contentEnd);
-                const cookieWidth = getDisplayWidth(cookieContent);
-
-                // Calculate balanced padding to center the cookie
-                const totalPaddingNeeded = targetWidth - cookieWidth;
-                const leftPadding = Math.floor(totalPaddingNeeded / 2);
-                const rightPadding = totalPaddingNeeded - leftPadding;
-
-                // Calculate visible region centered on the cookie
-                const visibleStart = Math.max(cellPos.cellStart, cellPos.contentStart - leftPadding);
-                const visibleEnd = Math.min(cellPos.cellEnd, cellPos.contentEnd + rightPadding);
-
-                // Hide everything before the visible region
-                if (visibleStart > cellPos.cellStart) {
-                    truncationRanges.push({
-                        range: new vscode.Range(specLineNum, cellPos.cellStart, specLineNum, visibleStart)
-                    });
-                }
-
-                // Hide everything after the visible region
-                if (visibleEnd < cellPos.cellEnd) {
-                    truncationRanges.push({
-                        range: new vscode.Range(specLineNum, visibleEnd, specLineNum, cellPos.cellEnd)
-                    });
-                }
-            }
+        const lines: string[] = [];
+        for (let i = table.startLine; i <= table.endLine; i++) {
+            lines.push(document.lineAt(i).text);
+        }
+        const skipLines = new Set<number>();
+        if (cursorLine >= table.startLine && cursorLine <= table.endLine) {
+            skipLines.add(cursorLine - table.startLine);
         }
 
-        // Process separator rows - truncate to match constrained column widths
-        for (const sepLineNum of table.separatorLines) {
-            const sepLine = document.lineAt(sepLineNum).text;
-
-            // Calculate where the separator should end based on maxWidth constraints
-            // Format: |---+---...| where each column section is (width + 2) chars
-            let expectedEnd = 1; // Start after initial |
-            for (let colIdx = 0; colIdx < table.columnWidths.length; colIdx++) {
-                const maxWidth = table.columnMaxWidths[colIdx];
-                // Use maxWidth if specified, otherwise use calculated column width
-                const colWidth = maxWidth !== undefined ? maxWidth : table.columnWidths[colIdx];
-                // Add targetWidth + 1 (for >) + 2 (for padding " | ") for truncated cols
-                // Or colWidth + 2 for normal columns
-                const cellWidth = maxWidth !== undefined ? (maxWidth + 1 + 2) : (colWidth + 2);
-                expectedEnd += cellWidth;
-                if (colIdx < table.columnWidths.length - 1) {
-                    expectedEnd += 1; // For the + separator between columns
-                }
-            }
-            expectedEnd += 1; // For final |
-
-            // If separator is longer than expected, hide the excess
-            const sepLength = sepLine.length;
-            if (sepLength > expectedEnd) {
-                // Find the position of the last | that should be visible
-                // We need to hide dashes before the final |, not after
-                const lastPipeIdx = sepLine.lastIndexOf('|');
-                if (lastPipeIdx > expectedEnd - 1) {
-                    truncationRanges.push({
-                        range: new vscode.Range(sepLineNum, expectedEnd - 1, sepLineNum, lastPipeIdx)
-                    });
-                }
-            }
-        }
-
-        // Process each data row
-        for (let rowIdx = 0; rowIdx < table.rows.length; rowIdx++) {
-            const lineNum = table.startLine + rowIdx;
-            const row = table.rows[rowIdx];
-
-            // Skip empty rows (separators are handled above, spec rows handled separately)
-            if (row.length === 0) continue;
-
-            // Skip the spec row itself
-            if (rowIdx === table.specRow) continue;
-
-            const line = document.lineAt(lineNum).text;
-
-            // Check each column for truncation
-            for (let colIdx = 0; colIdx < row.length; colIdx++) {
-                const maxWidth = table.columnMaxWidths[colIdx];
-                if (maxWidth === undefined) continue;
-
-                const cellContent = row[colIdx];
-                const cellDisplayWidth = getDisplayWidth(cellContent);
-
-                // Find the cell position in the line
-                const cellPos = getCellPositionInRow(line, colIdx);
-                if (!cellPos) continue;
-
-                // Always hide leading padding for columns with maxWidth
-                if (cellPos.cellStart < cellPos.contentStart) {
-                    truncationRanges.push({
-                        range: new vscode.Range(lineNum, cellPos.cellStart, lineNum, cellPos.contentStart)
-                    });
-                }
-
-                // Target visible width should match truncated cells (maxWidth + 1 for ">" indicator)
-                const targetWidth = maxWidth + 1;
-
-                // Only truncate content if it exceeds max width
-                if (cellDisplayWidth <= maxWidth) {
-                    // Content fits - keep enough trailing padding to match targetWidth
-                    const neededPadding = targetWidth - cellDisplayWidth;
-                    const currentTrailingPad = cellPos.cellEnd - cellPos.contentEnd;
-                    const excessTrailing = currentTrailingPad - neededPadding;
-
-                    if (excessTrailing > 0) {
-                        // Hide only the excess trailing padding
-                        truncationRanges.push({
-                            range: new vscode.Range(lineNum, cellPos.cellEnd - excessTrailing, lineNum, cellPos.cellEnd)
-                        });
-                    }
-                    continue;
-                }
-
-                // Calculate where to start hiding (after maxWidth characters)
-                let displayCount = 0;
-                let truncateAt = cellPos.contentStart;
-                for (let i = cellPos.contentStart; i < cellPos.contentEnd; i++) {
-                    if (displayCount >= maxWidth) {
-                        truncateAt = i;
-                        break;
-                    }
-                    const char = line[i];
-                    const charWidth = getDisplayWidth(char);
-                    displayCount += charWidth;
-                    truncateAt = i + 1;
-                }
-
-                // Hide overflow AND trailing padding
-                if (truncateAt < cellPos.cellEnd) {
-                    truncationRanges.push({
-                        range: new vscode.Range(lineNum, truncateAt, lineNum, cellPos.cellEnd)
-                    });
-
-                    // Add truncation indicator ">"
-                    ellipsisRanges.push({
-                        range: new vscode.Range(lineNum, truncateAt, lineNum, truncateAt),
-                        renderOptions: {
-                            after: {
-                                contentText: '>',
-                                color: new vscode.ThemeColor('editorWarning.foreground')
-                            }
+        const ranges = computeShrinkRanges(lines, table.columnWidths, table.columnMaxWidths, table.specRow, skipLines);
+        for (const r of ranges) {
+            const lineNum = table.startLine + r.line;
+            truncationRanges.push({ range: new vscode.Range(lineNum, r.start, lineNum, r.end) });
+            if (r.ellipsis) {
+                ellipsisRanges.push({
+                    range: new vscode.Range(lineNum, r.start, lineNum, r.start),
+                    renderOptions: {
+                        after: {
+                            contentText: '>',
+                            color: new vscode.ThemeColor('editorWarning.foreground')
                         }
-                    });
-                }
+                    }
+                });
             }
         }
     }
@@ -2918,8 +2866,8 @@ async function expandColumn(uri: vscode.Uri, tableStartLine: number, colIdx: num
         editBuilder.replace(range, newSpecRow);
     });
 
-    // Re-align the table
-    await alignTable();
+    // Re-align this table (a CodeLens click does not move the cursor into it)
+    await alignTableAt(editor, new vscode.Position(tableStartLine, 0));
 
     // Refresh CodeLens
     codeLensProvider?.refresh();
@@ -2966,8 +2914,8 @@ async function expandAllColumns(uri: vscode.Uri, tableStartLine: number): Promis
         editBuilder.replace(range, newSpecRow);
     });
 
-    // Re-align the table
-    await alignTable();
+    // Re-align this table (a CodeLens click does not move the cursor into it)
+    await alignTableAt(editor, new vscode.Position(tableStartLine, 0));
 
     // Refresh CodeLens
     codeLensProvider?.refresh();
@@ -3021,6 +2969,18 @@ export function registerTableCommands(context: vscode.ExtensionContext): void {
         vscode.window.onDidChangeActiveTextEditor(editor => {
             if (editor) {
                 updateTruncationDecorations(editor);
+            }
+        })
+    );
+
+    // The cursor's line is shown unshrunk, so update when it moves to another line
+    let lastCursorLine = -1;
+    context.subscriptions.push(
+        vscode.window.onDidChangeTextEditorSelection(event => {
+            const line = event.selections[0]?.active.line ?? -1;
+            if (line !== lastCursorLine && event.textEditor.document.languageId === 'org') {
+                lastCursorLine = line;
+                updateTruncationDecorations(event.textEditor);
             }
         })
     );

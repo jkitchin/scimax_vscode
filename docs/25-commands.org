@@ -95,7 +95,7 @@ excluded from exports. See [[file:43-notes.org][Dialog Notes]].
 | [[cmd:scimax.org.addNote]]  | Add a Note/Decision/Question footnote on the selection  | -                  |
 | [[cmd:scimax.notes.refresh]] | Refresh the Notes panel                                | -                  |
 
-** ⚠️ Crucible Knowledge Bases
+** Crucible Knowledge Bases
 
 Browse and search [[https://github.com/jkitchin/crucible][crucible]] wikis, and show the graph around an article.
 See [[file:48-crucible.org][Crucible Knowledge Bases]].
@@ -619,12 +619,11 @@ Loaded exporters are also listed in the export dispatcher (=C-c C-e=) under
 | [[cmd:scimax.export.showExporterProblems]]  | Show Custom Exporter Problems    | -                  |
 | [[cmd:scimax.export.insertExporterHeader]]  | Insert Custom Exporter Header    | -                  |
 
-* ✅ Links
-CLOSED: [2026-10-22 Thu 10:09]
+* ⚠️ Links
 
 | Command ID                           | Description                               | Default Keybinding      |
 |--------------------------------------+-------------------------------------------+-------------------------|
-| [[cmd:scimax.org.insertLink]]        | Insert Link                               | C-c C-l                 |
+| [[cmd:scimax.org.insertLink]]        | Insert Link (edits the link at point)     | C-c C-l                 |
 | [[cmd:scimax.org.openLink]]          | Open Link at Point                        | C-c C-o / RET (on link) |
 | [[cmd:scimax.org.storeLink]]         | Store Link (for later insertion)          | -                       |
 | [[cmd:scimax.org.deleteFileLink]]    | Delete File Link (and optionally file)    | -                       |
@@ -839,7 +838,7 @@ Commands for debugging issues and reporting problems.
 | [[cmd:scimax.contextHelp]]     | Context-Sensitive Help     | -                  |
 | [[cmd:scimax.openLogDirectory]]| Open Log Files Directory   | -                  |
 
-** ⚠️ AI Agent Skills
+** AI Agent Skills
 
 Install the bundled scimax skills for Claude Code, VS Code (GitHub Copilot), Codex,
 Cursor and other agents. See [[file:30-cli.org::*Skill][CLI: Skill]].
@@ -1015,7 +1014,7 @@ CLOSED: [2026-01-17 Sat 12:46]
 * ✅ Navigation
 CLOSED: [2026-01-17 Sat 12:47]
 
-** 👀 Fuzzy Search (Swiper)
+** Fuzzy Search (Swiper)
 
 | Command ID                                       | Description                      | Default Keybinding |
 |--------------------------------------------------+----------------------------------+--------------------|
@@ -1502,12 +1501,12 @@ These commands help prepare LaTeX manuscripts for submission by:
 - Creating a self-contained submission directory
 
 * ✅ Image Overlays
-CLOSED: [2026-01-17 Sat 12:50]
+CLOSED: [2026-10-30 Fri 08:06]
 
 | Command ID                                     | Description                            | Default Keybinding |
 |------------------------------------------------+----------------------------------------+--------------------|
 | [[cmd:scimax.imageOverlays.toggle]]            | Toggle Image Overlays                  | -                  |
-| [[cmd:scimax.imageOverlays.toggleCurrentFile]] | Toggle Image Overlays for Current File | -                  |
+| [[cmd:scimax.imageOverlays.toggleCurrentFile]] | Toggle Image Overlays for Current File | C-c C-x C-v        |
 | [[cmd:scimax.imageOverlays.refresh]]           | Refresh Image Overlays                 | -                  |
 | [[cmd:scimax.imageOverlays.clearCache]]        | Clear Image Overlay Cache              | -                  |
 | [[cmd:scimax.imageOverlays.showStats]]         | Show Image Overlay Cache Statistics    | -                  |

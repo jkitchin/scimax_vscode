@@ -295,7 +295,7 @@ scimax tangle setup.org --json
 
 Relative =:tangle= paths are resolved against the directory of the source file, and parent directories are created as needed. Note that =--only= filters *named* blocks; unnamed blocks with a =:tangle= target are always tangled.
 
-** ⚠️ Marp Slides
+** Marp Slides
 
 Build a Marp deck into one self-contained HTML file with the presenter tools
 (pen, laser, spotlight, sticky notes, talk timer, saving with ink, live Python
@@ -1044,7 +1044,7 @@ scimax publish --init --name docs --base ./docs --output ./_build/html
 
 If the source directory has no =_toc.yml=, =--init= prints an example one.
 
-** 👀 Skill
+** Skill
 
 Scimax ships four agent skills that let an AI coding agent use the CLI and answer
 questions about your notes, agenda, projects, org syntax and slides:
@@ -1060,7 +1060,7 @@ They live in =skills/<name>/SKILL.md= in the repository and follow the
 [[https://agentskills.io/specification][Agent Skills specification]], so they work with
 Claude Code, VS Code (GitHub Copilot), Codex, Cursor, OpenCode and Gemini CLI.
 
-*** ⚠️ Installing
+*** Installing
 
 Any of these gives the same result:
 
@@ -1078,7 +1078,7 @@ OpenCode and Gemini CLI read, and =~/.claude/skills/<name>= is a symlink to it f
 Claude Code. The install is recorded in =~/.agents/.skill-lock.json=, so
 =knowhow check=, =knowhow upgrade= and =npx skills update= can keep it current.
 
-*** 👀 Commands
+*** Commands
 
 #+begin_src bash
 scimax skill install [name...]    # Install skills (default: all four)
@@ -1098,7 +1098,7 @@ scimax skill path                 # Print the installation directory
 was installed by something else, unless you pass =--force=. =uninstall= only removes
 skills whose lock entry says they came from =jkitchin/scimax_vscode=.
 
-*** ⚠️ Learnings
+*** Learnings
 
 When you correct the agent, it appends the correction to
 =~/.config/scimax/learnings.md= (=$XDG_CONFIG_HOME/scimax/learnings.md= if set), and

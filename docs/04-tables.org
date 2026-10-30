@@ -30,38 +30,59 @@ Type a table using pipe characters (|) as column separators:
 When you press Tab after entering content, the table auto-aligns.
 
 ** ✅ Table Creation Command
-CLOSED: [2026-01-15 Thu 15:07]
+CLOSED: [2026-10-30 Fri 07:57]
 
 Press =C-c |= or use `scimax.table.create' to insert a table template.
 
-You'll be prompted for the number of columns and rows.
+You'll be prompted for the number of columns. If the clipboard holds table
+data (see [[*Converting Text to Table][Converting Text to Table]]), =C-c |= first offers to insert it
+as a table instead.
 
 ** ✅ Converting Text to Table
-CLOSED: [2026-01-15 Thu 15:26]
+CLOSED: [2026-10-30 Fri 07:58]
 
-Select comma-separated or tab-separated text, then use =C-c |= to convert
-it to a table.
+Select table data, then use =C-c |= to convert it to a table. With nothing
+selected, =C-c |= offers the clipboard when it holds table data (two or more
+lines with the same number of fields).
 
-1,2
-3,4
+name,value
+a,1
 
-leads to 
+leads to
 
-| 1 | 2 |
-| 3 | 4 |
+| name | value |
+|------+-------|
+| a    | 1     |
+
+Recognised formats, tried in this order:
+
+| Format             | Example                 | Notes                                |
+|--------------------+-------------------------+--------------------------------------|
+| Org/Markdown table | =\vert a \vert b \vert= | Rule lines are dropped               |
+| Tab-separated      | spreadsheet copy        | Cells may contain commas             |
+| Semicolon (;)      | =1,5;2,3=               | European CSV with decimal commas     |
+| Comma (CSV)        | ="Smith, J",42=         | "..." quoting, "" escapes, newlines  |
+| Aligned columns    | terminal/pandas output  | Split on runs of two or more spaces  |
+| Whitespace         | =1 2 3=                 | Fallback: split on any whitespace    |
+
+When there are two or more rows, a rule is added under the first one (the
+header). Short rows are padded with empty cells, and a literal =|= in a
+cell is written as =\vert{}= (=\|= in Markdown) so it does not start a new
+column.
 
 
 * ✅ Table Navigation
 CLOSED: [2026-01-15 Thu 15:26]
 
-** ✅ Moving Between Cells
-CLOSED: [2026-01-17 Sat 19:43]
+** 👀 Moving Between Cells
 
-| Key        | Action                                 |
-|------------+----------------------------------------|
-| <tab>      | Move to next cell (creates row at end) |
-| S-<tab>    | Move to previous cell                  |
-| Arrow keys | Move in that direction                 |
+| Key        | Action                                            |
+|------------+---------------------------------------------------|
+| <tab>      | Align, then move to next cell (creates row at end) |
+| S-<tab>    | Move to previous cell                             |
+| Arrow keys | Move in that direction                            |
+
+Tab remembers which cell you were in before aligning, so it always moves to the next cell even when aligning shifts the cells along the line.
 
 ** ✅ Quick Navigation
 CLOSED: [2026-01-17 Sat 19:43]
@@ -134,14 +155,15 @@ Notes:
 - Rows with fewer cells than the rest of the table are padded with empty cells
   so the swap lands in the right column.
 
-** ✅ Separator Lines
-CLOSED: [2026-01-15 Thu 15:36]
+** 👀 Separator Lines
 
 Insert horizontal separator lines to divide table sections:
 
-| Key      | Action                  |         |   |
-|----------+-------------------------+---------+---|
-| C-c - | Insert separator line ( | ---+--- | ) |
+| Key   | Action                                    |
+|-------+-------------------------------------------|
+| C-c - | Insert separator line (=\vert{}---+---\vert{}=) |
+
+You can also type the shorthand =|-= on a line of its own. Aligning the table (Tab or C-c C-c) expands it to a full separator.
 
 Example with separators:
 #+BEGIN_SRC org
@@ -156,13 +178,16 @@ Example with separators:
 * ✅ Table Alignment
 CLOSED: [2026-01-15 Thu 15:15]
 
-** ✅ Automatic Alignment
-CLOSED: [2026-01-15 Thu 15:15]
+** 👀 Automatic Alignment
 
-Tables auto-align when you press Tab. Column widths adjust to fit content.
+Tables auto-align when you press Tab. Press C-c C-c anywhere in a table to re-align it without moving (=scimax.table.align=). On a =#+TBLFM:= line, C-c C-c recalculates the formulas instead. Column widths adjust to fit content.
+
+With descriptive links on (=scimax.org.descriptiveLinks=, the default), a cell is measured as it is displayed: =[[target][desc]]= counts as =desc= and =[[target]]= as =target=. The collapsed table then lines up on screen, as =org-table-align= does in Emacs, while the raw text has extra padding where links are.
+
+As in org-mode, a line only has to start with =|= to be a table row. A row you are still typing (for example =| new=) belongs to the table, and aligning adds its missing cells and closing =|=.
 
 ** ✅ Column Width Specification
-CLOSED: [2026-01-17 Sat 19:43]
+CLOSED: [2026-10-30 Fri 07:58]
 
 Specify fixed column widths using <N> in a cell:
 
@@ -175,7 +200,11 @@ Specify fixed column widths using <N> in a cell:
 | Long text you don't want showing all of | Short |
 | More long                               | More  |
 
-Text exceeding the width is truncated in display (but preserved internally).
+Text exceeding the width is truncated in display only, with a =>= marking cut
+cells; the file keeps the full text, as in Emacs. The line with the cursor is
+shown in full so you can edit it, and hovering a cut cell shows its content.
+Click the =⊞ Expand col N= CodeLens above the cookie row to change =<N>= to
+=<l>= and realign the table at full width.
 
 ** ✅ Horizontal Alignment
 CLOSED: [2026-01-15 Thu 15:32]
@@ -509,15 +538,17 @@ Control how formula results are displayed:
 CLOSED: [2026-01-17 Sat 19:44]
 
 ** ✅ Importing Tables
-CLOSED: [2026-01-17 Sat 19:48]
+CLOSED: [2026-10-30 Fri 07:58]
 
-Import data from CSV files:
+Import data from the clipboard or a file. Both understand the formats in
+[[*Converting Text to Table][Converting Text to Table]].
 
-| Command             | Description            |
-|---------------------+------------------------|
-| scimax.table.import | Import table from file |
+| Command                 | Description                 |
+|-------------------------+-----------------------------|
+| scimax.table.import     | Import table from clipboard |
+| scimax.table.importFile | Import table from a file    |
 
-The import command will prompt for the file path and delimiter.
+The file command prompts for a =.csv=, =.tsv= or =.txt= file.
 
 ** Exporting Tables
 

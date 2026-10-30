@@ -2,6 +2,7 @@ import * as vscode from 'vscode';
 import * as fs from 'fs';
 import * as path from 'path';
 import { ReferenceManager } from './referenceManager';
+import { findBareRefs, findLabelLine } from './refLinks';
 import { formatCitation, formatAuthors, formatCitationLink, parseBibTeX } from './bibtexParser';
 import {
     fetchOpenAlexWork,
@@ -401,6 +402,14 @@ export class BibliographyHoverProvider implements vscode.HoverProvider {
 }
 
 /**
+ * Find where a ref label is defined: the current document first, then other
+ * org files in the workspace.
+ */
+export function findLabelDefinition(document: vscode.TextDocument, label: string) {
+    return new RefHoverProvider().findLabelDefinition(document, label);
+}
+
+/**
  * Hover provider for cross-reference links (ref:, eqref:, etc.)
  * Shows context around the label definition
  */
@@ -413,23 +422,13 @@ export class RefHoverProvider implements vscode.HoverProvider {
         const line = document.lineAt(position.line).text;
 
         // Match org-ref style links: ref:label, eqref:label, pageref:label, etc.
-        // Use negative lookbehind to avoid matching href:, etc.
-        // Labels may contain colons (e.g. ref:tab:flows-cmp), so colons are allowed inside the label.
-        const orgRefPattern = /(?<!\w)(ref|eqref|pageref|nameref|autoref|cref|Cref):([^\s<>[\](){},]+)/g;
-
-        let match;
-        while ((match = orgRefPattern.exec(line)) !== null) {
-            const start = match.index;
-            const end = start + match[0].length;
-
-            if (position.character >= start && position.character <= end) {
-                const refType = match[1];
-                // Strip trailing punctuation that's typically sentence terminators
-                const label = match[2].replace(/[.,;:!?]+$/, '');
-                return this.createRefHover(document, refType, label);
+        for (const ref of findBareRefs(line)) {
+            if (position.character >= ref.start && position.character <= ref.end) {
+                return this.createRefHover(document, ref.type, ref.label);
             }
         }
 
+        let match;
         // Match LaTeX style refs: \ref{label}, \eqref{label}, \pageref{label}, etc.
         const latexRefPattern = /\\(ref|eqref|pageref|nameref|autoref|cref|Cref|vref|fref|Fref)\{([^}]+)\}/g;
 
@@ -493,7 +492,7 @@ export class RefHoverProvider implements vscode.HoverProvider {
         return new vscode.Hover(markdown);
     }
 
-    private async findLabelDefinition(
+    async findLabelDefinition(
         document: vscode.TextDocument,
         label: string
     ): Promise<{
@@ -503,45 +502,21 @@ export class RefHoverProvider implements vscode.HoverProvider {
         line: number;
         surroundingLines: string[];
     } | null> {
-        // Patterns to find label definitions
-        // Note: patterns are made more permissive to handle trailing whitespace and line endings
-        const escapedLabel = this.escapeRegex(label);
-        const labelPatterns = [
-            // org-ref style: label:name
-            { regex: new RegExp(`label:${escapedLabel}(?=[\\s.,;:!?)]|$)`, 'i'), type: 'Label' },
-            // LaTeX style: \label{name}
-            { regex: new RegExp(`\\\\label\\{${escapedLabel}\\}`, 'i'), type: 'LaTeX Label' },
-            // org-mode CUSTOM_ID property
-            { regex: new RegExp(`:CUSTOM_ID:\\s*${escapedLabel}(?:\\s|$)`, 'i'), type: 'Heading (CUSTOM_ID)' },
-            // org-mode #+NAME: (more permissive - allows trailing content)
-            { regex: new RegExp(`^\\s*#\\+NAME:\\s*${escapedLabel}(?:\\s|$)`, 'i'), type: 'Named Element' },
-            // org-mode #+LABEL: (for figures/tables)
-            { regex: new RegExp(`^\\s*#\\+LABEL:\\s*${escapedLabel}(?:\\s|$)`, 'i'), type: 'Figure/Table' }
-        ];
+        const locate = (lines: string[], file: string) => {
+            const found = findLabelLine(lines, label);
+            if (!found) return null;
+            return {
+                type: found.type,
+                context: this.getContext(lines, found.line, found.type),
+                file,
+                line: found.line,
+                surroundingLines: this.getSurroundingLines(lines, found.line, 2)
+            };
+        };
 
         // Search in current document first
-        const text = document.getText();
-        const lines = text.split('\n');
-
-        for (let i = 0; i < lines.length; i++) {
-            // Trim trailing whitespace/carriage returns that may remain after split
-            const line = lines[i].replace(/\r$/, '');
-            for (const { regex, type } of labelPatterns) {
-                if (regex.test(line)) {
-                    // Found the label! Get context
-                    const context = this.getContext(lines, i, type);
-                    const surroundingLines = this.getSurroundingLines(lines, i, 2);
-
-                    return {
-                        type,
-                        context,
-                        file: document.uri.fsPath,
-                        line: i,
-                        surroundingLines
-                    };
-                }
-            }
-        }
+        const here = locate(document.getText().split('\n'), document.uri.fsPath);
+        if (here) return here;
 
         // Search in other org files in workspace
         const workspaceFolders = vscode.workspace.workspaceFolders;
@@ -558,26 +533,8 @@ export class RefHoverProvider implements vscode.HoverProvider {
 
                     try {
                         const content = fs.readFileSync(fileUri.fsPath, 'utf8');
-                        const fileLines = content.split('\n');
-
-                        for (let i = 0; i < fileLines.length; i++) {
-                            // Trim trailing whitespace/carriage returns
-                            const line = fileLines[i].replace(/\r$/, '');
-                            for (const { regex, type } of labelPatterns) {
-                                if (regex.test(line)) {
-                                    const context = this.getContext(fileLines, i, type);
-                                    const surroundingLines = this.getSurroundingLines(fileLines, i, 2);
-
-                                    return {
-                                        type,
-                                        context,
-                                        file: fileUri.fsPath,
-                                        line: i,
-                                        surroundingLines
-                                    };
-                                }
-                            }
-                        }
+                        const there = locate(content.split('\n'), fileUri.fsPath);
+                        if (there) return there;
                     } catch {
                         // Ignore file read errors
                     }
@@ -659,10 +616,6 @@ export class RefHoverProvider implements vscode.HoverProvider {
         }
 
         return result;
-    }
-
-    private escapeRegex(str: string): string {
-        return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     }
 }
 

@@ -41,6 +41,8 @@ import {
 } from './planningLine';
 import { pushMark } from '../mark/markRing';
 import { extractCiteKeysFromPath } from '../references/citationParser';
+import { findBareRefs, REF_LINK_PATH_RE } from '../references/refLinks';
+import { findBracketLinkAt, formatBracketLink } from './bracketLink';
 import { marpLinkArgs } from '../marp/marpExport';
 import * as os from 'os';
 import { expandTilde } from '../utils/pathResolver';
@@ -771,7 +773,7 @@ function isInSrcBlock(document: vscode.TextDocument, position: vscode.Position):
  * Check if line is in a table
  */
 function isInTable(lineText: string): boolean {
-    return lineText.trim().startsWith('|') && lineText.trim().endsWith('|');
+    return lineText.trim().startsWith('|');
 }
 
 /**
@@ -1748,8 +1750,10 @@ export async function updateClosedTimestamp(
                 );
             });
         }
-    } else if (!isNowInDoneState && wasInDoneState) {
-        // Transitioning FROM done state - remove CLOSED timestamp
+    } else if (!isNowInDoneState) {
+        // Not done (now) - remove any CLOSED timestamp. As in org-mode this
+        // does not depend on the previous state, so a stale CLOSED under a
+        // not-done heading is cleared too.
         const planningLineNum = findPlanningLineNumber(document, headingLine);
 
         if (planningLineNum !== -1) {
@@ -2351,6 +2355,12 @@ export async function toggleCheckbox(): Promise<void> {
     const position = editor.selection.active;
     const line = document.lineAt(position.line);
     const lineText = line.text;
+
+    // In a table, C-c C-c re-aligns it (as in org-mode)
+    if (isInTable(lineText)) {
+        await vscode.commands.executeCommand('scimax.table.align');
+        return;
+    }
 
     // Match checkbox: - [ ], - [X], - [-]
     const checkboxMatch = lineText.match(/^(\s*[-+*]|\s*\d+[.)])\s+\[([ Xx-])\]\s+(.*)$/);
@@ -3019,13 +3029,46 @@ export function clearStoredLink(): void {
 }
 
 /**
+ * Edit the org bracket link at the cursor: prompt for its target and
+ * description, prefilled with the current values (like Emacs C-c C-l on a link).
+ * Returns false when the cursor is not on a bracket link.
+ */
+async function editLinkAtPoint(editor: vscode.TextEditor): Promise<boolean> {
+    const position = editor.selection.active;
+    const link = findBracketLinkAt(editor.document.lineAt(position.line).text, position.character);
+    if (!link) return false;
+
+    const target = await vscode.window.showInputBox({
+        prompt: 'Edit link target',
+        value: link.target
+    });
+    if (!target) return true;
+
+    const description = await vscode.window.showInputBox({
+        prompt: 'Edit link description (empty for none)',
+        value: link.description ?? ''
+    });
+    if (description === undefined) return true;
+
+    const range = new vscode.Range(position.line, link.start, position.line, link.end);
+    const newLink = formatBracketLink(target, description);
+    await editor.edit(editBuilder => editBuilder.replace(range, newLink));
+    const after = new vscode.Position(position.line, link.start + newLink.length);
+    editor.selection = new vscode.Selection(after, after);
+    return true;
+}
+
+/**
  * Insert an org link
+ * On an existing bracket link, edits that link instead
  * If a link was previously stored with storeLink, offers to use it
  * Uses fuzzy link syntax when inserting in the same file
  */
 export async function insertLink(): Promise<void> {
     const editor = vscode.window.activeTextEditor;
     if (!editor) return;
+
+    if (await editLinkAtPoint(editor)) return;
 
     let url: string | undefined;
     let description: string | undefined;
@@ -3073,7 +3116,7 @@ export async function insertLink(): Promise<void> {
         });
     }
 
-    const link = description ? `[[${url}][${description}]]` : `[[${url}]]`;
+    const link = formatBracketLink(url, description);
 
     await editor.edit(editBuilder => {
         editBuilder.insert(editor.selection.active, link);
@@ -3095,6 +3138,13 @@ export function getLinkAtPoint(document: vscode.TextDocument, position: vscode.P
         // Bare URLs
         /https?:\/\/[^\s\]>)]+/g,
     ];
+
+    // Bare reference links: ref:label, eqref:label (trailing punctuation dropped)
+    for (const ref of findBareRefs(line)) {
+        if (position.character >= ref.start && position.character <= ref.end) {
+            return { url: `${ref.type}:${ref.label}`, start: ref.start, end: ref.end };
+        }
+    }
 
     for (const pattern of patterns) {
         pattern.lastIndex = 0; // Reset regex state
@@ -3245,9 +3295,12 @@ export async function openLinkAtPoint(): Promise<void> {
     } else if (url.startsWith('id:')) {
         // ID link: [[id:uuid]] - search for :ID: property
         await searchAndJumpToId(url.slice(3));
-    } else if (url.startsWith('ref:')) {
-        // Reference link: [[ref:name]] - search for #+name: name
-        await searchAndJumpToTarget(document, url.slice(4));
+    } else if (REF_LINK_PATH_RE.test(url)) {
+        // Reference link: ref:name, eqref:name - #+name:, label:, \label{}, ...
+        await vscode.commands.executeCommand('scimax.ref.gotoLabel', {
+            file: document.uri.fsPath,
+            label: url.replace(REF_LINK_PATH_RE, '$2')
+        });
     } else if (url.includes('::')) {
         // File link with search component but without file: prefix
         // e.g., [[05-links.org::#custom-id]] or [[file.org::*Heading]]

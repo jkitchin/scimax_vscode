@@ -651,13 +651,16 @@ Beyond citations, Scimax supports cross-references to figures, tables, equations
 
 Define labels for cross-referencing. The =ref:= link type searches for these label definitions:
 
-| Definition Type | Syntax                    | Example               |
-|-----------------+---------------------------+-----------------------|
-| #+NAME:         | =#+NAME: label=           | Tables, figures, blocks |
-| #+LABEL:        | =#+LABEL: label=          | Figures, tables       |
-| label:          | =label:label=             | Inline labels         |
-| \label{}        | =\label{label}=           | LaTeX labels          |
-| :CUSTOM_ID:     | =:CUSTOM_ID: label=       | Heading IDs           |
+| Definition Type | Syntax              | Example                 |
+|-----------------+---------------------+-------------------------|
+| #+NAME:         | =#+NAME: label=     | Tables, figures, blocks |
+| #+LABEL:        | =#+LABEL: label=    | Figures, tables         |
+| label:          | =label:label=       | Inline labels           |
+| \label{}        | =\label{label}=     | LaTeX labels            |
+| :CUSTOM_ID:     | =:CUSTOM_ID: label= | Heading IDs             |
+| <<target>>      | =<<label>>=         | Dedicated targets       |
+
+The current file is searched first, then the other org files in the workspace.
 
 *** Org-Mode Labels
 
@@ -698,6 +701,22 @@ The ref:methods section describes our approach.
 
 See equation \eqref{eq:main} for details.
 #+END_SRC
+
+** Following Reference Links
+
+Reference links are clickable wherever they appear, including inside table
+cells, and in both forms:
+
+- bare: =ref:tbl-data=, =eqref:eq-main=, ...
+- bracketed: =[[ref:tbl-data]]= or =[[ref:tbl-data][the table]]=
+
+Ctrl+click (Cmd+click on macOS) a reference, or put the cursor on it and press
+=C-c C-o= (=scimax.org.openLink=), to jump to the label definition. The
+target is unfolded if it is in a folded heading.
+
+Trailing sentence punctuation is not part of the label, so in
+=see ref:tbl-data.= the link goes to =tbl-data=. Labels may contain colons,
+as in =ref:tab:flows=.
 
 ** Reference Hover
 

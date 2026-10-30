@@ -26,7 +26,8 @@ vi.mock('vscode', () => ({
     EventEmitter: class { event = vi.fn(); fire = vi.fn(); dispose = vi.fn(); },
 }));
 
-import { parseRow, swapCell, CellMoveRow } from '../tableProvider';
+import { parseRow, swapCell, CellMoveRow, computeShrinkRanges, ShrinkRange,
+    parseTableText, formatTableLines, looksLikeTable } from '../tableProvider';
 
 describe('parseRow', () => {
     it('splits a simple row on pipes', () => {
@@ -176,5 +177,112 @@ describe('swapCell', () => {
 
     it('refuses a cursor column past the end of the table', () => {
         expect(swapCell(table(), 2, 3, 0, 1)).toBeNull();
+    });
+});
+
+/** Render lines the way the editor shows them with the shrink decorations applied */
+function renderShrunk(lines: string[], ranges: ShrinkRange[]): string[] {
+    return lines.map((line, i) => {
+        const mine = ranges.filter(r => r.line === i).sort((a, b) => b.start - a.start);
+        let out = line;
+        for (const r of mine) {
+            out = out.slice(0, r.start) + (r.ellipsis ? '>' : '') + out.slice(r.end);
+        }
+        return out;
+    });
+}
+
+describe('computeShrinkRanges', () => {
+    // Aligned buffer text keeps the full cell content; widths [3, 40]
+    const table = [
+        '| <l> |                   <15>                   |',
+        '|-----+------------------------------------------|',
+        '| 0   | A very long sentence that takes up space |',
+        '| 1   | a short one                              |',
+    ];
+
+    it('narrows a <N> column in display only, keeping columns aligned', () => {
+        const ranges = computeShrinkRanges(table, [3, 40], [undefined, 15], 0);
+        expect(renderShrunk(table, ranges)).toEqual([
+            '| <l> |      <15>       |',
+            '|-----+-----------------|',
+            '| 0   | A very long se> |',
+            '| 1   | a short one     |',
+        ]);
+    });
+
+    it('keeps later columns aligned when the narrowed column is not last', () => {
+        const lines = [
+            '|                <5>                 | <l> |',
+            '|------------------------------------+-----|',
+            '| Long text you do not want shown in | x   |',
+            '| More long                          | y   |',
+        ];
+        const ranges = computeShrinkRanges(lines, [34, 3], [5, undefined], 0);
+        expect(renderShrunk(lines, ranges)).toEqual([
+            '|  <5>  | <l> |',
+            '|-------+-----|',
+            '| Long> | x   |',
+            '| More> | y   |',
+        ]);
+    });
+
+    it('leaves skipped lines and unaligned lines in full', () => {
+        const lines = [...table];
+        lines[3] = '| 1 | a short one |';
+        const ranges = computeShrinkRanges(lines, [3, 40], [undefined, 15], 0, new Set([2]));
+        expect(ranges.some(r => r.line === 2 || r.line === 3)).toBe(false);
+    });
+});
+
+describe('parseTableText', () => {
+    it('parses CSV with quoting, embedded newlines and CRLF', () => {
+        expect(parseTableText('name,note\r\n"Smith, J","said ""hi""\nthen left"\r\n'))
+            .toEqual([['name', 'note'], ['Smith, J', 'said "hi" then left']]);
+    });
+
+    it('parses TSV even when cells contain commas', () => {
+        expect(parseTableText('a\tb, c\n1\t2, 3')).toEqual([['a', 'b, c'], ['1', '2, 3']]);
+    });
+
+    it('prefers semicolons for European CSV with decimal commas', () => {
+        expect(parseTableText('x;y\n1,5;2,25')).toEqual([['x', 'y'], ['1,5', '2,25']]);
+    });
+
+    it('splits space-aligned columns on runs of spaces', () => {
+        expect(parseTableText('   name      value\n0  long name   1.5'))
+            .toEqual([['name', 'value', ''], ['0', 'long name', '1.5']]);
+    });
+
+    it('reads Markdown tables and drops the rule', () => {
+        expect(parseTableText('| a | b |\n| --- | :-: |\n| 1 | 2 |')).toEqual([['a', 'b'], ['1', '2']]);
+    });
+
+    it('pads short rows', () => {
+        expect(parseTableText('a,b,c\n1,2\n')).toEqual([['a', 'b', 'c'], ['1', '2', '']]);
+    });
+});
+
+describe('formatTableLines', () => {
+    it('aligns, adds a header rule and escapes pipes', () => {
+        expect(formatTableLines([['op', 'meaning'], ['a|b', 'or']], true)).toEqual([
+            '| op        | meaning |',
+            '|-----------+---------|',
+            '| a\\vert{}b | or      |',
+        ]);
+        expect(formatTableLines([['a|b']], false)).toEqual(['| a\\|b |']);
+    });
+});
+
+describe('looksLikeTable', () => {
+    it('accepts consistent delimited data and existing tables', () => {
+        expect(looksLikeTable('a,b\n1,2')).toBe(true);
+        expect(looksLikeTable('a\tb\n1\t2')).toBe(true);
+        expect(looksLikeTable('| a |\n| 1 |')).toBe(true);
+    });
+
+    it('rejects prose and single lines', () => {
+        expect(looksLikeTable('Hello, world')).toBe(false);
+        expect(looksLikeTable('First, a thing.\nThen two, three, four.')).toBe(false);
     });
 });

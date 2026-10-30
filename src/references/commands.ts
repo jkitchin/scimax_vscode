@@ -16,6 +16,7 @@ import {
 import { storeOpenAlexApiKey, getOpenAlexApiKey, deleteOpenAlexApiKey, hasOpenAlexApiKey } from '../database/secretStorage';
 import { findCitationAtPosition, rebuildCitation } from './citationParser';
 import { isMarkdownLike } from '../shared/markdownLike';
+import { findLabelDefinition } from './providers';
 
 /**
  * Register all reference-related commands
@@ -490,6 +491,24 @@ export function registerReferenceCommands(
             } catch (error) {
                 // If file reading fails, show entry details
                 await showEntryActions(manager, entry);
+            }
+        })
+    );
+
+    // Go to the definition of a ref label (for ref:label link clicks)
+    context.subscriptions.push(
+        vscode.commands.registerCommand('scimax.ref.gotoLabel', async (args: { file: string; label: string }) => {
+            try {
+                const document = await vscode.workspace.openTextDocument(args.file);
+                const found = await findLabelDefinition(document, args.label);
+                if (!found) {
+                    vscode.window.showWarningMessage(`Label not found: ${args.label}`);
+                    return;
+                }
+                // gotoLine takes a 1-based line and unfolds the target
+                await vscode.commands.executeCommand('scimax.org.gotoLine', { file: found.file, line: found.line + 1 });
+            } catch (error) {
+                vscode.window.showErrorMessage(`Failed to go to label: ${args.label}`);
             }
         })
     );
