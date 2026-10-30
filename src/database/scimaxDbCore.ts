@@ -1110,6 +1110,15 @@ export class ScimaxDbCore {
             return;
         }
 
+        // A file over a size limit is dropped from the index, not left as it
+        // was. Its old row would otherwise stay stale (older than the file,
+        // or mtime 0 after migration 7) forever, so every staleness check
+        // (e.g. the agenda's, every few seconds) re-reads and skips it again.
+        const skip = async (reason: string): Promise<void> => {
+            console.warn(`[ScimaxDbCore] Skipping ${reason}: ${filePath}`);
+            await this.removeFileData(filePath);
+        };
+
         try {
             console.error(`[ScimaxDbCore] INDEX_START ${filePath}`);
 
@@ -1117,35 +1126,30 @@ export class ScimaxDbCore {
 
             const maxSizeBytes = (this.options.maxFileSizeMB ?? 10) * 1024 * 1024;
             if (stats.size > maxSizeBytes) {
-                console.warn(`[ScimaxDbCore] Skipping large file: ${filePath} (${(stats.size / 1024 / 1024).toFixed(2)}MB)`);
-                return;
+                return skip(`large file (${(stats.size / 1024 / 1024).toFixed(2)}MB)`);
             }
 
             const maxParseSizeKB = this.options.maxParseSizeKB ?? 500;
             if (stats.size > maxParseSizeKB * 1024) {
-                console.warn(`[ScimaxDbCore] Skipping file too large for parsing: ${filePath}`);
-                return;
+                return skip('file too large for parsing');
             }
 
             const maxLines = this.options.maxFileLines ?? 5000;
             const estimatedLines = Math.ceil(stats.size / 80);
             if (estimatedLines > maxLines * 1.1) {
-                console.warn(`[ScimaxDbCore] Skipping file with estimated too many lines: ${filePath}`);
-                return;
+                return skip('file with estimated too many lines');
             }
 
             const content = await fs.promises.readFile(filePath, 'utf8');
             const lineCount = content.split('\n').length;
             if (lineCount > maxLines) {
-                console.warn(`[ScimaxDbCore] Skipping file with too many lines: ${filePath} (${lineCount})`);
-                return;
+                return skip(`file with too many lines (${lineCount})`);
             }
 
             const knownTextExt = ['.org', '.md', '.txt'];
             const ext = path.extname(filePath).toLowerCase();
             if (!knownTextExt.includes(ext) && this.isBinaryContent(content)) {
-                console.warn(`[ScimaxDbCore] Skipping binary file: ${filePath}`);
-                return;
+                return skip('binary file');
             }
 
             const fileType = this.getFileType(filePath);

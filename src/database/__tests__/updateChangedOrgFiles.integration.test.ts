@@ -67,4 +67,19 @@ describe('updateChangedOrgFiles (integration)', () => {
         expect(result.removed).toBe(1);
         expect(await todos()).toEqual(['Folder unavailable']);
     }, SETUP_TIMEOUT_MS);
+
+    it('drops a file that grew past the line limit instead of re-checking it forever', async () => {
+        await db.close();
+        db = new ScimaxDbCore({ dbPath: path.join(dir, 'limits.db'), maxFileLines: 10 });
+        await db.initialize();
+        const past = new Date(Date.now() - 60_000);
+        const a = write('a.org', '* TODO Small\n', past);
+        await db.indexFile(a);
+
+        write('a.org', '* TODO Big\n' + 'line\n'.repeat(20));
+        expect((await db.updateChangedOrgFiles()).reindexed).toBe(1);
+
+        expect(await todos()).toEqual([]);
+        expect((await db.updateChangedOrgFiles()).checked).toBe(0);
+    }, SETUP_TIMEOUT_MS);
 });
