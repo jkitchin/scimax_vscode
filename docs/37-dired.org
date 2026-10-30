@@ -6,13 +6,14 @@
 
 Dired (Directory Editor) provides Emacs-style file management in VS Code. It displays directory listings in a webview panel where you can navigate, mark files, and perform bulk operations using familiar Emacs keybindings.
 
-** Opening Dired
+** 👀 Opening Dired
 
-| Keybinding | Command                      | Description                                          |
-|------------+------------------------------+------------------------------------------------------|
-| ~C-x d~    | =scimax.dired.open=          | Open dired (prompts for directory or uses workspace) |
-|            | =scimax.dired.openCurrent=   | Open dired for current file's directory              |
-|            | =scimax.dired.openWorkspace= | Open dired for workspace root                        |
+| Keybinding | Command                        | Description                                          |
+|------------+--------------------------------+------------------------------------------------------|
+| ~C-x d~    | =scimax.dired.open=            | Open dired (prompts for directory or uses workspace) |
+| ~C-x 5 d~  | =scimax.dired.openOtherWindow= | Open dired in a new window (prompts for directory)   |
+|            | =scimax.dired.openCurrent=     | Open dired for current file's directory              |
+|            | =scimax.dired.openWorkspace=   | Open dired for workspace root                        |
 
 ** Navigation
 

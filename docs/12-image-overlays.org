@@ -259,7 +259,7 @@ Controls where image thumbnails are displayed:
 - Use after if you prefer inline indicators
 - Use both for maximum visibility
 
-** 👀 scimax.imageOverlays.onlyWhenCursorNotInLink
+** scimax.imageOverlays.onlyWhenCursorNotInLink
 
 *Type:* boolean
 *Default:* true
@@ -446,7 +446,7 @@ If image overlays aren't displaying:
    - Review scimax.imageOverlays.excludePatterns setting
    - Ensure your image path doesn't match an exclude pattern
 
-** 👀 Overlays Disappear When Editing
+** Overlays Disappear When Editing
 
 This is *normal behavior* for the inline (=after=) overlay when scimax.imageOverlays.onlyWhenCursorNotInLink is true (default). The overlay hides when your cursor is inside the link to prevent obscuring the text you're editing. Gutter icons stay visible.
 
@@ -458,14 +458,16 @@ To always show overlays:
 }
 #+END_SRC
 
-** ⚠️ Hover Preview Size
+** ✅ Hover Preview Size
+CLOSED: [2026-10-30 Fri 09:38]
 
 The image in a hover is scaled to fit inside 480×260 pixels, keeping its shape, so the whole image is visible without scrolling. Small images are not enlarged. The first line shows the name, the pixel size, and the actions:
 
 - *Open* opens the image in an editor tab, where you can zoom it.
 - *Reveal* shows the file in Finder (or the system file manager).
 
-** ⚠️ Gutter Icon Looks Blank
+** ✅ Gutter Icon Looks Blank
+CLOSED: [2026-10-30 Fri 09:38]
 
 Raster gutter icons have their uniform margins trimmed (when ImageMagick is installed) and are drawn with a thin grey frame. A mostly white image, such as a plot from a =#+RESULTS:= block, therefore still shows as a framed box in a light theme. VS Code gives a gutter icon a fixed slot about one line tall, and an extension can't enlarge it, so a plot's detail won't be legible there. Hover over the link to see the image, or use Open in the hover.
 

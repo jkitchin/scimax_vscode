@@ -7,29 +7,52 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 import { DiredPanel } from './diredPanel';
 
+/**
+ * Show a directory picker, falling back to the first workspace folder
+ */
+async function pickDirectory(): Promise<string | undefined> {
+    const result = await vscode.window.showOpenDialog({
+        canSelectFolders: true,
+        canSelectFiles: false,
+        canSelectMany: false,
+        openLabel: 'Open in Dired',
+        title: 'Select directory to browse'
+    });
+
+    return result?.[0]?.fsPath ||
+        vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
+}
+
 export function registerDiredCommands(context: vscode.ExtensionContext): void {
     // Open dired - prompts for directory or uses workspace
     context.subscriptions.push(
         vscode.commands.registerCommand('scimax.dired.open', async (initialDirectory?: string) => {
             // Use the provided directory, or show a directory picker
-            let directory = initialDirectory;
-            if (!directory) {
-                const result = await vscode.window.showOpenDialog({
-                    canSelectFolders: true,
-                    canSelectFiles: false,
-                    canSelectMany: false,
-                    openLabel: 'Open in Dired',
-                    title: 'Select directory to browse'
-                });
-
-                directory = result?.[0]?.fsPath ||
-                    vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
-            }
+            const directory = initialDirectory || await pickDirectory();
 
             if (directory) {
                 DiredPanel.createOrShow(context.extensionUri, directory);
             } else {
                 vscode.window.showWarningMessage('No directory selected');
+            }
+        })
+    );
+
+    // Open dired in a new floating window (C-x 5 d)
+    context.subscriptions.push(
+        vscode.commands.registerCommand('scimax.dired.openOtherWindow', async (initialDirectory?: string) => {
+            const directory = initialDirectory || await pickDirectory();
+            if (!directory) {
+                vscode.window.showWarningMessage('No directory selected');
+                return;
+            }
+
+            DiredPanel.createOrShow(context.extensionUri, directory);
+            try {
+                await vscode.commands.executeCommand('workbench.action.moveEditorToNewWindow');
+            } catch {
+                // Floating editor windows need a newer VS Code; dired stays open here.
+                vscode.window.showInformationMessage('This VS Code cannot open editors in a new window.');
             }
         })
     );

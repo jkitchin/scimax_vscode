@@ -74,13 +74,13 @@ column.
 * ✅ Table Navigation
 CLOSED: [2026-01-15 Thu 15:26]
 
-** 👀 Moving Between Cells
+** Moving Between Cells
 
-| Key        | Action                                            |
-|------------+---------------------------------------------------|
+| Key        | Action                                             |
+|------------+----------------------------------------------------|
 | <tab>      | Align, then move to next cell (creates row at end) |
-| S-<tab>    | Move to previous cell                             |
-| Arrow keys | Move in that direction                            |
+| S-<tab>    | Move to previous cell                              |
+| Arrow keys | Move in that direction                             |
 
 Tab remembers which cell you were in before aligning, so it always moves to the next cell even when aligning shifts the cells along the line.
 
@@ -155,7 +155,8 @@ Notes:
 - Rows with fewer cells than the rest of the table are padded with empty cells
   so the swap lands in the right column.
 
-** 👀 Separator Lines
+** ✅ Separator Lines
+CLOSED: [2026-10-30 Fri 09:37]
 
 Insert horizontal separator lines to divide table sections:
 
@@ -178,7 +179,8 @@ Example with separators:
 * ✅ Table Alignment
 CLOSED: [2026-01-15 Thu 15:15]
 
-** 👀 Automatic Alignment
+** ✅ Automatic Alignment
+CLOSED: [2026-10-30 Fri 09:37]
 
 Tables auto-align when you press Tab. Press C-c C-c anywhere in a table to re-align it without moving (=scimax.table.align=). On a =#+TBLFM:= line, C-c C-c recalculates the formulas instead. Column widths adjust to fit content.
 

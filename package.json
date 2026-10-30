@@ -2,7 +2,7 @@
   "name": "scimax-vscode",
   "displayName": "Scimax for VS Code",
   "description": "Scientific computing environment inspired by Emacs Scimax - journal, literate programming, org-mode enhancements",
-  "version": "0.10.0",
+  "version": "0.11.0",
   "publisher": "jkitchin",
   "license": "MIT",
   "repository": {
@@ -1937,6 +1937,10 @@
         "command": "scimax.dired.open",
         "title": "Scimax: Open Dired (Directory Editor)",
         "icon": "$(folder-opened)"
+      },
+      {
+        "command": "scimax.dired.openOtherWindow",
+        "title": "Scimax: Open Dired in New Window"
       },
       {
         "command": "scimax.dired.openCurrent",
@@ -4233,6 +4237,18 @@
         "when": "!terminalFocus"
       },
       {
+        "command": "scimax.findFileOtherWindow",
+        "key": "ctrl+x 5 ctrl+f",
+        "mac": "ctrl+x 5 ctrl+f",
+        "when": "!terminalFocus"
+      },
+      {
+        "command": "scimax.dired.openOtherWindow",
+        "key": "ctrl+x 5 d",
+        "mac": "ctrl+x 5 d",
+        "when": "!terminalFocus"
+      },
+      {
         "command": "scimax.fuzzySearchRecentFilesOtherWindow",
         "key": "ctrl+x 5 b",
         "mac": "ctrl+x 5 b",
@@ -4242,6 +4258,12 @@
         "command": "workbench.action.copyEditorToNewWindow",
         "key": "ctrl+x 5 2",
         "mac": "ctrl+x 5 2",
+        "when": "!terminalFocus"
+      },
+      {
+        "command": "workbench.action.copyEditorToNewWindow",
+        "key": "ctrl+x 5 c",
+        "mac": "ctrl+x 5 c",
         "when": "!terminalFocus"
       },
       {
@@ -7858,7 +7880,11 @@
         },
         "scimax.project.progressWeighting": {
           "type": "string",
-          "enum": ["auto", "count", "effort"],
+          "enum": [
+            "auto",
+            "count",
+            "effort"
+          ],
           "enumDescriptions": [
             "Weight by EFFORT when at least half of the leaf tasks have one, else count tasks",
             "Every task counts the same",
@@ -8692,7 +8718,12 @@
         },
         "scimax.crucible.searchMode": {
           "type": "string",
-          "enum": ["auto", "fts", "semantic", "hybrid"],
+          "enum": [
+            "auto",
+            "fts",
+            "semantic",
+            "hybrid"
+          ],
           "enumDescriptions": [
             "Hybrid when the crucible has embeddings, keyword search otherwise",
             "Keyword search (FTS5)",

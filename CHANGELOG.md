@@ -7,8 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.11.0] - 2026-10-30
+
 ### Added
 
+- **Crucible knowledge bases** - A Crucible panel in the Scimax sidebar lists the crucibles in the workspace and in crucible's global registry, with their concepts, articles and article kinds. Commands search one or all crucibles, show the back-links, related articles and derivation history of the open article, open a crucible's index and run `crucible sync`. Opening an article loads the crucible's `references.bib`. Saving an article syncs the crucible in the background, and `crucible lint` issues show in the Problems panel at the broken link or missing cite key (*Scimax: Lint Crucible* checks on demand). Settings: `scimax.crucible.command`, `searchMode`, `searchLimit`, `syncOnSave` and `showLint`. See `docs/48-crucible.org`.
+- **Live captions and recording in the Marp slideshow** - `v` shows live captions of what is said, in the slideshow and the presenter view, kept per slide and saved as a Markdown transcript. `Shift+V` records the tab, a ring around the mouse, the microphone and the deck's sound to MP4 or WebM, with WebVTT captions of the recording. The laser pointer has the pens' five colours (`1`-`5`, or the right-click menu).
+- **`C-x 5 b`** - Opens a recent org or Markdown file in a new window (`scimax.fuzzySearchRecentFilesOtherWindow`).
+- **More `C-x 5` keys** - `C-x 5 d` opens dired in a new window (`scimax.dired.openOtherWindow`), `C-x 5 C-f` is the same as `C-x 5 f`, and `C-x 5 c` is the same as `C-x 5 2`, as in Emacs. There is no `C-x 5 1`: VS Code has no command that closes the other floating windows.
+- **Date picker keys** - Arrow keys move a highlighted day (Left/Right a day, Up/Down a week, with Shift a month) and `Enter` picks it, while the text box is empty.
+- **Edit the link at point** - `C-c C-l` on a link edits it.
+- **`ref:` links** - Bare `ref:`, `eqref:`, `cref:` and similar links are clickable and jump to the label.
+- **Tables** - `C-c C-c` in a table row aligns it, and `C-c |` converts the selection or the clipboard to a table.
 - **Agent skills for any agent** - The scimax skill is now four skills in `skills/`, following the Agent Skills specification: `scimax` (notes, agenda, journal, export, database), `scimax-org` (org syntax and citations), `scimax-projects` (`scimax task`, dependencies, Gantt charts) and `scimax-presentations` (Beamer and Marp). They install with `uvx knowhow add jkitchin/scimax_vscode` or `npx skills add jkitchin/scimax_vscode`, as well as `scimax skill install` and the new *Scimax: Install AI Agent Skills* command, and work in Claude Code, VS Code (GitHub Copilot), Codex, Cursor, OpenCode and Gemini CLI.
 - **`scimax marp build`** - Builds a Marp deck into one self-contained HTML file with the presenter tools from the command line (`--open`, `--pdf`, `--plain`, `-o`, `--json`, and Marp options after `--`). It uses the same scripts and bundler as the HTML export in VS Code and shares its font and offline-Python caches, so the standalone `marp-present` tool is no longer needed. The `scimax-presentations` skill now builds decks with it.
 
@@ -16,6 +26,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **`scimax skill install`** - Installs like knowhow and npx skills: a copy in `~/.agents/skills/<name>`, a symlink in `~/.claude/skills/<name>` and an entry in `~/.agents/.skill-lock.json`, so `knowhow check`/`upgrade` keep it current. `--project` installs into the current directory, `list` shows what is installed, and `install`/`update` won't replace a skill folder something else installed without `--force`.
 - **Skill learnings** - Corrections are kept in `~/.config/scimax/learnings.md`, outside the skill folders, so updates never overwrite them. Learnings from an old `~/.claude/skills/scimax` install are moved there on the next install or update.
+- **Descriptive links stay collapsed** - The cursor no longer opens up the literal link. It skips over the hidden brackets and target, as Emacs skips invisible text; edit a link with `C-c C-l`. Set `scimax.org.descriptiveLinksReveal` to `cursor` for the old behaviour. Org files default `editor.disableMonospaceOptimizations` to true so clicks and the cursor line up with the collapsed text.
+- **New Marp decks are presenter decks** - *Scimax: Make Marp Deck* adds `presenter: true` to the front matter, and the `scimax-presentations` skill (0.15.0) does the same. Existing decks present as before.
+- **Table rows** - A line only needs a leading `|` to be a table row, as in org, so a row still being typed and the `|-` shorthand belong to the table. Aligning closes the row and expands `|-`. With descriptive links on, cells are measured as displayed, so a table of links lines up on screen.
+
+### Fixed
+
+- **Clicking a collapsed link** put the cursor in the hidden target and drew it far to the right of the text.
+- **Tab in tables** skipped a cell when aligning shifted cells along the line.
+- **`<N>` width cookies** truncated cell text; justification and the expand CodeLens work again.
+- **CLOSED left behind** - Changing to any not-done state removes `CLOSED`, whatever the previous state (`S-<left>` from a not-done state could leave it behind).
+- **Marp link hover** showed raw `<img>` text or a broken image for decks with large embedded images or raw HTML.
+- **Image overlays** - Gutter icons stay visible with the cursor on the link, thumbnails are trimmed and framed so white plots show in light themes, and hover previews fit 480x260 with Open/Reveal actions above the image.
 
 ## [0.10.0] - 2026-10-25
 

@@ -168,7 +168,8 @@ CLOSED: [2026-10-22 Thu 09:46]
 | id:          | Jumps to entry with that ID property  |
 | nb:          | Opens file in a notebook project      |
 
-** 👀 Link Display (Descriptive vs Literal)
+** ✅ Link Display (Descriptive vs Literal)
+CLOSED: [2026-10-30 Fri 09:37]
 
 By default org links are shown by their description only, like Emacs
 =org-link-descriptive=. The brackets and target are hidden, so
