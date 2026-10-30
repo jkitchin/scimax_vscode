@@ -179,6 +179,9 @@ export function registerLinkDisplayDecorations(context: vscode.ExtensionContext)
     hiddenDecoration = vscode.window.createTextEditorDecorationType({
         // VS Code has no "invisible" option; injecting display:none removes the
         // characters from layout so the description reads as plain text.
+        // This needs editor.disableMonospaceOptimizations (an [org] default in
+        // package.json): otherwise ASCII lines place the cursor and map clicks
+        // at column * charWidth, as if the hidden text were still there.
         textDecoration: 'none; display: none;',
     });
 

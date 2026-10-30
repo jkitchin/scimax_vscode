@@ -185,6 +185,10 @@ blocks are always shown literally.
 The hidden brackets and target are still in the text, but the cursor skips
 over them, as Emacs skips invisible text. Arrow keys move one visible character
 at a time, and a click never leaves the cursor inside the hidden part.
+For clicks and the cursor to line up with the collapsed text, scimax sets
+=editor.disableMonospaceOptimizations= to true for org files. If you override
+it to false, the cursor on lines of plain ASCII text is drawn as if the hidden
+text were still there, and clicking a link puts the cursor in the wrong place.
 Tables measure links as displayed, so a table of links lines up on screen (see
 the Tables chapter).
 

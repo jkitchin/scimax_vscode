@@ -910,7 +910,8 @@
       },
       "[org]": {
         "editor.wordWrap": "on",
-        "editor.tabCompletion": "onlySnippets"
+        "editor.tabCompletion": "onlySnippets",
+        "editor.disableMonospaceOptimizations": true
       },
       "[latex]": {
         "editor.wordWrap": "on"
