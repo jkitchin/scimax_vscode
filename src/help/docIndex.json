@@ -1,5 +1,5 @@
 {
-  "buildDate": "2026-10-30T14:52:01.542Z",
+  "buildDate": "2026-10-30T14:56:53.409Z",
   "count": 3723,
   "entries": [
     {
@@ -74537,7 +74537,7 @@
       "level": 1,
       "file": "24-keybindings.org",
       "line": 94,
-      "content": "CLOSED: [2026-10-30 Fri 08:02] | Key           | Action                             | |---------------+------------------------------------| | M-x           | Show command palette               | | C-x C-f       | Quick open file                    | | C-x d         | Open Dired (directory editor)      | | C-x v v       | VC next action (add, commit, sync) | | C-x v p       | VC push                            | | C-x C-s       | Save file                          | | C-x s         | Save all fi",
+      "content": "CLOSED: [2026-10-30 Fri 10:54] | Key           | Action                             | |---------------+------------------------------------| | M-x           | Show command palette               | | C-x C-f       | Quick open file                    | | C-x d         | Open Dired (directory editor)      | | C-x v v       | VC next action (add, commit, sync) | | C-x v p       | VC push                            | | C-x C-s       | Save file                          | | C-x s         | Save all fi",
       "path": [],
       "commands": [],
       "keybindings": [
@@ -74553,7 +74553,7 @@
         "closed",
         "2026-10-30",
         "fri",
-        "0802",
+        "1054",
         "key",
         "action",
         "---------------------------------------------------",
@@ -81880,12 +81880,11 @@
       "level": 1,
       "file": "25-commands.org",
       "line": 1905,
-      "content": ":PROPERTIES: :CUSTOM_ID: utilities :END: Miscellaneous utility commands. | Command ID                              | Description                     | Default Keybinding | |-----------------------------------------+---------------------------------+--------------------| | [[cmd:scimax.findFile]]                 | Find File                       | C-x C-f            | | [[cmd:scimax.findFileOtherWindow]]      | Find File in New Window         | C-x 5 f, C-x 5 C-f | | [[cmd:scimax.findFileHome]]  ",
+      "content": "CLOSED: [2026-10-30 Fri 10:54] :PROPERTIES: :CUSTOM_ID: utilities :END: Miscellaneous utility commands. | Command ID                              | Description                     | Default Keybinding | |-----------------------------------------+---------------------------------+--------------------| | [[cmd:scimax.findFile]]                 | Find File                       | C-x C-f            | | [[cmd:scimax.findFileOtherWindow]]      | Find File in New Window         | C-x 5 f, C-x 5 C-f | ",
       "path": [],
       "commands": [
         "scimax.findFile",
-        "scimax.findFileOtherWindow",
-        "scimax.findFileHome"
+        "scimax.findFileOtherWindow"
       ],
       "keybindings": [
         "C-x C-f",
@@ -81894,6 +81893,10 @@
       ],
       "keywords": [
         "utilities",
+        "closed",
+        "2026-10-30",
+        "fri",
+        "1054",
         "properties",
         "customid",
         "end",
@@ -81908,16 +81911,14 @@
         "cmd",
         "find",
         "c-x",
-        "c-f",
-        "new",
-        "window"
+        "c-f"
       ]
     },
     {
       "heading": "Dired Commands",
       "level": 2,
       "file": "25-commands.org",
-      "line": 1932,
+      "line": 1933,
       "content": "Dired (Directory Editor) provides Emacs-style file management. Open with =C-x d= and use these keys in the dired panel: - Navigation: =n/p= (next/prev), =RET= (open), =^= (parent), =g= (refresh) - Marking: =m= (mark), =u= (unmark), =U= (unmark all), =t= (toggle marks) - Operations: =D= (delete), =C= (copy), =R= (rename/move), =+= (create directory) - WDired: =C-x C-q= (enter edit mode), =C-c C-c= (commit), =C-c C-k= (cancel) See [[file:37-dired.org][Dired documentation]] for full details.",
       "path": [
         "Utilities"
@@ -81956,7 +81957,7 @@
       "heading": "scimax.replaceNonAscii",
       "level": 2,
       "file": "25-commands.org",
-      "line": 1943,
+      "line": 1944,
       "content": "Replaces common non-ASCII characters (smart quotes, em-dashes, etc.) with their ASCII equivalents. Useful for preparing documents for systems that don't handle Unicode well.",
       "path": [
         "Utilities"
@@ -81990,7 +81991,7 @@
       "heading": "scimax.showDebugInfo",
       "level": 2,
       "file": "25-commands.org",
-      "line": 1947,
+      "line": 1948,
       "content": "Displays diagnostic information about the scimax extension, including version, enabled features, and configuration state. Useful for troubleshooting.",
       "path": [
         "Utilities"
@@ -82020,7 +82021,7 @@
       "heading": "Index",
       "level": 1,
       "file": "25-commands.org",
-      "line": 1951,
+      "line": 1952,
       "content": "CLOSED: [2026-01-17 Sat 12:51] This document contains [[*Introduction][310+ commands]] organized into [[*Document Structure][27 categories]] with their keybindings and descriptions. For configuration options, see the VS Code settings under scimax.*. For more information about the Scimax VS Code extension, visit the project repository.",
       "path": [],
       "commands": [],
@@ -82052,7 +82053,7 @@
       "heading": "Navigation",
       "level": 1,
       "file": "25-commands.org",
-      "line": 1960,
+      "line": 1961,
       "content": "- Previous: [[file:24-keybindings.org][Keybindings]] - Index: [[file:00-index.org][Documentation Index]] - Next: [[file:26-configuration.org][Configuration]]",
       "path": [],
       "commands": [],
