@@ -38,6 +38,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **CLOSED left behind** - Changing to any not-done state removes `CLOSED`, whatever the previous state (`S-<left>` from a not-done state could leave it behind).
 - **Marp link hover** showed raw `<img>` text or a broken image for decks with large embedded images or raw HTML.
 - **Image overlays** - Gutter icons stay visible with the cursor on the link, thumbnails are trimmed and framed so white plots show in light themes, and hover previews fit 480x260 with Open/Reveal actions above the image.
+- **Oversized files in the index** - Files over the size, line or binary limits are now dropped from the database. Their stale rows were re-read and skipped every few seconds, which kept the extension busy enough that Ollama embedding requests timed out.
 
 ## [0.10.0] - 2026-10-25
 
