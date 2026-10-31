@@ -41,3 +41,38 @@ export function soleMatch<T extends Matchable>(items: T[], value: string): T | u
     const fuzzy = items.filter(item => fields(item).some(f => isSubsequence(compact, f)));
     return fuzzy.length === 1 ? fuzzy[0] : undefined;
 }
+
+/** What a multi-select picker shows when Enter is pressed, for acceptedItems. */
+export interface PickerState<T> {
+    items: T[];
+    /** The checked items, and those checked when the picker opened */
+    selected: T[];
+    initial: T[];
+    /** The highlighted item, and whether the user moved the highlight off the first item */
+    active: T | undefined;
+    moved: boolean;
+    /** The filter text */
+    value: string;
+}
+
+/**
+ * The items Enter takes in a multi-select picker: the checked ones, plus the
+ * highlighted one, so a person can arrow to an item and press Enter without
+ * checking it first. With a filter typed, the highlighted match counts (or
+ * the only match left, as nothing is highlighted while typing). With no
+ * filter, it counts when the checks were left alone and the user moved the
+ * highlight, or nothing was checked to begin with; otherwise the first item,
+ * highlighted when the picker opens, would be added by an Enter meant to keep
+ * the checks as they are. Once the user changes the checks, Enter takes
+ * exactly the checked items (none clears).
+ */
+export function acceptedItems<T extends Matchable>(state: PickerState<T>): T[] {
+    const { items, selected, initial, active, moved, value } = state;
+    const chosen = [...selected];
+    const checksUnchanged = selected.length === initial.length && selected.every(i => initial.includes(i));
+    const extra = value.trim()
+        ? active ?? soleMatch(items, value)
+        : checksUnchanged && (moved || initial.length === 0) ? active : undefined;
+    if (extra && !chosen.includes(extra)) chosen.push(extra);
+    return chosen;
+}

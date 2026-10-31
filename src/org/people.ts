@@ -28,7 +28,7 @@ import { getPropCaseInsensitive } from '../database/scimaxDbCore';
 import { slugify, ASSIGNEE_PROPERTY } from '../parser/projectTasks';
 import { getHeadingLevel } from './speedCommands/context';
 import { setPropertyValue } from './speedCommands/metadata';
-import { soleMatch } from './quickPickMatch';
+import { acceptedItems } from './quickPickMatch';
 
 export const PERSON_TAG = 'person';
 
@@ -288,12 +288,10 @@ function currentAssignees(document: vscode.TextDocument, headingLine: number): S
  * :ASSIGNEE: property to the chosen handles.
  */
 /**
- * Multi-select people picker. Enter takes the checked people plus, when a
- * filter is typed, the highlighted match, or the only match left if none is
- * highlighted: a multi-select picker does not highlight the first match as you
- * type, so typing down to one person and pressing Enter must find that person
- * itself. With nothing typed, Enter takes exactly the checked people (none
- * clears the assignee). Undefined means cancelled.
+ * Multi-select people picker. Enter takes the checked people plus the
+ * highlighted one (acceptedItems has the details), so arrowing to a person,
+ * or typing down to one, and pressing Enter assigns them without checking a
+ * box. Undefined means cancelled.
  */
 function pickAssignees<T extends vscode.QuickPickItem & { picked?: boolean }>(items: T[]): Promise<T[] | undefined> {
     return new Promise(resolve => {
@@ -301,15 +299,24 @@ function pickAssignees<T extends vscode.QuickPickItem & { picked?: boolean }>(it
         qp.canSelectMany = true;
         qp.matchOnDescription = true;
         qp.matchOnDetail = true;
-        qp.placeholder = 'Assign to… (fuzzy-match handle, name, role, or email; Enter takes the highlighted match)';
+        qp.placeholder = 'Assign to… (fuzzy-match handle, name, role, or email; Enter takes the highlighted person too)';
         qp.items = items;
-        qp.selectedItems = items.filter(i => i.picked);
+        const initial = items.filter(i => i.picked);
+        qp.selectedItems = initial;
+        let moved = false;
+        qp.onDidChangeActive(active => {
+            if (active[0] && active[0] !== items[0]) moved = true;
+        });
         let result: T[] | undefined;
         qp.onDidAccept(() => {
-            const chosen = [...qp.selectedItems];
-            const active = qp.activeItems[0] ?? soleMatch(items, qp.value);
-            if (qp.value.trim() && active && !chosen.includes(active)) chosen.push(active);
-            result = chosen;
+            result = acceptedItems({
+                items,
+                selected: [...qp.selectedItems],
+                initial,
+                active: qp.activeItems[0],
+                moved,
+                value: qp.value,
+            });
             qp.hide();
         });
         qp.onDidHide(() => {

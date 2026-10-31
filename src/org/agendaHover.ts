@@ -140,3 +140,22 @@ export function renderSnippetMarkdown(
         .map(p => p.join('  \n'))
         .join('\n\n');
 }
+
+/**
+ * The 1-based line of a heading now, given the line it was found on and its
+ * title. Agenda rows can come from the database or the file on disk while the
+ * open buffer has been edited since, which moves headings. Keeps `line` if
+ * the heading there still has the title, else takes the nearest heading that
+ * does, else `line`.
+ */
+export function relocateHeading(lines: string[], line: number, title: string | undefined): number {
+    const text = title?.trim();
+    if (!text) return line;
+    const matches = (i: number) => /^\*+\s/.test(lines[i] ?? '') && lines[i].includes(text);
+    if (matches(line - 1)) return line;
+    for (let d = 1; d < lines.length; d++) {
+        if (matches(line - 1 - d)) return line - d;
+        if (matches(line - 1 + d)) return line + d;
+    }
+    return line;
+}

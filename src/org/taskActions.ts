@@ -11,7 +11,7 @@
  */
 
 import * as vscode from 'vscode';
-import { runOnSourceHeading } from './agendaDocumentProvider';
+import { currentHeadingLine, runOnSourceHeading } from './agendaDocumentProvider';
 import { planningLines, shiftPlanningLine } from '../parser/planningShift';
 
 /** What VS Code passes to a webview/context command: the row's data-vscode-context. */
@@ -21,6 +21,8 @@ export interface TaskContext {
     filePath?: string;
     /** 1-based heading line */
     line?: number;
+    /** The heading's title, to find it again if edits since moved it */
+    title?: string;
     /** The planning date the row shows (agenda rows) */
     planning?: 'SCHEDULED' | 'DEADLINE';
 }
@@ -45,7 +47,7 @@ export async function runOnTask(arg: TaskContext | undefined, command: string): 
     if (!arg?.filePath || !arg.line) return false;
     const host = arg.view ? hosts.get(arg.view) : undefined;
     const changed = await runOnSourceHeading(
-        { file: arg.filePath, line: arg.line },
+        { file: arg.filePath, line: arg.line, title: arg.title },
         command,
         () => host?.reveal()
     );
@@ -54,10 +56,10 @@ export async function runOnTask(arg: TaskContext | undefined, command: string): 
 }
 
 /** Open a task's heading beside the view. */
-export async function revealTask(filePath: string, line: number): Promise<void> {
+export async function revealTask(filePath: string, line: number, title?: string): Promise<void> {
     try {
         const doc = await vscode.workspace.openTextDocument(filePath);
-        const pos = new vscode.Position(Math.max(0, line - 1), 0);
+        const pos = new vscode.Position(Math.max(0, currentHeadingLine(doc, line, title) - 1), 0);
         const editor = await vscode.window.showTextDocument(doc, {
             viewColumn: vscode.ViewColumn.Beside,
             selection: new vscode.Range(pos, pos),
@@ -76,7 +78,7 @@ export async function shiftTask(arg: TaskContext | undefined, days: number): Pro
     if (!arg?.filePath || !arg.line) return;
     const doc = await vscode.workspace.openTextDocument(vscode.Uri.file(arg.filePath));
     const lines = doc.getText().split(/\r?\n/);
-    const headingLine = arg.line - 1;
+    const headingLine = currentHeadingLine(doc, arg.line, arg.title) - 1;
     if (!/^\*+\s/.test(lines[headingLine] ?? '')) {
         vscode.window.showWarningMessage('The view is out of date: refresh it and try again.');
         return;
@@ -115,7 +117,7 @@ async function pickPriority(arg?: TaskContext): Promise<void> {
 export function registerTaskActions(context: vscode.ExtensionContext): void {
     context.subscriptions.push(
         vscode.commands.registerCommand('scimax.task.open', (arg?: TaskContext) =>
-            arg?.filePath && arg.line ? revealTask(arg.filePath, arg.line) : undefined),
+            arg?.filePath && arg.line ? revealTask(arg.filePath, arg.line, arg.title) : undefined),
         vscode.commands.registerCommand('scimax.task.priority', pickPriority),
         vscode.commands.registerCommand('scimax.task.later', (arg?: TaskContext) => shiftTask(arg, 1)),
         vscode.commands.registerCommand('scimax.task.earlier', (arg?: TaskContext) => shiftTask(arg, -1)),

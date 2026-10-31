@@ -964,6 +964,23 @@ project's own org files, so a file the database has not indexed yet still
 shows; a custom agenda is limited to the items it found under the project's
 folder.
 
+*** Limiting to the current file
+
+As in Emacs, =C-c a <= restricts the next agenda command to the file you are
+editing. =C-c a < a= ([[cmd:scimax.agenda.viewCurrentFile]]) opens the agenda
+view limited to the current org file, and =C-c a < t=
+([[cmd:scimax.agenda.todoViewCurrentFile]]) opens its TODO list. The file is
+read directly, unsaved edits included, so it need not be one of your agenda
+files or indexed in the database, and it shows even if =scimax.agenda.exclude=
+matches it.
+
+The file shows in the *Project* menu as /This file: name.org/; choose *All
+agenda files* or a project there to lift the limit. Opening the view with
+=C-c a a= also lifts it, as org-agenda forgets its =<= restriction.
+
+The older quick pick for the current file
+([[cmd:scimax.agenda.currentFile]]) is still in the command palette.
+
 *** Filtering
 
 The filters work on the items already loaded, so they apply at once and each

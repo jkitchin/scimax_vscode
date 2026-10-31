@@ -228,12 +228,14 @@ CLOSED: [2026-01-17 Sat 10:14]
 |-------+---------------------------------------------|
 | C-c ] | Insert citation (scimax.ref.insertCitation) |
 
-*** ✅ Interactive Citation Insertion
-CLOSED: [2026-01-17 Sat 10:16]
+*** Interactive Citation Insertion
 
 1. Press C-c ] or run command [[cmd:scimax.ref.insertCitation]]
-2. Search and select a reference (searches key, author, title, year)
-3. Choose citation style (cite, citet, citep, citeauthor, citeyear)
+2. Search for a reference (searches key, author, title, year)
+3. Press =RET= to insert it with the default cite type
+   (=scimax.ref.defaultCiteStyle=, =cite= unless you change it), or =C-u RET=
+   ([[cmd:scimax.ref.acceptCitationWithType]]) to choose the type first (cite,
+   citet, citep, citeauthor, citeyear), as in org-ref
 4. Citation is inserted at cursor
 
 *** Appending to Existing Citations

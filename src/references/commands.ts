@@ -2,7 +2,7 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 import { ReferenceManager } from './referenceManager';
 import { BibEntry, formatCitation, formatCitationLink, formatAuthors, entryToBibTeX, OrgCitationSyntax } from './bibtexParser';
-import { showFuzzyQuickPick } from '../utils/fuzzyQuickPick';
+import { showFuzzyQuickPick, type FuzzyQuickPickItem } from '../utils/fuzzyQuickPick';
 import {
     fetchOpenAlexWork,
     fetchCitingWorks,
@@ -21,12 +21,35 @@ import { findLabelDefinition } from './providers';
 /**
  * Register all reference-related commands
  */
+/** Set by C-u RET in the reference picker: ask for the cite type after it closes. */
+let chooseCiteType = false;
+
+/** Ask for a citation style, the default first. Undefined if cancelled. */
+async function pickCiteStyle(defaultStyle: string): Promise<'cite' | 'citet' | 'citep' | 'citeauthor' | 'citeyear' | undefined> {
+    const styleItems = [
+        { label: 'cite', description: 'Basic citation', value: 'cite' as const },
+        { label: 'citet', description: 'Textual: Author (Year)', value: 'citet' as const },
+        { label: 'citep', description: 'Parenthetical: (Author, Year)', value: 'citep' as const },
+        { label: 'citeauthor', description: 'Author only', value: 'citeauthor' as const },
+        { label: 'citeyear', description: 'Year only', value: 'citeyear' as const }
+    ];
+    const defaultIndex = styleItems.findIndex(s => s.value === defaultStyle);
+    if (defaultIndex > 0) styleItems.unshift(styleItems.splice(defaultIndex, 1)[0]);
+    const picked = await vscode.window.showQuickPick(styleItems, { placeHolder: 'Select citation style' });
+    return picked?.value;
+}
+
 export function registerReferenceCommands(
     context: vscode.ExtensionContext,
     manager: ReferenceManager
 ): void {
     // Insert citation
     context.subscriptions.push(
+        // C-u RET in the reference picker: accept, then ask for the cite type
+        vscode.commands.registerCommand('scimax.ref.acceptCitationWithType', async () => {
+            chooseCiteType = true;
+            await vscode.commands.executeCommand('workbench.action.acceptSelectedQuickOpenItem');
+        }),
         vscode.commands.registerCommand('scimax.ref.insertCitation', async () => {
             const editor = vscode.window.activeTextEditor;
             if (!editor) return;
@@ -58,9 +81,16 @@ export function registerReferenceCommands(
                 };
             });
 
-            const selected = await showFuzzyQuickPick(items, {
-                placeholder: 'Search references (space-separated terms)...'
-            });
+            chooseCiteType = false;
+            void vscode.commands.executeCommand('setContext', 'scimax.citationPickerActive', true);
+            let selected: FuzzyQuickPickItem<BibEntry> | undefined;
+            try {
+                selected = await showFuzzyQuickPick(items, {
+                    placeholder: 'Search references (space-separated terms; RET inserts, C-u RET picks the cite type)...'
+                });
+            } finally {
+                void vscode.commands.executeCommand('setContext', 'scimax.citationPickerActive', false);
+            }
 
             if (!selected) return;
 
@@ -101,28 +131,11 @@ export function registerReferenceCommands(
                 return;
             }
 
-            // Not on existing citation - ask for citation style and insert new citation
+            // Not on an existing citation: insert a new one, in the default
+            // style unless C-u RET asked for the style
             const config = manager.getConfig();
-            const styleItems = [
-                { label: 'cite', description: 'Basic citation', value: 'cite' as const },
-                { label: 'citet', description: 'Textual: Author (Year)', value: 'citet' as const },
-                { label: 'citep', description: 'Parenthetical: (Author, Year)', value: 'citep' as const },
-                { label: 'citeauthor', description: 'Author only', value: 'citeauthor' as const },
-                { label: 'citeyear', description: 'Year only', value: 'citeyear' as const }
-            ];
-
-            // Pre-select default style
-            const defaultIndex = styleItems.findIndex(s => s.value === config.defaultCiteStyle);
-            if (defaultIndex > 0) {
-                const defaultItem = styleItems.splice(defaultIndex, 1)[0];
-                styleItems.unshift(defaultItem);
-            }
-
-            const styleSelection = await vscode.window.showQuickPick(styleItems, {
-                placeHolder: 'Select citation style'
-            });
-
-            if (!styleSelection) return;
+            const style = chooseCiteType ? await pickCiteStyle(config.defaultCiteStyle) : config.defaultCiteStyle;
+            if (!style) return;
 
             // Determine format based on current file
             const langId = document.languageId;
@@ -131,7 +144,7 @@ export function registerReferenceCommands(
             // Insert citation with configured syntax
             const citation = formatCitationLink(
                 selected.data.key,
-                styleSelection.value,
+                style,
                 format,
                 undefined, // prenote
                 undefined, // postnote
@@ -143,7 +156,6 @@ export function registerReferenceCommands(
             });
         })
     );
-
     // Insert a citation for a specific key (used by the hover "Insert Citation" link)
     context.subscriptions.push(
         vscode.commands.registerCommand('scimax.ref.insertCitationForKey', async (key?: string) => {

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { entrySnippet, escapeMarkdown, outlinePath, renderSnippetLine, renderSnippetMarkdown } from '../agendaHover';
+import { entrySnippet, escapeMarkdown, outlinePath, renderSnippetLine, renderSnippetMarkdown, relocateHeading } from '../agendaHover';
 
 const cmd = (ref: { line: number; column: number }) => `command:x?${ref.line}:${ref.column}`;
 
@@ -70,5 +70,36 @@ describe('entry context', () => {
         expect(outlinePath(lines, 10)).toEqual(['Projects', 'Grant renewal']);
         expect(outlinePath(lines, 1)).toEqual([]);
         expect(outlinePath(lines, 3)).toEqual([]);
+    });
+});
+
+describe('relocateHeading', () => {
+    const lines = [
+        '* Talk',
+        'Some new text typed since the save',
+        '** TODO Finish this talk',
+        'DEADLINE: <2026-11-01 Sun>',
+        '** TODO Publish to YouTube :video:',
+    ];
+
+    it('keeps a line whose heading still has the title', () => {
+        expect(relocateHeading(lines, 3, 'Finish this talk')).toBe(3);
+    });
+
+    it('finds a heading that moved', () => {
+        // Indexed before line 2 was added
+        expect(relocateHeading(lines, 2, 'Finish this talk')).toBe(3);
+        expect(relocateHeading(lines, 4, 'Publish to YouTube')).toBe(5);
+    });
+
+    it('takes the nearest heading with the title', () => {
+        const twice = ['* A', '** TODO x', '* B', '* C', '** TODO x'];
+        expect(relocateHeading(twice, 4, 'x')).toBe(5);
+        expect(relocateHeading(twice, 3, 'x')).toBe(2);
+    });
+
+    it('keeps the line when no heading has the title, or there is no title', () => {
+        expect(relocateHeading(lines, 2, 'Gone')).toBe(2);
+        expect(relocateHeading(lines, 2, undefined)).toBe(2);
     });
 });

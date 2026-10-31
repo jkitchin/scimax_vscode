@@ -442,6 +442,7 @@
             view: VIEW,
             filePath: row.file,
             line: row.line,
+            title: row.title,
             planning: row.planning,
             preventDefaultContextMenuItems: true,
         }));
@@ -539,7 +540,7 @@
     }
     function openSelected() {
         const row = current();
-        if (row) vscode.postMessage({ type: 'open', filePath: row.file, line: row.line });
+        if (row) vscode.postMessage({ type: 'open', filePath: row.file, line: row.line, title: row.title });
     }
     function indexOf(target) {
         const r = target.closest && target.closest('.row');
@@ -568,7 +569,7 @@
         previewTarget = { key, anchor, row: entry.row, id: nextPreviewId++ };
         const cached = previewCache.get(key);
         if (cached) drawPreview(cached);
-        else vscode.postMessage({ type: 'preview', id: previewTarget.id, filePath: entry.row.file, line: entry.row.line });
+        else vscode.postMessage({ type: 'preview', id: previewTarget.id, filePath: entry.row.file, line: entry.row.line, title: entry.row.title });
     }
     function drawPreview(data) {
         const { row, anchor } = previewTarget;
@@ -647,7 +648,7 @@
             openSelected();
         } else if (e.key === 't') {
             const row = current();
-            if (row) vscode.postMessage({ type: 'cycleTodo', filePath: row.file, line: row.line });
+            if (row) vscode.postMessage({ type: 'cycleTodo', filePath: row.file, line: row.line, title: row.title });
         } else {
             return;
         }

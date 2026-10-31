@@ -350,8 +350,7 @@ arrows = "depends on"), colored by status:
 It is seeded from the active file's tasks and expands over the dependency edges
 to show the connected component. Click a node to jump to that task.
 
-** ✅ People and assignments
-CLOSED: [2026-10-22 Thu 09:46]
+** People and assignments
 
 A *person* is any heading tagged =:person:=, with contact properties:
 
@@ -369,11 +368,11 @@ A *person* is any heading tagged =:person:=, with contact properties:
   the indexed =:person:= headings, fuzzy-matches on handle/name/role/email as you
   type, and sets the current task's =:ASSIGNEE:= property to the picked handle(s).
   Run it from anywhere inside the entry; pick more than one for a shared task.
-  Existing assignees are pre-selected. When you have typed a filter, Enter also
-  takes the highlighted match, or, if none is highlighted, the only person the
-  filter leaves, so typing down to one person and pressing Enter assigns them
-  without ticking the box. If the filter leaves several people, arrow to one or
-  tick it. With nothing typed, clearing every box unassigns.
+  Existing assignees are pre-selected. Enter takes the ticked people and the
+  highlighted one, so arrowing to a person and pressing Enter assigns them
+  without ticking the box; with a filter typed and nobody highlighted, it takes
+  the only person the filter leaves. Once you tick or untick a box, Enter takes
+  exactly the ticked people, so clearing every box unassigns.
 - **Autocomplete**: while editing an =:ASSIGNEE:= value, completion suggests
   known people (name + email) and inserts their handle (=:NICK:=, or a slug of
   the name).

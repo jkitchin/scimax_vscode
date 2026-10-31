@@ -428,24 +428,25 @@ viewport. Moving the cursor resets the cycle to center.
 | C-c p a   | Add project                     |
 | C-c p S-f | Find file in all known projects |
 
-** ✅ Database and Agenda
-CLOSED: [2026-10-24 Sat 20:49]
+** Database and Agenda
 
-| Key     | Action               |
-|---------+----------------------|
-| C-c a a | Agenda view          |
-| C-c a c | Agenda menu          |
-| C-c a v | Agenda buffer        |
-| C-c a w | Week agenda          |
-| C-c a m | Month agenda         |
-| C-c a t | TODO list            |
-| C-c a d | Deadlines            |
-| C-c d d | Database hydra menu  |
-| C-c d f | Browse indexed files |
-| C-c d s | Search database      |
-| C-c d h | Search headings      |
-| C-c d t | Show TODOs           |
-| C-c d a | Show agenda          |
+| Key       | Action                           |
+|-----------+----------------------------------|
+| C-c a a   | Agenda view                      |
+| C-c a < a | Agenda view for the current file |
+| C-c a < t | TODO list for the current file   |
+| C-c a c   | Agenda menu                      |
+| C-c a v   | Agenda buffer                    |
+| C-c a w   | Week agenda                      |
+| C-c a m   | Month agenda                     |
+| C-c a t   | TODO list                        |
+| C-c a d   | Deadlines                        |
+| C-c d d   | Database hydra menu              |
+| C-c d f   | Browse indexed files             |
+| C-c d s   | Search database                  |
+| C-c d h   | Search headings                  |
+| C-c d t   | Show TODOs                       |
+| C-c d a   | Show agenda                      |
 
 ** Agenda Buffer
 CLOSED: [2026-10-03 Sat 09:01]

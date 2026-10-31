@@ -10,10 +10,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - **`scimax` Marp theme** - `theme: scimax` gives a deck the blues of the crystal Scimax unicorn, with the amber of its horn, laid out like orgmode.org: deep blue and amber headings, grey-blue quote cards with a blue edge, blue code colours, a blue header band and pale footer. Classes `lead` (title slide on pale, faceted crystal), `invert` (white on dark, faceted crystal like the logo's background) and `stars` (Org's leading stars before headings). It ships with the extension, so the thumbnails, preview, slideshow, exports and `scimax marp build` use it with no setting, and *New Custom Theme...* can start from it.
+- **Agenda view for the current file** - `C-c a < a` opens the agenda view (the panel `C-c a a` opens) limited to the file you are editing, and `C-c a < t` its TODO list, like org-agenda's `<` restriction. The file shows in the view's *Project* menu, where *All agenda files* lifts the limit. `C-c a <` is now a prefix, so the current-file quick pick it used to open is in the command palette only (*Agenda for Current File*).
+
+### Changed
+
+- **`C-c ]` inserts the default cite type** - Choosing a reference with `RET` now inserts it with `scimax.ref.defaultCiteStyle` straight away, as org-ref does; `C-u RET` in the picker asks for the cite type first. It used to ask every time.
 
 ### Fixed
 
-- **Duplicate agenda entries** - The agenda for the current file (`C-c a <`) and project agendas listed every subheading's deadline or scheduled date twice (three times one level further down), because each heading was visited both from a flattened list and from its parent.
+- **Agenda items in edited files** - Opening an agenda item, acting on it, or hovering it went to the wrong line when its file had been edited since it was saved or indexed, because the line came from the database or the file on disk. The heading is now found again by its title near that line, in the agenda buffer, the agenda quick picks and the agenda view; and the agenda view limited to a project or file re-reads open editors as you type, so its lines follow unsaved edits.
+- **Assign task picks the highlighted person** - *Assign...* (`scimax.org.assignTask`, and the agenda and project views' right-click action) ignored a person you arrowed to and pressed Enter on unless their box was checked, so nobody was assigned. Enter now takes the highlighted person as well as the checked ones; once you change the checks, Enter takes exactly the checked people, so unchecking everyone still clears the assignee.
+
+- **Duplicate agenda entries** - The agenda for the current file and project agendas listed every subheading's deadline or scheduled date twice (three times one level further down), because each heading was visited both from a flattened list and from its parent.
 - **`c` speed key at a subheading** - Global visibility cycling (`c`, `S-TAB`) folded the heading the cursor was on and left the cursor at the end of the visible line, so the next `c` was typed into the heading. The cursor now goes to the start of the visible heading that contains it, so `c` keeps cycling, and SHOWALL puts it back on the heading you started from.
 
 ## [0.11.0] - 2026-10-30

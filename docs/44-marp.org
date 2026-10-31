@@ -508,7 +508,7 @@ Each sets a key in the front matter, or removes it.
 | Edit Current Theme   | [[cmd:scimax.marp.theme.edit]]       | Opens the theme's CSS file; for a built-in theme, offers a custom theme based on it |
 | Add Deck Style Block | [[cmd:scimax.marp.theme.styleBlock]] | A ~style: |~ block in the front matter for small CSS changes                        |
 
-** ⚠️ The scimax theme
+** The scimax theme
 
 ~theme: scimax~ dresses a deck in the blues of the crystal Scimax unicorn,
 with the amber of its horn, laid out like [[https://orgmode.org][orgmode.org]]: a pale background, serif
@@ -548,7 +548,7 @@ theme does ~@import 'scimax';~ and changes only what you set. The CSS is in
 ~media/marp/themes/scimax.css~ in the extension. Marp for VS Code's own
 preview does not know the theme; Scimax's previews and exports do.
 
-** 👀 Custom themes
+** Custom themes
 
 /New Custom Theme.../ asks for a name and a theme to start from (Marp's or
 ~scimax~), then:

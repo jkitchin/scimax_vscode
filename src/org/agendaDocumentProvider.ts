@@ -26,7 +26,7 @@ import {
     type AgendaViewConfig,
 } from '../parser/orgAgenda';
 import { renderCustomCommand, type CustomAgendaCommand, type CustomCommandResult } from '../parser/orgAgendaCustom';
-import { entrySnippet, renderSnippetMarkdown, type SnippetLine } from './agendaHover';
+import { entrySnippet, relocateHeading, renderSnippetMarkdown } from './agendaHover';
 import type { AgendaManager } from './agendaProvider';
 
 /** URI scheme for agenda buffers. Matches `resourceScheme` in when-clauses. */
@@ -218,9 +218,11 @@ export class AgendaDocumentProvider
         md.isTrusted = { enabledCommands: HOVER_COMMANDS };
         md.supportThemeIcons = true;
 
-        md.appendMarkdown(`$(file) \`${item.file}:${item.line}\`\n\n`);
+        const lines = await readSourceLines(item.file);
+        const line = lines ? relocateHeading(lines, item.line, item.title) : item.line;
+        md.appendMarkdown(`$(file) \`${item.file}:${line}\`\n\n`);
 
-        const snippet = await readEntrySnippet(item.file, item.line);
+        const snippet = lines ? entrySnippet(lines, line, HOVER_BODY_LINES) : undefined;
         if (snippet) {
             const entryLink = (target: unknown) =>
                 `command:scimax.agenda.buffer.openEntryLink?${encodeURIComponent(JSON.stringify([target]))}`;
@@ -356,10 +358,13 @@ export async function readSourceLines(file: string): Promise<string[] | undefine
     }
 }
 
-/** The heading at a 1-based line and the first few lines of its entry. */
-async function readEntrySnippet(file: string, line: number): Promise<SnippetLine[] | undefined> {
-    const lines = await readSourceLines(file);
-    return lines ? entrySnippet(lines, line, HOVER_BODY_LINES) : undefined;
+/**
+ * The 1-based line of an item's heading in the document as it is now, open
+ * and edited or not: the item's line can be from the database or the file on
+ * disk, from before edits that moved the heading.
+ */
+export function currentHeadingLine(document: vscode.TextDocument, line: number, title?: string): number {
+    return relocateHeading(document.getText().split(/\r?\n/), line, title);
 }
 
 /**
@@ -375,7 +380,7 @@ async function readEntrySnippet(file: string, line: number): Promise<SnippetLine
  * changes state without leaving the agenda; we trade that for correctness.
  */
 export async function runOnSourceHeading(
-    item: Pick<AgendaItem, 'file' | 'line'>,
+    item: Pick<AgendaItem, 'file' | 'line'> & { title?: string },
     command: string,
     returnTo: vscode.Uri | (() => Thenable<unknown> | void)
 ): Promise<boolean> {
@@ -388,7 +393,7 @@ export async function runOnSourceHeading(
         return false;
     }
 
-    const line = Math.max(0, item.line - 1);
+    const line = Math.max(0, currentHeadingLine(sourceEditor.document, item.line, item.title) - 1);
     if (line >= sourceEditor.document.lineCount) {
         vscode.window.showWarningMessage(
             `Agenda is out of date: ${item.file} no longer has line ${item.line}. Refresh with g.`
@@ -429,7 +434,7 @@ export async function revealAgendaItem(
     try {
         const doc = await vscode.workspace.openTextDocument(item.file);
         const editor = await vscode.window.showTextDocument(doc, { viewColumn });
-        const position = new vscode.Position(Math.max(0, item.line - 1), 0);
+        const position = new vscode.Position(Math.max(0, currentHeadingLine(doc, item.line, item.title) - 1), 0);
         editor.selection = new vscode.Selection(position, position);
         editor.revealRange(
             new vscode.Range(position, position),

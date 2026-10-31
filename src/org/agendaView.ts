@@ -4,7 +4,8 @@
  *
  * The extension picks the rows: a span of days (paged with an offset), the
  * TODO list, or a custom agenda from scimax.agenda.customCommands, limited to
- * one project (a projectile project, as C-c p p lists them) or not. The
+ * one project (a projectile project, as C-c p p lists them), to one file
+ * (C-c a < a, like org-agenda's < restriction) or not. The
  * webview filters those rows by tags, files, TODO state, priority, assignee,
  * properties and text, so its menus can show every value there is
  * (agendaViewModel.ts).
@@ -25,9 +26,9 @@ import format from 'date-fns/format';
 import startOfDay from 'date-fns/startOfDay';
 import type { AgendaManager } from './agendaProvider';
 import type { ProjectileManager } from '../projectile/projectileManager';
-import { loadProjectTasks } from './projectData';
+import { isOrgFileRoot, loadProjectTasks } from './projectData';
 import { readSourceLines } from './agendaDocumentProvider';
-import { entrySnippet, outlinePath } from './agendaHover';
+import { entrySnippet, outlinePath, relocateHeading } from './agendaHover';
 import { registerTaskHost, revealTask, runOnTask, type TaskContext } from './taskActions';
 import {
     groupByState,
@@ -53,7 +54,7 @@ interface ViewOptions {
     custom?: string;
     /** Spans paged forward (+) or back (-) from today */
     offset: number;
-    /** Project root the rows are limited to */
+    /** Project root, or one org file, the rows are limited to */
     project?: string;
     // Filters the webview applies; kept here so they outlast the view.
     includeTags?: string[];
@@ -72,15 +73,18 @@ type FromWebview =
     | { type: 'ready' }
     | { type: 'refresh' }
     | { type: 'options'; options: ViewOptions }
-    | { type: 'open'; filePath: string; line: number }
-    | { type: 'cycleTodo'; filePath: string; line: number }
-    | { type: 'preview'; id: number; filePath: string; line: number }
+    | { type: 'open'; filePath: string; line: number; title?: string }
+    | { type: 'cycleTodo'; filePath: string; line: number; title?: string }
+    | { type: 'preview'; id: number; filePath: string; line: number; title?: string }
     | { type: 'close' };
 
 /** Lines of an entry's body in its tooltip, after the heading. */
 const PREVIEW_BODY_LINES = 10;
 
 const OPTIONS_KEY = 'scimax.agendaView.options';
+
+/** Pause in typing before a project or file agenda re-reads the open text. */
+const EDIT_RELOAD_DELAY_MS = 1000;
 
 class AgendaWebview implements vscode.Disposable {
     private panel: vscode.WebviewPanel | undefined;
@@ -102,15 +106,36 @@ class AgendaWebview implements vscode.Disposable {
             vscode.workspace.onDidSaveTextDocument(doc => {
                 if (this.panel && doc.fileName.endsWith('.org')) this.scheduleReload();
             }),
+            // A project or file agenda reads open editors' text, so it can
+            // follow unsaved edits; the database only changes on save.
+            vscode.workspace.onDidChangeTextDocument(e => {
+                if (this.panel && this.options.project && e.contentChanges.length
+                    && e.document.fileName.endsWith('.org')) {
+                    this.scheduleReload(EDIT_RELOAD_DELAY_MS);
+                }
+            }),
             vscode.workspace.onDidChangeConfiguration(e => {
                 if (e.affectsConfiguration('scimax.agenda')) this.scheduleReload();
             })
         );
     }
 
-    async open(): Promise<void> {
+    /**
+     * Open the view. With a file, limit it to that file and show a span of
+     * days (or the TODO list, with span 'todo'); without one, drop a file
+     * limit left from before, as org-agenda forgets its < restriction.
+     */
+    async open(restrict?: { file: string; span?: Span }): Promise<void> {
+        const before = this.options;
+        if (restrict) {
+            const span = restrict.span ?? (before.span === 'todo' ? 'week' : before.span);
+            this.options = { ...before, project: restrict.file, span, custom: undefined, offset: 0 };
+        } else if (before.project && isOrgFileRoot(before.project)) {
+            this.options = { ...before, project: undefined };
+        }
         if (this.panel) {
             this.panel.reveal();
+            if (this.options !== before) await this.reload();
             return;
         }
         // Paging is for the session: a reopened view starts at today.
@@ -148,17 +173,20 @@ class AgendaWebview implements vscode.Disposable {
         });
     }
 
-    private scheduleReload(): void {
+    private scheduleReload(delayMs = 300): void {
         if (!this.panel) return;
         if (this.reloadTimer) clearTimeout(this.reloadTimer);
-        this.reloadTimer = setTimeout(() => void this.reload(), 300);
+        this.reloadTimer = setTimeout(() => void this.reload(), delayMs);
     }
 
     /** Projectile's projects, most recently opened first, plus the chosen one if it is not among them. */
     private projects(): Array<{ name: string; path: string }> {
         const list = (this.projectile?.getProjects() ?? []).map(p => ({ name: p.name, path: p.path }));
         const chosen = this.options.project;
-        if (chosen && !list.some(p => p.path === chosen)) list.unshift({ name: path.basename(chosen), path: chosen });
+        if (chosen && !list.some(p => p.path === chosen)) {
+            const name = isOrgFileRoot(chosen) ? `This file: ${path.basename(chosen)}` : path.basename(chosen);
+            list.unshift({ name, path: chosen });
+        }
         return list;
     }
 
@@ -235,16 +263,16 @@ class AgendaWebview implements vscode.Disposable {
                 break;
             }
             case 'open':
-                await revealTask(message.filePath, message.line);
+                await revealTask(message.filePath, message.line, message.title);
                 break;
             case 'cycleTodo':
                 await runOnTask(
-                    { view: AGENDA_VIEW_TYPE, filePath: message.filePath, line: message.line },
+                    { view: AGENDA_VIEW_TYPE, filePath: message.filePath, line: message.line, title: message.title },
                     'scimax.org.cycleTodo'
                 );
                 break;
             case 'preview':
-                await this.preview(message.id, message.filePath, message.line);
+                await this.preview(message.id, message.filePath, message.line, message.title);
                 break;
             case 'close':
                 this.panel?.dispose();
@@ -256,8 +284,9 @@ class AgendaWebview implements vscode.Disposable {
      * Send the context of a row's heading for its tooltip: the headings above
      * it and the start of its entry, read as the agenda buffer's hover does.
      */
-    private async preview(id: number, filePath: string, line: number): Promise<void> {
+    private async preview(id: number, filePath: string, rowLine: number, title?: string): Promise<void> {
         const lines = await readSourceLines(filePath);
+        const line = lines ? relocateHeading(lines, rowLine, title) : rowLine;
         const snippet = lines ? entrySnippet(lines, line, PREVIEW_BODY_LINES) : undefined;
         void this.panel?.webview.postMessage({
             type: 'preview',
@@ -352,6 +381,16 @@ class AgendaWebview implements vscode.Disposable {
     }
 }
 
+/** The agenda view limited to the active org file (C-c a < a, C-c a < t). */
+async function openForCurrentFile(view: AgendaWebview, span?: Span): Promise<void> {
+    const document = vscode.window.activeTextEditor?.document;
+    if (!document || document.uri.scheme !== 'file' || !isOrgFileRoot(document.uri.fsPath)) {
+        vscode.window.showWarningMessage('The agenda can only be limited to an org file');
+        return;
+    }
+    await view.open({ file: document.uri.fsPath, span });
+}
+
 function rangeText(start: Date, end: Date): string {
     // dateRange.end is the day after the last one shown.
     const last = addDays(end, -1);
@@ -369,6 +408,8 @@ export function registerAgendaView(
         view,
         registerTaskHost(AGENDA_VIEW_TYPE, view),
         vscode.commands.registerCommand('scimax.agenda.view', () => view.open()),
+        vscode.commands.registerCommand('scimax.agenda.viewCurrentFile', () => openForCurrentFile(view)),
+        vscode.commands.registerCommand('scimax.agenda.todoViewCurrentFile', () => openForCurrentFile(view, 'todo')),
         vscode.commands.registerCommand('scimax.agendaView.refresh', () => view.reload()),
         vscode.commands.registerCommand('scimax.agendaView.ignoreFile', async (arg?: TaskContext) => {
             if (!arg?.filePath) return;

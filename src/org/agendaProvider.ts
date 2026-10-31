@@ -39,6 +39,7 @@ import type { HeadlineElement } from '../parser/orgElementTypes';
 import {
     AgendaDocumentProvider,
     AGENDA_SCHEME,
+    currentHeadingLine,
     revealAgendaItem,
     runOnSourceHeading,
     type AgendaLineRef,
@@ -395,7 +396,8 @@ export class AgendaManager {
         const topLevel: HeadlineElement[] = [];
         const fileMap = new Map<string, string>();
         for (const { filePath, doc } of docs) {
-            if (this.isFileExcluded(filePath)) continue;
+            // A file asked for by name (C-c a < a) shows even if excluded.
+            if (!roots.includes(filePath) && this.isFileExcluded(filePath)) continue;
             for (const child of doc.children) {
                 if (child.type === 'headline') {
                     topLevel.push(child as HeadlineElement);
@@ -2189,7 +2191,7 @@ async function jumpToAgendaItem(item: AgendaItem): Promise<void> {
     try {
         const doc = await vscode.workspace.openTextDocument(item.file);
         const editor = await vscode.window.showTextDocument(doc);
-        const position = new vscode.Position(item.line - 1, 0);
+        const position = new vscode.Position(Math.max(0, currentHeadingLine(doc, item.line, item.title) - 1), 0);
         editor.selection = new vscode.Selection(position, position);
         editor.revealRange(
             new vscode.Range(position, position),

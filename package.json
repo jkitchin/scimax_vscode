@@ -1589,6 +1589,10 @@
         "title": "Scimax: Insert Citation"
       },
       {
+        "command": "scimax.ref.acceptCitationWithType",
+        "title": "Scimax: Insert Citation, Choosing the Cite Type"
+      },
+      {
         "command": "scimax.ref.insertCitationForKey",
         "title": "Scimax: Insert Citation for Key"
       },
@@ -3093,6 +3097,14 @@
         "title": "Scimax: Agenda View"
       },
       {
+        "command": "scimax.agenda.viewCurrentFile",
+        "title": "Scimax: Agenda View for Current File"
+      },
+      {
+        "command": "scimax.agenda.todoViewCurrentFile",
+        "title": "Scimax: TODO List View for Current File"
+      },
+      {
         "command": "scimax.agenda.openBuffer",
         "title": "Scimax: Open Agenda Buffer"
       },
@@ -4431,9 +4443,15 @@
         "when": "!terminalFocus"
       },
       {
-        "command": "scimax.agenda.currentFile",
-        "key": "ctrl+c a shift+,",
-        "mac": "ctrl+c a shift+,",
+        "command": "scimax.agenda.viewCurrentFile",
+        "key": "ctrl+c a shift+, a",
+        "mac": "ctrl+c a shift+, a",
+        "when": "editorTextFocus && editorLangId == 'org' && !terminalFocus"
+      },
+      {
+        "command": "scimax.agenda.todoViewCurrentFile",
+        "key": "ctrl+c a shift+, t",
+        "mac": "ctrl+c a shift+, t",
         "when": "editorTextFocus && editorLangId == 'org' && !terminalFocus"
       },
       {
@@ -4549,6 +4567,12 @@
         "key": "ctrl+c z",
         "mac": "ctrl+c z",
         "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto|latex/ && !terminalFocus"
+      },
+      {
+        "command": "scimax.ref.acceptCitationWithType",
+        "key": "ctrl+u enter",
+        "mac": "ctrl+u enter",
+        "when": "inQuickOpen && scimax.citationPickerActive"
       },
       {
         "command": "scimax.ref.insertRef",
@@ -9280,6 +9304,10 @@
         }
       ],
       "commandPalette": [
+        {
+          "command": "scimax.ref.acceptCitationWithType",
+          "when": "false"
+        },
         {
           "command": "scimax.crucible.backlinks",
           "when": "scimax.inCrucible"

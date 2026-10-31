@@ -59,6 +59,11 @@ export function currentProjectRoot(): string | undefined {
     return projectRootFor(vscode.window.activeTextEditor?.document.uri);
 }
 
+/** True when a project root is one org file, e.g. the agenda limited to the current file. */
+export function isOrgFileRoot(root: string): boolean {
+    return root.toLowerCase().endsWith('.org');
+}
+
 /** Every .org file under root, honouring .gitignore and the default ignores. */
 export async function findProjectOrgFiles(root: string): Promise<string[]> {
     const result = await walkDirectory(root, { extensions: ['.org'], maxFiles: MAX_PROJECT_FILES });
@@ -70,7 +75,7 @@ export async function findProjectOrgFiles(root: string): Promise<string[]> {
     return result.files.sort();
 }
 
-/** Parse every org file in the project, preferring open editors' text. */
+/** Parse every org file in the project (or the one file, for an .org root), preferring open editors' text. */
 export async function loadProjectDocuments(root: string): Promise<ProjectDocument[]> {
     const open = new Map<string, string>();
     for (const doc of vscode.workspace.textDocuments) {
@@ -78,7 +83,8 @@ export async function loadProjectDocuments(root: string): Promise<ProjectDocumen
     }
 
     const docs: ProjectDocument[] = [];
-    for (const filePath of await findProjectOrgFiles(root)) {
+    const files = isOrgFileRoot(root) ? [root] : await findProjectOrgFiles(root);
+    for (const filePath of files) {
         try {
             const content = open.get(filePath) ?? await fs.promises.readFile(filePath, 'utf-8');
             docs.push({ filePath, doc: parseOrg(content, { filePath }) });

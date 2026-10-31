@@ -388,13 +388,14 @@ function extractDiarySexpItems(
 }
 
 /**
- * True if file is inside one of the directories. Compares whole path
- * components, so /a/proj does not match /a/project/x.org.
+ * True if file is inside one of the directories, or is one of them (an agenda
+ * limited to one file passes the file). Compares whole path components, so
+ * /a/proj does not match /a/project/x.org.
  */
 export function isUnderAnyDirectory(file: string, directories: string[]): boolean {
     return directories.some(dir => {
         const rel = path.relative(dir, file);
-        return rel !== '' && !rel.startsWith('..') && !path.isAbsolute(rel);
+        return !rel.startsWith('..') && !path.isAbsolute(rel);
     });
 }
 

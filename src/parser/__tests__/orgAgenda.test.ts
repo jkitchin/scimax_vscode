@@ -1509,6 +1509,8 @@ describe('isUnderAnyDirectory', () => {
     it('matches files inside a directory, at any depth', () => {
         expect(isUnderAnyDirectory('/a/proj/x.org', ['/a/proj'])).toBe(true);
         expect(isUnderAnyDirectory('/a/proj/sub/y.org', ['/a/proj'])).toBe(true);
+        // An agenda limited to one file passes the file itself
+        expect(isUnderAnyDirectory('/a/proj/x.org', ['/a/proj/x.org'])).toBe(true);
     });
 
     it('does not match a sibling that shares a name prefix', () => {
