@@ -2965,6 +2965,22 @@
         "title": "Scimax: Clear LaTeX Preview Cache"
       },
       {
+        "command": "scimax.org.latexPreview",
+        "title": "Scimax: Toggle LaTeX Preview (fragment, region or section)"
+      },
+      {
+        "command": "scimax.org.latexPreviewClearSection",
+        "title": "Scimax: Remove LaTeX Previews in Section"
+      },
+      {
+        "command": "scimax.org.latexPreviewBuffer",
+        "title": "Scimax: Preview All LaTeX Fragments in File"
+      },
+      {
+        "command": "scimax.org.latexPreviewClearBuffer",
+        "title": "Scimax: Remove All LaTeX Previews in File"
+      },
+      {
         "command": "scimax.checkLatexTools",
         "title": "Scimax: Check LaTeX Tools Availability"
       },
@@ -3103,6 +3119,14 @@
       {
         "command": "scimax.agenda.todoViewCurrentFile",
         "title": "Scimax: TODO List View for Current File"
+      },
+      {
+        "command": "scimax.agenda.viewCurrentProject",
+        "title": "Scimax: Agenda View for Current Project"
+      },
+      {
+        "command": "scimax.agenda.help",
+        "title": "Scimax: Agenda Commands (C-c a ?)"
       },
       {
         "command": "scimax.agenda.openBuffer",
@@ -4453,6 +4477,18 @@
         "key": "ctrl+c a shift+, t",
         "mac": "ctrl+c a shift+, t",
         "when": "editorTextFocus && editorLangId == 'org' && !terminalFocus"
+      },
+      {
+        "command": "scimax.agenda.viewCurrentProject",
+        "key": "ctrl+c a p",
+        "mac": "ctrl+c a p",
+        "when": "!terminalFocus"
+      },
+      {
+        "command": "scimax.agenda.help",
+        "key": "ctrl+c a shift+/",
+        "mac": "ctrl+c a shift+/",
+        "when": "!terminalFocus"
       },
       {
         "command": "scimax.journal.prev",
@@ -5880,6 +5916,30 @@
         "key": "ctrl+c ctrl+x s",
         "mac": "ctrl+c ctrl+x s",
         "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/ && !terminalFocus"
+      },
+      {
+        "command": "scimax.org.latexPreview",
+        "key": "ctrl+c ctrl+x ctrl+l",
+        "mac": "ctrl+c ctrl+x ctrl+l",
+        "when": "editorTextFocus && editorLangId == 'org' && !terminalFocus"
+      },
+      {
+        "command": "scimax.org.latexPreviewClearSection",
+        "key": "ctrl+u ctrl+c ctrl+x ctrl+l",
+        "mac": "ctrl+u ctrl+c ctrl+x ctrl+l",
+        "when": "editorTextFocus && editorLangId == 'org' && !terminalFocus"
+      },
+      {
+        "command": "scimax.org.latexPreviewBuffer",
+        "key": "ctrl+u ctrl+u ctrl+c ctrl+x ctrl+l",
+        "mac": "ctrl+u ctrl+u ctrl+c ctrl+x ctrl+l",
+        "when": "editorTextFocus && editorLangId == 'org' && !terminalFocus"
+      },
+      {
+        "command": "scimax.org.latexPreviewClearBuffer",
+        "key": "ctrl+u ctrl+u ctrl+u ctrl+c ctrl+x ctrl+l",
+        "mac": "ctrl+u ctrl+u ctrl+u ctrl+c ctrl+x ctrl+l",
+        "when": "editorTextFocus && editorLangId == 'org' && !terminalFocus"
       },
       {
         "command": "scimax.imageOverlays.toggleCurrentFile",
@@ -7734,6 +7794,23 @@
           "type": "boolean",
           "default": true,
           "description": "Automatically adjust equation rendering for dark/light themes"
+        },
+        "scimax.latexPreview.overlayScale": {
+          "type": "number",
+          "default": 1,
+          "minimum": 0.25,
+          "maximum": 4,
+          "description": "Size of inline LaTeX previews (C-c C-x C-l) relative to the editor font, like :scale in org-format-latex-options. Previews are shrunk to fit the lines their source takes up."
+        },
+        "scimax.latexPreview.overlayForeground": {
+          "type": "string",
+          "default": "auto",
+          "description": "Text color of inline LaTeX previews, as a CSS color (e.g. #e0e0e0). \"auto\" picks a grey that reads on the current theme."
+        },
+        "scimax.latexPreview.startupWithPreview": {
+          "type": "boolean",
+          "default": false,
+          "description": "Preview all LaTeX fragments when an org file opens, like org-startup-with-latex-preview. #+STARTUP: latexpreview / nolatexpreview overrides this per file."
         },
         "scimax.orgPreview.updateDelay": {
           "type": "number",

@@ -92,6 +92,11 @@ export function initLatexPreviewCache(context: vscode.ExtensionContext): void {
     cleanupCache(7 * 24 * 60 * 60 * 1000);
 }
 
+/** Where rendered equations are cached */
+export function latexCacheDir(): string {
+    return cacheDir;
+}
+
 /**
  * Clean up cache entries older than maxAge milliseconds
  */

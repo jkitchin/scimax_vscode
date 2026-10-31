@@ -348,6 +348,17 @@ Like the Markdown preview, but for org files. See [[file:46-org-preview.org][Org
 
 *Note:* On macOS, =F10= requires screen recording permission. See [[file:12-image-overlays.org::*Inserting Screenshots][Inserting Screenshots]].
 
+* LaTeX Previews
+
+Inline previews of math fragments, like org's =org-latex-preview=. See [[file:11-latex-preview.org::*Inline Previews (C-c C-x C-l)][Inline Previews]].
+
+| Key                     | Action                                                          |
+|-------------------------+-----------------------------------------------------------------|
+| C-c C-x C-l             | Toggle the preview at point, or the region's or section's       |
+| C-u C-c C-x C-l         | Remove the previews in the section (or region)                  |
+| C-u C-u C-c C-x C-l     | Preview every fragment in the file                              |
+| C-u C-u C-u C-c C-x C-l | Remove every preview in the file                                |
+
 * Citations & References
 
 | Key        | Action                                 |
@@ -430,23 +441,25 @@ viewport. Moving the cursor resets the cycle to center.
 
 ** Database and Agenda
 
-| Key       | Action                           |
-|-----------+----------------------------------|
-| C-c a a   | Agenda view                      |
-| C-c a < a | Agenda view for the current file |
-| C-c a < t | TODO list for the current file   |
-| C-c a c   | Agenda menu                      |
-| C-c a v   | Agenda buffer                    |
-| C-c a w   | Week agenda                      |
-| C-c a m   | Month agenda                     |
-| C-c a t   | TODO list                        |
-| C-c a d   | Deadlines                        |
-| C-c d d   | Database hydra menu              |
-| C-c d f   | Browse indexed files             |
-| C-c d s   | Search database                  |
-| C-c d h   | Search headings                  |
-| C-c d t   | Show TODOs                       |
-| C-c d a   | Show agenda                      |
+| Key       | Action                              |
+|-----------+-------------------------------------|
+| C-c a ?   | All agenda commands                 |
+| C-c a a   | Agenda view                         |
+| C-c a p   | Agenda view for the current project |
+| C-c a < a | Agenda view for the current file    |
+| C-c a < t | TODO list for the current file      |
+| C-c a c   | Agenda menu                         |
+| C-c a v   | Agenda buffer                       |
+| C-c a w   | Week agenda                         |
+| C-c a m   | Month agenda                        |
+| C-c a t   | TODO list                           |
+| C-c a d   | Deadlines                           |
+| C-c d d   | Database hydra menu                 |
+| C-c d f   | Browse indexed files                |
+| C-c d s   | Search database                     |
+| C-c d h   | Search headings                     |
+| C-c d t   | Show TODOs                          |
+| C-c d a   | Show agenda                         |
 
 ** Agenda Buffer
 CLOSED: [2026-10-03 Sat 09:01]

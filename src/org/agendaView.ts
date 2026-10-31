@@ -26,7 +26,7 @@ import format from 'date-fns/format';
 import startOfDay from 'date-fns/startOfDay';
 import type { AgendaManager } from './agendaProvider';
 import type { ProjectileManager } from '../projectile/projectileManager';
-import { isOrgFileRoot, loadProjectTasks } from './projectData';
+import { currentProjectRoot, isOrgFileRoot, loadProjectTasks } from './projectData';
 import { readSourceLines } from './agendaDocumentProvider';
 import { entrySnippet, outlinePath, relocateHeading } from './agendaHover';
 import { registerTaskHost, revealTask, runOnTask, type TaskContext } from './taskActions';
@@ -121,15 +121,16 @@ class AgendaWebview implements vscode.Disposable {
     }
 
     /**
-     * Open the view. With a file, limit it to that file and show a span of
-     * days (or the TODO list, with span 'todo'); without one, drop a file
-     * limit left from before, as org-agenda forgets its < restriction.
+     * Open the view. With a root (an org file or a project folder), limit it
+     * to that root and show a span of days (or the TODO list, with span
+     * 'todo'); without one, drop a file limit left from before, as org-agenda
+     * forgets its < restriction.
      */
-    async open(restrict?: { file: string; span?: Span }): Promise<void> {
+    async open(restrict?: { root: string; span?: Span }): Promise<void> {
         const before = this.options;
         if (restrict) {
             const span = restrict.span ?? (before.span === 'todo' ? 'week' : before.span);
-            this.options = { ...before, project: restrict.file, span, custom: undefined, offset: 0 };
+            this.options = { ...before, project: restrict.root, span, custom: undefined, offset: 0 };
         } else if (before.project && isOrgFileRoot(before.project)) {
             this.options = { ...before, project: undefined };
         }
@@ -388,7 +389,16 @@ async function openForCurrentFile(view: AgendaWebview, span?: Span): Promise<voi
         vscode.window.showWarningMessage('The agenda can only be limited to an org file');
         return;
     }
-    await view.open({ file: document.uri.fsPath, span });
+    await view.open({ root: document.uri.fsPath, span });
+}
+
+async function openForCurrentProject(view: AgendaWebview): Promise<void> {
+    const root = currentProjectRoot();
+    if (!root) {
+        vscode.window.showWarningMessage('No project for the active file');
+        return;
+    }
+    await view.open({ root });
 }
 
 function rangeText(start: Date, end: Date): string {
@@ -410,6 +420,7 @@ export function registerAgendaView(
         vscode.commands.registerCommand('scimax.agenda.view', () => view.open()),
         vscode.commands.registerCommand('scimax.agenda.viewCurrentFile', () => openForCurrentFile(view)),
         vscode.commands.registerCommand('scimax.agenda.todoViewCurrentFile', () => openForCurrentFile(view, 'todo')),
+        vscode.commands.registerCommand('scimax.agenda.viewCurrentProject', () => openForCurrentProject(view)),
         vscode.commands.registerCommand('scimax.agendaView.refresh', () => view.reload()),
         vscode.commands.registerCommand('scimax.agendaView.ignoreFile', async (arg?: TaskContext) => {
             if (!arg?.filePath) return;

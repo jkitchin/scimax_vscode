@@ -202,6 +202,69 @@ The preview displays:
 - Equation number (if applicable)
 - The original LaTeX source code
 
+** Inline Previews (C-c C-x C-l)
+
+=C-c C-x C-l= (=scimax.org.latexPreview=) draws math fragments as rendered
+equations in the editor, as =org-latex-preview= does in Emacs. The fragment's
+source is hidden and the equation is drawn in its place, in the editor's font
+size and a text color that suits the theme.
+
+| Key                     | What it does                                                          |
+|-------------------------+-----------------------------------------------------------------------|
+| C-c C-x C-l             | On a fragment: toggle its preview (the cursor steps to the end of it) |
+|                         | Elsewhere: toggle the previews in the region or current section       |
+| C-u C-c C-x C-l         | Remove the previews in the section (or region)                        |
+| C-u C-u C-c C-x C-l     | Preview every fragment in the file                                    |
+| C-u C-u C-u C-c C-x C-l | Remove every preview in the file                                      |
+
+The section is the text from the heading above the cursor to the next heading
+of any level, or the text before the first heading. Toggling a region or
+section removes its previews if any are showing, and otherwise previews all its
+fragments, so pressing =C-c C-x C-l= repeatedly switches the equations on and
+off.
+
+*Clicking an equation* shows its LaTeX source so you can edit it. When the
+cursor leaves the source, the equation is drawn again, re-rendered if you
+changed it. If the edit leaves no math there (say you deleted a delimiter), the
+preview is removed.
+
+All the fragment types the hover preview knows are previewed: =$...$=,
+=\(...\)=, =$$...$$=, =\[...\]= and math environments such as
+=\begin{equation}=. Numbered environments show their equation number.
+
+*Editing a previewed fragment:*
+- Moving the cursor into a preview shows its LaTeX source again; moving out
+  shows the equation. A preview over several lines (an environment) shows its
+  source while the cursor is on any of its lines.
+- Edits made while the source is showing are re-rendered when the cursor
+  leaves it. (Org instead removes the preview.) An edit that runs across the
+  fragment's edge, such as replacing a selection that includes it, removes the
+  preview.
+- A fragment that fails to render gets a =⚠= after it; hover it for the LaTeX
+  error.
+
+*Previewing when a file opens:* =#+STARTUP: latexpreview= previews every
+fragment when the file is opened, and =#+STARTUP: nolatexpreview= turns that
+off for a file when =scimax.latexPreview.startupWithPreview= is on.
+
+*Differences from Emacs:* VS Code cannot make a line taller, so an equation has
+to fit the lines its source takes up. A one-line fragment that is taller than a
+line (a big fraction or sum in =\[...\]=) is shrunk to the line height; give
+such equations their own lines in an environment to see them full size. An
+environment is drawn across its lines, so a three-line =equation= has three
+lines of room.
+
+** Inline Preview Settings
+
+| Setting                                  | Default  | Description                                                                     |
+|------------------------------------------+----------+---------------------------------------------------------------------------------|
+| =scimax.latexPreview.overlayScale=       | =1=      | Size relative to the editor font, like =:scale= in =org-format-latex-options=   |
+| =scimax.latexPreview.overlayForeground=  | ="auto"= | CSS color of the equations; =auto= picks a grey for the theme                   |
+| =scimax.latexPreview.startupWithPreview= | =false=  | Preview all fragments when an org file opens (=org-startup-with-latex-preview=) |
+
+Changing the theme, the editor font size or these settings re-renders the
+previews.
+
 ** Preview Caching
 
 Rendered equations are cached in your VS Code global storage directory. The cache:
@@ -663,10 +726,13 @@ What you see in hover preview should match the exported output, but note:
 
 ** Preview Commands
 
-| Command                             | Description                        | Keybinding                 |
-|-------------------------------------+------------------------------------+----------------------------|
-| Scimax: Clear LaTeX Cache           | Clear all cached equation renders  | None (use Command Palette) |
-| Scimax: Show LaTeX Cache Statistics | Display cache size and entry count | None                       |
+| Command                                     | Description                        | Keybinding                 |
+|---------------------------------------------+------------------------------------+----------------------------|
+| Scimax: Toggle LaTeX Preview                | Inline preview at point or section | C-c C-x C-l                |
+| Scimax: Preview All LaTeX Fragments in File | Inline previews in the whole file  | C-u C-u C-c C-x C-l        |
+| Scimax: Remove All LaTeX Previews in File   | Remove the inline previews         | C-u C-u C-u C-c C-x C-l    |
+| Scimax: Clear LaTeX Cache                   | Clear all cached equation renders  | None (use Command Palette) |
+| Scimax: Show LaTeX Cache Statistics         | Display cache size and entry count | None                       |
 
 ** Live PDF Preview Commands
 
@@ -892,11 +958,12 @@ When sharing documents:
 
 ** Keybindings
 
-| Action                | Keybinding          |
-|-----------------------+---------------------|
-| Open live preview     | =C-c C-e l v=       |
-| Forward sync          | =C-c C-e l s=       |
-| Export dispatcher     | =C-c C-e=           |
+| Action               | Keybinding    |
+|----------------------+---------------|
+| Inline LaTeX preview | =C-c C-x C-l= |
+| Open live preview    | =C-c C-e l v= |
+| Forward sync         | =C-c C-e l s= |
+| Export dispatcher    | =C-c C-e=     |
 
 ** Settings
 

@@ -707,6 +707,8 @@ CLOSED: [2026-01-17 Sat 12:28]
 | [[cmd:scimax.agenda.view]]                  | Agenda View                                  | C-c a a             |
 | [[cmd:scimax.agenda.viewCurrentFile]]       | Agenda View for Current File                 | C-c a < a           |
 | [[cmd:scimax.agenda.todoViewCurrentFile]]   | TODO List View for Current File              | C-c a < t           |
+| [[cmd:scimax.agenda.viewCurrentProject]]    | Agenda View for Current Project              | C-c a p             |
+| [[cmd:scimax.agenda.help]]                  | Agenda Commands                              | C-c a ?             |
 | [[cmd:scimax.agendaView.refresh]]           | Agenda View - Refresh                        | g (in view)         |
 | [[cmd:scimax.agendaView.ignoreFile]]        | Agenda View - Ignore This File in the Agenda | -                   |
 | [[cmd:scimax.agenda.custom]]                | Run Custom Agenda Command                    | -                   |
@@ -1420,6 +1422,15 @@ Environment speed command keys:
 - l :: Add label
 - C :: Add caption
 - i :: Environment info
+
+** Inline LaTeX Previews
+
+| Command ID                                  | Description                                        | Default Keybinding      |
+|---------------------------------------------+----------------------------------------------------+-------------------------|
+| [[cmd:scimax.org.latexPreview]]             | Toggle LaTeX Preview (fragment, region or section) | C-c C-x C-l             |
+| [[cmd:scimax.org.latexPreviewClearSection]] | Remove LaTeX Previews in Section                   | C-u C-c C-x C-l         |
+| [[cmd:scimax.org.latexPreviewBuffer]]       | Preview All LaTeX Fragments in File                | C-u C-u C-c C-x C-l     |
+| [[cmd:scimax.org.latexPreviewClearBuffer]]  | Remove All LaTeX Previews in File                  | C-u C-u C-u C-c C-x C-l |
 
 ** ✅ LaTeX Cache Management
 CLOSED: [2026-01-21 Wed 11:36]

@@ -36,6 +36,7 @@ import { registerFoldingProvider } from './highlighting/foldingProvider';
 import { registerBlockDecorations } from './highlighting/blockDecorations';
 import { registerCommandMarkupDecorations } from './highlighting/commandMarkupDecoration';
 import { registerLinkDisplayDecorations } from './highlighting/linkDisplayDecoration';
+import { registerLatexOverlays } from './org/latexOverlays';
 import { registerCheckboxFeatures } from './markdown/checkboxProvider';
 import { registerMarkdownExportCommands } from './markdown/markdownExportCommands';
 import { registerTaskCommands } from './markdown/taskCommands';
@@ -729,6 +730,8 @@ async function activateScimax(context: vscode.ExtensionContext) {
 
     // Initialize LaTeX preview cache for equation rendering
     activationStep('initLatexPreviewCache', () => initLatexPreviewCache(context));
+    // After the cache: #+STARTUP: latexpreview renders as soon as it registers
+    activationStep('registerLatexOverlays', () => registerLatexOverlays(context));
 
     // Register LaTeX preview commands
     context.subscriptions.push(

@@ -385,7 +385,9 @@ export class AgendaManager {
     /**
      * Agenda for the org files under the given project roots, parsed from the
      * files themselves. Items carry blocked state and assignees resolved
-     * against the whole project, and config.assignees filters them.
+     * against the whole project, and config.assignees filters them. Files
+     * scimax.agenda.exclude hides from the full agenda show here: a project
+     * asked for by name shows all of its tasks, as its TODO list does.
      */
     private async getAgendaViewForProject(
         roots: string[],
@@ -396,8 +398,6 @@ export class AgendaManager {
         const topLevel: HeadlineElement[] = [];
         const fileMap = new Map<string, string>();
         for (const { filePath, doc } of docs) {
-            // A file asked for by name (C-c a < a) shows even if excluded.
-            if (!roots.includes(filePath) && this.isFileExcluded(filePath)) continue;
             for (const child of doc.children) {
                 if (child.type === 'headline') {
                     topLevel.push(child as HeadlineElement);
@@ -1122,8 +1122,12 @@ async function runDispatcher(
     if (entries.length === 0) return;
 
     type Item = vscode.QuickPickItem & { entry?: DispatchEntry };
-    const toItem = (e: DispatchEntry): Item => ({ label: `[${e.key}] ${e.label}`, description: e.description, entry: e });
-    const builtinItems = entries.filter(e => !customKeys.has(e.key) && builtins.includes(e)).map(toItem);
+    const toItem = (e: DispatchEntry): Item => ({ label: e.key ? `[${e.key}] ${e.label}` : e.label, description: e.description, entry: e });
+    const shown = entries.filter(e => !customKeys.has(e.key) && builtins.includes(e));
+    const keyless = shown.filter(e => !e.key);
+    const builtinItems: Item[] = keyless.length
+        ? [...shown.filter(e => e.key).map(toItem), { label: 'More', kind: vscode.QuickPickItemKind.Separator }, ...keyless.map(toItem)]
+        : shown.map(toItem);
     const customItems = custom.map(toItem);
     const items: Item[] = builtinItems.length && customItems.length
         ? [...builtinItems, { label: 'Custom commands', kind: vscode.QuickPickItemKind.Separator }, ...customItems]
@@ -1142,7 +1146,7 @@ async function runDispatcher(
             qp.hide();
         };
         qp.onDidChangeValue(value => {
-            const hit = entries.find(e => e.key === value);
+            const hit = value && entries.find(e => e.key === value);
             if (hit) finish(hit);
         });
         qp.onDidAccept(() => finish(qp.selectedItems[0]?.entry));
@@ -1897,6 +1901,38 @@ ${reportLines.join('\n')}
                 { key: 'r', label: 'Refresh', description: 'Re-scan agenda files', run: () => vscode.commands.executeCommand('scimax.agenda.refresh') },
             ];
             await runDispatcher(manager.getCustomCommands(), '', builtins, key => docProvider.openCustom(key));
+        }),
+
+        // C-c a ?: every agenda command, keyed as under C-c a, so typing the
+        // key after C-c a ? does what it does after C-c a. Commands with no
+        // key follow and run with Enter.
+        vscode.commands.registerCommand('scimax.agenda.help', async () => {
+            const run = (command: string) => () => vscode.commands.executeCommand(command);
+            const entries: DispatchEntry[] = [
+                { key: 'a', label: 'Agenda View', description: 'Agenda with filter menus and right-click actions', run: run('scimax.agenda.view') },
+                { key: 'v', label: 'Agenda Buffer', description: 'Persistent agenda in an editor tab, by span, project or assignee', run: run('scimax.agenda.openBuffer') },
+                { key: 'w', label: 'Week Agenda', description: '7-day view', run: run('scimax.agenda.week') },
+                { key: 'm', label: 'Month Agenda', description: '30-day view', run: run('scimax.agenda.month') },
+                { key: 't', label: 'TODO List', description: 'All TODO items', run: run('scimax.agenda.todoList') },
+                { key: 'd', label: 'Deadlines', description: 'Upcoming deadlines', run: run('scimax.agenda.deadlines') },
+                { key: 'p', label: 'Project Agenda', description: 'Agenda view for the active file\'s project', run: run('scimax.agenda.viewCurrentProject') },
+                { key: '<a', label: 'File Agenda', description: 'Agenda view for the current file', run: run('scimax.agenda.viewCurrentFile') },
+                { key: '<t', label: 'File TODO List', description: 'TODO list for the current file', run: run('scimax.agenda.todoViewCurrentFile') },
+                { key: 'c', label: 'Agenda Dispatcher', description: 'Org-style menu, with your custom commands', run: run('scimax.agenda.menu') },
+                { key: '', label: 'Day Agenda', description: 'Today\'s agenda', run: run('scimax.agenda.day') },
+                { key: '', label: 'Fortnight Agenda', description: '14-day view', run: run('scimax.agenda.fortnight') },
+                { key: '', label: 'Scheduled', description: 'Scheduled items', run: run('scimax.agenda.scheduled') },
+                { key: '', label: 'Match Tags/Properties', description: 'Headlines matching a match string', run: run('scimax.agenda.match') },
+                { key: '', label: 'Filter by Tag', description: 'Items with a tag', run: run('scimax.agenda.filterByTag') },
+                { key: '', label: 'Search Agenda', description: 'Search agenda items', run: run('scimax.agenda.search') },
+                { key: '', label: 'Clock Report', description: 'Time tracking report', run: run('scimax.agenda.clockReport') },
+                { key: '', label: 'Notebook Agenda', description: 'Agenda for a notebook', run: run('scimax.notebook.agenda') },
+                { key: '', label: 'Custom Agenda Command', description: 'Run one of scimax.agenda.customCommands', run: run('scimax.agenda.custom') },
+                { key: '', label: 'Store Agenda Views', description: 'Write every custom command\'s export files', run: run('scimax.agenda.storeViews') },
+                { key: '', label: 'Configure Agenda Files', description: 'Which files the agenda reads', run: run('scimax.agenda.configure') },
+                { key: '', label: 'Refresh', description: 'Re-scan agenda files', run: run('scimax.agenda.refresh') },
+            ];
+            await runDispatcher([], '', entries, async () => undefined);
         }),
 
         vscode.commands.registerCommand('scimax.agenda.custom', async (key?: string) => {

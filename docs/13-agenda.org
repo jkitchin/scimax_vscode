@@ -762,6 +762,30 @@ the key as its argument:
 { "key": "ctrl+c a w", "command": "scimax.agenda.custom", "args": "w" }
 #+END_SRC
 
+** All Agenda Commands (C-c a ?)
+
+=C-c a ?= ([[cmd:scimax.agenda.help]]) lists every agenda command. The ones
+bound under =C-c a= show their key, and typing it runs the command at once, so
+=C-c a ? w= does what =C-c a w= does. Type =<a= for the file agenda. The
+commands with no key follow under *More*: type to narrow the list and press
+Enter.
+
+| Key  | Action                                        |
+|------+-----------------------------------------------|
+| =a=  | Agenda view                                   |
+| =v=  | Agenda buffer                                 |
+| =w=  | Week agenda                                   |
+| =m=  | Month agenda                                  |
+| =t=  | TODO list                                     |
+| =d=  | Deadlines                                     |
+| =p=  | Agenda view for the current project           |
+| =<a= | Agenda view for the current file              |
+| =<t= | TODO list for the current file                |
+| =c=  | Agenda menu (with your custom commands)       |
+| -    | Day, fortnight, scheduled, match, tag, search |
+| -    | Clock report, notebook agenda, custom command |
+| -    | Store views, configure files, refresh         |
+
 ** Storing and Exporting Views
 
 A command's =export= list names files to write. The format follows the
@@ -850,8 +874,7 @@ Total: 3 items
 The buffer is read-only, so it can never be edited by accident and never
 prompts to save.
 
-*** ✅ Project Agenda Buffer
-CLOSED: [2026-10-03 Sat 09:00]
+*** Project Agenda Buffer
 
 Choose *Current Project* under *Filter* at the bottom of the =C-c a v= list to
 see only the items from files in the project you are working in, then pick a
@@ -862,7 +885,9 @@ is used, and with no file open, the only workspace folder.
 
 A project agenda reads the =.org= files under that folder directly (honouring
 =.gitignore=), rather than asking the database, so a new file shows up without
-being indexed. Unsaved edits in open editors are included.
+being indexed. Unsaved edits in open editors are included. Files that
+=scimax.agenda.exclude= hides from the full agenda are included too: a project
+agenda shows all of the project's tasks.
 
 The project buffer opens in its own tab, named after the project (for example
 =Agenda (scimax_vscode).org=), so it can sit beside the full agenda. All the
@@ -961,8 +986,19 @@ or a span button to go back.
 *Project* limits the items to one project, from the same list =C-c p p=
 ([[cmd:scimax.projectile.switch]]) offers. Spans and the TODO list read the
 project's own org files, so a file the database has not indexed yet still
-shows; a custom agenda is limited to the items it found under the project's
-folder.
+shows, and so does one =scimax.agenda.exclude= hides from the full agenda; a
+custom agenda reads the database, so it is limited to the items it found under
+the project's folder.
+
+*** Limiting to the current project
+
+=C-c a p= ([[cmd:scimax.agenda.viewCurrentProject]]) opens the agenda view
+limited to the project of the file you are editing: the nearest folder above
+it with a project marker (=.git=, =.projectile=, =package.json= and the like),
+else its workspace folder. It shows every task in the project's org files,
+including files =scimax.agenda.exclude= hides from the full agenda, and keeps
+the span you last used, the TODO list included. Choose *All agenda files* in
+the *Project* menu to lift the limit.
 
 *** Limiting to the current file
 
