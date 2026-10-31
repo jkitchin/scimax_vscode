@@ -391,18 +391,20 @@ export class AgendaManager {
         config: Partial<AgendaViewConfig>
     ): Promise<AgendaView> {
         const docs = (await Promise.all(roots.map(r => loadProjectDocuments(r)))).flat();
-        const headlines: HeadlineElement[] = [];
+        // Top-level headings only: generateAgendaView walks the subheadings
+        const topLevel: HeadlineElement[] = [];
         const fileMap = new Map<string, string>();
         for (const { filePath, doc } of docs) {
             if (this.isFileExcluded(filePath)) continue;
             for (const child of doc.children) {
                 if (child.type === 'headline') {
-                    this.collectHeadlinesWithFile(child as HeadlineElement, filePath, headlines, fileMap);
+                    topLevel.push(child as HeadlineElement);
+                    this.recordHeadlineFiles(child as HeadlineElement, filePath, fileMap);
                 }
             }
         }
 
-        const view = generateAgendaView(headlines, fileMap, {
+        const view = generateAgendaView(topLevel, fileMap, {
             showDone: this.config.showDone,
             showHabits: this.config.showHabits,
             days: this.config.defaultSpan,
@@ -637,17 +639,16 @@ export class AgendaManager {
         return db !== null;
     }
 
-    private collectHeadlinesWithFile(
+    /** Record the file of a heading and all its subheadings for generateAgendaView */
+    private recordHeadlineFiles(
         headline: HeadlineElement,
         filePath: string,
-        headlines: HeadlineElement[],
         fileMap: Map<string, string>
     ): void {
-        headlines.push(headline);
         fileMap.set(`${headline.properties.lineNumber}:${headline.properties.rawValue}`, filePath);
 
         for (const child of headline.children) {
-            this.collectHeadlinesWithFile(child, filePath, headlines, fileMap);
+            this.recordHeadlineFiles(child, filePath, fileMap);
         }
     }
 
@@ -752,7 +753,8 @@ export class AgendaManager {
      * no scanning — used for the "agenda for current file" command.
      */
     async getAgendaViewForFile(filePath: string, config?: Partial<AgendaViewConfig>): Promise<AgendaView> {
-        const allHeadlines: HeadlineElement[] = [];
+        // Top-level headings only: generateAgendaView walks the subheadings
+        const topLevel: HeadlineElement[] = [];
         const fileMap = new Map<string, string>();
 
         try {
@@ -760,14 +762,15 @@ export class AgendaManager {
             const document = parseOrg(content, { parseInlineObjects: false, addPositions: false });
             for (const child of document.children) {
                 if (child.type === 'headline') {
-                    this.collectHeadlinesWithFile(child as HeadlineElement, filePath, allHeadlines, fileMap);
+                    topLevel.push(child as HeadlineElement);
+                    this.recordHeadlineFiles(child as HeadlineElement, filePath, fileMap);
                 }
             }
         } catch (error) {
             this.log(`getAgendaViewForFile: failed to read/parse ${filePath}: ${error}`);
         }
 
-        return generateAgendaView(allHeadlines, fileMap, {
+        return generateAgendaView(topLevel, fileMap, {
             showDone: this.config.showDone,
             showHabits: this.config.showHabits,
             days: this.config.defaultSpan,

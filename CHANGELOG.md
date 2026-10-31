@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **Duplicate agenda entries** - The agenda for the current file (`C-c a <`) and project agendas listed every subheading's deadline or scheduled date twice (three times one level further down), because each heading was visited both from a flattened list and from its parent.
 - **`c` speed key at a subheading** - Global visibility cycling (`c`, `S-TAB`) folded the heading the cursor was on and left the cursor at the end of the visible line, so the next `c` was typed into the heading. The cursor now goes to the start of the visible heading that contains it, so `c` keeps cycling, and SHOWALL puts it back on the heading you started from.
 
 ## [0.11.0] - 2026-10-30

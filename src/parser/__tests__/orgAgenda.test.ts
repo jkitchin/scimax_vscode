@@ -1519,3 +1519,32 @@ describe('isUnderAnyDirectory', () => {
         expect(isUnderAnyDirectory('/b/x.org', ['/a/proj', '/c'])).toBe(false);
     });
 });
+
+describe('generateAgendaView with a parsed file', () => {
+    it('lists each subheading once when given the top-level headings', async () => {
+        const { parseOrg } = await import('../orgParserUnified');
+        const { format, addDays } = await import('date-fns');
+        const day = (n: number) => format(addDays(new Date(), n), 'yyyy-MM-dd EEE');
+        const doc = parseOrg([
+            '* Tasks',
+            '** TODO Finish this talk',
+            `DEADLINE: <${day(1)}>`,
+            '** TODO Publish to YouTube',
+            `DEADLINE: <${day(0)}>`,
+            '*** TODO Upload captions',
+            `DEADLINE: <${day(2)}>`,
+        ].join('\n'), { parseInlineObjects: false, addPositions: false });
+
+        const topLevel = doc.children.filter(c => c.type === 'headline') as HeadlineElement[];
+        const files = new Map<string, string>();
+        const record = (h: HeadlineElement) => {
+            files.set(`${h.properties.lineNumber}:${h.properties.rawValue}`, '/notes/talk.org');
+            h.children.forEach(record);
+        };
+        topLevel.forEach(record);
+
+        const view = generateAgendaView(topLevel, files, { startDate: new Date(), days: 7 });
+        const titles = view.groups.flatMap(g => g.items).map(i => i.title).sort();
+        expect(titles).toEqual(['Finish this talk', 'Publish to YouTube', 'Upload captions']);
+    });
+});
