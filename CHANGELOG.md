@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.12.1] - 2026-10-31
+
 ### Fixed
 
 - **`r` on a top-level heading** - `r` (and `M-right`) on a level-1 heading such as `* Notes` indented it with two spaces, turning it into a list item, because a `*` followed by a space was taken for a list bullet; `U`/`D` and `M-up`/`M-down` on it moved it as a list item. In org a `*` at the start of a line is now always a heading. Demoting also moved the cursor off the heading start, so a second `r` (or `l`) was typed into the heading; the cursor now stays at the start of the line.
