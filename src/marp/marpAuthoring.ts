@@ -7,7 +7,7 @@
  * dependency and can be unit tested directly.
  */
 
-import { BUILTIN_THEMES } from './marpDirectives';
+import { STANDARD_THEMES } from './marpDirectives';
 import type { Slide } from './slideModel';
 
 // =============================================================================
@@ -170,7 +170,7 @@ export function imageMarkdown(file: string, placement: ImagePlacement, filter: I
 export const MARP_HEADER_SNIPPET = [
     '---',
     'marp: true',
-    `theme: \${1|${BUILTIN_THEMES.join(',')}|}`,
+    `theme: \${1|${STANDARD_THEMES.join(',')}|}`,
     'paginate: ${2|true,false|}',
     'presenter: true',
     '---',
@@ -341,7 +341,7 @@ export function validThemeName(name: string): string | undefined {
     if (!/^[a-z][a-z0-9-]*$/i.test(name)) {
         return 'Use letters, digits and dashes, starting with a letter.';
     }
-    if (BUILTIN_THEMES.includes(name.toLowerCase())) {
+    if (STANDARD_THEMES.includes(name.toLowerCase())) {
         return `"${name}" is a built-in theme; choose another name.`;
     }
     return undefined;

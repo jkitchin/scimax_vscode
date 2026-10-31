@@ -1,0 +1,477 @@
+/*!
+ * Scimax: a Marp theme in the blues of the crystal Scimax unicorn, with the
+ * amber of its horn, laid out like orgmode.org.
+ *
+ * @theme scimax
+ * @author Scimax
+ *
+ * @auto-scaling true
+ * @size 16:9 1280px 720px
+ * @size 4:3 960px 720px
+ *
+ * Classes (`<!-- _class: lead -->`, or `class:` for the whole deck):
+ *   lead    centred title slide on pale, faceted crystal
+ *   invert  white text on dark, faceted crystal, for section slides
+ *   stars   Org's leading stars before the headings (* h1, ** h2, *** h3)
+ * Spans: <span class="todo">TODO</span> and <span class="done">DONE</span>.
+ */
+
+section {
+  --sx-bg: #fafbfc;
+  --sx-fg: #27313d;
+  --sx-blue: #2f6a9f;
+  --sx-blue-light: #7fa8cf;
+  --sx-band: #24507a;
+  --sx-level-1: #1d4a73;
+  --sx-level-2: #a35f17;
+  --sx-level-3: #5b5fa8;
+  --sx-link: #1f6fb8;
+  --sx-amber: #e8912d;
+  --sx-todo: #c2610f;
+  --sx-done: #6b7480;
+  --sx-card: #edf1f5;
+  --sx-pale: #ebf2f9;
+  --sx-pale-strong: #c8dbee;
+  --sx-code-bg: #f0f3f6;
+  --sx-inline-code-bg: #e4eaf1;
+  --sx-night: #0e1c30;
+  --sx-serif: "Droid Serif", "Noto Serif", Cambria, Georgia, "DejaVu Serif", serif;
+  --sx-sans: -apple-system, BlinkMacSystemFont, "San Francisco", "Helvetica Neue", Helvetica, Ubuntu, Roboto, Noto, "Segoe UI", Arial, sans-serif;
+  --sx-mono: "Droid Sans Mono", "Noto Sans Mono", Menlo, Consolas, "DejaVu Sans Mono", monospace;
+
+  width: 1280px;
+  height: 720px;
+  box-sizing: border-box;
+  padding: 64px 80px;
+  display: block;
+  place-content: safe center center;
+  flex-flow: column nowrap;
+  align-items: stretch;
+  background: var(--sx-bg);
+  color: var(--sx-fg);
+  font-family: var(--sx-serif);
+  font-size: 30px;
+  line-height: 1.45;
+  word-wrap: break-word;
+}
+
+section > :first-child,
+section > header:first-child + * {
+  margin-top: 0;
+}
+
+section > :last-child,
+section[data-footer] > :nth-last-child(2) {
+  margin-bottom: 0;
+}
+
+/* Headings: sans serif like the orgmode.org banner, in the blues of the logo with the horn's amber */
+
+section h1,
+section h2,
+section h3,
+section h4,
+section h5,
+section h6 {
+  font-family: var(--sx-sans);
+  font-weight: 700;
+  line-height: 1.15;
+  margin: 0 0 0.6em;
+}
+
+section h1 {
+  font-size: 1.9em;
+  color: var(--sx-level-1);
+}
+
+section h2 {
+  font-size: 1.45em;
+  color: var(--sx-level-1);
+  padding-bottom: 0.2em;
+  border-bottom: 3px solid var(--sx-pale-strong);
+}
+
+section h3 {
+  font-size: 1.15em;
+  color: var(--sx-level-2);
+}
+
+section h4,
+section h5,
+section h6 {
+  font-size: 1em;
+  color: var(--sx-level-3);
+}
+
+section[data-color] h1,
+section[data-color] h2,
+section[data-color] h3,
+section[data-color] h4,
+section[data-color] h5,
+section[data-color] h6 {
+  color: currentcolor;
+}
+
+section.stars h1::before { content: "* "; }
+section.stars h2::before { content: "** "; }
+section.stars h3::before { content: "*** "; }
+section.stars h1::before,
+section.stars h2::before,
+section.stars h3::before {
+  color: var(--sx-blue-light);
+  font-weight: 400;
+}
+
+/* Text */
+
+section p,
+section ul,
+section ol,
+section blockquote,
+section pre,
+section table,
+section dl {
+  margin: 0 0 0.7em;
+}
+
+section ul,
+section ol {
+  padding-left: 1.3em;
+}
+
+section li + li,
+section li > ul,
+section li > ol {
+  margin-top: 0.2em;
+}
+
+section li > ul,
+section li > ol {
+  margin-bottom: 0;
+}
+
+section li::marker {
+  color: var(--sx-blue);
+}
+
+section strong {
+  font-weight: 700;
+}
+
+section a {
+  color: var(--sx-link);
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+
+section mark {
+  background: var(--sx-pale-strong);
+  color: inherit;
+  padding: 0 0.15em;
+}
+
+section hr {
+  border: 0;
+  border-top: 2px solid var(--sx-pale-strong);
+  margin: 0.8em 0;
+}
+
+section img {
+  max-width: 100%;
+}
+
+section .todo,
+section .done {
+  font-family: var(--sx-sans);
+  font-weight: 700;
+}
+
+section .todo { color: var(--sx-todo); }
+section .done { color: var(--sx-done); }
+
+/* Quotes: grey-blue cards with a blue edge */
+
+section blockquote {
+  background: var(--sx-card);
+  border-left: 6px solid var(--sx-blue);
+  padding: 0.5em 0.8em;
+  color: var(--sx-fg);
+}
+
+section blockquote > :last-child {
+  margin-bottom: 0;
+}
+
+/* Code */
+
+section code,
+section kbd,
+section pre,
+section samp {
+  font-family: var(--sx-mono);
+}
+
+section code {
+  background: var(--sx-inline-code-bg);
+  color: var(--sx-fg);
+  border-radius: 4px;
+  padding: 0.1em 0.3em;
+  font-size: 0.85em;
+}
+
+section kbd {
+  background: #f5f5f5;
+  border: 1px solid var(--sx-fg);
+  border-radius: 3px;
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.2), 0 0 0 2px #fff inset;
+  padding: 0.05em 0.45em;
+  font-size: 0.75em;
+}
+
+section pre {
+  background: var(--sx-code-bg);
+  border-left: 6px solid var(--sx-blue-light);
+  color: #1f2a36;
+  font-size: 0.7em;
+  line-height: 1.45;
+  padding: 0.6em 0.9em;
+  overflow: auto;
+}
+
+section pre code {
+  background: none;
+  border-radius: 0;
+  padding: 0;
+  font-size: 1em;
+  color: inherit;
+}
+
+/* Syntax colours: blues, with amber for names */
+section .hljs-keyword,
+section .hljs-selector-tag,
+section .hljs-doctag { color: #2a6fb5; font-weight: 600; }
+section .hljs-string,
+section .hljs-regexp,
+section .hljs-addition { color: #1d7d8c; }
+section .hljs-comment,
+section .hljs-quote { color: #6b7480; font-style: italic; }
+section .hljs-title,
+section .hljs-section { color: #a35f17; }
+section .hljs-built_in,
+section .hljs-literal,
+section .hljs-number,
+section .hljs-symbol { color: #7a4fa8; }
+section .hljs-variable,
+section .hljs-params,
+section .hljs-attr,
+section .hljs-attribute,
+section .hljs-template-variable,
+section .hljs-type { color: #5b5fa8; }
+section .hljs-meta { color: #6b7480; }
+section .hljs-deletion { color: #b3261e; }
+
+/* Tables: pale blues */
+
+section table {
+  border-collapse: collapse;
+  font-size: 0.85em;
+}
+
+section th,
+section td {
+  padding: 0.25em 0.7em;
+  border-bottom: 1px solid #d3dde8;
+}
+
+section th {
+  background: var(--sx-pale-strong);
+  font-family: var(--sx-sans);
+  font-weight: 700;
+  border-bottom: 2px solid var(--sx-blue);
+}
+
+section tbody tr:nth-child(2n) {
+  background: var(--sx-pale);
+}
+
+/* Header: a deep blue band. Footer: a pale strip. */
+
+header,
+footer {
+  position: absolute;
+  left: 0;
+  right: 0;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 10px 80px;
+  font-family: var(--sx-sans);
+  font-size: 18px;
+  line-height: 1.3;
+}
+
+header {
+  top: 0;
+  background: var(--sx-band);
+  color: #fff;
+  font-weight: 600;
+}
+
+footer {
+  bottom: 0;
+  background: #e9eef4;
+  color: #3f4b59;
+}
+
+header a,
+footer a {
+  color: inherit;
+}
+
+section[data-header] {
+  padding-top: 84px;
+}
+
+section[data-footer] {
+  padding-bottom: 76px;
+}
+
+/* Page numbers */
+
+section::after {
+  position: absolute;
+  right: 28px;
+  bottom: 12px;
+  padding: 0;
+  font-family: var(--sx-sans);
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--sx-blue);
+}
+
+section[data-footer]::after {
+  z-index: 1;
+  color: #3f4b59;
+}
+
+/* lead: a centred title slide on pale, faceted crystal like the Scimax unicorn */
+
+section.lead {
+  display: flex;
+  justify-content: center;
+  text-align: center;
+  background-color: #f4f8fc;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1280 720' preserveAspectRatio='xMidYMid slice'%3E%3Cdefs%3E%3CradialGradient id='c' cx='.5' cy='.52' r='.5'%3E%3Cstop offset='0' stop-color='%23fff' stop-opacity='.75'/%3E%3Cstop offset='1' stop-color='%23fff' stop-opacity='0'/%3E%3C/radialGradient%3E%3CradialGradient id='w'%3E%3Cstop offset='0' stop-color='%23fff'/%3E%3Cstop offset='.3' stop-color='%23cfe3ff' stop-opacity='.7'/%3E%3Cstop offset='1' stop-color='%23cfe3ff' stop-opacity='0'/%3E%3C/radialGradient%3E%3CradialGradient id='a'%3E%3Cstop offset='0' stop-color='%23fff6e0'/%3E%3Cstop offset='.3' stop-color='%23ffb347' stop-opacity='.8'/%3E%3Cstop offset='1' stop-color='%23ff9a1f' stop-opacity='0'/%3E%3C/radialGradient%3E%3C/defs%3E%3Cpath fill='rgb(219,231,245)' d='M0 0L79 0L0 112Z'/%3E%3Cpath fill='rgb(217,230,244)' d='M79 0L65 71L0 112Z'/%3E%3Cpath fill='rgb(222,233,246)' d='M79 0L159 0L65 71Z'/%3E%3Cpath fill='rgb(231,239,248)' d='M159 0L192 121L65 71Z'/%3E%3Cpath fill='rgb(230,239,248)' d='M159 0L285 0L280 83Z'/%3E%3Cpath fill='rgb(220,232,245)' d='M159 0L280 83L192 121Z'/%3E%3Cpath fill='rgb(219,232,244)' d='M285 0L336 0L280 83Z'/%3E%3Cpath fill='rgb(233,241,248)' d='M336 0L399 59L280 83Z'/%3E%3Cpath fill='rgb(230,237,246)' d='M336 0L460 0L482 76Z'/%3E%3Cpath fill='rgb(231,239,246)' d='M336 0L482 76L399 59Z'/%3E%3Cpath fill='rgb(224,233,243)' d='M460 0L539 0L524 64Z'/%3E%3Cpath fill='rgb(223,232,242)' d='M460 0L524 64L482 76Z'/%3E%3Cpath fill='rgb(235,239,244)' d='M539 0L609 0L524 64Z'/%3E%3Cpath fill='rgb(233,237,241)' d='M609 0L627 112L524 64Z'/%3E%3Cpath fill='rgb(230,234,237)' d='M609 0L732 0L627 112Z'/%3E%3Cpath fill='rgb(245,242,239)' d='M732 0L709 96L627 112Z'/%3E%3Cpath fill='rgb(242,240,236)' d='M732 0L791 0L709 96Z'/%3E%3Cpath fill='rgb(246,240,233)' d='M791 0L833 81L709 96Z'/%3E%3Cpath fill='rgb(237,234,229)' d='M791 0L910 0L833 81Z'/%3E%3Cpath fill='rgb(249,240,228)' d='M910 0L918 60L833 81Z'/%3E%3Cpath fill='rgb(240,233,224)' d='M910 0L976 0L975 70Z'/%3E%3Cpath fill='rgb(250,239,227)' d='M910 0L975 70L918 60Z'/%3E%3Cpath fill='rgb(245,237,225)' d='M976 0L1069 0L975 70Z'/%3E%3Cpath fill='rgb(245,235,221)' d='M1069 0L1110 85L975 70Z'/%3E%3Cpath fill='rgb(247,237,225)' d='M1069 0L1183 0L1110 85Z'/%3E%3Cpath fill='rgb(251,240,225)' d='M1183 0L1176 96L1110 85Z'/%3E%3Cpath fill='rgb(240,235,229)' d='M1183 0L1280 0L1280 87Z'/%3E%3Cpath fill='rgb(241,234,225)' d='M1183 0L1280 87L1176 96Z'/%3E%3Cpath fill='rgb(224,234,246)' d='M0 112L65 71L112 194Z'/%3E%3Cpath fill='rgb(219,231,244)' d='M0 112L112 194L0 166Z'/%3E%3Cpath fill='rgb(217,230,244)' d='M65 71L192 121L165 185Z'/%3E%3Cpath fill='rgb(218,231,244)' d='M65 71L165 185L112 194Z'/%3E%3Cpath fill='rgb(217,230,244)' d='M192 121L280 83L276 206Z'/%3E%3Cpath fill='rgb(219,231,245)' d='M192 121L276 206L165 185Z'/%3E%3Cpath fill='rgb(223,234,245)' d='M280 83L399 59L276 206Z'/%3E%3Cpath fill='rgb(223,234,245)' d='M399 59L382 165L276 206Z'/%3E%3Cpath fill='rgb(234,240,246)' d='M399 59L482 76L491 154Z'/%3E%3Cpath fill='rgb(225,234,244)' d='M399 59L491 154L382 165Z'/%3E%3Cpath fill='rgb(232,238,244)' d='M482 76L524 64L543 198Z'/%3E%3Cpath fill='rgb(226,234,242)' d='M482 76L543 198L491 154Z'/%3E%3Cpath fill='rgb(232,237,241)' d='M524 64L627 112L616 179Z'/%3E%3Cpath fill='rgb(225,233,240)' d='M524 64L616 179L543 198Z'/%3E%3Cpath fill='rgb(233,236,238)' d='M627 112L709 96L616 179Z'/%3E%3Cpath fill='rgb(231,234,236)' d='M709 96L699 192L616 179Z'/%3E%3Cpath fill='rgb(246,240,231)' d='M709 96L833 81L841 185Z'/%3E%3Cpath fill='rgb(241,239,235)' d='M709 96L841 185L699 192Z'/%3E%3Cpath fill='rgb(242,234,223)' d='M833 81L918 60L940 167Z'/%3E%3Cpath fill='rgb(245,237,226)' d='M833 81L940 167L841 185Z'/%3E%3Cpath fill='rgb(252,240,224)' d='M918 60L975 70L940 167Z'/%3E%3Cpath fill='rgb(242,233,220)' d='M975 70L1019 186L940 167Z'/%3E%3Cpath fill='rgb(251,238,221)' d='M975 70L1110 85L1019 186Z'/%3E%3Cpath fill='rgb(246,235,221)' d='M1110 85L1103 177L1019 186Z'/%3E%3Cpath fill='rgb(246,237,223)' d='M1110 85L1176 96L1212 210Z'/%3E%3Cpath fill='rgb(250,239,225)' d='M1110 85L1212 210L1103 177Z'/%3E%3Cpath fill='rgb(244,236,225)' d='M1176 96L1280 87L1212 210Z'/%3E%3Cpath fill='rgb(244,237,228)' d='M1280 87L1280 178L1212 210Z'/%3E%3Cpath fill='rgb(226,236,247)' d='M0 166L112 194L0 281Z'/%3E%3Cpath fill='rgb(231,239,248)' d='M112 194L61 284L0 281Z'/%3E%3Cpath fill='rgb(221,232,245)' d='M112 194L165 185L61 284Z'/%3E%3Cpath fill='rgb(229,238,248)' d='M165 185L193 304L61 284Z'/%3E%3Cpath fill='rgb(228,237,247)' d='M165 185L276 206L193 304Z'/%3E%3Cpath fill='rgb(227,236,247)' d='M276 206L297 255L193 304Z'/%3E%3Cpath fill='rgb(224,235,245)' d='M276 206L382 165L358 282Z'/%3E%3Cpath fill='rgb(223,234,246)' d='M276 206L358 282L297 255Z'/%3E%3Cpath fill='rgb(221,232,243)' d='M382 165L491 154L424 267Z'/%3E%3Cpath fill='rgb(220,232,244)' d='M382 165L424 267L358 282Z'/%3E%3Cpath fill='rgb(224,233,242)' d='M491 154L543 198L526 244Z'/%3E%3Cpath fill='rgb(234,239,246)' d='M491 154L526 244L424 267Z'/%3E%3Cpath fill='rgb(229,236,242)' d='M543 198L616 179L609 288Z'/%3E%3Cpath fill='rgb(225,234,242)' d='M543 198L609 288L526 244Z'/%3E%3Cpath fill='rgb(229,234,239)' d='M616 179L699 192L609 288Z'/%3E%3Cpath fill='rgb(240,241,243)' d='M699 192L706 253L609 288Z'/%3E%3Cpath fill='rgb(245,242,237)' d='M699 192L841 185L815 295Z'/%3E%3Cpath fill='rgb(240,240,240)' d='M699 192L815 295L706 253Z'/%3E%3Cpath fill='rgb(241,236,229)' d='M841 185L940 167L885 267Z'/%3E%3Cpath fill='rgb(237,235,234)' d='M841 185L885 267L815 295Z'/%3E%3Cpath fill='rgb(242,235,226)' d='M940 167L1019 186L885 267Z'/%3E%3Cpath fill='rgb(242,237,231)' d='M1019 186L1009 296L885 267Z'/%3E%3Cpath fill='rgb(240,235,226)' d='M1019 186L1103 177L1009 296Z'/%3E%3Cpath fill='rgb(242,237,231)' d='M1103 177L1119 295L1009 296Z'/%3E%3Cpath fill='rgb(241,236,228)' d='M1103 177L1212 210L1173 264Z'/%3E%3Cpath fill='rgb(249,242,232)' d='M1103 177L1173 264L1119 295Z'/%3E%3Cpath fill='rgb(249,242,232)' d='M1212 210L1280 178L1173 264Z'/%3E%3Cpath fill='rgb(242,238,234)' d='M1280 178L1280 260L1173 264Z'/%3E%3Cpath fill='rgb(219,231,244)' d='M0 281L61 284L0 386Z'/%3E%3Cpath fill='rgb(231,239,248)' d='M61 284L123 336L0 386Z'/%3E%3Cpath fill='rgb(220,232,245)' d='M61 284L193 304L123 336Z'/%3E%3Cpath fill='rgb(221,233,245)' d='M193 304L160 342L123 336Z'/%3E%3Cpath fill='rgb(216,229,243)' d='M193 304L297 255L256 359Z'/%3E%3Cpath fill='rgb(222,233,245)' d='M193 304L256 359L160 342Z'/%3E%3Cpath fill='rgb(224,235,246)' d='M297 255L358 282L256 359Z'/%3E%3Cpath fill='rgb(225,235,246)' d='M358 282L372 344L256 359Z'/%3E%3Cpath fill='rgb(221,232,244)' d='M358 282L424 267L423 354Z'/%3E%3Cpath fill='rgb(225,236,246)' d='M358 282L423 354L372 344Z'/%3E%3Cpath fill='rgb(220,231,243)' d='M424 267L526 244L539 365Z'/%3E%3Cpath fill='rgb(222,234,245)' d='M424 267L539 365L423 354Z'/%3E%3Cpath fill='rgb(223,232,242)' d='M526 244L609 288L539 365Z'/%3E%3Cpath fill='rgb(228,235,245)' d='M609 288L671 373L539 365Z'/%3E%3Cpath fill='rgb(225,233,241)' d='M609 288L706 253L671 373Z'/%3E%3Cpath fill='rgb(225,233,241)' d='M706 253L733 368L671 373Z'/%3E%3Cpath fill='rgb(231,236,241)' d='M706 253L815 295L733 368Z'/%3E%3Cpath fill='rgb(230,235,240)' d='M815 295L835 329L733 368Z'/%3E%3Cpath fill='rgb(238,239,239)' d='M815 295L885 267L835 329Z'/%3E%3Cpath fill='rgb(237,239,240)' d='M885 267L942 379L835 329Z'/%3E%3Cpath fill='rgb(242,241,239)' d='M885 267L1009 296L942 379Z'/%3E%3Cpath fill='rgb(238,240,241)' d='M1009 296L1032 380L942 379Z'/%3E%3Cpath fill='rgb(241,241,238)' d='M1009 296L1119 295L1090 353Z'/%3E%3Cpath fill='rgb(242,242,241)' d='M1009 296L1090 353L1032 380Z'/%3E%3Cpath fill='rgb(237,237,236)' d='M1119 295L1173 264L1090 353Z'/%3E%3Cpath fill='rgb(235,237,239)' d='M1173 264L1161 369L1090 353Z'/%3E%3Cpath fill='rgb(246,243,239)' d='M1173 264L1280 260L1161 369Z'/%3E%3Cpath fill='rgb(231,235,238)' d='M1280 260L1280 330L1161 369Z'/%3E%3Cpath fill='rgb(227,236,247)' d='M0 386L123 336L0 420Z'/%3E%3Cpath fill='rgb(225,235,247)' d='M123 336L71 427L0 420Z'/%3E%3Cpath fill='rgb(215,229,243)' d='M123 336L160 342L71 427Z'/%3E%3Cpath fill='rgb(229,238,248)' d='M160 342L172 419L71 427Z'/%3E%3Cpath fill='rgb(230,239,248)' d='M160 342L256 359L240 426Z'/%3E%3Cpath fill='rgb(225,236,247)' d='M160 342L240 426L172 419Z'/%3E%3Cpath fill='rgb(228,237,247)' d='M256 359L372 344L240 426Z'/%3E%3Cpath fill='rgb(229,238,248)' d='M372 344L338 441L240 426Z'/%3E%3Cpath fill='rgb(219,231,244)' d='M372 344L423 354L424 476Z'/%3E%3Cpath fill='rgb(225,235,246)' d='M372 344L424 476L338 441Z'/%3E%3Cpath fill='rgb(225,235,247)' d='M423 354L539 365L424 476Z'/%3E%3Cpath fill='rgb(231,239,247)' d='M539 365L556 426L424 476Z'/%3E%3Cpath fill='rgb(232,240,248)' d='M539 365L671 373L556 426Z'/%3E%3Cpath fill='rgb(232,240,248)' d='M671 373L623 440L556 426Z'/%3E%3Cpath fill='rgb(230,237,246)' d='M671 373L733 368L623 440Z'/%3E%3Cpath fill='rgb(234,240,247)' d='M733 368L722 424L623 440Z'/%3E%3Cpath fill='rgb(234,240,245)' d='M733 368L835 329L722 424Z'/%3E%3Cpath fill='rgb(233,239,246)' d='M835 329L847 484L722 424Z'/%3E%3Cpath fill='rgb(228,235,242)' d='M835 329L942 379L912 449Z'/%3E%3Cpath fill='rgb(222,232,242)' d='M835 329L912 449L847 484Z'/%3E%3Cpath fill='rgb(226,234,242)' d='M942 379L1032 380L912 449Z'/%3E%3Cpath fill='rgb(229,236,243)' d='M1032 380L977 423L912 449Z'/%3E%3Cpath fill='rgb(227,234,240)' d='M1032 380L1090 353L977 423Z'/%3E%3Cpath fill='rgb(238,241,245)' d='M1090 353L1086 434L977 423Z'/%3E%3Cpath fill='rgb(234,238,243)' d='M1090 353L1161 369L1086 434Z'/%3E%3Cpath fill='rgb(233,239,245)' d='M1161 369L1211 427L1086 434Z'/%3E%3Cpath fill='rgb(234,239,244)' d='M1161 369L1280 330L1280 417Z'/%3E%3Cpath fill='rgb(234,240,245)' d='M1161 369L1280 417L1211 427Z'/%3E%3Cpath fill='rgb(223,234,246)' d='M0 420L71 427L93 516Z'/%3E%3Cpath fill='rgb(214,228,243)' d='M0 420L93 516L0 571Z'/%3E%3Cpath fill='rgb(228,237,247)' d='M71 427L172 419L186 508Z'/%3E%3Cpath fill='rgb(227,237,247)' d='M71 427L186 508L93 516Z'/%3E%3Cpath fill='rgb(223,234,246)' d='M172 419L240 426L276 573Z'/%3E%3Cpath fill='rgb(224,234,246)' d='M172 419L276 573L186 508Z'/%3E%3Cpath fill='rgb(226,236,247)' d='M240 426L338 441L391 553Z'/%3E%3Cpath fill='rgb(216,229,244)' d='M240 426L391 553L276 573Z'/%3E%3Cpath fill='rgb(228,237,247)' d='M338 441L424 476L441 531Z'/%3E%3Cpath fill='rgb(219,231,245)' d='M338 441L441 531L391 553Z'/%3E%3Cpath fill='rgb(217,230,244)' d='M424 476L556 426L441 531Z'/%3E%3Cpath fill='rgb(220,232,245)' d='M556 426L525 559L441 531Z'/%3E%3Cpath fill='rgb(229,238,248)' d='M556 426L623 440L525 559Z'/%3E%3Cpath fill='rgb(219,231,245)' d='M623 440L642 559L525 559Z'/%3E%3Cpath fill='rgb(230,238,247)' d='M623 440L722 424L642 559Z'/%3E%3Cpath fill='rgb(233,241,249)' d='M722 424L720 521L642 559Z'/%3E%3Cpath fill='rgb(226,236,246)' d='M722 424L847 484L845 573Z'/%3E%3Cpath fill='rgb(223,234,245)' d='M722 424L845 573L720 521Z'/%3E%3Cpath fill='rgb(226,236,246)' d='M847 484L912 449L845 573Z'/%3E%3Cpath fill='rgb(229,238,247)' d='M912 449L939 561L845 573Z'/%3E%3Cpath fill='rgb(232,240,247)' d='M912 449L977 423L939 561Z'/%3E%3Cpath fill='rgb(228,237,246)' d='M977 423L1028 556L939 561Z'/%3E%3Cpath fill='rgb(231,238,246)' d='M977 423L1086 434L1078 541Z'/%3E%3Cpath fill='rgb(219,231,244)' d='M977 423L1078 541L1028 556Z'/%3E%3Cpath fill='rgb(223,233,243)' d='M1086 434L1211 427L1078 541Z'/%3E%3Cpath fill='rgb(222,234,245)' d='M1211 427L1179 508L1078 541Z'/%3E%3Cpath fill='rgb(233,239,247)' d='M1211 427L1280 417L1179 508Z'/%3E%3Cpath fill='rgb(223,234,245)' d='M1280 417L1280 508L1179 508Z'/%3E%3Cpath fill='rgb(224,234,246)' d='M0 571L93 516L75 643Z'/%3E%3Cpath fill='rgb(214,228,243)' d='M0 571L75 643L0 615Z'/%3E%3Cpath fill='rgb(215,229,243)' d='M93 516L186 508L75 643Z'/%3E%3Cpath fill='rgb(219,231,244)' d='M186 508L215 626L75 643Z'/%3E%3Cpath fill='rgb(226,236,247)' d='M186 508L276 573L305 663Z'/%3E%3Cpath fill='rgb(226,236,247)' d='M186 508L305 663L215 626Z'/%3E%3Cpath fill='rgb(226,236,247)' d='M276 573L391 553L397 621Z'/%3E%3Cpath fill='rgb(219,231,245)' d='M276 573L397 621L305 663Z'/%3E%3Cpath fill='rgb(223,234,246)' d='M391 553L441 531L397 621Z'/%3E%3Cpath fill='rgb(222,234,246)' d='M441 531L438 611L397 621Z'/%3E%3Cpath fill='rgb(223,234,246)' d='M441 531L525 559L438 611Z'/%3E%3Cpath fill='rgb(217,230,244)' d='M525 559L527 610L438 611Z'/%3E%3Cpath fill='rgb(230,239,248)' d='M525 559L642 559L649 657Z'/%3E%3Cpath fill='rgb(218,231,244)' d='M525 559L649 657L527 610Z'/%3E%3Cpath fill='rgb(232,240,249)' d='M642 559L720 521L755 629Z'/%3E%3Cpath fill='rgb(231,239,248)' d='M642 559L755 629L649 657Z'/%3E%3Cpath fill='rgb(216,229,244)' d='M720 521L845 573L755 629Z'/%3E%3Cpath fill='rgb(223,234,246)' d='M845 573L833 650L755 629Z'/%3E%3Cpath fill='rgb(230,238,248)' d='M845 573L939 561L885 641Z'/%3E%3Cpath fill='rgb(232,240,249)' d='M845 573L885 641L833 650Z'/%3E%3Cpath fill='rgb(223,234,246)' d='M939 561L1028 556L1034 649Z'/%3E%3Cpath fill='rgb(220,232,245)' d='M939 561L1034 649L885 641Z'/%3E%3Cpath fill='rgb(220,232,245)' d='M1028 556L1078 541L1115 628Z'/%3E%3Cpath fill='rgb(232,240,249)' d='M1028 556L1115 628L1034 649Z'/%3E%3Cpath fill='rgb(220,232,245)' d='M1078 541L1179 508L1115 628Z'/%3E%3Cpath fill='rgb(226,236,247)' d='M1179 508L1166 650L1115 628Z'/%3E%3Cpath fill='rgb(219,231,245)' d='M1179 508L1280 508L1280 619Z'/%3E%3Cpath fill='rgb(225,235,246)' d='M1179 508L1280 619L1166 650Z'/%3E%3Cpath fill='rgb(230,239,248)' d='M0 615L75 643L0 720Z'/%3E%3Cpath fill='rgb(216,230,244)' d='M75 643L112 720L0 720Z'/%3E%3Cpath fill='rgb(228,237,247)' d='M75 643L215 626L216 720Z'/%3E%3Cpath fill='rgb(223,234,246)' d='M75 643L216 720L112 720Z'/%3E%3Cpath fill='rgb(229,238,248)' d='M215 626L305 663L267 720Z'/%3E%3Cpath fill='rgb(226,236,247)' d='M215 626L267 720L216 720Z'/%3E%3Cpath fill='rgb(218,231,244)' d='M305 663L397 621L359 720Z'/%3E%3Cpath fill='rgb(229,238,248)' d='M305 663L359 720L267 720Z'/%3E%3Cpath fill='rgb(223,234,246)' d='M397 621L438 611L359 720Z'/%3E%3Cpath fill='rgb(215,228,243)' d='M438 611L488 720L359 720Z'/%3E%3Cpath fill='rgb(214,228,243)' d='M438 611L527 610L488 720Z'/%3E%3Cpath fill='rgb(223,234,246)' d='M527 610L564 720L488 720Z'/%3E%3Cpath fill='rgb(222,233,246)' d='M527 610L649 657L617 720Z'/%3E%3Cpath fill='rgb(219,232,245)' d='M527 610L617 720L564 720Z'/%3E%3Cpath fill='rgb(217,230,244)' d='M649 657L755 629L617 720Z'/%3E%3Cpath fill='rgb(220,232,245)' d='M755 629L706 720L617 720Z'/%3E%3Cpath fill='rgb(220,232,245)' d='M755 629L833 650L706 720Z'/%3E%3Cpath fill='rgb(229,238,248)' d='M833 650L799 720L706 720Z'/%3E%3Cpath fill='rgb(215,228,243)' d='M833 650L885 641L799 720Z'/%3E%3Cpath fill='rgb(227,237,247)' d='M885 641L942 720L799 720Z'/%3E%3Cpath fill='rgb(229,238,248)' d='M885 641L1034 649L1027 720Z'/%3E%3Cpath fill='rgb(217,230,244)' d='M885 641L1027 720L942 720Z'/%3E%3Cpath fill='rgb(231,239,248)' d='M1034 649L1115 628L1073 720Z'/%3E%3Cpath fill='rgb(227,236,247)' d='M1034 649L1073 720L1027 720Z'/%3E%3Cpath fill='rgb(230,239,248)' d='M1115 628L1166 650L1211 720Z'/%3E%3Cpath fill='rgb(220,232,245)' d='M1115 628L1211 720L1073 720Z'/%3E%3Cpath fill='rgb(221,233,245)' d='M1166 650L1280 619L1211 720Z'/%3E%3Cpath fill='rgb(221,233,245)' d='M1280 619L1280 720L1211 720Z'/%3E%3Cpath fill='none' stroke='%23ffffff' stroke-opacity='0.9' stroke-width='1.2' d='M0 0L79 0L0 112ZM79 0L65 71L0 112ZM79 0L159 0L65 71ZM159 0L192 121L65 71ZM159 0L285 0L280 83ZM159 0L280 83L192 121ZM285 0L336 0L280 83ZM336 0L399 59L280 83ZM336 0L460 0L482 76ZM336 0L482 76L399 59ZM460 0L539 0L524 64ZM460 0L524 64L482 76ZM539 0L609 0L524 64ZM609 0L627 112L524 64ZM609 0L732 0L627 112ZM732 0L709 96L627 112ZM732 0L791 0L709 96ZM791 0L833 81L709 96ZM791 0L910 0L833 81ZM910 0L918 60L833 81ZM910 0L976 0L975 70ZM910 0L975 70L918 60ZM976 0L1069 0L975 70ZM1069 0L1110 85L975 70ZM1069 0L1183 0L1110 85ZM1183 0L1176 96L1110 85ZM1183 0L1280 0L1280 87ZM1183 0L1280 87L1176 96ZM0 112L65 71L112 194ZM0 112L112 194L0 166ZM65 71L192 121L165 185ZM65 71L165 185L112 194ZM192 121L280 83L276 206ZM192 121L276 206L165 185ZM280 83L399 59L276 206ZM399 59L382 165L276 206ZM399 59L482 76L491 154ZM399 59L491 154L382 165ZM482 76L524 64L543 198ZM482 76L543 198L491 154ZM524 64L627 112L616 179ZM524 64L616 179L543 198ZM627 112L709 96L616 179ZM709 96L699 192L616 179ZM709 96L833 81L841 185ZM709 96L841 185L699 192ZM833 81L918 60L940 167ZM833 81L940 167L841 185ZM918 60L975 70L940 167ZM975 70L1019 186L940 167ZM975 70L1110 85L1019 186ZM1110 85L1103 177L1019 186ZM1110 85L1176 96L1212 210ZM1110 85L1212 210L1103 177ZM1176 96L1280 87L1212 210ZM1280 87L1280 178L1212 210ZM0 166L112 194L0 281ZM112 194L61 284L0 281ZM112 194L165 185L61 284ZM165 185L193 304L61 284ZM165 185L276 206L193 304ZM276 206L297 255L193 304ZM276 206L382 165L358 282ZM276 206L358 282L297 255ZM382 165L491 154L424 267ZM382 165L424 267L358 282ZM491 154L543 198L526 244ZM491 154L526 244L424 267ZM543 198L616 179L609 288ZM543 198L609 288L526 244ZM616 179L699 192L609 288ZM699 192L706 253L609 288ZM699 192L841 185L815 295ZM699 192L815 295L706 253ZM841 185L940 167L885 267ZM841 185L885 267L815 295ZM940 167L1019 186L885 267ZM1019 186L1009 296L885 267ZM1019 186L1103 177L1009 296ZM1103 177L1119 295L1009 296ZM1103 177L1212 210L1173 264ZM1103 177L1173 264L1119 295ZM1212 210L1280 178L1173 264ZM1280 178L1280 260L1173 264ZM0 281L61 284L0 386ZM61 284L123 336L0 386ZM61 284L193 304L123 336ZM193 304L160 342L123 336ZM193 304L297 255L256 359ZM193 304L256 359L160 342ZM297 255L358 282L256 359ZM358 282L372 344L256 359ZM358 282L424 267L423 354ZM358 282L423 354L372 344ZM424 267L526 244L539 365ZM424 267L539 365L423 354ZM526 244L609 288L539 365ZM609 288L671 373L539 365ZM609 288L706 253L671 373ZM706 253L733 368L671 373ZM706 253L815 295L733 368ZM815 295L835 329L733 368ZM815 295L885 267L835 329ZM885 267L942 379L835 329ZM885 267L1009 296L942 379ZM1009 296L1032 380L942 379ZM1009 296L1119 295L1090 353ZM1009 296L1090 353L1032 380ZM1119 295L1173 264L1090 353ZM1173 264L1161 369L1090 353ZM1173 264L1280 260L1161 369ZM1280 260L1280 330L1161 369ZM0 386L123 336L0 420ZM123 336L71 427L0 420ZM123 336L160 342L71 427ZM160 342L172 419L71 427ZM160 342L256 359L240 426ZM160 342L240 426L172 419ZM256 359L372 344L240 426ZM372 344L338 441L240 426ZM372 344L423 354L424 476ZM372 344L424 476L338 441ZM423 354L539 365L424 476ZM539 365L556 426L424 476ZM539 365L671 373L556 426ZM671 373L623 440L556 426ZM671 373L733 368L623 440ZM733 368L722 424L623 440ZM733 368L835 329L722 424ZM835 329L847 484L722 424ZM835 329L942 379L912 449ZM835 329L912 449L847 484ZM942 379L1032 380L912 449ZM1032 380L977 423L912 449ZM1032 380L1090 353L977 423ZM1090 353L1086 434L977 423ZM1090 353L1161 369L1086 434ZM1161 369L1211 427L1086 434ZM1161 369L1280 330L1280 417ZM1161 369L1280 417L1211 427ZM0 420L71 427L93 516ZM0 420L93 516L0 571ZM71 427L172 419L186 508ZM71 427L186 508L93 516ZM172 419L240 426L276 573ZM172 419L276 573L186 508ZM240 426L338 441L391 553ZM240 426L391 553L276 573ZM338 441L424 476L441 531ZM338 441L441 531L391 553ZM424 476L556 426L441 531ZM556 426L525 559L441 531ZM556 426L623 440L525 559ZM623 440L642 559L525 559ZM623 440L722 424L642 559ZM722 424L720 521L642 559ZM722 424L847 484L845 573ZM722 424L845 573L720 521ZM847 484L912 449L845 573ZM912 449L939 561L845 573ZM912 449L977 423L939 561ZM977 423L1028 556L939 561ZM977 423L1086 434L1078 541ZM977 423L1078 541L1028 556ZM1086 434L1211 427L1078 541ZM1211 427L1179 508L1078 541ZM1211 427L1280 417L1179 508ZM1280 417L1280 508L1179 508ZM0 571L93 516L75 643ZM0 571L75 643L0 615ZM93 516L186 508L75 643ZM186 508L215 626L75 643ZM186 508L276 573L305 663ZM186 508L305 663L215 626ZM276 573L391 553L397 621ZM276 573L397 621L305 663ZM391 553L441 531L397 621ZM441 531L438 611L397 621ZM441 531L525 559L438 611ZM525 559L527 610L438 611ZM525 559L642 559L649 657ZM525 559L649 657L527 610ZM642 559L720 521L755 629ZM642 559L755 629L649 657ZM720 521L845 573L755 629ZM845 573L833 650L755 629ZM845 573L939 561L885 641ZM845 573L885 641L833 650ZM939 561L1028 556L1034 649ZM939 561L1034 649L885 641ZM1028 556L1078 541L1115 628ZM1028 556L1115 628L1034 649ZM1078 541L1179 508L1115 628ZM1179 508L1166 650L1115 628ZM1179 508L1280 508L1280 619ZM1179 508L1280 619L1166 650ZM0 615L75 643L0 720ZM75 643L112 720L0 720ZM75 643L215 626L216 720ZM75 643L216 720L112 720ZM215 626L305 663L267 720ZM215 626L267 720L216 720ZM305 663L397 621L359 720ZM305 663L359 720L267 720ZM397 621L438 611L359 720ZM438 611L488 720L359 720ZM438 611L527 610L488 720ZM527 610L564 720L488 720ZM527 610L649 657L617 720ZM527 610L617 720L564 720ZM649 657L755 629L617 720ZM755 629L706 720L617 720ZM755 629L833 650L706 720ZM833 650L799 720L706 720ZM833 650L885 641L799 720ZM885 641L942 720L799 720ZM885 641L1034 649L1027 720ZM885 641L1027 720L942 720ZM1034 649L1115 628L1073 720ZM1034 649L1073 720L1027 720ZM1115 628L1166 650L1211 720ZM1115 628L1211 720L1073 720ZM1166 650L1280 619L1211 720ZM1280 619L1280 720L1211 720Z'/%3E%3Crect width='1280' height='720' fill='url(%23c)'/%3E%3Ccircle cx='1110' cy='85' r='10' fill='url(%23a)'/%3E%3Ccircle cx='1034' cy='649' r='5' fill='url(%23w)'/%3E%3Ccircle cx='172' cy='419' r='7' fill='url(%23w)'/%3E%3Ccircle cx='192' cy='121' r='11' fill='url(%23w)'/%3E%3Ccircle cx='1176' cy='96' r='8' fill='url(%23a)'/%3E%3Ccircle cx='123' cy='336' r='8' fill='url(%23w)'/%3E%3Ccircle cx='1078' cy='541' r='9' fill='url(%23w)'/%3E%3Ccircle cx='940' cy='167' r='14' fill='url(%23a)'/%3E%3Ccircle cx='65' cy='71' r='6' fill='url(%23w)'/%3E%3Ccircle cx='720' cy='521' r='7' fill='url(%23w)'/%3E%3Ccircle cx='1115' cy='628' r='6' fill='url(%23w)'/%3E%3Ccircle cx='193' cy='304' r='7' fill='url(%23w)'/%3E%3Ccircle cx='186' cy='508' r='8' fill='url(%23w)'/%3E%3Ccircle cx='699' cy='192' r='11' fill='url(%23w)'/%3E%3Ccircle cx='1019' cy='186' r='14' fill='url(%23a)'/%3E%3Ccircle cx='297' cy='255' r='10' fill='url(%23w)'/%3E%3Ccircle cx='524' cy='64' r='5' fill='url(%23w)'/%3E%3Ccircle cx='280' cy='83' r='5' fill='url(%23w)'/%3E%3Ccircle cx='1173' cy='264' r='13' fill='url(%23a)'/%3E%3C/svg%3E");
+  background-size: cover;
+  background-position: center;
+}
+
+section.lead h1 {
+  font-size: 2.3em;
+  margin-bottom: 0.3em;
+  text-shadow: 0 0 18px #fff, 0 0 6px #fff;
+}
+
+section.lead h2 {
+  border-bottom: 0;
+}
+
+section.lead p {
+  font-size: 1.05em;
+}
+
+section.lead ul,
+section.lead ol {
+  display: inline-block;
+  text-align: left;
+}
+
+/* invert: white on dark, faceted crystal, for section slides */
+
+section.invert {
+  background-color: var(--sx-night);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1280 720' preserveAspectRatio='xMidYMid slice'%3E%3Cdefs%3E%3CradialGradient id='c' cx='.5' cy='.52' r='.55'%3E%3Cstop offset='0' stop-color='%23081426' stop-opacity='.55'/%3E%3Cstop offset='1' stop-color='%23081426' stop-opacity='0'/%3E%3C/radialGradient%3E%3CradialGradient id='w'%3E%3Cstop offset='0' stop-color='%23fff'/%3E%3Cstop offset='.3' stop-color='%23cfe3ff' stop-opacity='.7'/%3E%3Cstop offset='1' stop-color='%23cfe3ff' stop-opacity='0'/%3E%3C/radialGradient%3E%3CradialGradient id='a'%3E%3Cstop offset='0' stop-color='%23fff6e0'/%3E%3Cstop offset='.3' stop-color='%23ffb347' stop-opacity='.8'/%3E%3Cstop offset='1' stop-color='%23ff9a1f' stop-opacity='0'/%3E%3C/radialGradient%3E%3C/defs%3E%3Cpath fill='rgb(16,31,53)' d='M0 0L88 0L0 111Z'/%3E%3Cpath fill='rgb(25,44,71)' d='M88 0L105 59L0 111Z'/%3E%3Cpath fill='rgb(24,43,69)' d='M88 0L187 0L216 122Z'/%3E%3Cpath fill='rgb(21,39,63)' d='M88 0L216 122L105 59Z'/%3E%3Cpath fill='rgb(30,50,79)' d='M187 0L304 0L285 98Z'/%3E%3Cpath fill='rgb(23,42,67)' d='M187 0L285 98L216 122Z'/%3E%3Cpath fill='rgb(21,38,60)' d='M304 0L363 0L342 57Z'/%3E%3Cpath fill='rgb(22,39,62)' d='M304 0L342 57L285 98Z'/%3E%3Cpath fill='rgb(33,55,84)' d='M363 0L458 0L342 57Z'/%3E%3Cpath fill='rgb(36,58,87)' d='M458 0L459 60L342 57Z'/%3E%3Cpath fill='rgb(26,41,64)' d='M458 0L555 0L459 60Z'/%3E%3Cpath fill='rgb(39,61,90)' d='M555 0L527 72L459 60Z'/%3E%3Cpath fill='rgb(45,67,97)' d='M555 0L618 0L527 72Z'/%3E%3Cpath fill='rgb(40,57,81)' d='M618 0L607 88L527 72Z'/%3E%3Cpath fill='rgb(45,63,86)' d='M618 0L732 0L607 88Z'/%3E%3Cpath fill='rgb(45,58,76)' d='M732 0L727 113L607 88Z'/%3E%3Cpath fill='rgb(60,72,90)' d='M732 0L832 0L824 100Z'/%3E%3Cpath fill='rgb(59,71,89)' d='M732 0L824 100L727 113Z'/%3E%3Cpath fill='rgb(70,79,94)' d='M832 0L935 0L914 101Z'/%3E%3Cpath fill='rgb(62,67,77)' d='M832 0L914 101L824 100Z'/%3E%3Cpath fill='rgb(78,89,104)' d='M935 0L978 0L1003 75Z'/%3E%3Cpath fill='rgb(76,81,92)' d='M935 0L1003 75L914 101Z'/%3E%3Cpath fill='rgb(75,79,89)' d='M978 0L1083 0L1132 124Z'/%3E%3Cpath fill='rgb(82,88,99)' d='M978 0L1132 124L1003 75Z'/%3E%3Cpath fill='rgb(73,80,93)' d='M1083 0L1160 0L1212 104Z'/%3E%3Cpath fill='rgb(76,81,91)' d='M1083 0L1212 104L1132 124Z'/%3E%3Cpath fill='rgb(68,79,96)' d='M1160 0L1280 0L1280 77Z'/%3E%3Cpath fill='rgb(65,69,79)' d='M1160 0L1280 77L1212 104Z'/%3E%3Cpath fill='rgb(21,39,63)' d='M0 111L105 59L0 162Z'/%3E%3Cpath fill='rgb(19,35,58)' d='M105 59L77 151L0 162Z'/%3E%3Cpath fill='rgb(30,52,81)' d='M105 59L216 122L201 173Z'/%3E%3Cpath fill='rgb(29,51,79)' d='M105 59L201 173L77 151Z'/%3E%3Cpath fill='rgb(19,34,57)' d='M216 122L285 98L298 172Z'/%3E%3Cpath fill='rgb(21,39,64)' d='M216 122L298 172L201 173Z'/%3E%3Cpath fill='rgb(17,32,53)' d='M285 98L342 57L298 172Z'/%3E%3Cpath fill='rgb(24,42,66)' d='M342 57L398 204L298 172Z'/%3E%3Cpath fill='rgb(33,55,84)' d='M342 57L459 60L398 204Z'/%3E%3Cpath fill='rgb(36,58,87)' d='M459 60L422 160L398 204Z'/%3E%3Cpath fill='rgb(34,52,77)' d='M459 60L527 72L577 178Z'/%3E%3Cpath fill='rgb(29,45,69)' d='M459 60L577 178L422 160Z'/%3E%3Cpath fill='rgb(36,50,71)' d='M527 72L607 88L673 173Z'/%3E%3Cpath fill='rgb(43,61,86)' d='M527 72L673 173L577 178Z'/%3E%3Cpath fill='rgb(57,76,101)' d='M607 88L727 113L702 189Z'/%3E%3Cpath fill='rgb(41,53,72)' d='M607 88L702 189L673 173Z'/%3E%3Cpath fill='rgb(62,77,97)' d='M727 113L824 100L702 189Z'/%3E%3Cpath fill='rgb(54,62,75)' d='M824 100L842 164L702 189Z'/%3E%3Cpath fill='rgb(67,72,82)' d='M824 100L914 101L886 169Z'/%3E%3Cpath fill='rgb(64,71,83)' d='M824 100L886 169L842 164Z'/%3E%3Cpath fill='rgb(79,85,96)' d='M914 101L1003 75L886 169Z'/%3E%3Cpath fill='rgb(75,78,86)' d='M1003 75L1038 198L886 169Z'/%3E%3Cpath fill='rgb(78,80,87)' d='M1003 75L1132 124L1038 198Z'/%3E%3Cpath fill='rgb(79,84,94)' d='M1132 124L1071 163L1038 198Z'/%3E%3Cpath fill='rgb(71,73,81)' d='M1132 124L1212 104L1161 150Z'/%3E%3Cpath fill='rgb(80,86,98)' d='M1132 124L1161 150L1071 163Z'/%3E%3Cpath fill='rgb(67,72,81)' d='M1212 104L1280 77L1161 150Z'/%3E%3Cpath fill='rgb(69,77,91)' d='M1280 77L1280 200L1161 150Z'/%3E%3Cpath fill='rgb(15,30,52)' d='M0 162L77 151L96 266Z'/%3E%3Cpath fill='rgb(14,29,49)' d='M0 162L96 266L0 248Z'/%3E%3Cpath fill='rgb(21,39,64)' d='M77 151L201 173L161 286Z'/%3E%3Cpath fill='rgb(19,36,59)' d='M77 151L161 286L96 266Z'/%3E%3Cpath fill='rgb(19,36,60)' d='M201 173L298 172L249 280Z'/%3E%3Cpath fill='rgb(19,36,60)' d='M201 173L249 280L161 286Z'/%3E%3Cpath fill='rgb(25,44,69)' d='M298 172L398 204L339 265Z'/%3E%3Cpath fill='rgb(17,31,52)' d='M298 172L339 265L249 280Z'/%3E%3Cpath fill='rgb(21,36,58)' d='M398 204L422 160L339 265Z'/%3E%3Cpath fill='rgb(29,48,75)' d='M422 160L437 254L339 265Z'/%3E%3Cpath fill='rgb(35,55,81)' d='M422 160L577 178L581 291Z'/%3E%3Cpath fill='rgb(29,49,75)' d='M422 160L581 291L437 254Z'/%3E%3Cpath fill='rgb(46,66,94)' d='M577 178L673 173L626 296Z'/%3E%3Cpath fill='rgb(37,56,82)' d='M577 178L626 296L581 291Z'/%3E%3Cpath fill='rgb(53,72,97)' d='M673 173L702 189L711 263Z'/%3E%3Cpath fill='rgb(37,51,73)' d='M673 173L711 263L626 296Z'/%3E%3Cpath fill='rgb(56,73,95)' d='M702 189L842 164L711 263Z'/%3E%3Cpath fill='rgb(59,75,98)' d='M842 164L847 280L711 263Z'/%3E%3Cpath fill='rgb(69,82,102)' d='M842 164L886 169L887 303Z'/%3E%3Cpath fill='rgb(53,65,82)' d='M842 164L887 303L847 280Z'/%3E%3Cpath fill='rgb(63,71,85)' d='M886 169L1038 198L887 303Z'/%3E%3Cpath fill='rgb(68,82,103)' d='M1038 198L986 253L887 303Z'/%3E%3Cpath fill='rgb(68,73,83)' d='M1038 198L1071 163L986 253Z'/%3E%3Cpath fill='rgb(75,87,105)' d='M1071 163L1116 258L986 253Z'/%3E%3Cpath fill='rgb(78,87,102)' d='M1071 163L1161 150L1116 258Z'/%3E%3Cpath fill='rgb(62,68,80)' d='M1161 150L1174 241L1116 258Z'/%3E%3Cpath fill='rgb(63,71,82)' d='M1161 150L1280 200L1174 241Z'/%3E%3Cpath fill='rgb(63,76,96)' d='M1280 200L1280 242L1174 241Z'/%3E%3Cpath fill='rgb(15,30,51)' d='M0 248L96 266L0 366Z'/%3E%3Cpath fill='rgb(12,26,45)' d='M96 266L74 367L0 366Z'/%3E%3Cpath fill='rgb(27,47,75)' d='M96 266L161 286L174 357Z'/%3E%3Cpath fill='rgb(19,35,58)' d='M96 266L174 357L74 367Z'/%3E%3Cpath fill='rgb(27,47,75)' d='M161 286L249 280L306 359Z'/%3E%3Cpath fill='rgb(14,28,48)' d='M161 286L306 359L174 357Z'/%3E%3Cpath fill='rgb(21,37,61)' d='M249 280L339 265L371 385Z'/%3E%3Cpath fill='rgb(25,45,71)' d='M249 280L371 385L306 359Z'/%3E%3Cpath fill='rgb(15,30,49)' d='M339 265L437 254L435 336Z'/%3E%3Cpath fill='rgb(18,32,54)' d='M339 265L435 336L371 385Z'/%3E%3Cpath fill='rgb(32,52,80)' d='M437 254L581 291L577 382Z'/%3E%3Cpath fill='rgb(34,56,86)' d='M437 254L577 382L435 336Z'/%3E%3Cpath fill='rgb(39,62,92)' d='M581 291L626 296L577 382Z'/%3E%3Cpath fill='rgb(23,38,59)' d='M626 296L623 339L577 382Z'/%3E%3Cpath fill='rgb(36,54,79)' d='M626 296L711 263L748 390Z'/%3E%3Cpath fill='rgb(37,58,85)' d='M626 296L748 390L623 339Z'/%3E%3Cpath fill='rgb(42,59,83)' d='M711 263L847 280L802 391Z'/%3E%3Cpath fill='rgb(39,59,85)' d='M711 263L802 391L748 390Z'/%3E%3Cpath fill='rgb(41,55,73)' d='M847 280L887 303L941 367Z'/%3E%3Cpath fill='rgb(33,46,66)' d='M847 280L941 367L802 391Z'/%3E%3Cpath fill='rgb(43,55,72)' d='M887 303L986 253L941 367Z'/%3E%3Cpath fill='rgb(41,53,70)' d='M986 253L1000 333L941 367Z'/%3E%3Cpath fill='rgb(58,71,90)' d='M986 253L1116 258L1000 333Z'/%3E%3Cpath fill='rgb(48,64,85)' d='M1116 258L1065 392L1000 333Z'/%3E%3Cpath fill='rgb(54,69,89)' d='M1116 258L1174 241L1065 392Z'/%3E%3Cpath fill='rgb(40,52,72)' d='M1174 241L1170 374L1065 392Z'/%3E%3Cpath fill='rgb(47,58,76)' d='M1174 241L1280 242L1170 374Z'/%3E%3Cpath fill='rgb(39,53,73)' d='M1280 242L1280 343L1170 374Z'/%3E%3Cpath fill='rgb(26,47,74)' d='M0 366L74 367L98 436Z'/%3E%3Cpath fill='rgb(29,51,80)' d='M0 366L98 436L0 472Z'/%3E%3Cpath fill='rgb(28,49,78)' d='M74 367L174 357L98 436Z'/%3E%3Cpath fill='rgb(12,26,45)' d='M174 357L160 465L98 436Z'/%3E%3Cpath fill='rgb(12,25,44)' d='M174 357L306 359L160 465Z'/%3E%3Cpath fill='rgb(29,51,80)' d='M306 359L244 431L160 465Z'/%3E%3Cpath fill='rgb(20,38,62)' d='M306 359L371 385L370 474Z'/%3E%3Cpath fill='rgb(26,46,73)' d='M306 359L370 474L244 431Z'/%3E%3Cpath fill='rgb(18,35,57)' d='M371 385L435 336L370 474Z'/%3E%3Cpath fill='rgb(21,39,63)' d='M435 336L465 435L370 474Z'/%3E%3Cpath fill='rgb(24,43,68)' d='M435 336L577 382L465 435Z'/%3E%3Cpath fill='rgb(23,41,64)' d='M577 382L578 430L465 435Z'/%3E%3Cpath fill='rgb(29,48,75)' d='M577 382L623 339L606 434Z'/%3E%3Cpath fill='rgb(15,30,49)' d='M577 382L606 434L578 430Z'/%3E%3Cpath fill='rgb(34,55,81)' d='M623 339L748 390L728 420Z'/%3E%3Cpath fill='rgb(33,56,85)' d='M623 339L728 420L606 434Z'/%3E%3Cpath fill='rgb(24,40,62)' d='M748 390L802 391L728 420Z'/%3E%3Cpath fill='rgb(28,47,71)' d='M802 391L800 441L728 420Z'/%3E%3Cpath fill='rgb(37,58,85)' d='M802 391L941 367L800 441Z'/%3E%3Cpath fill='rgb(31,48,72)' d='M941 367L919 425L800 441Z'/%3E%3Cpath fill='rgb(31,46,68)' d='M941 367L1000 333L996 477Z'/%3E%3Cpath fill='rgb(26,42,63)' d='M941 367L996 477L919 425Z'/%3E%3Cpath fill='rgb(36,54,79)' d='M1000 333L1065 392L996 477Z'/%3E%3Cpath fill='rgb(21,35,55)' d='M1065 392L1131 461L996 477Z'/%3E%3Cpath fill='rgb(41,63,91)' d='M1065 392L1170 374L1131 461Z'/%3E%3Cpath fill='rgb(36,58,86)' d='M1170 374L1202 456L1131 461Z'/%3E%3Cpath fill='rgb(38,59,86)' d='M1170 374L1280 343L1202 456Z'/%3E%3Cpath fill='rgb(38,60,89)' d='M1280 343L1280 425L1202 456Z'/%3E%3Cpath fill='rgb(22,40,65)' d='M0 472L98 436L0 508Z'/%3E%3Cpath fill='rgb(18,34,56)' d='M98 436L58 568L0 508Z'/%3E%3Cpath fill='rgb(22,40,64)' d='M98 436L160 465L197 572Z'/%3E%3Cpath fill='rgb(20,37,60)' d='M98 436L197 572L58 568Z'/%3E%3Cpath fill='rgb(29,51,80)' d='M160 465L244 431L197 572Z'/%3E%3Cpath fill='rgb(26,46,73)' d='M244 431L241 549L197 572Z'/%3E%3Cpath fill='rgb(16,31,52)' d='M244 431L370 474L364 556Z'/%3E%3Cpath fill='rgb(28,49,77)' d='M244 431L364 556L241 549Z'/%3E%3Cpath fill='rgb(25,45,72)' d='M370 474L465 435L364 556Z'/%3E%3Cpath fill='rgb(26,46,73)' d='M465 435L445 574L364 556Z'/%3E%3Cpath fill='rgb(27,48,76)' d='M465 435L578 430L445 574Z'/%3E%3Cpath fill='rgb(19,36,59)' d='M578 430L519 543L445 574Z'/%3E%3Cpath fill='rgb(31,52,81)' d='M578 430L606 434L519 543Z'/%3E%3Cpath fill='rgb(29,50,79)' d='M606 434L656 567L519 543Z'/%3E%3Cpath fill='rgb(27,47,74)' d='M606 434L728 420L656 567Z'/%3E%3Cpath fill='rgb(28,48,76)' d='M728 420L748 554L656 567Z'/%3E%3Cpath fill='rgb(30,52,79)' d='M728 420L800 441L843 568Z'/%3E%3Cpath fill='rgb(22,38,62)' d='M728 420L843 568L748 554Z'/%3E%3Cpath fill='rgb(30,51,78)' d='M800 441L919 425L843 568Z'/%3E%3Cpath fill='rgb(16,30,50)' d='M919 425L904 553L843 568Z'/%3E%3Cpath fill='rgb(23,40,64)' d='M919 425L996 477L904 553Z'/%3E%3Cpath fill='rgb(23,41,66)' d='M996 477L1034 565L904 553Z'/%3E%3Cpath fill='rgb(17,30,50)' d='M996 477L1131 461L1034 565Z'/%3E%3Cpath fill='rgb(21,39,61)' d='M1131 461L1091 560L1034 565Z'/%3E%3Cpath fill='rgb(29,48,75)' d='M1131 461L1202 456L1091 560Z'/%3E%3Cpath fill='rgb(26,45,72)' d='M1202 456L1214 545L1091 560Z'/%3E%3Cpath fill='rgb(21,37,59)' d='M1202 456L1280 425L1214 545Z'/%3E%3Cpath fill='rgb(32,55,85)' d='M1280 425L1280 549L1214 545Z'/%3E%3Cpath fill='rgb(23,41,67)' d='M0 508L58 568L97 637Z'/%3E%3Cpath fill='rgb(16,32,53)' d='M0 508L97 637L0 622Z'/%3E%3Cpath fill='rgb(23,41,66)' d='M58 568L197 572L97 637Z'/%3E%3Cpath fill='rgb(21,39,63)' d='M197 572L154 640L97 637Z'/%3E%3Cpath fill='rgb(20,38,61)' d='M197 572L241 549L154 640Z'/%3E%3Cpath fill='rgb(18,33,56)' d='M241 549L309 656L154 640Z'/%3E%3Cpath fill='rgb(29,51,80)' d='M241 549L364 556L382 622Z'/%3E%3Cpath fill='rgb(22,41,66)' d='M241 549L382 622L309 656Z'/%3E%3Cpath fill='rgb(24,43,69)' d='M364 556L445 574L473 636Z'/%3E%3Cpath fill='rgb(25,45,71)' d='M364 556L473 636L382 622Z'/%3E%3Cpath fill='rgb(29,51,80)' d='M445 574L519 543L544 653Z'/%3E%3Cpath fill='rgb(11,23,42)' d='M445 574L544 653L473 636Z'/%3E%3Cpath fill='rgb(23,41,66)' d='M519 543L656 567L544 653Z'/%3E%3Cpath fill='rgb(25,44,71)' d='M656 567L611 647L544 653Z'/%3E%3Cpath fill='rgb(16,31,53)' d='M656 567L748 554L611 647Z'/%3E%3Cpath fill='rgb(19,35,58)' d='M748 554L699 637L611 647Z'/%3E%3Cpath fill='rgb(13,26,46)' d='M748 554L843 568L822 612Z'/%3E%3Cpath fill='rgb(15,30,50)' d='M748 554L822 612L699 637Z'/%3E%3Cpath fill='rgb(19,36,59)' d='M843 568L904 553L928 630Z'/%3E%3Cpath fill='rgb(13,27,47)' d='M843 568L928 630L822 612Z'/%3E%3Cpath fill='rgb(17,32,54)' d='M904 553L1034 565L928 630Z'/%3E%3Cpath fill='rgb(29,50,79)' d='M1034 565L1014 659L928 630Z'/%3E%3Cpath fill='rgb(23,41,67)' d='M1034 565L1091 560L1080 597Z'/%3E%3Cpath fill='rgb(21,39,63)' d='M1034 565L1080 597L1014 659Z'/%3E%3Cpath fill='rgb(31,53,83)' d='M1091 560L1214 545L1080 597Z'/%3E%3Cpath fill='rgb(22,41,66)' d='M1214 545L1175 642L1080 597Z'/%3E%3Cpath fill='rgb(31,54,84)' d='M1214 545L1280 549L1280 610Z'/%3E%3Cpath fill='rgb(24,43,69)' d='M1214 545L1280 610L1175 642Z'/%3E%3Cpath fill='rgb(25,45,72)' d='M0 622L97 637L68 720Z'/%3E%3Cpath fill='rgb(11,24,43)' d='M0 622L68 720L0 720Z'/%3E%3Cpath fill='rgb(21,39,64)' d='M97 637L154 640L68 720Z'/%3E%3Cpath fill='rgb(24,44,70)' d='M154 640L211 720L68 720Z'/%3E%3Cpath fill='rgb(11,23,42)' d='M154 640L309 656L285 720Z'/%3E%3Cpath fill='rgb(28,49,77)' d='M154 640L285 720L211 720Z'/%3E%3Cpath fill='rgb(13,27,47)' d='M309 656L382 622L362 720Z'/%3E%3Cpath fill='rgb(19,36,59)' d='M309 656L362 720L285 720Z'/%3E%3Cpath fill='rgb(13,27,47)' d='M382 622L473 636L362 720Z'/%3E%3Cpath fill='rgb(20,37,60)' d='M473 636L484 720L362 720Z'/%3E%3Cpath fill='rgb(22,40,65)' d='M473 636L544 653L484 720Z'/%3E%3Cpath fill='rgb(11,24,43)' d='M544 653L537 720L484 720Z'/%3E%3Cpath fill='rgb(28,50,78)' d='M544 653L611 647L537 720Z'/%3E%3Cpath fill='rgb(18,35,57)' d='M611 647L652 720L537 720Z'/%3E%3Cpath fill='rgb(20,38,62)' d='M611 647L699 637L652 720Z'/%3E%3Cpath fill='rgb(22,40,64)' d='M699 637L710 720L652 720Z'/%3E%3Cpath fill='rgb(18,34,56)' d='M699 637L822 612L710 720Z'/%3E%3Cpath fill='rgb(16,31,52)' d='M822 612L818 720L710 720Z'/%3E%3Cpath fill='rgb(23,42,68)' d='M822 612L928 630L936 720Z'/%3E%3Cpath fill='rgb(21,39,63)' d='M822 612L936 720L818 720Z'/%3E%3Cpath fill='rgb(16,31,53)' d='M928 630L1014 659L936 720Z'/%3E%3Cpath fill='rgb(24,43,70)' d='M1014 659L1034 720L936 720Z'/%3E%3Cpath fill='rgb(16,32,54)' d='M1014 659L1080 597L1124 720Z'/%3E%3Cpath fill='rgb(11,23,42)' d='M1014 659L1124 720L1034 720Z'/%3E%3Cpath fill='rgb(16,30,52)' d='M1080 597L1175 642L1181 720Z'/%3E%3Cpath fill='rgb(11,24,43)' d='M1080 597L1181 720L1124 720Z'/%3E%3Cpath fill='rgb(14,28,48)' d='M1175 642L1280 610L1181 720Z'/%3E%3Cpath fill='rgb(25,45,71)' d='M1280 610L1280 720L1181 720Z'/%3E%3Cpath fill='none' stroke='%239cc4ff' stroke-opacity='0.22' stroke-width='1.2' d='M0 0L88 0L0 111ZM88 0L105 59L0 111ZM88 0L187 0L216 122ZM88 0L216 122L105 59ZM187 0L304 0L285 98ZM187 0L285 98L216 122ZM304 0L363 0L342 57ZM304 0L342 57L285 98ZM363 0L458 0L342 57ZM458 0L459 60L342 57ZM458 0L555 0L459 60ZM555 0L527 72L459 60ZM555 0L618 0L527 72ZM618 0L607 88L527 72ZM618 0L732 0L607 88ZM732 0L727 113L607 88ZM732 0L832 0L824 100ZM732 0L824 100L727 113ZM832 0L935 0L914 101ZM832 0L914 101L824 100ZM935 0L978 0L1003 75ZM935 0L1003 75L914 101ZM978 0L1083 0L1132 124ZM978 0L1132 124L1003 75ZM1083 0L1160 0L1212 104ZM1083 0L1212 104L1132 124ZM1160 0L1280 0L1280 77ZM1160 0L1280 77L1212 104ZM0 111L105 59L0 162ZM105 59L77 151L0 162ZM105 59L216 122L201 173ZM105 59L201 173L77 151ZM216 122L285 98L298 172ZM216 122L298 172L201 173ZM285 98L342 57L298 172ZM342 57L398 204L298 172ZM342 57L459 60L398 204ZM459 60L422 160L398 204ZM459 60L527 72L577 178ZM459 60L577 178L422 160ZM527 72L607 88L673 173ZM527 72L673 173L577 178ZM607 88L727 113L702 189ZM607 88L702 189L673 173ZM727 113L824 100L702 189ZM824 100L842 164L702 189ZM824 100L914 101L886 169ZM824 100L886 169L842 164ZM914 101L1003 75L886 169ZM1003 75L1038 198L886 169ZM1003 75L1132 124L1038 198ZM1132 124L1071 163L1038 198ZM1132 124L1212 104L1161 150ZM1132 124L1161 150L1071 163ZM1212 104L1280 77L1161 150ZM1280 77L1280 200L1161 150ZM0 162L77 151L96 266ZM0 162L96 266L0 248ZM77 151L201 173L161 286ZM77 151L161 286L96 266ZM201 173L298 172L249 280ZM201 173L249 280L161 286ZM298 172L398 204L339 265ZM298 172L339 265L249 280ZM398 204L422 160L339 265ZM422 160L437 254L339 265ZM422 160L577 178L581 291ZM422 160L581 291L437 254ZM577 178L673 173L626 296ZM577 178L626 296L581 291ZM673 173L702 189L711 263ZM673 173L711 263L626 296ZM702 189L842 164L711 263ZM842 164L847 280L711 263ZM842 164L886 169L887 303ZM842 164L887 303L847 280ZM886 169L1038 198L887 303ZM1038 198L986 253L887 303ZM1038 198L1071 163L986 253ZM1071 163L1116 258L986 253ZM1071 163L1161 150L1116 258ZM1161 150L1174 241L1116 258ZM1161 150L1280 200L1174 241ZM1280 200L1280 242L1174 241ZM0 248L96 266L0 366ZM96 266L74 367L0 366ZM96 266L161 286L174 357ZM96 266L174 357L74 367ZM161 286L249 280L306 359ZM161 286L306 359L174 357ZM249 280L339 265L371 385ZM249 280L371 385L306 359ZM339 265L437 254L435 336ZM339 265L435 336L371 385ZM437 254L581 291L577 382ZM437 254L577 382L435 336ZM581 291L626 296L577 382ZM626 296L623 339L577 382ZM626 296L711 263L748 390ZM626 296L748 390L623 339ZM711 263L847 280L802 391ZM711 263L802 391L748 390ZM847 280L887 303L941 367ZM847 280L941 367L802 391ZM887 303L986 253L941 367ZM986 253L1000 333L941 367ZM986 253L1116 258L1000 333ZM1116 258L1065 392L1000 333ZM1116 258L1174 241L1065 392ZM1174 241L1170 374L1065 392ZM1174 241L1280 242L1170 374ZM1280 242L1280 343L1170 374ZM0 366L74 367L98 436ZM0 366L98 436L0 472ZM74 367L174 357L98 436ZM174 357L160 465L98 436ZM174 357L306 359L160 465ZM306 359L244 431L160 465ZM306 359L371 385L370 474ZM306 359L370 474L244 431ZM371 385L435 336L370 474ZM435 336L465 435L370 474ZM435 336L577 382L465 435ZM577 382L578 430L465 435ZM577 382L623 339L606 434ZM577 382L606 434L578 430ZM623 339L748 390L728 420ZM623 339L728 420L606 434ZM748 390L802 391L728 420ZM802 391L800 441L728 420ZM802 391L941 367L800 441ZM941 367L919 425L800 441ZM941 367L1000 333L996 477ZM941 367L996 477L919 425ZM1000 333L1065 392L996 477ZM1065 392L1131 461L996 477ZM1065 392L1170 374L1131 461ZM1170 374L1202 456L1131 461ZM1170 374L1280 343L1202 456ZM1280 343L1280 425L1202 456ZM0 472L98 436L0 508ZM98 436L58 568L0 508ZM98 436L160 465L197 572ZM98 436L197 572L58 568ZM160 465L244 431L197 572ZM244 431L241 549L197 572ZM244 431L370 474L364 556ZM244 431L364 556L241 549ZM370 474L465 435L364 556ZM465 435L445 574L364 556ZM465 435L578 430L445 574ZM578 430L519 543L445 574ZM578 430L606 434L519 543ZM606 434L656 567L519 543ZM606 434L728 420L656 567ZM728 420L748 554L656 567ZM728 420L800 441L843 568ZM728 420L843 568L748 554ZM800 441L919 425L843 568ZM919 425L904 553L843 568ZM919 425L996 477L904 553ZM996 477L1034 565L904 553ZM996 477L1131 461L1034 565ZM1131 461L1091 560L1034 565ZM1131 461L1202 456L1091 560ZM1202 456L1214 545L1091 560ZM1202 456L1280 425L1214 545ZM1280 425L1280 549L1214 545ZM0 508L58 568L97 637ZM0 508L97 637L0 622ZM58 568L197 572L97 637ZM197 572L154 640L97 637ZM197 572L241 549L154 640ZM241 549L309 656L154 640ZM241 549L364 556L382 622ZM241 549L382 622L309 656ZM364 556L445 574L473 636ZM364 556L473 636L382 622ZM445 574L519 543L544 653ZM445 574L544 653L473 636ZM519 543L656 567L544 653ZM656 567L611 647L544 653ZM656 567L748 554L611 647ZM748 554L699 637L611 647ZM748 554L843 568L822 612ZM748 554L822 612L699 637ZM843 568L904 553L928 630ZM843 568L928 630L822 612ZM904 553L1034 565L928 630ZM1034 565L1014 659L928 630ZM1034 565L1091 560L1080 597ZM1034 565L1080 597L1014 659ZM1091 560L1214 545L1080 597ZM1214 545L1175 642L1080 597ZM1214 545L1280 549L1280 610ZM1214 545L1280 610L1175 642ZM0 622L97 637L68 720ZM0 622L68 720L0 720ZM97 637L154 640L68 720ZM154 640L211 720L68 720ZM154 640L309 656L285 720ZM154 640L285 720L211 720ZM309 656L382 622L362 720ZM309 656L362 720L285 720ZM382 622L473 636L362 720ZM473 636L484 720L362 720ZM473 636L544 653L484 720ZM544 653L537 720L484 720ZM544 653L611 647L537 720ZM611 647L652 720L537 720ZM611 647L699 637L652 720ZM699 637L710 720L652 720ZM699 637L822 612L710 720ZM822 612L818 720L710 720ZM822 612L928 630L936 720ZM822 612L936 720L818 720ZM928 630L1014 659L936 720ZM1014 659L1034 720L936 720ZM1014 659L1080 597L1124 720ZM1014 659L1124 720L1034 720ZM1080 597L1175 642L1181 720ZM1080 597L1181 720L1124 720ZM1175 642L1280 610L1181 720ZM1280 610L1280 720L1181 720Z'/%3E%3Crect width='1280' height='720' fill='url(%23c)'/%3E%3Ccircle cx='928' cy='630' r='7' fill='url(%23w)'/%3E%3Ccircle cx='1003' cy='75' r='11' fill='url(%23a)'/%3E%3Ccircle cx='748' cy='554' r='6' fill='url(%23w)'/%3E%3Ccircle cx='544' cy='653' r='10' fill='url(%23w)'/%3E%3Ccircle cx='1214' cy='545' r='10' fill='url(%23w)'/%3E%3Ccircle cx='656' cy='567' r='8' fill='url(%23w)'/%3E%3Ccircle cx='1202' cy='456' r='10' fill='url(%23w)'/%3E%3Ccircle cx='285' cy='98' r='10' fill='url(%23w)'/%3E%3Ccircle cx='1132' cy='124' r='13' fill='url(%23a)'/%3E%3Ccircle cx='459' cy='60' r='8' fill='url(%23w)'/%3E%3Ccircle cx='74' cy='367' r='9' fill='url(%23w)'/%3E%3Ccircle cx='342' cy='57' r='7' fill='url(%23w)'/%3E%3Ccircle cx='98' cy='436' r='6' fill='url(%23w)'/%3E%3Ccircle cx='1161' cy='150' r='8' fill='url(%23a)'/%3E%3Ccircle cx='77' cy='151' r='10' fill='url(%23w)'/%3E%3Ccircle cx='1175' cy='642' r='9' fill='url(%23w)'/%3E%3Ccircle cx='105' cy='59' r='7' fill='url(%23w)'/%3E%3C/svg%3E");
+  background-size: cover;
+  background-position: center;
+  color: #eef4fb;
+}
+
+section.invert h1,
+section.invert h2,
+section.invert h4,
+section.invert h5,
+section.invert h6 {
+  color: #fff;
+}
+
+section.invert h3 {
+  color: #ffc27a;
+}
+
+section.invert h2 {
+  border-bottom-color: rgba(255, 255, 255, 0.35);
+}
+
+section.invert a {
+  color: #9cc4ff;
+}
+
+section.invert li::marker,
+section.invert.stars h1::before,
+section.invert.stars h2::before,
+section.invert.stars h3::before {
+  color: #9cc4ff;
+}
+
+section.invert code {
+  background: rgba(255, 255, 255, 0.18);
+  color: #fff;
+}
+
+section.invert pre code {
+  background: none;
+  color: inherit;
+}
+
+section.invert blockquote {
+  background: rgba(14, 28, 48, 0.6);
+  border-left-color: var(--sx-amber);
+  color: inherit;
+}
+
+section.invert::after {
+  color: #9cc4ff;
+}
+
+section.invert header {
+  background: rgba(36, 80, 122, 0.85);
+}
+
+section.invert .todo { color: #ffb347; }
+section.invert .done { color: #b6c3d1; }
+
+section.invert[data-footer]::after {
+  color: #3f4b59;
+}
+
+section.invert pre {
+  background: rgba(240, 243, 246, 0.95);
+  color: #1f2a36;
+}
+
+section.invert th {
+  background: rgba(200, 219, 238, 0.25);
+  border-bottom-color: #9cc4ff;
+}
+
+section.invert th,
+section.invert td {
+  border-bottom-color: rgba(156, 196, 255, 0.3);
+}
+
+section.invert tbody tr:nth-child(2n) {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+section.lead.invert h1 {
+  text-shadow: 0 2px 16px rgba(8, 20, 38, 0.8);
+}

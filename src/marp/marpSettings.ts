@@ -18,6 +18,7 @@ import * as vscode from 'vscode';
 import { findMarpCliConfig, MarpCliConfig } from './marpConfig';
 import { frontMatterValue } from './marpAuthoring';
 import { presenterRequested } from './presenterBundle';
+import { bundledThemeFiles } from './bundledThemes';
 
 export type MathTypesetting = 'mathjax' | 'katex' | 'off';
 
@@ -73,9 +74,11 @@ function marpSetting<T>(document: SettingsScope, key: string, marpKey: string, f
 }
 
 /**
- * Local theme CSS files: `scimax.marp.themes`, resolved against the
- * document's workspace folder (or its own folder outside a workspace), then
- * the `themeSet` of the deck's Marp CLI configuration. Remote URLs are skipped.
+ * Local theme CSS files: the themes that ship with Scimax, then
+ * `scimax.marp.themes`, resolved against the document's workspace folder (or
+ * its own folder outside a workspace), then the `themeSet` of the deck's Marp
+ * CLI configuration. Remote URLs are skipped. A later file with the same
+ * `@theme` name wins, so a user's own theme can replace a bundled one.
  */
 export function marpThemeUris(document: SettingsScope): vscode.Uri[] {
     const themes = marpSetting<string[]>(document, 'scimax.marp.themes', 'markdown.marp.themes', []);
@@ -89,7 +92,8 @@ export function marpThemeUris(document: SettingsScope): vscode.Uri[] {
                 : vscode.Uri.file(path.join(path.dirname(document.uri.fsPath), theme)));
     const configured = new Set(uris.map(uri => uri.fsPath));
     const fromCli = (marpCliConfig(document)?.themeFiles ?? []).filter(file => !configured.has(file));
-    return [...uris, ...fromCli.map(file => vscode.Uri.file(file))];
+    const bundled = bundledThemeFiles().filter(file => !configured.has(file));
+    return [...bundled, ...uris, ...fromCli].map(item => typeof item === 'string' ? vscode.Uri.file(item) : item);
 }
 
 /** Allow all raw HTML in slides (`scimax.marp.enableHtml`, or `html` in `.marprc.yml`). */

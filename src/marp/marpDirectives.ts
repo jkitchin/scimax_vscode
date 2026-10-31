@@ -9,6 +9,8 @@
  * This module has no VS Code dependency so it can be unit tested directly.
  */
 
+import { SCIMAX_THEMES } from './bundledThemes';
+
 export interface DirectiveSpec {
     name: string;
     scope: 'global' | 'local';
@@ -17,6 +19,9 @@ export interface DirectiveSpec {
 }
 
 export const BUILTIN_THEMES = ['default', 'gaia', 'uncover'];
+
+/** Themes every deck has without a theme file of its own: Marp's, then the ones that ship with Scimax. */
+export const STANDARD_THEMES = [...BUILTIN_THEMES, ...SCIMAX_THEMES];
 
 const TRANSITIONS = [
     'none', 'clockwise', 'counterclockwise', 'cover', 'coverflow', 'cube', 'cylinder', 'diamond', 'drop',
@@ -27,7 +32,7 @@ const TRANSITIONS = [
 
 export const DIRECTIVES: DirectiveSpec[] = [
     { name: 'marp', scope: 'global', description: 'Turns on Marp for this Markdown file.', values: ['true'] },
-    { name: 'theme', scope: 'global', description: 'Theme of the deck. Built in: `default`, `gaia`, `uncover`; custom themes come from `scimax.marp.themes`.', values: BUILTIN_THEMES },
+    { name: 'theme', scope: 'global', description: 'Theme of the deck. Built in: `default`, `gaia`, `uncover`, and Scimax\'s `scimax` (blues of the Scimax unicorn); custom themes come from `scimax.marp.themes`.', values: STANDARD_THEMES },
     { name: 'style', scope: 'global', description: 'Extra CSS for the deck, to adjust the theme. Use a YAML block (`style: |`).' },
     { name: 'headingDivider', scope: 'global', description: 'Start a new slide before every heading at this level or above (1 to 6), or at the levels in a list such as `[1, 3]`.', values: ['1', '2', '3', '4', '5', '6'] },
     { name: 'size', scope: 'global', description: 'Slide size preset from the theme, such as `16:9` (default) or `4:3`.', values: ['16:9', '4:3'] },

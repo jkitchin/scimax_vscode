@@ -2,7 +2,7 @@
 marp: true
 presenter: true
 timer: 20
-theme: gaia
+theme: scimax
 paginate: true
 math: katex
 ---
@@ -36,8 +36,12 @@ The pen, pointer, timer, Python and the rest, in the browser
 
 - It starts by itself when you leave the first slide
 - **t** pauses and restarts it, **T** resets it (do this after a rehearsal)
+- **+** / **-** add or take off a minute; **Alt+T** types a new time
+- Right-click the timer for its menu: reset, set the time, back to the deck's
 - Amber in the last 5 minutes, red in the last minute, then it counts overtime
 - **P** opens Marp's presenter view, which shows the same time
+
+No `timer:` in a deck? Right-click → *Add a talk timer...* during the show.
 
 ---
 
@@ -46,7 +50,7 @@ The pen, pointer, timer, Python and the rest, in the browser
 ![width:300px](img/chart.png)
 
 - **a** pen on/off, **1**–**5** colours, **r** eraser, **z** undo, **c** / **C** clear
-- **l** laser pointer, **n** sticky note at the mouse (Markdown works in it)
+- **l** laser pointer (**1**–**5** colour it), **n** sticky note at the mouse (Markdown works in it)
 - Hold the mouse button down for a spotlight
 
 *Try it:* press **a** and circle the peak. Press **n**: drag the note by its bar, **●** recolours it, **–** shrinks it, **×** deletes it.
@@ -121,7 +125,9 @@ Marp's `![bg]` images are CSS backgrounds; they get inlined too.
 
 ## A live widget in an iframe
 
-<iframe src="widget/counter.html" style="width:100%;height:380px;border:0"></iframe>
+<iframe src="widget/counter.html" style="width:100%;height:340px;border:0"></iframe>
+
+Click the widget, then press →: the arrow keys still change slides.
 
 ---
 
@@ -218,6 +224,19 @@ Press **e** (or click here) to start, **e** to pause, **E** to reset
 
 ---
 
+## Captions and a recording of the talk
+
+- **v** shows live captions of what you say at the bottom of the slides
+  (Chrome or Edge). Right-click → *Save transcript…* keeps them as Markdown, per slide
+- **V** (Shift+V) records the tab, the mouse and your voice; **V** again saves an MP4
+- Right-click → *Save captions of the recording* writes a `.vtt` subtitle file
+
+*Try it:* press **v** and say something. Start recording before going full screen.
+
+<!-- Captions also show, smaller, in the presenter view. The yellow ring around the mouse is only drawn while recording. -->
+
+---
+
 ## Polish a slide just before the talk
 
 ![width:300px](img/chart.png)
@@ -251,6 +270,18 @@ scimax-hidden -->
 Yes: a *hidden* slide. It is in the thumbnails, dimmed and marked *hidden*, but not in the slideshow or any export.
 
 **H** in the Slide Sorter, or Marp menu → Hide or Unhide Slide, wraps a slide in a `<!-- scimax-hidden ... -->` comment.
+
+---
+
+## Change the running order on the day
+
+- Right-click a slide → *Add a slide after this one*, or *Hide this slide*
+- Open Marp's overview (the four squares) and drag a thumbnail to move a slide
+- Slides hidden in the show stay in the overview, greyed out: click one to bring it back
+
+The Markdown does not change: **s** saves the new order in the HTML.
+
+*Try it:* hide this slide, then find it again in the overview.
 
 ---
 
@@ -302,11 +333,11 @@ Directives complete as you type in the front matter or `<!-- -->`, and hovering 
 Right-click a thumbnail (or select several) → *Edit with Claude Code…*
 
 ```text
-In the Marp slide deck demo.md, edit slide 9 (lines 112-118).
+In the Marp slide deck demo.md, edit slide 9 (lines 117-123).
 Change only that slide and keep the rest of the deck as it is. Change:
 ```
 
-Type the change and send it. With a Claude Code chat already open, the slides go to it as an `@demo.md#L112-118` mention.
+Type the change and send it. With a Claude Code chat already open, the slides go to it as an `@demo.md#L117-123` mention.
 
 ---
 
@@ -329,7 +360,16 @@ Type the change and send it. With a Claude Code chat already open, the slides go
 | s   | PowerPoint (pictures)    | e/d | Editable PowerPoint           |
 | g   | For Google Slides        | t   | Notes as text                 |
 
-In an org file, `[[marp:demo.md::5][the demo]]` presents from slide 5.
+In an org file, `[[marp:demo.md::5][the demo]]` presents from slide 5; hover it to see the deck.
+
+---
+
+## Presenter tools for every deck, and from a terminal
+
+- *Make Marp Deck* writes `presenter: true` in new decks
+- The `scimax.marp.presenter` setting gives the tools to decks with no `presenter:` line; `presenter: false` still turns them off
+- `scimax marp build demo.md --open` builds this one-file HTML from a terminal, a Makefile or Claude Code
+- `--pdf` also writes a PDF; `--plain` builds it without the tools
 
 ---
 

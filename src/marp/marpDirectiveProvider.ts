@@ -6,7 +6,7 @@
 import * as vscode from 'vscode';
 import { isMarpText } from './slideRenderer';
 import { marpThemeUris } from './marpSettings';
-import { BUILTIN_THEMES, DIRECTIVES, directiveAt, directiveContext, findDirective, themeNames } from './marpDirectives';
+import { DIRECTIVES, STANDARD_THEMES, directiveAt, directiveContext, findDirective, themeNames } from './marpDirectives';
 
 function linesOf(document: vscode.TextDocument): string[] {
     return document.getText().split(/\r?\n/);
@@ -14,7 +14,7 @@ function linesOf(document: vscode.TextDocument): string[] {
 
 /** Built-in themes and the ones declared by `scimax.marp.themes` files. */
 async function availableThemes(document: vscode.TextDocument): Promise<string[]> {
-    const names = [...BUILTIN_THEMES];
+    const names = [...STANDARD_THEMES];
     for (const uri of marpThemeUris(document)) {
         try {
             names.push(...themeNames(Buffer.from(await vscode.workspace.fs.readFile(uri)).toString('utf8')));

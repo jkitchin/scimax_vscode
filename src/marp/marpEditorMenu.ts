@@ -17,7 +17,8 @@ import {
 } from './slideModel';
 import { parseDocument, replaceDocumentText, slidesInSelection } from './deckEdits';
 import { marpHtmlEnabled, marpThemeUris } from './marpSettings';
-import { BUILTIN_THEMES, themeNames } from './marpDirectives';
+import { STANDARD_THEMES, themeNames } from './marpDirectives';
+import { isBundledThemeFile, SCIMAX_THEMES } from './bundledThemes';
 import { parseTimer, presenterOffline, presenterRequested } from './presenterBundle';
 import {
     customThemeCss, ensureStyleBlock, frontMatterRange, frontMatterValue, MARP_HEADER_SNIPPET, IMAGE_PLACEMENTS, ImageFilter, imageMarkdown,
@@ -488,10 +489,10 @@ async function setDeck(key: string, ask: (current: string | undefined) => Promis
     await editLines(editor, lines => setFrontMatterValue(lines, key, answer === null ? undefined : answer));
 }
 
-/** Theme names: built in, then the ones in `scimax.marp.themes` files. */
+/** Theme names: built in (Marp's and Scimax's), then the ones in `scimax.marp.themes` files. */
 async function allThemes(document: vscode.TextDocument): Promise<Array<{ name: string; file?: vscode.Uri }>> {
-    const themes: Array<{ name: string; file?: vscode.Uri }> = BUILTIN_THEMES.map(name => ({ name }));
-    for (const uri of marpThemeUris(document)) {
+    const themes: Array<{ name: string; file?: vscode.Uri }> = STANDARD_THEMES.map(name => ({ name }));
+    for (const uri of marpThemeUris(document).filter(uri => !isBundledThemeFile(uri.fsPath))) {
         try {
             const css = Buffer.from(await vscode.workspace.fs.readFile(uri)).toString('utf8');
             for (const name of themeNames(css)) {
@@ -562,7 +563,10 @@ async function setTheme(): Promise<void> {
         ...themes.map(t => ({
             label: t.name,
             theme: t.name,
-            description: [t.name === current ? 'current' : '', t.file ? vscode.workspace.asRelativePath(t.file) : 'built in']
+            description: [
+                t.name === current ? 'current' : '',
+                t.file ? vscode.workspace.asRelativePath(t.file) : SCIMAX_THEMES.includes(t.name) ? 'Scimax, in the unicorn\'s blues' : 'built in',
+            ]
                 .filter(Boolean).join(' · '),
         })),
         { label: '$(add) New custom theme…', create: true },
@@ -572,7 +576,7 @@ async function setTheme(): Promise<void> {
         return;
     }
     if (choice.create) {
-        await newCustomTheme(BUILTIN_THEMES.includes(current) ? current : 'default');
+        await newCustomTheme(STANDARD_THEMES.includes(current) ? current : 'default');
         return;
     }
     await editLines(editor, lines => setFrontMatterValue(lines, 'theme', choice.theme));
@@ -615,7 +619,7 @@ async function newCustomTheme(suggestedBase?: string): Promise<void> {
         return;
     }
     const base = (await vscode.window.showQuickPick(
-        BUILTIN_THEMES.map(theme => ({ label: theme, description: theme === suggestedBase ? 'current theme' : undefined })),
+        STANDARD_THEMES.map(theme => ({ label: theme, description: theme === suggestedBase ? 'current theme' : undefined })),
         { title: `New Marp theme "${name.trim()}": start from` }
     ))?.label;
     if (!base) {
@@ -661,7 +665,7 @@ async function editCurrentTheme(): Promise<void> {
         await vscode.window.showTextDocument(found.file, { viewColumn: vscode.ViewColumn.Beside, preview: false });
         return;
     }
-    if (BUILTIN_THEMES.includes(current)) {
+    if (STANDARD_THEMES.includes(current)) {
         const choice = await vscode.window.showInformationMessage(
             `"${current}" is a built-in theme and cannot be edited. Make a custom theme based on it?`,
             'New Custom Theme'

@@ -223,7 +223,7 @@ shows what a directive does when you hover over it.
 
 | Directive                                                                     | Scope  | Values offered                                                      |
 |-------------------------------------------------------------------------------+--------+---------------------------------------------------------------------|
-| ~theme~                                                                       | Global | ~default~, ~gaia~, ~uncover~, and themes from ~scimax.marp.themes~  |
+| ~theme~                                                                       | Global | ~default~, ~gaia~, ~uncover~, ~scimax~, and themes from ~scimax.marp.themes~ |
 | ~paginate~                                                                    | Local  | ~true~, ~false~, ~hold~, ~skip~                                     |
 | ~headingDivider~                                                              | Global | ~1~ to ~6~                                                          |
 | ~size~                                                                        | Global | ~16:9~, ~4:3~                                                       |
@@ -508,9 +508,50 @@ Each sets a key in the front matter, or removes it.
 | Edit Current Theme   | [[cmd:scimax.marp.theme.edit]]       | Opens the theme's CSS file; for a built-in theme, offers a custom theme based on it |
 | Add Deck Style Block | [[cmd:scimax.marp.theme.styleBlock]] | A ~style: |~ block in the front matter for small CSS changes                        |
 
-** Custom themes
+** ⚠️ The scimax theme
 
-/New Custom Theme.../ asks for a name and a built-in theme to start from, then:
+~theme: scimax~ dresses a deck in the blues of the crystal Scimax unicorn,
+with the amber of its horn, laid out like [[https://orgmode.org][orgmode.org]]: a pale background, serif
+text, sans-serif headings in deep blue (level 1 and 2) and amber (level 3),
+quotes as grey-blue cards with a blue edge, and code in blues with amber
+names. Title and section slides sit on faceted crystal like the logo. It ships with Scimax, so every deck
+can use it with no theme file or setting: the thumbnails, the preview, the
+slideshow, every export and ~scimax marp build~ all know it.
+
+#+begin_src markdown
+---
+marp: true
+theme: scimax
+paginate: true
+header: Group meeting
+footer: Your name · Your university
+---
+#+end_src
+
+| Class    | Use it with                | Does                                                         |
+|----------+----------------------------+--------------------------------------------------------------|
+| ~lead~   | ~<!-- _class: lead -->~    | A centred title slide on pale, faceted crystal               |
+| ~invert~ | ~<!-- _class: invert -->~  | White on dark, faceted crystal, for section slides           |
+| ~stars~  | ~class: stars~ in the deck | Org's stars before headings: ~*~ for ~#~, ~**~ for ~##~, ... |
+
+- A ~header~ is a deep blue band across the top, and a ~footer~ is a pale
+  strip across the bottom.
+- ~<span class="todo">TODO</span>~ and ~<span class="done">DONE</span>~
+  colour a keyword: TODO in amber, DONE in grey.
+- Fitted headings (~# <!-- fit --> Title~) work.
+- The fonts are ones orgmode.org uses when they are installed (Droid Serif, Noto
+  Serif) and otherwise Cambria or Georgia, so nothing is downloaded and the
+  deck looks the same offline.
+
+To change it, choose /New Custom Theme.../ and start from ~scimax~: the new
+theme does ~@import 'scimax';~ and changes only what you set. The CSS is in
+~media/marp/themes/scimax.css~ in the extension. Marp for VS Code's own
+preview does not know the theme; Scimax's previews and exports do.
+
+** 👀 Custom themes
+
+/New Custom Theme.../ asks for a name and a theme to start from (Marp's or
+~scimax~), then:
 
 1. writes ~themes/<name>.css~ in the workspace folder (next to the deck
    outside a workspace), with ~/* @theme <name> */~, ~@import '<base>';~ and

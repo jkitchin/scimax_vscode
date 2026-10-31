@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **`scimax` Marp theme** - `theme: scimax` gives a deck the blues of the crystal Scimax unicorn, with the amber of its horn, laid out like orgmode.org: deep blue and amber headings, grey-blue quote cards with a blue edge, blue code colours, a blue header band and pale footer. Classes `lead` (title slide on pale, faceted crystal), `invert` (white on dark, faceted crystal like the logo's background) and `stars` (Org's leading stars before headings). It ships with the extension, so the thumbnails, preview, slideshow, exports and `scimax marp build` use it with no setting, and *New Custom Theme...* can start from it.
+
+### Fixed
+
+- **`c` speed key at a subheading** - Global visibility cycling (`c`, `S-TAB`) folded the heading the cursor was on and left the cursor at the end of the visible line, so the next `c` was typed into the heading. The cursor now goes to the start of the visible heading that contains it, so `c` keeps cycling, and SHOWALL puts it back on the heading you started from.
+
 ## [0.11.0] - 2026-10-30
 
 ### Added

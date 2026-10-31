@@ -19,7 +19,7 @@ A deck is one Markdown file. The front matter switches Marp on, and `---` on its
 ```markdown
 ---
 marp: true
-theme: default          # default | gaia | uncover | a custom theme (see below)
+theme: default          # default | gaia | uncover | scimax | a custom theme (see below)
 paginate: true
 presenter: true         # presenter tools (see below); always include it in a new deck
 size: 16:9              # 1280 x 720 slides
@@ -56,6 +56,8 @@ footer: My course · Lecture 3
 - `<!-- fit -->` before a heading shrinks it to fit.
 - Columns and cards need raw HTML (`<div style="display:flex">…</div>`), which requires `--html`.
 - Leave blank lines between the HTML and any Markdown inside it.
+
+**Scimax theme:** `theme: scimax` ships with Scimax (blues of the crystal Scimax unicorn with amber accents, laid out like orgmode.org: deep blue headings, amber h3, grey-blue quote cards, blue header band). Classes: `lead` (centred title slide on pale faceted crystal), `invert` (white on dark faceted crystal, for section slides), `stars` (Org's `*`/`**` before headings). `scimax marp build` and the VS Code exports include it with no `--theme-set`; a custom theme can `@import 'scimax';`.
 
 **Custom theme:** a CSS file that starts with `/* @theme name */` and usually `@import 'default';`. Use it with `theme: name` in the front matter, and build with `--theme-set path/to/theme.css`. Style `section` (the slide), `h1`/`h2`, and classes you assign with `_class`. Two traps when extending the default theme:
 - **Content sits too low.** The default theme sets `align-content: safe center` on `section`, which Chrome applies to block layout, so content ends up vertically centred. Add `align-content: start` to your `section` rule.

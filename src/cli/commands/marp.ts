@@ -18,6 +18,7 @@ import {
     presenterAssets, presenterOffline, presenterRequested,
 } from '../../marp/presenterBundle';
 import { fetchFontCached, offlinePythonFiles } from '../../marp/presenterDownloads';
+import { bundledThemeFiles } from '../../marp/bundledThemes';
 import { scimaxGlobalStorageDir } from '../globalStorage';
 
 interface CliConfig {
@@ -162,6 +163,8 @@ export async function marpCommand(_config: CliConfig, args: ParsedArgs): Promise
             // Presenter decks may use HTML widgets (e.g. iframes).
             enableHtml: presenter,
             engine: presenter ? path.join(MEDIA_DIR, 'engine.cjs') : undefined,
+            // Scimax's own themes, such as `theme: scimax`
+            themeFiles: bundledThemeFiles(),
         })], deckDir, json);
 
         if (presenter) {
