@@ -29,11 +29,13 @@ const ORDERED_LIST_PATTERN = /^(\s*)(\d+[.)])\s+/;
 
 /**
  * Get list item info if line is a list item
- * Returns indentation level (number of leading spaces) or -1 if not a list item
+ * Returns indentation level (number of leading spaces) or -1 if not a list item.
+ * In org a `*` at the line start is a heading, never a bullet.
  */
-function getListItemIndent(line: string): number {
+function getListItemIndent(line: string, isOrg: boolean): number {
     const unorderedMatch = line.match(UNORDERED_LIST_PATTERN);
     if (unorderedMatch) {
+        if (isOrg && unorderedMatch[1] === '' && unorderedMatch[2] === '*') return -1;
         return unorderedMatch[1].length;
     }
     const orderedMatch = line.match(ORDERED_LIST_PATTERN);
@@ -46,11 +48,11 @@ function getListItemIndent(line: string): number {
 /**
  * Check if a line is a continuation of a list item (indented more than the bullet)
  */
-function isListContinuation(line: string, listIndent: number): boolean {
+function isListContinuation(line: string, listIndent: number, isOrg: boolean): boolean {
     if (line.trim() === '') return true; // Empty lines can be part of a list item
     const lineIndent = line.match(/^(\s*)/)?.[1].length ?? 0;
     // Continuation lines must be indented more than the list bullet position
-    return lineIndent > listIndent && getListItemIndent(line) === -1;
+    return lineIndent > listIndent && getListItemIndent(line, isOrg) === -1;
 }
 
 /**
@@ -69,7 +71,7 @@ function findListItemEnd(document: vscode.TextDocument, startLine: number, listI
         }
 
         // Check if this is another list item
-        const nextIndent = getListItemIndent(line);
+        const nextIndent = getListItemIndent(line, document.languageId === 'org');
         if (nextIndent !== -1) {
             // It's a list item - stop if same or lower indent
             if (nextIndent <= listIndent) {
@@ -108,7 +110,7 @@ export async function promoteHeading(): Promise<boolean> {
     const isOrg = document.languageId === 'org';
 
     // Check if on a list item first
-    const listIndent = getListItemIndent(lineText);
+    const listIndent = getListItemIndent(lineText, isOrg);
     if (listIndent !== -1) {
         return promoteListItem(editor, line, lineText, position, listIndent);
     }
@@ -191,7 +193,7 @@ export async function demoteHeading(): Promise<boolean> {
     const isOrg = document.languageId === 'org';
 
     // Check if on a list item first
-    const listIndent = getListItemIndent(lineText);
+    const listIndent = getListItemIndent(lineText, isOrg);
     if (listIndent !== -1) {
         return demoteListItem(editor, line, lineText, position);
     }
@@ -206,8 +208,9 @@ export async function demoteHeading(): Promise<boolean> {
             editBuilder.replace(line.range, newLine);
         });
 
-        // Adjust cursor position
-        const newPosition = new vscode.Position(position.line, position.character + 1);
+        // Keep the cursor on the same text. At the line start it stays put,
+        // so it is still at the heading start and the r speed key repeats.
+        const newPosition = new vscode.Position(position.line, position.character && position.character + 1);
         editor.selection = new vscode.Selection(newPosition, newPosition);
 
         return true;
@@ -223,8 +226,9 @@ export async function demoteHeading(): Promise<boolean> {
             editBuilder.replace(line.range, newLine);
         });
 
-        // Adjust cursor position
-        const newPosition = new vscode.Position(position.line, position.character + 1);
+        // Keep the cursor on the same text. At the line start it stays put,
+        // so it is still at the heading start and the r speed key repeats.
+        const newPosition = new vscode.Position(position.line, position.character && position.character + 1);
         editor.selection = new vscode.Selection(newPosition, newPosition);
 
         return true;
@@ -247,8 +251,8 @@ async function demoteListItem(
         editBuilder.replace(line.range, newLine);
     });
 
-    // Adjust cursor position
-    const newPosition = new vscode.Position(position.line, position.character + 2);
+    // Adjust cursor position, leaving it at the line start if it was there
+    const newPosition = new vscode.Position(position.line, position.character && position.character + 2);
     editor.selection = new vscode.Selection(newPosition, newPosition);
 
     return true;
@@ -370,7 +374,7 @@ export async function moveHeadingUp(): Promise<boolean> {
     const headingLevel = getLevel(lineText);
 
     // Check if we're on a list item
-    const listIndent = getListItemIndent(lineText);
+    const listIndent = getListItemIndent(lineText, isOrg);
     if (listIndent !== -1) {
         return moveListItemUp(editor, document, position, listIndent);
     }
@@ -451,7 +455,7 @@ async function moveListItemUp(
     let prevStart = -1;
     for (let i = currentStart - 1; i >= 0; i--) {
         const line = document.lineAt(i).text;
-        const itemIndent = getListItemIndent(line);
+        const itemIndent = getListItemIndent(line, document.languageId === 'org');
 
         if (itemIndent === listIndent) {
             // Found previous sibling at same level
@@ -463,7 +467,7 @@ async function moveListItemUp(
             return false;
         }
         // Check if we've exited the list entirely (non-list, non-continuation line)
-        if (line.trim() !== '' && itemIndent === -1 && !isListContinuation(line, listIndent)) {
+        if (line.trim() !== '' && itemIndent === -1 && !isListContinuation(line, listIndent, document.languageId === 'org')) {
             return false;
         }
     }
@@ -514,7 +518,7 @@ export async function moveHeadingDown(): Promise<boolean> {
     const headingLevel = getLevel(lineText);
 
     // Check if we're on a list item
-    const listIndent = getListItemIndent(lineText);
+    const listIndent = getListItemIndent(lineText, isOrg);
     if (listIndent !== -1) {
         return moveListItemDown(editor, document, position, listIndent);
     }
@@ -598,7 +602,7 @@ async function moveListItemDown(
     if (nextStart >= document.lineCount) return false;
 
     const nextLine = document.lineAt(nextStart).text;
-    const nextIndent = getListItemIndent(nextLine);
+    const nextIndent = getListItemIndent(nextLine, document.languageId === 'org');
 
     // Must be a list item at the same indent level
     if (nextIndent !== listIndent) return false;
