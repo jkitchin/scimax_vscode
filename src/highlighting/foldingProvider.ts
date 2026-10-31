@@ -2,6 +2,7 @@ import * as vscode from 'vscode';
 import { isInTable, nextCell } from '../org/tableProvider';
 import { findFencedDivs, findMarkdownFencedBlocks, markdownFencedLineMask } from '../shared/markdownFences';
 import { isMarkdownLike } from '../shared/markdownLike';
+import { visibleLineFor } from './foldCycle';
 
 // LaTeX section commands in order of hierarchy (lower index = higher level)
 const LATEX_SECTION_LEVELS: { [key: string]: number } = {
@@ -418,6 +419,11 @@ export class MarkdownFoldingRangeProvider implements vscode.FoldingRangeProvider
 // Track global fold state for cycling
 let globalFoldState: 'expanded' | 'headings-only' | 'collapsed' = 'expanded';
 
+// Where the cycle started, and the line it last put the cursor on. Pressing c
+// again from that line continues the cycle; SHOWALL returns to the start.
+let cycleHome: { uri: string; position: vscode.Position } | undefined;
+let cyclePlaced: { uri: string; line: number } | undefined;
+
 /**
  * Check if a line is an org heading
  */
@@ -555,6 +561,13 @@ async function cycleGlobalFold(): Promise<void> {
         prefix = 'Org';
     }
 
+    const uri = editor.document.uri.toString();
+    const cursor = editor.selection.active;
+    if (!cycleHome || cycleHome.uri !== uri || cyclePlaced?.uri !== uri || cyclePlaced.line !== cursor.line) {
+        cycleHome = { uri, position: cursor };
+    }
+    const home = cycleHome.position;
+
     switch (globalFoldState) {
         case 'expanded':
             // Fold all to show only headings/sections
@@ -576,6 +589,21 @@ async function cycleGlobalFold(): Promise<void> {
             vscode.window.setStatusBarMessage(`${prefix}: SHOWALL (expanded)`, 2000);
             break;
     }
+
+    // Folding leaves the cursor at the end of the visible fold line, where the
+    // next c is typed as text. Put it at the start of the visible line that
+    // hides the starting point instead, and back on that point at SHOWALL.
+    let target = home;
+    if (globalFoldState !== 'expanded') {
+        const ranges = await vscode.commands.executeCommand<vscode.FoldingRange[]>(
+            'vscode.executeFoldingRangeProvider', editor.document.uri) ?? [];
+        const depth = globalFoldState === 'collapsed' ? 1 : 2;
+        const line = visibleLineFor(ranges, home.line, depth);
+        if (line !== home.line) target = new vscode.Position(line, 0);
+    }
+    editor.selection = new vscode.Selection(target, target);
+    editor.revealRange(new vscode.Range(target, target), vscode.TextEditorRevealType.InCenterIfOutsideViewport);
+    cyclePlaced = { uri, line: target.line };
 }
 
 export function registerFoldingProvider(context: vscode.ExtensionContext): void {
