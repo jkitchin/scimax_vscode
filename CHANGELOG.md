@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **`C-c d ?`** - Lists every database command, as `C-c a ?` does for the agenda: typing a command's `C-c d` key runs it (`C-c d ? s` searches), and the commands with no key, such as semantic search, backup or optimize, are picked from the list.
+- **Hashtags you can hover and follow** - A `#hashtag` in an org file is drawn in blue (`#4682B4`, scope `entity.name.tag.hashtag.org`) instead of the theme's heading-tag colour. Hovering it shows how often it is used in the file and lists the other indexed files that use it, each opening at the tag; Ctrl/Cmd+click or `C-c C-o` on it lists every line with the tag across files (*Show Hashtag Occurrences*, `scimax.hashtag.show`). *Search by Hashtag* now ends in that list too.
+- **Tasks in Markdown headings** - A Markdown heading can be an org task: `## TODO [#A] Write the intro #paper`, with `SCHEDULED: <...> DEADLINE: <...>` on the next line. The keyword may be bare or in brackets (`[TODO]`), tags are `#tags` or `:a:b:` at the end of the title, and `<!-- #+TODO: A B | C -->` declares more keywords. `C-c C-t`, `C-c ,`, and on a heading `C-c C-s` and `C-c C-d` (and the speed keys `t`, `,`, `s`, `d`) work on them, the database indexes their state, priority, tags and dates for the agenda and TODO lists, and `C-c a < a` / `C-c a < t` open the agenda for a Markdown file. The keyword, priority, tags and planning line are coloured as in org. The next database sync re-indexes Markdown files.
+- **Hashtags in Markdown** - `#tags` in Markdown and Quarto files are coloured, hover and click as in org, and are indexed; a heading's own `#` marks are not hashtags.
+- **Hashtag completion** - In org and Markdown, typing `#` or `#ta` and pressing `Tab` opens a completion menu of known hashtags, those in the file first (`scimax.hashtag.complete`); `C-c #` (*Insert Hashtag*, `scimax.hashtag.insert`) picks one, or a new one, and inserts it.
+
+### Fixed
+
+- **Checkbox cookies in Markdown** - Toggling a checkbox in a Markdown file left the `[n/m]` or `[n%]` cookie on its heading or parent item unchanged. It is now updated, with the cookies above it, and `C-c C-c` on a line with a cookie recounts it. Changing a TODO subheading's keyword updates its parent heading's cookie, as in org.
+- **`C-c C-s` / `C-c C-d` in a Markdown section** - Away from the heading line they inserted `@scheduled(...)` / `@due(...)` text at the cursor, which the agenda does not read. Anywhere under a heading they now open the calendar date picker, write a SCHEDULED / DEADLINE line under the heading and make it a TODO, as in org.
+- **Citations in Markdown export** - Exporting to Markdown (`C-c C-e m m`) turned `cite:&key` into a broken link (`[&key](&key)`) and `bibliography:refs.bib` into a link to the `.bib` file. Citations are now Pandoc citations (`[@a; @b]`, `@a` for `citet`, `[-@a]` for `citeyear`, with prefixes and pages), and the bibliography files and `#+CSL_STYLE` go in YAML front matter, so `pandoc --citeproc` formats them and adds the reference list. Markdown copied to the clipboard does the same. Text before the first heading is no longer left out.
+- **`C-c d s` with punctuation** - Searching for `kitchin-2025-beyon-fourt` failed with "no such column: 2025", because FTS5 reads `-` and `:` as query syntax. Words with punctuation are now searched as phrases, half-typed queries (an unclosed quote or parenthesis, a trailing `AND`) are repaired, and a query that is still invalid is searched as plain words. `title: word` with a space works as documented.
+- **Find Citations finds them all** - `scimax.ref.findCitations` only looked at workspace files, missed org-ref v3 (`cite:&key`) citations and keys that were not first in a citation, and counted the key in prose. It now searches every indexed file containing the key as well as the workspace and open editors, parses org-ref v2/v3, org-cite, LaTeX and (in Markdown) Pandoc citations with the key anywhere, and lists the results grouped by file. It uses the key at the cursor, or the `.bib` entry the cursor is in, and citation hovers have a *Find citations* link.
+- **Hashtags are the same everywhere** - The highlighter and the database disagreed on what a hashtag is: the index took `#` plus word characters anywhere, so it stored URL fragments, `[#A]` priorities and numbers, and cut `#web-dev` to `web`. Both now use one rule, which also skips comments, keyword lines and code blocks. A line starting with `#tag` is no longer coloured as a comment; as in org, a comment needs a space after `#`. Rebuild the database (`scimax.db.rebuild`) to re-index hashtags in unchanged files.
+
 ## [0.12.1] - 2026-10-31
 
 ### Fixed

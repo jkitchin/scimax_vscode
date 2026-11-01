@@ -43,7 +43,8 @@ export class CitationHoverProvider implements vscode.HoverProvider {
             markdown.appendMarkdown(`### Citation: ${key}\n\n`);
             markdown.appendMarkdown(`*Not found in bibliography*\n\n`);
             markdown.appendMarkdown(`[Search Google Scholar](https://scholar.google.com/scholar?q=${encodeURIComponent(key)}) | `);
-            markdown.appendMarkdown(`[Add from DOI](command:scimax.ref.fetchFromDOI)`);
+            markdown.appendMarkdown(`[Add from DOI](command:scimax.ref.fetchFromDOI) | `);
+            markdown.appendMarkdown(`[Find citations](command:scimax.ref.findCitations?${encodeURIComponent(JSON.stringify(key))})`);
             return new vscode.Hover(markdown);
         }
 
@@ -88,7 +89,8 @@ export class CitationHoverProvider implements vscode.HoverProvider {
         if (entry.url) {
             markdown.appendMarkdown(`[URL](${entry.url}) | `);
         }
-        markdown.appendMarkdown(`[Actions](command:scimax.ref.showDetails?${encodeURIComponent(JSON.stringify(key))})`);
+        markdown.appendMarkdown(`[Actions](command:scimax.ref.showDetails?${encodeURIComponent(JSON.stringify(key))}) | `);
+        markdown.appendMarkdown(`[Find citations](command:scimax.ref.findCitations?${encodeURIComponent(JSON.stringify(key))})`);
 
         // Show source file
         const sourceFile = (entry as any)._sourceFile;

@@ -11,6 +11,7 @@ import { spawn } from 'child_process';
 import { createLogger } from '../utils/logger';
 import { parseOrgFast } from '../parser/orgExportParser';
 import { exportToHtml, HtmlExportOptions } from '../parser/orgExportHtml';
+import { exportToMarkdown } from '../parser/orgExportMarkdown';
 import { exportToLatex, LatexExportOptions } from '../parser/orgExportLatex';
 import { processIncludes, hasIncludes } from '../parser/orgInclude';
 import { parseOptionsKeyword, type ExportOptions } from '../parser/orgExport';
@@ -446,106 +447,11 @@ async function exportToLatexString(
 }
 
 /**
- * Export content to Markdown (simple conversion)
+ * Export content to Markdown. Citations become Pandoc citations ([@key]).
  */
 async function exportToMarkdownString(content: string): Promise<string> {
-    const doc = parseOrgFast(content);
-    const lines: string[] = [];
-
-    function convertElement(elem: any): void {
-        switch (elem.type) {
-            case 'headline':
-                const level = elem.properties?.level || 1;
-                const title = elem.properties?.rawValue || '';
-                lines.push(`${'#'.repeat(level)} ${title}`);
-                if (elem.section?.children) {
-                    for (const child of elem.section.children) {
-                        convertElement(child);
-                    }
-                }
-                if (elem.children) {
-                    for (const child of elem.children) {
-                        convertElement(child);
-                    }
-                }
-                break;
-
-            case 'section':
-                if (elem.children) {
-                    for (const child of elem.children) {
-                        convertElement(child);
-                    }
-                }
-                break;
-
-            case 'paragraph':
-                const text = convertObjects(elem.children || []);
-                lines.push(text, '');
-                break;
-
-            case 'src-block':
-                const lang = elem.properties?.language || '';
-                const code = elem.properties?.value || '';
-                lines.push('```' + lang);
-                lines.push(code);
-                lines.push('```', '');
-                break;
-
-            case 'plain-list':
-                if (elem.children) {
-                    for (const item of elem.children) {
-                        if (item.type === 'item') {
-                            const bullet = elem.properties?.listType === 'ordered' ? '1.' : '-';
-                            const itemText = convertObjects(item.children?.[0]?.children || []);
-                            lines.push(`${bullet} ${itemText}`);
-                        }
-                    }
-                    lines.push('');
-                }
-                break;
-        }
-    }
-
-    function convertObjects(objects: any[]): string {
-        return objects.map((obj: any) => {
-            switch (obj.type) {
-                case 'plain-text':
-                    return obj.properties?.value || '';
-                case 'bold':
-                    return `**${convertObjects(obj.children || [])}**`;
-                case 'italic':
-                    return `*${convertObjects(obj.children || [])}*`;
-                case 'code':
-                case 'verbatim':
-                    return `\`${obj.properties?.value || ''}\``;
-                case 'link':
-                    const url = obj.properties?.path || '';
-                    const desc = obj.children?.[0]?.properties?.value || url;
-                    return `[${desc}](${url})`;
-                default:
-                    return obj.properties?.value || '';
-            }
-        }).join('');
-    }
-
-    // Process document section (preamble)
-    if (doc.section?.children) {
-        for (const child of doc.section.children) {
-            convertElement(child);
-        }
-    }
-
-    // Process headlines
-    for (const child of doc.children || []) {
-        convertElement(child);
-    }
-
-    return lines.join('\n');
+    return exportToMarkdown(content);
 }
-
-// =============================================================================
-// Main Export Command
-// =============================================================================
 
 /**
  * Copy to clipboard with given options

@@ -13,37 +13,54 @@ import {
 } from './taskParser';
 import { parseRelativeDate } from '../utils/dateParser';
 import { DAY_NAMES_SHORT, MONTH_NAMES_FULL } from '../utils/dateConstants';
+import { markdownFencedLineMask } from '../shared/markdownFences';
 
 /**
- * Insert a due date at cursor
+ * The 0-based line of the `#` heading whose section holds the cursor
+ * (skipping `#` lines in code fences), or -1 above the first heading.
+ * C-c C-s / C-c C-d there add an org-style SCHEDULED / DEADLINE line under
+ * that heading (src/parser/markdownTasks.ts), as they do anywhere in an org
+ * entry.
  */
-async function insertDueDate(): Promise<void> {
+function enclosingMarkdownHeading(editor: vscode.TextEditor): number {
+    const lines = editor.document.getText().split(/\r?\n/);
+    const inFence = markdownFencedLineMask(lines);
+    for (let i = editor.selection.active.line; i >= 0; i--) {
+        if (!inFence[i] && /^ {0,3}#{1,6}(?:\s|$)/.test(lines[i])) return i;
+    }
+    return -1;
+}
+
+/** Schedule or set a deadline: on the enclosing heading, else an inline @tag. */
+async function planMarkdown(keyword: 'SCHEDULED' | 'DEADLINE'): Promise<void> {
     const editor = vscode.window.activeTextEditor;
     if (!editor) return;
+    const headingLine = enclosingMarkdownHeading(editor);
+    if (headingLine >= 0) {
+        await vscode.commands.executeCommand(
+            keyword === 'DEADLINE' ? 'scimax.speed.deadline' : 'scimax.speed.schedule',
+            { headingLine }
+        );
+        return;
+    }
 
-    const date = await pickDate('Select due date');
+    // No heading above: a checkbox task in the @due / @scheduled syntax.
+    const date = await pickDate(keyword === 'DEADLINE' ? 'Select due date' : 'Select scheduled date');
     if (!date) return;
-
-    const dateStr = formatDate(date);
+    const tag = keyword === 'DEADLINE' ? 'due' : 'scheduled';
     await editor.edit(editBuilder => {
-        editBuilder.insert(editor.selection.active, `@due(${dateStr}) `);
+        editBuilder.insert(editor.selection.active, `@${tag}(${formatDate(date)}) `);
     });
 }
 
-/**
- * Insert a scheduled date at cursor
- */
+/** C-c C-d: a DEADLINE for the heading the cursor is under. */
+async function insertDueDate(): Promise<void> {
+    await planMarkdown('DEADLINE');
+}
+
+/** C-c C-s: SCHEDULED for the heading the cursor is under. */
 async function insertScheduledDate(): Promise<void> {
-    const editor = vscode.window.activeTextEditor;
-    if (!editor) return;
-
-    const date = await pickDate('Select scheduled date');
-    if (!date) return;
-
-    const dateStr = formatDate(date);
-    await editor.edit(editBuilder => {
-        editBuilder.insert(editor.selection.active, `@scheduled(${dateStr}) `);
-    });
+    await planMarkdown('SCHEDULED');
 }
 
 /**

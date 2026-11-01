@@ -10,6 +10,7 @@ import { extractTags, formatTags, removeTagsFromLine, similarTags } from './util
 import { getDatabase } from '../../database/lazyDb';
 import { getPropCaseInsensitive } from '../../database/scimaxDbCore';
 import { parseEffort } from '../../parser/orgClocking';
+import { getAllTodoStatesForDocument } from '../todoStates';
 
 /** Property names offered even when not yet used anywhere. */
 const COMMON_PROPERTIES = [
@@ -503,7 +504,9 @@ export async function setPriority(priority: string): Promise<void> {
             lineText = lineText.replace(/\[#[A-Z]\]/, newPriority);
         } else {
             // Insert priority after TODO keyword or after stars
-            const headingMatch = lineText.match(/^(\*+)\s+(TODO|DONE|NEXT|WAITING|HOLD|SOMEDAY|CANCELLED|CANCELED)?\s*/);
+            const states = [...getAllTodoStatesForDocument(document)]
+                .map(s => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|');
+            const headingMatch = lineText.match(new RegExp(`^(\\*+|#{1,6})\\s+(?:(?:${states})\\s+|\\[(?:${states})\\]\\s+)?`));
             if (headingMatch) {
                 const insertPos = headingMatch[0].length;
                 lineText = lineText.slice(0, insertPos) + newPriority + ' ' + lineText.slice(insertPos);

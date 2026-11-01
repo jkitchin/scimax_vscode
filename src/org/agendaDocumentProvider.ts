@@ -27,6 +27,7 @@ import {
 } from '../parser/orgAgenda';
 import { renderCustomCommand, type CustomAgendaCommand, type CustomCommandResult } from '../parser/orgAgendaCustom';
 import { entrySnippet, relocateHeading, renderSnippetMarkdown } from './agendaHover';
+import { isMarkdownPath } from '../parser/markdownTasks';
 import type { AgendaManager } from './agendaProvider';
 
 /** URI scheme for agenda buffers. Matches `resourceScheme` in when-clauses. */
@@ -219,10 +220,11 @@ export class AgendaDocumentProvider
         md.supportThemeIcons = true;
 
         const lines = await readSourceLines(item.file);
-        const line = lines ? relocateHeading(lines, item.line, item.title) : item.line;
+        const isMd = isMarkdownPath(item.file);
+        const line = lines ? relocateHeading(lines, item.line, item.title, isMd) : item.line;
         md.appendMarkdown(`$(file) \`${item.file}:${line}\`\n\n`);
 
-        const snippet = lines ? entrySnippet(lines, line, HOVER_BODY_LINES) : undefined;
+        const snippet = lines ? entrySnippet(lines, line, HOVER_BODY_LINES, isMd) : undefined;
         if (snippet) {
             const entryLink = (target: unknown) =>
                 `command:scimax.agenda.buffer.openEntryLink?${encodeURIComponent(JSON.stringify([target]))}`;
@@ -364,7 +366,7 @@ export async function readSourceLines(file: string): Promise<string[] | undefine
  * disk, from before edits that moved the heading.
  */
 export function currentHeadingLine(document: vscode.TextDocument, line: number, title?: string): number {
-    return relocateHeading(document.getText().split(/\r?\n/), line, title);
+    return relocateHeading(document.getText().split(/\r?\n/), line, title, isMarkdownPath(document.fileName));
 }
 
 /**

@@ -762,48 +762,6 @@ export class ReferenceManager {
     }
 
     /**
-     * Find all citations of a key in workspace
-     */
-    public async findCitations(key: string): Promise<vscode.Location[]> {
-        const locations: vscode.Location[] = [];
-
-        // Search patterns for different citation styles
-        const patterns = [
-            `cite:${key}`,
-            `citet:${key}`,
-            `citep:${key}`,
-            `@${key}`,
-            `\\cite{${key}}`,
-            `\\citet{${key}}`,
-            `\\citep{${key}}`
-        ];
-
-        const files = await vscode.workspace.findFiles('**/*.{org,md,tex}', '**/node_modules/**');
-
-        for (const fileUri of files) {
-            try {
-                const content = fs.readFileSync(fileUri.fsPath, 'utf8');
-                const lines = content.split('\n');
-
-                for (let i = 0; i < lines.length; i++) {
-                    for (const pattern of patterns) {
-                        const index = lines[i].indexOf(pattern);
-                        if (index !== -1) {
-                            const position = new vscode.Position(i, index);
-                            const location = new vscode.Location(fileUri, position);
-                            locations.push(location);
-                        }
-                    }
-                }
-            } catch (error) {
-                // Skip files that can't be read
-            }
-        }
-
-        return locations;
-    }
-
-    /**
      * Dispose resources
      */
     public dispose(): void {

@@ -26,7 +26,8 @@ import format from 'date-fns/format';
 import startOfDay from 'date-fns/startOfDay';
 import type { AgendaManager } from './agendaProvider';
 import type { ProjectileManager } from '../projectile/projectileManager';
-import { currentProjectRoot, isOrgFileRoot, loadProjectTasks } from './projectData';
+import { currentProjectRoot, isOrgFileRoot, isTaskFile, loadProjectTasks } from './projectData';
+import { isMarkdownPath } from '../parser/markdownTasks';
 import { readSourceLines } from './agendaDocumentProvider';
 import { entrySnippet, outlinePath, relocateHeading } from './agendaHover';
 import { registerTaskHost, revealTask, runOnTask, type TaskContext } from './taskActions';
@@ -104,13 +105,13 @@ class AgendaWebview implements vscode.Disposable {
         this.disposables.push(
             manager.onDidRefresh(() => this.scheduleReload()),
             vscode.workspace.onDidSaveTextDocument(doc => {
-                if (this.panel && doc.fileName.endsWith('.org')) this.scheduleReload();
+                if (this.panel && isTaskFile(doc.fileName)) this.scheduleReload();
             }),
             // A project or file agenda reads open editors' text, so it can
             // follow unsaved edits; the database only changes on save.
             vscode.workspace.onDidChangeTextDocument(e => {
                 if (this.panel && this.options.project && e.contentChanges.length
-                    && e.document.fileName.endsWith('.org')) {
+                    && isTaskFile(e.document.fileName)) {
                     this.scheduleReload(EDIT_RELOAD_DELAY_MS);
                 }
             }),
@@ -287,12 +288,13 @@ class AgendaWebview implements vscode.Disposable {
      */
     private async preview(id: number, filePath: string, rowLine: number, title?: string): Promise<void> {
         const lines = await readSourceLines(filePath);
-        const line = lines ? relocateHeading(lines, rowLine, title) : rowLine;
-        const snippet = lines ? entrySnippet(lines, line, PREVIEW_BODY_LINES) : undefined;
+        const md = isMarkdownPath(filePath);
+        const line = lines ? relocateHeading(lines, rowLine, title, md) : rowLine;
+        const snippet = lines ? entrySnippet(lines, line, PREVIEW_BODY_LINES, md) : undefined;
         void this.panel?.webview.postMessage({
             type: 'preview',
             id,
-            outline: lines && snippet ? outlinePath(lines, line) : [],
+            outline: lines && snippet ? outlinePath(lines, line, md) : [],
             lines: snippet?.map(l => l.text) ?? [],
             location: `${vscode.workspace.asRelativePath(filePath)}:${line}`,
         });
@@ -386,7 +388,7 @@ class AgendaWebview implements vscode.Disposable {
 async function openForCurrentFile(view: AgendaWebview, span?: Span): Promise<void> {
     const document = vscode.window.activeTextEditor?.document;
     if (!document || document.uri.scheme !== 'file' || !isOrgFileRoot(document.uri.fsPath)) {
-        vscode.window.showWarningMessage('The agenda can only be limited to an org file');
+        vscode.window.showWarningMessage('The agenda can only be limited to an org or Markdown file');
         return;
     }
     await view.open({ root: document.uri.fsPath, span });

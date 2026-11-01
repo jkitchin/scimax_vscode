@@ -17,6 +17,7 @@ import { storeOpenAlexApiKey, getOpenAlexApiKey, deleteOpenAlexApiKey, hasOpenAl
 import { findCitationAtPosition, rebuildCitation } from './citationParser';
 import { isMarkdownLike } from '../shared/markdownLike';
 import { findLabelDefinition } from './providers';
+import { findCitationsCommand } from './findCitations';
 
 /**
  * Register all reference-related commands
@@ -527,38 +528,10 @@ export function registerReferenceCommands(
 
     // Find citations of a reference
     context.subscriptions.push(
-        vscode.commands.registerCommand('scimax.ref.findCitations', async () => {
-            const entries = manager.getAllEntries();
-            const items = entries.map(entry => manager.formatForQuickPick(entry));
-
-            const selected = await vscode.window.showQuickPick(items, {
-                placeHolder: 'Select reference to find citations'
-            });
-
-            if (!selected) return;
-
-            await vscode.window.withProgress({
-                location: vscode.ProgressLocation.Notification,
-                title: `Finding citations of ${selected.entry.key}...`,
-                cancellable: false
-            }, async () => {
-                const locations = await manager.findCitations(selected.entry.key);
-
-                if (locations.length === 0) {
-                    vscode.window.showInformationMessage(`No citations found for ${selected.entry.key}`);
-                    return;
-                }
-
-                // Show in peek view
-                await vscode.commands.executeCommand(
-                    'editor.action.peekLocations',
-                    vscode.window.activeTextEditor?.document.uri,
-                    vscode.window.activeTextEditor?.selection.active,
-                    locations,
-                    'peek'
-                );
-            });
-        })
+        // Every citation of a key across indexed and workspace files: the
+        // key passed in, the one at the cursor, or one picked from the list.
+        vscode.commands.registerCommand('scimax.ref.findCitations', (key?: unknown) =>
+            findCitationsCommand(manager, key))
     );
 
     // Copy BibTeX for entry
@@ -1556,12 +1529,7 @@ async function showEntryActions(manager: ReferenceManager, entry: BibEntry): Pro
             break;
 
         case 'find':
-            const locations = await manager.findCitations(entry.key);
-            if (locations.length === 0) {
-                vscode.window.showInformationMessage(`No citations found for ${entry.key}`);
-            } else {
-                vscode.window.showInformationMessage(`Found ${locations.length} citations`);
-            }
+            await vscode.commands.executeCommand('scimax.ref.findCitations', entry.key);
             break;
 
         case 'copy':

@@ -44,7 +44,8 @@ export const DEFAULT_TODO_STATES = [
  */
 export function parseTodoKeywordLine(line: string): TodoWorkflow | null {
     // Match #+TODO: or #+SEQ_TODO: (TYP_TODO is less common but also valid)
-    const match = line.match(/^#\+(TODO|SEQ_TODO|TYP_TODO):\s*(.*)$/i);
+    // Markdown files may hide the line in a comment: <!-- #+TODO: A | B -->
+    const match = line.match(/^(?:<!--\s*)?#\+(TODO|SEQ_TODO|TYP_TODO):\s*(.*?)(?:\s*-->)?\s*$/i);
     if (!match) {
         return null;
     }

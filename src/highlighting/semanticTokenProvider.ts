@@ -4,6 +4,7 @@ import {
     DEFAULT_TODO_STATES,
     type TodoWorkflow
 } from '../org/todoStates';
+import { findHashtags } from '../parser/hashtags';
 
 // Define token types - must match package.json semanticTokenTypes
 const tokenTypes = [
@@ -18,7 +19,12 @@ const tokenTypes = [
     'orgHeading6',
     'orgTodo',
     'orgDone',
-    'orgTag'
+    'orgTag',
+    'orgHashtag',
+    // Used by the Markdown task highlighting (src/org/hashtagProvider.ts);
+    // org gets these colours from its grammar.
+    'orgPriority',
+    'orgPlanning'
 ];
 
 // Define token modifiers - must match package.json semanticTokenModifiers
@@ -113,9 +119,17 @@ export class OrgSemanticTokenProvider implements vscode.DocumentSemanticTokensPr
 
             // Find headings
             this.findHeadings(line, lineNum, tokens, workflow, headingRegex);
+        }
 
-            // Find tags
-            this.findTags(line, lineNum, tokens);
+        // Hashtags in body text (skips comments and code blocks)
+        for (const h of findHashtags(lines)) {
+            tokens.push({
+                line: h.line,
+                startChar: h.start,
+                length: h.end - h.start,
+                tokenType: tokenTypes.indexOf('orgHashtag'),
+                tokenModifiers: 0
+            });
         }
 
         // Sort tokens by position (required by VS Code)
@@ -314,26 +328,6 @@ export class OrgSemanticTokenProvider implements vscode.DocumentSemanticTokensPr
                     });
                 }
             }
-        }
-    }
-
-    private findTags(line: string, lineNum: number, tokens: TokenMatch[]): void {
-        // Hashtags in body text: #tag
-        const hashtagRegex = /(?<!\S)#([a-zA-Z][a-zA-Z0-9_-]*)/g;
-        let match;
-
-        while ((match = hashtagRegex.exec(line)) !== null) {
-            // Skip if in a comment line
-            if (line.trim().startsWith('#') && !line.trim().startsWith('#+')) {
-                continue;
-            }
-            tokens.push({
-                line: lineNum,
-                startChar: match.index,
-                length: match[0].length,
-                tokenType: tokenTypes.indexOf('orgTag'),
-                tokenModifiers: 0
-            });
         }
     }
 }

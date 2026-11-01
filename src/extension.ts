@@ -32,6 +32,7 @@ import { registerNotebookCommands, checkPendingNavigation } from './notebook/com
 import { OrgLinkProvider, MarkdownHeadingLinkProvider, registerOrgLinkCommands } from './org/orgLinkProvider';
 import { registerBuiltinFollowHandlers } from './adapters/linkFollowAdapter';
 import { registerSemanticTokenProvider } from './highlighting/semanticTokenProvider';
+import { registerHashtagProvider } from './org/hashtagProvider';
 import { registerFoldingProvider } from './highlighting/foldingProvider';
 import { registerBlockDecorations } from './highlighting/blockDecorations';
 import { registerCommandMarkupDecorations } from './highlighting/commandMarkupDecoration';
@@ -600,6 +601,7 @@ async function activateScimax(context: vscode.ExtensionContext) {
 
     // Register Semantic Token Provider for org-mode
     activationStep('registerSemanticTokenProvider', () => registerSemanticTokenProvider(context));
+    activationStep('registerHashtagProvider', () => registerHashtagProvider(context));
 
     // Register Folding Provider for org-mode
     activationStep('registerFoldingProvider', () => registerFoldingProvider(context));
@@ -911,15 +913,8 @@ async function activateScimax(context: vscode.ExtensionContext) {
 
     // Additional reference commands for code lens
     context.subscriptions.push(
-        vscode.commands.registerCommand('scimax.ref.findCitationsForKey', async (key: string) => {
-            const locations = await referenceManager.findCitations(key);
-            if (locations.length === 0) {
-                vscode.window.showInformationMessage(`No citations found for ${key}`);
-            } else {
-                vscode.window.showInformationMessage(`Found ${locations.length} citations of ${key}`);
-                // Could also show in peek view if editor is available
-            }
-        }),
+        vscode.commands.registerCommand('scimax.ref.findCitationsForKey', (key: string) =>
+            vscode.commands.executeCommand('scimax.ref.findCitations', key)),
         vscode.commands.registerCommand('scimax.ref.copyKey', async (key: string) => {
             await vscode.env.clipboard.writeText(key);
             vscode.window.showInformationMessage(`Copied: ${key}`);

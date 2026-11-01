@@ -33,6 +33,7 @@ import {
 } from '../parser/orgAgendaCustom';
 import { createDbAgendaSource } from '../parser/orgAgendaCustomSource';
 import { getRowAssignees } from '../parser/projectTasks';
+import { isMarkdownPath, markdownToOrgOutline } from '../parser/markdownTasks';
 import { loadProjectDocuments, loadProjectTasks, collectProjectTasks, taskKey, currentProjectRoot } from './projectData';
 import { pickAssigneeFilter } from './people';
 import type { HeadlineElement } from '../parser/orgElementTypes';
@@ -761,7 +762,8 @@ export class AgendaManager {
 
         try {
             const content = await fs.promises.readFile(filePath, 'utf-8');
-            const document = parseOrg(content, { parseInlineObjects: false, addPositions: false });
+            const text = isMarkdownPath(filePath) ? markdownToOrgOutline(content) : content;
+            const document = parseOrg(text, { parseInlineObjects: false, addPositions: false });
             for (const child of document.children) {
                 if (child.type === 'headline') {
                     topLevel.push(child as HeadlineElement);
@@ -1093,7 +1095,7 @@ export class AgendaTreeProvider implements vscode.TreeDataProvider<AgendaTreeIte
 // Commands
 // =============================================================================
 
-interface DispatchEntry {
+export interface DispatchEntry {
     key: string;
     label: string;
     description?: string;
@@ -1104,18 +1106,21 @@ interface DispatchEntry {
  * Show one level of the agenda dispatcher. Typing a key that names exactly
  * one entry runs it immediately, as org-agenda's dispatcher does; Enter runs
  * the highlighted entry. Prefix keys recurse with a longer prefix.
+ * Other key menus (C-c d ?) use it with no custom commands and their own
+ * placeholder.
  */
-async function runDispatcher(
+export async function runDispatcher(
     commands: ResolvedCommand[],
     prefix: string,
     builtins: DispatchEntry[],
-    openCustom: (key: string) => Promise<void>
+    openCustom: (key: string) => Promise<void>,
+    placeholder?: string
 ): Promise<void> {
     const custom: DispatchEntry[] = commandsUnderPrefix(commands, prefix).map(c => ({
         key: c.key.slice(prefix.length),
         label: c.isPrefix ? `${c.description}...` : c.description,
         description: c.errors.length ? `$(warning) ${c.errors[0]}` : c.isPrefix ? 'prefix' : undefined,
-        run: () => (c.isPrefix ? runDispatcher(commands, c.key, [], openCustom) : openCustom(c.key)),
+        run: () => (c.isPrefix ? runDispatcher(commands, c.key, [], openCustom, placeholder) : openCustom(c.key)),
     }));
     const customKeys = new Set(custom.map(e => e.key));
     const entries = [...builtins.filter(b => !customKeys.has(b.key)), ...custom];
@@ -1136,7 +1141,7 @@ async function runDispatcher(
     const picked = await new Promise<DispatchEntry | undefined>(resolve => {
         const qp = vscode.window.createQuickPick<Item>();
         qp.items = items;
-        qp.placeholder = prefix ? `Agenda: ${prefix}-` : 'Org Agenda: press a key';
+        qp.placeholder = placeholder ?? (prefix ? `Agenda: ${prefix}-` : 'Org Agenda: press a key');
         qp.matchOnDescription = true;
         let done = false;
         const finish = (entry: DispatchEntry | undefined) => {
@@ -1546,8 +1551,8 @@ export function registerAgendaCommands(context: vscode.ExtensionContext): Agenda
                 return;
             }
             const filePath = editor.document.uri.fsPath;
-            if (!filePath.endsWith('.org')) {
-                vscode.window.showWarningMessage('Current file is not an org file');
+            if (!/\.(org|md|markdown)$/i.test(filePath)) {
+                vscode.window.showWarningMessage('Current file is not an org or Markdown file');
                 return;
             }
             const items = await showAgendaQuickPickForFile(manager, filePath, { type: 'month', days: 30 });
@@ -1821,6 +1826,7 @@ export function registerAgendaCommands(context: vscode.ExtensionContext): Agenda
                 for (const filePath of indexedFiles) {
                     try {
                         // Re-parse file to get clock entries
+                        if (isMarkdownPath(filePath)) continue;  // no clock entries
                         const content = fs.readFileSync(filePath, 'utf-8');
                         const document = parseOrg(content, {
                             parseInlineObjects: false,

@@ -48,6 +48,7 @@ import * as os from 'os';
 import { expandTilde } from '../utils/pathResolver';
 import { markdownFencedLineMask } from '../shared/markdownFences';
 import { isMarkdownLike } from '../shared/markdownLike';
+import { hashtagAtCursor } from './hashtagProvider';
 
 // Re-export planning line utilities for external use
 export { findPlanningLine, buildPlanningLine, removeClosed };
@@ -1795,7 +1796,7 @@ function findRepeaterForHeading(
         const lineText = document.lineAt(i).text;
         lines.push(lineText);
         // Stop at next heading (but include the first line which is the current heading)
-        if (i > headingLine && /^\*+\s/.test(lineText)) {
+        if (i > headingLine && (document.languageId === 'org' ? /^\*+\s/ : /^(\*+|#{1,6})\s/).test(lineText)) {
             lines.pop(); // Don't include the next heading
             break;
         }
@@ -1822,7 +1823,11 @@ export async function cycleTodoState(): Promise<void> {
     const document = editor.document;
     const position = editor.selection.active;
     const line = document.lineAt(position.line);
-    const lineText = line.text;
+    // Markdown headings (`## TODO Title`) cycle like org ones; a bracketed
+    // `[TODO]` keyword is rewritten in the bare form.
+    const markdown = document.languageId !== 'org';
+    const prefix = markdown ? '#{1,6}' : '\\*+';
+    const lineText = markdown ? line.text.replace(/^(#{1,6}\s+)\[([A-Z][A-Z0-9_-]*)\](?=\s|$)/, '$1$2') : line.text;
 
     // Get TODO workflow for this document
     const workflow = getTodoWorkflowForDocument(document);
@@ -1835,12 +1840,12 @@ export async function cycleTodoState(): Promise<void> {
         .join('|');
 
     // Build dynamic regex to match heading with any recognized TODO state
-    const headingRegex = new RegExp(`^(\\*+)\\s+(${statesPattern})?\\s*(.*)`);
+    const headingRegex = new RegExp(`^(${prefix})\\s+(?:(${statesPattern})(?=\\s|$))?\\s*(.*)`);
     const headingMatch = lineText.match(headingRegex);
 
     if (!headingMatch) {
         // Try simpler match for headings without TODO states
-        const simpleMatch = lineText.match(/^(\*+)\s+(.*)/);
+        const simpleMatch = lineText.match(new RegExp(`^(${prefix})\\s+(.*)`));
         if (!simpleMatch) {
             vscode.window.showInformationMessage('Not on a heading');
             return;
@@ -2017,6 +2022,9 @@ export async function updateStatisticsCookies(
     const workflow = getTodoWorkflowForDocument(document);
     const doneStates = new Set(workflow.doneStates);
     const todoStates = new Set(workflow.activeStates);
+    // Markdown headings are `#` lines; their keyword may be `[TODO]`.
+    const markdown = document.languageId !== 'org';
+    const headingRegex = markdown ? /^(#{1,6})\s+/ : /^(\*+)\s+/;
 
     // Find parent heading (lower level number = higher in hierarchy)
     let parentLine = -1;
@@ -2024,7 +2032,7 @@ export async function updateStatisticsCookies(
 
     for (let i = changedLine - 1; i >= 0; i--) {
         const line = document.lineAt(i).text;
-        const match = line.match(/^(\*+)\s+/);
+        const match = line.match(headingRegex);
         if (match && match[1].length < parentLevel) {
             parentLine = i;
             parentLevel = match[1].length;
@@ -2049,7 +2057,7 @@ export async function updateStatisticsCookies(
     let endLine = document.lineCount;
     for (let i = parentLine + 1; i < document.lineCount; i++) {
         const line = document.lineAt(i).text;
-        const match = line.match(/^(\*+)\s+/);
+        const match = line.match(headingRegex);
         if (match && match[1].length <= parentLevel) {
             endLine = i;
             break;
@@ -2061,7 +2069,9 @@ export async function updateStatisticsCookies(
     const statesPattern = Array.from(allStates)
         .map(s => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))
         .join('|');
-    const headingWithStateRegex = new RegExp(`^(\\*+)\\s+(${statesPattern})?\\s*`);
+    const headingWithStateRegex = markdown
+        ? new RegExp(`^(#{1,6})\\s+(?:\\[?(${statesPattern})\\]?(?=\\s|$))?`)
+        : new RegExp(`^(\\*+)\\s+(${statesPattern})?\\s*`);
 
     // Count direct children with TODO states
     for (let i = parentLine + 1; i < endLine; i++) {
@@ -3258,6 +3268,12 @@ export async function openLinkAtPoint(): Promise<void> {
 
     const linkInfo = getLinkAtPoint(document, position);
     if (!linkInfo) {
+        // A #hashtag opens the list of its occurrences in every file.
+        const hashtag = hashtagAtCursor();
+        if (hashtag) {
+            await vscode.commands.executeCommand('scimax.hashtag.show', hashtag.tag);
+            return;
+        }
         vscode.window.showInformationMessage('No link at cursor');
         return;
     }

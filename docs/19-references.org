@@ -525,13 +525,30 @@ Searches across:
 
 Results are ranked by relevance (key matches first, then author, then title).
 
-** Find Citations
+** 👀 Find Citations
 
 | Command                  | Description                       |
 |--------------------------+-----------------------------------|
 | scimax.ref.findCitations | Find all citations of a reference |
 
-Searches workspace for citations of a selected key in all org, markdown, and LaTeX files. Results shown in peek view for quick navigation.
+Lists every place a key is cited, grouped by file; picking a line opens
+the file with the key selected.
+
+The key is the citation (or the key within a multi-key citation) at the
+cursor, the BibTeX entry the cursor is in in a =.bib= file, or one picked
+from your bibliographies. Citation hovers have a *Find citations* link,
+and =.bib= entries a *Find citations* code lens.
+
+Files searched:
+- Every indexed file that contains the key (see [[file:18-database-search.org][Database Search]]), so files outside the workspace count
+- Org, Markdown, Quarto, R Markdown and TeX files in the workspace
+- Open editors, including unsaved changes
+
+Every citation syntax counts, with the key in any position: org-ref v2
+(=cite:a,key=) and v3 (=cite:&a;&key=, =[[cite:&key][...]]=), org-cite
+(=[cite:@key]=), LaTeX (=\citep[p. 5]{a,key}=) and, in Markdown, Pandoc
+(=[@key]=, =@key=). Keys compare ignoring case. A key that only appears
+in prose is not counted.
 
 * Fetching References from DOI
 
@@ -837,7 +854,7 @@ The extension validates bibliography links in org files:
 ** Code Lenses in .bib Files
 
 When viewing a .bib file, code lenses appear for each entry:
-- Find citations - Search workspace for citations of this key
+- Find citations - List every citation of this key (see Find Citations)
 - Copy key - Copy citation key to clipboard
 
 * Command Reference

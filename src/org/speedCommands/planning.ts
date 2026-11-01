@@ -112,10 +112,10 @@ async function promptForDate(title: string): Promise<Date | null> {
  * Check if heading has a TODO state
  */
 function headingHasTodoState(headingText: string, validStates: Set<string>): boolean {
-    // Match: stars, space, then check for TODO state
-    const match = headingText.match(/^\*+\s+(\S+)/);
+    // Match: stars (or Markdown #), space, then check for TODO state
+    const match = headingText.match(/^(?:\*+|#{1,6})\s+(\S+)/);
     if (!match) return false;
-    return validStates.has(match[1]);
+    return validStates.has(match[1]) || /^\[[A-Z][A-Z0-9_-]*\]$/.test(match[1]) && validStates.has(match[1].slice(1, -1));
 }
 
 /**
@@ -123,15 +123,21 @@ function headingHasTodoState(headingText: string, validStates: Set<string>): boo
  */
 function addTodoStateToHeading(headingText: string, todoState: string): string {
     // Match: stars and space
-    const match = headingText.match(/^(\*+\s+)/);
+    const match = headingText.match(/^((?:\*+|#{1,6})\s+)/);
     if (!match) return headingText;
     return match[1] + todoState + ' ' + headingText.slice(match[1].length);
+}
+
+/** Options for scimax.speed.schedule / scimax.speed.deadline. */
+export interface PlanningOptions {
+    /** 0-based line of the heading to plan; default: the heading at or above the cursor */
+    headingLine?: number;
 }
 
 /**
  * Add or edit a planning timestamp (SCHEDULED or DEADLINE)
  */
-async function addPlanningTimestamp(keyword: 'SCHEDULED' | 'DEADLINE'): Promise<void> {
+async function addPlanningTimestamp(keyword: 'SCHEDULED' | 'DEADLINE', options?: PlanningOptions): Promise<void> {
     const editor = vscode.window.activeTextEditor;
     if (!editor) return;
 
@@ -141,8 +147,12 @@ async function addPlanningTimestamp(keyword: 'SCHEDULED' | 'DEADLINE'): Promise<
     // Save document URI to restore focus after calendar picker
     const documentUri = document.uri;
 
-    // Find the heading we're on or below
-    let headingLine = position.line;
+    // Find the heading we're on or below (the caller may have found it,
+    // e.g. Markdown, where a `#` line in a code fence is not a heading)
+    const given = options?.headingLine;
+    let headingLine = typeof given === 'number' && given >= 0 && given < document.lineCount
+        ? given
+        : position.line;
     if (getHeadingLevel(document, headingLine) === 0) {
         // Search backward for heading
         for (let i = position.line - 1; i >= 0; i--) {
@@ -242,13 +252,13 @@ async function addPlanningTimestamp(keyword: 'SCHEDULED' | 'DEADLINE'): Promise<
 /**
  * Add or edit SCHEDULED timestamp
  */
-export async function addSchedule(): Promise<void> {
-    await addPlanningTimestamp('SCHEDULED');
+export async function addSchedule(options?: PlanningOptions): Promise<void> {
+    await addPlanningTimestamp('SCHEDULED', options);
 }
 
 /**
  * Add or edit DEADLINE timestamp
  */
-export async function addDeadline(): Promise<void> {
-    await addPlanningTimestamp('DEADLINE');
+export async function addDeadline(options?: PlanningOptions): Promise<void> {
+    await addPlanningTimestamp('DEADLINE', options);
 }

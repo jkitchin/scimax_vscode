@@ -207,6 +207,23 @@ content: python           # Search only in content
 NEAR(neural network, 5)   # Words within 5 tokens of each other
 #+END_SRC
 
+**** ⚠️ Punctuation in Queries
+
+Words with punctuation are searched as phrases, so citation keys, file
+names and hyphenated words can be typed as they are:
+
+#+BEGIN_SRC org
+kitchin-2025-beyon-fourt  # Same as "kitchin-2025-beyon-fourt"
+cite:&kitchin-2025        # Finds the key's text; the cite: prefix is ignored
+e-mail c++                # Phrases "e mail" and "c"
+#+END_SRC
+
+Half-typed queries are repaired rather than reported as errors: an
+unclosed phrase or parenthesis is closed, a stray =)= and a trailing
+=AND=/=OR=/=NOT= are dropped. If a query still is not valid, its words are
+searched as plain text. =title: word= and =title:word= are the same column
+filter.
+
 ** Results
 
 Search results include:
@@ -814,24 +831,62 @@ CLOSED: [2026-01-17 Sat 12:04]
 
   `Scimax: Search Hashtags' (`scimax.db.searchHashtags'). [[cmd:scimax.db.searchHashtags]]
 
-*** ✅ Features
-CLOSED: [2026-01-17 Sat 12:04]
+*** 👀 Features
 - Lists all hashtags found (`#tagname')
 - Shows file count per hashtag
-- Displays files containing selected hashtag
+- Lists every line with the selected hashtag, in every file
 - Case-insensitive matching
 
-*** ✅ Hashtag Format
-CLOSED: [2026-01-17 Sat 12:04]
+*** ⚠️ Hashtags in the Editor
+
+In org and Markdown files a hashtag is drawn in blue and works like a link:
+
+- *Hover* it to see how often it is used in this file and which other indexed
+  files use it; click a file to open it at the tag.
+- *Ctrl+click* (=Cmd+click= on macOS) it, or put the cursor on it and press
+  =C-c C-o=, to pick from every line that uses the tag, in this file and in
+  every indexed file. Unsaved edits in open editors count.
+- *Show Hashtag Occurrences* ([[cmd:scimax.hashtag.show]]) does the same from
+  the command palette for the hashtag at the cursor, or asks for one.
+
+The colour is the =entity.name.tag.hashtag.org= scope (default =#4682B4=);
+change it with =editor.tokenColorCustomizations=.
+
+*** ⚠️ Completing and Inserting Hashtags
+
+- Type =#= (or =#res=) and press =Tab= to get a completion menu of known
+  hashtags: those in the current file first, most used first, then every
+  hashtag in the database (=scimax.hashtag.complete=). Completions also
+  appear as you type after =#=.
+- =C-c #= (*Insert Hashtag*, [[cmd:scimax.hashtag.insert]]) picks a hashtag
+  from the same list, or takes a new one, and inserts it at the cursor. If the
+  cursor is right after a partly typed =#ta=, it completes that.
+
+In Markdown, the =#= marks of a heading are not hashtags, but =#tags= in its
+title are; =#tags= at the end of a heading are also its tags in the agenda.
+
+*** 👀 Hashtag Format
+
+A hashtag is =#= followed by a letter and then letters, digits, =_= or =-=,
+at the start of a line or after a space or =(=. =#web-dev=, =#py3= and
+=#snake_case= are hashtags; URL fragments (=page.html#intro=), priority
+cookies (=[#A]=) and numbers (=#42=) are not. Comment lines (=# text=),
+keyword lines (=#+TITLE:=) and the insides of src, example and export blocks
+and Markdown code fences are skipped. A line that starts with =#idea= is not
+an org comment (a comment needs a space after the =#=), so =idea= is a
+hashtag.
 
 #+BEGIN_SRC org
-# In your documents
-This is a #research note about #machinelearning
+This is a #research note about #MachineLearning
 
-# Database indexes as
-research
-machinelearning
+,# Database indexes as
+,# research
+,# machinelearning
 #+END_SRC
+
+The highlighter, the hover and the database use this same rule. Files indexed
+before it was introduced keep their old hashtags until they change or the
+database is rebuilt (=scimax.db.rebuild=).
 
 ** ✅ File Browser
 CLOSED: [2026-01-17 Sat 12:04]
@@ -1311,6 +1366,27 @@ Ollama embedding model name.
 #+END_SRC
 
 * Command Reference
+
+** ⚠️ All Database Commands (C-c d ?)
+
+=C-c d ?= ([[cmd:scimax.db.help]]) lists every database command. The ones
+bound under =C-c d= show their key, and typing it runs the command at once, so
+=C-c d ? s= does what =C-c d s= does. The commands with no key follow under
+*More*: type to narrow the list and press Enter.
+
+| Key | Action                                                    |
+|-----+-----------------------------------------------------------|
+| =d= | Database hydra menu                                       |
+| =s= | Search all files                                          |
+| =h= | Search headings                                           |
+| =f= | Browse indexed files                                      |
+| =t= | Show TODOs                                                |
+| =a= | Show agenda                                               |
+| -   | Code block, hashtag, tag, property, semantic, hybrid and  |
+|     | advanced search; deadlines; search scope                  |
+| -   | Refresh, sync, rebuild, cancel sync, auto-scan, remove or |
+|     | ignore files, stats, embeddings, optimize, verify, backup |
+|     | and restore, clear                                        |
 
 ** Search Commands
 

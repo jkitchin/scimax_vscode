@@ -14,13 +14,13 @@ Scimax VS Code provides first-class support for org-mode files, with substantial
 structural editing and navigation support for Markdown documents as well. This
 chapter documents which features work in Markdown files and how to use them.
 
-** ✅ Design Philosophy
-CLOSED: [2026-01-19 Mon 09:32]
+** 👀 Design Philosophy
 
 The extension treats Markdown as a first-class citizen for *structural editing
-and navigation*. Features that rely on org-mode specific syntax (TODO states,
-scheduling, clocking, properties) are not available in Markdown since they would
-require non-standard Markdown extensions.
+and navigation*. TODO keywords, priorities, SCHEDULED/DEADLINE lines and
+hashtags work in Markdown headings with the same syntax as org (see
+[[*Tasks, Planning and Hashtags in Markdown]]). Clocking and properties drawers
+are org only.
 
 | Category                | Markdown Support | Notes                              |
 |-------------------------+------------------+------------------------------------|
@@ -28,11 +28,14 @@ require non-standard Markdown extensions.
 | Navigation              | Full             | Jump, outline, breadcrumbs         |
 | Speed commands          | Full             | Single-key commands at headings    |
 | Code block execution    | Full             | Fenced blocks with Babel/Jupyter   |
-| TODO states             | None             | Org-mode specific syntax           |
-| Scheduling/Deadlines    | None             | Org-mode specific syntax           |
+| TODO states             | Full             | =## TODO Title= or =## [TODO] ...= |
+| Priorities              | Full             | =## TODO [#A] Title=               |
+| Scheduling/Deadlines    | Full             | Planning line under the heading    |
+| Agenda                  | Full             | Database and current-file agendas  |
+| Tags                    | Full             | =#tags= or =:a:b:= ending a heading |
+| Hashtags                | Full             | Coloured, hover, click, completion |
 | Clocking                | None             | Org-mode specific syntax           |
 | Properties              | None             | Org-mode specific syntax           |
-| Tags                    | Limited          | Hashtags work, not headline tags   |
 
 * ✅ Supported Features
 CLOSED: [2026-01-19 Mon 09:33]
@@ -319,40 +322,111 @@ meanings, and =Cmd+Shift+K= on a citation still deletes it there.
 Fenced divs (callouts, =::: {.columns}=, panels, =::: {#fig-x}= figure divs)
 fold from the opening =:::= to its matching close, including nested divs.
 
+* ⚠️ Tasks, Planning and Hashtags in Markdown
+
+Markdown headings can be org tasks. A heading may start with a TODO keyword
+(bare, or in brackets as =[TODO]= so it renders visibly), then a priority
+cookie; tags are =#tag= words or an org =:a:b:= group at the end of the
+title. A planning line with SCHEDULED, DEADLINE and CLOSED timestamps may
+follow the heading directly:
+
+#+BEGIN_SRC markdown
+## TODO [#A] Write the introduction #paper #writing
+SCHEDULED: <2026-11-03 Tue> DEADLINE: <2026-11-07 Fri>
+
+## [NEXT] Send the draft to coauthors
+
+## DONE Collect the data
+CLOSED: [2026-10-30 Fri 14:12]
+#+END_SRC
+
+** ⚠️ Highlighting
+
+Task headings are coloured as in org: TODO keywords red, done keywords
+green, and the priority, =:tags:= and the SCHEDULED / DEADLINE / CLOSED line
+with its timestamps in the theme's org colours. They are semantic tokens
+(=orgTodo=, =orgDone=, =orgPriority=, =orgTag=, =orgPlanning=,
+=orgTimestamp=), so =editor.semanticTokenColorCustomizations= can change them.
+
+** ⚠️ Keywords
+
+The default keywords are =TODO NEXT WAIT WAITING HOLD SOMEDAY IN-PROGRESS=
+(active) and =DONE CANCELLED CANCELED= (done). Declare others with a
+=#+TODO:= line, inside an HTML comment so it does not render:
+
+#+BEGIN_SRC markdown
+<!-- #+TODO: TODO REVIEW | DONE REJECTED -->
+#+END_SRC
+
+Put the declaration somewhere other than the first line when the first line
+is a heading.
+
+** ⚠️ Commands
+
+| Key        | Speed key | Action                                          |
+|------------+-----------+-------------------------------------------------|
+| =C-c C-t=  | =t=       | Cycle the heading's TODO keyword                |
+| =C-c ,=    | =,=       | Set the priority                                |
+| =C-c C-s=  | =s=       | Schedule the heading the cursor is under        |
+| =C-c C-d=  | =d=       | Set a deadline on the heading the cursor is under |
+| =C-c C-c=  |           | Toggle a checkbox; recount a =[n/m]= cookie     |
+| =C-c a < a= |          | Agenda view for the current file                |
+| =C-c a < t= |          | TODO list for the current file                  |
+
+=C-c C-s= and =C-c C-d= work anywhere in a heading's section, as in org:
+they open the calendar date picker, write the SCHEDULED / DEADLINE line under
+the heading, and add =TODO= to a heading without a keyword, so the task shows
+in the agenda. Above the first heading they insert =@scheduled(...)= /
+=@due(...)= at the cursor, as before. Cycling a =[TODO]= heading writes the
+keyword bare (=TODO=).
+
+** ⚠️ Checkbox Statistics
+
+A =[n/m]= or =[n%]= cookie on a heading counts the checkboxes in its section;
+on a list item, its direct child checkboxes. Toggling a checkbox (=C-c C-c=
+or a click) updates the cookies above it, and =C-c C-c= on a line with a
+cookie recounts it. As in org, a heading's cookie also counts its direct
+subheadings with TODO keywords when you change one with =C-c C-t=.
+
+#+BEGIN_SRC markdown
+## Checkboxes [2/3]
+- [x] task 1
+- [x] task 2
+- [ ] task 3
+#+END_SRC
+
+** ⚠️ Agenda
+
+Indexed Markdown files take part in the database agenda and TODO lists
+(=C-c a=), with priority, tags and planning dates. The first database sync
+after updating re-indexes Markdown files. The agenda view for the current
+file (=C-c a < a=) works on a Markdown file; agendas limited to a project
+read only its org files.
+
+** ⚠️ Hashtags
+
+=#tags= in Markdown are drawn in blue, hover and click like in org (see
+[[file:18-database-search.org::*Hashtags in the Editor][Hashtags in the Editor]]),
+and are indexed. A heading's own =#= marks are not hashtags, but =#tags= in its
+title are.
+
 * ✅ Features Not Available in Markdown
 CLOSED: [2026-01-19 Mon 09:40]
 
 The following org-mode features are *not* supported in Markdown files because
 they require org-specific syntax:
 
-** ✅ Task Management
-CLOSED: [2026-01-19 Mon 09:40]
-
-| Feature        | Reason                                      |
-|----------------+---------------------------------------------|
-| TODO keywords  | Org syntax: =* TODO Task=                   |
-| Priorities     | Org syntax: =[#A]=                          |
-| Checkbox lists | Markdown checkboxes work differently        |
-| Progress cookies| Org syntax: =[2/5]= or =[40%]=             |
-
-** ✅ Planning
-CLOSED: [2026-01-19 Mon 09:40]
+** 👀 Planning
 
 | Feature    | Reason                                         |
 |------------+------------------------------------------------|
-| SCHEDULED  | Org syntax: =SCHEDULED: <2026-01-20>=          |
-| DEADLINE   | Org syntax: =DEADLINE: <2026-01-20>=           |
 | Clocking   | Org syntax: =CLOCK: [timestamp]--[timestamp]=  |
-| Agenda     | Requires TODO states and scheduling            |
 
-** ✅ Metadata
-CLOSED: [2026-01-19 Mon 09:40]
+** 👀 Metadata
 
 | Feature         | Reason                                    |
 |-----------------+-------------------------------------------|
 | Properties      | Org syntax: =:PROPERTIES:= drawer         |
-| Tags            | Org syntax: =* Heading :tag1:tag2:=       |
-| Inherited tags  | Requires org tag syntax                   |
 | LOGBOOK         | Org syntax: =:LOGBOOK:= drawer            |
 
 ** ✅ Special Elements
@@ -406,6 +480,9 @@ org-mode.
 - [[file:23-speed-commands.org][Speed Commands]] - Complete speed command reference
 - [[file:07-source-blocks.org][Source Blocks]] - Code execution details
 - [[file:21-navigation.org][Navigation]] - All navigation features
+- [[file:03-todo-items.org][TODO Items]] - TODO keywords and priorities
+- [[file:13-agenda.org][Agenda]] - Agenda views, which include Markdown tasks
+- [[file:18-database-search.org::*Hashtag Search][Hashtags]] - Hashtag hover, search and completion
 
 * ✅ Navigation
 CLOSED: [2026-01-19 Mon 09:44]
