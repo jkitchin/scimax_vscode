@@ -13,6 +13,7 @@
 import * as vscode from 'vscode';
 import { currentHeadingLine, runOnSourceHeading } from './agendaDocumentProvider';
 import { planningLines, shiftPlanningLine } from '../parser/planningShift';
+import { headingLineRegex, isMarkdownPath } from '../parser/markdownTasks';
 
 /** What VS Code passes to a webview/context command: the row's data-vscode-context. */
 export interface TaskContext {
@@ -79,7 +80,7 @@ export async function shiftTask(arg: TaskContext | undefined, days: number): Pro
     const doc = await vscode.workspace.openTextDocument(vscode.Uri.file(arg.filePath));
     const lines = doc.getText().split(/\r?\n/);
     const headingLine = currentHeadingLine(doc, arg.line, arg.title) - 1;
-    if (!/^\*+\s/.test(lines[headingLine] ?? '')) {
+    if (!headingLineRegex(isMarkdownPath(arg.filePath)).test(lines[headingLine] ?? '')) {
         vscode.window.showWarningMessage('The view is out of date: refresh it and try again.');
         return;
     }

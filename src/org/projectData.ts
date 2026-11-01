@@ -23,6 +23,7 @@ import {
 } from '../parser/projectTasks';
 import { findProjectRoot } from '../notebook/notebookManager';
 import { walkDirectory } from '../shared/fileWalker';
+import { isMarkdownPath, markdownToOrgOutline } from '../parser/markdownTasks';
 
 /** Stop after this many org files: a project tree is not the whole disk. */
 const MAX_PROJECT_FILES = 2000;
@@ -59,9 +60,17 @@ export function currentProjectRoot(): string | undefined {
     return projectRootFor(vscode.window.activeTextEditor?.document.uri);
 }
 
-/** True when a project root is one org file, e.g. the agenda limited to the current file. */
+/** True for an org or Markdown file: the files whose headings can be tasks. */
+export function isTaskFile(filePath: string): boolean {
+    return /\.(org|md|markdown)$/i.test(filePath);
+}
+
+/**
+ * True when a project root is one file, e.g. the agenda limited to the
+ * current file. Org and Markdown files can be roots.
+ */
 export function isOrgFileRoot(root: string): boolean {
-    return root.toLowerCase().endsWith('.org');
+    return isTaskFile(root);
 }
 
 /** Every .org file under root, honouring .gitignore and the default ignores. */
@@ -87,7 +96,9 @@ export async function loadProjectDocuments(root: string): Promise<ProjectDocumen
     for (const filePath of files) {
         try {
             const content = open.get(filePath) ?? await fs.promises.readFile(filePath, 'utf-8');
-            docs.push({ filePath, doc: parseOrg(content, { filePath }) });
+            // Markdown headings are read as the same org outline (same lines).
+            const text = isMarkdownPath(filePath) ? markdownToOrgOutline(content) : content;
+            docs.push({ filePath, doc: parseOrg(text, { filePath }) });
         } catch {
             // Unreadable or unparsable: leave it out rather than fail the view.
         }

@@ -3,6 +3,8 @@
  * Extracts structure from notebook files for indexing
  */
 
+import { extractHashtagTags } from './hashtags';
+
 export interface NotebookCell {
     cellType: 'markdown' | 'code' | 'raw';
     source: string;
@@ -232,12 +234,11 @@ function extractHashtagsAndMentions(
     hashtags: Set<string>,
     mentions: Set<string>
 ): void {
-    // Hashtags: #word (but not ## markdown headings or #! shebangs)
-    const hashtagRegex = /(?:^|[\s(])#([a-zA-Z]\w*)/g;
-    let match;
-    while ((match = hashtagRegex.exec(content)) !== null) {
-        hashtags.add(match[1].toLowerCase());
+    // Hashtags: the same rule as org and Markdown files (./hashtags.ts)
+    for (const tag of extractHashtagTags(content)) {
+        hashtags.add(tag);
     }
+    let match;
 
     // @mentions: @word
     const mentionRegex = /(?:^|[\s(])@([a-zA-Z]\w*)/g;

@@ -773,13 +773,15 @@ CLOSED: [2026-01-17 Sat 12:45]
 | [[cmd:scimax.db.setScope]]       | Set Search Scope                | -                  |
 | [[cmd:scimax.showDbMenu]]        | Database Menu                   | C-M-v              |
 
-** ✅ Advanced Search
-CLOSED: [2026-01-17 Sat 12:45]
+** 👀 Advanced Search
 
 | Command ID                       | Description                  | Default Keybinding |
 |----------------------------------+------------------------------+--------------------|
 | [[cmd:scimax.db.searchBlocks]]   | Search Code Blocks           | -                  |
 | [[cmd:scimax.db.searchHashtags]] | Search by Hashtag            | -                  |
+| [[cmd:scimax.hashtag.show]]      | Show Hashtag Occurrences     | C-c C-o, Ctrl+click |
+| [[cmd:scimax.hashtag.insert]]    | Insert Hashtag               | C-c #              |
+| [[cmd:scimax.hashtag.complete]]  | Complete Hashtag at Cursor   | Tab (after =#=)    |
 | [[cmd:scimax.db.searchByTag]]    | Search by Tag                | -                  |
 | [[cmd:scimax.db.searchByProperty]]| Search by Property          | -                  |
 | [[cmd:scimax.db.searchAdvanced]] | Advanced Search (Full Pipeline) | -               |
@@ -1135,6 +1137,7 @@ See [[file:47-version-control.org][Version Control]].
 | [[cmd:scimax.hydra.back]]        | Hydra Menu Back      | -                  |
 | [[cmd:scimax.hydra.main]]        | Main Menu            | C-c m              |
 | [[cmd:scimax.hydra.database]]    | Database Menu        | C-c d d            |
+| [[cmd:scimax.db.help]]           | Database Commands    | C-c d ?            |
 | [[cmd:scimax.hydra.vc]]          | Version Control Menu | C-x v m            |
 | [[cmd:scimax.hydra.contextMenu]] | Context Menu         | C-c C-m            |
 

@@ -16,6 +16,7 @@ import { getDatabase, cancelStaleFileCheck } from './lazyDb';
 import { describeOptimize } from './scimaxDbCore';
 import { databaseLogger as log } from '../utils/logger';
 import { showFuzzyQuickPick } from '../utils/fuzzyQuickPick';
+import { runDispatcher, DispatchEntry } from '../org/agendaProvider';
 
 /**
  * Debounce function for dynamic QuickPick updates
@@ -961,21 +962,8 @@ export function registerDbCommands(
 
             if (!selected) return;
 
-            const files = await db.findByHashtag(selected.tag);
-            const fileItems = files.map(filePath => ({
-                label: `$(file) ${path.basename(filePath)}`,
-                detail: filePath,
-                filePath
-            }));
-
-            const fileSelected = await vscode.window.showQuickPick(fileItems, {
-                placeHolder: `Files with #${selected.tag}`
-            });
-
-            if (fileSelected) {
-                const doc = await vscode.workspace.openTextDocument(fileSelected.filePath);
-                await vscode.window.showTextDocument(doc);
-            }
+            // Every line with the tag, across files
+            await vscode.commands.executeCommand('scimax.hashtag.show', selected.tag);
         })
     );
 
@@ -990,6 +978,51 @@ export function registerDbCommands(
             vscode.commands.executeCommand('scimax.agenda.month')),
         vscode.commands.registerCommand('scimax.db.deadlines', () =>
             vscode.commands.executeCommand('scimax.agenda.deadlines')),
+    );
+
+    // C-c d ?: every database command, keyed as under C-c d, so typing the
+    // key after C-c d ? does what it does after C-c d. Commands with no key
+    // follow and run with Enter.
+    context.subscriptions.push(
+        vscode.commands.registerCommand('scimax.db.help', async () => {
+            const run = (command: string) => () => vscode.commands.executeCommand(command);
+            const entries: DispatchEntry[] = [
+                { key: 'd', label: 'Database Menu', description: 'Database hydra menu', run: run('scimax.hydra.database') },
+                { key: 's', label: 'Search All Files', description: 'Full-text search', run: run('scimax.db.search') },
+                { key: 'h', label: 'Search Headings', description: 'Headings in indexed files', run: run('scimax.db.searchHeadings') },
+                { key: 'f', label: 'Browse Indexed Files', description: 'Open a file from the database', run: run('scimax.db.browseFiles') },
+                { key: 't', label: 'Show TODOs', description: 'Agenda TODO list', run: run('scimax.db.showTodos') },
+                { key: 'a', label: 'Show Agenda', description: 'Month agenda', run: run('scimax.db.agenda') },
+                { key: '', label: 'Search Code Blocks', description: 'Source blocks by content or language', run: run('scimax.db.searchBlocks') },
+                { key: '', label: 'Search by Hashtag', description: 'Hashtags in indexed files', run: run('scimax.db.searchHashtags') },
+                { key: '', label: 'Search by Tag', description: 'Headings with a tag', run: run('scimax.db.searchByTag') },
+                { key: '', label: 'Search by Property', description: 'Headings with a property value', run: run('scimax.db.searchByProperty') },
+                { key: '', label: 'Semantic Search (AI)', description: 'Search by meaning with embeddings', run: run('scimax.db.searchSemantic') },
+                { key: '', label: 'Hybrid Search', description: 'Keywords + embeddings', run: run('scimax.db.searchHybrid') },
+                { key: '', label: 'Advanced Search', description: 'Full search pipeline', run: run('scimax.db.searchAdvanced') },
+                { key: '', label: 'Show Upcoming Deadlines', description: 'Agenda deadlines', run: run('scimax.db.deadlines') },
+                { key: '', label: 'Set Search Scope', description: 'All files, a directory or a project', run: run('scimax.db.setScope') },
+                { key: '', label: 'Refresh Database', description: 'Index new and changed files', run: run('scimax.db.refresh') },
+                { key: '', label: 'Sync Files', description: 'Reconcile the database with the filesystem', run: run('scimax.db.reindex') },
+                { key: '', label: 'Rebuild Database', description: 'Re-index everything from scratch', run: run('scimax.db.rebuild') },
+                { key: '', label: 'Cancel Background Sync', run: run('scimax.db.cancelSync') },
+                { key: '', label: 'Toggle Auto-Scanning', run: run('scimax.db.toggleAutoScan') },
+                { key: '', label: 'Remove Current File from Database', run: run('scimax.db.removeCurrentFile') },
+                { key: '', label: 'Remove File from Database', run: run('scimax.db.removeFile') },
+                { key: '', label: "Don't Index Current File", description: 'Removes it and skips it in future scans', run: run('scimax.db.ignoreCurrentFile') },
+                { key: '', label: "Don't Index File", description: 'Removes it and skips it in future scans', run: run('scimax.db.ignoreFile') },
+                { key: '', label: 'Show Database Stats', run: run('scimax.db.stats') },
+                { key: '', label: 'Show Search Capabilities', run: run('scimax.db.searchCapabilities') },
+                { key: '', label: 'Configure Embedding Service', run: run('scimax.db.configureEmbeddings') },
+                { key: '', label: 'Cancel Embedding Generation', run: run('scimax.db.cancelEmbeddings') },
+                { key: '', label: 'Optimize Database', run: run('scimax.db.optimize') },
+                { key: '', label: 'Verify Database Integrity', run: run('scimax.db.verify') },
+                { key: '', label: 'Backup Database', run: run('scimax.db.backup') },
+                { key: '', label: 'Restore Database from Backup', run: run('scimax.db.restore') },
+                { key: '', label: 'Clear Database', run: run('scimax.db.clear') },
+            ];
+            await runDispatcher([], '', entries, async () => undefined, 'Database: press a key');
+        }),
     );
 
     // Set search scope

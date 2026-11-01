@@ -735,6 +735,21 @@
         "id": "orgTag",
         "superType": "label",
         "description": "Org-mode tag"
+      },
+      {
+        "id": "orgHashtag",
+        "superType": "label",
+        "description": "Org-mode #hashtag in body text"
+      },
+      {
+        "id": "orgPriority",
+        "superType": "keyword",
+        "description": "Priority cookie [#A] in a Markdown task heading"
+      },
+      {
+        "id": "orgPlanning",
+        "superType": "keyword",
+        "description": "SCHEDULED, DEADLINE or CLOSED in a Markdown task planning line"
       }
     ],
     "semanticTokenModifiers": [
@@ -752,6 +767,64 @@
       }
     ],
     "semanticTokenScopes": [
+      {
+        "language": "markdown",
+        "scopes": {
+          "orgHashtag": [
+            "entity.name.tag.hashtag.org"
+          ],
+          "orgTodo": [
+            "keyword.other.todo.org"
+          ],
+          "orgDone": [
+            "keyword.other.done.org"
+          ],
+          "orgPriority": [
+            "constant.other.priority.org"
+          ],
+          "orgTag": [
+            "entity.name.tag.org"
+          ],
+          "orgPlanning": [
+            "keyword.other.planning.org"
+          ],
+          "orgTimestamp.active": [
+            "constant.other.timestamp.active.org"
+          ],
+          "orgTimestamp.inactive": [
+            "constant.other.timestamp.inactive.org"
+          ]
+        }
+      },
+      {
+        "language": "quarto",
+        "scopes": {
+          "orgHashtag": [
+            "entity.name.tag.hashtag.org"
+          ],
+          "orgTodo": [
+            "keyword.other.todo.org"
+          ],
+          "orgDone": [
+            "keyword.other.done.org"
+          ],
+          "orgPriority": [
+            "constant.other.priority.org"
+          ],
+          "orgTag": [
+            "entity.name.tag.org"
+          ],
+          "orgPlanning": [
+            "keyword.other.planning.org"
+          ],
+          "orgTimestamp.active": [
+            "constant.other.timestamp.active.org"
+          ],
+          "orgTimestamp.inactive": [
+            "constant.other.timestamp.inactive.org"
+          ]
+        }
+      },
       {
         "language": "org",
         "scopes": {
@@ -796,6 +869,9 @@
           ],
           "orgTag": [
             "entity.name.tag.org"
+          ],
+          "orgHashtag": [
+            "entity.name.tag.hashtag.org"
           ]
         }
       }
@@ -803,6 +879,12 @@
     "configurationDefaults": {
       "editor.tokenColorCustomizations": {
         "textMateRules": [
+          {
+            "scope": "entity.name.tag.hashtag.org",
+            "settings": {
+              "foreground": "#4682B4"
+            }
+          },
           {
             "scope": [
               "entity.other.citation.org",
@@ -3129,6 +3211,22 @@
         "title": "Scimax: Agenda Commands (C-c a ?)"
       },
       {
+        "command": "scimax.db.help",
+        "title": "Scimax: Database Commands (C-c d ?)"
+      },
+      {
+        "command": "scimax.hashtag.show",
+        "title": "Scimax: Show Hashtag Occurrences"
+      },
+      {
+        "command": "scimax.hashtag.insert",
+        "title": "Scimax: Insert Hashtag"
+      },
+      {
+        "command": "scimax.hashtag.complete",
+        "title": "Scimax: Complete Hashtag at Cursor"
+      },
+      {
         "command": "scimax.agenda.openBuffer",
         "title": "Scimax: Open Agenda Buffer"
       },
@@ -4470,13 +4568,13 @@
         "command": "scimax.agenda.viewCurrentFile",
         "key": "ctrl+c a shift+, a",
         "mac": "ctrl+c a shift+, a",
-        "when": "editorTextFocus && editorLangId == 'org' && !terminalFocus"
+        "when": "editorTextFocus && editorLangId =~ /^(org|markdown)$/ && !terminalFocus"
       },
       {
         "command": "scimax.agenda.todoViewCurrentFile",
         "key": "ctrl+c a shift+, t",
         "mac": "ctrl+c a shift+, t",
-        "when": "editorTextFocus && editorLangId == 'org' && !terminalFocus"
+        "when": "editorTextFocus && editorLangId =~ /^(org|markdown)$/ && !terminalFocus"
       },
       {
         "command": "scimax.agenda.viewCurrentProject",
@@ -4629,7 +4727,7 @@
       {
         "command": "scimax.list.cycleIndent",
         "key": "tab",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/ && scimax.onListItem && !scimax.inTable && !editorHasSelection && !suggestWidgetVisible && !inlineSuggestionVisible && !inSnippetMode"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/ && scimax.onListItem && !scimax.inTable && !editorHasSelection && !suggestWidgetVisible && !inlineSuggestionVisible && !inSnippetMode && !scimax.afterHashtagPrefix"
       },
       {
         "command": "scimax.list.cycleOutdent",
@@ -4639,12 +4737,12 @@
       {
         "command": "scimax.org.toggleFold",
         "key": "tab",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto|latex/ && scimax.onHeading && !editorHasSelection && !suggestWidgetVisible && !inlineSuggestionVisible && !inSnippetMode"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto|latex/ && scimax.onHeading && !editorHasSelection && !suggestWidgetVisible && !inlineSuggestionVisible && !inSnippetMode && !scimax.afterHashtagPrefix"
       },
       {
         "command": "-tab",
         "key": "tab",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto|latex/ && scimax.onHeading && !editorHasSelection && !suggestWidgetVisible && !inlineSuggestionVisible && !inSnippetMode"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto|latex/ && scimax.onHeading && !editorHasSelection && !suggestWidgetVisible && !inlineSuggestionVisible && !inSnippetMode && !scimax.afterHashtagPrefix"
       },
       {
         "command": "scimax.org.toggleFold",
@@ -5375,6 +5473,12 @@
         "when": "!terminalFocus"
       },
       {
+        "command": "scimax.db.help",
+        "key": "ctrl+c d shift+/",
+        "mac": "ctrl+c d shift+/",
+        "when": "!terminalFocus"
+      },
+      {
         "command": "scimax.hydra.contextMenu",
         "key": "ctrl+c ctrl+m",
         "mac": "ctrl+c ctrl+m",
@@ -5559,6 +5663,18 @@
         "key": "ctrl+c ctrl+o",
         "mac": "ctrl+c ctrl+o",
         "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/ && !terminalFocus"
+      },
+      {
+        "command": "scimax.hashtag.complete",
+        "key": "tab",
+        "mac": "tab",
+        "when": "editorTextFocus && editorLangId =~ /^(org|markdown|quarto)$/ && scimax.afterHashtagPrefix && !scimax.inTable && !editorHasSelection && !suggestWidgetVisible && !inlineSuggestionVisible && !inSnippetMode && !terminalFocus"
+      },
+      {
+        "command": "scimax.hashtag.insert",
+        "key": "ctrl+c shift+3",
+        "mac": "ctrl+c shift+3",
+        "when": "editorTextFocus && editorLangId =~ /^(org|markdown|quarto)$/ && !terminalFocus"
       },
       {
         "command": "scimax.org.dwimReturn",

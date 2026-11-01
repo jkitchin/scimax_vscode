@@ -5,6 +5,7 @@
 
 import { DEFAULT_TODO_STATES } from '../org/todoStates';
 import { normalizeLineEndings } from '../utils/escapeUtils';
+import { extractHashtagTags } from './hashtags';
 
 export interface OrgHeading {
     level: number;
@@ -539,18 +540,11 @@ function parseMarkdownBlockHeaders(headerStr: string): Record<string, string> {
 }
 
 /**
- * Extract hashtags from content
+ * Extract hashtags from content, lowercased. See ./hashtags.ts for what
+ * counts as a hashtag.
  */
-export function extractHashtags(content: string): string[] {
-    const hashtags = new Set<string>();
-    const regex = /#(\w+)/g;
-    let match;
-
-    while ((match = regex.exec(content)) !== null) {
-        hashtags.add(match[1].toLowerCase());
-    }
-
-    return Array.from(hashtags);
+export function extractHashtags(content: string, options: { markdown?: boolean } = {}): string[] {
+    return extractHashtagTags(content, options);
 }
 
 /**

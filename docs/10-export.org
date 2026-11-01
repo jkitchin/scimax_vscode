@@ -704,6 +704,38 @@ CLOSED: [2026-01-17 Sat 09:18]
 - Tables (GFM format)
 - Links and images
 - Blockquotes
+- Citations (see below)
+
+*** ⚠️ Citations in Markdown
+
+Citations are written as Pandoc citations, and the document's bibliography
+goes in YAML front matter, so =pandoc --citeproc= formats the citations and
+adds the reference list:
+
+| Org                          | Markdown              |
+|------------------------------+-----------------------|
+| =cite:&a;&b=, =[cite:@a;@b]= | =[@a; @b]=            |
+| =citet:&a=, =[cite/t:@a]=    | =@a=                  |
+| =citeyear:&a=                | =[-@a]=               |
+| =[[cite:See &a p. 5]]=       | =[See @a, p. 5]=      |
+| =[[citet:&a p. 5]]=          | =@a [p. 5]=           |
+| =bibliography:refs.bib=      | front matter (below)  |
+
+#+BEGIN_SRC markdown
+---
+bibliography: refs.bib
+csl: ieee.csl
+link-citations: true
+---
+#+END_SRC
+
+The front matter lists every file named by =bibliography:= links and
+=#+BIBLIOGRAPHY:=, and =csl:= comes from =#+CSL_STYLE:=. Paths are written
+as in the org file, so run Pandoc from the org file's directory:
+
+#+BEGIN_SRC sh
+pandoc --citeproc why-org-mode.md -o why-org-mode.html
+#+END_SRC
 
 *** ✅ Example Conversion
 CLOSED: [2026-01-17 Sat 09:18]

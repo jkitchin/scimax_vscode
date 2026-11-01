@@ -12,6 +12,19 @@ import { describe, it, expect } from 'vitest';
 import { tokenizeOrg, hasScopeFor, markupScopesFor } from './grammarTestUtils';
 
 describe('org TextMate grammar', () => {
+    describe('comments', () => {
+        it('colours "# text" and a bare "#" as comments', async () => {
+            const tokens = await tokenizeOrg('# a comment\n#\n  # indented comment');
+            expect(hasScopeFor(tokens, '# a comment', /comment\.line/)).toBe(true);
+            expect(hasScopeFor(tokens, '# indented comment', /comment\.line/)).toBe(true);
+        });
+
+        it('does not colour a line starting with a #hashtag as a comment', async () => {
+            const tokens = await tokenizeOrg('#idea worth keeping');
+            expect(hasScopeFor(tokens, 'idea worth keeping', /comment\.line/)).toBe(false);
+        });
+    });
+
     describe('raw markers (~ code, = verbatim) do not run away', () => {
         it('treats "~270x" (approximately) as plain text, not inline code', async () => {
             // Hard-wrapped: the ~ has no closer on its line. Previously the

@@ -20,6 +20,7 @@ This document provides a comprehensive reference for all keybindings in Scimax V
 | C-c m   | Show Hydra main menu                |
 | C-c C-m | Show Hydra context menu             |
 | C-c d d | Show database hydra menu            |
+| C-c d ? | All database commands               |
 | C-c c   | Quick capture                       |
 | C-c t   | Quick capture TODO                  |
 | C-M-v   | Show database menu                  |
@@ -207,14 +208,14 @@ org-mode, markdown, and LaTeX files with consistent behavior.
 | C-c C-w       | Refile subtree to target       |
 | C-c M-w       | Copy subtree to refile target  |
 
-* Items
+* 👀 Items
 
 | Key     | Action                             |
 |---------+------------------------------------|
 | C-c C-t | Cycle TODO state                   |
 | C-c C-c | Toggle checkbox (not in src block) |
-| C-c C-d | Insert due date (DEADLINE)         |
-| C-c C-s | Insert scheduled date (SCHEDULED)  |
+| C-c C-d | Set a DEADLINE on the heading      |
+| C-c C-s | Set SCHEDULED on the heading       |
 
 * Timestamps
 
@@ -341,7 +342,9 @@ Like the Markdown preview, but for org files. See [[file:46-org-preview.org][Org
 | Key         | Action                                 |
 |-------------+----------------------------------------|
 | C-c C-l     | Insert link, or edit the link at point |
-| C-c C-o     | Open link                              |
+| C-c C-o     | Open link, or the hashtag at point     |
+| C-c #       | Insert a hashtag, with completion      |
+| Tab         | After =#= or =#ta=: complete hashtags  |
 | <return>    | Open link (when on link)               |
 | F10         | Insert screenshot                      |
 | C-c C-x C-v | Toggle inline image thumbnails in file |
@@ -454,6 +457,7 @@ viewport. Moving the cursor resets the cycle to center.
 | C-c a m   | Month agenda                        |
 | C-c a t   | TODO list                           |
 | C-c a d   | Deadlines                           |
+| C-c d ?   | All database commands               |
 | C-c d d   | Database hydra menu                 |
 | C-c d f   | Browse indexed files                |
 | C-c d s   | Search database                     |

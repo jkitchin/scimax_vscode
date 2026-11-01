@@ -1,5 +1,18 @@
 import * as vscode from 'vscode';
 import { isInTable, alignTable } from '../org/tableProvider';
+import { checkboxCookieEdits, isCookieLine } from './checkboxStatistics';
+
+/** Bring the statistics cookies that count `line` ([n/m], [n%]) up to date. */
+async function updateCookies(editor: vscode.TextEditor, line: number): Promise<void> {
+    const document = editor.document;
+    const lines: string[] = [];
+    for (let i = 0; i < document.lineCount; i++) lines.push(document.lineAt(i).text);
+    const edits = checkboxCookieEdits(lines, line);
+    if (edits.length === 0) return;
+    await editor.edit(editBuilder => {
+        for (const e of edits) editBuilder.replace(document.lineAt(e.line).range, e.text);
+    });
+}
 
 /**
  * Toggle checkbox on current line, or align table if in a table
@@ -37,6 +50,10 @@ export async function toggleCheckbox(): Promise<void> {
         await editor.edit(editBuilder => {
             editBuilder.replace(line.range, newLine);
         });
+        await updateCookies(editor, position.line);
+    } else if (isCookieLine(lineText)) {
+        // C-c C-c on a heading or item with a cookie recounts it.
+        await updateCookies(editor, position.line);
     }
 }
 
@@ -64,6 +81,7 @@ export async function toggleCheckboxAt(uri: vscode.Uri, line: number): Promise<v
         await editor.edit(editBuilder => {
             editBuilder.replace(lineObj.range, newLine);
         });
+        await updateCookies(editor, line);
     }
 }
 

@@ -32,13 +32,24 @@ vi.mock('vscode', () => {
 import { cycleTodoState } from '../scimaxOrg';
 
 function makeEditor(text: string, languageId: string, line = 0) {
-    const lines = text.split('\n');
+    let lines = text.split('\n');
+    const offset = (p: { line: number; character: number }) =>
+        lines.slice(0, p.line).reduce((n, l) => n + l.length + 1, 0) + p.character;
+    const splice = (range: any, s: string) => {
+        const full = lines.join('\n');
+        lines = (full.slice(0, offset(range.start)) + s + full.slice(offset(range.end))).split('\n');
+        doc.version++;
+    };
     const doc: any = {
         languageId,
         version: 1,
         get lineCount() { return lines.length; },
         getText: () => lines.join('\n'),
-        lineAt: (n: number) => ({ text: lines[n], range: { start: { line: n, character: 0 }, end: { line: n, character: lines[n].length } } }),
+        lineAt: (n: number) => ({
+            text: lines[n],
+            range: { start: { line: n, character: 0 }, end: { line: n, character: lines[n].length } },
+            rangeIncludingLineBreak: { start: { line: n, character: 0 }, end: { line: n + 1, character: 0 } },
+        }),
         uri: { fsPath: '/tmp/x.md', toString: () => 'file:///tmp/x.md' },
     };
     const editor: any = {
@@ -46,10 +57,9 @@ function makeEditor(text: string, languageId: string, line = 0) {
         selection: { active: { line, character: 0 } },
         edit: async (cb: any) => {
             cb({
-                replace: (range: any, s: string) => {
-                    lines[range.start.line] = s;
-                    doc.version++;
-                },
+                replace: (range: any, s: string) => splice(range, s),
+                insert: (pos: any, s: string) => splice({ start: pos, end: pos }, s),
+                delete: (range: any) => splice(range, ''),
             });
             return true;
         },
@@ -65,22 +75,29 @@ const today = (() => {
 describe('cycleTodoState on markdown headings', () => {
     beforeEach(() => { state.editor = undefined; });
 
-    it('cycles # x -> # TODO x -> # DONE x @closed -> # x', async () => {
+    it('cycles # x -> # TODO x -> # DONE x (with a CLOSED line) -> # x', async () => {
         const e = makeEditor('## Write paper', 'markdown');
         state.editor = e.editor;
         await cycleTodoState();
         expect(e.text()).toBe('## TODO Write paper');
         await cycleTodoState();
-        expect(e.text()).toBe(`## DONE Write paper @closed(${today})`);
+        expect(e.text()).toMatch(new RegExp(`^## DONE Write paper\\nCLOSED: \\[${today} \\w{3}( \\d\\d:\\d\\d)?\\]$`));
         await cycleTodoState();
         expect(e.text()).toBe('## Write paper');
     });
 
-    it('honors #+TODO: keywords', async () => {
-        const e = makeEditor('#+TODO: TODO REVIEW | SHIPPED\n# TODO x @due(2026-01-01)', 'quarto', 1);
+    it('adds CLOSED to an existing planning line', async () => {
+        const e = makeEditor('## TODO Write paper\nDEADLINE: <2026-01-09 Fri>', 'markdown');
         state.editor = e.editor;
         await cycleTodoState();
-        expect(e.text().split('\n')[1]).toBe('# REVIEW x @due(2026-01-01)');
+        expect(e.text().split('\n')[1]).toMatch(/^DEADLINE: <2026-01-09 Fri> CLOSED: \[|^CLOSED: \[.*\] DEADLINE: <2026-01-09 Fri>$/);
+    });
+
+    it('honors #+TODO: keywords', async () => {
+        const e = makeEditor('<!-- #+TODO: TODO REVIEW | SHIPPED -->\n# TODO x #paper', 'quarto', 1);
+        state.editor = e.editor;
+        await cycleTodoState();
+        expect(e.text().split('\n')[1]).toBe('# REVIEW x #paper');
     });
 
     it('ignores # lines inside fenced code', async () => {

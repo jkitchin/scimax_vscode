@@ -28,8 +28,8 @@ import {
 import { extractAnchors, normalizeAnchorText } from '../parser/orgAnchors';
 import { isExcludedPath } from '../shared/ignorePatterns';
 import { parseWarning, warningStart } from '../parser/deadlineWarning';
-import { markdownNonProseMask } from '../shared/markdownFences';
-import { parseTodoKeywords, DEFAULT_TODO_STATES } from '../shared/todoKeywords';
+import { parseMarkdownHeadings } from '../parser/markdownTasks';
+import { normalizeFtsQuery, literalFtsQuery } from './ftsQuery';
 // Migration data - inlined here to avoid importing migrations.ts which pulls in vscode via logger.
 // Keep in sync with src/database/migrations.ts.
 
@@ -231,6 +231,13 @@ const coreMigrations: CoreMigration[] = [
             `CREATE INDEX IF NOT EXISTS idx_dependencies_file_path ON dependencies(file_path)`,
             `CREATE INDEX IF NOT EXISTS idx_hashtags_file_path ON hashtags(file_path)`
         ]
+    },
+    {
+        version: 10,
+        description: 'Reindex Markdown files for TODO keywords, priorities and planning lines',
+        up: [
+            `UPDATE files SET mtime = 0 WHERE file_type = 'md'`
+        ]
     }
 ];
 
@@ -375,75 +382,6 @@ export function parseDependsIds(value: string): string[] {
 
 /** Keywords treated as done when a file declares no #+TODO line of its own */
 export const DEFAULT_DONE_STATES = ['DONE', 'CANCELLED', 'CANCELED'];
-
-/** A markdown ATX heading's text, split into the fields the headings table stores. */
-export interface MarkdownHeadingFields {
-    title: string;
-    todoState: string | null;
-    priority: string | null;
-    tags: string[];
-    scheduled: string | null;
-    deadline: string | null;
-    closed: string | null;
-}
-
-/** A YYYY-MM-DD string naming a real calendar date (2026-02-30 is not). */
-function validYmd(s: string): string | null {
-    const m = s.trim().match(/^(\d{4})-(\d{2})-(\d{2})$/);
-    if (!m) return null;
-    const [y, mo, d] = [parseInt(m[1]), parseInt(m[2]), parseInt(m[3])];
-    const date = new Date(y, mo - 1, d);
-    return date.getFullYear() === y && date.getMonth() === mo - 1 && date.getDate() === d ? m[0] : null;
-}
-
-/**
- * Parse the text after the `#`s of a markdown heading:
- *   `TODO Title @scheduled(2026-01-05) @due(2026-01-09) #tag`
- * The TODO keyword (one of `todoStates`; legacy `[TODO]` is also read) is
- * removed from the title, as are `@scheduled/@due/@deadline/@closed/@priority`
- * metadata (`@deadline` is an alias for `@due`) and trailing `#tags`.
- * Dates are stored as YYYY-MM-DD, the form the agenda queries parse.
- */
-export function parseMarkdownHeadingText(text: string, todoStates: Set<string>): MarkdownHeadingFields {
-    let title = text;
-    let scheduled: string | null = null;
-    let deadline: string | null = null;
-    let closed: string | null = null;
-    let priority: string | null = null;
-
-    title = title.replace(/(^|\s)@(scheduled|due|deadline|closed|priority)\(([^)]*)\)/gi, (_m, ws: string, key: string, value: string) => {
-        switch (key.toLowerCase()) {
-            case 'scheduled': scheduled = validYmd(value) ?? scheduled; break;
-            case 'due': deadline = validYmd(value) ?? deadline; break;
-            case 'deadline': deadline = deadline ?? validYmd(value); break;
-            case 'closed': closed = validYmd(value) ?? closed; break;
-            case 'priority': priority = value.trim().toUpperCase() || null; break;
-        }
-        return ws;
-    }).trim();
-
-    const tags: string[] = [];
-    const tagMatch = title.match(/(?:^|\s+)#([A-Za-z][\w-]*(?:\s+#[A-Za-z][\w-]*)*)$/);
-    if (tagMatch) {
-        tags.push(...tagMatch[1].split(/\s+#/));
-        title = title.slice(0, -tagMatch[0].length);
-    }
-
-    let todoState: string | null = null;
-    const legacy = title.match(/^\[([A-Z]+)\]\s+/);
-    if (legacy) {
-        todoState = legacy[1];
-        title = title.slice(legacy[0].length);
-    } else {
-        const kw = title.match(/^(\S+)(?:\s+|$)/);
-        if (kw && todoStates.has(kw[1])) {
-            todoState = kw[1];
-            title = title.slice(kw[0].length);
-        }
-    }
-
-    return { title: title.replace(/\s+/g, ' ').trim(), todoState, priority, tags, scheduled, deadline, closed };
-}
 
 export interface FileRecord {
     id: number;
@@ -1230,7 +1168,7 @@ export class ScimaxDbCore {
                 parsedDoc = this.parser.parse(content);
             }
 
-            const hashtags = extractHashtags(content);
+            const hashtags = extractHashtags(content, { markdown: fileType === 'md' });
             let contentForDb: string | null = content;
 
             await this.withWriteLock(async () => {
@@ -1717,41 +1655,27 @@ export class ScimaxDbCore {
         if (!this.db) return;
 
         const statements: { sql: string; args: (string | number | null)[] }[] = [];
-        const lines = content.split('\n');
-        // `#` lines inside fenced code blocks are code comments, not headings
-        const inFence = markdownNonProseMask(lines);
-        let charPos = 0;
-
-        // Markdown headings use org TODO keywords (`# TODO Title`), honoring
-        // #+TODO: lines like org files do.
-        const workflow = parseTodoKeywords(content);
-        const todoStates = new Set<string>([...DEFAULT_TODO_STATES, ...(workflow?.allStates ?? [])]);
-        const doneStates = new Set<string>([...DEFAULT_DONE_STATES, ...(workflow?.doneStates ?? [])]);
-
-        for (let i = 0; i < lines.length; i++) {
-            const line = lines[i];
-            const lineNumber = i + 1;
-            const match = inFence[i] ? null : line.match(/^(#{1,6})\s+(.*)$/);
-            if (match) {
-                const level = match[1].length;
-                const parsed = parseMarkdownHeadingText(match[2], todoStates);
-                const todoState = parsed.todoState;
-                statements.push({
-                    sql: `INSERT INTO headings
-                          (file_id, file_path, level, title, line_number, begin_pos,
-                           todo_state, todo_type, priority, tags, inherited_tags, properties,
-                           scheduled, deadline, closed, cell_index)
-                          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, '[]', '{}', ?, ?, ?, NULL)`,
-                    args: [
-                        fileId, filePath, level, parsed.title, lineNumber, charPos, todoState,
-                        todoState ? (doneStates.has(todoState) ? 'done' : 'todo') : null,
-                        parsed.priority,
-                        JSON.stringify(parsed.tags),
-                        parsed.scheduled, parsed.deadline, parsed.closed
-                    ]
-                });
-            }
-            charPos += line.length + 1;
+        // Headings with org-style TODO keywords, priorities, tags and
+        // SCHEDULED / DEADLINE / CLOSED lines (src/parser/markdownTasks.ts).
+        const tagStack: string[][] = [];
+        for (const h of parseMarkdownHeadings(content)) {
+            while (tagStack.length >= h.level) tagStack.pop();
+            const inheritedTags = tagStack.flat();
+            while (tagStack.length < h.level - 1) tagStack.push([]);
+            tagStack.push(h.tags);
+            statements.push({
+                sql: `INSERT INTO headings
+                      (file_id, file_path, level, title, line_number, begin_pos,
+                       todo_state, todo_type, priority, tags, inherited_tags, properties,
+                       scheduled, deadline, closed, cell_index)
+                      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, '{}', ?, ?, ?, NULL)`,
+                args: [
+                    fileId, filePath, h.level, h.title, h.lineNumber, h.beginPos,
+                    h.todoState, h.todoType, h.priority,
+                    JSON.stringify(h.tags), JSON.stringify(inheritedTags),
+                    h.scheduled, h.deadline, h.closed
+                ]
+            });
         }
 
         const blocks = parseMarkdownCodeBlocks(content);
@@ -2255,7 +2179,7 @@ export class ScimaxDbCore {
         if (!this.db) return [];
         const limit = options?.limit || 100;
         const scope = this.getScopeClause('file_path');
-        const result = await this.db.execute({
+        const run = (match: string) => this.db!.execute({
             sql: `SELECT file_path, title,
                          snippet(fts_content, 2, '<mark>', '</mark>', '...', 32) as snippet,
                          bm25(fts_content) as score
@@ -2263,8 +2187,20 @@ export class ScimaxDbCore {
                   WHERE fts_content MATCH ?${scope.sql}
                   ORDER BY score
                   LIMIT ?`,
-            args: [query, ...scope.args, limit]
+            args: [match, ...scope.args, limit]
         });
+        const normalized = normalizeFtsQuery(query);
+        if (!normalized) return [];
+        let result;
+        try {
+            result = await run(normalized);
+        } catch (error) {
+            // Still not valid FTS5 (e.g. half-typed NEAR): search the words as text.
+            if (!/fts5|no such column/i.test(String(error))) throw error;
+            const literal = literalFtsQuery(query);
+            if (!literal) return [];
+            result = await run(literal);
+        }
         return result.rows.map(row => ({
             type: 'content' as const,
             file_path: row.file_path as string,
@@ -2709,6 +2645,22 @@ export class ScimaxDbCore {
         const result = await this.db.execute({
             sql: 'SELECT DISTINCT file_path FROM hashtags WHERE tag = ?',
             args: [tag.toLowerCase()]
+        });
+        return result.rows.map(r => r.file_path as string);
+    }
+
+    /**
+     * Indexed files whose stored text contains `text` (ignoring case), plus
+     * every file whose stored text was truncated (over 100,000 characters),
+     * since those may contain it past the cut. A plain substring test, so
+     * keys with `-` and `:` match exactly, unlike an FTS MATCH.
+     */
+    public async findFilesContaining(text: string): Promise<string[]> {
+        if (!this.db || !text) return [];
+        const result = await this.db.execute({
+            sql: `SELECT file_path FROM fts_content
+                  WHERE instr(lower(content), lower(?)) > 0 OR length(content) > 100000`,
+            args: [text]
         });
         return result.rows.map(r => r.file_path as string);
     }

@@ -49,6 +49,7 @@ import { expandTilde } from '../utils/pathResolver';
 import { isMarkdownNonProseLine, markdownHeadingLevel } from '../shared/markdownDocument';
 import { findMarkdownLinkAt, formatMarkdownLink, markdownHeadingSlug, markdownHeadingTitle, orgLinkToMarkdownTarget } from '../shared/markdownLinks';
 import { isMarkdownLike } from '../shared/markdownLike';
+import { hashtagAtCursor } from './hashtagProvider';
 
 // Re-export planning line utilities for external use
 export { findPlanningLine, buildPlanningLine, removeClosed };
@@ -1788,10 +1789,13 @@ export async function updateClosedTimestamp(
             const closedLine = `${indent}CLOSED: ${closedTimestamp}`;
 
             await editor.edit(editBuilder => {
-                editBuilder.insert(
-                    new vscode.Position(headingLine + 1, 0),
-                    closedLine + '\n'
-                );
+                if (headingLine + 1 < document.lineCount) {
+                    editBuilder.insert(new vscode.Position(headingLine + 1, 0), closedLine + '\n');
+                } else {
+                    // Heading on the last line: an insert past the end would
+                    // land on the heading line itself.
+                    editBuilder.insert(document.lineAt(headingLine).range.end, '\n' + closedLine);
+                }
             });
         }
     } else if (!isNowInDoneState) {
@@ -1808,8 +1812,11 @@ export async function updateClosedTimestamp(
                 const newLine = removeClosed(existingLine);
 
                 if (newLine === '') {
-                    // Line only had CLOSED - delete the entire line
-                    const lineRange = document.lineAt(planningLineNum).rangeIncludingLineBreak;
+                    // Line only had CLOSED - delete the entire line (on the
+                    // last line, with the line break before it)
+                    const lineRange = planningLineNum + 1 < document.lineCount
+                        ? document.lineAt(planningLineNum).rangeIncludingLineBreak
+                        : new vscode.Range(document.lineAt(planningLineNum - 1).range.end, document.lineAt(planningLineNum).range.end);
                     await editor.edit(editBuilder => {
                         editBuilder.delete(lineRange);
                     });
@@ -1839,7 +1846,7 @@ function findRepeaterForHeading(
         const lineText = document.lineAt(i).text;
         lines.push(lineText);
         // Stop at next heading (but include the first line which is the current heading)
-        if (i > headingLine && /^\*+\s/.test(lineText)) {
+        if (i > headingLine && (document.languageId === 'org' ? /^\*+\s/ : /^(\*+|#{1,6})\s/).test(lineText)) {
             lines.pop(); // Don't include the next heading
             break;
         }
@@ -1856,54 +1863,6 @@ function findRepeaterForHeading(
 }
 
 /**
- * Cycle the TODO keyword on a markdown ATX heading:
- * `# x` -> `# TODO x` -> `# DONE x` -> `# x` (honoring #+TODO: keywords).
- * Completion is recorded as markdown task metadata `@closed(YYYY-MM-DD)`
- * (read by markdown/taskParser), never as an org CLOSED: line.
- */
-async function cycleMarkdownTodoState(editor: vscode.TextEditor): Promise<void> {
-    const document = editor.document;
-    const lineNumber = editor.selection.active.line;
-    const line = document.lineAt(lineNumber);
-    const match = isInMarkdownCodeBlock(document, lineNumber)
-        ? null
-        : line.text.match(/^(#{1,6})[ \t]+(.*)$/);
-    if (!match) {
-        vscode.window.showInformationMessage('Not on a heading');
-        return;
-    }
-    const [, hashes, body] = match;
-
-    const allStates = getAllTodoStatesForDocument(document);
-    const doneStates = new Set(getTodoWorkflowForDocument(document).doneStates);
-    let currentState: string | undefined;
-    let rest = body;
-    const firstWord = body.match(/^(\S+)(?:[ \t]+(.*))?$/);
-    if (firstWord && allStates.has(firstWord[1])) {
-        currentState = firstWord[1];
-        rest = firstWord[2] ?? '';
-    }
-
-    const nextState = getNextTodoState(currentState, document);
-    const wasDone = currentState ? doneStates.has(currentState) : false;
-    const isNowDone = nextState ? doneStates.has(nextState) : false;
-
-    if (!isNowDone || !wasDone) {
-        rest = rest.replace(/[ \t]*@closed\([^)]*\)/g, '').trimEnd();
-        if (isNowDone) {
-            const d = new Date();
-            const ymd = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-            rest = rest ? `${rest} @closed(${ymd})` : `@closed(${ymd})`;
-        }
-    }
-
-    const newLine = [hashes, nextState, rest].filter(s => s).join(' ');
-    await editor.edit(editBuilder => {
-        editBuilder.replace(line.range, newLine);
-    });
-}
-
-/**
  * Cycle TODO state on current heading
  * Uses file-specific TODO states from #+TODO: keywords if defined
  */
@@ -1911,15 +1870,19 @@ export async function cycleTodoState(): Promise<void> {
     const editor = vscode.window.activeTextEditor;
     if (!editor) return;
 
-    if (isMarkdownLike(editor.document.languageId)) {
-        await cycleMarkdownTodoState(editor);
-        return;
-    }
-
     const document = editor.document;
     const position = editor.selection.active;
+    // A `#` line inside a fenced code block, front matter or comment is not a heading
+    if (isInMarkdownCodeBlock(document, position.line)) {
+        vscode.window.showInformationMessage('Not on a heading');
+        return;
+    }
     const line = document.lineAt(position.line);
-    const lineText = line.text;
+    // Markdown headings (`## TODO Title`) cycle like org ones; a bracketed
+    // `[TODO]` keyword is rewritten in the bare form.
+    const markdown = document.languageId !== 'org';
+    const prefix = markdown ? '#{1,6}' : '\\*+';
+    const lineText = markdown ? line.text.replace(/^(#{1,6}\s+)\[([A-Z][A-Z0-9_-]*)\](?=\s|$)/, '$1$2') : line.text;
 
     // Get TODO workflow for this document
     const workflow = getTodoWorkflowForDocument(document);
@@ -1932,12 +1895,12 @@ export async function cycleTodoState(): Promise<void> {
         .join('|');
 
     // Build dynamic regex to match heading with any recognized TODO state
-    const headingRegex = new RegExp(`^(\\*+)\\s+(${statesPattern})?\\s*(.*)`);
+    const headingRegex = new RegExp(`^(${prefix})\\s+(?:(${statesPattern})(?=\\s|$))?\\s*(.*)`);
     const headingMatch = lineText.match(headingRegex);
 
     if (!headingMatch) {
         // Try simpler match for headings without TODO states
-        const simpleMatch = lineText.match(/^(\*+)\s+(.*)/);
+        const simpleMatch = lineText.match(new RegExp(`^(${prefix})\\s+(.*)`));
         if (!simpleMatch) {
             vscode.window.showInformationMessage('Not on a heading');
             return;
@@ -2114,6 +2077,9 @@ export async function updateStatisticsCookies(
     const workflow = getTodoWorkflowForDocument(document);
     const doneStates = new Set(workflow.doneStates);
     const todoStates = new Set(workflow.activeStates);
+    // Markdown headings are `#` lines; their keyword may be `[TODO]`.
+    const markdown = document.languageId !== 'org';
+    const headingRegex = markdown ? /^(#{1,6})\s+/ : /^(\*+)\s+/;
 
     // Find parent heading (lower level number = higher in hierarchy)
     let parentLine = -1;
@@ -2121,7 +2087,7 @@ export async function updateStatisticsCookies(
 
     for (let i = changedLine - 1; i >= 0; i--) {
         const line = document.lineAt(i).text;
-        const match = line.match(/^(\*+)\s+/);
+        const match = line.match(headingRegex);
         if (match && match[1].length < parentLevel) {
             parentLine = i;
             parentLevel = match[1].length;
@@ -2146,7 +2112,7 @@ export async function updateStatisticsCookies(
     let endLine = document.lineCount;
     for (let i = parentLine + 1; i < document.lineCount; i++) {
         const line = document.lineAt(i).text;
-        const match = line.match(/^(\*+)\s+/);
+        const match = line.match(headingRegex);
         if (match && match[1].length <= parentLevel) {
             endLine = i;
             break;
@@ -2158,7 +2124,9 @@ export async function updateStatisticsCookies(
     const statesPattern = Array.from(allStates)
         .map(s => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))
         .join('|');
-    const headingWithStateRegex = new RegExp(`^(\\*+)\\s+(${statesPattern})?\\s*`);
+    const headingWithStateRegex = markdown
+        ? new RegExp(`^(#{1,6})\\s+(?:\\[?(${statesPattern})\\]?(?=\\s|$))?`)
+        : new RegExp(`^(\\*+)\\s+(${statesPattern})?\\s*`);
 
     // Count direct children with TODO states
     for (let i = parentLine + 1; i < endLine; i++) {
@@ -3404,6 +3372,12 @@ export async function openLinkAtPoint(): Promise<void> {
 
     const linkInfo = getLinkAtPoint(document, position);
     if (!linkInfo) {
+        // A #hashtag opens the list of its occurrences in every file.
+        const hashtag = hashtagAtCursor();
+        if (hashtag) {
+            await vscode.commands.executeCommand('scimax.hashtag.show', hashtag.tag);
+            return;
+        }
         vscode.window.showInformationMessage('No link at cursor');
         return;
     }

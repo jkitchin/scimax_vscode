@@ -12,13 +12,16 @@
 Scimax VS Code provides first-class support for org-mode files, and most of its
 structural editing, navigation, task and code block commands also work in
 Markdown files. In a Markdown file the commands write Markdown syntax: =**bold**=,
-=[text](target)= links, =# TODO= headings, =@due(...)= dates and results that
+=[text](target)= links, =# TODO= headings with org-style SCHEDULED / DEADLINE
+lines, and results that
 render in the Markdown preview. This chapter documents which features work in
 Markdown files and how they differ from org.
 
 ** 👀 Design Philosophy
 
-Commands that make sense in Markdown write Markdown. Features that only exist
+Commands that make sense in Markdown write Markdown. TODO keywords,
+priorities, SCHEDULED/DEADLINE lines and hashtags use the same syntax as org
+(see [[*Tasks, Planning and Hashtags in Markdown]]). Features that only exist
 in org syntax (clocking, property drawers, tangling) stay org-only rather than
 writing org text that Markdown renderers show literally.
 
@@ -30,10 +33,12 @@ writing org text that Markdown renderers show literally.
 | Text markup          | Full             | Writes =**bold**=, =*italic*=, =`code`=, =~~strike~~= |
 | Tables               | Full (GFM)       | Alignment colons kept; formulas are org-only          |
 | Code block execution | Partial          | Runs fenced blocks; no per-block header arguments     |
-| TODO states          | Full             | =# TODO Heading= and =- [ ]= checkbox tasks           |
-| Scheduling/Deadlines | Full             | =@scheduled(2026-01-20)=, =@due(2026-01-20)=          |
-| Agenda               | Full             | Dated Markdown headings appear in the org agenda      |
-| Tags                 | Hashtags         | =#tag= words, not =:tag:= headline tags               |
+| TODO states          | Full             | =## TODO Title= or =## [TODO] Title=                  |
+| Priorities           | Full             | =## TODO [#A] Title=                                  |
+| Scheduling/Deadlines | Full             | SCHEDULED / DEADLINE line under the heading           |
+| Agenda               | Full             | Database and current-file agendas                     |
+| Tags                 | Full             | =#tags= or =:a:b:= ending a heading                   |
+| Hashtags             | Full             | Coloured, hover, click, completion                    |
 | Clocking             | None             | Org-specific syntax                                   |
 | Properties           | None             | Org-specific syntax                                   |
 
@@ -177,7 +182,7 @@ heading line, see [[*What Counts as a Heading][What Counts as a Heading]]).
 | l r L R       | Promote / demote heading, promote / demote subtree     |
 | m @ k W y w a | Mark, kill, clone, yank, refile, archive subtree       |
 | t             | Cycle TODO state (=# TODO=, =# DONE=)                  |
-| s d           | Add =@scheduled(...)= / =@due(...)= to the heading     |
+| s d           | Add a SCHEDULED / DEADLINE line under the heading      |
 | ?             | Speed command help                                     |
 
 The keys =1= =2= =3= =0= (priority), =:= (tags), =e= (effort), =P= (property)
@@ -370,36 +375,15 @@ are org-only and show a message in Markdown.
 ** ⚠️ Tasks and Planning
 
 Markdown files have two kinds of task: TODO headings and checkbox tasks.
+Checkbox tasks carry their dates as =@due(...)= / =@scheduled(...)= tags, and
+=C-c C-s= / =C-c C-d= above the first heading insert those tags.
 
 *** ⚠️ TODO Headings
 
-A heading whose first word is a TODO keyword is a task:
-
-#+BEGIN_SRC markdown
-## TODO Draft the methods section @scheduled(2026-01-20) #writing
-## DONE Collect data @closed(2026-01-12)
-#+END_SRC
-
-| Key            | Command               | Effect in Markdown                               |
-|----------------+-----------------------+--------------------------------------------------|
-| C-c C-t, t     | scimax.org.cycleTodo  | =# x= -> =# TODO x= -> =# DONE x= -> =# x=       |
-| S-<right/left> | Cycle TODO state      | Same keywords, forward or backward; no =@closed= |
-| C-c C-s, s     | Insert Scheduled Date | Adds or replaces =@scheduled(YYYY-MM-DD)=        |
-| C-c C-d, d     | Insert Due Date       | Adds or replaces =@due(YYYY-MM-DD)=              |
-| S-<up/down>    | Shift date            | On a =@due(...)= or =@scheduled(...)= date       |
-
-=t=, =s= and =d= are speed keys (column 0 of a heading). Marking a heading
-=DONE= adds =@closed(date)=; leaving the done state removes it. Keywords come
-from ~scimax.todo~ settings or a =#+TODO:= line, as in org files.
-=@deadline(...)= is read as a due date. The older =## [TODO] Title= form is
-still recognized.
-
-The database indexes these headings with their state, dates, =@priority(A)=
-and trailing =#tags=. TODO headings appear in the org TODO list, and headings
-with =@scheduled= or =@due= dates appear in the org agenda (=C-c a=) next to
-org entries. Files indexed before this version need re-indexing to pick this
-up: run *Scimax: Rebuild Database (from scratch)* (~scimax.db.rebuild~), or
-save each file.
+A heading whose first word is a TODO keyword is a task, with org-style
+SCHEDULED / DEADLINE lines under it. See
+[[*Tasks, Planning and Hashtags in Markdown]] for the syntax, commands and
+agenda.
 
 *** ⚠️ Checkbox Tasks
 
@@ -499,32 +483,110 @@ meanings, and =Cmd+Shift+K= on a citation still deletes it there.
 Fenced divs (callouts, =::: {.columns}=, panels, =::: {#fig-x}= figure divs)
 fold from the opening =:::= to its matching close, including nested divs.
 
+* ⚠️ Tasks, Planning and Hashtags in Markdown
+
+Markdown headings can be org tasks. A heading may start with a TODO keyword
+(bare, or in brackets as =[TODO]= so it renders visibly), then a priority
+cookie; tags are =#tag= words or an org =:a:b:= group at the end of the
+title. A planning line with SCHEDULED, DEADLINE and CLOSED timestamps may
+follow the heading directly:
+
+#+BEGIN_SRC markdown
+## TODO [#A] Write the introduction #paper #writing
+SCHEDULED: <2026-11-03 Tue> DEADLINE: <2026-11-07 Fri>
+
+## [NEXT] Send the draft to coauthors
+
+## DONE Collect the data
+CLOSED: [2026-10-30 Fri 14:12]
+#+END_SRC
+
+** ⚠️ Highlighting
+
+Task headings are coloured as in org: TODO keywords red, done keywords
+green, and the priority, =:tags:= and the SCHEDULED / DEADLINE / CLOSED line
+with its timestamps in the theme's org colours. They are semantic tokens
+(=orgTodo=, =orgDone=, =orgPriority=, =orgTag=, =orgPlanning=,
+=orgTimestamp=), so =editor.semanticTokenColorCustomizations= can change them.
+
+** ⚠️ Keywords
+
+The default keywords are =TODO NEXT WAIT WAITING HOLD SOMEDAY IN-PROGRESS=
+(active) and =DONE CANCELLED CANCELED= (done). Declare others with a
+=#+TODO:= line, inside an HTML comment so it does not render:
+
+#+BEGIN_SRC markdown
+<!-- #+TODO: TODO REVIEW | DONE REJECTED -->
+#+END_SRC
+
+Put the declaration somewhere other than the first line when the first line
+is a heading.
+
+** ⚠️ Commands
+
+| Key        | Speed key | Action                                          |
+|------------+-----------+-------------------------------------------------|
+| =C-c C-t=  | =t=       | Cycle the heading's TODO keyword                |
+| =C-c ,=    | =,=       | Set the priority                                |
+| =C-c C-s=  | =s=       | Schedule the heading the cursor is under        |
+| =C-c C-d=  | =d=       | Set a deadline on the heading the cursor is under |
+| =C-c C-c=  |           | Toggle a checkbox; recount a =[n/m]= cookie     |
+| =C-c a < a= |          | Agenda view for the current file                |
+| =C-c a < t= |          | TODO list for the current file                  |
+
+=C-c C-s= and =C-c C-d= work anywhere in a heading's section, as in org:
+they open the calendar date picker, write the SCHEDULED / DEADLINE line under
+the heading, and add =TODO= to a heading without a keyword, so the task shows
+in the agenda. Above the first heading they insert =@scheduled(...)= /
+=@due(...)= at the cursor, as before. Cycling a =[TODO]= heading writes the
+keyword bare (=TODO=).
+
+** ⚠️ Checkbox Statistics
+
+A =[n/m]= or =[n%]= cookie on a heading counts the checkboxes in its section;
+on a list item, its direct child checkboxes. Toggling a checkbox (=C-c C-c=
+or a click) updates the cookies above it, and =C-c C-c= on a line with a
+cookie recounts it. As in org, a heading's cookie also counts its direct
+subheadings with TODO keywords when you change one with =C-c C-t=.
+
+#+BEGIN_SRC markdown
+## Checkboxes [2/3]
+- [x] task 1
+- [x] task 2
+- [ ] task 3
+#+END_SRC
+
+** ⚠️ Agenda
+
+Indexed Markdown files take part in the database agenda and TODO lists
+(=C-c a=), with priority, tags and planning dates. The first database sync
+after updating re-indexes Markdown files. The agenda view for the current
+file (=C-c a < a=) works on a Markdown file; agendas limited to a project
+read only its org files.
+
+** ⚠️ Hashtags
+
+=#tags= in Markdown are drawn in blue, hover and click like in org (see
+[[file:18-database-search.org::*Hashtags in the Editor][Hashtags in the Editor]]),
+and are indexed. A heading's own =#= marks are not hashtags, but =#tags= in its
+title are.
+
 * 👀 Features Not Available in Markdown
 
 These org-mode features have no Markdown form and stay org-only. Their
 commands either do nothing in Markdown files or work only in org files.
 
-** 👀 Task Management
-
-| Feature            | Reason                                          |
-|--------------------+-------------------------------------------------|
-| Progress cookies   | Org syntax: =[2/5]= or =[40%]=                  |
-| Headline tags      | Org syntax: =* Heading :tag1:tag2:= (=C-c C-q=) |
-| Repeaters, logging | Org syntax: =<2026-01-20 +1w>=, =:LOGBOOK:=     |
-
 ** 👀 Time and Metadata
 
-| Feature        | Reason                                        |
-|----------------+-----------------------------------------------|
-| Clocking       | Org syntax: =CLOCK: [timestamp]--[timestamp]= |
-| Properties     | Org syntax: =:PROPERTIES:= drawer             |
-| Inherited tags | Requires org tag syntax                       |
+| Feature    | Reason                                        |
+|------------+-----------------------------------------------|
+| Clocking   | Org syntax: =CLOCK: [timestamp]--[timestamp]= |
+| Properties | Org syntax: =:PROPERTIES:= drawer             |
+| LOGBOOK    | Org syntax: =:LOGBOOK:= drawer                |
 
 The speed keys =I= (clock in), =e= (effort) and =P= (set property) insert org
 drawers even in Markdown files, where nothing reads them back. Avoid them in
-Markdown. The priority keys =1= =2= =3= do nothing on a Markdown heading; use
-*Scimax: Insert Priority* (~scimax.markdown.insertPriority~) to add
-=@priority(A)=.
+Markdown.
 
 ** 👀 Special Elements
 
@@ -557,7 +619,7 @@ To get the most out of Scimax VS Code with Markdown:
 
 4. *Use jump commands* - =C-c C-j= for headings, =C-c C-v g= for code blocks
 
-5. *Use =# TODO= headings with =@scheduled= and =@due= dates* - they show up in
+5. *Use =# TODO= headings with SCHEDULED / DEADLINE lines* - they show up in
    the org agenda next to your org tasks
 
 ** 👀 When to Use Org-Mode Instead
@@ -587,6 +649,9 @@ org-mode.
 - [[file:05-links.org][Links]] - Link types, storing and inserting links
 - [[file:18-database-search.org][Database Search]] - What the database indexes
 - [[file:21-navigation.org][Navigation]] - All navigation features
+- [[file:03-todo-items.org][TODO Items]] - TODO keywords and priorities
+- [[file:13-agenda.org][Agenda]] - Agenda views, which include Markdown tasks
+- [[file:18-database-search.org::*Hashtag Search][Hashtags]] - Hashtag hover, search and completion
 
 * ✅ Navigation
 CLOSED: [2026-01-19 Mon 09:44]

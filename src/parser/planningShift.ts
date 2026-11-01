@@ -122,7 +122,7 @@ export function planningDate(line: string, keyword: 'SCHEDULED' | 'DEADLINE'): D
 export function headingForPlanningLine(lines: string[], line: number): number {
     if (!/^\s*(SCHEDULED|DEADLINE|CLOSED):/.test(lines[line] ?? '')) return -1;
     for (let i = line - 1; i >= 0; i--) {
-        if (/^\*+\s/.test(lines[i])) return i;
+        if (/^(\*+|#{1,6})\s/.test(lines[i])) return i;
         if (!/^\s*(SCHEDULED|DEADLINE|CLOSED):/.test(lines[i])) return -1;
     }
     return -1;

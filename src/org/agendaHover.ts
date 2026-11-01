@@ -8,6 +8,8 @@
  * in the source file.
  */
 
+import { headingLineRegex } from '../parser/markdownTasks';
+
 /** A link in the entry, located in its source file. */
 export interface EntryLinkRef {
     /** Source file */
@@ -29,7 +31,8 @@ export interface SnippetLine {
  * property drawers left out and long lines cut. Undefined if the line is
  * outside the file.
  */
-export function entrySnippet(lines: string[], line: number, maxBody: number): SnippetLine[] | undefined {
+export function entrySnippet(lines: string[], line: number, maxBody: number, markdown = false): SnippetLine[] | undefined {
+    const heading = headingLineRegex(markdown);
     const start = line - 1;
     if (start < 0 || start >= lines.length) return undefined;
 
@@ -37,7 +40,7 @@ export function entrySnippet(lines: string[], line: number, maxBody: number): Sn
     let inDrawer = false;
     for (let i = start + 1; i < lines.length && out.length <= maxBody; i++) {
         const text = lines[i];
-        if (/^\*+\s/.test(text)) break;
+        if (heading.test(text)) break;
         if (/^\s*:PROPERTIES:\s*$/i.test(text)) {
             inDrawer = true;
             continue;
@@ -55,15 +58,16 @@ export function entrySnippet(lines: string[], line: number, maxBody: number): Sn
  * Titles of the headings above the one at 1-based `line`, outermost first,
  * without their stars and tags. Empty for a top-level heading.
  */
-export function outlinePath(lines: string[], line: number): string[] {
-    const level = (text: string) => /^(\*+)\s/.exec(text)?.[1].length ?? 0;
+export function outlinePath(lines: string[], line: number, markdown = false): string[] {
+    const heading = headingLineRegex(markdown);
+    const level = (text: string) => heading.exec(text)?.[1].length ?? 0;
     let below = level(lines[line - 1] ?? '');
     if (below === 0) return [];
     const path: string[] = [];
     for (let i = line - 2; i >= 0 && below > 1; i--) {
         const l = level(lines[i]);
         if (l === 0 || l >= below) continue;
-        path.unshift(lines[i].replace(/^\*+\s+/, '').replace(/\s+:[\w@#%:-]+:\s*$/, '').trim());
+        path.unshift(lines[i].replace(markdown ? /^#+\s+/ : /^\*+\s+/, '').replace(/\s+:[\w@#%:-]+:\s*$/, '').trim());
         below = l;
     }
     return path;
@@ -148,10 +152,11 @@ export function renderSnippetMarkdown(
  * the heading there still has the title, else takes the nearest heading that
  * does, else `line`.
  */
-export function relocateHeading(lines: string[], line: number, title: string | undefined): number {
+export function relocateHeading(lines: string[], line: number, title: string | undefined, markdown = false): number {
     const text = title?.trim();
     if (!text) return line;
-    const matches = (i: number) => /^\*+\s/.test(lines[i] ?? '') && lines[i].includes(text);
+    const heading = headingLineRegex(markdown);
+    const matches = (i: number) => heading.test(lines[i] ?? '') && lines[i].includes(text);
     if (matches(line - 1)) return line;
     for (let d = 1; d < lines.length; d++) {
         if (matches(line - 1 - d)) return line - d;
