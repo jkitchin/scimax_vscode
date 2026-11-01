@@ -371,11 +371,16 @@ export function liveReloadVersionScript(version: string, slide?: number): string
  * Make Marp's HTML slideshow work from a temporary file: relative images
  * resolve against the deck's folder (`deckFolderUrl`, a file: URL ending in
  * "/"), and the show opens at `startSlide` (1-based) when given. With
- * `reload`, the page also reloads itself when the deck is rebuilt.
+ * `reload`, the page also reloads itself when the deck is rebuilt. `showId`
+ * (hex) names this showing: the presenter tools ask whether to keep ink left
+ * by an earlier one when it changes.
  */
-export function prepareSlideshowHtml(html: string, deckFolderUrl: string, startSlide?: number, reload?: LiveReload): string {
+export function prepareSlideshowHtml(html: string, deckFolderUrl: string, startSlide?: number, reload?: LiveReload, showId?: string): string {
     const escaped = deckFolderUrl.replace(/&/g, '&amp;').replace(/"/g, '&quot;');
     let inject = `<base href="${escaped}">`;
+    if (showId && /^[0-9a-f]+$/.test(showId)) {
+        inject += `<script>window.__MARP_SHOW_ID__ = "${showId}";</script>`;
+    }
     if (startSlide !== undefined && Number.isInteger(startSlide) && startSlide > 1) {
         // Marp's slideshow shows the slide named by the URL hash. The URL is absolute
         // because a relative '#n' would resolve against the <base> (the deck's folder).

@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **Old ink when presenting again** - Presenting a deck again brought back the ink, sticky notes and slide edits from the last showing with no way to tell. The slideshow now asks whether to keep them or start fresh; starting fresh keeps a copy in the browser's storage. Live reloads and browser reloads keep them without asking.
 - **Equation hover for `$$` blocks** - A display equation with `$$` on its own lines failed with an empty "LaTeX compilation failed" message: the newlines next to the delimiters left a blank line inside `equation*`, which LaTeX rejects. The content is now trimmed, and a failed hover shows TeX's own error (`! Missing $ inserted.`, with its line) instead of nothing.
 - **Citations in Marp slides** - `[@key]` and `@key` in a Marp deck showed as typed in the Markdown preview and the slide preview. They now render as author-year citations, as in other Markdown files, and each slide lists the full reference of the sources it cites at its foot, like a footnote. CSS variables (`--scimax-refs-bottom`, `--scimax-refs-inset`, `--scimax-refs-size`) move or resize the list. Exports still show citations as typed.
 - **Citations in the Markdown preview without a `bibliography:` line** - A key the file's own bibliography did not have showed as not found, even when the editor's hover knew it. The preview now also looks keys up in the bibliographies Scimax has loaded (`scimax.ref.bibliographyFiles` and workspace `.bib` files).

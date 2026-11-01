@@ -161,7 +161,7 @@ section {
 Citations are rendered by the two previews only; Marp exports (HTML, PDF,
 PowerPoint) still show them as typed.
 
-* Slideshow
+* 👀 Slideshow
 
 To present, Scimax makes Marp's HTML slideshow of the deck and opens it in the
 browser. Marp CLI builds it (see [[*Marp CLI][Marp CLI]]), and it is written to a private folder
@@ -203,7 +203,12 @@ the slides it shows.
 A deck with ~presenter: true~ also gets a pen, a laser pointer, sticky notes
 and live Python cells in the slideshow; see [[*Presenter Tools and Live Python][Presenter Tools and Live Python]].
 Because each deck always uses the same folder, ink drawn in one slideshow is
-still there the next time.
+still there the next time. When you Present again and the browser still has
+ink, sticky notes or slide edits from an earlier showing, a bar at the top of
+the slideshow asks whether to *Keep* them or *Start fresh*. Starting fresh
+clears them, but a copy stays in the browser's storage under
+~marp-ink:<path>:before-load~. A live reload or a browser reload does not ask,
+and =Shift+C= in the slideshow still clears the ink at any time.
 
 ** Live reload
 

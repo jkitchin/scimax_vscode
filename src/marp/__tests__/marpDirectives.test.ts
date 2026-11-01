@@ -88,6 +88,12 @@ describe('marpLinkArgs', () => {
 });
 
 describe('prepareSlideshowHtml', () => {
+    it('names the showing with a hex show id, and ignores anything else', () => {
+        expect(prepareSlideshowHtml('<head></head>', 'file:///t/', undefined, undefined, 'ab12'))
+            .toContain('window.__MARP_SHOW_ID__ = "ab12"');
+        expect(prepareSlideshowHtml('<head></head>', 'file:///t/', undefined, undefined, '"x')).not.toContain('__MARP_SHOW_ID__');
+        expect(prepareSlideshowHtml('<head></head>', 'file:///t/')).not.toContain('__MARP_SHOW_ID__');
+    });
     it('adds a base URL after <head>', () => {
         const out = prepareSlideshowHtml('<html><head><title>x</title></head></html>', 'file:///talks/');
         expect(out).toBe('<html><head><base href="file:///talks/"><title>x</title></head></html>');
