@@ -14,7 +14,7 @@
 import * as vscode from 'vscode';
 import { randomUUID } from 'crypto';
 import { getTodoStatesFromText, extractHeadingTitle } from './todoStates';
-import { findDrawer } from './dependencyCommands';
+import { ensureHeadingId } from './dependencyCommands';
 
 export interface HeadingEmail {
     /** Line of the headline in the source text (0-based). */
@@ -46,13 +46,33 @@ export function findHeadingAt(
     lines: string[],
     line: number
 ): { start: number; end: number; level: number } | null {
+    // A `* ` line inside a #+BEGIN_... / #+END_... block is block content
+    // (an org example, a shell comment), not a heading.
+    const inBlock: boolean[] = new Array(lines.length).fill(false);
+    let open: string | null = null;
+    for (let i = 0; i < lines.length; i++) {
+        if (open) {
+            inBlock[i] = true;
+            const end = lines[i].match(/^\s*#\+end_(\S+)/i);
+            if (end && end[1].toLowerCase() === open) open = null;
+        } else {
+            const begin = lines[i].match(/^\s*#\+begin_(\S+)/i);
+            if (begin) open = begin[1].toLowerCase();
+        }
+    }
+    const headingLevel = (i: number): number => {
+        if (inBlock[i]) return 0;
+        const m = lines[i].match(HEADING_RE);
+        return m ? m[1].length : 0;
+    };
+
     let start = -1;
     let level = 0;
     for (let i = Math.min(line, lines.length - 1); i >= 0; i--) {
-        const m = lines[i].match(HEADING_RE);
-        if (m) {
+        const l = headingLevel(i);
+        if (l) {
             start = i;
-            level = m[1].length;
+            level = l;
             break;
         }
     }
@@ -60,8 +80,8 @@ export function findHeadingAt(
 
     let end = lines.length - 1;
     for (let i = start + 1; i < lines.length; i++) {
-        const m = lines[i].match(HEADING_RE);
-        if (m && m[1].length <= level) {
+        const l = headingLevel(i);
+        if (l && l <= level) {
             end = i - 1;
             break;
         }
@@ -74,6 +94,26 @@ function plainLinks(text: string): string {
     return text
         .replace(/\[\[([^\]]+)\]\[([^\]]+)\]\]/g, '$2')
         .replace(/\[\[([^\]]+)\]\]/g, '$1');
+}
+
+const WEB_LINK_RE = /^(https?|mailto|doi):/i;
+
+/**
+ * Org links in the body as plain text: a web link keeps its address,
+ * `[[https://x.org][X]]` -> `X (https://x.org)`; other links (file:, id:,
+ * internal) become their description, or the target's last path component,
+ * so no local path goes in the email.
+ */
+export function plainBodyLinks(text: string): string {
+    return text.replace(/\[\[([^\]]+)\](?:\[([^\]]+)\])?\]/g, (_m, target: string, desc?: string) => {
+        if (WEB_LINK_RE.test(target)) {
+            const address = target.replace(/^mailto:/i, '');
+            return desc && desc !== target ? `${desc} (${address})` : address;
+        }
+        if (desc) return desc;
+        const bare = target.replace(/^[a-z][\w+-]*:/i, '').replace(/::.*$/, '');
+        return bare.split(/[\\/]/).filter(Boolean).pop() ?? bare;
+    });
 }
 
 /**
@@ -96,7 +136,7 @@ export function normalizeAddresses(value: string | undefined): string {
  *
  * The body is the heading's full subtree minus the headline itself, its
  * planning line (SCHEDULED/DEADLINE/CLOSED) and its properties drawer.
- * Subheadings are kept as-is.
+ * Subheadings are kept as-is; org links become plain text (plainBodyLinks).
  */
 export function buildHeadingEmail(text: string, cursorLine: number): HeadingEmail | null {
     const lines = text.split(/\r?\n/);
@@ -143,7 +183,7 @@ export function buildHeadingEmail(text: string, cursorLine: number): HeadingEmai
         headingLine: heading.start,
         id: id || undefined,
         subject,
-        body: bodyLines.join('\n'),
+        body: plainBodyLinks(bodyLines.join('\n')),
         to: normalizeAddresses(prop('TO', 'MAIL_TO')),
         cc: normalizeAddresses(prop('CC', 'MAIL_CC')),
         bcc: normalizeAddresses(prop('BCC', 'MAIL_BCC')),
@@ -158,27 +198,6 @@ export function buildHeadingEmail(text: string, cursorLine: number): HeadingEmai
 export function appendIdFooter(body: string, id: string): string {
     const footer = `--\norg-id: ${id}`;
     return body ? `${body}\n\n${footer}` : footer;
-}
-
-/**
- * Return the heading's :ID:, adding a fresh UUID in its properties drawer if
- * it has none. Undefined when the edit could not be applied.
- */
-async function ensureEmailId(
-    document: vscode.TextDocument,
-    headingLine: number,
-    existing: string | undefined
-): Promise<string | undefined> {
-    if (existing) return existing;
-    const id = randomUUID();
-    const drawer = findDrawer(document, headingLine, 'ID');
-    const edit = new vscode.WorkspaceEdit();
-    if (drawer.start !== -1 && drawer.end !== -1) {
-        edit.insert(document.uri, new vscode.Position(drawer.end, 0), `:ID: ${id}\n`);
-    } else {
-        edit.insert(document.uri, new vscode.Position(drawer.insertAt, 0), `:PROPERTIES:\n:ID: ${id}\n:END:\n`);
-    }
-    return (await vscode.workspace.applyEdit(edit)) ? id : undefined;
 }
 
 /**
@@ -237,7 +256,7 @@ export async function emailHeading(): Promise<void> {
 
     const config = vscode.workspace.getConfiguration('scimax.emailHeading');
     if (config.get<boolean>('includeId', true)) {
-        const id = await ensureEmailId(document, email.headingLine, email.id);
+        const id = email.id ?? await ensureHeadingId(document, email.headingLine, randomUUID);
         if (id) {
             email.body = appendIdFooter(email.body, id);
         } else {
@@ -259,7 +278,11 @@ export async function emailHeading(): Promise<void> {
         bodyOnClipboard = true;
     }
 
-    const opened = await vscode.env.openExternal(vscode.Uri.parse(url, true));
+    // Pass the URL string, not a Uri: VS Code decodes a Uri's query and
+    // re-encodes it, which turns `&` in the subject or body into a parameter
+    // separator, `+` into a space and `#` / `?` into %23 / %3F. A string is
+    // opened as is (the API is typed Uri but accepts a string).
+    const opened = await vscode.env.openExternal(url as unknown as vscode.Uri);
     if (!opened) {
         vscode.window.showErrorMessage('Could not open the email compose window');
         return;

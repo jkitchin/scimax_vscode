@@ -75,14 +75,27 @@ export function findDrawer(document: vscode.TextDocument, headingLine: number, p
     return { start, end, existingLine, insertAt };
 }
 
-/** Return the heading's `:ID:`, minting a readable, unique slug id if it has none. */
-export async function ensureHeadingId(document: vscode.TextDocument, headingLine: number): Promise<string | undefined> {
+/**
+ * Return the heading's `:ID:`, adding one if it has none: a readable, unique
+ * slug id from the title, or whatever `mintId` returns (e.g. a UUID).
+ * Undefined when the edit could not be applied.
+ */
+export async function ensureHeadingId(
+    document: vscode.TextDocument,
+    headingLine: number,
+    mintId?: () => string
+): Promise<string | undefined> {
     const existing = readHeadingProperty(document, headingLine, 'ID');
     if (existing) return existing.replace(/^id:/i, '');
 
-    const todoStates = getTodoStatesFromText(document.getText());
-    const title = extractHeadingTitle(document.lineAt(headingLine).text, todoStates);
-    const id = await uniqueSlugId(slugify(title), document);
+    let id: string;
+    if (mintId) {
+        id = mintId();
+    } else {
+        const todoStates = getTodoStatesFromText(document.getText());
+        const title = extractHeadingTitle(document.lineAt(headingLine).text, todoStates);
+        id = await uniqueSlugId(slugify(title), document);
+    }
 
     const drawer = findDrawer(document, headingLine, 'ID');
     const edit = new vscode.WorkspaceEdit();

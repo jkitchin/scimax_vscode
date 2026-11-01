@@ -1126,6 +1126,8 @@ If rich clipboard tools aren't available, falls back to plain text clipboard wit
 
 A =SUBJECT= (or =MAIL_SUBJECT=) property replaces the headline as the subject. The planning line (=SCHEDULED=, =DEADLINE=, =CLOSED=) and the properties drawer are left out of the body. Separate several addresses with commas or semicolons.
 
+Org links in the body become plain text. A web link keeps its address (=[[https://x.org][X]]= becomes =X (https://x.org)=). Other links (=file:=, =id:=, internal) become their description, or the file name, so no local path goes in the email. A =*= line inside a =#+BEGIN_...= block is content, not a subheading.
+
 #+BEGIN_SRC org
 ,* TODO Draft for the review meeting
 :PROPERTIES:

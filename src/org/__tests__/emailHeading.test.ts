@@ -10,6 +10,7 @@ import {
     appendIdFooter,
     normalizeAddresses,
     findHeadingAt,
+    plainBodyLinks,
 } from '../emailHeading';
 
 const doc = `#+TITLE: Notes
@@ -125,5 +126,51 @@ describe('compose URLs', () => {
         expect(url).toContain('subject=A%20%26%20B');
         expect(url).toContain('body=line%201%0D%0Aline%202');
         expect(url).not.toContain('cc=&');
+    });
+});
+
+describe('block-aware subtree', () => {
+    const text = `* Top
+Intro.
+#+begin_example
+* not a heading
+#+end_example
+#+BEGIN_SRC sh
+* also not
+#+END_SRC
+Outro.
+* Next
+`;
+    it('does not end the body at a star line inside a block', () => {
+        expect(findHeadingAt(text.split('\n'), 1)).toEqual({ start: 0, end: 8, level: 1 });
+        const email = buildHeadingEmail(text, 3)!;
+        expect(email.subject).toBe('Top');
+        expect(email.body).toContain('* not a heading');
+        expect(email.body).toContain('Outro.');
+    });
+});
+
+describe('plainBodyLinks', () => {
+    it('keeps web addresses and drops local paths', () => {
+        expect(plainBodyLinks('See [[https://x.org/a?b=1&c=2][the site]] and [[https://y.org]].'))
+            .toBe('See the site (https://x.org/a?b=1&c=2) and https://y.org.');
+        expect(plainBodyLinks('[[file:~/secret/dir/report.pdf]] [[file:a.org::*H][notes]] [[id:123][task]]'))
+            .toBe('report.pdf notes task');
+        expect(plainBodyLinks('[[mailto:a@b.c][Al]]')).toBe('Al (a@b.c)');
+    });
+    it('applies to the email body', () => {
+        const email = buildHeadingEmail('* H\nRead [[https://x.org][X]].\n', 0)!;
+        expect(email.body.trim()).toBe('Read X (https://x.org).');
+    });
+});
+
+describe('special characters survive the compose URL', () => {
+    it('round-trips & + # ? in subject and body', () => {
+        const email = buildHeadingEmail('* Q&A: 1+1 #3?\nA & B + C # D ? E\n', 0)!;
+        for (const url of [buildGmailUrl(email), buildMailtoUrl(email)]) {
+            const q = new URLSearchParams(url.slice(url.indexOf('?') + 1).replace(/\+/g, '%2B'));
+            expect(q.get('su') ?? q.get('subject')).toBe('Q&A: 1+1 #3?');
+            expect((q.get('body') ?? '').trim()).toBe('A & B + C # D ? E');
+        }
     });
 });
