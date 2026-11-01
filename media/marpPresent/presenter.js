@@ -30,7 +30,8 @@
  * The keys also work while a widget has keyboard focus (e.g. after dragging a slider).
  * Ink belongs to the slide it was drawn on and is stored relative to that slide, so it
  * survives slide changes, window resizes and fullscreen. It is kept in localStorage, so a
- * reload does not lose it; shift+C wipes it. Save to a file to keep them for good, move them
+ * reload does not lose it; shift+C wipes it. A new Present from scimax asks whether to keep
+ * what an earlier showing left or start fresh. Save to a file to keep them for good, move them
  * to another machine, or share them. Loading replaces the current ink; the ink it replaced is
  * kept in localStorage under "<key>:before-load" in case you need it back.
  *
@@ -1104,7 +1105,45 @@
   addEventListener("load", hookAll);
   loadSource();
   // The script runs from the first slide, before the later slides are parsed.
-  const ready = () => { importBaked(); if (overview) showInOverview(); else { redraw(); buildNotes(); } };
+  const ready = () => { importBaked(); if (overview) showInOverview(); else { redraw(); buildNotes(); askKeepOrFresh(); } };
+  // scimax's Present puts a new show id in the page each time (live reloads keep it). On a new
+  // one, if this browser still has ink, notes or edits from an earlier showing, ask whether to
+  // keep them or start fresh. A saved copy (s) has no id, so it never asks.
+  function askKeepOrFresh() {
+    const id = typeof window.__MARP_SHOW_ID__ === "string" ? window.__MARP_SHOW_ID__ : "";
+    if (!id) return;
+    let seen = null;
+    try { seen = localStorage.getItem(KEY + ":show"); localStorage.setItem(KEY + ":show", id); } catch (e) { return; }
+    if (seen === id || nothing(total())) return;
+    const box = document.createElement("div");
+    box.className = "annotate-layer";
+    Object.assign(box.style, {
+      position: "fixed", left: "50%", top: "18px", transform: "translateX(-50%)", zIndex: "100003",
+      padding: "10px 16px", borderRadius: "8px", background: "rgba(17,24,39,.95)", color: "white",
+      fontSize: "15px", fontFamily: "Helvetica, Arial, sans-serif", display: "flex", gap: "12px",
+      alignItems: "center", boxShadow: "0 4px 16px rgba(0,0,0,.3)",
+    });
+    const text = document.createElement("span");
+    text.textContent = `This deck has ${describe(total())} from an earlier showing.`;
+    const button = (label, act) => {
+      const b = document.createElement("button");
+      b.textContent = label;
+      Object.assign(b.style, {
+        font: "inherit", padding: "4px 12px", borderRadius: "6px", cursor: "pointer",
+        border: "1px solid rgba(255,255,255,.5)", background: "transparent", color: "white",
+      });
+      b.addEventListener("click", e => { e.stopPropagation(); box.remove(); act(); });
+      return b;
+    };
+    ["pointerdown", "mousedown", "click"].forEach(t => box.addEventListener(t, e => e.stopPropagation()));
+    box.append(text, button("Keep", () => {}), button("Start fresh", () => {
+      try { localStorage.setItem(KEY + ":before-load", JSON.stringify({ ink, notes, edits: edits() })); } catch (e) { /* ignore */ }
+      ink = {}; notes = {}; stroke = null; save(); saveNotes(); redraw(); buildNotes();
+      if (window.__marpEdits && editCount()) window.__marpEdits.replace({});
+      say(`Starting fresh. The earlier annotations are kept in this browser under "${KEY}:before-load".`);
+    }));
+    document.body.appendChild(box);
+  }
   // In the overview: every slide with its own ink and notes, as for printing. The ink comes from
   // the slideshow itself: Chrome treats a file:// frame as another site, and may not let it read
   // the slideshow's storage.

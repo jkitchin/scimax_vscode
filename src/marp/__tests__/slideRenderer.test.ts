@@ -3,6 +3,8 @@ import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
 import { firstSlideSvg, isMarpText, renderDeck, slideStarts } from '../slideRenderer';
+import { fallbackEntriesFor, setFallbackCitationLookup } from '../../markdown/citationPreview';
+import { parseBibTeX } from '../../references/bibtexParser';
 
 const DECK = '---\nmarp: true\nheadingDivider: 2\n---\n\n# One\n\n## Two\n\n```\n---\n```\n\n---\n\nThree\n';
 
@@ -82,5 +84,72 @@ describe('firstSlideSvg', () => {
         expect(svg).toContain('src="data:image/png;base64,iVBORw=="');
         expect(svg).toContain('src="https://example.org/b.png"');
         fs.rmSync(dir, { recursive: true });
+    });
+});
+
+describe('renderDeck citations', () => {
+    const BIB = '@book{boyd2004convex,\n  author = {Boyd, Stephen and Vandenberghe, Lieven},\n  title = {Convex Optimization},\n  year = {2004}\n}\n'
+        + '@article{kitchin2025,\n  author = {Kitchin, John},\n  title = {Beyond Fourier},\n  journal = {Nat. Chem. Eng.},\n  year = {2025},\n  doi = {10.1038/s44286-024-00170-x}\n}\n';
+
+    it('numbers citations across the deck, with a numbered reference list on each citing slide', () => {
+        const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'deck-cite-'));
+        try {
+            fs.writeFileSync(path.join(dir, 'refs.bib'), BIB);
+            const deck = '---\nmarp: true\nbibliography: refs.bib\n---\n\n# Title\n\nSee [@boyd2004convex] and @boyd2004convex.\n'
+                + '\n---\n\n# Two\n\nNo citations, [@unknown].\n'
+                + '\n---\n\n# Three\n\nBoth [@kitchin2025; @boyd2004convex, p. 4].\n';
+            const { html } = renderDeck(deck, { documentPath: path.join(dir, 'deck.md') });
+            expect(renderDeck(deck).html).toContain('[@boyd2004convex]');
+            const slides = html.split('</section>');
+            // Slide 1: [1] and Boyd and Vandenberghe [1], one reference
+            expect(slides[0]).toContain('[<span class="scimax-cite" title="Boyd');
+            expect(slides[0]).toMatch(/>1<\/span>\]/);
+            expect(slides[0]).toContain('Boyd and Vandenberghe [<span');
+            expect(slides[0]).not.toMatch(/>Boyd and Vandenberghe,? \(?2004/);
+            expect(slides[0].match(/<li>/g)).toHaveLength(1);
+            expect(slides[0]).toMatch(/<li><span class="scimax-ref-num">\[1\]<\/span> [^<]*Convex Optimization/);
+            // Slide 2 cites nothing found: no list, and the missing key does not take a number
+            expect(slides[1]).not.toContain('scimax-slide-refs');
+            // Slide 3: Kitchin is [2] (first used here), Boyd keeps [1]; the list is in number order
+            expect(slides[2]).toMatch(/>2<\/span>, <span[^>]*>1, p\. 4<\/span>\]/);
+            expect(slides[2]).toMatch(/\[1\]<\/span> [^<]*Convex.*\[2\]<\/span> [^<]*Beyond Fourier/s);
+            // The DOI is a link
+            expect(slides[2]).toContain('<a href="https://doi.org/10.1038/s44286-024-00170-x">');
+        } finally {
+            fs.rmSync(dir, { recursive: true, force: true });
+        }
+    });
+});
+
+describe('renderDeck citations without a bibliography: line', () => {
+    it('finds keys through the fallback lookup (the reference manager)', () => {
+        const entries = new Map(parseBibTeX(
+            '@article{kitchin-2025,\n  author = {Kitchin, John},\n  title = {Beyond Fourier},\n  journal = {J. Chem. Phys.},\n  year = {2025}\n}\n'
+        ).entries.map(e => [e.key, e]));
+        setFallbackCitationLookup(key => entries.get(key));
+        try {
+            const deck = '---\nmarp: true\n---\n\n# Title\n\nSee [@kitchin-2025].\n';
+            const { html } = renderDeck(deck, { documentPath: path.join(os.tmpdir(), 'no-such-dir', 'deck.md') });
+            expect(html).toMatch(/\[<span class="scimax-cite"[^>]*>1<\/span>\]/);
+            expect(html).toMatch(/scimax-slide-refs.*Beyond Fourier/s);
+        } finally {
+            setFallbackCitationLookup(undefined);
+        }
+    });
+
+    it('collects the entries a deck may cite, for Marp CLI', () => {
+        const entries = new Map(parseBibTeX(
+            '@article{kitchin-2025,\n  author = {Kitchin, John},\n  title = {Beyond Fourier},\n  year = {2025}\n}\n'
+        ).entries.map(e => [e.key, e]));
+        expect(fallbackEntriesFor('See @kitchin-2025.')).toEqual({});
+        setFallbackCitationLookup(key => entries.get(key));
+        try {
+            const found = fallbackEntriesFor('As shown [@kitchin-2025]. Also @kitchin-2025.');
+            expect(Object.keys(found)).toEqual(['kitchin-2025']);
+            expect(found['kitchin-2025'].title).toBe('Beyond Fourier');
+            expect(fallbackEntriesFor('No citations here.')).toEqual({});
+        } finally {
+            setFallbackCitationLookup(undefined);
+        }
     });
 });

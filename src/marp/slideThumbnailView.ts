@@ -307,6 +307,7 @@ class SlideWebviewController implements vscode.Disposable {
                 enableHtml: marpHtmlEnabled(document),
                 math: marpMathTypesetting(document),
                 themes: await this.loadThemes(document),
+                documentPath: document.uri.scheme === 'file' ? document.uri.fsPath : undefined,
             });
             if (document !== this.document) {
                 return;

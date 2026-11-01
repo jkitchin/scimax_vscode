@@ -48,12 +48,15 @@ import { registerMarpPythonRunner } from './marp/pythonRunner';
 import { marpPreviewPlugin } from './marp/marpPreviewPlugin';
 import { marpPreviewRenderOptions } from './marp/marpSettings';
 import { mystPreviewPlugin } from './markdown/mystPreview';
+import { setFallbackCitationLookup } from './markdown/citationPreview';
 import { registerTimestampCommands } from './org/timestampProvider';
 import { registerTableCommands, isInTable } from './org/tableProvider';
 import { registerHeadingCommands } from './org/headingProvider';
 import { registerDocumentSymbolProvider } from './org/documentSymbolProvider';
 import { registerOrgCompletionProvider } from './org/completionProvider';
 import { registerOrgHoverProvider } from './org/hoverProvider';
+import { registerMarkdownMathHover } from './markdown/markdownMathHover';
+import { useSlideCitations } from './marp/slideCitations';
 import { initLatexPreviewCache, clearLatexCache, checkLatexAvailable, getCacheStats } from './org/latexPreviewProvider';
 import { registerLatexLivePreviewCommands } from './org/latexLivePreview';
 import { registerBabelCommands, registerBabelCodeLens } from './org/babelProvider';
@@ -477,6 +480,11 @@ async function activateScimax(context: vscode.ExtensionContext) {
     try {
         referenceManager = new ReferenceManager(context);
         context.subscriptions.push({ dispose: () => referenceManager.dispose() });
+        // Citations in the Markdown and slide previews also find keys in the
+        // bibliographies Scimax has loaded, as the editor's citation hover does.
+        const refs = referenceManager;
+        setFallbackCitationLookup(key => refs.getEntry(key));
+        context.subscriptions.push({ dispose: () => setFallbackCitationLookup(undefined) });
         // Defer bibliography loading to avoid blocking extension activation
         // Use setImmediate to yield to the event loop
         setImmediate(async () => {
@@ -729,6 +737,8 @@ async function activateScimax(context: vscode.ExtensionContext) {
 
     // Register Org Hover Provider (for entities, timestamps, blocks, etc.)
     activationStep('registerOrgHoverProvider', () => registerOrgHoverProvider(context));
+    activationStep('registerMarkdownMathHover', () => registerMarkdownMathHover(context));
+
 
     // Initialize LaTeX preview cache for equation rendering
     activationStep('initLatexPreviewCache', () => initLatexPreviewCache(context));
@@ -1277,12 +1287,17 @@ async function activateScimax(context: vscode.ExtensionContext) {
          * to render MyST directives and roles.
          */
         extendMarkdownIt(md: any) {
+            const myst = {
+                isEnabled: () => vscode.workspace.getConfiguration('scimax.markdown').get<boolean>('myst.enabled', true),
+            };
             return md
-                .use(mystPreviewPlugin, {
-                    isEnabled: () => vscode.workspace.getConfiguration('scimax.markdown').get<boolean>('myst.enabled', true),
-                })
-                // Marp decks render as slides, without the Marp for VS Code extension.
-                .use(marpPreviewPlugin, { renderOptions: marpPreviewRenderOptions });
+                .use(mystPreviewPlugin, myst)
+                // Marp decks render as slides, without the Marp for VS Code
+                // extension; citations and MyST roles render in them too.
+                .use(marpPreviewPlugin, {
+                    renderOptions: marpPreviewRenderOptions,
+                    extend: (marpMd: any) => useSlideCitations(marpMd, myst),
+                });
         },
 
         /**

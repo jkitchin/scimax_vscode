@@ -14,6 +14,7 @@ import * as path from 'path';
 import { pathToFileURL } from 'url';
 import * as vscode from 'vscode';
 import { checkPandoc } from '../markdown/markdownExport';
+import { fallbackEntriesFor } from '../markdown/citationPreview';
 import { isMarpText, slideStarts } from './slideRenderer';
 import { previewedMarkdownDocument } from '../markdown/previewSource';
 import { currentMarpDeck } from './currentDeck';
@@ -499,11 +500,21 @@ async function convertWithMarp(
         allowLocalFiles,
         // Presenter decks may use HTML widgets (e.g. iframes), as marp-present always allowed.
         enableHtml: presenter || marpHtmlEnabled(document),
-        engine: presenter ? context.asAbsolutePath(path.join('media', 'marpPresent', 'engine.cjs')) : undefined,
+        // Citations for every format, and the presenter tools' fences (cliEngine.ts)
+        engine: context.asAbsolutePath(path.join('out', 'marp', 'cliEngine.js')),
         themeFiles: marpThemeUris(document).filter(uri => fs.existsSync(uri.fsPath)).map(uri => uri.fsPath),
         browserPath: config.get<string>('browserPath', '').trim() || undefined,
     });
-    const env = { ...process.env };
+    const env: NodeJS.ProcessEnv = { ...process.env, SCIMAX_MARP_DECK: input, SCIMAX_MARP_PRESENTER: presenter ? '1' : '' };
+    // Reference manager entries the deck may cite, for keys its own bibliography lacks
+    const entries = fallbackEntriesFor(document.getText());
+    const entriesFile = Object.keys(entries).length
+        ? path.join(os.tmpdir(), `scimax-marp-cite-${randomBytes(16).toString('hex')}.json`)
+        : undefined;
+    if (entriesFile) {
+        await fs.promises.writeFile(entriesFile, JSON.stringify(entries), { encoding: 'utf8', mode: 0o600, flag: 'wx' });
+        env.SCIMAX_MARP_CITATIONS = entriesFile;
+    }
     const soffice = config.get<string>('libreOfficePath', '').trim();
     if (soffice) {
         env.SOFFICE_PATH = soffice;
@@ -518,6 +529,10 @@ async function convertWithMarp(
     } catch (error) {
         vscode.window.showErrorMessage(`Could not run Marp CLI: ${error instanceof Error ? error.message : String(error)}`);
         return false;
+    } finally {
+        if (entriesFile) {
+            await fs.promises.rm(entriesFile, { force: true });
+        }
     }
     if (result.cancelled) {
         vscode.window.setStatusBarMessage('Marp export cancelled', 3000);
@@ -719,6 +734,8 @@ function offlineDeck(document: vscode.TextDocument): boolean {
 interface LiveShow {
     output: string;
     presenter: boolean;
+    /** Names this showing; rebuilds keep it, so the page asks about old ink only on a new Present. */
+    showId: string;
     building: boolean;
     again: boolean;
 }
@@ -735,7 +752,7 @@ async function buildSlideshow(
     context: vscode.ExtensionContext,
     document: vscode.TextDocument,
     output: string,
-    options: { presenter: boolean; startSlide?: number; jumpTo?: number; liveReload: boolean; quiet: boolean }
+    options: { presenter: boolean; startSlide?: number; jumpTo?: number; liveReload: boolean; quiet: boolean; showId?: string }
 ): Promise<boolean> {
     const presenter = options.presenter;
     // Marp writes a scratch file next to the slideshow; the open page only ever sees a finished one.
@@ -762,7 +779,7 @@ async function buildSlideshow(
         const reload = options.liveReload ? { url: pathToFileURL(versionFile).href, version } : undefined;
         const folderUrl = pathToFileURL(path.dirname(document.uri.fsPath) + path.sep).href;
         const html = await fs.promises.readFile(scratch, 'utf8');
-        await fs.promises.writeFile(scratch, prepareSlideshowHtml(html, folderUrl, options.startSlide, reload), 'utf8');
+        await fs.promises.writeFile(scratch, prepareSlideshowHtml(html, folderUrl, options.startSlide, reload, options.showId), 'utf8');
         await fs.promises.rename(scratch, output);
         if (reload) {
             await fs.promises.writeFile(versionFile, liveReloadVersionScript(version, options.jumpTo), 'utf8');
@@ -789,7 +806,7 @@ async function rebuildLiveShow(context: vscode.ExtensionContext, document: vscod
             show.again = false;
             await buildSlideshow(context, document, show.output, {
                 presenter: show.presenter && presenterWanted(document, document.getText()),
-                jumpTo: slideUnderCursor(document), liveReload: true, quiet: true,
+                jumpTo: slideUnderCursor(document), liveReload: true, quiet: true, showId: show.showId,
             });
         } while (show.again);
     } finally {
@@ -824,11 +841,12 @@ async function present(context: vscode.ExtensionContext, args?: PresentArgs, fro
     while (previous?.building) {
         await new Promise(resolve => setTimeout(resolve, 100));
     }
-    if (!(await buildSlideshow(context, document, output, { presenter, startSlide, liveReload, quiet: false }))) {
+    const showId = randomBytes(8).toString('hex');
+    if (!(await buildSlideshow(context, document, output, { presenter, startSlide, liveReload, quiet: false, showId }))) {
         return;
     }
     if (liveReload) {
-        liveShows.set(document.uri.fsPath, { output, presenter: vscode.workspace.isTrusted, building: false, again: false });
+        liveShows.set(document.uri.fsPath, { output, presenter: vscode.workspace.isTrusted, showId, building: false, again: false });
     }
     await vscode.env.openExternal(vscode.Uri.file(output));
     const reloadHint = liveReload ? '; saving the deck updates it' : '';

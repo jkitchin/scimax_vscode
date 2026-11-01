@@ -23,6 +23,12 @@ export interface MarpPreviewOptions {
      * `env.currentDocument`.
      */
     renderOptions?: (env: unknown) => RenderOptions;
+    /**
+     * Extra markdown-it plugins for Marp's own markdown-it instance (a deck is
+     * not parsed by the preview's instance, so its plugins, such as citations,
+     * do not apply otherwise).
+     */
+    extend?: (marpMarkdown: MarkdownIt) => void;
 }
 
 // markdown-it has no type declarations in this project (as in mystPreview.ts).
@@ -54,6 +60,7 @@ export function marpPreviewPlugin(md: MarkdownIt, options: MarpPreviewOptions = 
             return parse.call(this, src, env);
         }
         const marp = createPreviewMarp(options.renderOptions?.(env) ?? {});
+        options.extend?.(marp.markdown);
         addSourceMap(marp);
         const tokens = marp.markdown.parse(src, env ?? {});
         decks.set(tokens, marp);

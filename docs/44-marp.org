@@ -111,7 +111,7 @@ default).
 The command has no default keybinding. To add one, open Keyboard Shortcuts
 and search for ~scimax.marp.revealInPreview~.
 
-* Slide Preview
+* 👀 Slide Preview
 
 The slide preview shows the slide under the editor cursor, fitted to its
 tab, and follows the cursor as you move and type. Open it with the preview
@@ -134,7 +134,38 @@ left of its toolbar switch between one slide and the grid of all slides
 
 Hidden slides are shown (dimmed in the grid) so they can still be edited.
 
-* Slideshow
+Citations in a deck are numbered, in the order they are first cited across
+the deck: =[@key]= shows as [1], =[@a; @b, p. 4]= as [1, 2, p. 4], and a bare
+=@key= (or ~{cite:t}~) as Author [1], with the full reference as a tooltip.
+A source keeps its number on every slide that cites it. Each slide lists the
+numbered full reference of the sources it cites at its bottom, like a
+footnote, with the DOI or URL as a link. Other Markdown files keep
+author-year citations. Keys are looked up
+in =bibliography:= in the deck's front matter (or a =myst.yml= / Jupyter
+Book =_config.yml= above it), then in the bibliographies Scimax has loaded
+(~scimax.ref.bibliographyFiles~ and the =.bib= files in the workspace), as
+the editor's citation hover does. A key found in neither is shown as typed
+and gets no footnote. See
+[[file:45-myst-preview.org][MyST Preview]].
+
+The list sits 40px above the bottom of the slide, inset 70px from each side,
+at half the slide's font size. A theme or a =<style>= block in the deck can
+move it (for example above a =footer:=) with CSS variables:
+
+#+BEGIN_SRC css
+section {
+  --scimax-refs-bottom: 70px;   /* distance from the bottom edge */
+  --scimax-refs-inset: 60px;    /* left and right inset */
+  --scimax-refs-size: 0.45em;   /* font size */
+}
+#+END_SRC
+
+The slideshow (Present) and Marp exports (HTML, PDF, PowerPoint, images)
+render citations and each slide's references the same way. Marp CLI is given
+the citation plugins as its engine, along with the reference manager's
+entries for the keys the deck cites.
+
+* 👀 Slideshow
 
 To present, Scimax makes Marp's HTML slideshow of the deck and opens it in the
 browser. Marp CLI builds it (see [[*Marp CLI][Marp CLI]]), and it is written to a private folder
@@ -176,7 +207,12 @@ the slides it shows.
 A deck with ~presenter: true~ also gets a pen, a laser pointer, sticky notes
 and live Python cells in the slideshow; see [[*Presenter Tools and Live Python][Presenter Tools and Live Python]].
 Because each deck always uses the same folder, ink drawn in one slideshow is
-still there the next time.
+still there the next time. When you Present again and the browser still has
+ink, sticky notes or slide edits from an earlier showing, a bar at the top of
+the slideshow asks whether to *Keep* them or *Start fresh*. Starting fresh
+clears them, but a copy stays in the browser's storage under
+~marp-ink:<path>:before-load~. A live reload or a browser reload does not ask,
+and =Shift+C= in the slideshow still clears the ink at any time.
 
 ** Live reload
 
@@ -1236,7 +1272,7 @@ Markdown previews.
 
 * How It Works
 
-** Slides in the Markdown preview
+** 👀 Slides in the Markdown preview
 
 Scimax contributes a markdown-it plugin (~markdown.markdownItPlugins~,
 ~src/marp/marpPreviewPlugin.ts~). For a file with ~marp: true~ in its front
@@ -1247,6 +1283,11 @@ preview script ~media/marp/marpPreviewMode.js~ then turns off VS Code's own
 Markdown styles for that preview, since they would leak into the slides, and
 ~media/marp/marpPreviewSlides.css~ lays the slides out. Marp Core's browser
 script (also a preview script) fits headings marked ~<!-- fit -->~.
+
+A deck is parsed by Marp's own markdown-it instance, not the preview's, so
+the plugin applies Scimax's MyST and citation rules (~src/markdown/mystPreview.ts~)
+to it too, plus ~src/marp/slideCitations.ts~, which adds each slide's
+reference list; the slide preview does the same in ~renderDeck~.
 
 ** Double-click in the Markdown preview
 

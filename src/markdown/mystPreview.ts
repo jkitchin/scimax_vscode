@@ -15,7 +15,7 @@
  */
 
 import {
-    bibliographyPaths, CitationMode, frontMatterBibliography, parseCitationItems, renderCitation,
+    bibliographyPaths, CitationMode, frontMatterBibliography, hasFallbackCitationLookup, parseCitationItems, renderCitation,
 } from './citationPreview';
 
 /* eslint-disable @typescript-eslint/no-explicit-any -- markdown-it ships no types here */
@@ -516,10 +516,10 @@ export function mystPreviewPlugin(md: MarkdownIt, options: MystPreviewOptions = 
     rules.scimax_cite = (tokens: Token[], idx: number, _opts: any, env: any) => {
         const { items, mode, bare, frontBibs } = tokens[idx].meta;
         const files = bibFiles(env, frontBibs);
-        if (bare && !files.length) {
+        if (bare && !files.length && !hasFallbackCitationLookup()) {
             return escape(`@${items[0].key}`);
         }
-        const html = renderCitation(items, mode, files, escape);
+        const html = renderCitation(items, mode, files, escape, env?.scimaxCiteNumbers);
         // A bare @word that is not a key stays as typed (e.g. a handle).
         return bare && html.includes('scimax-cite-missing') ? escape(`@${items[0].key}`) : html;
     };
@@ -544,7 +544,7 @@ export function mystPreviewPlugin(md: MarkdownIt, options: MystPreviewOptions = 
         }
         if (CITE_MODES[name]) {
             const items = content.split(',').map((key: string) => ({ key: key.trim() })).filter((i: { key: string }) => i.key);
-            return renderCitation(items, CITE_MODES[name], bibFiles(env, frontBibs), escape);
+            return renderCitation(items, CITE_MODES[name], bibFiles(env, frontBibs), escape, env?.scimaxCiteNumbers);
         }
         switch (name) {
             case 'math':
