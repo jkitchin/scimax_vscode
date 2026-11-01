@@ -88,22 +88,33 @@ describe('firstSlideSvg', () => {
 });
 
 describe('renderDeck citations', () => {
-    it('renders [@key] when the deck path is given', () => {
+    const BIB = '@book{boyd2004convex,\n  author = {Boyd, Stephen and Vandenberghe, Lieven},\n  title = {Convex Optimization},\n  year = {2004}\n}\n'
+        + '@article{kitchin2025,\n  author = {Kitchin, John},\n  title = {Beyond Fourier},\n  journal = {Nat. Chem. Eng.},\n  year = {2025},\n  doi = {10.1038/s44286-024-00170-x}\n}\n';
+
+    it('numbers citations across the deck, with a numbered reference list on each citing slide', () => {
         const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'deck-cite-'));
         try {
-            fs.writeFileSync(path.join(dir, 'refs.bib'),
-                '@book{boyd2004convex,\n  author = {Boyd, Stephen and Vandenberghe, Lieven},\n  title = {Convex Optimization},\n  year = {2004}\n}\n');
-            const deck = '---\nmarp: true\nbibliography: refs.bib\n---\n\n# Title\n\nSee [@boyd2004convex] and @boyd2004convex.\n\n---\n\n# Two\n\nNo citations, [@unknown].\n';
+            fs.writeFileSync(path.join(dir, 'refs.bib'), BIB);
+            const deck = '---\nmarp: true\nbibliography: refs.bib\n---\n\n# Title\n\nSee [@boyd2004convex] and @boyd2004convex.\n'
+                + '\n---\n\n# Two\n\nNo citations, [@unknown].\n'
+                + '\n---\n\n# Three\n\nBoth [@kitchin2025; @boyd2004convex, p. 4].\n';
             const { html } = renderDeck(deck, { documentPath: path.join(dir, 'deck.md') });
-            expect(html).toContain('(<span class="scimax-cite"');
-            expect(html).toContain('Boyd and Vandenberghe, 2004');
             expect(renderDeck(deck).html).toContain('[@boyd2004convex]');
-            // The full reference sits at the foot of the citing slide only, once.
             const slides = html.split('</section>');
-            expect(slides[0].match(/class="scimax-slide-refs"/g)).toHaveLength(1);
-            expect(slides[0]).toMatch(/<div class="scimax-slide-refs"[^>]*>.*<li>[^<]*Convex Optimization[^<]*<\/li>/s);
+            // Slide 1: [1] and Boyd and Vandenberghe [1], one reference
+            expect(slides[0]).toContain('[<span class="scimax-cite" title="Boyd');
+            expect(slides[0]).toMatch(/>1<\/span>\]/);
+            expect(slides[0]).toContain('Boyd and Vandenberghe [<span');
+            expect(slides[0]).not.toMatch(/>Boyd and Vandenberghe,? \(?2004/);
             expect(slides[0].match(/<li>/g)).toHaveLength(1);
+            expect(slides[0]).toMatch(/<li><span class="scimax-ref-num">\[1\]<\/span> [^<]*Convex Optimization/);
+            // Slide 2 cites nothing found: no list, and the missing key does not take a number
             expect(slides[1]).not.toContain('scimax-slide-refs');
+            // Slide 3: Kitchin is [2] (first used here), Boyd keeps [1]; the list is in number order
+            expect(slides[2]).toMatch(/>2<\/span>, <span[^>]*>1, p\. 4<\/span>\]/);
+            expect(slides[2]).toMatch(/\[1\]<\/span> [^<]*Convex.*\[2\]<\/span> [^<]*Beyond Fourier/s);
+            // The DOI is a link
+            expect(slides[2]).toContain('<a href="https://doi.org/10.1038/s44286-024-00170-x">');
         } finally {
             fs.rmSync(dir, { recursive: true, force: true });
         }
@@ -119,7 +130,7 @@ describe('renderDeck citations without a bibliography: line', () => {
         try {
             const deck = '---\nmarp: true\n---\n\n# Title\n\nSee [@kitchin-2025].\n';
             const { html } = renderDeck(deck, { documentPath: path.join(os.tmpdir(), 'no-such-dir', 'deck.md') });
-            expect(html).toContain('Kitchin, 2025');
+            expect(html).toMatch(/\[<span class="scimax-cite"[^>]*>1<\/span>\]/);
             expect(html).toMatch(/scimax-slide-refs.*Beyond Fourier/s);
         } finally {
             setFallbackCitationLookup(undefined);

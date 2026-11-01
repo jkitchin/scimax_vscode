@@ -185,13 +185,21 @@ export function parseCitationItems(body: string): CitationItem[] | undefined {
     return items.length ? items : undefined;
 }
 
-/** HTML for a citation; `escape` is markdown-it's escapeHtml. */
+/**
+ * HTML for a citation; `escape` is markdown-it's escapeHtml. With `numbers`
+ * (key -> number, set for Marp decks by slideCitations.ts), citations are
+ * numbered: [1], [1, 3], [2, p. 4]; a textual one is "Author [1]".
+ */
 export function renderCitation(
     items: CitationItem[],
     mode: CitationMode,
     bibFiles: string[],
-    escape: (s: string) => string
+    escape: (s: string) => string,
+    numbers?: Map<string, number>
 ): string {
+    if (numbers && mode !== 'author' && mode !== 'year') {
+        return renderNumbered(items, mode, bibFiles, escape, numbers);
+    }
     const parts = items.map(item => {
         const found = lookupCitation(item.key, bibFiles);
         let text: string;
@@ -216,4 +224,33 @@ export function renderCitation(
     });
     const sep = mode === 't' ? ', ' : '; ';
     return mode === 'p' ? `(${parts.join(sep)})` : parts.join(sep);
+}
+
+function renderNumbered(
+    items: CitationItem[],
+    mode: CitationMode,
+    bibFiles: string[],
+    escape: (s: string) => string,
+    numbers: Map<string, number>
+): string {
+    const parts = items.map(item => {
+        const found = lookupCitation(item.key, bibFiles);
+        const n = numbers.get(item.key);
+        const prefix = item.prefix ? `${escape(item.prefix)} ` : '';
+        if (!found || n === undefined) {
+            return `${prefix}<span class="scimax-cite scimax-cite-missing" title="${escape(`${item.key}: not found in the bibliography`)}">${escape(item.key)}</span>`;
+        }
+        const num = `<span class="scimax-cite" title="${escape(found.full)}">${n}${item.suffix ? escape(`, ${item.suffix}`) : ''}</span>`;
+        return mode === 't' ? `${prefix}${escape(found.author)} [${num}]` : prefix + num;
+    });
+    return mode === 't' ? parts.join(', ') : `[${parts.join(', ')}]`;
+}
+
+/** `html` (already escaped) with each http(s) URL made a link; trailing punctuation stays outside. */
+export function linkifyUrls(html: string): string {
+    return html.replace(/\bhttps?:\/\/[^\s<>"]+/g, url => {
+        const tail = /[.,;:)\]]+$/.exec(url)?.[0] ?? '';
+        const href = tail ? url.slice(0, -tail.length) : url;
+        return `<a href="${href}">${href}</a>${tail}`;
+    });
 }

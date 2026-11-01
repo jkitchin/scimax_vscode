@@ -134,11 +134,13 @@ left of its toolbar switch between one slide and the grid of all slides
 
 Hidden slides are shown (dimmed in the grid) so they can still be edited.
 
-Citations render in the slide preview and in VS Code's Markdown preview as
-they do in other Markdown files: =[@key]= shows as (Author, year), a bare
-=@key= as Author (year), with the full reference as a tooltip. The full
-reference of each source cited on a slide is also listed at the bottom of
-that slide, like a footnote, so the audience can see it. Keys are looked up
+Citations in a deck are numbered, in the order they are first cited across
+the deck: =[@key]= shows as [1], =[@a; @b, p. 4]= as [1, 2, p. 4], and a bare
+=@key= (or ~{cite:t}~) as Author [1], with the full reference as a tooltip.
+A source keeps its number on every slide that cites it. Each slide lists the
+numbered full reference of the sources it cites at its bottom, like a
+footnote, with the DOI or URL as a link. Other Markdown files keep
+author-year citations. Keys are looked up
 in =bibliography:= in the deck's front matter (or a =myst.yml= / Jupyter
 Book =_config.yml= above it), then in the bibliographies Scimax has loaded
 (~scimax.ref.bibliographyFiles~ and the =.bib= files in the workspace), as

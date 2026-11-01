@@ -53,9 +53,8 @@ describe('marpPreviewPlugin', () => {
             const deck = '---\nmarp: true\nbibliography: refs.bib\n---\n\n# Title\n\nSee [@boyd2004convex] and @boyd2004convex.\n';
             const html = md.render(deck, { currentDocument: { fsPath: path.join(dir, 'deck.md') } });
             expect(html).toContain('scimax-marp-style');
-            expect(html).toContain('(<span class="scimax-cite"');
-            expect(html).toContain('Boyd and Vandenberghe, 2004');
-            expect(html).toContain('Boyd and Vandenberghe (2004)');
+            expect(html).toContain('[<span class="scimax-cite"');
+            expect(html).toContain('Boyd and Vandenberghe [<span');
             expect(html).not.toContain('[@boyd2004convex]');
             expect(html).toMatch(/scimax-slide-refs.*Convex Optimization/s);
         } finally {

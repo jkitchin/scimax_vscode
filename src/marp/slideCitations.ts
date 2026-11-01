@@ -2,16 +2,17 @@
  * Citations in Marp slides, with a reference list on each slide.
  *
  * The MyST preview plugin (src/markdown/mystPreview.ts) renders `[@key]`,
- * `@key` and `{cite}` roles as author-year text. In a deck this plugin also
- * puts the full reference for each source cited on a slide at the bottom of
- * that slide, like a footnote, so the audience can see what it is.
+ * `@key` and `{cite}` roles as author-year text. In a deck this plugin numbers
+ * them instead, [1], [2], in order of first use across the deck, and puts the
+ * numbered full reference of each source cited on a slide at the bottom of
+ * that slide, like a footnote, with its DOI or URL as a link.
  *
  * Used by the Markdown preview's Marp plugin and by renderDeck (the slide
  * preview). Pure: no vscode imports.
  */
 
 import { mystPreviewPlugin, MystPreviewOptions } from '../markdown/mystPreview';
-import { bibliographyPaths, frontMatterBibliography, lookupCitation } from '../markdown/citationPreview';
+import { bibliographyPaths, frontMatterBibliography, linkifyUrls, lookupCitation } from '../markdown/citationPreview';
 
 // markdown-it has no type declarations in this project.
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -39,13 +40,22 @@ export function slideReferencesPlugin(md: MarkdownIt): void {
     md.core.ruler.push('scimax_slide_refs', (state: { src: string; tokens: Token[]; Token: new (type: string, tag: string, nesting: number) => Token }) => {
         const frontBibs = frontMatterBibliography(state.src);
         const tokens = state.tokens;
+        // Numbers for the keys found, in order of first use; the citation renderers read them from env.
+        const env = (state as { env?: any }).env;
+        const docPath: string | undefined = env?.currentDocument?.fsPath;
+        const files = docPath ? bibliographyPaths(docPath, frontBibs) : [];
+        const numbers = new Map<string, number>();
         let keys: string[] = [];
         for (let i = 0; i < tokens.length; i++) {
             const token = tokens[i];
             if (token.type === 'marpit_slide_open') {
                 keys = [];
             } else if (token.type === 'inline' && token.children) {
+                const before = keys.length;
                 citedKeys(token.children, keys);
+                for (const key of keys.slice(before)) {
+                    if (!numbers.has(key) && lookupCitation(key, files)) numbers.set(key, numbers.size + 1);
+                }
             } else if (token.type === 'marpit_slide_close' && keys.length) {
                 const refs = new state.Token('scimax_slide_refs', 'div', 0);
                 refs.block = true;
@@ -55,16 +65,19 @@ export function slideReferencesPlugin(md: MarkdownIt): void {
                 keys = [];
             }
         }
+        if (env) env.scimaxCiteNumbers = numbers;
     });
 
     md.renderer.rules.scimax_slide_refs = (tokens: Token[], idx: number, _opts: unknown, env: any) => {
         const { keys, frontBibs } = tokens[idx].meta as { keys: string[]; frontBibs: string[] };
         const docPath: string | undefined = env?.currentDocument?.fsPath;
         const files = docPath ? bibliographyPaths(docPath, frontBibs) : [];
+        const numbers: Map<string, number> = env?.scimaxCiteNumbers ?? new Map();
         const items = keys
-            .map(key => lookupCitation(key, files))
-            .filter((found): found is NonNullable<typeof found> => !!found)
-            .map(found => `<li>${escape(found.full)}</li>`);
+            .map(key => ({ n: numbers.get(key), found: lookupCitation(key, files) }))
+            .filter((ref): ref is { n: number; found: NonNullable<typeof ref.found> } => ref.n !== undefined && !!ref.found)
+            .sort((a, b) => a.n - b.n)
+            .map(({ n, found }) => `<li><span class="scimax-ref-num">[${n}]</span> ${linkifyUrls(escape(found.full))}</li>`);
         if (!items.length) return '';
         // Inline styles, so it works in every theme and in both previews.
         // Marp's section is position: relative; this sits above the footer.

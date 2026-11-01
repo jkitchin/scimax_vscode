@@ -519,7 +519,7 @@ export function mystPreviewPlugin(md: MarkdownIt, options: MystPreviewOptions = 
         if (bare && !files.length && !hasFallbackCitationLookup()) {
             return escape(`@${items[0].key}`);
         }
-        const html = renderCitation(items, mode, files, escape);
+        const html = renderCitation(items, mode, files, escape, env?.scimaxCiteNumbers);
         // A bare @word that is not a key stays as typed (e.g. a handle).
         return bare && html.includes('scimax-cite-missing') ? escape(`@${items[0].key}`) : html;
     };
@@ -544,7 +544,7 @@ export function mystPreviewPlugin(md: MarkdownIt, options: MystPreviewOptions = 
         }
         if (CITE_MODES[name]) {
             const items = content.split(',').map((key: string) => ({ key: key.trim() })).filter((i: { key: string }) => i.key);
-            return renderCitation(items, CITE_MODES[name], bibFiles(env, frontBibs), escape);
+            return renderCitation(items, CITE_MODES[name], bibFiles(env, frontBibs), escape, env?.scimaxCiteNumbers);
         }
         switch (name) {
             case 'math':
