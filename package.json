@@ -4911,7 +4911,7 @@
         "command": "scimax.markdown.toggleCheckbox",
         "key": "ctrl+c ctrl+c",
         "mac": "ctrl+c ctrl+c",
-        "when": "editorTextFocus && editorLangId == 'markdown' && !scimax.inSourceBlock && !scimax.onTblfmLine && !scimax.inOrderedList && !scimax.inDynamicBlock && !scimax.inInlineBabelCall && !scimax.inInlineSrc && !scimax.onCallLine && !scimax.marp.inRunCell && !terminalFocus"
+        "when": "editorTextFocus && editorLangId =~ /^(markdown|quarto)$/ && !scimax.inSourceBlock && !scimax.onTblfmLine && !scimax.inOrderedList && !scimax.inDynamicBlock && !scimax.inInlineBabelCall && !scimax.inInlineSrc && !scimax.onCallLine && !scimax.marp.inRunCell && !terminalFocus"
       },
       {
         "command": "scimax.org.updateStatistics",
@@ -4935,7 +4935,7 @@
         "command": "scimax.markdown.insertDueDate",
         "key": "ctrl+c ctrl+d",
         "mac": "ctrl+c ctrl+d",
-        "when": "editorTextFocus && editorLangId == markdown && !terminalFocus"
+        "when": "editorTextFocus && editorLangId =~ /^(markdown|quarto)$/ && !terminalFocus"
       },
       {
         "command": "scimax.speed.deadline",
@@ -4947,7 +4947,7 @@
         "command": "scimax.markdown.insertScheduledDate",
         "key": "ctrl+c ctrl+s",
         "mac": "ctrl+c ctrl+s",
-        "when": "editorTextFocus && editorLangId == markdown && !terminalFocus"
+        "when": "editorTextFocus && editorLangId =~ /^(markdown|quarto)$/ && !terminalFocus"
       },
       {
         "command": "scimax.speed.schedule",

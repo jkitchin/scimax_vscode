@@ -1,6 +1,6 @@
 {
-  "buildDate": "2026-11-01T18:56:06.327Z",
-  "count": 3742,
+  "buildDate": "2026-11-01T19:27:08.199Z",
+  "count": 3747,
   "entries": [
     {
       "heading": "Scimax VS Code",
@@ -1005,7 +1005,7 @@
       "level": 2,
       "file": "00-index.org",
       "line": 314,
-      "content": "| Document                                                       | Topics Covered                             | |----------------------------------------------------------------+--------------------------------------------| | [[file:02-document-structure.org][Document Structure]]         | Headings, folding, properties, drawers     | | [[file:30-markdown-compatibility.org][Markdown Compatibility]] | Markdown structural editing, navigation    | | [[file:03-todo-items.org][TODO Items]]            ",
+      "content": "| Document                                                       | Topics Covered                             | |----------------------------------------------------------------+--------------------------------------------| | [[file:02-document-structure.org][Document Structure]]         | Headings, folding, properties, drawers     | | [[file:30-markdown-compatibility.org][Markdown Compatibility]] | Markdown editing, tasks, tables, code      | | [[file:03-todo-items.org][TODO Items]]            ",
       "path": [
         "Complete Documentation Index"
       ],
@@ -1026,8 +1026,9 @@
         "file30-markdown-compatibilityorg",
         "markdown",
         "compatibility",
-        "structural",
-        "navigation",
+        "tasks",
+        "tables",
+        "code",
         "file03-todo-itemsorg",
         "todo",
         "items"
@@ -1251,7 +1252,7 @@
       "heading": "Quick Start by Use Case",
       "level": 1,
       "file": "00-index.org",
-      "line": 527,
+      "line": 529,
       "content": "",
       "path": [],
       "commands": [],
@@ -1266,7 +1267,7 @@
       "heading": "I want to...",
       "level": 2,
       "file": "00-index.org",
-      "line": 529,
+      "line": 531,
       "content": "",
       "path": [
         "Quick Start by Use Case"
@@ -1281,7 +1282,7 @@
       "heading": "Take notes and organize information",
       "level": 3,
       "file": "00-index.org",
-      "line": 531,
+      "line": 533,
       "content": "- Start with [[file:01-getting-started.org][Getting Started]] - Learn [[file:01.5-basic-syntax.org][Basic Syntax]] for formatting text - Learn [[file:02-document-structure.org][Document Structure]] for headings and organization - Use [[file:15-capture.org][Capture]] for quick note-taking - Search with [[file:18-database-search.org][Database and Search]]",
       "path": [
         "Quick Start by Use Case",
@@ -1316,7 +1317,7 @@
       "heading": "Manage tasks and projects",
       "level": 3,
       "file": "00-index.org",
-      "line": 538,
+      "line": 540,
       "content": "- Set up tasks with [[file:03-todo-items.org][TODO Items]] - Add dates with [[file:06-timestamps.org][Timestamps]] - View agenda with [[file:13-agenda.org][Agenda]] - Organize projects with [[file:17-projectile.org][Projectile]] or [[file:16-notebook.org][Notebook]]",
       "path": [
         "Quick Start by Use Case",
@@ -1350,7 +1351,7 @@
       "heading": "Write scientific documents",
       "level": 3,
       "file": "00-index.org",
-      "line": 544,
+      "line": 546,
       "content": "- Execute code with [[file:07-source-blocks.org][Source Code Blocks]] - Preview math with [[file:11-latex-preview.org][LaTeX Preview]] - Manage citations with [[file:19-references.org][References]] - Export with [[file:10-export.org][Export]]",
       "path": [
         "Quick Start by Use Case",
@@ -1383,7 +1384,7 @@
       "heading": "Keep a journal",
       "level": 3,
       "file": "00-index.org",
-      "line": 550,
+      "line": 552,
       "content": "- Set up with [[file:14-journal.org][Journal]] - Use templates from [[file:15-capture.org][Capture]] - Navigate entries with [[file:21-navigation.org][Navigation]]",
       "path": [
         "Quick Start by Use Case",
@@ -1409,7 +1410,7 @@
       "heading": "Navigate efficiently",
       "level": 3,
       "file": "00-index.org",
-      "line": 555,
+      "line": 557,
       "content": "- Learn [[file:21-navigation.org][Navigation]] techniques - Master [[file:23-speed-commands.org][Speed Commands]] - Use [[file:22-hydra-menus.org][Hydra Menus]] for discovery - Reference [[file:24-keybindings.org][Keybindings]]",
       "path": [
         "Quick Start by Use Case",
@@ -1441,7 +1442,7 @@
       "heading": "Programmatically modify org files",
       "level": 3,
       "file": "00-index.org",
-      "line": 561,
+      "line": 563,
       "content": "CLOSED: [2026-01-16 Fri 20:04] - Use the [[file:27-org-api.org][Org API]] in TypeScript source blocks - Bulk update TODO states, properties, and tags - Extract and transform table data - Automate repetitive org file operations",
       "path": [
         "Quick Start by Use Case",
@@ -1476,7 +1477,7 @@
       "heading": "Configure the extension",
       "level": 3,
       "file": "00-index.org",
-      "line": 568,
+      "line": 570,
       "content": "CLOSED: [2026-01-16 Fri 20:04] - See all options in [[file:26-configuration.org][Configuration]] - Set up keybindings with [[file:24-keybindings.org][Keybindings]] - Customize menus with [[file:22-hydra-menus.org][Hydra Menus]]",
       "path": [
         "Quick Start by Use Case",
@@ -1507,7 +1508,7 @@
       "heading": "Navigation",
       "level": 1,
       "file": "00-index.org",
-      "line": 574,
+      "line": 576,
       "content": "- Index: [[file:00-index.org][Documentation Index]] - Next: [[file:01-getting-started.org][Getting Started]]",
       "path": [],
       "commands": [],
@@ -94335,39 +94336,39 @@
       "level": 1,
       "file": "30-markdown-compatibility.org",
       "line": 10,
-      "content": "CLOSED: [2026-01-19 Mon 09:32] Scimax VS Code provides first-class support for org-mode files, with substantial structural editing and navigation support for Markdown documents as well. This chapter documents which features work in Markdown files and how to use them.",
+      "content": "Scimax VS Code provides first-class support for org-mode files, and most of its structural editing, navigation, task and code block commands also work in Markdown files. In a Markdown file the commands write Markdown syntax: =**bold**=, =[text](target)= links, =# TODO= headings with org-style SCHEDULED / DEADLINE lines, and results that render in the Markdown preview. This chapter documents which features work in Markdown files and how they differ from org.",
       "path": [],
       "commands": [],
       "keybindings": [],
       "keywords": [
         "markdown",
         "compatibility",
-        "closed",
-        "2026-01-19",
-        "mon",
-        "0932",
         "scimax",
         "code",
         "provides",
         "first-class",
         "support",
         "org-mode",
-        "substantial",
         "structural",
         "editing",
         "navigation",
-        "documents",
-        "well",
-        "chapter",
-        "features"
+        "task",
+        "block",
+        "commands",
+        "work",
+        "write",
+        "syntax",
+        "bold",
+        "text",
+        "target"
       ]
     },
     {
       "heading": "Design Philosophy",
       "level": 2,
       "file": "30-markdown-compatibility.org",
-      "line": 17,
-      "content": "The extension treats Markdown as a first-class citizen for *structural editing and navigation*. TODO keywords, priorities, SCHEDULED/DEADLINE lines and hashtags work in Markdown headings with the same syntax as org (see [[*Tasks, Planning and Hashtags in Markdown]]). Clocking and properties drawers are org only. | Category                | Markdown Support | Notes                              | |-------------------------+------------------+------------------------------------| | Structural editi",
+      "line": 20,
+      "content": "Commands that make sense in Markdown write Markdown. TODO keywords, priorities, SCHEDULED/DEADLINE lines and hashtags use the same syntax as org (see [[*Tasks, Planning and Hashtags in Markdown]]). Features that only exist in org syntax (clocking, property drawers, tangling) stay org-only rather than writing org text that Markdown renderers show literally. | Category             | Markdown Support | Notes                                                 | |----------------------+-----------------",
       "path": [
         "Markdown Compatibility"
       ],
@@ -94376,49 +94377,45 @@
       "keywords": [
         "design",
         "philosophy",
-        "extension",
-        "treats",
+        "commands",
+        "make",
+        "sense",
         "markdown",
-        "first-class",
-        "citizen",
-        "structural",
-        "editing",
-        "navigation",
+        "write",
         "todo",
         "keywords",
         "priorities",
         "scheduleddeadline",
         "lines",
         "hashtags",
-        "work",
-        "headings",
         "syntax",
-        "org"
+        "org",
+        "tasks",
+        "planning",
+        "features",
+        "exist",
+        "clocking"
       ]
     },
     {
       "heading": "Supported Features",
       "level": 1,
       "file": "30-markdown-compatibility.org",
-      "line": 40,
-      "content": "CLOSED: [2026-01-19 Mon 09:33]",
+      "line": 45,
+      "content": "",
       "path": [],
       "commands": [],
       "keybindings": [],
       "keywords": [
         "supported",
-        "features",
-        "closed",
-        "2026-01-19",
-        "mon",
-        "0933"
+        "features"
       ]
     },
     {
       "heading": "Document Outline and Navigation",
       "level": 2,
       "file": "30-markdown-compatibility.org",
-      "line": 43,
+      "line": 47,
       "content": "CLOSED: [2026-01-19 Mon 09:33] Markdown files have full support for the VS Code outline view and breadcrumb navigation.",
       "path": [
         "Supported Features"
@@ -94445,8 +94442,8 @@
       "heading": "Outline View",
       "level": 3,
       "file": "30-markdown-compatibility.org",
-      "line": 49,
-      "content": "CLOSED: [2026-01-19 Mon 09:33] The extension provides a =DocumentSymbolProvider= for Markdown that recognizes: - Headings (lines starting with =#=) - Fenced code blocks (=```language= or =~~~language=) - YAML frontmatter title Open the Outline view in the Explorer sidebar or press =Ctrl+Shift+O= to see the document structure.",
+      "line": 53,
+      "content": "The extension provides a =DocumentSymbolProvider= for Markdown that recognizes: - ATX headings (lines starting with =#= to =######=) - Fenced code blocks (=```language= or =~~~language=) - YAML frontmatter title Open the Outline view in the Explorer sidebar or press =Ctrl+Shift+O= to see the document structure.",
       "path": [
         "Supported Features",
         "Document Outline and Navigation"
@@ -94458,15 +94455,12 @@
       "keywords": [
         "outline",
         "view",
-        "closed",
-        "2026-01-19",
-        "mon",
-        "0933",
         "extension",
         "provides",
         "documentsymbolprovider",
         "markdown",
         "recognizes",
+        "atx",
         "headings",
         "lines",
         "starting",
@@ -94475,14 +94469,17 @@
         "blocks",
         "language",
         "yaml",
-        "frontmatter"
+        "frontmatter",
+        "title",
+        "open",
+        "explorer"
       ]
     },
     {
       "heading": "Breadcrumbs",
       "level": 3,
       "file": "30-markdown-compatibility.org",
-      "line": 61,
+      "line": 64,
       "content": "CLOSED: [2026-01-19 Mon 09:33] Breadcrumbs show the current heading hierarchy in the editor title bar. This works automatically for Markdown files.",
       "path": [
         "Supported Features",
@@ -94512,7 +94509,7 @@
       "heading": "Jump to Heading",
       "level": 3,
       "file": "30-markdown-compatibility.org",
-      "line": 67,
+      "line": 70,
       "content": "CLOSED: [2026-01-19 Mon 09:34] Press =C-c C-j= to open a quick-pick menu of all headings in the current file. Type to filter and press Enter to jump.  `Cmd-C/Shift-o' also works.",
       "path": [
         "Supported Features",
@@ -94545,11 +94542,45 @@
       ]
     },
     {
+      "heading": "What Counts as a Heading",
+      "level": 2,
+      "file": "30-markdown-compatibility.org",
+      "line": 76,
+      "content": "A heading is a line that starts with one to six =#= characters followed by a space. Every heading command, speed key, fold, outline entry and refile target ignores =#= lines in these places, because they are not headings there: - inside fenced code blocks (=```= or =~~~=), such as a =# comment= in Python - in YAML front matter at the top of the file (between =---= lines) - inside HTML comments (=<!-- ... -->=) So a speed key pressed at the start of =# install deps= inside a =```bash= block types",
+      "path": [
+        "Supported Features"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "counts",
+        "heading",
+        "line",
+        "starts",
+        "one",
+        "six",
+        "characters",
+        "followed",
+        "space",
+        "command",
+        "speed",
+        "key",
+        "fold",
+        "outline",
+        "entry",
+        "refile",
+        "target",
+        "ignores",
+        "lines",
+        "places"
+      ]
+    },
+    {
       "heading": "Heading Navigation",
       "level": 2,
       "file": "30-markdown-compatibility.org",
-      "line": 73,
-      "content": "CLOSED: [2026-01-19 Mon 09:35] All heading navigation commands work in Markdown: | Key       | Command                   | Description                      | |-----------+---------------------------+----------------------------------| | C-c C-n   | Next Heading              | Move to next heading (any level) | | C-c C-p   | Previous Heading          | Move to previous heading         | | C-c C-u   | Parent Heading            | Move to parent (higher level)    | | C-c C-j   | Jump to Heading     ",
+      "line": 94,
+      "content": "CLOSED: [2026-01-19 Mon 09:35] All heading navigation commands work in Markdown: | Key     | Command          | Description                      | |---------+------------------+----------------------------------| | C-c C-n | Next Heading     | Move to next heading (any level) | | C-c C-p | Previous Heading | Move to previous heading         | | C-c C-u | Parent Heading   | Move to parent (higher level)    | | C-c C-j | Jump to Heading  | Quick-pick menu of all headings  | Speed commands (when cu",
       "path": [
         "Supported Features"
       ],
@@ -94573,7 +94604,7 @@
         "key",
         "command",
         "description",
-        "------------------------------------------------------------------------",
+        "-------------------------------------------------------------",
         "c-c",
         "c-n",
         "next",
@@ -94587,8 +94618,8 @@
       "heading": "Heading Manipulation",
       "level": 2,
       "file": "30-markdown-compatibility.org",
-      "line": 96,
-      "content": "CLOSED: [2026-01-19 Mon 09:35] Change heading levels and move subtrees: | Key         | Command           | Description                      | |-------------+-------------------+----------------------------------| | M-<left>    | Promote Heading   | Decrease level (## -> #)         | | M-<right>   | Demote Heading    | Increase level (# -> ##)         | | M-S-<left>  | Promote Subtree   | Promote heading and all children | | M-S-<right> | Demote Subtree    | Demote heading and all children  | | ",
+      "line": 117,
+      "content": "Change heading levels and move subtrees: | Key         | Command           | Description                      | |-------------+-------------------+----------------------------------| | M-<left>    | Promote Heading   | Decrease level (## -> #)         | | M-<right>   | Demote Heading    | Increase level (# -> ##)         | | M-S-<left>  | Promote Subtree   | Promote heading and all children | | M-S-<right> | Demote Subtree    | Demote heading and all children  | | M-<up>      | Move Subtree Up  ",
       "path": [
         "Supported Features"
       ],
@@ -94599,10 +94630,6 @@
       "keywords": [
         "heading",
         "manipulation",
-        "closed",
-        "2026-01-19",
-        "mon",
-        "0935",
         "change",
         "levels",
         "move",
@@ -94616,15 +94643,19 @@
         "decrease",
         "level",
         "m-right",
-        "demote"
+        "demote",
+        "increase",
+        "m-s-left",
+        "subtree",
+        "children"
       ]
     },
     {
       "heading": "Insert Headings",
       "level": 3,
       "file": "30-markdown-compatibility.org",
-      "line": 110,
-      "content": "CLOSED: [2026-01-19 Mon 09:35] | Key        | Command           | Description                           | |------------+-------------------+---------------------------------------| | C-<return> | Insert Heading    | Insert new heading at same level      | | -          | Insert Subheading | Insert heading one level deeper       | The extension automatically uses =#= characters for Markdown (not =*= like org).",
+      "line": 132,
+      "content": "| Key        | Command           | Description                      | |------------+-------------------+----------------------------------| | C-<return> | Insert Heading    | Insert new heading at same level | | -          | Insert Subheading | Insert heading one level deeper  | The extension uses =#= characters for Markdown (not =*= like org), and a subheading under a =######= heading stays at level 6.",
       "path": [
         "Supported Features",
         "Heading Manipulation"
@@ -94634,14 +94665,10 @@
       "keywords": [
         "insert",
         "headings",
-        "closed",
-        "2026-01-19",
-        "mon",
-        "0935",
         "key",
         "command",
         "description",
-        "----------------------------------------------------------------------",
+        "-----------------------------------------------------------------",
         "c-return",
         "heading",
         "new",
@@ -94650,16 +94677,20 @@
         "one",
         "deeper",
         "extension",
-        "automatically",
-        "uses"
+        "uses",
+        "characters",
+        "markdown",
+        "like",
+        "org",
+        "under"
       ]
     },
     {
       "heading": "Subtree Operations",
       "level": 2,
       "file": "30-markdown-compatibility.org",
-      "line": 120,
-      "content": "CLOSED: [2026-01-19 Mon 09:35] All subtree operations work in Markdown: | Command                    | Speed Key | Description                    | |----------------------------+-----------+--------------------------------| | scimax.org.markSubtree     | @         | Select entire subtree          | | scimax.org.killSubtree     | w         | Cut subtree to clipboard       | | scimax.org.cloneSubtree    | W         | Duplicate subtree below        | | scimax.org.yankSubtree     | y         | Paste",
+      "line": 142,
+      "content": "All subtree operations work in Markdown: | Command                    | Speed Key | Description                    | |----------------------------+-----------+--------------------------------| | scimax.org.markSubtree     | m, @      | Select entire subtree          | | scimax.org.killSubtree     | k         | Cut subtree to clipboard       | | scimax.org.cloneSubtree    | W         | Duplicate subtree below        | | scimax.speed.yankSubtree   | y         | Paste subtree from clipboard   | | s",
       "path": [
         "Supported Features"
       ],
@@ -94667,16 +94698,12 @@
         "scimax.org.markSubtree",
         "scimax.org.killSubtree",
         "scimax.org.cloneSubtree",
-        "scimax.org.yankSubtree"
+        "scimax.speed.yankSubtree"
       ],
       "keybindings": [],
       "keywords": [
         "subtree",
         "operations",
-        "closed",
-        "2026-01-19",
-        "mon",
-        "0935",
         "work",
         "markdown",
         "command",
@@ -94697,8 +94724,8 @@
       "heading": "Yank Subtree Level Adjustment",
       "level": 3,
       "file": "30-markdown-compatibility.org",
-      "line": 134,
-      "content": "CLOSED: [2026-01-19 Mon 09:35] When yanking (pasting) a subtree, the extension automatically adjusts heading levels to match the context: #+BEGIN_SRC markdown ## Target Section <!-- Yank a subtree that was cut from a different level --> <!-- Headings are automatically adjusted to match ## level --> #+END_SRC",
+      "line": 159,
+      "content": "When yanking (pasting) a subtree, the extension adjusts heading levels to match the context. Only real headings change: =#= comments inside code blocks in the subtree are left alone, and no heading goes past level 6. #+BEGIN_SRC markdown ## Target Section <!-- Yank a subtree that was cut from a different level --> <!-- Headings are automatically adjusted to match ## level --> #+END_SRC",
       "path": [
         "Supported Features",
         "Subtree Operations"
@@ -94710,30 +94737,256 @@
         "subtree",
         "level",
         "adjustment",
-        "closed",
-        "2026-01-19",
-        "mon",
-        "0935",
         "yanking",
         "pasting",
         "extension",
-        "automatically",
         "adjusts",
         "heading",
         "levels",
         "match",
         "context",
-        "beginsrc",
+        "real",
+        "headings",
+        "change",
+        "comments",
+        "inside",
+        "code",
+        "blocks",
+        "left"
+      ]
+    },
+    {
+      "heading": "Speed Commands",
+      "level": 2,
+      "file": "30-markdown-compatibility.org",
+      "line": 172,
+      "content": "Speed commands work at the beginning of Markdown headings (column 0 of a heading line, see [[*What Counts as a Heading][What Counts as a Heading]]). | Keys          | Action                                                 | |---------------+--------------------------------------------------------| | n p f b u j g | Navigate: next, previous, sibling, parent, jump, go to | | c C o Tab     | Visibility: cycle, show children, overview, fold       | | U D           | Move subtree up / down           ",
+      "path": [
+        "Supported Features"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "speed",
+        "commands",
+        "work",
+        "beginning",
         "markdown",
-        "target"
+        "headings",
+        "column",
+        "heading",
+        "line",
+        "counts",
+        "keys",
+        "action",
+        "-----------------------------------------------------------------------",
+        "navigate",
+        "next",
+        "previous",
+        "sibling",
+        "parent",
+        "jump",
+        "tab"
+      ]
+    },
+    {
+      "heading": "Folding",
+      "level": 2,
+      "file": "30-markdown-compatibility.org",
+      "line": 192,
+      "content": "CLOSED: [2026-01-19 Mon 09:40] Markdown headings support folding via the standard VS Code folding mechanism: - Press =Tab= on a heading to cycle fold state - Press =Shift+Tab= anywhere for global fold cycling - Use the fold icons in the gutter Fenced code blocks and Pandoc fenced divs (=::: {.callout-note}= ... =:::=, nested to any depth, and MyST =:::{note}= fences) fold as well.",
+      "path": [
+        "Supported Features"
+      ],
+      "commands": [],
+      "keybindings": [
+        "Shift+Tab"
+      ],
+      "keywords": [
+        "folding",
+        "closed",
+        "2026-01-19",
+        "mon",
+        "0940",
+        "markdown",
+        "headings",
+        "support",
+        "via",
+        "standard",
+        "code",
+        "mechanism",
+        "press",
+        "tab",
+        "heading",
+        "cycle",
+        "fold",
+        "state",
+        "shifttab",
+        "anywhere"
+      ]
+    },
+    {
+      "heading": "Text Markup and Comments",
+      "level": 2,
+      "file": "30-markdown-compatibility.org",
+      "line": 204,
+      "content": "The markup commands write Markdown syntax in Markdown files: | Key        | Command                        | Org        | Markdown          | |------------+--------------------------------+------------+-------------------| | M-b, C-c b | scimax.markup.bold             | =*text*=   | =**text**=        | | M-i, C-c i | scimax.markup.italic           | =/text/=   | =*text*=          | | M-u, C-c _ | scimax.markup.underline        | =_text_=   | =<u>text</u>=     | | M-c, C-c ` | scimax.markup.code ",
+      "path": [
+        "Supported Features"
+      ],
+      "commands": [
+        "scimax.markup.bold",
+        "scimax.markup.italic",
+        "scimax.markup.underline",
+        "scimax.markup.code"
+      ],
+      "keybindings": [
+        "M-b",
+        "C-c",
+        "M-i",
+        "M-u",
+        "M-c"
+      ],
+      "keywords": [
+        "text",
+        "markup",
+        "comments",
+        "commands",
+        "write",
+        "markdown",
+        "syntax",
+        "key",
+        "command",
+        "org",
+        "---------------------------------------------------------------------------",
+        "m-b",
+        "c-c",
+        "m-i",
+        "m-u",
+        "utextu",
+        "m-c"
+      ]
+    },
+    {
+      "heading": "Lists and Return",
+      "level": 2,
+      "file": "30-markdown-compatibility.org",
+      "line": 224,
+      "content": "=Return= (DWIM return) in a Markdown file: - On a list item (=-=, =+=, =*= or =1.=), starts the next item; on an empty item, removes it. =*= at column 0 is a list bullet in Markdown, not a heading. - On a checkbox item (=- [ ] ...=), starts a new checkbox item. - In a table, moves to the next row. - Inside a fenced code block, front matter or an HTML comment, inserts a plain newline, so =- key: value= in a YAML block and =| pipes= in code are left alone. =C-c C-c= on a checkbox (~scimax.markdown",
+      "path": [
+        "Supported Features"
+      ],
+      "commands": [
+        "scimax.markdown"
+      ],
+      "keybindings": [
+        "C-c C-c"
+      ],
+      "keywords": [
+        "lists",
+        "return",
+        "dwim",
+        "markdown",
+        "list",
+        "item",
+        "starts",
+        "next",
+        "empty",
+        "removes",
+        "column",
+        "bullet",
+        "heading",
+        "checkbox",
+        "new",
+        "table",
+        "moves",
+        "row",
+        "inside",
+        "fenced"
+      ]
+    },
+    {
+      "heading": "Links",
+      "level": 2,
+      "file": "30-markdown-compatibility.org",
+      "line": 239,
+      "content": "| Key     | Command               | In Markdown                                              | |---------+-----------------------+----------------------------------------------------------| | C-c C-o | scimax.org.openLink   | Follows =[text](target)= and =![alt](image)= links       | | C-c l   | scimax.org.storeLink  | On a heading, stores a link to it                        | | C-c C-l | scimax.org.insertLink | Inserts =[description](target)=; edits the link at point | =C-c C-o= follows: - URLs",
+      "path": [
+        "Supported Features"
+      ],
+      "commands": [
+        "scimax.org.openLink",
+        "scimax.org.storeLink",
+        "scimax.org.insertLink"
+      ],
+      "keybindings": [
+        "C-c C-o",
+        "C-c",
+        "C-c C-l"
+      ],
+      "keywords": [
+        "links",
+        "key",
+        "command",
+        "markdown",
+        "------------------------------------------------------------------------------------------",
+        "c-c",
+        "c-o",
+        "follows",
+        "text",
+        "target",
+        "alt",
+        "image",
+        "heading",
+        "stores",
+        "link",
+        "c-l",
+        "inserts",
+        "description",
+        "edits",
+        "point"
+      ]
+    },
+    {
+      "heading": "Tables",
+      "level": 2,
+      "file": "30-markdown-compatibility.org",
+      "line": 264,
+      "content": "Org table editing works on GitHub-flavored Markdown pipe tables: #+BEGIN_SRC markdown | Name | Count | Price | |:-----|:-----:|------:| | a    |   1   |  2.50 | #+END_SRC - =Tab= / =S-Tab= move between cells and realign the table. - Alignment colons in the delimiter row are kept: =:---= left, =:---:= center, =---:= right. Cells are padded to match, and the alignment moves with its column when you move, insert or delete columns. - The header row and the delimiter row stay at the top. Inserting a ",
+      "path": [
+        "Supported Features"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "tables",
+        "org",
+        "table",
+        "editing",
+        "works",
+        "github-flavored",
+        "markdown",
+        "pipe",
+        "beginsrc",
+        "name",
+        "count",
+        "price",
+        "-----",
+        "------",
+        "250",
+        "endsrc",
+        "tab",
+        "s-tab",
+        "move",
+        "between"
       ]
     },
     {
       "heading": "Code Block Support",
       "level": 2,
       "file": "30-markdown-compatibility.org",
-      "line": 147,
-      "content": "CLOSED: [2026-01-19 Mon 09:37] Markdown fenced code blocks have full support for: - Detection and navigation - Execution via Babel/Jupyter - Block manipulation (split, merge, clone)",
+      "line": 287,
+      "content": "Markdown fenced code blocks support: - Detection and navigation - Execution via Babel/Jupyter - Block manipulation (split, merge, clone, kill, move)",
       "path": [
         "Supported Features"
       ],
@@ -94743,14 +94996,9 @@
         "code",
         "block",
         "support",
-        "closed",
-        "2026-01-19",
-        "mon",
-        "0937",
         "markdown",
         "fenced",
         "blocks",
-        "full",
         "detection",
         "navigation",
         "execution",
@@ -94759,15 +95007,17 @@
         "manipulation",
         "split",
         "merge",
-        "clone"
+        "clone",
+        "kill",
+        "move"
       ]
     },
     {
       "heading": "Fenced Block Syntax",
       "level": 3,
       "file": "30-markdown-compatibility.org",
-      "line": 156,
-      "content": "CLOSED: [2026-01-19 Mon 09:37] Both backtick and tilde fences are supported: #+BEGIN_SRC markdown ```python print(\"Hello from Python\") ``` ~~~javascript console.log(\"Hello from JS\"); ~~~ #+END_SRC",
+      "line": 295,
+      "content": "Both backtick and tilde fences are supported, with the language as a single word or in braces: #+BEGIN_SRC markdown ```python print(\"Hello from Python\") ``` ~~~javascript console.log(\"Hello from JS\"); ~~~ ```{python} print(\"Quarto/Pandoc chunk form\") ``` #+END_SRC The fence must start at column 0. A fence with extra text after the language (=```python title=\"x\"=) or a hyphenated language (=```jupyter-python=) is not treated as a code block; use the braced form (=```{jupyter-python}=) for Jupyter",
       "path": [
         "Supported Features",
         "Code Block Support"
@@ -94778,14 +95028,14 @@
         "fenced",
         "block",
         "syntax",
-        "closed",
-        "2026-01-19",
-        "mon",
-        "0937",
         "backtick",
         "tilde",
         "fences",
         "supported",
+        "language",
+        "single",
+        "word",
+        "braces",
         "beginsrc",
         "markdown",
         "python",
@@ -94793,15 +95043,16 @@
         "hello",
         "javascript",
         "consolelog",
-        "endsrc"
+        "quartopandoc",
+        "chunk"
       ]
     },
     {
       "heading": "Code Block Navigation",
       "level": 3,
       "file": "30-markdown-compatibility.org",
-      "line": 171,
-      "content": "CLOSED: [2026-01-19 Mon 09:53] | Key       | Command              | Description                    | |-----------+----------------------+--------------------------------| | C-c C-v n | Next Source Block    | Jump to next fenced block      | | C-c C-v p | Previous Source Block| Jump to previous fenced block  | | C-c C-v g | Jump to Source Block | Quick-pick menu of all blocks  |",
+      "line": 319,
+      "content": "CLOSED: [2026-01-19 Mon 09:53] | Key       | Command               | Description                   | |-----------+-----------------------+-------------------------------| | C-c C-v n | Next Source Block     | Jump to next fenced block     | | C-c C-v p | Previous Source Block | Jump to previous fenced block | | C-c C-v g | Jump to Source Block  | Quick-pick menu of all blocks |",
       "path": [
         "Supported Features",
         "Code Block Support"
@@ -94837,8 +95088,8 @@
       "heading": "Code Block Execution",
       "level": 3,
       "file": "30-markdown-compatibility.org",
-      "line": 180,
-      "content": "CLOSED: [2026-01-19 Mon 09:50] Press =C-c C-c= inside a fenced code block to execute it. Results appear below the block. Supported languages include Python, JavaScript, TypeScript, Shell, and any language with a Jupyter kernel installed.",
+      "line": 328,
+      "content": "Press =C-c C-c= inside a fenced code block to execute it. Results go below the block, between two HTML comments that the Markdown preview and Pandoc hide: #+BEGIN_SRC markdown ```python print(6 * 7) ``` <!-- results --> ``` 42 ``` <!-- /results --> #+END_SRC Running the block again replaces these results instead of adding a second copy. Images from Jupyter kernels are written as =![](.ob-jupyter/plot.png)=, so they show in the preview. Table results become GFM tables. Supported languages include",
       "path": [
         "Supported Features",
         "Code Block Support"
@@ -94851,31 +95102,31 @@
         "code",
         "block",
         "execution",
-        "closed",
-        "2026-01-19",
-        "mon",
-        "0950",
         "press",
         "c-c",
         "inside",
         "fenced",
         "execute",
         "results",
-        "appear",
         "below",
-        "supported",
-        "languages",
-        "include",
-        "python",
-        "javascript"
+        "between",
+        "two",
+        "html",
+        "comments",
+        "markdown",
+        "preview",
+        "pandoc",
+        "hide",
+        "beginsrc",
+        "python"
       ]
     },
     {
       "heading": "Code Block Manipulation",
       "level": 3,
       "file": "30-markdown-compatibility.org",
-      "line": 189,
-      "content": "CLOSED: [2026-01-19 Mon 09:50] | Command                        | Description                          | |--------------------------------+--------------------------------------| | scimax.ob.splitBlock           | Split block at cursor                | | scimax.ob.mergeWithPrevious    | Merge with previous block            | | scimax.ob.mergeWithNext        | Merge with next block                | | scimax.ob.insertBlockAbove     | Insert new block above               | | scimax.ob.insertBlockBe",
+      "line": 356,
+      "content": "| Command                        | Description                     | |--------------------------------+---------------------------------| | scimax.ob.splitBlock           | Split block at cursor           | | scimax.ob.mergeWithPrevious    | Merge with previous block       | | scimax.ob.mergeWithNext        | Merge with next block           | | scimax.ob.insertBlockAbove     | Insert new block above          | | scimax.ob.insertBlockBelow     | Insert new block below          | | scimax.ob.inser",
       "path": [
         "Supported Features",
         "Code Block Support"
@@ -94885,20 +95136,17 @@
         "scimax.ob.mergeWithPrevious",
         "scimax.ob.mergeWithNext",
         "scimax.ob.insertBlockAbove",
-        "scimax.ob.insertBlockBe"
+        "scimax.ob.insertBlockBelow",
+        "scimax.ob.inser"
       ],
       "keybindings": [],
       "keywords": [
         "code",
         "block",
         "manipulation",
-        "closed",
-        "2026-01-19",
-        "mon",
-        "0950",
         "command",
         "description",
-        "----------------------------------------------------------------------",
+        "-----------------------------------------------------------------",
         "split",
         "cursor",
         "merge",
@@ -94906,177 +95154,166 @@
         "next",
         "insert",
         "new",
-        "above"
+        "above",
+        "below"
       ]
     },
     {
-      "heading": "Speed Commands",
+      "heading": "Tasks and Planning",
       "level": 2,
       "file": "30-markdown-compatibility.org",
-      "line": 205,
-      "content": "CLOSED: [2026-01-19 Mon 09:40] Speed commands work at the beginning of Markdown headings (column 0 of a line starting with =#=).",
-      "path": [
-        "Supported Features"
-      ],
-      "commands": [],
-      "keybindings": [],
-      "keywords": [
-        "speed",
-        "commands",
-        "closed",
-        "2026-01-19",
-        "mon",
-        "0940",
-        "work",
-        "beginning",
-        "markdown",
-        "headings",
-        "column",
-        "line",
-        "starting"
-      ]
-    },
-    {
-      "heading": "Navigation Speed Commands",
-      "level": 3,
-      "file": "30-markdown-compatibility.org",
-      "line": 211,
-      "content": "CLOSED: [2026-01-19 Mon 09:40] | Key | Action                               | |-----+--------------------------------------| | n   | Next heading                         | | p   | Previous heading                     | | f   | Forward to same-level heading        | | b   | Back to same-level heading           | | u   | Up to parent heading                 | | j   | Jump to heading (quick-pick)         | | g   | Go to... (navigation menu)           |",
-      "path": [
-        "Supported Features",
-        "Speed Commands"
-      ],
-      "commands": [],
-      "keybindings": [],
-      "keywords": [
-        "navigation",
-        "speed",
-        "commands",
-        "closed",
-        "2026-01-19",
-        "mon",
-        "0940",
-        "key",
-        "action",
-        "-------------------------------------------",
-        "next",
-        "heading",
-        "previous",
-        "forward",
-        "same-level",
-        "back",
-        "parent",
-        "jump",
-        "quick-pick",
-        "menu"
-      ]
-    },
-    {
-      "heading": "Structure Speed Commands",
-      "level": 3,
-      "file": "30-markdown-compatibility.org",
-      "line": 224,
-      "content": "CLOSED: [2026-01-19 Mon 09:40] | Key | Action                    | |-----+---------------------------| | @   | Mark (select) subtree     | | w   | Kill (cut) subtree        | | W   | Clone subtree             | | y   | Yank (paste) subtree      | | s   | Narrow to subtree         | | S   | Widen (show all)          |",
-      "path": [
-        "Supported Features",
-        "Speed Commands"
-      ],
-      "commands": [],
-      "keybindings": [],
-      "keywords": [
-        "structure",
-        "speed",
-        "commands",
-        "closed",
-        "2026-01-19",
-        "mon",
-        "0940",
-        "key",
-        "action",
-        "--------------------------------",
-        "mark",
-        "select",
-        "subtree",
-        "kill",
-        "cut",
-        "clone",
-        "yank",
-        "paste",
-        "narrow",
-        "widen"
-      ]
-    },
-    {
-      "heading": "Visibility Speed Commands",
-      "level": 3,
-      "file": "30-markdown-compatibility.org",
-      "line": 236,
-      "content": "CLOSED: [2026-01-19 Mon 09:40] | Key | Action               | |-----+----------------------| | c   | Cycle visibility     | | C   | Show children        | | o   | Overview (fold all)  |",
-      "path": [
-        "Supported Features",
-        "Speed Commands"
-      ],
-      "commands": [],
-      "keybindings": [],
-      "keywords": [
-        "visibility",
-        "speed",
-        "commands",
-        "closed",
-        "2026-01-19",
-        "mon",
-        "0940",
-        "key",
-        "action",
-        "---------------------------",
-        "cycle",
-        "show",
-        "children",
-        "overview",
-        "fold"
-      ]
-    },
-    {
-      "heading": "Folding",
-      "level": 2,
-      "file": "30-markdown-compatibility.org",
-      "line": 245,
-      "content": "CLOSED: [2026-01-19 Mon 09:40] Markdown headings support folding via the standard VS Code folding mechanism: - Press =Tab= on a heading to cycle fold state - Press =Shift+Tab= anywhere for global fold cycling - Use the fold icons in the gutter Fenced code blocks and Pandoc fenced divs (=::: {.callout-note}= ... =:::=, nested to any depth, and MyST =:::{note}= fences) fold as well.",
+      "line": 375,
+      "content": "Markdown files have two kinds of task: TODO headings and checkbox tasks. Checkbox tasks carry their dates as =@due(...)= / =@scheduled(...)= tags, and =C-c C-s= / =C-c C-d= above the first heading insert those tags.",
       "path": [
         "Supported Features"
       ],
       "commands": [],
       "keybindings": [
-        "Shift+Tab"
+        "C-c C-s",
+        "C-c C-d"
       ],
       "keywords": [
-        "folding",
-        "closed",
-        "2026-01-19",
-        "mon",
-        "0940",
+        "tasks",
+        "planning",
         "markdown",
+        "two",
+        "kinds",
+        "task",
+        "todo",
         "headings",
-        "support",
-        "via",
-        "standard",
-        "code",
-        "mechanism",
-        "press",
-        "tab",
+        "checkbox",
+        "carry",
+        "dates",
+        "due",
+        "scheduled",
+        "tags",
+        "c-c",
+        "c-s",
+        "c-d",
+        "above",
+        "first",
+        "heading"
+      ]
+    },
+    {
+      "heading": "TODO Headings",
+      "level": 3,
+      "file": "30-markdown-compatibility.org",
+      "line": 381,
+      "content": "A heading whose first word is a TODO keyword is a task, with org-style SCHEDULED / DEADLINE lines under it. See [[*Tasks, Planning and Hashtags in Markdown]] for the syntax, commands and agenda.",
+      "path": [
+        "Supported Features",
+        "Tasks and Planning"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "todo",
+        "headings",
         "heading",
-        "cycle",
-        "fold",
-        "state",
-        "shifttab",
-        "anywhere"
+        "whose",
+        "first",
+        "word",
+        "keyword",
+        "task",
+        "org-style",
+        "scheduled",
+        "deadline",
+        "lines",
+        "under",
+        "tasks",
+        "planning",
+        "hashtags",
+        "markdown",
+        "syntax",
+        "commands",
+        "agenda"
+      ]
+    },
+    {
+      "heading": "Checkbox Tasks",
+      "level": 3,
+      "file": "30-markdown-compatibility.org",
+      "line": 388,
+      "content": "#+BEGIN_SRC markdown - [ ] Email reviewers @due(2026-01-22) @project(paper) #urgent - [x] Upload data @closed(2026-01-10) #+END_SRC | Command                            | Description                              | |------------------------------------+------------------------------------------| | scimax.markdown.insertTask         | Insert a new checkbox task               | | scimax.markdown.toggleCheckbox     | Toggle the checkbox (=C-c C-c=)          | | scimax.markdown.insertPriority     | A",
+      "path": [
+        "Supported Features",
+        "Tasks and Planning"
+      ],
+      "commands": [
+        "scimax.markdown.insertTask",
+        "scimax.markdown.toggleCheckbox",
+        "scimax.markdown.insertPriority"
+      ],
+      "keybindings": [
+        "C-c C-c"
+      ],
+      "keywords": [
+        "checkbox",
+        "tasks",
+        "beginsrc",
+        "markdown",
+        "email",
+        "reviewers",
+        "due",
+        "2026-01-22",
+        "project",
+        "paper",
+        "urgent",
+        "upload",
+        "data",
+        "closed",
+        "2026-01-10",
+        "endsrc",
+        "command",
+        "description",
+        "------------------------------------------------------------------------------",
+        "insert"
+      ]
+    },
+    {
+      "heading": "Export",
+      "level": 2,
+      "file": "30-markdown-compatibility.org",
+      "line": 410,
+      "content": "=C-c C-e= (~scimax.markdown.exportMenu~) exports the Markdown file with Pandoc to HTML, PDF, LaTeX or Word, writing the output next to the source with the new extension. This works for =.md=, =.markdown= and other Markdown extensions; the export never writes over the source file. Code blocks are not executed during export.",
+      "path": [
+        "Supported Features"
+      ],
+      "commands": [
+        "scimax.markdown.exportMenu"
+      ],
+      "keybindings": [
+        "C-c C-e"
+      ],
+      "keywords": [
+        "export",
+        "c-c",
+        "c-e",
+        "exports",
+        "markdown",
+        "pandoc",
+        "html",
+        "pdf",
+        "latex",
+        "word",
+        "writing",
+        "output",
+        "next",
+        "source",
+        "new",
+        "extension",
+        "works",
+        "extensions",
+        "never",
+        "writes"
       ]
     },
     {
       "heading": "Markdown Preview",
       "level": 2,
       "file": "30-markdown-compatibility.org",
-      "line": 257,
+      "line": 418,
       "content": "VS Code's Markdown preview (=Cmd+Shift+V=, =Cmd+K V= to the side) gets these additions from Scimax: - *MyST directives and roles* (Jupyter Book) render as callouts, figures and highlighted code instead of raw =:::{...}= text. See [[file:45-myst-preview.org][MyST Preview]]. - *Reveal Cursor in Markdown Preview* (~scimax.marp.revealInPreview~) scrolls the preview so the element on the cursor line is at its top, opening a preview to the side if none is showing. It relies on ~markdown.preview.scroll",
       "path": [
         "Supported Features"
@@ -95114,7 +95351,7 @@
       "heading": "Quarto Documents",
       "level": 1,
       "file": "30-markdown-compatibility.org",
-      "line": 281,
+      "line": 442,
       "content": "Quarto files (=.qmd=) are Pandoc Markdown with executable code chunks. Scimax works alongside the official [[https://marketplace.visualstudio.com/items?itemName=quarto.quarto][Quarto extension]] (=quarto.quarto=), which gives =.qmd= files their language (~quarto~). Each extension does its own part: | Feature                                           | Provided by | |---------------------------------------------------+-------------| | Syntax highlighting, YAML header completion       | Quarto    ",
       "path": [],
       "commands": [],
@@ -95146,7 +95383,7 @@
       "heading": "Code chunks",
       "level": 2,
       "file": "30-markdown-compatibility.org",
-      "line": 303,
+      "line": 464,
       "content": "Scimax recognizes Quarto's chunk fences (=```{python}=, =```{r, echo=FALSE}=) as code blocks, along with plain fences, =```{.python}= display blocks and =```{=html}= raw blocks. Blocks that scimax inserts in a =.qmd= file use the chunk form, so Quarto executes them; splitting, cloning and merging keep it. =C-c C-c= in a chunk runs it with Quarto's *Run Cell* (~quarto.runCurrentCell~) rather than scimax's own execution, because chunk output belongs in the rendered page, not in the source. Quarto'",
       "path": [
         "Quarto Documents"
@@ -95182,7 +95419,7 @@
       "heading": "Callouts and other divs",
       "level": 2,
       "file": "30-markdown-compatibility.org",
-      "line": 320,
+      "line": 481,
       "content": "Fenced divs (callouts, =::: {.columns}=, panels, =::: {#fig-x}= figure divs) fold from the opening =:::= to its matching close, including nested divs.",
       "path": [
         "Quarto Documents"
@@ -95209,7 +95446,7 @@
       "heading": "Tasks, Planning and Hashtags in Markdown",
       "level": 1,
       "file": "30-markdown-compatibility.org",
-      "line": 325,
+      "line": 486,
       "content": "Markdown headings can be org tasks. A heading may start with a TODO keyword (bare, or in brackets as =[TODO]= so it renders visibly), then a priority cookie; tags are =#tag= words or an org =:a:b:= group at the end of the title. A planning line with SCHEDULED, DEADLINE and CLOSED timestamps may follow the heading directly: #+BEGIN_SRC markdown ## TODO [#A] Write the introduction #paper #writing SCHEDULED: <2026-11-03 Tue> DEADLINE: <2026-11-07 Fri> ## [NEXT] Send the draft to coauthors ## DONE C",
       "path": [],
       "commands": [],
@@ -95241,7 +95478,7 @@
       "heading": "Highlighting",
       "level": 2,
       "file": "30-markdown-compatibility.org",
-      "line": 343,
+      "line": 504,
       "content": "Task headings are coloured as in org: TODO keywords red, done keywords green, and the priority, =:tags:= and the SCHEDULED / DEADLINE / CLOSED line with its timestamps in the theme's org colours. They are semantic tokens (=orgTodo=, =orgDone=, =orgPriority=, =orgTag=, =orgPlanning=, =orgTimestamp=), so =editor.semanticTokenColorCustomizations= can change them.",
       "path": [
         "Tasks, Planning and Hashtags in Markdown"
@@ -95275,7 +95512,7 @@
       "heading": "Keywords",
       "level": 2,
       "file": "30-markdown-compatibility.org",
-      "line": 351,
+      "line": 512,
       "content": "The default keywords are =TODO NEXT WAIT WAITING HOLD SOMEDAY IN-PROGRESS= (active) and =DONE CANCELLED CANCELED= (done). Declare others with a =#+TODO:= line, inside an HTML comment so it does not render: #+BEGIN_SRC markdown <!-- #+TODO: TODO REVIEW | DONE REJECTED --> #+END_SRC Put the declaration somewhere other than the first line when the first line is a heading.",
       "path": [
         "Tasks, Planning and Hashtags in Markdown"
@@ -95309,7 +95546,7 @@
       "heading": "Commands",
       "level": 2,
       "file": "30-markdown-compatibility.org",
-      "line": 364,
+      "line": 525,
       "content": "| Key        | Speed key | Action                                          | |------------+-----------+-------------------------------------------------| | =C-c C-t=  | =t=       | Cycle the heading's TODO keyword                | | =C-c ,=    | =,=       | Set the priority                                | | =C-c C-s=  | =s=       | Schedule the heading the cursor is under        | | =C-c C-d=  | =d=       | Set a deadline on the heading the cursor is under | | =C-c C-c=  |           | Toggle a ",
       "path": [
         "Tasks, Planning and Hashtags in Markdown"
@@ -95349,7 +95586,7 @@
       "heading": "Checkbox Statistics",
       "level": 2,
       "file": "30-markdown-compatibility.org",
-      "line": 383,
+      "line": 544,
       "content": "A =[n/m]= or =[n%]= cookie on a heading counts the checkboxes in its section; on a list item, its direct child checkboxes. Toggling a checkbox (=C-c C-c= or a click) updates the cookies above it, and =C-c C-c= on a line with a cookie recounts it. As in org, a heading's cookie also counts its direct subheadings with TODO keywords when you change one with =C-c C-t=. #+BEGIN_SRC markdown ## Checkboxes [2/3] - [x] task 1 - [x] task 2 - [ ] task 3 #+END_SRC",
       "path": [
         "Tasks, Planning and Hashtags in Markdown"
@@ -95386,7 +95623,7 @@
       "heading": "Agenda",
       "level": 2,
       "file": "30-markdown-compatibility.org",
-      "line": 398,
+      "line": 559,
       "content": "Indexed Markdown files take part in the database agenda and TODO lists (=C-c a=), with priority, tags and planning dates. The first database sync after updating re-indexes Markdown files. The agenda view for the current file (=C-c a < a=) works on a Markdown file; agendas limited to a project read only its org files.",
       "path": [
         "Tasks, Planning and Hashtags in Markdown"
@@ -95422,7 +95659,7 @@
       "heading": "Hashtags",
       "level": 2,
       "file": "30-markdown-compatibility.org",
-      "line": 406,
+      "line": 567,
       "content": "=#tags= in Markdown are drawn in blue, hover and click like in org (see [[file:18-database-search.org::*Hashtags in the Editor][Hashtags in the Editor]]), and are indexed. A heading's own =#= marks are not hashtags, but =#tags= in its title are.",
       "path": [
         "Tasks, Planning and Hashtags in Markdown"
@@ -95452,8 +95689,8 @@
       "heading": "Features Not Available in Markdown",
       "level": 1,
       "file": "30-markdown-compatibility.org",
-      "line": 413,
-      "content": "CLOSED: [2026-01-19 Mon 09:40] The following org-mode features are *not* supported in Markdown files because they require org-specific syntax:",
+      "line": 574,
+      "content": "These org-mode features have no Markdown form and stay org-only. Their commands either do nothing in Markdown files or work only in org files.",
       "path": [],
       "commands": [],
       "keybindings": [],
@@ -95461,71 +95698,57 @@
         "features",
         "available",
         "markdown",
-        "closed",
-        "2026-01-19",
-        "mon",
-        "0940",
-        "following",
         "org-mode",
-        "supported",
-        "because",
-        "require",
-        "org-specific",
-        "syntax"
+        "form",
+        "stay",
+        "org-only",
+        "commands",
+        "either",
+        "nothing",
+        "work",
+        "org"
       ]
     },
     {
-      "heading": "Planning",
+      "heading": "Time and Metadata",
       "level": 2,
       "file": "30-markdown-compatibility.org",
-      "line": 419,
-      "content": "| Feature    | Reason                                         | |------------+------------------------------------------------| | Clocking   | Org syntax: =CLOCK: [timestamp]--[timestamp]=  |",
+      "line": 579,
+      "content": "| Feature    | Reason                                        | |------------+-----------------------------------------------| | Clocking   | Org syntax: =CLOCK: [timestamp]--[timestamp]= | | Properties | Org syntax: =:PROPERTIES:= drawer             | | LOGBOOK    | Org syntax: =:LOGBOOK:= drawer                | The speed keys =I= (clock in), =e= (effort) and =P= (set property) insert org drawers even in Markdown files, where nothing reads them back. Avoid them in Markdown.",
       "path": [
         "Features Not Available in Markdown"
       ],
       "commands": [],
       "keybindings": [],
       "keywords": [
-        "planning",
+        "time",
+        "metadata",
         "feature",
         "reason",
-        "------------------------------------------------------------",
+        "-----------------------------------------------------------",
         "clocking",
         "org",
         "syntax",
         "clock",
-        "timestamp"
-      ]
-    },
-    {
-      "heading": "Metadata",
-      "level": 2,
-      "file": "30-markdown-compatibility.org",
-      "line": 425,
-      "content": "| Feature         | Reason                                    | |-----------------+-------------------------------------------| | Properties      | Org syntax: =:PROPERTIES:= drawer         | | LOGBOOK         | Org syntax: =:LOGBOOK:= drawer            |",
-      "path": [
-        "Features Not Available in Markdown"
-      ],
-      "commands": [],
-      "keybindings": [],
-      "keywords": [
-        "metadata",
-        "feature",
-        "reason",
-        "------------------------------------------------------------",
+        "timestamp",
         "properties",
-        "org",
-        "syntax",
         "drawer",
-        "logbook"
+        "logbook",
+        "speed",
+        "keys",
+        "effort",
+        "set",
+        "property",
+        "insert",
+        "drawers"
       ]
     },
     {
       "heading": "Special Elements",
       "level": 2,
       "file": "30-markdown-compatibility.org",
-      "line": 432,
-      "content": "CLOSED: [2026-01-19 Mon 09:40] | Feature         | Reason                                    | |-----------------+-------------------------------------------| | Inline tasks    | Org syntax: 15+ stars                     | | Dynamic blocks  | Org syntax: =#+BEGIN:=                    | | Special blocks  | Org syntax: =#+BEGIN_QUOTE=, etc.         |",
+      "line": 591,
+      "content": "| Feature             | Reason                                  | |---------------------+-----------------------------------------| | Inline tasks        | Org syntax: 15+ stars                   | | Dynamic blocks      | Org syntax: =#+BEGIN:=                  | | Special blocks      | Org syntax: =#+BEGIN_QUOTE=, etc.       | | Table formulas      | Org syntax: =#+TBLFM:=                  | | Tangle, noweb       | Need org header arguments               | | LaTeX preview       | Inline preview",
       "path": [
         "Features Not Available in Markdown"
       ],
@@ -95534,13 +95757,9 @@
       "keywords": [
         "special",
         "elements",
-        "closed",
-        "2026-01-19",
-        "mon",
-        "0940",
         "feature",
         "reason",
-        "------------------------------------------------------------",
+        "--------------------------------------------------------------",
         "inline",
         "tasks",
         "org",
@@ -95550,34 +95769,35 @@
         "blocks",
         "begin",
         "beginquote",
-        "etc"
+        "etc",
+        "table",
+        "formulas",
+        "tblfm",
+        "tangle",
+        "noweb"
       ]
     },
     {
       "heading": "Tips for Markdown Users",
       "level": 1,
       "file": "30-markdown-compatibility.org",
-      "line": 441,
-      "content": "CLOSED: [2026-01-19 Mon 09:40]",
+      "line": 605,
+      "content": "",
       "path": [],
       "commands": [],
       "keybindings": [],
       "keywords": [
         "tips",
         "markdown",
-        "users",
-        "closed",
-        "2026-01-19",
-        "mon",
-        "0940"
+        "users"
       ]
     },
     {
       "heading": "Maximizing Compatibility",
       "level": 2,
       "file": "30-markdown-compatibility.org",
-      "line": 444,
-      "content": "CLOSED: [2026-01-19 Mon 09:41] To get the most out of Scimax VS Code with Markdown: 1. *Use speed commands* - Position cursor at column 0 of headings for rapid single-key operations 2. *Use fenced code blocks* - The extension fully supports =```language= blocks for execution and manipulation 3. *Use the outline view* - Provides visual navigation similar to org's sparse tree features 4. *Use jump commands* - =C-c C-j= for headings, =C-c C-v g= for code blocks",
+      "line": 607,
+      "content": "To get the most out of Scimax VS Code with Markdown: 1. *Use speed commands* - Position cursor at column 0 of headings for rapid single-key operations 2. *Use fenced code blocks* - The extension supports =```language= blocks for execution and manipulation 3. *Use the outline view* - Provides visual navigation similar to org's sparse tree features 4. *Use jump commands* - =C-c C-j= for headings, =C-c C-v g= for code blocks 5. *Use =# TODO= headings with SCHEDULED / DEADLINE lines* - they show up ",
       "path": [
         "Tips for Markdown Users"
       ],
@@ -95589,10 +95809,6 @@
       "keywords": [
         "maximizing",
         "compatibility",
-        "closed",
-        "2026-01-19",
-        "mon",
-        "0941",
         "get",
         "out",
         "scimax",
@@ -95606,15 +95822,19 @@
         "headings",
         "rapid",
         "single-key",
-        "operations"
+        "operations",
+        "fenced",
+        "blocks",
+        "extension",
+        "supports"
       ]
     },
     {
       "heading": "When to Use Org-Mode Instead",
       "level": 2,
       "file": "30-markdown-compatibility.org",
-      "line": 460,
-      "content": "CLOSED: [2026-01-19 Mon 09:41] Consider using org-mode files when you need: - Task management with TODO states and priorities - Scheduling and deadlines with agenda integration - Time tracking with clocking - Inherited properties and tags - Advanced export features Org files can be exported to Markdown when sharing with others who don't use org-mode.",
+      "line": 625,
+      "content": "Consider using org-mode files when you need: - Time tracking with clocking - Inherited properties and tags - Per-block header arguments, tangling and noweb - Table formulas - Advanced export features Org files can be exported to Markdown when sharing with others who don't use org-mode.",
       "path": [
         "Tips for Markdown Users"
       ],
@@ -95623,31 +95843,31 @@
       "keywords": [
         "org-mode",
         "instead",
-        "closed",
-        "2026-01-19",
-        "mon",
-        "0941",
         "consider",
         "need",
-        "task",
-        "management",
-        "todo",
-        "states",
-        "priorities",
-        "scheduling",
-        "deadlines",
-        "agenda",
-        "integration",
         "time",
         "tracking",
-        "clocking"
+        "clocking",
+        "inherited",
+        "properties",
+        "tags",
+        "per-block",
+        "header",
+        "arguments",
+        "tangling",
+        "noweb",
+        "table",
+        "formulas",
+        "advanced",
+        "export",
+        "features"
       ]
     },
     {
       "heading": "Related Topics",
       "level": 1,
       "file": "30-markdown-compatibility.org",
-      "line": 474,
+      "line": 638,
       "content": "- [[file:45-myst-preview.org][MyST Markdown Preview]] - Jupyter Book directives and roles in the preview - [[file:44-marp.org][Marp Slides]] - jump from a Marp slide preview to its source - [[file:25-commands.org][Commands]] - Markdown File Export commands (Pandoc) - [[file:02-document-structure.org][Document Structure]] - Full org-mode structure documentation - [[file:23-speed-commands.org][Speed Commands]] - Complete speed command reference - [[file:07-source-blocks.org][Source Blocks]] - Code",
       "path": [],
       "commands": [],
@@ -95679,7 +95899,7 @@
       "heading": "Navigation",
       "level": 1,
       "file": "30-markdown-compatibility.org",
-      "line": 487,
+      "line": 656,
       "content": "CLOSED: [2026-01-19 Mon 09:44] - Previous: [[file:29-unsupported-features.org][Unsupported Features]] - Index: [[file:00-index.org][Documentation Index]] - Next: [[file:31-publishing.org][Publishing]]",
       "path": [],
       "commands": [],

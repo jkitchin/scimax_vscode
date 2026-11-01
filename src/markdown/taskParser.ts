@@ -66,6 +66,12 @@ export function parseTaskLine(line: string, filePath: string, lineNumber: number
             case 'due':
                 task.due = parseDate(value);
                 break;
+            case 'deadline':
+                // @deadline(...) is an alias for @due(...); an explicit @due wins
+                if (!task.rawMetadata.has('due')) {
+                    task.due = parseDate(value);
+                }
+                break;
             case 'scheduled':
                 task.scheduled = parseDate(value);
                 break;
@@ -79,40 +85,93 @@ export function parseTaskLine(line: string, filePath: string, lineNumber: number
                 task.project = value;
                 break;
         }
-
-        // Remove metadata from title
-        task.title = task.title.replace(metaMatch[0], '').trim();
     }
 
-    // Parse #tags
-    const tagPattern = /#([\w-]+)/g;
-    let tagMatch;
-    while ((tagMatch = tagPattern.exec(content)) !== null) {
-        task.tags.push(tagMatch[1]);
-        // Remove tag from title
-        task.title = task.title.replace(tagMatch[0], '').trim();
-    }
-
-    // Clean up extra whitespace in title
-    task.title = task.title.replace(/\s+/g, ' ').trim();
+    task.tags = extractTags(content);
+    task.title = stripTaskMetadata(content);
 
     return task;
+}
+
+// A #tag must start a line or follow whitespace and begin with a letter, so
+// `#123` and URL fragments (`http://x.org/page#section`) are not tags.
+const TAG_PATTERN = /(^|\s)#([A-Za-z][\w-]*)/g;
+
+/**
+ * Extract #tags from task/heading text
+ */
+export function extractTags(text: string): string[] {
+    const tags: string[] = [];
+    for (const m of text.matchAll(TAG_PATTERN)) {
+        tags.push(m[2]);
+    }
+    return tags;
+}
+
+/**
+ * Remove @key(value) metadata and #tags from text, collapsing whitespace
+ */
+export function stripTaskMetadata(text: string): string {
+    return text
+        .replace(/@\w+\([^)]+\)/g, ' ')
+        .replace(TAG_PATTERN, '$1')
+        .replace(/\s+/g, ' ')
+        .trim();
+}
+
+/**
+ * Set a date metadata tag (`@scheduled(...)`, `@due(...)`) on a markdown
+ * heading or checkbox task line: an existing tag of the same kind is replaced
+ * in place (for `due`, a legacy `@deadline(...)` too), otherwise the tag is
+ * appended to the end of the line. Returns undefined when the line is neither
+ * a heading nor a task.
+ */
+export function setDateTagOnLine(line: string, key: 'scheduled' | 'due', dateStr: string): string | undefined {
+    if (!/^#{1,6}[ \t]/.test(line) && !/^\s*[-*+]\s*\[[ xX]\]/.test(line)) {
+        return undefined;
+    }
+    const tag = `@${key}(${dateStr})`;
+    const keys = key === 'due' ? 'due|deadline' : key;
+    const existing = new RegExp(`([ \\t]*)@(?:${keys})\\([^)]*\\)`, 'g');
+    if (existing.test(line)) {
+        let first = true;
+        return line
+            .replace(existing, (_m, ws: string) => {
+                if (first) { first = false; return ws + tag; }
+                return '';
+            })
+            .replace(/[ \t]+$/, '');
+    }
+    const trimmed = line.replace(/[ \t]+$/, '');
+    return `${trimmed} ${tag}`;
+}
+
+/**
+ * Build a local date, rejecting out-of-range parts (no silent rollover:
+ * 2026-02-30 is invalid rather than March 2).
+ */
+function makeValidDate(year: number, month: number, day: number): Date | undefined {
+    const d = new Date(year, month - 1, day);
+    if (d.getFullYear() !== year || d.getMonth() !== month - 1 || d.getDate() !== day) {
+        return undefined;
+    }
+    return d;
 }
 
 /**
  * Parse a date string (supports various formats)
  */
-function parseDate(dateStr: string): Date | undefined {
+export function parseDate(dateStr: string): Date | undefined {
     // Try YYYY-MM-DD
     const isoMatch = dateStr.match(/^(\d{4})-(\d{2})-(\d{2})$/);
     if (isoMatch) {
-        return new Date(parseInt(isoMatch[1]), parseInt(isoMatch[2]) - 1, parseInt(isoMatch[3]));
+        return makeValidDate(parseInt(isoMatch[1]), parseInt(isoMatch[2]), parseInt(isoMatch[3]));
     }
 
     // Try MM/DD/YYYY
     const usMatch = dateStr.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
     if (usMatch) {
-        return new Date(parseInt(usMatch[3]), parseInt(usMatch[1]) - 1, parseInt(usMatch[2]));
+        return makeValidDate(parseInt(usMatch[3]), parseInt(usMatch[1]), parseInt(usMatch[2]));
     }
 
     // Try natural language (today, tomorrow, next week, etc.)
@@ -135,8 +194,17 @@ function parseDate(dateStr: string): Date | undefined {
     }
 
     // Try parsing with Date constructor as fallback
+    // (rejecting rollover such as "Feb 30 2026" -> Mar 2, and other
+    // numeric forms that look like dates but did not match above)
+    if (/^\d+[-/]\d+[-/]\d+$/.test(dateStr.trim())) {
+        return undefined;
+    }
     const parsed = new Date(dateStr);
     if (!isNaN(parsed.getTime())) {
+        const dayNumbers = (dateStr.match(/\b\d{1,2}\b/g) || []).map(n => parseInt(n));
+        if (dayNumbers.length > 0 && !dayNumbers.includes(parsed.getDate())) {
+            return undefined;
+        }
         return parsed;
     }
 
@@ -205,19 +273,22 @@ export function formatRelativeDate(date: Date): string {
 }
 
 /**
- * Check if a task is overdue
+ * Check if a task is overdue (past due, or scheduled in the past and not done)
  */
 export function isOverdue(task: MarkdownTask): boolean {
     if (task.completed) return false;
-    if (!task.due) return false;
 
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    const due = new Date(task.due);
-    due.setHours(0, 0, 0, 0);
-
-    return due < today;
+    // An incomplete task whose due date OR scheduled date has passed is
+    // overdue (scheduled-in-the-past tasks carry over, as in the org agenda).
+    return [task.due, task.scheduled].some(date => {
+        if (!date) return false;
+        const d = new Date(date);
+        d.setHours(0, 0, 0, 0);
+        return d < today;
+    });
 }
 
 /**

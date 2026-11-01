@@ -165,6 +165,15 @@ const FORMAT_EXTENSIONS: Record<MarkdownExportFormat, string> = {
 };
 
 /**
+ * Default output path for an export: the input path with its extension
+ * (.md, .markdown, .qmd, ...) replaced by the format's extension.
+ */
+export function defaultExportPath(inputPath: string, format: MarkdownExportFormat): string {
+    const parsed = path.parse(inputPath);
+    return path.join(parsed.dir, parsed.name + FORMAT_EXTENSIONS[format]);
+}
+
+/**
  * Export a markdown file to the specified format using pandoc.
  *
  * @param content - The markdown content to export
@@ -186,8 +195,10 @@ export async function exportMarkdown(
         throw new Error('pandoc is not installed. Install it from https://pandoc.org/installing.html');
     }
 
-    const ext = FORMAT_EXTENSIONS[format];
-    const outPath = outputPath || inputPath.replace(/\.md$/i, ext);
+    const outPath = outputPath || defaultExportPath(inputPath, format);
+    if (path.resolve(outPath) === path.resolve(inputPath)) {
+        throw new Error(`Refusing to export over the source file ${inputPath}`);
+    }
     const cwd = path.dirname(inputPath);
 
     // Write content to a temp file so unsaved editor changes are exported

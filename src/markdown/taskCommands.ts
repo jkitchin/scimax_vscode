@@ -9,22 +9,51 @@ import {
     isOverdue,
     isDueToday,
     isScheduledToday,
-    sortTasks
+    sortTasks,
+    setDateTagOnLine
 } from './taskParser';
 import { parseRelativeDate } from '../utils/dateParser';
 import { DAY_NAMES_SHORT, MONTH_NAMES_FULL } from '../utils/dateConstants';
-import { markdownFencedLineMask } from '../shared/markdownFences';
+import { markdownNonProseMask } from '../shared/markdownFences';
+
+/**
+ * Insert an @due / @scheduled tag (used above the first heading). On a
+ * checkbox task line the tag is set on the line itself (replacing an
+ * existing tag of the same kind, else appended at the end of the line);
+ * elsewhere it is inserted at the cursor.
+ */
+async function insertDateTag(key: 'due' | 'scheduled', title: string): Promise<void> {
+    const editor = vscode.window.activeTextEditor;
+    if (!editor) return;
+    const document = editor.document;
+    const lineNumber = editor.selection.active.line;
+
+    const date = await pickDate(title);
+    if (!date) return;
+
+    const dateStr = formatDate(date);
+    const line = document.lineAt(lineNumber);
+    const newLine = setDateTagOnLine(line.text, key, dateStr);
+    await editor.edit(editBuilder => {
+        if (newLine !== undefined) {
+            editBuilder.replace(line.range, newLine);
+        } else {
+            editBuilder.insert(editor.selection.active, `@${key}(${dateStr}) `);
+        }
+    });
+}
 
 /**
  * The 0-based line of the `#` heading whose section holds the cursor
- * (skipping `#` lines in code fences), or -1 above the first heading.
+ * (skipping `#` lines in code fences, front matter and HTML comments), or
+ * -1 above the first heading.
  * C-c C-s / C-c C-d there add an org-style SCHEDULED / DEADLINE line under
  * that heading (src/parser/markdownTasks.ts), as they do anywhere in an org
  * entry.
  */
 function enclosingMarkdownHeading(editor: vscode.TextEditor): number {
     const lines = editor.document.getText().split(/\r?\n/);
-    const inFence = markdownFencedLineMask(lines);
+    const inFence = markdownNonProseMask(lines);
     for (let i = editor.selection.active.line; i >= 0; i--) {
         if (!inFence[i] && /^ {0,3}#{1,6}(?:\s|$)/.test(lines[i])) return i;
     }
@@ -45,12 +74,10 @@ async function planMarkdown(keyword: 'SCHEDULED' | 'DEADLINE'): Promise<void> {
     }
 
     // No heading above: a checkbox task in the @due / @scheduled syntax.
-    const date = await pickDate(keyword === 'DEADLINE' ? 'Select due date' : 'Select scheduled date');
-    if (!date) return;
-    const tag = keyword === 'DEADLINE' ? 'due' : 'scheduled';
-    await editor.edit(editBuilder => {
-        editBuilder.insert(editor.selection.active, `@${tag}(${formatDate(date)}) `);
-    });
+    await insertDateTag(
+        keyword === 'DEADLINE' ? 'due' : 'scheduled',
+        keyword === 'DEADLINE' ? 'Select due date' : 'Select scheduled date'
+    );
 }
 
 /** C-c C-d: a DEADLINE for the heading the cursor is under. */

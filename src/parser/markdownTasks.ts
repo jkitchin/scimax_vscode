@@ -16,7 +16,7 @@
  * Pure: no vscode imports, so the database and the CLI can use it.
  */
 
-import { markdownFencedLineMask } from '../shared/markdownFences';
+import { markdownNonProseMask } from '../shared/markdownFences';
 
 /** Same list as DEFAULT_TODO_STATES in src/org/todoStates.ts. */
 const DEFAULT_ACTIVE = ['TODO', 'NEXT', 'WAIT', 'WAITING', 'HOLD', 'SOMEDAY', 'IN-PROGRESS'];
@@ -140,7 +140,7 @@ function splitHeadingText(text: string, keywords: MarkdownTaskKeywords): SplitTi
 /** The headings of a Markdown document, with their task metadata. */
 export function parseMarkdownHeadings(content: string, keywords = markdownTodoKeywords(content)): MarkdownHeading[] {
     const lines = content.split('\n');
-    const inFence = markdownFencedLineMask(lines);
+    const inFence = markdownNonProseMask(lines);
     const headings: MarkdownHeading[] = [];
     let pos = 0;
     for (let i = 0; i < lines.length; i++) {
@@ -181,7 +181,7 @@ export function parseMarkdownHeadings(content: string, keywords = markdownTodoKe
 export function markdownToOrgOutline(content: string): string {
     const keywords = markdownTodoKeywords(content);
     const lines = content.split('\n');
-    const inFence = markdownFencedLineMask(lines);
+    const inFence = markdownNonProseMask(lines);
     const out: string[] = [];
     // Declare the document's keywords so the org parser recognises them.
     const declared = `#+TODO: ${[...keywords.active].join(' ')} | ${[...keywords.done].join(' ')}`;
@@ -241,7 +241,7 @@ export interface MarkdownTaskToken {
  */
 export function markdownTaskTokens(content: string, keywords = markdownTodoKeywords(content)): MarkdownTaskToken[] {
     const lines = content.split('\n');
-    const inFence = markdownFencedLineMask(lines);
+    const inFence = markdownNonProseMask(lines);
     const tokens: MarkdownTaskToken[] = [];
     for (let i = 0; i < lines.length; i++) {
         if (inFence[i]) continue;
