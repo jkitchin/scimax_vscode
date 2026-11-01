@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.13.0] - 2026-11-01
+
 ### Added
 
 - **Email a heading** - *Scimax: Email Heading* (`scimax.org.emailHeading`) opens a compose window for the heading at point, in Gmail or the default mail app (`scimax.emailHeading.client`). The headline is the subject and the subtree, with links as plain text, is the body; `TO`, `CC` and `BCC` properties fill the recipients. The heading's `:ID:` is added to the body (`scimax.emailHeading.includeId`), and *Go to ID* with no argument asks for one, so a reply can be traced back to the heading.
