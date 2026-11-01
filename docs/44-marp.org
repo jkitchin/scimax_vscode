@@ -158,8 +158,10 @@ section {
 }
 #+END_SRC
 
-Citations are rendered by the two previews only; Marp exports (HTML, PDF,
-PowerPoint) still show them as typed.
+The slideshow (Present) and Marp exports (HTML, PDF, PowerPoint, images)
+render citations and each slide's references the same way. Marp CLI is given
+the citation plugins as its engine, along with the reference manager's
+entries for the keys the deck cites.
 
 * 👀 Slideshow
 

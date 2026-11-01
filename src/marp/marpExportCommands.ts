@@ -14,6 +14,7 @@ import * as path from 'path';
 import { pathToFileURL } from 'url';
 import * as vscode from 'vscode';
 import { checkPandoc } from '../markdown/markdownExport';
+import { fallbackEntriesFor } from '../markdown/citationPreview';
 import { isMarpText, slideStarts } from './slideRenderer';
 import { previewedMarkdownDocument } from '../markdown/previewSource';
 import { currentMarpDeck } from './currentDeck';
@@ -499,11 +500,21 @@ async function convertWithMarp(
         allowLocalFiles,
         // Presenter decks may use HTML widgets (e.g. iframes), as marp-present always allowed.
         enableHtml: presenter || marpHtmlEnabled(document),
-        engine: presenter ? context.asAbsolutePath(path.join('media', 'marpPresent', 'engine.cjs')) : undefined,
+        // Citations for every format, and the presenter tools' fences (cliEngine.ts)
+        engine: context.asAbsolutePath(path.join('out', 'marp', 'cliEngine.js')),
         themeFiles: marpThemeUris(document).filter(uri => fs.existsSync(uri.fsPath)).map(uri => uri.fsPath),
         browserPath: config.get<string>('browserPath', '').trim() || undefined,
     });
-    const env = { ...process.env };
+    const env: NodeJS.ProcessEnv = { ...process.env, SCIMAX_MARP_DECK: input, SCIMAX_MARP_PRESENTER: presenter ? '1' : '' };
+    // Reference manager entries the deck may cite, for keys its own bibliography lacks
+    const entries = fallbackEntriesFor(document.getText());
+    const entriesFile = Object.keys(entries).length
+        ? path.join(os.tmpdir(), `scimax-marp-cite-${randomBytes(16).toString('hex')}.json`)
+        : undefined;
+    if (entriesFile) {
+        await fs.promises.writeFile(entriesFile, JSON.stringify(entries), { encoding: 'utf8', mode: 0o600, flag: 'wx' });
+        env.SCIMAX_MARP_CITATIONS = entriesFile;
+    }
     const soffice = config.get<string>('libreOfficePath', '').trim();
     if (soffice) {
         env.SOFFICE_PATH = soffice;
@@ -518,6 +529,10 @@ async function convertWithMarp(
     } catch (error) {
         vscode.window.showErrorMessage(`Could not run Marp CLI: ${error instanceof Error ? error.message : String(error)}`);
         return false;
+    } finally {
+        if (entriesFile) {
+            await fs.promises.rm(entriesFile, { force: true });
+        }
     }
     if (result.cancelled) {
         vscode.window.setStatusBarMessage('Marp export cancelled', 3000);

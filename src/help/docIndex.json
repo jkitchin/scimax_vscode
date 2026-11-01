@@ -1,5 +1,5 @@
 {
-  "buildDate": "2026-11-01T21:16:52.356Z",
+  "buildDate": "2026-11-01T21:23:24.167Z",
   "count": 3753,
   "entries": [
     {
@@ -108035,7 +108035,7 @@
       "heading": "Slideshow",
       "level": 1,
       "file": "44-marp.org",
-      "line": 164,
+      "line": 166,
       "content": "To present, Scimax makes Marp's HTML slideshow of the deck and opens it in the browser. Marp CLI builds it (see [[*Marp CLI][Marp CLI]]), and it is written to a private folder of the extension's storage, one per deck, so nothing is added next to the deck. Relative images still load from the deck's folder. Unsaved changes are saved first. | Command                                                                                   | Starts at                  | |------------------------------------",
       "path": [],
       "commands": [],
@@ -108067,7 +108067,7 @@
       "heading": "Live reload",
       "level": 2,
       "file": "44-marp.org",
-      "line": 213,
+      "line": 215,
       "content": "While the slideshow is open, saving the deck rebuilds it and the browser reloads at the slide you are editing (the one under the cursor when you save), so you can fix a slide and see it in the talk's layout without presenting again. Ink is kept. Edits are picked up only on save, and only for a slideshow started from this VS Code window. The page checks for a new build once a second by loading a small ~<name>.html.version.js~ file written next to it, so it needs no server. Turn it off with ~scima",
       "path": [
         "Slideshow"
@@ -108101,7 +108101,7 @@
       "heading": "Presenting from an org file",
       "level": 2,
       "file": "44-marp.org",
-      "line": 225,
+      "line": 227,
       "content": "A ~marp:~ link in an org file launches the slideshow when clicked (or with =C-c C-o= on it): #+begin_example [[marp:talks/group-meeting.md][Group meeting slides]] [[marp:talks/group-meeting.md::5][Start at slide 5]] #+end_example The path is relative to the org file (absolute paths and ~~/~ work too), and ~::N~ starts at slide /N/. When the org file is exported, the link becomes an ordinary link to the ~.md~ file. Hovering over the link shows a picture of the deck's first slide, the number of sl",
       "path": [
         "Slideshow"
@@ -108137,7 +108137,7 @@
       "heading": "Directives",
       "level": 1,
       "file": "44-marp.org",
-      "line": 245,
+      "line": 247,
       "content": "Marp directives set a deck's theme, pagination, headers and so on. Global directives go in the front matter. Local directives go in the front matter (for every slide) or in an HTML comment (from that slide on); with a leading underscore, ~<!-- _class: lead -->~, they apply to that one slide. In a Marp deck, Scimax completes directive names as you type them at the start of a front matter line or inside ~<!-- -->~, then their values, and shows what a directive does when you hover over it. | Direct",
       "path": [],
       "commands": [],
@@ -108169,7 +108169,7 @@
       "heading": "Slide Thumbnails",
       "level": 1,
       "file": "44-marp.org",
-      "line": 268,
+      "line": 270,
       "content": "The *Slide Sorter* is an editor tab that shows a thumbnail of every slide in the active deck in a grid, like a slide sorter in PowerPoint or Keynote. Open it with =Cmd+Shift+V= (=Ctrl+Shift+V=) in the deck, ~Scimax: Open Marp Slide Sorter~ ([[cmd:scimax.marp.openSlideSorter]]), or the layout button in the deck's editor title bar. It opens beside the deck, and like any tab it can be split, moved or dragged into its own window. It reopens after a reload. The sorter follows the active Marp deck and",
       "path": [],
       "commands": [
@@ -108206,7 +108206,7 @@
       "heading": "Zoom",
       "level": 2,
       "file": "44-marp.org",
-      "line": 300,
+      "line": 302,
       "content": "The slider in the toolbar at the top sets the thumbnail width, from 80 to 640 pixels. The thumbnails flow into as many columns as fit. The default is 240 pixels, and the sorter remembers the zoom. The keys =+= and =-= step the zoom and =0= resets it; they are plain keys because =Cmd+==/=Cmd+-= zoom the whole VS Code window. A trackpad pinch (or =Ctrl= + scroll wheel) zooms too. The thumbnails re-render as you type (after a short pause). Slide boundaries come from Marp itself, so ~---~, ~***~ and",
       "path": [
         "Slide Thumbnails"
@@ -108240,7 +108240,7 @@
       "heading": "Editing Slides",
       "level": 1,
       "file": "44-marp.org",
-      "line": 325,
+      "line": 327,
       "content": "The Slide Sorter can rearrange a deck without scrolling through the Markdown. Each change edits the ~.md~ file directly and is a single edit, so one Undo in the editor (or =Cmd+Z= in the sorter) reverses it. Only the lines that change are rewritten; the rest of the file is left exactly as it was.",
       "path": [],
       "commands": [],
@@ -108272,7 +108272,7 @@
       "heading": "Selecting slides",
       "level": 2,
       "file": "44-marp.org",
-      "line": 332,
+      "line": 334,
       "content": "Click a thumbnail to select it, =Cmd+click= (=Ctrl+click= on Windows and Linux) to add or remove one, and =Shift+click= to select a range. =Left= and =Right= move the selection by one slide and =Up= and =Down= by one row of the grid (=Shift= extends it), =Home= and =End= jump to the first and last slide, and =Cmd+A= selects them all. Right-clicking a slide that is not selected selects just that slide, as in the Explorer.",
       "path": [
         "Editing Slides"
@@ -108309,7 +108309,7 @@
       "heading": "Drag and drop",
       "level": 2,
       "file": "44-marp.org",
-      "line": 341,
+      "line": 343,
       "content": "Drag a thumbnail to move its slide. A bar shows where it will land: between two thumbnails in the grid, or between two rows in a single column. Dragging a selected thumbnail moves the whole selection, in order, as one block, even when the selected slides were not next to each other. Dropping past the last thumbnail moves the slides to the end.",
       "path": [
         "Editing Slides"
@@ -108343,7 +108343,7 @@
       "heading": "The slide menu",
       "level": 2,
       "file": "44-marp.org",
-      "line": 349,
+      "line": 351,
       "content": "Right-click a thumbnail for these commands. They act on all selected slides when the clicked slide is part of the selection. | Menu item               | Command                                   | Key in the view           | |-------------------------+-------------------------------------------+---------------------------| | Edit with Claude Code…  | [[cmd:scimax.marp.slide.editWithClaude]]  |                           | | Go to Source            | [[cmd:scimax.marp.slide.gotoSource]]      | =En",
       "path": [
         "Editing Slides"
@@ -108380,7 +108380,7 @@
       "heading": "How the Markdown changes",
       "level": 2,
       "file": "44-marp.org",
-      "line": 386,
+      "line": 388,
       "content": "Copy and Cut put the slides' Markdown on the system clipboard, joined with ~---~, so you can also paste them into another deck or any file. Paste reads Markdown from the clipboard: text copied from the view comes back as the same slides, and any other text becomes one new slide.",
       "path": [
         "Editing Slides"
@@ -108414,7 +108414,7 @@
       "heading": "Pasting slides with images",
       "level": 2,
       "file": "44-marp.org",
-      "line": 393,
+      "line": 395,
       "content": "Slides often show images by relative path, such as ~![bg](figs/a.png)~, which would break in a deck in another folder. So Copy and Cut write every relative path in the slides as an absolute one, and Paste makes them relative to the deck you paste into. Pasting back into the same deck gives the original paths. This covers Markdown images and links, ~<img>~, ~<video>~ and other HTML ~src~ attributes, and ~url(...)~ in directives such as ~<!-- _backgroundImage: url(bg.png) -->~ and in ~<style scope",
       "path": [
         "Editing Slides"
@@ -108448,7 +108448,7 @@
       "heading": "Hidden slides",
       "level": 2,
       "file": "44-marp.org",
-      "line": 429,
+      "line": 431,
       "content": "Marp has no way to skip a slide, so Hide Slide wraps it in a comment that Scimax recognizes: #+begin_example <!-- scimax-hidden # Backup results Details for questions. scimax-hidden --> #+end_example Marp does not render the comment, so the slide is left out of the preview and of every export. Its thumbnail stays in the sorter, dimmed and marked /hidden/, and can be moved, copied or unhidden like any other slide. Any ~-->~ inside the hidden slide (such as its own directive comments) is written a",
       "path": [
         "Editing Slides"
@@ -108482,7 +108482,7 @@
       "heading": "The Marp Menu",
       "level": 1,
       "file": "44-marp.org",
-      "line": 451,
+      "line": 453,
       "content": "Right-click in a Marp deck for the *Marp* menu. It acts on the slide under the cursor, or on every slide the selection touches. Each change is one edit, so one undo reverses it. All of these are in the command palette too, as /Scimax Marp: .../.",
       "path": [],
       "commands": [],
@@ -108512,7 +108512,7 @@
       "heading": "Slides",
       "level": 2,
       "file": "44-marp.org",
-      "line": 458,
+      "line": 460,
       "content": "| Item                     | Command                                    | What it does                                                      | |--------------------------+--------------------------------------------+-------------------------------------------------------------------| | New Slide After This One | [[cmd:scimax.marp.newSlide]]               | An empty slide after the current one, with the cursor in it       | | Split Slide at Cursor    | [[cmd:scimax.marp.splitSlide]]             | ",
       "path": [
         "The Marp Menu"
@@ -108542,7 +108542,7 @@
       "heading": "New Slide from Layout",
       "level": 2,
       "file": "44-marp.org",
-      "line": 469,
+      "line": 471,
       "content": "Each adds a slide after the current one, with tab stops to fill in. | Item                     | Command                               | What it does                                                                                | |--------------------------+---------------------------------------+---------------------------------------------------------------------------------------------| | Title Slide              | [[cmd:scimax.marp.layout.title]]      | Centered title, subtitle, author and ",
       "path": [
         "The Marp Menu"
@@ -108576,7 +108576,7 @@
       "heading": "Insert",
       "level": 2,
       "file": "44-marp.org",
-      "line": 485,
+      "line": 487,
       "content": "Inserted at the cursor, as its own paragraph. | Item                  | Command                               | What it does                                                                                           | |-----------------------+---------------------------------------+--------------------------------------------------------------------------------------------------------| | Image...              | [[cmd:scimax.marp.insert.image]]      | Pick a file, then inline, inline with a width,",
       "path": [
         "The Marp Menu"
@@ -108605,7 +108605,7 @@
       "heading": "This Slide",
       "level": 2,
       "file": "44-marp.org",
-      "line": 501,
+      "line": 503,
       "content": "Each sets a directive for just this slide, ~<!-- _name: value -->~, at the top of the slide (or of every selected slide), replacing one already there. Choose /(remove)/ or leave the text empty to remove it. | Item                  | Command                                       | What it does                                                     | |-----------------------+-----------------------------------------------+------------------------------------------------------------------| | Class... ",
       "path": [
         "The Marp Menu"
@@ -108639,7 +108639,7 @@
       "heading": "Deck",
       "level": 2,
       "file": "44-marp.org",
-      "line": 516,
+      "line": 518,
       "content": "CLOSED: [2026-10-03 Sat 09:02] Each sets a key in the front matter, or removes it. | Item                             | Command                                 | What it does                                           | |----------------------------------+-----------------------------------------+--------------------------------------------------------| | Theme...                         | [[cmd:scimax.marp.deck.theme]]          | Built-in and custom themes, or a new custom theme      | | Size...",
       "path": [
         "The Marp Menu"
@@ -108675,7 +108675,7 @@
       "heading": "Theme",
       "level": 2,
       "file": "44-marp.org",
-      "line": 534,
+      "line": 536,
       "content": "| Item                 | Command                              | What it does                                                                        | |----------------------+--------------------------------------+-------------------------------------------------------------------------------------| | Choose Theme...      | [[cmd:scimax.marp.deck.theme]]       | As in Deck                                                                          | | New Custom Theme...  | [[cmd:scimax.marp.theme.n",
       "path": [
         "The Marp Menu"
@@ -108701,7 +108701,7 @@
       "heading": "The scimax theme",
       "level": 2,
       "file": "44-marp.org",
-      "line": 543,
+      "line": 545,
       "content": "~theme: scimax~ dresses a deck in the blues of the crystal Scimax unicorn, with the amber of its horn, laid out like [[https://orgmode.org][orgmode.org]]: a pale background, serif text, sans-serif headings in deep blue (level 1 and 2) and amber (level 3), quotes as grey-blue cards with a blue edge, and code in blues with amber names. Title and section slides sit on faceted crystal like the logo. It ships with Scimax, so every deck can use it with no theme file or setting: the thumbnails, the pre",
       "path": [
         "The Marp Menu"
@@ -108735,7 +108735,7 @@
       "heading": "Custom themes",
       "level": 2,
       "file": "44-marp.org",
-      "line": 583,
+      "line": 585,
       "content": "/New Custom Theme.../ asks for a name and a theme to start from (Marp's or ~scimax~), then: 1. writes ~themes/<name>.css~ in the workspace folder (next to the deck outside a workspace), with ~/* @theme <name> */~, ~@import '<base>';~ and commented-out rules for the usual things to change; 2. adds it to ~scimax.marp.themes~ (in the workspace settings); 3. sets ~theme: <name>~ in the deck; 4. opens the CSS beside the deck. Uncomment and change the rules, and save: the thumbnails and preview update",
       "path": [
         "The Marp Menu"
@@ -108771,7 +108771,7 @@
       "heading": "Actions",
       "level": 2,
       "file": "44-marp.org",
-      "line": 599,
+      "line": 601,
       "content": "The last part of the menu has Present, Present from Current Slide, Slide Preview, Slide Sorter, Edit with Claude Code and Export Deck, then Marp Help.",
       "path": [
         "The Marp Menu"
@@ -108801,7 +108801,7 @@
       "heading": "Editing Slides with Claude Code",
       "level": 1,
       "file": "44-marp.org",
-      "line": 604,
+      "line": 606,
       "content": "With the [[https://marketplace.visualstudio.com/items?itemName=anthropic.claude-code][Claude Code]] extension installed, right-click a thumbnail (or several selected ones) and choose *Edit with Claude Code…*. Claude Code opens with a prompt already filled in that names the deck, the slides and their lines, and ends with \"Change: \", for example: #+begin_example In the Marp slide deck talks/deck.md, edit slide 3 (lines 25-38). Change only that slide and keep the rest of the deck as it is. Change: ",
       "path": [],
       "commands": [],
@@ -108833,7 +108833,7 @@
       "heading": "Presenter Tools and Live Python",
       "level": 1,
       "file": "44-marp.org",
-      "line": 637,
+      "line": 639,
       "content": "A deck can opt in to presenter tools in the HTML slideshow: a pen to draw on slides, a laser pointer, sticky notes, a spotlight, and Python code cells that run in the browser while you present. Add one key to the front matter: #+begin_src markdown --- marp: true presenter: true --- #+end_src or choose Deck → Presenter Tools... in the Marp menu ([[cmd:scimax.marp.deck.presenter]]). Decks without the key are presented and exported exactly as before, unless you turn on ~scimax.marp.presenter~: then",
       "path": [],
       "commands": [
@@ -108868,7 +108868,7 @@
       "heading": "Keys in the slideshow",
       "level": 2,
       "file": "44-marp.org",
-      "line": 666,
+      "line": 668,
       "content": "| Key                       | Effect                                                                         | |---------------------------+--------------------------------------------------------------------------------| | =a=                       | Turn the pen on or off (widgets cannot be clicked while it is on)              | | =1= to =5=                | Pen colour while the pen is on: red, blue, green, black, yellow highlighter    | | =r=                       | Eraser: drag over strokes ",
       "path": [
         "Presenter Tools and Live Python"
@@ -108902,7 +108902,7 @@
       "heading": "Talk timer",
       "level": 2,
       "file": "44-marp.org",
-      "line": 709,
+      "line": 711,
       "content": "Give the length of the talk with a ~timer~ key and a small countdown sits in the top-right corner of every slide: #+begin_src markdown --- marp: true presenter: true timer: 20 --- #+end_src A bare number is minutes; ~20m~, ~45:00~, ~1h30m~ and ~90s~ also work. Deck → Talk Timer... in the Marp menu ([[cmd:scimax.marp.deck.timer]]) sets it, and turns on the presenter tools if the deck does not have them (the timer is one of them). A deck with presenter tools but no ~timer~ can get one during the s",
       "path": [
         "Presenter Tools and Live Python"
@@ -108938,7 +108938,7 @@
       "heading": "Exercise countdowns",
       "level": 2,
       "file": "44-marp.org",
-      "line": 754,
+      "line": 756,
       "content": "A ~countdown~ fence puts a countdown box on a slide, for an exercise or a discussion. The first line is the time, the rest is the label (Markdown): #+begin_src markdown ```countdown 3:00 Discuss with your neighbour: *which step is rate limiting?* ``` #+end_src The time is written as for the talk timer: a bare number is minutes, and ~3:00~, ~90s~ and ~2m30s~ also work (the default is 5 minutes). Insert → Exercise Countdown... in the Marp menu ([[cmd:scimax.marp.insert.countdown]]) adds one and tu",
       "path": [
         "Presenter Tools and Live Python"
@@ -108974,7 +108974,7 @@
       "heading": "Blank, zoom and go to a slide",
       "level": 2,
       "file": "44-marp.org",
-      "line": 778,
+      "line": 780,
       "content": "- *Blank screen.* =b= turns the audience screen black and =w= white, so the room looks at you instead of the slide. Press the key again, =Esc=, or click to bring the slide back. Pressed in Marp's presenter view, it blanks the audience window and the presenter view shows a reminder instead of going blank itself. - *Zoom.* =x= then drag a box over a dense figure or table to magnify that part to fill the screen (a click magnifies 2.5 times around that point). The audience window zooms too. =x= or =",
       "path": [
         "Presenter Tools and Live Python"
@@ -109008,7 +109008,7 @@
       "heading": "Live captions",
       "level": 2,
       "file": "44-marp.org",
-      "line": 795,
+      "line": 797,
       "content": "=v= shows what you say as captions at the bottom of the slides, two lines at a time. Words still being recognised are grey. The captions fade out after a pause. Press =v= again to turn them off. \"Captions at the top\" in the right-click menu moves them out of the way of a slide's footer. The captions use the browser's speech recognition. Chrome and Edge send the audio to their speech service, so they need a network connection. Firefox has no speech recognition. The first time, Chrome asks to use ",
       "path": [
         "Presenter Tools and Live Python"
@@ -109042,7 +109042,7 @@
       "heading": "Recording the talk",
       "level": 2,
       "file": "44-marp.org",
-      "line": 834,
+      "line": 836,
       "content": "=V= (=Shift+V=) records the slideshow, the mouse and your voice as a video. Chrome asks you to share \"this tab\". Press =V= again to stop. Chrome then asks where to save the video (=<deck>-<date>-<time>.mp4=). If you cancel, \"Save the recording…\" in the right-click menu asks again, until the next recording. - *Format.* Chrome and Edge write MP4 (H.264 video, AAC audio) that QuickTime and other players can play. Firefox writes WebM. The video is the size of the tab when recording starts, at most 1",
       "path": [
         "Presenter Tools and Live Python"
@@ -109078,7 +109078,7 @@
       "heading": "Editing slides in the slideshow",
       "level": 2,
       "file": "44-marp.org",
-      "line": 872,
+      "line": 874,
       "content": "For last-minute polish just before a talk, =d= lets you fix the slides in the slideshow itself: correct a typo, move a heading, make a figure bigger, or hide a line. A bar at the top says what is selected and what you can do. The edits stay in the HTML; they do not change the Markdown. | Key or action       | Effect                                                                      | |---------------------+-----------------------------------------------------------------------------| | =d=    ",
       "path": [
         "Presenter Tools and Live Python"
@@ -109112,7 +109112,7 @@
       "heading": "The editing toolbar",
       "level": 3,
       "file": "44-marp.org",
-      "line": 945,
+      "line": 947,
       "content": "The bar at the top of the slide while you edit also adds things and styles text. *+ Text* puts a text box in the middle of the slide, ready to type in (or press =t=). *+ Image* opens a file picker; you can also paste an image from the clipboard with =Cmd+V=. Pictures larger than 1920 pixels are scaled down so the deck stays small. *+ Table* shows a grid: pick the number of rows and columns and start typing. In a table, Tab and Shift+Tab move between cells, and Tab in the last cell adds a row. In",
       "path": [
         "Presenter Tools and Live Python",
@@ -109149,7 +109149,7 @@
       "heading": "Keeping the ink",
       "level": 2,
       "file": "44-marp.org",
-      "line": 972,
+      "line": 974,
       "content": "Ink and notes belong to the slide they were drawn on and are kept in the browser's local storage, so a reload does not lose them. Scimax presents a deck with presenter tools from the same private folder every time, so the ink is still there when you present it again. To keep the ink for good, move it to another machine or share it, press =s=: the browser downloads one HTML file with the theme, images, iframes, fonts, tools and ink inside. Open it anywhere, keep annotating, and press =s= again.",
       "path": [
         "Presenter Tools and Live Python"
@@ -109183,7 +109183,7 @@
       "heading": "Live Python cells",
       "level": 2,
       "file": "44-marp.org",
-      "line": 982,
+      "line": 984,
       "content": "Mark a Python code block with ~run~ to make it a cell you can edit and run during the talk: #+begin_src markdown ```python run import numpy as np np.linspace(0, 1, 5) ``` #+end_src | Fence                  | Cell                                              | |------------------------+---------------------------------------------------| | ~```python run~        | Editable, with a Run button                       | | ~```python run auto~   | Runs by itself the first time its slide is shown  | | ~",
       "path": [
         "Presenter Tools and Live Python"
@@ -109217,7 +109217,7 @@
       "heading": "Running cells in VS Code",
       "level": 2,
       "file": "44-marp.org",
-      "line": 1022,
+      "line": 1024,
       "content": "Press =C-c C-c= in a ~run~ cell to run it while you write the deck, without presenting. The output shows in a /Python/ panel beside the editor, from the same Pyodide the slideshow uses, so code that works there works in the talk. | Command                                                               | Key       | Effect                                              | |-----------------------------------------------------------------------+-----------+---------------------------------------------",
       "path": [
         "Presenter Tools and Live Python"
@@ -109253,7 +109253,7 @@
       "heading": "Offline Python",
       "level": 2,
       "file": "44-marp.org",
-      "line": 1048,
+      "line": 1050,
       "content": "Set ~presenter: offline~ instead of ~presenter: true~ (or choose \"On, with offline Python\" in Deck → Presenter Tools...) to put Python inside the deck, so its cells run with no internet connection: #+begin_src markdown --- marp: true presenter: offline --- #+end_src - When you present or export HTML (=h=), Scimax adds Pyodide and the packages the deck's ~run~ cells import (with their dependencies) to the HTML file. Pyodide is downloaded once per version and cached in the extension's storage, so ",
       "path": [
         "Presenter Tools and Live Python"
@@ -109287,7 +109287,7 @@
       "heading": "Checking a deck for offline use",
       "level": 2,
       "file": "44-marp.org",
-      "line": 1082,
+      "line": 1084,
       "content": "~Scimax Marp: Check for Offline Use~ ([[cmd:scimax.marp.checkOffline]], also Deck → Check for Offline Use in the Marp menu) builds the deck in a temporary folder and lists in the Problems panel what would not work without an internet connection, each on the line it comes from: - Python cells in a deck with ~presenter: true~ (Python is downloaded when the deck opens; use ~presenter: offline~) - ~%pip~ lines, and imports of packages that are not part of Pyodide, in an offline deck - images and oth",
       "path": [
         "Presenter Tools and Live Python"
@@ -109323,7 +109323,7 @@
       "heading": "Notes",
       "level": 2,
       "file": "44-marp.org",
-      "line": 1101,
+      "line": 1103,
       "content": "- The tools are added only in a trusted workspace, since the deck's HTML and Python run in the browser. In an untrusted workspace Scimax warns and shows the plain slideshow. - A deck with ~presenter: true~ is built with Marp CLI's ~--html~ option, so raw HTML in its slides is rendered. The slide thumbnails and previews allow all HTML for these decks too (in a trusted workspace), so an ~<iframe>~ widget shows there as well, whatever ~scimax.marp.enableHtml~ says. - Scimax passes its own markdown-",
       "path": [
         "Presenter Tools and Live Python"
@@ -109359,7 +109359,7 @@
       "heading": "Exporting Slides",
       "level": 1,
       "file": "44-marp.org",
-      "line": 1118,
+      "line": 1120,
       "content": "Press =C-c C-e= in a Marp deck (or click the export button in the Marp Slides view's title bar) for the Marp export menu. In other Markdown files =C-c C-e= still opens the Markdown (Pandoc) export menu, which is also =m= in this one. Exports are written next to the deck, and the deck is saved first. When an export finishes, a notification offers to open the file or show it in its folder. | Key | Export                                               | Output                 | Needs                ",
       "path": [],
       "commands": [],
@@ -109393,7 +109393,7 @@
       "heading": "Marp CLI",
       "level": 2,
       "file": "44-marp.org",
-      "line": 1145,
+      "line": 1147,
       "content": "All exports except =d= run [[https://github.com/marp-team/marp-cli][Marp CLI]], the tool behind Marp for VS Code's own export. Scimax uses ~scimax.marp.cliPath~ if set, then ~marp~ on the PATH (=npm install -g @marp-team/marp-cli=). Failing both, it offers to run it with ~npx~, which downloads Marp CLI the first time. It asks once and remembers the answer. PDF, PowerPoint and image exports render the slides in Google Chrome, Microsoft Edge or Firefox, so one of them must be installed. Local imag",
       "path": [
         "Exporting Slides"
@@ -109429,7 +109429,7 @@
       "heading": "Which PowerPoint",
       "level": 2,
       "file": "44-marp.org",
-      "line": 1160,
+      "line": 1162,
       "content": "There are three PowerPoint exports: |                        | PowerPoint (=s=) | Editable, Marp (=e=)    | Editable, Pandoc (=d=)                  | |------------------------+------------------+-------------------------+-----------------------------------------| | Looks like the preview | Exactly          | Mostly                  | No: PowerPoint default or your template | | Text editable          | No (pictures)    | Yes                     | Yes                                     | | Presen",
       "path": [
         "Exporting Slides"
@@ -109462,7 +109462,7 @@
       "heading": "Google Slides",
       "level": 2,
       "file": "44-marp.org",
-      "line": 1185,
+      "line": 1187,
       "content": "Google Slides has no import from Marp, but it opens PowerPoint files, and editable ones import best. The =g= export makes Marp's editable PowerPoint when LibreOffice is installed, otherwise the Pandoc one, otherwise (after asking) the picture PowerPoint. The notification links to Google Drive: upload the file (New > File upload), then open it with Google Slides.",
       "path": [
         "Exporting Slides"
@@ -109496,7 +109496,7 @@
       "heading": "Export settings",
       "level": 2,
       "file": "44-marp.org",
-      "line": 1193,
+      "line": 1195,
       "content": "| Setting                          | Default | Effect                                                                | |----------------------------------+---------+-----------------------------------------------------------------------| | ~scimax.marp.cliPath~            | (empty) | Marp CLI executable; empty means ~marp~ on the PATH, else ~npx~       | | ~scimax.marp.browserPath~        | (empty) | Browser for PDF, PowerPoint and images; empty lets Marp find one      | | ~scimax.marp.libreOffi",
       "path": [
         "Exporting Slides"
@@ -109534,7 +109534,7 @@
       "heading": "Configuration",
       "level": 1,
       "file": "44-marp.org",
-      "line": 1203,
+      "line": 1205,
       "content": "| Setting                       | Default   | Effect                                                     | |-------------------------------+-----------+------------------------------------------------------------| | ~scimax.marp.themes~          | ~[]~      | Custom theme CSS files for thumbnails, preview and exports | | ~scimax.marp.enableHtml~      | ~false~   | Allow all raw HTML in slides                               | | ~scimax.marp.mathTypesetting~ | ~mathjax~ | ~mathjax~, ~katex~ or ~off",
       "path": [],
       "commands": [
@@ -109569,7 +109569,7 @@
       "heading": "Marp CLI configuration files",
       "level": 2,
       "file": "44-marp.org",
-      "line": 1221,
+      "line": 1223,
       "content": "A deck set up for Marp CLI often keeps its themes and options in a configuration file beside it rather than in VS Code settings: #+begin_src yaml # .marprc.yml themeSet: ./theme html: true #+end_src Scimax reads the same file, so the thumbnails, the slide preview, the Markdown preview and exports show the deck the way Marp CLI renders it. It uses the nearest ~.marprc~, ~.marprc.json~, ~.marprc.yaml~, ~.marprc.yml~ or ~marp~ key of ~package.json~, looking in the deck's folder and then each folder",
       "path": [
         "Configuration"
@@ -109603,7 +109603,7 @@
       "heading": "Double-click in the Markdown preview",
       "level": 2,
       "file": "44-marp.org",
-      "line": 1250,
+      "line": 1252,
       "content": "Double-click in the Markdown preview follows VS Code's own setting for double-clicking in the Markdown preview. Current VS Code releases turn it off by default, so enable it once in your user settings: #+begin_src json \"markdown.preview.doubleClickToSwitchToEditor\": true #+end_src | Setting                                        | Default | Effect                                      | |------------------------------------------------+---------+---------------------------------------------| | ~m",
       "path": [
         "Configuration"
@@ -109637,7 +109637,7 @@
       "heading": "How It Works",
       "level": 1,
       "file": "44-marp.org",
-      "line": 1269,
+      "line": 1271,
       "content": "",
       "path": [],
       "commands": [],
@@ -109650,7 +109650,7 @@
       "heading": "Slides in the Markdown preview",
       "level": 2,
       "file": "44-marp.org",
-      "line": 1271,
+      "line": 1273,
       "content": "Scimax contributes a markdown-it plugin (~markdown.markdownItPlugins~, ~src/marp/marpPreviewPlugin.ts~). For a file with ~marp: true~ in its front matter it parses and renders with Marp Core instead of plain markdown-it, adds VS Code's ~code-line~ class and ~data-line~ source line to each block (for scroll sync and double-click), and puts the deck's theme CSS in front. The preview script ~media/marp/marpPreviewMode.js~ then turns off VS Code's own Markdown styles for that preview, since they wou",
       "path": [
         "How It Works"
@@ -109684,7 +109684,7 @@
       "heading": "Double-click in the Markdown preview",
       "level": 2,
       "file": "44-marp.org",
-      "line": 1288,
+      "line": 1290,
       "content": "Scimax contributes a preview script (~media/marp/marpPreview.js~) through the ~markdown.previewScripts~ contribution point. Marp already tags each rendered element with its source line (~data-line~). On double-click inside a slide the script: 1. finds the nearest element carrying a line number; 2. adds the number of source line breaks between the start of that element and the caret (and one for the opening fence of a code block); 3. sends the preview's own ~didClick~ message with that line, so V",
       "path": [
         "How It Works"
@@ -109718,7 +109718,7 @@
       "heading": "Related Topics",
       "level": 1,
       "file": "44-marp.org",
-      "line": 1307,
+      "line": 1309,
       "content": "- [[file:30-markdown-compatibility.org][Markdown Compatibility]] - Scimax editing features in Markdown files - [[file:45-myst-preview.org][MyST Markdown Preview]] - Jupyter Book directives and roles in the preview - [[file:41-export-beamer.org][Beamer Export]] - slides from org files via LaTeX Beamer - [[file:26-configuration.org][Configuration Reference]] - [[https://marpit.marp.app/markdown][Marpit Markdown]] - slide syntax reference",
       "path": [],
       "commands": [],

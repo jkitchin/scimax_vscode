@@ -9,7 +9,7 @@
 //
 // Marp drops everything after the language name, so this plugin records the flags on the <pre>
 // (data-run="auto" etc.) while keeping Marp's normal syntax highlighting; the static HTML and the
-// PDF show ordinary highlighted code. scimax passes it to Marp CLI as `--engine` for decks with `presenter: true`.
+// PDF show ordinary highlighted code. scimax adds it to Marp CLI's engine (src/marp/cliEngine.ts) for decks with `presenter: true`.
 function runnableFences(md) {
   const fence = md.renderer.rules.fence;
   md.renderer.rules.fence = (tokens, idx, options, env, self) => {

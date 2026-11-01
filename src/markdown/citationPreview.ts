@@ -70,6 +70,24 @@ export function hasFallbackCitationLookup(): boolean {
     return !!fallbackLookup;
 }
 
+/**
+ * The reference manager's entries for the keys that may be cited in `text`,
+ * for Marp CLI, which renders in another process (see cliEngine.ts). Every
+ * word that could be a key is looked up, so nothing cited is missed.
+ */
+export function fallbackEntriesFor(text: string): Record<string, BibEntry> {
+    const found: Record<string, BibEntry> = {};
+    if (!fallbackLookup) return found;
+    for (const word of new Set(text.match(/[\w][\w:.\-/+]*/g) ?? [])) {
+        for (const key of [word, word.replace(/[:.\-/+]+$/, '')]) {
+            if (key in found) continue;
+            const entry = fallbackLookup(key);
+            if (entry) found[key] = entry;
+        }
+    }
+    return found;
+}
+
 /** Bibliography files for a document: front matter first, then the project config. */
 export function bibliographyPaths(docPath: string, frontMatter: string[]): string[] {
     const docDir = path.dirname(docPath);

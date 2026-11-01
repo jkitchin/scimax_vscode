@@ -3,7 +3,7 @@ import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
 import { firstSlideSvg, isMarpText, renderDeck, slideStarts } from '../slideRenderer';
-import { setFallbackCitationLookup } from '../../markdown/citationPreview';
+import { fallbackEntriesFor, setFallbackCitationLookup } from '../../markdown/citationPreview';
 import { parseBibTeX } from '../../references/bibtexParser';
 
 const DECK = '---\nmarp: true\nheadingDivider: 2\n---\n\n# One\n\n## Two\n\n```\n---\n```\n\n---\n\nThree\n';
@@ -121,6 +121,22 @@ describe('renderDeck citations without a bibliography: line', () => {
             const { html } = renderDeck(deck, { documentPath: path.join(os.tmpdir(), 'no-such-dir', 'deck.md') });
             expect(html).toContain('Kitchin, 2025');
             expect(html).toMatch(/scimax-slide-refs.*Beyond Fourier/s);
+        } finally {
+            setFallbackCitationLookup(undefined);
+        }
+    });
+
+    it('collects the entries a deck may cite, for Marp CLI', () => {
+        const entries = new Map(parseBibTeX(
+            '@article{kitchin-2025,\n  author = {Kitchin, John},\n  title = {Beyond Fourier},\n  year = {2025}\n}\n'
+        ).entries.map(e => [e.key, e]));
+        expect(fallbackEntriesFor('See @kitchin-2025.')).toEqual({});
+        setFallbackCitationLookup(key => entries.get(key));
+        try {
+            const found = fallbackEntriesFor('As shown [@kitchin-2025]. Also @kitchin-2025.');
+            expect(Object.keys(found)).toEqual(['kitchin-2025']);
+            expect(found['kitchin-2025'].title).toBe('Beyond Fourier');
+            expect(fallbackEntriesFor('No citations here.')).toEqual({});
         } finally {
             setFallbackCitationLookup(undefined);
         }
