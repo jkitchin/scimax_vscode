@@ -796,8 +796,18 @@ export function registerOrgLinkCommands(context: vscode.ExtensionContext): void 
 
     // Go to ID (search for :ID: property across files)
     context.subscriptions.push(
-        vscode.commands.registerCommand('scimax.org.gotoId', async (args: { id: string }) => {
-            const { id } = args;
+        vscode.commands.registerCommand('scimax.org.gotoId', async (args?: { id: string }) => {
+            // From the command palette there are no args: ask for the ID
+            // (e.g. the org-id footer of an email sent with scimax.org.emailHeading)
+            let id = args?.id;
+            if (!id) {
+                const input = await vscode.window.showInputBox({
+                    prompt: 'Heading ID to go to',
+                    placeHolder: 'e.g. 3f2a9c1e-... (an id: prefix is fine)',
+                });
+                id = input?.trim().replace(/^(org-id:\s*)?(id:)?/i, '');
+                if (!id) return;
+            }
             const idLower = id.toLowerCase();
 
             // Helper function to find ID in a document and navigate to it
