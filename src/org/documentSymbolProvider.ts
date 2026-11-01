@@ -4,7 +4,7 @@
  */
 
 import * as vscode from 'vscode';
-import { findMarkdownFencedBlocks, markdownFencedLineMask, FencedBlock } from '../shared/markdownFences';
+import { findMarkdownFencedBlocks, markdownNonProseMask, FencedBlock } from '../shared/markdownFences';
 import { isMarkdownLike } from '../shared/markdownLike';
 
 // =============================================================================
@@ -65,7 +65,7 @@ function parseLightweight(lines: string[], isMarkdown: boolean = false): { headl
         for (const block of findMarkdownFencedBlocks(lines)) {
             fencedBlockAt.set(block.start, block);
         }
-        inFence = markdownFencedLineMask(lines);
+        inFence = markdownNonProseMask(lines);
     }
 
     let i = 0;

@@ -46,7 +46,8 @@ import { findBracketLinkAt, formatBracketLink } from './bracketLink';
 import { marpLinkArgs } from '../marp/marpExport';
 import * as os from 'os';
 import { expandTilde } from '../utils/pathResolver';
-import { markdownFencedLineMask } from '../shared/markdownFences';
+import { isMarkdownNonProseLine, markdownHeadingLevel } from '../shared/markdownDocument';
+import { findMarkdownLinkAt, formatMarkdownLink, markdownHeadingSlug, markdownHeadingTitle, orgLinkToMarkdownTarget } from '../shared/markdownLinks';
 import { isMarkdownLike } from '../shared/markdownLike';
 
 // Re-export planning line utilities for external use
@@ -75,20 +76,11 @@ function getHeadingChar(document: vscode.TextDocument): string {
     return isMarkdownLike(document.languageId) ? '#' : '*';
 }
 
-// Cache of fenced-code-line masks for markdown documents, keyed by document version
-const fenceMaskCache = new WeakMap<vscode.TextDocument, { version: number; mask: boolean[] }>();
-
 /**
- * True if the line is inside a markdown fenced code block (where `#` is code, not a heading)
+ * True if the line is markdown code, front matter or an HTML comment (where `#` is not a heading)
  */
 function isInMarkdownCodeBlock(document: vscode.TextDocument, lineNumber: number): boolean {
-    if (!isMarkdownLike(document.languageId)) return false;
-    let cached = fenceMaskCache.get(document);
-    if (!cached || cached.version !== document.version) {
-        cached = { version: document.version, mask: markdownFencedLineMask(document.getText().split('\n')) };
-        fenceMaskCache.set(document, cached);
-    }
-    return cached.mask[lineNumber] ?? false;
+    return isMarkdownNonProseLine(document, lineNumber);
 }
 
 /**
@@ -153,7 +145,9 @@ async function applyMarkup(
 
         if (!wordRange) {
             // No word at cursor - insert empty markup with cursor between markers
-            const snippet = new vscode.SnippetString(`${prefix}$0${suffix}`);
+            // Escape snippet syntax characters ($ } \\) in the markers
+            const esc = (t: string) => t.replace(/[$}\\]/g, m => '\\' + m);
+            const snippet = new vscode.SnippetString(`${esc(prefix)}$0${esc(suffix)}`);
             await editor.insertSnippet(snippet);
             return;
         }
@@ -197,46 +191,79 @@ async function applyMarkup(
     }
 }
 
+type MarkupKind = 'bold' | 'italic' | 'underline' | 'code' | 'verbatim' | 'strike';
+
+const ORG_MARKUP: Record<MarkupKind, [string, string]> = {
+    bold: ['*', '*'],
+    italic: ['/', '/'],
+    underline: ['_', '_'],
+    code: ['~', '~'],
+    verbatim: ['=', '='],
+    strike: ['+', '+'],
+};
+
+// Markdown has no underline or separate verbatim; use HTML <u> and inline code
+const MARKDOWN_MARKUP: Record<MarkupKind, [string, string]> = {
+    bold: ['**', '**'],
+    italic: ['*', '*'],
+    underline: ['<u>', '</u>'],
+    code: ['`', '`'],
+    verbatim: ['`', '`'],
+    strike: ['~~', '~~'],
+};
+
 /**
- * Make text bold (*bold*)
+ * Markers for a markup kind in the given language (org syntax unless markdown)
+ */
+export function markupMarkers(kind: MarkupKind, languageId: string | undefined): [string, string] {
+    return (isMarkdownLike(languageId) ? MARKDOWN_MARKUP : ORG_MARKUP)[kind];
+}
+
+async function applyMarkupKind(kind: MarkupKind): Promise<void> {
+    const [prefix, suffix] = markupMarkers(kind, vscode.window.activeTextEditor?.document.languageId);
+    await applyMarkup(prefix, suffix);
+}
+
+/**
+ * Make text bold (org *bold*, markdown **bold**)
  */
 export async function boldRegionOrPoint(): Promise<void> {
-    await applyMarkup('*', '*');
+    await applyMarkupKind('bold');
 }
 
 /**
- * Make text italic (/italic/)
+ * Make text italic (org /italic/, markdown *italic*)
  */
 export async function italicRegionOrPoint(): Promise<void> {
-    await applyMarkup('/', '/');
+    await applyMarkupKind('italic');
 }
 
 /**
- * Make text underlined (_underlined_)
+ * Make text underlined (org _underlined_, markdown <u>underlined</u>)
  */
 export async function underlineRegionOrPoint(): Promise<void> {
-    await applyMarkup('_', '_');
+    await applyMarkupKind('underline');
 }
 
 /**
- * Make text code (~code~)
+ * Make text code (org ~code~, markdown `code`)
  */
 export async function codeRegionOrPoint(): Promise<void> {
-    await applyMarkup('~', '~');
+    await applyMarkupKind('code');
 }
 
 /**
- * Make text verbatim (=verbatim=)
+ * Make text verbatim (org =verbatim=, markdown `verbatim`)
  */
 export async function verbatimRegionOrPoint(): Promise<void> {
-    await applyMarkup('=', '=');
+    await applyMarkupKind('verbatim');
 }
 
 /**
- * Make text strikethrough (+strikethrough+)
+ * Make text strikethrough (org +strikethrough+, markdown ~~strikethrough~~)
  */
 export async function strikethroughRegionOrPoint(): Promise<void> {
-    await applyMarkup('+', '+');
+    await applyMarkupKind('strike');
 }
 
 // =============================================================================
@@ -567,6 +594,10 @@ async function applyBraceMarkup(
  * Make text subscript (_{subscript})
  */
 export async function subscriptRegionOrPoint(): Promise<void> {
+    if (isMarkdownLike(vscode.window.activeTextEditor?.document.languageId)) {
+        await applyMarkup('<sub>', '</sub>');
+        return;
+    }
     await applyBraceMarkup('_');
 }
 
@@ -574,6 +605,10 @@ export async function subscriptRegionOrPoint(): Promise<void> {
  * Make text superscript (^{superscript})
  */
 export async function superscriptRegionOrPoint(): Promise<void> {
+    if (isMarkdownLike(vscode.window.activeTextEditor?.document.languageId)) {
+        await applyMarkup('<sup>', '</sup>');
+        return;
+    }
     await applyBraceMarkup('^');
 }
 
@@ -588,6 +623,11 @@ export async function latexMathRegionOrPoint(): Promise<void> {
  * Wrap in LaTeX display math (\[math\])
  */
 export async function latexDisplayMathRegionOrPoint(): Promise<void> {
+    // Markdown renderers (Pandoc, KaTeX, MathJax in the preview) use $$...$$
+    if (isMarkdownLike(vscode.window.activeTextEditor?.document.languageId)) {
+        await applyMarkup('$$', '$$');
+        return;
+    }
     await applyMarkup('\\[', '\\]');
 }
 
@@ -604,6 +644,12 @@ export async function latexDisplayMathRegionOrPoint(): Promise<void> {
 export async function dwimComment(): Promise<void> {
     const editor = vscode.window.activeTextEditor;
     if (!editor) return;
+
+    // In markdown `# ` makes a heading; use the language's own <!-- --> comments
+    if (isMarkdownLike(editor.document.languageId)) {
+        await vscode.commands.executeCommand('editor.action.commentLine');
+        return;
+    }
 
     const document = editor.document;
     const selection = editor.selection;
@@ -690,10 +736,11 @@ export async function dwimReturn(): Promise<boolean> {
     const line = document.lineAt(position.line);
     const lineText = line.text;
 
-    // Check if in a src block - use normal newline
-    if (isInSrcBlock(document, position)) {
+    // Check if in a src block (or markdown code, front matter, comment) - use normal newline
+    if (isInSrcBlock(document, position) || isInMarkdownCodeBlock(document, position.line)) {
         return false;
     }
+    const isMarkdown = isMarkdownLike(document.languageId);
 
     // Check if on a link - open it (unless at end of line)
     const linkInfo = getLinkAtPoint(document, position);
@@ -710,7 +757,8 @@ export async function dwimReturn(): Promise<boolean> {
     // Check if on a heading first (but not inline task). In org-mode `*` at
     // column 0 is always a heading, never a list bullet, so this must be
     // checked before the list/checkbox matchers.
-    const headingMatch = lineText.match(/^(\*+)\s+/);
+    // In markdown a `*` at column 0 is a list bullet, not a heading.
+    const headingMatch = isMarkdown ? null : lineText.match(/^(\*+)\s+/);
     if (headingMatch) {
         // Check for inline task (starts with many stars and ends with many stars)
         const inlineTaskMatch = lineText.match(/^\*{3,}\s+.*\s+\*{3,}$/);
@@ -722,8 +770,10 @@ export async function dwimReturn(): Promise<boolean> {
     }
 
     // Check if on a checkbox item (must check before regular list).
-    // `*` bullets require leading whitespace (otherwise it'd be a heading).
-    const checkboxMatch = lineText.match(/^(\s*[-+]|\s+\*|\s*\d+[.)])\s+\[[ Xx-]\]\s*(.*)$/);
+    // In org `*` bullets require leading whitespace (otherwise it'd be a heading).
+    const checkboxMatch = isMarkdown
+        ? lineText.match(/^(\s*[-+*]|\s*\d+[.)])\s+\[[ Xx-]\]\s*(.*)$/)
+        : lineText.match(/^(\s*[-+]|\s+\*|\s*\d+[.)])\s+\[[ Xx-]\]\s*(.*)$/);
     if (checkboxMatch) {
         // Re-parse into the (indent, bullet, content) shape handleCheckboxReturn expects.
         const parts = lineText.match(/^(\s*)([-+*]|\d+[.)])\s+\[[ Xx-]\]\s*(.*)$/);
@@ -736,7 +786,7 @@ export async function dwimReturn(): Promise<boolean> {
     // distinguish from headings.
     const listMatch =
         lineText.match(/^(\s*)([-+]|\d+[.)])\s+(.*)$/) ||
-        lineText.match(/^(\s+)(\*)\s+(.*)$/);
+        lineText.match(isMarkdown ? /^(\s*)(\*)\s+(.*)$/ : /^(\s+)(\*)\s+(.*)$/);
     if (listMatch) {
         return await handleListReturn(editor, position, listMatch);
     }
@@ -789,10 +839,11 @@ async function handleTableReturn(
 
     // Check if current row is empty (all cells are whitespace only)
     // Skip separator rows (containing only |, -, +)
-    const isSeparator = /^\s*\|[-+|]+\|\s*$/.test(currentLineText);
+    const isSeparator = /^\s*\|[-+|:]+\|\s*$/.test(currentLineText);
     if (!isSeparator) {
         const cells = currentLineText.split('|').slice(1, -1);
-        const isEmptyRow = cells.every(cell => cell.trim() === '');
+        // A line like `| text` or a bare `|` has no cells; it is not an empty row
+        const isEmptyRow = cells.length > 0 && cells.every(cell => cell.trim() === '');
 
         if (isEmptyRow) {
             // Delete the empty row
@@ -990,20 +1041,9 @@ async function handleHeadingReturn(
     const insertPos = new vscode.Position(insertLine, document.lineAt(insertLine).text.length);
     const newHeading = `\n\n${stars} `;
 
-    console.log('[DWIM] handleHeadingReturn:', {
-        positionLine: position.line,
-        level,
-        endLine,
-        insertLine,
-        insertPos: `(${insertPos.line}, ${insertPos.character})`,
-        lineCount: document.lineCount,
-        insertLineText: JSON.stringify(document.lineAt(insertLine).text),
-    });
-
-    const editResult = await editor.edit(editBuilder => {
+    await editor.edit(editBuilder => {
         editBuilder.insert(insertPos, newHeading);
     });
-    console.log('[DWIM] edit result:', editResult);
 
     // Move cursor to the new heading
     const newPos = new vscode.Position(insertLine + 2, stars.length + 1);
@@ -1579,6 +1619,10 @@ export async function insertSubheading(): Promise<void> {
             break;
         }
     }
+    // Markdown has no heading level beyond 6
+    if (isMarkdownLike(document.languageId)) {
+        level = Math.min(level, 6);
+    }
 
     const heading = '\n' + headingChar.repeat(level) + ' ';
 
@@ -1812,12 +1856,65 @@ function findRepeaterForHeading(
 }
 
 /**
+ * Cycle the TODO keyword on a markdown ATX heading:
+ * `# x` -> `# TODO x` -> `# DONE x` -> `# x` (honoring #+TODO: keywords).
+ * Completion is recorded as markdown task metadata `@closed(YYYY-MM-DD)`
+ * (read by markdown/taskParser), never as an org CLOSED: line.
+ */
+async function cycleMarkdownTodoState(editor: vscode.TextEditor): Promise<void> {
+    const document = editor.document;
+    const lineNumber = editor.selection.active.line;
+    const line = document.lineAt(lineNumber);
+    const match = isInMarkdownCodeBlock(document, lineNumber)
+        ? null
+        : line.text.match(/^(#{1,6})[ \t]+(.*)$/);
+    if (!match) {
+        vscode.window.showInformationMessage('Not on a heading');
+        return;
+    }
+    const [, hashes, body] = match;
+
+    const allStates = getAllTodoStatesForDocument(document);
+    const doneStates = new Set(getTodoWorkflowForDocument(document).doneStates);
+    let currentState: string | undefined;
+    let rest = body;
+    const firstWord = body.match(/^(\S+)(?:[ \t]+(.*))?$/);
+    if (firstWord && allStates.has(firstWord[1])) {
+        currentState = firstWord[1];
+        rest = firstWord[2] ?? '';
+    }
+
+    const nextState = getNextTodoState(currentState, document);
+    const wasDone = currentState ? doneStates.has(currentState) : false;
+    const isNowDone = nextState ? doneStates.has(nextState) : false;
+
+    if (!isNowDone || !wasDone) {
+        rest = rest.replace(/[ \t]*@closed\([^)]*\)/g, '').trimEnd();
+        if (isNowDone) {
+            const d = new Date();
+            const ymd = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+            rest = rest ? `${rest} @closed(${ymd})` : `@closed(${ymd})`;
+        }
+    }
+
+    const newLine = [hashes, nextState, rest].filter(s => s).join(' ');
+    await editor.edit(editBuilder => {
+        editBuilder.replace(line.range, newLine);
+    });
+}
+
+/**
  * Cycle TODO state on current heading
  * Uses file-specific TODO states from #+TODO: keywords if defined
  */
 export async function cycleTodoState(): Promise<void> {
     const editor = vscode.window.activeTextEditor;
     if (!editor) return;
+
+    if (isMarkdownLike(editor.document.languageId)) {
+        await cycleMarkdownTodoState(editor);
+        return;
+    }
 
     const document = editor.document;
     const position = editor.selection.active;
@@ -2782,7 +2879,9 @@ export function setupListContext(context: vscode.ExtensionContext): void {
         const isOrgHeading = langId === 'org' && /^\*+\s/.test(line);
         const isMdHeading = isMarkdownLike(langId) && /^#+\s/.test(line);
         const listMatch = /^(\s*)([-+*]|\d+[.)])\s+/.test(line);
-        const onListItem = listMatch && !isOrgHeading && !isMdHeading;
+        // A `- ` line in a markdown code block or front matter is not a list item
+        const inMdCode = isInMarkdownCodeBlock(editor.document, position.line);
+        const onListItem = listMatch && !isOrgHeading && !isMdHeading && !inMdCode;
         setContextKey('scimax.onListItem', onListItem);
 
         // Also track ordered list for org files
@@ -2926,6 +3025,22 @@ export async function storeLink(): Promise<void> {
     const filePath = document.uri.fsPath;
     const fileName = filePath.split('/').pop() || filePath;
 
+    // Markdown heading: store it as a heading link; insertLink turns it into
+    // [Title](#title) or [Title](file.md#title) in markdown
+    if (isMarkdownLike(document.languageId) && markdownHeadingLevel(document, position.line) > 0) {
+        const title = (markdownHeadingTitle(lineText)?.title ?? '').replace(/^(TODO|DONE)\s+/, '');
+        if (title) {
+            persistStoredLink({
+                filePath,
+                fuzzyLink: `*${title}`,
+                fullLink: `file:${fileName}::*${title}`,
+                description: title
+            });
+            vscode.window.showInformationMessage(`Stored link: ${formatMarkdownLink('#' + markdownHeadingSlug(title), title)}`);
+            return;
+        }
+    }
+
     // Check if on a heading - extract title without TODO state, priority, or tags
     const headingMatch = lineText.match(/^(\*+)\s+(.+?)(?:\s+:[\w:]+:\s*)?$/);
     if (headingMatch) {
@@ -3068,7 +3183,8 @@ export async function insertLink(): Promise<void> {
     const editor = vscode.window.activeTextEditor;
     if (!editor) return;
 
-    if (await editLinkAtPoint(editor)) return;
+    const isMarkdown = isMarkdownLike(editor.document.languageId);
+    if (isMarkdown ? await editMarkdownLinkAtPoint(editor) : await editLinkAtPoint(editor)) return;
 
     let url: string | undefined;
     let description: string | undefined;
@@ -3116,7 +3232,9 @@ export async function insertLink(): Promise<void> {
         });
     }
 
-    const link = formatBracketLink(url, description);
+    const link = isMarkdown
+        ? formatMarkdownLink(orgLinkToMarkdownTarget(url), description)
+        : formatBracketLink(url, description);
 
     await editor.edit(editBuilder => {
         editBuilder.insert(editor.selection.active, link);
@@ -3124,10 +3242,38 @@ export async function insertLink(): Promise<void> {
 }
 
 /**
+ * Edit the markdown [text](target) link at the cursor. Returns false when
+ * the cursor is not on one.
+ */
+async function editMarkdownLinkAtPoint(editor: vscode.TextEditor): Promise<boolean> {
+    const position = editor.selection.active;
+    const link = findMarkdownLinkAt(editor.document.lineAt(position.line).text, position.character);
+    if (!link) return false;
+
+    const target = await vscode.window.showInputBox({ prompt: 'Edit link target', value: link.target });
+    if (!target) return true;
+    const text = await vscode.window.showInputBox({ prompt: 'Edit link text', value: link.text });
+    if (text === undefined) return true;
+
+    const range = new vscode.Range(position.line, link.start, position.line, link.end);
+    const newLink = (link.image ? '!' : '') + formatMarkdownLink(target, text);
+    await editor.edit(editBuilder => editBuilder.replace(range, newLink));
+    return true;
+}
+
+/**
  * Check if cursor is on a link and return the link info
  */
-export function getLinkAtPoint(document: vscode.TextDocument, position: vscode.Position): { url: string; start: number; end: number } | null {
+export function getLinkAtPoint(document: vscode.TextDocument, position: vscode.Position): { url: string; start: number; end: number; markdown?: boolean } | null {
     const line = document.lineAt(position.line).text;
+
+    // Markdown inline links and images: [text](target), ![alt](target)
+    if (isMarkdownLike(document.languageId)) {
+        const mdLink = findMarkdownLinkAt(line, position.character);
+        if (mdLink) {
+            return { url: mdLink.target, start: mdLink.start, end: mdLink.end, markdown: true };
+        }
+    }
 
     // Link patterns to check
     const patterns = [
@@ -3264,6 +3410,11 @@ export async function openLinkAtPoint(): Promise<void> {
 
     const url = linkInfo.url;
 
+    if (linkInfo.markdown) {
+        await openMarkdownLink(url, document);
+        return;
+    }
+
     // Handle different link types
     if (url.startsWith('http://') || url.startsWith('https://')) {
         vscode.env.openExternal(vscode.Uri.parse(url));
@@ -3344,6 +3495,80 @@ export async function openLinkAtPoint(): Promise<void> {
             await searchAndJumpToTarget(document, url);
         }
     }
+}
+
+/**
+ * Follow a markdown link destination: a URL, `#anchor` in this file, or a
+ * relative/absolute path with an optional `#anchor`.
+ */
+async function openMarkdownLink(target: string, document: vscode.TextDocument): Promise<void> {
+    if (/^[a-z][a-z0-9+.-]*:/i.test(target) && !/^file:/i.test(target)) {
+        // http(s), mailto, and other URL schemes
+        await vscode.env.openExternal(vscode.Uri.parse(target));
+        return;
+    }
+    if (target.startsWith('#')) {
+        await jumpToMarkdownAnchor(document, decodeURIComponent(target.slice(1)));
+        return;
+    }
+
+    const hashIndex = target.indexOf('#');
+    const rawPath = (hashIndex >= 0 ? target.slice(0, hashIndex) : target).replace(/^file:/i, '');
+    const anchor = hashIndex >= 0 ? decodeURIComponent(target.slice(hashIndex + 1)) : '';
+    const targetUri = resolveLinkPath(decodeURIComponent(rawPath), document);
+
+    try {
+        const stat = await vscode.workspace.fs.stat(targetUri);
+        if (stat.type & vscode.FileType.Directory) {
+            await vscode.commands.executeCommand('scimax.dired.open', targetUri.fsPath);
+            return;
+        }
+    } catch {
+        vscode.window.showWarningMessage(`File not found: ${targetUri.fsPath}`);
+        return;
+    }
+
+    if (!anchor) {
+        await vscode.commands.executeCommand('vscode.open', targetUri);
+        return;
+    }
+    const doc = await vscode.workspace.openTextDocument(targetUri);
+    await vscode.window.showTextDocument(doc);
+    if (doc.languageId === 'org') {
+        await searchAndJumpToCustomId(doc, anchor);
+    } else {
+        await jumpToMarkdownAnchor(doc, anchor);
+    }
+}
+
+/**
+ * Jump to the markdown heading whose anchor is `anchor`: an explicit
+ * `{#id}` attribute, or the GitHub-style slug of its title (duplicates get
+ * -1, -2, ... suffixes).
+ */
+async function jumpToMarkdownAnchor(document: vscode.TextDocument, anchor: string): Promise<void> {
+    const wanted = anchor.toLowerCase();
+    const seen = new Map<string, number>();
+    for (let i = 0; i < document.lineCount; i++) {
+        if (markdownHeadingLevel(document, i) === 0) continue;
+        const heading = markdownHeadingTitle(document.lineAt(i).text);
+        if (!heading) continue;
+        let slug = markdownHeadingSlug(heading.title);
+        const count = seen.get(slug) ?? 0;
+        seen.set(slug, count + 1);
+        if (count > 0) slug = `${slug}-${count}`;
+        if (heading.id?.toLowerCase() === wanted || slug === wanted) {
+            const editor = vscode.window.activeTextEditor;
+            if (editor && editor.document === document) {
+                const pos = new vscode.Position(i, 0);
+                editor.selection = new vscode.Selection(pos, pos);
+                await vscode.commands.executeCommand('editor.unfold', { selectionLines: [i] });
+                editor.revealRange(new vscode.Range(pos, pos), vscode.TextEditorRevealType.InCenter);
+            }
+            return;
+        }
+    }
+    vscode.window.showWarningMessage(`Heading not found: #${anchor}`);
 }
 
 /**
@@ -3447,11 +3672,14 @@ async function openFileLink(url: string, currentDocument: vscode.TextDocument): 
 async function searchAndJumpToHeading(document: vscode.TextDocument, headingTitle: string): Promise<void> {
     const searchText = headingTitle.toLowerCase();
 
+    const isMarkdown = isMarkdownLike(document.languageId);
     for (let i = 0; i < document.lineCount; i++) {
         const line = document.lineAt(i).text;
-        const match = line.match(/^(\*+)\s+(.+?)(?:\s+:[\w:]+:\s*)?$/);
-        if (match) {
-            let title = match[2].trim();
+        const rawTitle = isMarkdown
+            ? (markdownHeadingLevel(document, i) > 0 ? markdownHeadingTitle(line)?.title : undefined)
+            : line.match(/^(\*+)\s+(.+?)(?:\s+:[\w:]+:\s*)?$/)?.[2];
+        if (rawTitle) {
+            let title = rawTitle.trim();
             // Strip TODO keyword (any all-caps word at start)
             title = title.replace(/^[A-Z]+\s+/, '');
             // Strip priority like [#A]
@@ -3751,8 +3979,8 @@ function isOnHeading(document: vscode.TextDocument, position: vscode.Position): 
         // Org heading: starts with one or more asterisks followed by space
         return /^\*+\s/.test(line);
     } else if (isMarkdownLike(document.languageId)) {
-        // Markdown heading: starts with one or more hashes followed by space
-        return /^#+\s/.test(line);
+        // Markdown heading: 1-6 hashes followed by space, outside code, front matter and comments
+        return isHeadingLine(document, position.line);
     } else if (document.languageId === 'latex') {
         // LaTeX section commands (including starred variants)
         return /^\s*\\(part|chapter|section|subsection|subsubsection|paragraph|subparagraph)\*?\s*[[{]/.test(line);

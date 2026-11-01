@@ -105,3 +105,39 @@ export function markdownFencedLineMask(lines: string[]): boolean[] {
     }
     return mask;
 }
+
+const FRONT_MATTER_OPEN = /^---\s*$/;
+const FRONT_MATTER_CLOSE = /^(---|\.\.\.)\s*$/;
+
+/**
+ * Return a per-line flag that is true for lines that are not markdown prose:
+ * fenced code blocks, YAML front matter at the top of the file, and HTML
+ * comment blocks. A `#` at the start of such a line is code, YAML or comment
+ * text, never an ATX heading, and list markers or `|` there are not lists or
+ * tables.
+ */
+export function markdownNonProseMask(lines: string[]): boolean[] {
+    const mask = markdownFencedLineMask(lines);
+
+    // YAML front matter: --- on the first line up to the next --- or ...
+    if (lines.length > 0 && FRONT_MATTER_OPEN.test(lines[0])) {
+        for (let j = 1; j < lines.length; j++) {
+            if (FRONT_MATTER_CLOSE.test(lines[j])) {
+                for (let k = 0; k <= j; k++) mask[k] = true;
+                break;
+            }
+        }
+    }
+
+    // HTML comments that start a line and may span several lines
+    for (let i = 0; i < lines.length; i++) {
+        if (mask[i] || !/^ {0,3}<!--/.test(lines[i])) continue;
+        let j = i;
+        while (j < lines.length && !lines[j].includes('-->')) j++;
+        const end = Math.min(j, lines.length - 1);
+        for (let k = i; k <= end; k++) mask[k] = true;
+        i = end;
+    }
+
+    return mask;
+}

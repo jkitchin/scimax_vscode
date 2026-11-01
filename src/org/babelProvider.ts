@@ -24,6 +24,7 @@ import { normalizeLineEndings } from '../utils/escapeUtils';
 import { getKernelManager } from '../jupyter/kernelManager';
 import { isMarkdownLike } from '../shared/markdownLike';
 import { matchCodeFenceOpen } from '../shared/markdownFences';
+import { findMarkdownResults, orgResultsToMarkdown } from '../shared/markdownResults';
 
 // Output channel for Babel execution
 let outputChannel: vscode.OutputChannel | undefined;
@@ -802,6 +803,8 @@ function findMarkdownFencedBlockAtCursor(document: vscode.TextDocument, position
                     // Extract code content
                     const codeLines = lines.slice(i + 1, closingLine);
                     const code = codeLines.join('\n');
+                    // Earlier results (between <!-- results --> markers) are replaced on re-run
+                    const results = findMarkdownResults(lines, closingLine);
 
                     return {
                         language: language,
@@ -811,6 +814,8 @@ function findMarkdownFencedBlockAtCursor(document: vscode.TextDocument, position
                         endLine: closingLine,
                         codeStartLine: i + 1,
                         codeEndLine: closingLine - 1,
+                        resultsLine: results?.start,
+                        resultsEndLine: results?.end,
                     };
                 }
                 i = closingLine + 1;
@@ -1365,6 +1370,11 @@ if plt.get_fignums():
                 // Pass block.name so named blocks get named results
                 // Pass codeHash for :cache yes to include in #+RESULTS[hash]:
                 resultText = formatResult(result, resultsFormat, block.name, cacheEnabled ? codeHash : undefined);
+            }
+
+            // Markdown has no #+RESULTS: syntax; write markdown between comment markers
+            if (isMarkdownLike(editor.document.languageId)) {
+                resultText = orgResultsToMarkdown(resultText);
             }
 
             await insertResults(editor, block, resultText);

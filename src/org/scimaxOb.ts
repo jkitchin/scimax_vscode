@@ -14,6 +14,7 @@ import { pushKill } from '../killRing/commands';
 import { executeSourceBlock, formatResult, parseHeaderArguments, ExecutionContext } from '../parser/orgBabel';
 import { isMarkdownLike } from '../shared/markdownLike';
 import { matchCodeFenceOpen } from '../shared/markdownFences';
+import { findMarkdownResults } from '../shared/markdownResults';
 
 // =============================================================================
 // Types
@@ -72,7 +73,7 @@ function findBlockAtCursor(
     position: vscode.Position
 ): BlockPosition | null {
     const text = document.getText();
-    const lines = text.split('\n');
+    const lines = text.split(/\r?\n/);
     const isMarkdown = isMarkdownDocument(document);
 
     if (isMarkdown) {
@@ -240,8 +241,11 @@ function findMarkdownBlockAtCursor(lines: string[], position: vscode.Position): 
         if (position.line >= block.start && position.line <= block.end) {
             const codeLines = lines.slice(block.start + 1, block.end);
             const code = codeLines.join('\n');
+            const results = findMarkdownResults(lines, block.end);
 
             return {
+                resultsStart: results?.start,
+                resultsEnd: results?.end,
                 block: {
                     language: block.language || 'text',
                     parameters: '',
@@ -268,7 +272,7 @@ function findMarkdownBlockAtCursor(lines: string[], position: vscode.Position): 
 function findAllBlocks(document: vscode.TextDocument): BlockPosition[] {
     const blocks: BlockPosition[] = [];
     const text = document.getText();
-    const lines = text.split('\n');
+    const lines = text.split(/\r?\n/);
     const isMarkdown = isMarkdownDocument(document);
 
     let i = 0;
@@ -832,13 +836,25 @@ export async function mergeWithPrevious(): Promise<void> {
         prevBlock.block.braced
     );
 
-    // Delete both blocks and insert merged
-    const startLine = prevBlock.block.startLine;
-    const endLine = blockPos.resultsEnd ?? blockPos.block.endLine;
+    await replaceMergedBlocks(editor, prevBlock, blockPos, mergedBlock);
+}
 
+/**
+ * Put the merged block where the first block was and delete the second
+ * block. The results of both blocks are dropped (they no longer match the
+ * code), but text between the blocks is kept.
+ */
+async function replaceMergedBlocks(
+    editor: vscode.TextEditor,
+    first: BlockPosition,
+    second: BlockPosition,
+    mergedBlock: string
+): Promise<void> {
+    const firstEnd = first.resultsEnd ?? first.block.endLine;
+    const secondEnd = second.resultsEnd ?? second.block.endLine;
     await editor.edit(editBuilder => {
-        const range = new vscode.Range(startLine, 0, endLine + 1, 0);
-        editBuilder.replace(range, mergedBlock + '\n');
+        editBuilder.replace(new vscode.Range(first.block.startLine, 0, firstEnd + 1, 0), mergedBlock + '\n');
+        editBuilder.delete(new vscode.Range(second.block.startLine, 0, secondEnd + 1, 0));
     });
 }
 
@@ -885,14 +901,7 @@ export async function mergeWithNext(): Promise<void> {
         blockPos.block.braced
     );
 
-    // Delete both blocks and insert merged
-    const startLine = blockPos.block.startLine;
-    const nextEndLine = nextBlock.resultsEnd ?? nextBlock.block.endLine;
-
-    await editor.edit(editBuilder => {
-        const range = new vscode.Range(startLine, 0, nextEndLine + 1, 0);
-        editBuilder.replace(range, mergedBlock + '\n');
-    });
+    await replaceMergedBlocks(editor, blockPos, nextBlock, mergedBlock);
 }
 
 // =============================================================================
@@ -1191,6 +1200,13 @@ export async function editHeader(): Promise<void> {
         return;
     }
 
+    // Markdown fences carry no org header arguments; rewriting the fence line
+    // as #+BEGIN_SRC would leave an unmatched closing fence
+    if (blockPos.block.format === 'markdown') {
+        vscode.window.showInformationMessage('Header arguments are only supported on org source blocks');
+        return;
+    }
+
     const { block } = blockPos;
 
     // Parse current headers
@@ -1253,6 +1269,13 @@ export async function updateHeader(key: string, value: string): Promise<void> {
     const blockPos = findBlockAtCursor(editor.document, editor.selection.active);
 
     if (!blockPos) return;
+
+    // Markdown fences carry no org header arguments; rewriting the fence line
+    // as #+BEGIN_SRC would leave an unmatched closing fence
+    if (blockPos.block.format === 'markdown') {
+        vscode.window.showInformationMessage('Header arguments are only supported on org source blocks');
+        return;
+    }
 
     const { block } = blockPos;
     const paramKey = key.startsWith(':') ? key : `:${key}`;

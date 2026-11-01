@@ -7,35 +7,37 @@
 
 *Keybinding Note:* This extension uses Emacs-style keybindings where Ctrl is used on all platforms (not Cmd on Mac), except where explicitly noted.
 
-* ✅ Markdown Compatibility
-CLOSED: [2026-01-19 Mon 09:32]
+* 👀 Markdown Compatibility
 
-Scimax VS Code provides first-class support for org-mode files, with substantial
-structural editing and navigation support for Markdown documents as well. This
-chapter documents which features work in Markdown files and how to use them.
+Scimax VS Code provides first-class support for org-mode files, and most of its
+structural editing, navigation, task and code block commands also work in
+Markdown files. In a Markdown file the commands write Markdown syntax: =**bold**=,
+=[text](target)= links, =# TODO= headings, =@due(...)= dates and results that
+render in the Markdown preview. This chapter documents which features work in
+Markdown files and how they differ from org.
 
-** ✅ Design Philosophy
-CLOSED: [2026-01-19 Mon 09:32]
+** 👀 Design Philosophy
 
-The extension treats Markdown as a first-class citizen for *structural editing
-and navigation*. Features that rely on org-mode specific syntax (TODO states,
-scheduling, clocking, properties) are not available in Markdown since they would
-require non-standard Markdown extensions.
+Commands that make sense in Markdown write Markdown. Features that only exist
+in org syntax (clocking, property drawers, tangling) stay org-only rather than
+writing org text that Markdown renderers show literally.
 
-| Category                | Markdown Support | Notes                              |
-|-------------------------+------------------+------------------------------------|
-| Structural editing      | Full             | Headings, subtrees, code blocks    |
-| Navigation              | Full             | Jump, outline, breadcrumbs         |
-| Speed commands          | Full             | Single-key commands at headings    |
-| Code block execution    | Full             | Fenced blocks with Babel/Jupyter   |
-| TODO states             | None             | Org-mode specific syntax           |
-| Scheduling/Deadlines    | None             | Org-mode specific syntax           |
-| Clocking                | None             | Org-mode specific syntax           |
-| Properties              | None             | Org-mode specific syntax           |
-| Tags                    | Limited          | Hashtags work, not headline tags   |
+| Category             | Markdown Support | Notes                                                 |
+|----------------------+------------------+-------------------------------------------------------|
+| Structural editing   | Full             | Headings, subtrees, refile, archive                   |
+| Navigation           | Full             | Jump, outline, breadcrumbs, links and anchors         |
+| Speed commands       | Most             | Clocking and property keys are org-only               |
+| Text markup          | Full             | Writes =**bold**=, =*italic*=, =`code`=, =~~strike~~= |
+| Tables               | Full (GFM)       | Alignment colons kept; formulas are org-only          |
+| Code block execution | Partial          | Runs fenced blocks; no per-block header arguments     |
+| TODO states          | Full             | =# TODO Heading= and =- [ ]= checkbox tasks           |
+| Scheduling/Deadlines | Full             | =@scheduled(2026-01-20)=, =@due(2026-01-20)=          |
+| Agenda               | Full             | Dated Markdown headings appear in the org agenda      |
+| Tags                 | Hashtags         | =#tag= words, not =:tag:= headline tags               |
+| Clocking             | None             | Org-specific syntax                                   |
+| Properties           | None             | Org-specific syntax                                   |
 
-* ✅ Supported Features
-CLOSED: [2026-01-19 Mon 09:33]
+* 👀 Supported Features
 
 ** ✅ Document Outline and Navigation
 CLOSED: [2026-01-19 Mon 09:33]
@@ -43,12 +45,11 @@ CLOSED: [2026-01-19 Mon 09:33]
 Markdown files have full support for the VS Code outline view and breadcrumb
 navigation.
 
-*** ✅ Outline View
-CLOSED: [2026-01-19 Mon 09:33]
+*** 👀 Outline View
 
 The extension provides a =DocumentSymbolProvider= for Markdown that recognizes:
 
-- Headings (lines starting with =#=)
+- ATX headings (lines starting with =#= to =######=)
 - Fenced code blocks (=```language= or =~~~language=)
 - YAML frontmatter title
 
@@ -67,17 +68,35 @@ CLOSED: [2026-01-19 Mon 09:34]
 Press =C-c C-j= to open a quick-pick menu of all headings in the current file.
 Type to filter and press Enter to jump.  `Cmd-C/Shift-o' also works.
 
+** ⚠️ What Counts as a Heading
+
+A heading is a line that starts with one to six =#= characters followed by a
+space. Every heading command, speed key, fold, outline entry and refile target
+ignores =#= lines in these places, because they are not headings there:
+
+- inside fenced code blocks (=```= or =~~~=), such as a =# comment= in Python
+- in YAML front matter at the top of the file (between =---= lines)
+- inside HTML comments (=<!-- ... -->=)
+
+So a speed key pressed at the start of =# install deps= inside a =```bash= block
+types the letter instead of acting on a section, and moving or demoting a
+section moves its code blocks with it untouched.
+
+Setext headings (a title underlined with ==== or =---=) are not recognized;
+use =#= headings. A trailing =##= sequence or a Pandoc ={#id}= attribute is not
+part of the heading title.
+
 ** ✅ Heading Navigation
 CLOSED: [2026-01-19 Mon 09:35]
 
 All heading navigation commands work in Markdown:
 
-| Key       | Command                   | Description                      |
-|-----------+---------------------------+----------------------------------|
-| C-c C-n   | Next Heading              | Move to next heading (any level) |
-| C-c C-p   | Previous Heading          | Move to previous heading         |
-| C-c C-u   | Parent Heading            | Move to parent (higher level)    |
-| C-c C-j   | Jump to Heading           | Quick-pick menu of all headings  |
+| Key     | Command          | Description                      |
+|---------+------------------+----------------------------------|
+| C-c C-n | Next Heading     | Move to next heading (any level) |
+| C-c C-p | Previous Heading | Move to previous heading         |
+| C-c C-u | Parent Heading   | Move to parent (higher level)    |
+| C-c C-j | Jump to Heading  | Quick-pick menu of all headings  |
 
 Speed commands (when cursor is at column 0 of a heading line):
 
@@ -90,8 +109,7 @@ Speed commands (when cursor is at column 0 of a heading line):
 | u   | Up to parent heading                 |
 | j   | Jump to heading (opens menu)         |
 
-** ✅ Heading Manipulation
-CLOSED: [2026-01-19 Mon 09:35]
+** 👀 Heading Manipulation
 
 Change heading levels and move subtrees:
 
@@ -104,35 +122,40 @@ Change heading levels and move subtrees:
 | M-<up>      | Move Subtree Up   | Swap with previous sibling       |
 | M-<down>    | Move Subtree Down | Swap with next sibling           |
 
-*** ✅ Insert Headings
-CLOSED: [2026-01-19 Mon 09:35]
+Markdown has six heading levels, so demoting stops at =######=.
 
-| Key        | Command           | Description                           |
-|------------+-------------------+---------------------------------------|
-| C-<return> | Insert Heading    | Insert new heading at same level      |
-| -          | Insert Subheading | Insert heading one level deeper       |
+*** 👀 Insert Headings
 
-The extension automatically uses =#= characters for Markdown (not =*= like org).
+| Key        | Command           | Description                      |
+|------------+-------------------+----------------------------------|
+| C-<return> | Insert Heading    | Insert new heading at same level |
+| -          | Insert Subheading | Insert heading one level deeper  |
 
-** ✅ Subtree Operations
-CLOSED: [2026-01-19 Mon 09:35]
+The extension uses =#= characters for Markdown (not =*= like org), and a
+subheading under a =######= heading stays at level 6.
+
+** 👀 Subtree Operations
 
 All subtree operations work in Markdown:
 
 | Command                    | Speed Key | Description                    |
 |----------------------------+-----------+--------------------------------|
-| scimax.org.markSubtree     | @         | Select entire subtree          |
-| scimax.org.killSubtree     | w         | Cut subtree to clipboard       |
+| scimax.org.markSubtree     | m, @      | Select entire subtree          |
+| scimax.org.killSubtree     | k         | Cut subtree to clipboard       |
 | scimax.org.cloneSubtree    | W         | Duplicate subtree below        |
-| scimax.org.yankSubtree     | y         | Paste subtree from clipboard   |
-| scimax.org.narrowToSubtree | s         | Focus on subtree (fold others) |
-| scimax.org.widen           | S         | Unfold all (undo narrow)       |
+| scimax.speed.yankSubtree   | y         | Paste subtree from clipboard   |
+| scimax.org.refile          | w         | Move subtree under a heading   |
+| scimax.org.narrowToSubtree |           | Focus on subtree (fold others) |
+| scimax.org.widen           |           | Unfold all (undo narrow)       |
 
-*** ✅ Yank Subtree Level Adjustment
-CLOSED: [2026-01-19 Mon 09:35]
+Refile and archive (speed key =a=) adjust heading levels the same way yank
+does.
 
-When yanking (pasting) a subtree, the extension automatically adjusts heading
-levels to match the context:
+*** 👀 Yank Subtree Level Adjustment
+
+When yanking (pasting) a subtree, the extension adjusts heading levels to
+match the context. Only real headings change: =#= comments inside code blocks
+in the subtree are left alone, and no heading goes past level 6.
 
 #+BEGIN_SRC markdown
 ## Target Section
@@ -141,105 +164,27 @@ levels to match the context:
 <!-- Headings are automatically adjusted to match ## level -->
 #+END_SRC
 
-** ✅ Code Block Support
-CLOSED: [2026-01-19 Mon 09:37]
+** 👀 Speed Commands
 
-Markdown fenced code blocks have full support for:
+Speed commands work at the beginning of Markdown headings (column 0 of a
+heading line, see [[*What Counts as a Heading][What Counts as a Heading]]).
 
-- Detection and navigation
-- Execution via Babel/Jupyter
-- Block manipulation (split, merge, clone)
+| Keys          | Action                                                 |
+|---------------+--------------------------------------------------------|
+| n p f b u j g | Navigate: next, previous, sibling, parent, jump, go to |
+| c C o Tab     | Visibility: cycle, show children, overview, fold       |
+| U D           | Move subtree up / down                                 |
+| l r L R       | Promote / demote heading, promote / demote subtree     |
+| m @ k W y w a | Mark, kill, clone, yank, refile, archive subtree       |
+| t             | Cycle TODO state (=# TODO=, =# DONE=)                  |
+| s d           | Add =@scheduled(...)= / =@due(...)= to the heading     |
+| ?             | Speed command help                                     |
 
-*** ✅ Fenced Block Syntax
-CLOSED: [2026-01-19 Mon 09:37]
+The keys =1= =2= =3= =0= (priority), =:= (tags), =e= (effort), =P= (property)
+and =I= =O= (clock in/out) are for org headings; see
+[[*Features Not Available in Markdown][Features Not Available in Markdown]].
 
-Both backtick and tilde fences are supported:
-
-#+BEGIN_SRC markdown
-```python
-print("Hello from Python")
-```
-
-~~~javascript
-console.log("Hello from JS");
-~~~
-#+END_SRC
-
-*** ✅ Code Block Navigation
-CLOSED: [2026-01-19 Mon 09:53]
-
-| Key       | Command              | Description                    |
-|-----------+----------------------+--------------------------------|
-| C-c C-v n | Next Source Block    | Jump to next fenced block      |
-| C-c C-v p | Previous Source Block| Jump to previous fenced block  |
-| C-c C-v g | Jump to Source Block | Quick-pick menu of all blocks  |
-
-*** ✅ Code Block Execution
-CLOSED: [2026-01-19 Mon 09:50]
-
-Press =C-c C-c= inside a fenced code block to execute it. Results appear below
-the block.
-
-Supported languages include Python, JavaScript, TypeScript, Shell, and any
-language with a Jupyter kernel installed.
-
-*** ✅ Code Block Manipulation
-CLOSED: [2026-01-19 Mon 09:50]
-
-| Command                        | Description                          |
-|--------------------------------+--------------------------------------|
-| scimax.ob.splitBlock           | Split block at cursor                |
-| scimax.ob.mergeWithPrevious    | Merge with previous block            |
-| scimax.ob.mergeWithNext        | Merge with next block                |
-| scimax.ob.insertBlockAbove     | Insert new block above               |
-| scimax.ob.insertBlockBelow     | Insert new block below               |
-| scimax.ob.insertBlockBelowSame | Insert block with same language      |
-| scimax.ob.cloneBlock           | Duplicate current block              |
-| scimax.ob.killBlock            | Delete block and results             |
-
-The extension preserves the fence style (=```= or =~~~=) when manipulating blocks.
-
-** ✅ Speed Commands
-CLOSED: [2026-01-19 Mon 09:40]
-
-Speed commands work at the beginning of Markdown headings (column 0 of a line
-starting with =#=).
-
-*** ✅ Navigation Speed Commands
-CLOSED: [2026-01-19 Mon 09:40]
-
-| Key | Action                               |
-|-----+--------------------------------------|
-| n   | Next heading                         |
-| p   | Previous heading                     |
-| f   | Forward to same-level heading        |
-| b   | Back to same-level heading           |
-| u   | Up to parent heading                 |
-| j   | Jump to heading (quick-pick)         |
-| g   | Go to... (navigation menu)           |
-
-*** ✅ Structure Speed Commands
-CLOSED: [2026-01-19 Mon 09:40]
-
-| Key | Action                    |
-|-----+---------------------------|
-| @   | Mark (select) subtree     |
-| w   | Kill (cut) subtree        |
-| W   | Clone subtree             |
-| y   | Yank (paste) subtree      |
-| s   | Narrow to subtree         |
-| S   | Widen (show all)          |
-
-*** ✅ Visibility Speed Commands
-CLOSED: [2026-01-19 Mon 09:40]
-
-| Key | Action               |
-|-----+----------------------|
-| c   | Cycle visibility     |
-| C   | Show children        |
-| o   | Overview (fold all)  |
-
-** Folding
+** ✅ Folding
 CLOSED: [2026-01-19 Mon 09:40]
 
 Markdown headings support folding via the standard VS Code folding mechanism:
@@ -250,6 +195,241 @@ Markdown headings support folding via the standard VS Code folding mechanism:
 
 Fenced code blocks and Pandoc fenced divs (=::: {.callout-note}= ... =:::=,
 nested to any depth, and MyST =:::{note}= fences) fold as well.
+
+** ⚠️ Text Markup and Comments
+
+The markup commands write Markdown syntax in Markdown files:
+
+| Key        | Command                        | Org        | Markdown          |
+|------------+--------------------------------+------------+-------------------|
+| M-b, C-c b | scimax.markup.bold             | =*text*=   | =**text**=        |
+| M-i, C-c i | scimax.markup.italic           | =/text/=   | =*text*=          |
+| M-u, C-c _ | scimax.markup.underline        | =_text_=   | =<u>text</u>=     |
+| M-c, C-c ` | scimax.markup.code             | =~text~=   | =`text`=          |
+| M-v, C-c = | scimax.markup.verbatim         | ~=text=~   | =`text`=          |
+| M-s, C-c + | scimax.markup.strikethrough    | =+text+=   | =~~text~~=        |
+| M--        | scimax.markup.subscript        | =_{text}=  | =<sub>text</sub>= |
+| M-=        | scimax.markup.superscript      | =^{text}=  | =<sup>text</sup>= |
+|            | scimax.markup.latexDisplayMath | =\[text\]= | =$$text$$=        |
+
+=M-;= (~scimax.org.dwimComment~) comments lines with HTML comments
+(=<!-- ... -->=), using VS Code's Toggle Line Comment. In org it adds =# =,
+which in Markdown would make the line a heading.
+
+** ⚠️ Lists and Return
+
+=Return= (DWIM return) in a Markdown file:
+
+- On a list item (=-=, =+=, =*= or =1.=), starts the next item; on an empty
+  item, removes it. =*= at column 0 is a list bullet in Markdown, not a heading.
+- On a checkbox item (=- [ ] ...=), starts a new checkbox item.
+- In a table, moves to the next row.
+- Inside a fenced code block, front matter or an HTML comment, inserts a plain
+  newline, so =- key: value= in a YAML block and =| pipes= in code are left
+  alone.
+
+=C-c C-c= on a checkbox (~scimax.markdown.toggleCheckbox~) toggles it in
+Markdown and Quarto files.
+
+** ⚠️ Links
+
+| Key     | Command               | In Markdown                                              |
+|---------+-----------------------+----------------------------------------------------------|
+| C-c C-o | scimax.org.openLink   | Follows =[text](target)= and =![alt](image)= links       |
+| C-c l   | scimax.org.storeLink  | On a heading, stores a link to it                        |
+| C-c C-l | scimax.org.insertLink | Inserts =[description](target)=; edits the link at point |
+
+=C-c C-o= follows:
+
+- URLs: =[docs](https://example.com)=
+- other files, relative to the current file: =[notes](../notes.md)=
+- headings in this file: =[Methods](#methods)=
+- headings in another file: =[setup](install.md#setup)=; in an org file the
+  anchor is a =CUSTOM_ID=
+
+Heading anchors are GitHub-style: lower case, punctuation removed, spaces
+replaced by hyphens, so =## Results & Discussion= is =#results--discussion=. A
+Pandoc attribute such as =# Intro {#sec-intro}= also works as =#sec-intro=.
+
+To link to a heading, put the cursor on it and press =C-c l=, then press
+=C-c C-l= where the link should go. In the same file this inserts
+=[Methods](#methods)=; in another Markdown file, =[Methods](notes.md#methods)=.
+Org-style =[[...]]= links in Markdown files still work with =C-c C-o=.
+
+** ⚠️ Tables
+
+Org table editing works on GitHub-flavored Markdown pipe tables:
+
+#+BEGIN_SRC markdown
+| Name | Count | Price |
+|:-----|:-----:|------:|
+| a    |   1   |  2.50 |
+#+END_SRC
+
+- =Tab= / =S-Tab= move between cells and realign the table.
+- Alignment colons in the delimiter row are kept: =:---= left, =:---:= center,
+  =---:= right. Cells are padded to match, and the alignment moves with its
+  column when you move, insert or delete columns.
+- The header row and the delimiter row stay at the top. Inserting a row below
+  the header puts it under the delimiter row, moving rows skips over the
+  delimiter, and deleting the header or the delimiter is refused.
+- =C-c -= (insert separator) creates the delimiter row when the table has none,
+  and otherwise does nothing, since GFM tables have only one.
+
+Rows must start with =|=. Tables written without the outer pipes
+(=a | b= / =--|--=) are not recognized. Table formulas (=#+TBLFM:=) are org-only.
+
+** 👀 Code Block Support
+
+Markdown fenced code blocks support:
+
+- Detection and navigation
+- Execution via Babel/Jupyter
+- Block manipulation (split, merge, clone, kill, move)
+
+*** 👀 Fenced Block Syntax
+
+Both backtick and tilde fences are supported, with the language as a single
+word or in braces:
+
+#+BEGIN_SRC markdown
+```python
+print("Hello from Python")
+```
+
+~~~javascript
+console.log("Hello from JS");
+~~~
+
+```{python}
+print("Quarto/Pandoc chunk form")
+```
+#+END_SRC
+
+The fence must start at column 0. A fence with extra text after the language
+(=```python title="x"=) or a hyphenated language (=```jupyter-python=) is not
+treated as a code block; use the braced form (=```{jupyter-python}=) for
+Jupyter languages.
+
+*** ✅ Code Block Navigation
+CLOSED: [2026-01-19 Mon 09:53]
+
+| Key       | Command               | Description                   |
+|-----------+-----------------------+-------------------------------|
+| C-c C-v n | Next Source Block     | Jump to next fenced block     |
+| C-c C-v p | Previous Source Block | Jump to previous fenced block |
+| C-c C-v g | Jump to Source Block  | Quick-pick menu of all blocks |
+
+*** 👀 Code Block Execution
+
+Press =C-c C-c= inside a fenced code block to execute it. Results go below the
+block, between two HTML comments that the Markdown preview and Pandoc hide:
+
+#+BEGIN_SRC markdown
+```python
+print(6 * 7)
+```
+
+<!-- results -->
+```
+42
+```
+<!-- /results -->
+#+END_SRC
+
+Running the block again replaces these results instead of adding a second
+copy. Images from Jupyter kernels are written as =![](.ob-jupyter/plot.png)=,
+so they show in the preview. Table results become GFM tables.
+
+Supported languages include Python, JavaScript, TypeScript, Shell, and any
+language with a Jupyter kernel installed.
+
+Markdown blocks have no per-block header arguments (=:session=, =:var=,
+=:results=, =:eval no=). A file-wide =#+PROPERTY: header-args ...= line applies
+to all blocks. Execute-all, tangle and noweb references are org-only.
+
+*** 👀 Code Block Manipulation
+
+| Command                        | Description                     |
+|--------------------------------+---------------------------------|
+| scimax.ob.splitBlock           | Split block at cursor           |
+| scimax.ob.mergeWithPrevious    | Merge with previous block       |
+| scimax.ob.mergeWithNext        | Merge with next block           |
+| scimax.ob.insertBlockAbove     | Insert new block above          |
+| scimax.ob.insertBlockBelow     | Insert new block below          |
+| scimax.ob.insertBlockBelowSame | Insert block with same language |
+| scimax.ob.cloneBlock           | Duplicate current block         |
+| scimax.ob.killBlock            | Delete block and results        |
+
+The extension preserves the fence style (=```= or =~~~=) when manipulating
+blocks. Kill and move take the block's results with it. Merging puts the
+merged block where the first one was, drops both blocks' results and keeps any
+text between the blocks. The header-argument commands (~scimax.ob.editHeader~)
+are org-only and show a message in Markdown.
+
+** ⚠️ Tasks and Planning
+
+Markdown files have two kinds of task: TODO headings and checkbox tasks.
+
+*** ⚠️ TODO Headings
+
+A heading whose first word is a TODO keyword is a task:
+
+#+BEGIN_SRC markdown
+## TODO Draft the methods section @scheduled(2026-01-20) #writing
+## DONE Collect data @closed(2026-01-12)
+#+END_SRC
+
+| Key            | Command               | Effect in Markdown                               |
+|----------------+-----------------------+--------------------------------------------------|
+| C-c C-t, t     | scimax.org.cycleTodo  | =# x= -> =# TODO x= -> =# DONE x= -> =# x=       |
+| S-<right/left> | Cycle TODO state      | Same keywords, forward or backward; no =@closed= |
+| C-c C-s, s     | Insert Scheduled Date | Adds or replaces =@scheduled(YYYY-MM-DD)=        |
+| C-c C-d, d     | Insert Due Date       | Adds or replaces =@due(YYYY-MM-DD)=              |
+| S-<up/down>    | Shift date            | On a =@due(...)= or =@scheduled(...)= date       |
+
+=t=, =s= and =d= are speed keys (column 0 of a heading). Marking a heading
+=DONE= adds =@closed(date)=; leaving the done state removes it. Keywords come
+from ~scimax.todo~ settings or a =#+TODO:= line, as in org files.
+=@deadline(...)= is read as a due date. The older =## [TODO] Title= form is
+still recognized.
+
+The database indexes these headings with their state, dates, =@priority(A)=
+and trailing =#tags=. TODO headings appear in the org TODO list, and headings
+with =@scheduled= or =@due= dates appear in the org agenda (=C-c a=) next to
+org entries. Files indexed before this version need re-indexing to pick this
+up: run *Scimax: Rebuild Database (from scratch)* (~scimax.db.rebuild~), or
+save each file.
+
+*** ⚠️ Checkbox Tasks
+
+#+BEGIN_SRC markdown
+- [ ] Email reviewers @due(2026-01-22) @project(paper) #urgent
+- [x] Upload data @closed(2026-01-10)
+#+END_SRC
+
+| Command                            | Description                              |
+|------------------------------------+------------------------------------------|
+| scimax.markdown.insertTask         | Insert a new checkbox task               |
+| scimax.markdown.toggleCheckbox     | Toggle the checkbox (=C-c C-c=)          |
+| scimax.markdown.insertPriority     | Add =@priority(A)=                       |
+| scimax.markdown.showAgenda         | Tasks grouped by date                    |
+| scimax.markdown.showTodaysTasks    | Tasks due or scheduled today, or overdue |
+| scimax.markdown.showTasksByTag     | Filter tasks by =#tag=                   |
+| scimax.markdown.showTasksByProject | Filter tasks by =@project(...)=          |
+
+A task is overdue when its due date, or its scheduled date if it has no due
+date, is in the past. A tag is a =#word= that starts with a letter and follows
+a space or the start of the line, so =#123= and the =#section= part of a URL
+are not tags. Invalid dates such as =@due(2026-02-30)= are ignored.
+
+** ⚠️ Export
+
+=C-c C-e= (~scimax.markdown.exportMenu~) exports the Markdown file with Pandoc
+to HTML, PDF, LaTeX or Word, writing the output next to the source with the
+new extension. This works for =.md=, =.markdown= and other Markdown
+extensions; the export never writes over the source file. Code blocks are not
+executed during export.
 
 ** Markdown Preview
 
@@ -319,85 +499,81 @@ meanings, and =Cmd+Shift+K= on a citation still deletes it there.
 Fenced divs (callouts, =::: {.columns}=, panels, =::: {#fig-x}= figure divs)
 fold from the opening =:::= to its matching close, including nested divs.
 
-* ✅ Features Not Available in Markdown
-CLOSED: [2026-01-19 Mon 09:40]
+* 👀 Features Not Available in Markdown
 
-The following org-mode features are *not* supported in Markdown files because
-they require org-specific syntax:
+These org-mode features have no Markdown form and stay org-only. Their
+commands either do nothing in Markdown files or work only in org files.
 
-** ✅ Task Management
-CLOSED: [2026-01-19 Mon 09:40]
+** 👀 Task Management
 
-| Feature        | Reason                                      |
-|----------------+---------------------------------------------|
-| TODO keywords  | Org syntax: =* TODO Task=                   |
-| Priorities     | Org syntax: =[#A]=                          |
-| Checkbox lists | Markdown checkboxes work differently        |
-| Progress cookies| Org syntax: =[2/5]= or =[40%]=             |
+| Feature            | Reason                                          |
+|--------------------+-------------------------------------------------|
+| Progress cookies   | Org syntax: =[2/5]= or =[40%]=                  |
+| Headline tags      | Org syntax: =* Heading :tag1:tag2:= (=C-c C-q=) |
+| Repeaters, logging | Org syntax: =<2026-01-20 +1w>=, =:LOGBOOK:=     |
 
-** ✅ Planning
-CLOSED: [2026-01-19 Mon 09:40]
+** 👀 Time and Metadata
 
-| Feature    | Reason                                         |
-|------------+------------------------------------------------|
-| SCHEDULED  | Org syntax: =SCHEDULED: <2026-01-20>=          |
-| DEADLINE   | Org syntax: =DEADLINE: <2026-01-20>=           |
-| Clocking   | Org syntax: =CLOCK: [timestamp]--[timestamp]=  |
-| Agenda     | Requires TODO states and scheduling            |
+| Feature        | Reason                                        |
+|----------------+-----------------------------------------------|
+| Clocking       | Org syntax: =CLOCK: [timestamp]--[timestamp]= |
+| Properties     | Org syntax: =:PROPERTIES:= drawer             |
+| Inherited tags | Requires org tag syntax                       |
 
-** ✅ Metadata
-CLOSED: [2026-01-19 Mon 09:40]
+The speed keys =I= (clock in), =e= (effort) and =P= (set property) insert org
+drawers even in Markdown files, where nothing reads them back. Avoid them in
+Markdown. The priority keys =1= =2= =3= do nothing on a Markdown heading; use
+*Scimax: Insert Priority* (~scimax.markdown.insertPriority~) to add
+=@priority(A)=.
 
-| Feature         | Reason                                    |
-|-----------------+-------------------------------------------|
-| Properties      | Org syntax: =:PROPERTIES:= drawer         |
-| Tags            | Org syntax: =* Heading :tag1:tag2:=       |
-| Inherited tags  | Requires org tag syntax                   |
-| LOGBOOK         | Org syntax: =:LOGBOOK:= drawer            |
+** 👀 Special Elements
 
-** ✅ Special Elements
-CLOSED: [2026-01-19 Mon 09:40]
+| Feature             | Reason                                  |
+|---------------------+-----------------------------------------|
+| Inline tasks        | Org syntax: 15+ stars                   |
+| Dynamic blocks      | Org syntax: =#+BEGIN:=                  |
+| Special blocks      | Org syntax: =#+BEGIN_QUOTE=, etc.       |
+| Table formulas      | Org syntax: =#+TBLFM:=                  |
+| Tangle, noweb       | Need org header arguments               |
+| LaTeX preview       | Inline previews are drawn for org files |
+| Image overlays      | Inline images are drawn for org files   |
+| Capture into a file | Capture templates write org headings    |
+| Backlinks           | Links in Markdown files are not indexed |
 
-| Feature         | Reason                                    |
-|-----------------+-------------------------------------------|
-| Inline tasks    | Org syntax: 15+ stars                     |
-| Dynamic blocks  | Org syntax: =#+BEGIN:=                    |
-| Special blocks  | Org syntax: =#+BEGIN_QUOTE=, etc.         |
+* 👀 Tips for Markdown Users
 
-* ✅ Tips for Markdown Users
-CLOSED: [2026-01-19 Mon 09:40]
-
-** ✅ Maximizing Compatibility
-CLOSED: [2026-01-19 Mon 09:41]
+** 👀 Maximizing Compatibility
 
 To get the most out of Scimax VS Code with Markdown:
 
 1. *Use speed commands* - Position cursor at column 0 of headings for rapid
    single-key operations
 
-2. *Use fenced code blocks* - The extension fully supports =```language= blocks
-   for execution and manipulation
+2. *Use fenced code blocks* - The extension supports =```language= blocks for
+   execution and manipulation
 
 3. *Use the outline view* - Provides visual navigation similar to org's sparse
    tree features
 
 4. *Use jump commands* - =C-c C-j= for headings, =C-c C-v g= for code blocks
 
-** ✅ When to Use Org-Mode Instead
-CLOSED: [2026-01-19 Mon 09:41]
+5. *Use =# TODO= headings with =@scheduled= and =@due= dates* - they show up in
+   the org agenda next to your org tasks
+
+** 👀 When to Use Org-Mode Instead
 
 Consider using org-mode files when you need:
 
-- Task management with TODO states and priorities
-- Scheduling and deadlines with agenda integration
 - Time tracking with clocking
 - Inherited properties and tags
+- Per-block header arguments, tangling and noweb
+- Table formulas
 - Advanced export features
 
 Org files can be exported to Markdown when sharing with others who don't use
 org-mode.
 
-* Related Topics
+* 👀 Related Topics
 
 - [[file:45-myst-preview.org][MyST Markdown Preview]] - Jupyter Book directives and roles in the preview
 - [[file:44-marp.org][Marp Slides]] - jump from a Marp slide preview to its source
@@ -405,6 +581,11 @@ org-mode.
 - [[file:02-document-structure.org][Document Structure]] - Full org-mode structure documentation
 - [[file:23-speed-commands.org][Speed Commands]] - Complete speed command reference
 - [[file:07-source-blocks.org][Source Blocks]] - Code execution details
+- [[file:03-todo-items.org][TODO Items]] - TODO keywords and cycling
+- [[file:13-agenda.org][Agenda]] - Agenda views that include Markdown tasks
+- [[file:04-tables.org][Tables]] - Table editing commands
+- [[file:05-links.org][Links]] - Link types, storing and inserting links
+- [[file:18-database-search.org][Database Search]] - What the database indexes
 - [[file:21-navigation.org][Navigation]] - All navigation features
 
 * ✅ Navigation

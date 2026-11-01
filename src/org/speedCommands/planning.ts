@@ -9,6 +9,7 @@ import { getHeadingLevel } from './context';
 import { formatOrgTimestamp as formatTimestamp } from '../../parser/orgRepeater';
 import { showCalendarDatePicker } from '../calendarDatePicker';
 import { getTodoWorkflowForDocument } from '../todoStates';
+import { isMarkdownLike } from '../../shared/markdownLike';
 
 // Store extension URI for calendar picker
 let extensionUri: vscode.Uri | undefined;
@@ -136,6 +137,15 @@ async function addPlanningTimestamp(keyword: 'SCHEDULED' | 'DEADLINE'): Promise<
     if (!editor) return;
 
     const document = editor.document;
+
+    // Markdown has no org planning lines: its canonical planning syntax is
+    // `@scheduled(YYYY-MM-DD)` / `@due(YYYY-MM-DD)` on the heading line.
+    if (isMarkdownLike(document.languageId)) {
+        await vscode.commands.executeCommand(
+            keyword === 'SCHEDULED' ? 'scimax.markdown.insertScheduledDate' : 'scimax.markdown.insertDueDate'
+        );
+        return;
+    }
     const position = editor.selection.active;
 
     // Save document URI to restore focus after calendar picker

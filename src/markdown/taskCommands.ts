@@ -9,41 +9,50 @@ import {
     isOverdue,
     isDueToday,
     isScheduledToday,
-    sortTasks
+    sortTasks,
+    setDateTagOnLine
 } from './taskParser';
 import { parseRelativeDate } from '../utils/dateParser';
 import { DAY_NAMES_SHORT, MONTH_NAMES_FULL } from '../utils/dateConstants';
 
 /**
- * Insert a due date at cursor
+ * Insert a date tag. On a heading or checkbox task line the tag is set on the
+ * line itself (replacing an existing tag of the same kind, else appended at
+ * the end of the line); elsewhere it is inserted at the cursor.
  */
-async function insertDueDate(): Promise<void> {
+async function insertDateTag(key: 'due' | 'scheduled', title: string): Promise<void> {
     const editor = vscode.window.activeTextEditor;
     if (!editor) return;
+    const document = editor.document;
+    const lineNumber = editor.selection.active.line;
 
-    const date = await pickDate('Select due date');
+    const date = await pickDate(title);
     if (!date) return;
 
     const dateStr = formatDate(date);
+    const line = document.lineAt(lineNumber);
+    const newLine = setDateTagOnLine(line.text, key, dateStr);
     await editor.edit(editBuilder => {
-        editBuilder.insert(editor.selection.active, `@due(${dateStr}) `);
+        if (newLine !== undefined) {
+            editBuilder.replace(line.range, newLine);
+        } else {
+            editBuilder.insert(editor.selection.active, `@${key}(${dateStr}) `);
+        }
     });
 }
 
 /**
- * Insert a scheduled date at cursor
+ * Insert a due date (on the current heading/task line, or at cursor)
+ */
+async function insertDueDate(): Promise<void> {
+    await insertDateTag('due', 'Select due date');
+}
+
+/**
+ * Insert a scheduled date (on the current heading/task line, or at cursor)
  */
 async function insertScheduledDate(): Promise<void> {
-    const editor = vscode.window.activeTextEditor;
-    if (!editor) return;
-
-    const date = await pickDate('Select scheduled date');
-    if (!date) return;
-
-    const dateStr = formatDate(date);
-    await editor.edit(editBuilder => {
-        editBuilder.insert(editor.selection.active, `@scheduled(${dateStr}) `);
-    });
+    await insertDateTag('scheduled', 'Select scheduled date');
 }
 
 /**

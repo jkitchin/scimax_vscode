@@ -28,7 +28,8 @@ import {
 import { extractAnchors, normalizeAnchorText } from '../parser/orgAnchors';
 import { isExcludedPath } from '../shared/ignorePatterns';
 import { parseWarning, warningStart } from '../parser/deadlineWarning';
-import { markdownFencedLineMask } from '../shared/markdownFences';
+import { markdownNonProseMask } from '../shared/markdownFences';
+import { parseTodoKeywords, DEFAULT_TODO_STATES } from '../shared/todoKeywords';
 // Migration data - inlined here to avoid importing migrations.ts which pulls in vscode via logger.
 // Keep in sync with src/database/migrations.ts.
 
@@ -374,6 +375,75 @@ export function parseDependsIds(value: string): string[] {
 
 /** Keywords treated as done when a file declares no #+TODO line of its own */
 export const DEFAULT_DONE_STATES = ['DONE', 'CANCELLED', 'CANCELED'];
+
+/** A markdown ATX heading's text, split into the fields the headings table stores. */
+export interface MarkdownHeadingFields {
+    title: string;
+    todoState: string | null;
+    priority: string | null;
+    tags: string[];
+    scheduled: string | null;
+    deadline: string | null;
+    closed: string | null;
+}
+
+/** A YYYY-MM-DD string naming a real calendar date (2026-02-30 is not). */
+function validYmd(s: string): string | null {
+    const m = s.trim().match(/^(\d{4})-(\d{2})-(\d{2})$/);
+    if (!m) return null;
+    const [y, mo, d] = [parseInt(m[1]), parseInt(m[2]), parseInt(m[3])];
+    const date = new Date(y, mo - 1, d);
+    return date.getFullYear() === y && date.getMonth() === mo - 1 && date.getDate() === d ? m[0] : null;
+}
+
+/**
+ * Parse the text after the `#`s of a markdown heading:
+ *   `TODO Title @scheduled(2026-01-05) @due(2026-01-09) #tag`
+ * The TODO keyword (one of `todoStates`; legacy `[TODO]` is also read) is
+ * removed from the title, as are `@scheduled/@due/@deadline/@closed/@priority`
+ * metadata (`@deadline` is an alias for `@due`) and trailing `#tags`.
+ * Dates are stored as YYYY-MM-DD, the form the agenda queries parse.
+ */
+export function parseMarkdownHeadingText(text: string, todoStates: Set<string>): MarkdownHeadingFields {
+    let title = text;
+    let scheduled: string | null = null;
+    let deadline: string | null = null;
+    let closed: string | null = null;
+    let priority: string | null = null;
+
+    title = title.replace(/(^|\s)@(scheduled|due|deadline|closed|priority)\(([^)]*)\)/gi, (_m, ws: string, key: string, value: string) => {
+        switch (key.toLowerCase()) {
+            case 'scheduled': scheduled = validYmd(value) ?? scheduled; break;
+            case 'due': deadline = validYmd(value) ?? deadline; break;
+            case 'deadline': deadline = deadline ?? validYmd(value); break;
+            case 'closed': closed = validYmd(value) ?? closed; break;
+            case 'priority': priority = value.trim().toUpperCase() || null; break;
+        }
+        return ws;
+    }).trim();
+
+    const tags: string[] = [];
+    const tagMatch = title.match(/(?:^|\s+)#([A-Za-z][\w-]*(?:\s+#[A-Za-z][\w-]*)*)$/);
+    if (tagMatch) {
+        tags.push(...tagMatch[1].split(/\s+#/));
+        title = title.slice(0, -tagMatch[0].length);
+    }
+
+    let todoState: string | null = null;
+    const legacy = title.match(/^\[([A-Z]+)\]\s+/);
+    if (legacy) {
+        todoState = legacy[1];
+        title = title.slice(legacy[0].length);
+    } else {
+        const kw = title.match(/^(\S+)(?:\s+|$)/);
+        if (kw && todoStates.has(kw[1])) {
+            todoState = kw[1];
+            title = title.slice(kw[0].length);
+        }
+    }
+
+    return { title: title.replace(/\s+/g, ' ').trim(), todoState, priority, tags, scheduled, deadline, closed };
+}
 
 export interface FileRecord {
     id: number;
@@ -1015,7 +1085,7 @@ export class ScimaxDbCore {
                         stack.push(fullPath);
                     } else if (item.isFile()) {
                         const ext = path.extname(item.name).toLowerCase();
-                        if (ext === '.org' || ext === '.md') yield fullPath;
+                        if (ext === '.org' || ext === '.md' || ext === '.markdown') yield fullPath;
                     }
                 }
                 directoriesProcessed++;
@@ -1027,7 +1097,7 @@ export class ScimaxDbCore {
                     // Entry is a single file (e.g. added to scimax.db.include
                     // via "Add file to agenda"), not a directory.
                     const ext = path.extname(dir).toLowerCase();
-                    if ((ext === '.org' || ext === '.md') && !this.isExcluded(dir)) {
+                    if ((ext === '.org' || ext === '.md' || ext === '.markdown') && !this.isExcluded(dir)) {
                         yield dir;
                     }
                 } else if (error?.code !== 'EACCES' && error?.code !== 'ENOENT') {
@@ -1092,7 +1162,7 @@ export class ScimaxDbCore {
 
     private getFileType(filePath: string): 'org' | 'md' {
         const ext = path.extname(filePath).toLowerCase();
-        if (ext === '.md') return 'md';
+        if (ext === '.md' || ext === '.markdown') return 'md';
         return 'org';
     }
 
@@ -1146,7 +1216,7 @@ export class ScimaxDbCore {
                 return skip(`file with too many lines (${lineCount})`);
             }
 
-            const knownTextExt = ['.org', '.md', '.txt'];
+            const knownTextExt = ['.org', '.md', '.markdown', '.txt'];
             const ext = path.extname(filePath).toLowerCase();
             if (!knownTextExt.includes(ext) && this.isBinaryContent(content)) {
                 return skip('binary file');
@@ -1649,8 +1719,14 @@ export class ScimaxDbCore {
         const statements: { sql: string; args: (string | number | null)[] }[] = [];
         const lines = content.split('\n');
         // `#` lines inside fenced code blocks are code comments, not headings
-        const inFence = markdownFencedLineMask(lines);
+        const inFence = markdownNonProseMask(lines);
         let charPos = 0;
+
+        // Markdown headings use org TODO keywords (`# TODO Title`), honoring
+        // #+TODO: lines like org files do.
+        const workflow = parseTodoKeywords(content);
+        const todoStates = new Set<string>([...DEFAULT_TODO_STATES, ...(workflow?.allStates ?? [])]);
+        const doneStates = new Set<string>([...DEFAULT_DONE_STATES, ...(workflow?.doneStates ?? [])]);
 
         for (let i = 0; i < lines.length; i++) {
             const line = lines[i];
@@ -1658,28 +1734,20 @@ export class ScimaxDbCore {
             const match = inFence[i] ? null : line.match(/^(#{1,6})\s+(.*)$/);
             if (match) {
                 const level = match[1].length;
-                let title = match[2];
-                const tags: string[] = [];
-                const tagMatch = title.match(/\s+#(\w+(?:\s+#\w+)*)$/);
-                if (tagMatch) {
-                    tags.push(...tagMatch[1].split(/\s+#/));
-                    title = title.slice(0, -tagMatch[0].length);
-                }
-                let todoState: string | null = null;
-                const todoMatch = title.match(/^\[([A-Z]+)\]\s+/);
-                if (todoMatch) {
-                    todoState = todoMatch[1];
-                    title = title.slice(todoMatch[0].length);
-                }
+                const parsed = parseMarkdownHeadingText(match[2], todoStates);
+                const todoState = parsed.todoState;
                 statements.push({
                     sql: `INSERT INTO headings
                           (file_id, file_path, level, title, line_number, begin_pos,
-                           todo_state, todo_type, tags, inherited_tags, properties, cell_index)
-                          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, '[]', '{}', NULL)`,
+                           todo_state, todo_type, priority, tags, inherited_tags, properties,
+                           scheduled, deadline, closed, cell_index)
+                          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, '[]', '{}', ?, ?, ?, NULL)`,
                     args: [
-                        fileId, filePath, level, title.trim(), lineNumber, charPos, todoState,
-                        todoState ? (DEFAULT_DONE_STATES.includes(todoState) ? 'done' : 'todo') : null,
-                        JSON.stringify(tags)
+                        fileId, filePath, level, parsed.title, lineNumber, charPos, todoState,
+                        todoState ? (doneStates.has(todoState) ? 'done' : 'todo') : null,
+                        parsed.priority,
+                        JSON.stringify(parsed.tags),
+                        parsed.scheduled, parsed.deadline, parsed.closed
                     ]
                 });
             }
@@ -2026,9 +2094,9 @@ export class ScimaxDbCore {
     }
 
     /**
-     * Bring indexed org files up to date with the disk: re-index the ones
-     * changed since they were indexed (e.g. synced from another machine) and
-     * drop the ones deleted. Stats every indexed org file in parallel, which
+     * Bring indexed org and markdown files up to date with the disk: re-index
+     * the ones changed since they were indexed (e.g. synced from another
+     * machine) and drop the ones deleted. Stats every indexed file in parallel, which
      * takes well under a second for tens of thousands of files.
      *
      * A file is dropped only when its directory still exists, so an unmounted
@@ -2039,7 +2107,7 @@ export class ScimaxDbCore {
     }): Promise<{ checked: number; reindexed: number; removed: number }> {
         const result = { checked: 0, reindexed: 0, removed: 0 };
         if (!this.db) return result;
-        const rows = await this.db.execute(`SELECT path, mtime FROM files WHERE file_type = 'org'`);
+        const rows = await this.db.execute(`SELECT path, mtime FROM files WHERE file_type IN ('org', 'md')`);
         const changed: string[] = [];
         const removed: string[] = [];
         const batchSize = 1000;

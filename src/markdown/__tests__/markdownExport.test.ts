@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { defaultMainFont, frontMatterHasKey, missingCharacters, pdfArgs } from '../markdownExport';
+import { defaultExportPath, defaultMainFont, frontMatterHasKey, missingCharacters, pdfArgs } from '../markdownExport';
 
 describe('defaultMainFont', () => {
     it('uses Arial Unicode MS on macOS', () => {
@@ -71,5 +71,20 @@ describe('missingCharacters', () => {
 
     it('returns nothing for clean output', () => {
         expect(missingCharacters('')).toEqual([]);
+    });
+});
+
+describe('defaultExportPath', () => {
+    it('replaces .md with the format extension', () => {
+        expect(defaultExportPath('/a/notes.md', 'html')).toBe('/a/notes.html');
+    });
+
+    it('never returns the source path for other markdown extensions', () => {
+        for (const name of ['notes.markdown', 'notes.mkd', 'notes.qmd', 'notes.MD', 'notes']) {
+            const input = `/a/${name}`;
+            const out = defaultExportPath(input, 'html');
+            expect(out).not.toBe(input);
+            expect(out.endsWith('.html')).toBe(true);
+        }
     });
 });

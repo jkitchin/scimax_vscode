@@ -5,6 +5,7 @@
  */
 
 import * as vscode from 'vscode';
+import { firstHeadingLevel, shiftHeadingLevels } from '../../shared/headingText';
 import { pushKill } from '../../killRing/commands';
 import { getHeadingLevel, getSubtreeRange } from './context';
 
@@ -60,12 +61,12 @@ export async function yankSubtree(): Promise<void> {
     }
 
     // Adjust heading levels in clipboard to match context
-    const clipboardLevel = getClipboardHeadingLevel(clipboardText, isOrg);
+    const clipboardLevel = firstHeadingLevel(clipboardText, isOrg);
     let adjustedText = clipboardText;
 
     if (currentLevel > 0 && clipboardLevel > 0 && clipboardLevel !== currentLevel) {
         const levelDiff = currentLevel - clipboardLevel;
-        adjustedText = adjustHeadingLevels(clipboardText, levelDiff, isOrg);
+        adjustedText = shiftHeadingLevels(clipboardText, levelDiff, isOrg);
     }
 
     // Ensure text ends with newline
@@ -73,37 +74,20 @@ export async function yankSubtree(): Promise<void> {
         adjustedText += '\n';
     }
 
-    // Insert at the end of current subtree
+    // Insert at the end of current subtree. When the subtree ends on the last
+    // line and the file has no final newline, start a new line first so the
+    // heading is not glued onto that line.
+    const lastLine = document.lineAt(document.lineCount - 1);
+    const atEndWithoutNewline = insertAfterLine + 1 >= document.lineCount && lastLine.text.length > 0;
     await editor.edit(editBuilder => {
-        editBuilder.insert(
-            new vscode.Position(insertAfterLine + 1, 0),
-            adjustedText
-        );
+        if (atEndWithoutNewline) {
+            editBuilder.insert(lastLine.range.end, '\n' + adjustedText.replace(/\n$/, ''));
+        } else {
+            editBuilder.insert(new vscode.Position(insertAfterLine + 1, 0), adjustedText);
+        }
     });
 
     vscode.window.showInformationMessage('Subtree yanked');
-}
-
-/**
- * Get the level of the first heading in text
- */
-function getClipboardHeadingLevel(text: string, isOrg: boolean): number {
-    const pattern = isOrg ? /^(\*+)\s/m : /^(#+)\s/m;
-    const match = text.match(pattern);
-    return match ? match[1].length : 0;
-}
-
-/**
- * Adjust all heading levels in text by delta
- */
-function adjustHeadingLevels(text: string, delta: number, isOrg: boolean): string {
-    const char = isOrg ? '*' : '#';
-    const pattern = new RegExp(`^(${char}+)(\\s)`, 'gm');
-
-    return text.replace(pattern, (match, stars, space) => {
-        const newLevel = Math.max(1, stars.length + delta);
-        return char.repeat(newLevel) + space;
-    });
 }
 
 /**

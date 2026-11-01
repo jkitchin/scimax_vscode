@@ -1,0 +1,133 @@
+/**
+ * Pure (vscode-free) TODO keyword parsing, shared by the editor
+ * (org/todoStates.ts) and the database indexer.
+ * Supports #+TODO: and #+SEQ_TODO: in-buffer keywords
+ *
+ * Format: #+TODO: STATE1 STATE2 | DONE1 DONE2
+ * The | separates active (incomplete) states from done (complete) states
+ * If no | is present, the last state is considered done
+ */
+
+/**
+ * Represents the TODO workflow states for a document
+ */
+export interface TodoWorkflow {
+    /** All states in order for cycling */
+    allStates: string[];
+    /** Active (incomplete) states */
+    activeStates: string[];
+    /** Done (complete) states */
+    doneStates: string[];
+}
+
+/** Default TODO workflow when no custom states are defined */
+export const DEFAULT_TODO_WORKFLOW: TodoWorkflow = {
+    allStates: ['TODO', 'DONE'],
+    activeStates: ['TODO'],
+    doneStates: ['DONE']
+};
+
+/** Extended default states recognized by the parser */
+export const DEFAULT_TODO_STATES = [
+    'TODO', 'NEXT', 'WAIT', 'WAITING', 'HOLD', 'SOMEDAY',
+    'DONE', 'CANCELLED', 'CANCELED', 'IN-PROGRESS'
+];
+
+/**
+ * Parse a #+TODO: or #+SEQ_TODO: line to extract workflow states
+ *
+ * Format examples:
+ *   #+TODO: TODO REVIEW | DONE CANCELLED
+ *   #+SEQ_TODO: PROPOSAL APPROVED | MERGED
+ *   #+TODO: TODO DOING DONE  (no |, last state is done)
+ */
+export function parseTodoKeywordLine(line: string): TodoWorkflow | null {
+    // Match #+TODO: or #+SEQ_TODO: (TYP_TODO is less common but also valid)
+    const match = line.match(/^#\+(TODO|SEQ_TODO|TYP_TODO):\s*(.*)$/i);
+    if (!match) {
+        return null;
+    }
+
+    const statesString = match[2].trim();
+    if (!statesString) {
+        return null;
+    }
+
+    // Use the LAST | as the active/done separator. Multiple | groups collapse:
+    // everything before the final | is active, everything after is done.
+    // Stray '|' tokens in either section are filtered out.
+    const pipeIndex = statesString.lastIndexOf('|');
+
+    let activeStates: string[];
+    let doneStates: string[];
+
+    if (pipeIndex >= 0) {
+        const beforePipe = statesString.slice(0, pipeIndex).trim();
+        const afterPipe = statesString.slice(pipeIndex + 1).trim();
+
+        activeStates = beforePipe.split(/\s+/).filter(s => s.length > 0 && s !== '|');
+        doneStates = afterPipe.split(/\s+/).filter(s => s.length > 0 && s !== '|');
+    } else {
+        // No |, last state is done
+        const allParsed = statesString.split(/\s+/).filter(s => s.length > 0);
+        if (allParsed.length === 0) {
+            return null;
+        }
+        if (allParsed.length === 1) {
+            // Only one state, treat it as active (incomplete)
+            activeStates = allParsed;
+            doneStates = [];
+        } else {
+            // Last state is done
+            activeStates = allParsed.slice(0, -1);
+            doneStates = [allParsed[allParsed.length - 1]];
+        }
+    }
+
+    if (activeStates.length === 0 && doneStates.length === 0) {
+        return null;
+    }
+
+    return {
+        allStates: [...activeStates, ...doneStates],
+        activeStates,
+        doneStates
+    };
+}
+
+/**
+ * Parse all TODO keyword definitions from document text
+ * Multiple #+TODO: lines are combined into a single workflow
+ */
+export function parseTodoKeywords(content: string): TodoWorkflow | null {
+    const lines = content.split('\n');
+    const combinedActive: string[] = [];
+    const combinedDone: string[] = [];
+
+    for (const line of lines) {
+        // Stop parsing after first heading (keywords must be at top of file)
+        if (line.match(/^\*+\s/)) {
+            break;
+        }
+
+        const workflow = parseTodoKeywordLine(line);
+        if (workflow) {
+            combinedActive.push(...workflow.activeStates);
+            combinedDone.push(...workflow.doneStates);
+        }
+    }
+
+    if (combinedActive.length === 0 && combinedDone.length === 0) {
+        return null;
+    }
+
+    // Remove duplicates while preserving order
+    const uniqueActive = [...new Set(combinedActive)];
+    const uniqueDone = [...new Set(combinedDone)];
+
+    return {
+        allStates: [...uniqueActive, ...uniqueDone],
+        activeStates: uniqueActive,
+        doneStates: uniqueDone
+    };
+}
