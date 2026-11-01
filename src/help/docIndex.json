@@ -1,6 +1,6 @@
 {
-  "buildDate": "2026-11-01T19:33:49.358Z",
-  "count": 3747,
+  "buildDate": "2026-11-01T20:05:29.601Z",
+  "count": 3752,
   "entries": [
     {
       "heading": "Scimax VS Code",
@@ -1005,7 +1005,7 @@
       "level": 2,
       "file": "00-index.org",
       "line": 314,
-      "content": "| Document                                                       | Topics Covered                             | |----------------------------------------------------------------+--------------------------------------------| | [[file:02-document-structure.org][Document Structure]]         | Headings, folding, properties, drawers     | | [[file:30-markdown-compatibility.org][Markdown Compatibility]] | Markdown structural editing, navigation    | | [[file:03-todo-items.org][TODO Items]]            ",
+      "content": "| Document                                                       | Topics Covered                             | |----------------------------------------------------------------+--------------------------------------------| | [[file:02-document-structure.org][Document Structure]]         | Headings, folding, properties, drawers     | | [[file:30-markdown-compatibility.org][Markdown Compatibility]] | Markdown editing, tasks, tables, code      | | [[file:03-todo-items.org][TODO Items]]            ",
       "path": [
         "Complete Documentation Index"
       ],
@@ -1026,8 +1026,9 @@
         "file30-markdown-compatibilityorg",
         "markdown",
         "compatibility",
-        "structural",
-        "navigation",
+        "tasks",
+        "tables",
+        "code",
         "file03-todo-itemsorg",
         "todo",
         "items"
@@ -1251,7 +1252,7 @@
       "heading": "Quick Start by Use Case",
       "level": 1,
       "file": "00-index.org",
-      "line": 528,
+      "line": 530,
       "content": "",
       "path": [],
       "commands": [],
@@ -1266,7 +1267,7 @@
       "heading": "I want to...",
       "level": 2,
       "file": "00-index.org",
-      "line": 530,
+      "line": 532,
       "content": "",
       "path": [
         "Quick Start by Use Case"
@@ -1281,7 +1282,7 @@
       "heading": "Take notes and organize information",
       "level": 3,
       "file": "00-index.org",
-      "line": 532,
+      "line": 534,
       "content": "- Start with [[file:01-getting-started.org][Getting Started]] - Learn [[file:01.5-basic-syntax.org][Basic Syntax]] for formatting text - Learn [[file:02-document-structure.org][Document Structure]] for headings and organization - Use [[file:15-capture.org][Capture]] for quick note-taking - Search with [[file:18-database-search.org][Database and Search]]",
       "path": [
         "Quick Start by Use Case",
@@ -1316,7 +1317,7 @@
       "heading": "Manage tasks and projects",
       "level": 3,
       "file": "00-index.org",
-      "line": 539,
+      "line": 541,
       "content": "- Set up tasks with [[file:03-todo-items.org][TODO Items]] - Add dates with [[file:06-timestamps.org][Timestamps]] - View agenda with [[file:13-agenda.org][Agenda]] - Organize projects with [[file:17-projectile.org][Projectile]] or [[file:16-notebook.org][Notebook]]",
       "path": [
         "Quick Start by Use Case",
@@ -1350,7 +1351,7 @@
       "heading": "Write scientific documents",
       "level": 3,
       "file": "00-index.org",
-      "line": 545,
+      "line": 547,
       "content": "- Execute code with [[file:07-source-blocks.org][Source Code Blocks]] - Preview math with [[file:11-latex-preview.org][LaTeX Preview]] - Manage citations with [[file:19-references.org][References]] - Export with [[file:10-export.org][Export]]",
       "path": [
         "Quick Start by Use Case",
@@ -1383,7 +1384,7 @@
       "heading": "Keep a journal",
       "level": 3,
       "file": "00-index.org",
-      "line": 551,
+      "line": 553,
       "content": "- Set up with [[file:14-journal.org][Journal]] - Use templates from [[file:15-capture.org][Capture]] - Navigate entries with [[file:21-navigation.org][Navigation]]",
       "path": [
         "Quick Start by Use Case",
@@ -1409,7 +1410,7 @@
       "heading": "Navigate efficiently",
       "level": 3,
       "file": "00-index.org",
-      "line": 556,
+      "line": 558,
       "content": "- Learn [[file:21-navigation.org][Navigation]] techniques - Master [[file:23-speed-commands.org][Speed Commands]] - Use [[file:22-hydra-menus.org][Hydra Menus]] for discovery - Reference [[file:24-keybindings.org][Keybindings]]",
       "path": [
         "Quick Start by Use Case",
@@ -1441,7 +1442,7 @@
       "heading": "Programmatically modify org files",
       "level": 3,
       "file": "00-index.org",
-      "line": 562,
+      "line": 564,
       "content": "CLOSED: [2026-01-16 Fri 20:04] - Use the [[file:27-org-api.org][Org API]] in TypeScript source blocks - Bulk update TODO states, properties, and tags - Extract and transform table data - Automate repetitive org file operations",
       "path": [
         "Quick Start by Use Case",
@@ -1476,7 +1477,7 @@
       "heading": "Configure the extension",
       "level": 3,
       "file": "00-index.org",
-      "line": 569,
+      "line": 571,
       "content": "CLOSED: [2026-01-16 Fri 20:04] - See all options in [[file:26-configuration.org][Configuration]] - Set up keybindings with [[file:24-keybindings.org][Keybindings]] - Customize menus with [[file:22-hydra-menus.org][Hydra Menus]]",
       "path": [
         "Quick Start by Use Case",
@@ -1507,7 +1508,7 @@
       "heading": "Navigation",
       "level": 1,
       "file": "00-index.org",
-      "line": 575,
+      "line": 577,
       "content": "- Index: [[file:00-index.org][Documentation Index]] - Next: [[file:01-getting-started.org][Getting Started]]",
       "path": [],
       "commands": [],
@@ -29223,7 +29224,7 @@
       "heading": "Finding the heading later",
       "level": 3,
       "file": "10-export.org",
-      "line": 1138,
+      "line": 1140,
       "content": "The command adds the heading's =:ID:= to the end of the email body, after a =--= line: #+BEGIN_EXAMPLE -- org-id: 3f2a9c1e-5b7d-4e2a-9c1f-0a1b2c3d4e5f #+END_EXAMPLE If the heading has no =:ID:=, the command first creates one (a random UUID) in its properties drawer. Only the ID goes in the email: no file name or path. To go back to the heading from a sent email, run =Scimax: Go to Heading by ID= (=scimax.org.gotoId=) and paste the ID (an =org-id:= or =id:= prefix is fine), or follow an =[[id:...",
       "path": [
         "Export Keybindings",
@@ -29260,7 +29261,7 @@
       "heading": "Mail client",
       "level": 3,
       "file": "10-export.org",
-      "line": 1149,
+      "line": 1151,
       "content": "By default the compose window opens in Gmail in your browser. Set =scimax.emailHeading.client= to =mailto= to use the system mail client instead. If you are signed in to several Google accounts, set =scimax.emailHeading.gmailAccount= to the address to send from. Gmail decides where the cursor goes in the compose window. A compose link cannot set it. When the heading has no =TO= property, the To field is empty and Gmail usually puts the cursor there. If the body is too long to fit in a compose li",
       "path": [
         "Export Keybindings",
@@ -29298,7 +29299,7 @@
       "heading": "Primary Keybindings",
       "level": 2,
       "file": "10-export.org",
-      "line": 1164,
+      "line": 1166,
       "content": "| Keybinding  | Command              | Description                     | |-------------+----------------------+---------------------------------| | C-c C-e     | Export dispatcher    | Open export menu                | | C-c C-e h h | HTML export          | Export to HTML file             | | C-c C-e h o | HTML export and open | Export HTML and open in browser | | C-c C-e l l | LaTeX export         | Export to .tex file             | | C-c C-e l p | PDF export           | Export to PDF via LaTeX",
       "path": [
         "Export Keybindings"
@@ -29332,7 +29333,7 @@
       "heading": "Additional LaTeX Keybindings",
       "level": 2,
       "file": "10-export.org",
-      "line": 1183,
+      "line": 1185,
       "content": "| Keybinding  | Command            | Description                           | |-------------+--------------------+---------------------------------------| | C-c C-e l v | Open LaTeX preview | Open PDF preview (if built)           | | C-c C-e l s | Forward sync       | Sync cursor position to PDF (SyncTeX) |",
       "path": [
         "Export Keybindings"
@@ -29366,7 +29367,7 @@
       "heading": "Quick Access",
       "level": 2,
       "file": "10-export.org",
-      "line": 1190,
+      "line": 1192,
       "content": "For frequently used exports, use the quick commands: - [[cmd:scimax.org.exportHtmlOpen]] - [[cmd:scimax.org.exportLatexOpen]] - [[cmd:scimax.org.exportMarkdown]]",
       "path": [
         "Export Keybindings"
@@ -29390,7 +29391,7 @@
       "heading": "Export Scope",
       "level": 1,
       "file": "10-export.org",
-      "line": 1197,
+      "line": 1199,
       "content": "The export system supports three scope modes:",
       "path": [],
       "commands": [],
@@ -29408,7 +29409,7 @@
       "heading": "Full Document Export (default)",
       "level": 2,
       "file": "10-export.org",
-      "line": 1201,
+      "line": 1203,
       "content": "Exports the entire org file from beginning to end. Usage: Select \"Full document\" when prompted for export scope.",
       "path": [
         "Export Scope"
@@ -29435,7 +29436,7 @@
       "heading": "Subtree Export",
       "level": 2,
       "file": "10-export.org",
-      "line": 1207,
+      "line": 1209,
       "content": "Exports only the current headline and its children. Usage: 1. Place cursor on or within a headline 2. Invoke export dispatcher (`C-c C-e') 3. Select \"Current subtree\" as scope Example: #+BEGIN_SRC org ,* Introduction Some intro text. ,* Methods                     ← Cursor here ,** Data Collection ,** Analysis ,* Results #+END_SRC Exporting with subtree scope from \"Methods\" exports: - Methods heading - Data Collection subsection - Analysis subsection - (Results is NOT included)",
       "path": [
         "Export Scope"
@@ -29471,7 +29472,7 @@
       "heading": "Use Cases for Subtree Export",
       "level": 3,
       "file": "10-export.org",
-      "line": 1234,
+      "line": 1236,
       "content": "- Export a single chapter from a book - Generate standalone reports from sections - Create focused documentation for specific topics - Share individual project components",
       "path": [
         "Export Scope",
@@ -29505,7 +29506,7 @@
       "heading": "Visible Content Export",
       "level": 2,
       "file": "10-export.org",
-      "line": 1240,
+      "line": 1242,
       "content": "Exports only content that is currently visible (not folded). Usage: 1. Fold sections you want to exclude (`Tab' on headings) 2. Invoke export (`C-c C-e') 3. Select \"Visible content\" as scope This is useful for: - Creating executive summaries (hide details) - Generating public versions (hide private notes) - Focusing on high-level structure",
       "path": [
         "Export Scope"
@@ -29541,7 +29542,7 @@
       "heading": "HTML Export Options",
       "level": 1,
       "file": "10-export.org",
-      "line": 1254,
+      "line": 1256,
       "content": "",
       "path": [],
       "commands": [],
@@ -29556,7 +29557,7 @@
       "heading": "Standalone vs. Body-Only",
       "level": 2,
       "file": "10-export.org",
-      "line": 1256,
+      "line": 1258,
       "content": "",
       "path": [
         "HTML Export Options"
@@ -29572,7 +29573,7 @@
       "heading": "Standalone (default)",
       "level": 3,
       "file": "10-export.org",
-      "line": 1258,
+      "line": 1260,
       "content": "Generates complete HTML document: #+BEGIN_SRC html <!DOCTYPE html> <html lang=\"en\"> <head> <meta charset=\"utf-8\" /> <title>My Document</title> <!-- CSS and JavaScript --> </head> <body> <main> <!-- Content --> </main> </body> </html> #+END_SRC",
       "path": [
         "HTML Export Options",
@@ -29607,7 +29608,7 @@
       "heading": "Custom CSS",
       "level": 2,
       "file": "10-export.org",
-      "line": 1276,
+      "line": 1278,
       "content": "Add custom styles via export options: #+BEGIN_SRC org #+HTML_HEAD: <style> #+HTML_HEAD: .org-content { max-width: 900px; } #+HTML_HEAD: h1 { color: #2c3e50; } #+HTML_HEAD: </style> #+END_SRC Or link external CSS: #+BEGIN_SRC org #+HTML_HEAD: <link rel=\"stylesheet\" href=\"custom.css\" /> #+END_SRC",
       "path": [
         "HTML Export Options"
@@ -29641,7 +29642,7 @@
       "heading": "JavaScript Support",
       "level": 2,
       "file": "10-export.org",
-      "line": 1293,
+      "line": 1295,
       "content": "Include custom JavaScript: #+BEGIN_SRC org #+HTML_HEAD: <script src=\"https://cdn.example.com/lib.js\"></script> #+HTML_HEAD: <script> #+HTML_HEAD:   // Custom initialization #+HTML_HEAD: </script> #+END_SRC",
       "path": [
         "HTML Export Options"
@@ -29667,7 +29668,7 @@
       "heading": "MathJax Configuration",
       "level": 2,
       "file": "10-export.org",
-      "line": 1304,
+      "line": 1306,
       "content": "HTML exports use MathJax 3 by default. The CDN URL is: #+BEGIN_EXAMPLE https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js #+END_EXAMPLE MathJax automatically renders: - Inline math: `\\(...\\)' or `$...$' - Display math: `\\[...\\]' or `$$...$$' - LaTeX environments: `\\begin{equation}...\\end{equation}'",
       "path": [
         "HTML Export Options"
@@ -29701,7 +29702,7 @@
       "heading": "Syntax Highlighting",
       "level": 2,
       "file": "10-export.org",
-      "line": 1316,
+      "line": 1318,
       "content": "Code blocks use highlight.js for syntax highlighting: #+BEGIN_SRC org #+BEGIN_SRC python def greet(name): print(f\"Hello, {name}!\") #+END_SRC #+END_SRC Supported languages: Python, JavaScript, Java, C, C++, Rust, Go, Ruby, Shell, SQL, and many more.",
       "path": [
         "HTML Export Options"
@@ -29735,7 +29736,7 @@
       "heading": "LaTeX Export Options",
       "level": 1,
       "file": "10-export.org",
-      "line": 1329,
+      "line": 1331,
       "content": "",
       "path": [],
       "commands": [],
@@ -29750,7 +29751,7 @@
       "heading": "Document Structure",
       "level": 2,
       "file": "10-export.org",
-      "line": 1331,
+      "line": 1333,
       "content": "",
       "path": [
         "LaTeX Export Options"
@@ -29766,7 +29767,7 @@
       "heading": "Headline Levels",
       "level": 3,
       "file": "10-export.org",
-      "line": 1333,
+      "line": 1335,
       "content": "Control which headline levels become sections: #+BEGIN_SRC org #+OPTIONS: H:4 #+END_SRC - `H:1' → Only top-level headlines become sections - `H:2' → Two levels (section, subsection) - `H:3' → Three levels (section, subsection, subsubsection) - `H:4' → Four levels (adds paragraph)",
       "path": [
         "LaTeX Export Options",
@@ -29800,7 +29801,7 @@
       "heading": "Section Numbering",
       "level": 3,
       "file": "10-export.org",
-      "line": 1346,
+      "line": 1348,
       "content": "Control section numbering: #+BEGIN_SRC org #+OPTIONS: num:t      % Number all sections #+OPTIONS: num:nil    % No numbering #+OPTIONS: num:3      % Number up to level 3 #+END_SRC In LaTeX output, this sets: #+BEGIN_SRC latex \\setcounter{secnumdepth}{3} #+END_SRC",
       "path": [
         "LaTeX Export Options",
@@ -29833,7 +29834,7 @@
       "heading": "Table of Contents",
       "level": 3,
       "file": "10-export.org",
-      "line": 1361,
+      "line": 1363,
       "content": "#+BEGIN_SRC org #+OPTIONS: toc:t      % Include TOC #+OPTIONS: toc:nil    % No TOC #+OPTIONS: toc:2      % TOC with 2 levels #+END_SRC Generates: #+BEGIN_SRC latex \\tableofcontents \\newpage #+END_SRC",
       "path": [
         "LaTeX Export Options",
@@ -29864,7 +29865,7 @@
       "heading": "Images and Figures",
       "level": 2,
       "file": "10-export.org",
-      "line": 1375,
+      "line": 1377,
       "content": "Include images with captions and labels: #+BEGIN_SRC org #+CAPTION: System Architecture Diagram #+NAME: fig:architecture #+ATTR_LATEX: :width 0.8\\textwidth :placement [htbp] [[file:architecture.png]] #+END_SRC Exports to: #+BEGIN_SRC latex \\begin{figure}[htbp] \\centering \\includegraphics[width=0.8\\textwidth]{architecture.png} \\caption{System Architecture Diagram} \\label{fig:architecture} \\end{figure} #+END_SRC",
       "path": [
         "LaTeX Export Options"
@@ -29898,7 +29899,7 @@
       "heading": "Image Attributes",
       "level": 3,
       "file": "10-export.org",
-      "line": 1396,
+      "line": 1398,
       "content": "- `:width' - Image width (e.g., `0.8\\textwidth', `12cm') - `:height' - Image height - `:placement' - Float placement (`[htbp]') - `:scale' - Scale factor (`0.5' for 50%)",
       "path": [
         "LaTeX Export Options",
@@ -29924,7 +29925,7 @@
       "heading": "Bibliography Support",
       "level": 2,
       "file": "10-export.org",
-      "line": 1403,
+      "line": 1405,
       "content": "",
       "path": [
         "LaTeX Export Options"
@@ -29940,7 +29941,7 @@
       "heading": "BibTeX Integration",
       "level": 3,
       "file": "10-export.org",
-      "line": 1405,
+      "line": 1407,
       "content": "Include bibliography: #+BEGIN_SRC org #+LATEX_HEADER: \\usepackage{natbib} Reference a citation cite:knuth1984. bibliography:~/references.bib bibliographystyle:plainnat #+END_SRC",
       "path": [
         "LaTeX Export Options",
@@ -29970,7 +29971,7 @@
       "heading": "Citation Links",
       "level": 3,
       "file": "10-export.org",
-      "line": 1418,
+      "line": 1420,
       "content": "Org-ref style citations work directly: - `cite:key' → `\\cite{key}' - `citep:key' → `\\citep{key}' (parenthetical) - `citet:key' → `\\citet{key}' (textual) - `citeauthor:key' → `\\citeauthor{key}' - `citeyear:key' → `\\citeyear{key}'",
       "path": [
         "LaTeX Export Options",
@@ -30005,7 +30006,7 @@
       "heading": "Org-cite Citations =[cite/STYLE/VARIANTS:@key]=",
       "level": 3,
       "file": "10-export.org",
-      "line": 1427,
+      "line": 1429,
       "content": "Org-cite citations are translated to LaTeX through a configurable backend. The default backend, =bibtex=, emits =natbib= commands; the =biblatex= backend emits the corresponding =biblatex= commands. Choose a backend with the setting =scimax.export.latex.citeBackend= (values =bibtex= or =biblatex=) or per-document with: #+BEGIN_SRC org #+cite_export: bibtex ,#+cite_export: biblatex #+END_SRC Both the short and long org-cite spellings are accepted (=t= = =text=, =a= = =author=, =na= = =noauthor=, ",
       "path": [
         "LaTeX Export Options",
@@ -30042,7 +30043,7 @@
       "heading": "Style → command mapping (=bibtex= backend, default)",
       "level": 4,
       "file": "10-export.org",
-      "line": 1446,
+      "line": 1448,
       "content": "| Org-cite                  | LaTeX command   | |---------------------------+-----------------| | =[cite:@k]=               | =\\citep{k}=     | | =[cite//c:@k]=            | =\\Citep{k}=     | | =[cite//b:@k]=            | =\\citealp{k}=   | | =[cite//bc:@k]=           | =\\Citealp{k}=   | | =[cite/t:@k]=             | =\\citet{k}=     | | =[cite/t/c:@k]=           | =\\Citet{k}=     | | =[cite/t/b:@k]=           | =\\citealt{k}=   | | =[cite/t/bc:@k]=          | =\\Citealt{k}=   | | =[cite/a:@k]=     ",
       "path": [
         "LaTeX Export Options",
@@ -30078,7 +30079,7 @@
       "heading": "Style → command mapping (=biblatex= backend)",
       "level": 4,
       "file": "10-export.org",
-      "line": 1466,
+      "line": 1468,
       "content": "| Org-cite                  | LaTeX command   | |---------------------------+-----------------| | =[cite:@k]=               | =\\autocite{k}=  | | =[cite//c:@k]=            | =\\Autocite{k}=  | | =[cite//b:@k]=            | =\\cite{k}=      | | =[cite/t:@k]=             | =\\textcite{k}=  | | =[cite/t/c:@k]=           | =\\Textcite{k}=  | | =[cite/a:@k]=             | =\\citeauthor{k}=| | =[cite/a/c:@k]=           | =\\Citeauthor{k}=| | =[cite/na:@k]=            | =\\autocite*{k}= | | =[cite/y:@k]=     ",
       "path": [
         "LaTeX Export Options",
@@ -30114,7 +30115,7 @@
       "heading": "Per-key prefix and suffix",
       "level": 4,
       "file": "10-export.org",
-      "line": 1483,
+      "line": 1485,
       "content": "For *single-key* citations the per-key prefix and suffix are emitted as natbib's =[pre][post]{key}= bracketed arguments: | Org-cite                  | LaTeX command            | |---------------------------+--------------------------| | =[cite:@k p. 5]=          | =\\citep[p. 5]{k}=        | | =[cite:see @k p. 5]=      | =\\citep[see][p. 5]{k}=   | Multi-key citations always emit a single =\\citep{k1,k2,...}= form (per-key notes have no clean LaTeX analogue).",
       "path": [
         "LaTeX Export Options",
@@ -30150,7 +30151,7 @@
       "heading": "HTML Citation Export",
       "level": 3,
       "file": "10-export.org",
-      "line": 1496,
+      "line": 1498,
       "content": "HTML export includes full citation processing using citation-js, which formats citations according to standard citation styles (CSL).",
       "path": [
         "LaTeX Export Options",
@@ -30178,7 +30179,7 @@
       "heading": "Supported Citation Formats",
       "level": 4,
       "file": "10-export.org",
-      "line": 1500,
+      "line": 1502,
       "content": "The following citation link types are supported in HTML export: | Link Type        | Example              | Output Style                    | |------------------+----------------------+---------------------------------| | =cite:=          | =cite:knuth1984=     | Parenthetical (Smith, 2020)     | | =citep:=         | =citep:knuth1984=    | Parenthetical (Smith, 2020)     | | =citet:=         | =citet:knuth1984=    | Textual: Smith (2020)           | | =citeauthor:=    | =citeauthor:knuth1984= | ",
       "path": [
         "LaTeX Export Options",
@@ -30214,7 +30215,7 @@
       "heading": "Specifying Bibliography Files",
       "level": 4,
       "file": "10-export.org",
-      "line": 1513,
+      "line": 1515,
       "content": "To include citations in HTML export, specify your bibliography file(s): #+BEGIN_SRC org #+BIBLIOGRAPHY: references.bib Or use a bibliography link: [[bibliography:~/path/to/references.bib]] #+END_SRC The export system automatically: 1. Finds all =#+BIBLIOGRAPHY:= keywords and =[[bibliography:...]]= links 2. Loads the BibTeX entries from those files 3. Formats citations according to the selected style 4. Generates a bibliography section at the end of the document",
       "path": [
         "LaTeX Export Options",
@@ -30250,7 +30251,7 @@
       "heading": "Citation Styles",
       "level": 4,
       "file": "10-export.org",
-      "line": 1530,
+      "line": 1532,
       "content": "The default citation style is APA. You can change it with the =#+CSL_STYLE:= keyword: #+BEGIN_SRC org #+CSL_STYLE: apa #+END_SRC Available built-in styles: | Style        | Description                              | |--------------+------------------------------------------| | =apa=        | American Psychological Association (default) | | =mla=        | Modern Language Association              | | =chicago=    | Chicago Manual of Style                  | | =harvard=    | Harvard referencing    ",
       "path": [
         "LaTeX Export Options",
@@ -30286,7 +30287,7 @@
       "heading": "Example Document with Citations",
       "level": 4,
       "file": "10-export.org",
-      "line": 1548,
+      "line": 1550,
       "content": "#+BEGIN_SRC org #+TITLE: My Research Paper #+AUTHOR: Jane Doe #+BIBLIOGRAPHY: references.bib #+CSL_STYLE: apa ,* Introduction Recent advances in machine learning cite:lecun2015 have enabled remarkable progress in computer vision. According to citet:krizhevsky2012, deep convolutional networks outperform traditional methods. ,* Methods We follow the approach of citep:he2016,simonyan2014 for our experiments. #+END_SRC",
       "path": [
         "LaTeX Export Options",
@@ -30322,7 +30323,7 @@
       "heading": "Bibliography Output",
       "level": 4,
       "file": "10-export.org",
-      "line": 1567,
+      "line": 1569,
       "content": "The bibliography section is automatically generated at the end of the HTML document with: - A \"References\" heading (customizable) - Properly formatted entries according to the CSL style - Hanging indent formatting for readability",
       "path": [
         "LaTeX Export Options",
@@ -30358,7 +30359,7 @@
       "heading": "Missing Citations",
       "level": 4,
       "file": "10-export.org",
-      "line": 1574,
+      "line": 1576,
       "content": "If a citation key is not found in the bibliography: - The citation appears with a \"missing\" CSS class - It renders as =[missing: key]= in red italic text - Check your =.bib= file for the correct key spelling",
       "path": [
         "LaTeX Export Options",
@@ -30391,7 +30392,7 @@
       "heading": "Configuring Citation Defaults",
       "level": 4,
       "file": "10-export.org",
-      "line": 1581,
+      "line": 1583,
       "content": "You can configure default citation behavior in VS Code settings: #+BEGIN_SRC json { \"scimax.references.defaultCiteStyle\": \"citep\" } #+END_SRC Options: =cite=, =citep=, =citet=, =citeauthor=, =citeyear=",
       "path": [
         "LaTeX Export Options",
@@ -30426,7 +30427,7 @@
       "heading": "Advanced LaTeX Features",
       "level": 2,
       "file": "10-export.org",
-      "line": 1593,
+      "line": 1595,
       "content": "",
       "path": [
         "LaTeX Export Options"
@@ -30443,7 +30444,7 @@
       "heading": "Custom Environments",
       "level": 3,
       "file": "10-export.org",
-      "line": 1595,
+      "line": 1597,
       "content": "Use `#+BEGIN_LATEX' blocks for raw LaTeX: #+BEGIN_SRC org #+BEGIN_LATEX \\begin{theorem}[Pythagorean Theorem] For a right triangle with legs $a$ and $b$ and hypotenuse $c$: \\[a^2 + b^2 = c^2\\] \\end{theorem} #+END_LATEX #+END_SRC",
       "path": [
         "LaTeX Export Options",
@@ -30476,7 +30477,7 @@
       "heading": "Special Blocks",
       "level": 3,
       "file": "10-export.org",
-      "line": 1608,
+      "line": 1610,
       "content": "Special blocks map to LaTeX environments: #+BEGIN_SRC org #+BEGIN_abstract This paper presents a novel approach... #+END_abstract #+BEGIN_theorem If $P$, then $Q$. #+END_theorem #+BEGIN_proof Assume $P$. Then... #+END_proof #+END_SRC",
       "path": [
         "LaTeX Export Options",
@@ -30510,7 +30511,7 @@
       "heading": "Math Environments",
       "level": 3,
       "file": "10-export.org",
-      "line": 1626,
+      "line": 1628,
       "content": "LaTeX math environments work directly: #+BEGIN_SRC org \\begin{equation} E = mc^2 \\label{eq:einstein} \\end{equation} \\begin{align} x &= a + b \\\\ y &= c + d \\end{align} #+END_SRC",
       "path": [
         "LaTeX Export Options",
@@ -30540,7 +30541,7 @@
       "heading": "PDF Export Configuration",
       "level": 1,
       "file": "10-export.org",
-      "line": 1642,
+      "line": 1644,
       "content": "",
       "path": [],
       "commands": [],
@@ -30555,7 +30556,7 @@
       "heading": "Compiler Selection",
       "level": 2,
       "file": "10-export.org",
-      "line": 1644,
+      "line": 1646,
       "content": "Set the LaTeX compiler in VS Code settings:",
       "path": [
         "PDF Export Configuration"
@@ -30575,7 +30576,7 @@
       "heading": "pdflatex (default)",
       "level": 3,
       "file": "10-export.org",
-      "line": 1648,
+      "line": 1650,
       "content": "- Fast compilation - Wide compatibility - Standard LaTeX packages - ASCII and Latin-1 support Configuration: #+BEGIN_SRC json { \"scimax.latexLivePreview.compiler\": \"pdflatex\" } #+END_SRC",
       "path": [
         "PDF Export Configuration",
@@ -30608,7 +30609,7 @@
       "heading": "xelatex",
       "level": 3,
       "file": "10-export.org",
-      "line": 1661,
+      "line": 1663,
       "content": "- Unicode support (UTF-8) - System fonts (TrueType, OpenType) - Modern typography - Required for non-Latin scripts Configuration: #+BEGIN_SRC json { \"scimax.latexLivePreview.compiler\": \"xelatex\" } #+END_SRC Example with system fonts: #+BEGIN_SRC org #+LATEX_HEADER: \\usepackage{fontspec} #+LATEX_HEADER: \\setmainfont{Libertinus Serif} #+LATEX_HEADER: \\setmonofont{Fira Code} #+END_SRC",
       "path": [
         "PDF Export Configuration",
@@ -30645,7 +30646,7 @@
       "heading": "lualatex",
       "level": 3,
       "file": "10-export.org",
-      "line": 1681,
+      "line": 1683,
       "content": "- Unicode support - Lua scripting in LaTeX - Advanced typography - Memory-efficient for large documents Configuration: #+BEGIN_SRC json { \"scimax.latexLivePreview.compiler\": \"lualatex\" } #+END_SRC",
       "path": [
         "PDF Export Configuration",
@@ -30677,7 +30678,7 @@
       "heading": "latexmk Configuration",
       "level": 2,
       "file": "10-export.org",
-      "line": 1694,
+      "line": 1696,
       "content": "The export system uses `latexmk' for reliable compilation:",
       "path": [
         "PDF Export Configuration"
@@ -30698,7 +30699,7 @@
       "heading": "Benefits",
       "level": 3,
       "file": "10-export.org",
-      "line": 1698,
+      "line": 1700,
       "content": "- Automatic multiple passes (for TOC, references, etc.) - Bibliography processing (BibTeX/Biber) - Dependency tracking - Incremental builds",
       "path": [
         "PDF Export Configuration",
@@ -30727,7 +30728,7 @@
       "heading": "Configuration File",
       "level": 3,
       "file": "10-export.org",
-      "line": 1704,
+      "line": 1706,
       "content": "Create `.latexmkrc' in your project directory: #+BEGIN_SRC perl # Use pdflatex $pdf_mode = 1; # Clean auxiliary files $clean_ext = \"synctex.gz synctex.gz(busy) run.xml\"; # Custom compiler options $pdflatex = 'pdflatex -interaction=nonstopmode -shell-escape %O %S'; #+END_SRC",
       "path": [
         "PDF Export Configuration",
@@ -30762,7 +30763,7 @@
       "heading": "Disabling latexmk",
       "level": 3,
       "file": "10-export.org",
-      "line": 1719,
+      "line": 1721,
       "content": "If you prefer direct compiler invocation: #+BEGIN_SRC json { \"scimax.latexLivePreview.useLatexmk\": false } #+END_SRC",
       "path": [
         "PDF Export Configuration",
@@ -30789,7 +30790,7 @@
       "heading": "Build Automation",
       "level": 2,
       "file": "10-export.org",
-      "line": 1728,
+      "line": 1730,
       "content": "",
       "path": [
         "PDF Export Configuration"
@@ -30805,7 +30806,7 @@
       "heading": "Build on Save",
       "level": 3,
       "file": "10-export.org",
-      "line": 1730,
+      "line": 1732,
       "content": "Automatically rebuild PDF when saving: #+BEGIN_SRC json { \"scimax.latexLivePreview.buildOnSave\": true } #+END_SRC",
       "path": [
         "PDF Export Configuration",
@@ -30832,7 +30833,7 @@
       "heading": "Build on Idle",
       "level": 3,
       "file": "10-export.org",
-      "line": 1739,
+      "line": 1741,
       "content": "Build after idle period (useful for live preview): #+BEGIN_SRC json { \"scimax.latexLivePreview.buildOnIdle\": true, \"scimax.latexLivePreview.idleDelay\": 2000 } #+END_SRC",
       "path": [
         "PDF Export Configuration",
@@ -30862,7 +30863,7 @@
       "heading": "SyncTeX Integration",
       "level": 2,
       "file": "10-export.org",
-      "line": 1749,
+      "line": 1751,
       "content": "SyncTeX enables bidirectional sync between source and PDF:",
       "path": [
         "PDF Export Configuration"
@@ -30884,7 +30885,7 @@
       "heading": "Forward Sync (Source → PDF)",
       "level": 3,
       "file": "10-export.org",
-      "line": 1753,
+      "line": 1755,
       "content": "1. Place cursor in org file 2. Press `C-c C-e l s' 3. PDF viewer jumps to corresponding location",
       "path": [
         "PDF Export Configuration",
@@ -30915,7 +30916,7 @@
       "heading": "Reverse Sync (PDF → Source)",
       "level": 3,
       "file": "10-export.org",
-      "line": 1758,
+      "line": 1760,
       "content": "C-click in PDF viewer (if supported) to jump to source line.",
       "path": [
         "PDF Export Configuration",
@@ -30941,7 +30942,7 @@
       "heading": "Markdown Export Details",
       "level": 1,
       "file": "10-export.org",
-      "line": 1761,
+      "line": 1763,
       "content": "",
       "path": [],
       "commands": [],
@@ -30956,7 +30957,7 @@
       "heading": "GitHub-Flavored Markdown (GFM)",
       "level": 2,
       "file": "10-export.org",
-      "line": 1763,
+      "line": 1765,
       "content": "The Markdown export follows GitHub's flavor for maximum compatibility.",
       "path": [
         "Markdown Export Details"
@@ -30979,7 +30980,7 @@
       "heading": "Supported Elements",
       "level": 2,
       "file": "10-export.org",
-      "line": 1767,
+      "line": 1769,
       "content": "",
       "path": [
         "Markdown Export Details"
@@ -30995,7 +30996,7 @@
       "heading": "Headings",
       "level": 3,
       "file": "10-export.org",
-      "line": 1769,
+      "line": 1771,
       "content": "#+BEGIN_SRC org ,* Level 1      →  # Level 1 ,** Level 2     →  ## Level 2 ,*** Level 3    →  ### Level 3 #+END_SRC",
       "path": [
         "Markdown Export Details",
@@ -31015,7 +31016,7 @@
       "heading": "Text Formatting",
       "level": 3,
       "file": "10-export.org",
-      "line": 1776,
+      "line": 1778,
       "content": "#+BEGIN_SRC org *bold*          →  **bold** /italic/        →  *italic* _underline_     →  _underline_ +strikethrough+ →  ~~strikethrough~~ =code=          →  `code` ~verbatim~      →  `verbatim` #+END_SRC",
       "path": [
         "Markdown Export Details",
@@ -31041,7 +31042,7 @@
       "heading": "Lists",
       "level": 3,
       "file": "10-export.org",
-      "line": 1786,
+      "line": 1788,
       "content": "*Unordered:* #+BEGIN_SRC org - Item 1 - Item 2 - Nested #+END_SRC *Ordered:* #+BEGIN_SRC org 1. First 2. Second 3. Third #+END_SRC",
       "path": [
         "Markdown Export Details",
@@ -31067,7 +31068,7 @@
       "heading": "Code Blocks",
       "level": 3,
       "file": "10-export.org",
-      "line": 1802,
+      "line": 1804,
       "content": "#+BEGIN_SRC org #+BEGIN_SRC python def hello(): print(\"Hello\") #+END_SRC #+END_SRC Exports to: #+BEGIN_SRC markdown ```python def hello(): print(\"Hello\") ``` #+END_SRC",
       "path": [
         "Markdown Export Details",
@@ -31093,7 +31094,7 @@
       "heading": "Tables",
       "level": 3,
       "file": "10-export.org",
-      "line": 1819,
+      "line": 1821,
       "content": "#+BEGIN_SRC org | Name  | Age | City       | |-------+-----+------------| | Alice |  30 | New York   | | Bob   |  25 | London     | #+END_SRC Exports to: #+BEGIN_SRC markdown | Name  | Age | City       | | ---   | --- | ---        | | Alice | 30  | New York   | | Bob   | 25  | London     | #+END_SRC",
       "path": [
         "Markdown Export Details",
@@ -31124,7 +31125,7 @@
       "heading": "Links",
       "level": 3,
       "file": "10-export.org",
-      "line": 1836,
+      "line": 1838,
       "content": "#+BEGIN_SRC org [[https://example.com][Example Site]]  →  [Example Site](https://example.com) [[file:image.png]]                     →  [image.png](image.png) #+END_SRC",
       "path": [
         "Markdown Export Details",
@@ -31148,7 +31149,7 @@
       "heading": "Images",
       "level": 3,
       "file": "10-export.org",
-      "line": 1843,
+      "line": 1845,
       "content": "#+BEGIN_SRC org [[file:diagram.png]]  →  ![](diagram.png) #+END_SRC",
       "path": [
         "Markdown Export Details",
@@ -31169,7 +31170,7 @@
       "heading": "Metadata Handling",
       "level": 2,
       "file": "10-export.org",
-      "line": 1849,
+      "line": 1851,
       "content": "Document metadata is converted: #+BEGIN_SRC org #+TITLE: My Document #+AUTHOR: Jane Doe #+DATE: 2024-01-15 #+END_SRC Becomes: #+BEGIN_SRC markdown # My Document *Jane Doe* 2024-01-15 #+END_SRC",
       "path": [
         "Markdown Export Details"
@@ -31198,7 +31199,7 @@
       "heading": "Export Options Reference",
       "level": 1,
       "file": "10-export.org",
-      "line": 1867,
+      "line": 1869,
       "content": "",
       "path": [],
       "commands": [],
@@ -31213,7 +31214,7 @@
       "heading": "#+OPTIONS Keyword",
       "level": 2,
       "file": "10-export.org",
-      "line": 1869,
+      "line": 1871,
       "content": "The `#+OPTIONS' keyword controls various export behaviors:",
       "path": [
         "Export Options Reference"
@@ -31233,7 +31234,7 @@
       "heading": "Syntax",
       "level": 3,
       "file": "10-export.org",
-      "line": 1873,
+      "line": 1875,
       "content": "#+BEGIN_SRC org #+OPTIONS: key1:value1 key2:value2 ... #+END_SRC",
       "path": [
         "Export Options Reference",
@@ -31255,7 +31256,7 @@
       "heading": "Complete OPTIONS Reference",
       "level": 3,
       "file": "10-export.org",
-      "line": 1878,
+      "line": 1880,
       "content": "CLOSED: [2026-01-24 Sat 17:34] | Option       | Values             | Default | Description                                                   | |--------------+--------------------+---------+---------------------------------------------------------------| | toc          | t, nil, N          | nil     | Table of contents (N  depth)                                  | | num          | t, nil, N          | t       | Section numbering (N  depth)                                  | | H            | N   ",
       "path": [
         "Export Options Reference",
@@ -31290,7 +31291,7 @@
       "heading": "Examples",
       "level": 3,
       "file": "10-export.org",
-      "line": 1904,
+      "line": 1906,
       "content": "*Full configuration:* #+BEGIN_SRC org #+OPTIONS: toc:3 num:t H:4 author:t date:t tags:nil todo:nil #+END_SRC *Minimal export (no metadata):* #+BEGIN_SRC org #+OPTIONS: toc:nil num:nil author:nil date:nil tags:nil todo:nil pri:nil #+END_SRC *Academic paper:* #+BEGIN_SRC org #+OPTIONS: toc:t num:t H:3 ^:{} author:t date:t email:t #+END_SRC *Include all drawers:* #+BEGIN_SRC org #+OPTIONS: d:t c:t p:t #+END_SRC *Include only specific drawers:* #+BEGIN_SRC org #+OPTIONS: d:(\"LOGBOOK\" \"NOTES\") #+END_",
       "path": [
         "Export Options Reference",
@@ -31325,7 +31326,7 @@
       "heading": "Subscripts and Superscripts",
       "level": 3,
       "file": "10-export.org",
-      "line": 1936,
+      "line": 1938,
       "content": "The =^= option controls how =_= and =^= are interpreted in body text: | Value | Behavior                                                      | |-------+---------------------------------------------------------------| | ={}=  | (default) Only braced forms render: =a_{b}= → subscript, =a_b= → literal | | =t=   | Both forms render: =a_{b}= and =a_b= both produce a subscript | | =nil= | Never render as sub/superscripts; both forms stay literal     | The default was changed from =t= to ={}= because ",
       "path": [
         "Export Options Reference",
@@ -31360,7 +31361,7 @@
       "heading": "Document Keywords",
       "level": 2,
       "file": "10-export.org",
-      "line": 1962,
+      "line": 1964,
       "content": "",
       "path": [
         "Export Options Reference"
@@ -31376,7 +31377,7 @@
       "heading": "Required Keywords",
       "level": 3,
       "file": "10-export.org",
-      "line": 1964,
+      "line": 1966,
       "content": "#+BEGIN_SRC org #+TITLE: Document Title #+AUTHOR: Your Name #+DATE: 2024-01-15 #+EMAIL: you@example.com #+LANGUAGE: en #+END_SRC Note: =#+EMAIL= is only included in output when =email:t= is set in OPTIONS.",
       "path": [
         "Export Options Reference",
@@ -31411,7 +31412,7 @@
       "heading": "HTML-Specific Keywords",
       "level": 3,
       "file": "10-export.org",
-      "line": 1976,
+      "line": 1978,
       "content": "#+BEGIN_SRC org #+HTML_HEAD: <style>body { font-family: sans-serif; }</style> #+HTML_HEAD_EXTRA: <meta name=\"keywords\" content=\"research, science\" /> #+HTML_LINK_HOME: index.html #+HTML_LINK_UP: ../index.html #+END_SRC",
       "path": [
         "Export Options Reference",
@@ -31445,7 +31446,7 @@
       "heading": "LaTeX-Specific Keywords",
       "level": 3,
       "file": "10-export.org",
-      "line": 1985,
+      "line": 1987,
       "content": "#+BEGIN_SRC org #+LATEX_CLASS: article #+LATEX_CLASS_OPTIONS: [11pt,a4paper] #+LATEX_HEADER: \\usepackage{geometry} #+LATEX_HEADER: \\geometry{margin=1in} #+LATEX_COMPILER: pdflatex #+END_SRC",
       "path": [
         "Export Options Reference",
@@ -31476,7 +31477,7 @@
       "heading": "Export Settings Keywords",
       "level": 3,
       "file": "10-export.org",
-      "line": 1995,
+      "line": 1997,
       "content": "CLOSED: [2026-01-24 Sat 17:35]",
       "path": [
         "Export Options Reference",
@@ -31498,7 +31499,7 @@
       "heading": "EXPORT_FILE_NAME",
       "level": 4,
       "file": "10-export.org",
-      "line": 1998,
+      "line": 2000,
       "content": "Override the output file name: #+BEGIN_SRC org #+EXPORT_FILE_NAME: custom-output-name #+END_SRC - If set to =custom-output-name=, exporting to HTML produces =custom-output-name.html= - The extension is automatically appended based on export format - If the keyword already includes the correct extension, it's used as-is - Paths are relative to the org file's directory Example: #+BEGIN_SRC org #+TITLE: My Report #+EXPORT_FILE_NAME: final-report-v2 ,* Content here... #+END_SRC Exporting to PDF prod",
       "path": [
         "Export Options Reference",
@@ -31534,7 +31535,7 @@
       "heading": "EXCLUDE_TAGS",
       "level": 4,
       "file": "10-export.org",
-      "line": 2021,
+      "line": 2023,
       "content": "Exclude headlines with specific tags from export: #+BEGIN_SRC org #+EXCLUDE_TAGS: noexport private draft #+END_SRC - Space-separated list of tags - =noexport= is always excluded by default (even if not specified) - Headlines with any of these tags (and their children) are omitted - Useful for keeping internal notes, drafts, or private content",
       "path": [
         "Export Options Reference",
@@ -31570,7 +31571,7 @@
       "heading": "SELECT_TAGS",
       "level": 4,
       "file": "10-export.org",
-      "line": 2034,
+      "line": 2036,
       "content": "Export *only* headlines with specific tags: #+BEGIN_SRC org #+SELECT_TAGS: export publish #+END_SRC - When set, only headlines with at least one of these tags are exported - Headlines without a select tag are excluded (unless a child has one) - Overrides normal export behavior for selective publishing Example workflow: #+BEGIN_SRC org #+SELECT_TAGS: publish #+EXCLUDE_TAGS: noexport ,* Internal Notes                                    :noexport: Not exported (excluded). ,* Introduction Not export",
       "path": [
         "Export Options Reference",
@@ -31606,7 +31607,7 @@
       "heading": "Configuration Settings",
       "level": 1,
       "file": "10-export.org",
-      "line": 2064,
+      "line": 2066,
       "content": "",
       "path": [],
       "commands": [],
@@ -31620,7 +31621,7 @@
       "heading": "Export Settings Location",
       "level": 2,
       "file": "10-export.org",
-      "line": 2066,
+      "line": 2068,
       "content": "All export settings are in VS Code preferences: 1. `C-,' (`s-,' on Mac) to open Settings 2. Search for \"scimax export\" or \"scimax latex\" 3. Modify settings as needed",
       "path": [
         "Configuration Settings"
@@ -31646,7 +31647,7 @@
       "heading": "LaTeX Export Configuration",
       "level": 2,
       "file": "10-export.org",
-      "line": 2073,
+      "line": 2075,
       "content": "",
       "path": [
         "Configuration Settings"
@@ -31663,7 +31664,7 @@
       "heading": "Custom Header",
       "level": 3,
       "file": "10-export.org",
-      "line": 2075,
+      "line": 2077,
       "content": "*Setting:* `scimax.export.latex.customHeader' *Type:* String (multiline) *Description:* Complete custom LaTeX preamble replacing auto-generated one. *Example:* #+BEGIN_SRC json { \"scimax.export.latex.customHeader\": \"\\\\documentclass[12pt]{article}\\n\\\\usepackage[utf8]{inputenc}\\n\\\\usepackage{graphicx}\\n\\\\usepackage{amsmath}\" } #+END_SRC Or in `settings.json': #+BEGIN_SRC json { \"scimax.export.latex.customHeader\": [ \"\\\\documentclass[12pt]{article}\", \"\\\\usepackage[utf8]{inputenc}\", \"\\\\usepackage{gra",
       "path": [
         "Configuration Settings",
@@ -31700,7 +31701,7 @@
       "heading": "LaTeX Preview Settings",
       "level": 2,
       "file": "10-export.org",
-      "line": 2103,
+      "line": 2105,
       "content": "",
       "path": [
         "Configuration Settings"
@@ -31717,7 +31718,7 @@
       "heading": "Compiler",
       "level": 3,
       "file": "10-export.org",
-      "line": 2105,
+      "line": 2107,
       "content": "*Setting:* `scimax.latexLivePreview.compiler' *Values:* `\"pdflatex\"', `\"xelatex\"', `\"lualatex\"' *Default:* `\"pdflatex\"' *Example:* #+BEGIN_SRC json { \"scimax.latexLivePreview.compiler\": \"xelatex\" } #+END_SRC",
       "path": [
         "Configuration Settings",
@@ -31745,7 +31746,7 @@
       "heading": "Use latexmk",
       "level": 3,
       "file": "10-export.org",
-      "line": 2120,
+      "line": 2122,
       "content": "*Setting:* `scimax.latexLivePreview.useLatexmk' *Type:* Boolean *Default:* `true' *Description:* Use latexmk for smart incremental builds (recommended).",
       "path": [
         "Configuration Settings",
@@ -31773,7 +31774,7 @@
       "heading": "Build on Save",
       "level": 3,
       "file": "10-export.org",
-      "line": 2130,
+      "line": 2132,
       "content": "*Setting:* `scimax.latexLivePreview.buildOnSave' *Type:* Boolean *Default:* `true' *Description:* Automatically rebuild PDF when org file is saved.",
       "path": [
         "Configuration Settings",
@@ -31803,7 +31804,7 @@
       "heading": "Build on Idle",
       "level": 3,
       "file": "10-export.org",
-      "line": 2140,
+      "line": 2142,
       "content": "*Setting:* `scimax.latexLivePreview.buildOnIdle' *Type:* Boolean *Default:* `false' *Description:* Rebuild PDF after idle period (for live preview).",
       "path": [
         "Configuration Settings",
@@ -31834,7 +31835,7 @@
       "heading": "Idle Delay",
       "level": 3,
       "file": "10-export.org",
-      "line": 2150,
+      "line": 2152,
       "content": "*Setting:* `scimax.latexLivePreview.idleDelay' *Type:* Number (milliseconds) *Default:* `2000' *Description:* Delay before idle build triggers.",
       "path": [
         "Configuration Settings",
@@ -31863,7 +31864,7 @@
       "heading": "Complete Configuration Example",
       "level": 2,
       "file": "10-export.org",
-      "line": 2160,
+      "line": 2162,
       "content": "#+BEGIN_SRC json { // LaTeX Export \"scimax.export.latex.customHeader\": \"\", // LaTeX Preview \"scimax.latexLivePreview.compiler\": \"pdflatex\", \"scimax.latexLivePreview.useLatexmk\": true, \"scimax.latexLivePreview.buildOnSave\": true, \"scimax.latexLivePreview.buildOnIdle\": false, \"scimax.latexLivePreview.idleDelay\": 2000, // LaTeX Equation Preview \"scimax.latexPreview.enabled\": true, \"scimax.latexPreview.cacheEnabled\": true, \"scimax.latexPreview.darkModeAware\": true } #+END_SRC",
       "path": [
         "Configuration Settings"
@@ -31901,7 +31902,7 @@
       "heading": "Advanced Export Techniques",
       "level": 1,
       "file": "10-export.org",
-      "line": 2181,
+      "line": 2183,
       "content": "",
       "path": [],
       "commands": [],
@@ -31916,7 +31917,7 @@
       "heading": "Conditional Export",
       "level": 2,
       "file": "10-export.org",
-      "line": 2183,
+      "line": 2185,
       "content": "",
       "path": [
         "Advanced Export Techniques"
@@ -31932,7 +31933,7 @@
       "heading": "Exclude Content by Tag",
       "level": 3,
       "file": "10-export.org",
-      "line": 2185,
+      "line": 2187,
       "content": "Tag headlines to exclude them from export: #+BEGIN_SRC org #+EXCLUDE_TAGS: noexport private draft ,* Public Section Content for everyone. ,* Private Notes                                    :noexport: Internal notes not included in export. ,* Draft Ideas                                      :draft: Work in progress, excluded. #+END_SRC",
       "path": [
         "Advanced Export Techniques",
@@ -31967,7 +31968,7 @@
       "heading": "Select Content by Tag",
       "level": 3,
       "file": "10-export.org",
-      "line": 2202,
+      "line": 2204,
       "content": "Only export tagged content: #+BEGIN_SRC org #+SELECT_TAGS: export publish ,* Internal Document This section won't be exported. ,* Published Chapter                                 :export: This section will be exported. #+END_SRC",
       "path": [
         "Advanced Export Techniques",
@@ -31999,7 +32000,7 @@
       "heading": "Backend-Specific Content",
       "level": 2,
       "file": "10-export.org",
-      "line": 2216,
+      "line": 2218,
       "content": "",
       "path": [
         "Advanced Export Techniques"
@@ -32015,7 +32016,7 @@
       "heading": "HTML-Only Content",
       "level": 3,
       "file": "10-export.org",
-      "line": 2218,
+      "line": 2220,
       "content": "#+BEGIN_SRC org #+BEGIN_EXPORT html <div class=\"alert alert-info\"> This appears only in HTML export. </div> #+END_EXPORT #+END_SRC",
       "path": [
         "Advanced Export Techniques",
@@ -32044,7 +32045,7 @@
       "heading": "LaTeX-Only Content",
       "level": 3,
       "file": "10-export.org",
-      "line": 2228,
+      "line": 2230,
       "content": "#+BEGIN_SRC org #+BEGIN_EXPORT latex \\begin{tcolorbox}[title=Important] This appears only in LaTeX/PDF export. \\end{tcolorbox} #+END_EXPORT #+END_SRC",
       "path": [
         "Advanced Export Techniques",
@@ -32075,7 +32076,7 @@
       "heading": "Export Snippets",
       "level": 3,
       "file": "10-export.org",
-      "line": 2238,
+      "line": 2240,
       "content": "Inline backend-specific content: #+BEGIN_SRC org Click @@html:<button>@@here@@html:</button>@@ to continue. The value is @@latex:\\textcolor{red}{@@important@@latex:}@@. #+END_SRC",
       "path": [
         "Advanced Export Techniques",
@@ -32105,7 +32106,7 @@
       "heading": "Macros for Reusable Content",
       "level": 2,
       "file": "10-export.org",
-      "line": 2248,
+      "line": 2250,
       "content": "Define macros for repeated content: #+BEGIN_SRC org #+MACRO: version 2.5.0 #+MACRO: author-email john.doe@example.com Current version: {{{version}}} Contact: {{{author-email}}} #+END_SRC Built-in macros: - `{{{date}}}' - Current date - `{{{time}}}' - Current time - `{{{title}}}' - Document title - `{{{author}}}' - Document author",
       "path": [
         "Advanced Export Techniques"
@@ -32139,7 +32140,7 @@
       "heading": "Include Files",
       "level": 2,
       "file": "10-export.org",
-      "line": 2267,
+      "line": 2269,
       "content": "Include content from other files using the `#+INCLUDE:' directive. Files are processed during export, allowing modular document organization.",
       "path": [
         "Advanced Export Techniques"
@@ -32163,7 +32164,7 @@
       "heading": "Basic Syntax",
       "level": 3,
       "file": "10-export.org",
-      "line": 2272,
+      "line": 2274,
       "content": "#+BEGIN_SRC org ,#+INCLUDE: \"chapter1.org\" ,#+INCLUDE: \"path/to/file.org\" #+END_SRC Paths can be relative (to the current document) or absolute.",
       "path": [
         "Advanced Export Techniques",
@@ -32191,7 +32192,7 @@
       "heading": "Block Wrappers",
       "level": 3,
       "file": "10-export.org",
-      "line": 2281,
+      "line": 2283,
       "content": "Wrap included content in a block: #+BEGIN_SRC org ,# Include as source code block ,#+INCLUDE: \"code/example.py\" src python ,#+INCLUDE: \"script.sh\" src bash ,# Include as example (verbatim) block ,#+INCLUDE: \"output.txt\" example ,# Include as quote block ,#+INCLUDE: \"excerpt.txt\" quote ,# Include as export block (raw format) ,#+INCLUDE: \"custom.html\" export html #+END_SRC",
       "path": [
         "Advanced Export Techniques",
@@ -32226,7 +32227,7 @@
       "heading": "Line Selection with :lines",
       "level": 3,
       "file": "10-export.org",
-      "line": 2300,
+      "line": 2302,
       "content": "Include only specific lines from a file: #+BEGIN_SRC org ,# Lines 10 through 20 (inclusive, 1-indexed) ,#+INCLUDE: \"data.org\" :lines \"10-20\" ,# From line 10 to end of file ,#+INCLUDE: \"data.org\" :lines \"10-\" ,# From beginning to line 20 ,#+INCLUDE: \"data.org\" :lines \"-20\" ,# Single line ,#+INCLUDE: \"data.org\" :lines \"15\" #+END_SRC",
       "path": [
         "Advanced Export Techniques",
@@ -32259,7 +32260,7 @@
       "heading": "Headline Level Adjustment with :minlevel",
       "level": 3,
       "file": "10-export.org",
-      "line": 2318,
+      "line": 2320,
       "content": "Shift all headlines in the included file to a minimum level: #+BEGIN_SRC org ,# Shift headlines so the minimum level is 2 ,#+INCLUDE: \"chapter.org\" :minlevel 2 #+END_SRC This is useful for including a standalone document as a section: - A file with `* Heading' becomes `** Heading' with `:minlevel 2' - Sub-headlines are adjusted proportionally",
       "path": [
         "Advanced Export Techniques",
@@ -32294,7 +32295,7 @@
       "heading": "Content Only with :only-contents",
       "level": 3,
       "file": "10-export.org",
-      "line": 2331,
+      "line": 2333,
       "content": "Strip the first headline and include only its contents: #+BEGIN_SRC org ,#+INCLUDE: \"section.org\" :only-contents t #+END_SRC This extracts the body of the first headline without including the headline itself.",
       "path": [
         "Advanced Export Techniques",
@@ -32325,7 +32326,7 @@
       "heading": "Combining Options",
       "level": 3,
       "file": "10-export.org",
-      "line": 2342,
+      "line": 2344,
       "content": "Options can be combined: #+BEGIN_SRC org ,# Include lines 5-25 of Python file, shift headlines to level 3 ,#+INCLUDE: \"code.py\" src python :lines \"5-25\" ,# Include chapter, make it a subsection (minlevel 2) ,#+INCLUDE: \"chapter.org\" :minlevel 2 :only-contents t #+END_SRC",
       "path": [
         "Advanced Export Techniques",
@@ -32360,7 +32361,7 @@
       "heading": "Recursive Includes",
       "level": 3,
       "file": "10-export.org",
-      "line": 2354,
+      "line": 2356,
       "content": "Included files can themselves contain `#+INCLUDE:' directives, which are processed recursively. A maximum depth of 10 levels prevents infinite loops.",
       "path": [
         "Advanced Export Techniques",
@@ -32390,7 +32391,7 @@
       "heading": "Example: Modular Book Structure",
       "level": 3,
       "file": "10-export.org",
-      "line": 2359,
+      "line": 2361,
       "content": "#+BEGIN_SRC org ,#+TITLE: My Book ,#+AUTHOR: Author Name ,#+INCLUDE: \"frontmatter.org\" ,* Part I: Introduction ,#+INCLUDE: \"chapters/intro.org\" :minlevel 2 ,* Part II: Main Content ,#+INCLUDE: \"chapters/chapter1.org\" :minlevel 2 ,#+INCLUDE: \"chapters/chapter2.org\" :minlevel 2 ,* Appendices ,#+INCLUDE: \"appendices/code-samples.org\" :minlevel 2 ,* Index ,#+INCLUDE: \"backmatter/index.org\" :only-contents t #+END_SRC",
       "path": [
         "Advanced Export Techniques",
@@ -32425,7 +32426,7 @@
       "heading": "Custom Link Types",
       "level": 2,
       "file": "10-export.org",
-      "line": 2381,
+      "line": 2383,
       "content": "Define custom export behavior for link types: #+BEGIN_SRC org # Link to bug tracker [[bug:1234][Bug #1234]] # Link to commit [[commit:abc123][View commit]] #+END_SRC",
       "path": [
         "Advanced Export Techniques"
@@ -32455,7 +32456,7 @@
       "heading": "Troubleshooting",
       "level": 1,
       "file": "10-export.org",
-      "line": 2393,
+      "line": 2395,
       "content": "",
       "path": [],
       "commands": [],
@@ -32468,7 +32469,7 @@
       "heading": "HTML Export Issues",
       "level": 2,
       "file": "10-export.org",
-      "line": 2395,
+      "line": 2397,
       "content": "",
       "path": [
         "Troubleshooting"
@@ -32485,7 +32486,7 @@
       "heading": "MathJax Not Rendering",
       "level": 3,
       "file": "10-export.org",
-      "line": 2397,
+      "line": 2399,
       "content": "*Problem:* Math equations appear as plain text. *Solution:* 1. Ensure internet connection (MathJax loads from CDN) 2. Check browser console for errors 3. Verify math syntax (use `\\(...\\)' or `$...$' for inline, `\\[...\\]' for display)",
       "path": [
         "Troubleshooting",
@@ -32520,7 +32521,7 @@
       "heading": "Broken Images",
       "level": 3,
       "file": "10-export.org",
-      "line": 2406,
+      "line": 2408,
       "content": "*Problem:* Images don't appear in exported HTML. *Solution:* 1. Use relative paths: `[[file:./images/plot.png]]' 2. Ensure images are in same directory or subdirectory 3. Check image file names (case-sensitive on Linux)",
       "path": [
         "Troubleshooting",
@@ -32554,7 +32555,7 @@
       "heading": "CSS Not Applied",
       "level": 3,
       "file": "10-export.org",
-      "line": 2415,
+      "line": 2417,
       "content": "*Problem:* Custom CSS doesn't show. *Solution:* 1. Verify `#+HTML_HEAD:' syntax 2. Check CSS selector specificity 3. Inspect generated HTML for CSS inclusion",
       "path": [
         "Troubleshooting",
@@ -32586,7 +32587,7 @@
       "heading": "LaTeX/PDF Export Issues",
       "level": 2,
       "file": "10-export.org",
-      "line": 2424,
+      "line": 2426,
       "content": "",
       "path": [
         "Troubleshooting"
@@ -32603,7 +32604,7 @@
       "heading": "Missing Packages",
       "level": 3,
       "file": "10-export.org",
-      "line": 2426,
+      "line": 2428,
       "content": "*Problem:* Compilation fails with \"! LaTeX Error: File `xyz.sty' not found\" *Solution:* #+BEGIN_SRC bash # TeX Live sudo tlmgr install xyz # MiKTeX (Windows) miktex packages install xyz # MacTeX sudo tlmgr install xyz #+END_SRC",
       "path": [
         "Troubleshooting",
@@ -32638,7 +32639,7 @@
       "heading": "Unicode Errors",
       "level": 3,
       "file": "10-export.org",
-      "line": 2442,
+      "line": 2444,
       "content": "*Problem:* \"! Package inputenc Error: Unicode character ... not set up\" *Solution:* 1. Switch to XeLaTeX or LuaLaTeX: #+BEGIN_SRC json { \"scimax.latexLivePreview.compiler\": \"xelatex\" } #+END_SRC 2. Or use LaTeX-safe characters",
       "path": [
         "Troubleshooting",
@@ -32672,7 +32673,7 @@
       "heading": "Bibliography Not Generated",
       "level": 3,
       "file": "10-export.org",
-      "line": 2454,
+      "line": 2456,
       "content": "*Problem:* Citations show as `[?]' in PDF. *Solution:* 1. Ensure `.bib' file exists 2. Use `latexmk' (handles BibTeX automatically) 3. Check citation keys match bibliography entries 4. Verify `bibliography:' and `bibliographystyle:' links",
       "path": [
         "Troubleshooting",
@@ -32707,7 +32708,7 @@
       "heading": "Images Not Found",
       "level": 3,
       "file": "10-export.org",
-      "line": 2464,
+      "line": 2466,
       "content": "*Problem:* LaTeX can't find image files. *Solution:* 1. Use relative paths from org file location 2. Avoid spaces in filenames 3. Use supported formats: PNG, JPG, PDF, EPS 4. Check `\\graphicspath' if using custom image directories",
       "path": [
         "Troubleshooting",
@@ -32742,7 +32743,7 @@
       "heading": "Compilation Timeout",
       "level": 3,
       "file": "10-export.org",
-      "line": 2474,
+      "line": 2476,
       "content": "*Problem:* PDF export hangs or times out. *Solution:* 1. Check for infinite loops in LaTeX code 2. Reduce document size 3. Disable auto-build: `buildOnSave: false' 4. Review `.log' file for warnings",
       "path": [
         "Troubleshooting",
@@ -32777,7 +32778,7 @@
       "heading": "Markdown Export Issues",
       "level": 2,
       "file": "10-export.org",
-      "line": 2484,
+      "line": 2486,
       "content": "",
       "path": [
         "Troubleshooting"
@@ -32794,7 +32795,7 @@
       "heading": "Table Alignment",
       "level": 3,
       "file": "10-export.org",
-      "line": 2486,
+      "line": 2488,
       "content": "*Problem:* Tables don't align properly. *Solution:* - GitHub-flavored Markdown tables are left-aligned by default - Org-mode alignment hints (`<l>', `<c>', `<r>') are not supported - Consider using HTML tables for complex layouts",
       "path": [
         "Troubleshooting",
@@ -32828,7 +32829,7 @@
       "heading": "Math Not Rendering",
       "level": 3,
       "file": "10-export.org",
-      "line": 2495,
+      "line": 2497,
       "content": "*Problem:* Math equations don't work. *Solution:* - GitHub supports some math via `$$...$$' (display) and `$...$' (inline) - Other platforms may require MathJax integration - Consider exporting to HTML for math-heavy content",
       "path": [
         "Troubleshooting",
@@ -32863,7 +32864,7 @@
       "heading": "General Export Issues",
       "level": 2,
       "file": "10-export.org",
-      "line": 2504,
+      "line": 2506,
       "content": "",
       "path": [
         "Troubleshooting"
@@ -32880,7 +32881,7 @@
       "heading": "Empty Export",
       "level": 3,
       "file": "10-export.org",
-      "line": 2506,
+      "line": 2508,
       "content": "*Problem:* Export produces empty or minimal file. *Solution:* 1. Check export scope (full vs. subtree) 2. Verify content isn't excluded by tags 3. Ensure headlines match `H:' level setting 4. Review `#+OPTIONS' settings",
       "path": [
         "Troubleshooting",
@@ -32915,7 +32916,7 @@
       "heading": "Slow Export",
       "level": 3,
       "file": "10-export.org",
-      "line": 2516,
+      "line": 2518,
       "content": "*Problem:* Export takes very long. *Solution:* 1. Disable `buildOnIdle' for PDF export 2. Reduce `toc' depth 3. Split large documents into smaller files 4. Use `#+INCLUDE:' for modular organization",
       "path": [
         "Troubleshooting",
@@ -32950,7 +32951,7 @@
       "heading": "Wrong Output Location",
       "level": 3,
       "file": "10-export.org",
-      "line": 2526,
+      "line": 2528,
       "content": "*Problem:* Export file appears in unexpected location. *Solution:* 1. Check `#+EXPORT_FILE_NAME:' keyword 2. Verify save dialog selection 3. Review file permissions in target directory",
       "path": [
         "Troubleshooting",
@@ -32984,7 +32985,7 @@
       "heading": "Best Practices",
       "level": 1,
       "file": "10-export.org",
-      "line": 2535,
+      "line": 2537,
       "content": "",
       "path": [],
       "commands": [],
@@ -32998,7 +32999,7 @@
       "heading": "Document Organization",
       "level": 2,
       "file": "10-export.org",
-      "line": 2537,
+      "line": 2539,
       "content": "",
       "path": [
         "Best Practices"
@@ -33014,7 +33015,7 @@
       "heading": "Use Meaningful Headings",
       "level": 3,
       "file": "10-export.org",
-      "line": 2539,
+      "line": 2541,
       "content": "- Clear, descriptive headline text - Logical hierarchy (avoid jumping levels) - Consistent depth for similar content",
       "path": [
         "Best Practices",
@@ -33044,7 +33045,7 @@
       "heading": "Metadata at Top",
       "level": 3,
       "file": "10-export.org",
-      "line": 2544,
+      "line": 2546,
       "content": "#+BEGIN_SRC org #+TITLE: Document Title #+AUTHOR: Your Name #+DATE: 2024-01-15 #+OPTIONS: toc:t num:t #+LATEX_CLASS: article #+END_SRC",
       "path": [
         "Best Practices",
@@ -33075,7 +33076,7 @@
       "heading": "Separate Concerns",
       "level": 3,
       "file": "10-export.org",
-      "line": 2553,
+      "line": 2555,
       "content": "- Content in main file - References in `.bib' file - Images in `images/' directory - Custom styles in `.css' file",
       "path": [
         "Best Practices",
@@ -33101,7 +33102,7 @@
       "heading": "Version Control",
       "level": 2,
       "file": "10-export.org",
-      "line": 2559,
+      "line": 2561,
       "content": "",
       "path": [
         "Best Practices"
@@ -33117,7 +33118,7 @@
       "heading": "Track Generated Files Separately",
       "level": 3,
       "file": "10-export.org",
-      "line": 2561,
+      "line": 2563,
       "content": "Add to `.gitignore': #+BEGIN_SRC text *.pdf *.html *.tex *.aux *.log *.out *.toc #+END_SRC",
       "path": [
         "Best Practices",
@@ -33147,7 +33148,7 @@
       "heading": "Use Meaningful Commit Messages",
       "level": 3,
       "file": "10-export.org",
-      "line": 2573,
+      "line": 2575,
       "content": "#+BEGIN_SRC text Update export configuration for XeLaTeX support Add custom LaTeX preamble for ACM format Fix image paths in HTML export #+END_SRC",
       "path": [
         "Best Practices",
@@ -33182,7 +33183,7 @@
       "heading": "Performance Optimization",
       "level": 2,
       "file": "10-export.org",
-      "line": 2580,
+      "line": 2582,
       "content": "CLOSED: [2026-01-17 Sat 09:25]",
       "path": [
         "Best Practices"
@@ -33202,7 +33203,7 @@
       "heading": "For Large Documents",
       "level": 3,
       "file": "10-export.org",
-      "line": 2583,
+      "line": 2585,
       "content": "CLOSED: [2026-01-17 Sat 09:25] 1. Disable auto-build during editing 2. Use `#+INCLUDE:' for modular structure 3. Cache expensive computations 4. Optimize image sizes",
       "path": [
         "Best Practices",
@@ -33236,7 +33237,7 @@
       "heading": "For Fast Iteration",
       "level": 3,
       "file": "10-export.org",
-      "line": 2590,
+      "line": 2592,
       "content": "CLOSED: [2026-01-17 Sat 09:25] 1. Use HTML preview for quick checks 2. Enable `buildOnIdle' with appropriate delay 3. Use body-only export for faster generation 4. Minimize custom packages",
       "path": [
         "Best Practices",
@@ -33271,7 +33272,7 @@
       "heading": "Example Workflows",
       "level": 1,
       "file": "10-export.org",
-      "line": 2597,
+      "line": 2599,
       "content": "CLOSED: [2026-01-17 Sat 09:26]",
       "path": [],
       "commands": [],
@@ -33289,7 +33290,7 @@
       "heading": "Academic Paper Workflow",
       "level": 2,
       "file": "10-export.org",
-      "line": 2600,
+      "line": 2602,
       "content": "CLOSED: [2026-01-17 Sat 09:26]",
       "path": [
         "Example Workflows"
@@ -33310,7 +33311,7 @@
       "heading": "1. Initial Setup",
       "level": 3,
       "file": "10-export.org",
-      "line": 2603,
+      "line": 2605,
       "content": "#+BEGIN_SRC org #+TITLE: Novel Approach to Machine Learning #+AUTHOR: Dr. Jane Smith #+DATE: \\today #+OPTIONS: toc:t num:t H:3 #+LATEX_CLASS: IEEEtran #+LATEX_HEADER: \\usepackage{amsmath,amssymb} #+LATEX_HEADER: \\usepackage{algorithm,algorithmic} #+BIBLIOGRAPHY: references.bib #+END_SRC",
       "path": [
         "Example Workflows",
@@ -33345,7 +33346,7 @@
       "heading": "2. Write Content",
       "level": 3,
       "file": "10-export.org",
-      "line": 2615,
+      "line": 2617,
       "content": "Structure with standard sections: - Abstract - Introduction - Related Work - Methodology - Results - Discussion - Conclusion",
       "path": [
         "Example Workflows",
@@ -33373,7 +33374,7 @@
       "heading": "3. Add Citations",
       "level": 3,
       "file": "10-export.org",
-      "line": 2625,
+      "line": 2627,
       "content": "#+BEGIN_SRC org Recent work cite:smith2023 has shown... #+END_SRC",
       "path": [
         "Example Workflows",
@@ -33397,7 +33398,7 @@
       "heading": "4. Export to PDF",
       "level": 3,
       "file": "10-export.org",
-      "line": 2630,
+      "line": 2632,
       "content": "`C-c C-e l p' → PDF via LaTeX",
       "path": [
         "Example Workflows",
@@ -33420,7 +33421,7 @@
       "heading": "5. Submit",
       "level": 3,
       "file": "10-export.org",
-      "line": 2633,
+      "line": 2635,
       "content": "Review generated PDF, make final edits, submit.",
       "path": [
         "Example Workflows",
@@ -33442,7 +33443,7 @@
       "heading": "Technical Documentation Workflow",
       "level": 2,
       "file": "10-export.org",
-      "line": 2636,
+      "line": 2638,
       "content": "",
       "path": [
         "Example Workflows"
@@ -33459,7 +33460,7 @@
       "heading": "1. Setup",
       "level": 3,
       "file": "10-export.org",
-      "line": 2638,
+      "line": 2640,
       "content": "#+BEGIN_SRC org #+TITLE: API Documentation #+AUTHOR: Development Team #+OPTIONS: toc:2 num:nil H:4 #+HTML_HEAD: <link rel=\"stylesheet\" href=\"docs.css\" /> #+END_SRC",
       "path": [
         "Example Workflows",
@@ -33493,7 +33494,7 @@
       "heading": "2. Write Sections",
       "level": 3,
       "file": "10-export.org",
-      "line": 2646,
+      "line": 2648,
       "content": "- Getting Started - API Reference - Examples - Troubleshooting",
       "path": [
         "Example Workflows",
@@ -33516,7 +33517,7 @@
       "heading": "3. Export to HTML",
       "level": 3,
       "file": "10-export.org",
-      "line": 2652,
+      "line": 2654,
       "content": "`C-c C-e h h' → HTML",
       "path": [
         "Example Workflows",
@@ -33537,7 +33538,7 @@
       "heading": "4. Deploy",
       "level": 3,
       "file": "10-export.org",
-      "line": 2655,
+      "line": 2657,
       "content": "Copy HTML and CSS to docs server or GitHub Pages.",
       "path": [
         "Example Workflows",
@@ -33560,7 +33561,7 @@
       "heading": "Blog Post Workflow",
       "level": 2,
       "file": "10-export.org",
-      "line": 2658,
+      "line": 2660,
       "content": "CLOSED: [2026-01-17 Sat 09:27]",
       "path": [
         "Example Workflows"
@@ -33581,7 +33582,7 @@
       "heading": "1. Write in Org",
       "level": 3,
       "file": "10-export.org",
-      "line": 2661,
+      "line": 2663,
       "content": "CLOSED: [2026-01-17 Sat 09:27] #+BEGIN_SRC org #+TITLE: 10 Tips for Better Python Code #+AUTHOR: Tech Blogger #+DATE: 2024-01-15 #+OPTIONS: toc:nil num:nil #+END_SRC",
       "path": [
         "Example Workflows",
@@ -33616,7 +33617,7 @@
       "heading": "2. Export to Markdown",
       "level": 3,
       "file": "10-export.org",
-      "line": 2670,
+      "line": 2672,
       "content": "CLOSED: [2026-01-17 Sat 09:27] `C-c C-e m m' → Markdown",
       "path": [
         "Example Workflows",
@@ -33641,7 +33642,7 @@
       "heading": "3. Publish",
       "level": 3,
       "file": "10-export.org",
-      "line": 2674,
+      "line": 2676,
       "content": "CLOSED: [2026-01-17 Sat 09:27] Copy Markdown to CMS or static site generator (Hugo, Jekyll, etc.)",
       "path": [
         "Example Workflows",
@@ -33670,7 +33671,7 @@
       "heading": "Resources",
       "level": 1,
       "file": "10-export.org",
-      "line": 2679,
+      "line": 2681,
       "content": "CLOSED: [2026-01-17 Sat 09:29]",
       "path": [],
       "commands": [],
@@ -33687,7 +33688,7 @@
       "heading": "External Links",
       "level": 2,
       "file": "10-export.org",
-      "line": 2682,
+      "line": 2684,
       "content": "CLOSED: [2026-01-17 Sat 09:29]",
       "path": [
         "Resources"
@@ -33707,7 +33708,7 @@
       "heading": "Org-Mode Documentation",
       "level": 3,
       "file": "10-export.org",
-      "line": 2685,
+      "line": 2687,
       "content": "CLOSED: [2026-01-17 Sat 09:29] - [[https://orgmode.org/manual/Exporting.html][Official Export Documentation]] - [[https://orgmode.org/worg/org-tutorials/org-latex-export.html][LaTeX Export Tutorial]] - [[https://orgmode.org/worg/org-tutorials/org-publish-html-tutorial.html][HTML Export Tutorial]]",
       "path": [
         "Resources",
@@ -33736,7 +33737,7 @@
       "heading": "LaTeX Resources",
       "level": 3,
       "file": "10-export.org",
-      "line": 2691,
+      "line": 2693,
       "content": "CLOSED: [2026-01-17 Sat 09:29] - [[https://www.latex-project.org/][LaTeX Project]] - [[https://ctan.org/][CTAN - Package Archive]] - [[https://www.overleaf.com/learn][Overleaf Learn LaTeX]]",
       "path": [
         "Resources",
@@ -33766,7 +33767,7 @@
       "heading": "Tools",
       "level": 3,
       "file": "10-export.org",
-      "line": 2697,
+      "line": 2699,
       "content": "CLOSED: [2026-01-17 Sat 09:29] - [[https://www.mathjax.org/][MathJax Documentation]] - [[https://highlightjs.org/][highlight.js]] - [[https://pandoc.org/][Pandoc - Universal Document Converter]]",
       "path": [
         "Resources",
@@ -33796,7 +33797,7 @@
       "heading": "Related Scimax Documentation",
       "level": 2,
       "file": "10-export.org",
-      "line": 2703,
+      "line": 2705,
       "content": "CLOSED: [2026-01-17 Sat 09:29] - [[file:01-getting-started.org][Getting Started with Scimax]] - [[file:04-tables.org][Working with Tables]] - [[file:05-links.org][Links and Cross-References]] - [[file:03-todo-items.org][TODO Items and Planning]]",
       "path": [
         "Resources"
@@ -33830,7 +33831,7 @@
       "heading": "Community",
       "level": 2,
       "file": "10-export.org",
-      "line": 2711,
+      "line": 2713,
       "content": "CLOSED: [2026-01-17 Sat 09:29] - [[https://github.com/jkitchin/scimax_vscode][Scimax VS Code Repository]] - [[https://github.com/jkitchin/scimax_vscode/issues][Issue Tracker]] - [[https://github.com/jkitchin/scimax_vscode/discussions][Discussions]]",
       "path": [
         "Resources"
@@ -33858,7 +33859,7 @@
       "heading": "Appendix",
       "level": 1,
       "file": "10-export.org",
-      "line": 2718,
+      "line": 2720,
       "content": "CLOSED: [2026-01-17 Sat 09:29]",
       "path": [],
       "commands": [],
@@ -33875,7 +33876,7 @@
       "heading": "Complete Keybinding Reference",
       "level": 2,
       "file": "10-export.org",
-      "line": 2721,
+      "line": 2723,
       "content": "CLOSED: [2026-01-17 Sat 09:29] | Keybinding  | Command                  | Description                  | |-------------+--------------------------+------------------------------| | C-c C-e     | Export dispatcher        | Open export menu             | | C-c C-e h h | HTML export              | Export to .html              | | C-c C-e h o | HTML export and open     | Export and open in browser   | | C-c C-e h p | HTML preview             | Preview in VS Code webview   | | C-c C-e l l | LaTeX exp",
       "path": [
         "Appendix"
@@ -33911,7 +33912,7 @@
       "heading": "Export Options Quick Reference",
       "level": 2,
       "file": "10-export.org",
-      "line": 2745,
+      "line": 2747,
       "content": "CLOSED: [2026-01-24 Sat 17:36] | Option   | Values             | Default | Effect                                 | |----------+--------------------+---------+----------------------------------------| | toc      | t/nil/N            | nil     | Table of contents (N = depth)          | | num      | t/nil/N            | t       | Section numbering (N = depth)          | | H        | N                  | 0       | Export headlines up to level N         | | author   | t/nil              | t       | ",
       "path": [
         "Appendix"
@@ -33945,7 +33946,7 @@
       "heading": "LaTeX Package Reference",
       "level": 2,
       "file": "10-export.org",
-      "line": 2770,
+      "line": 2772,
       "content": "",
       "path": [
         "Appendix"
@@ -33962,7 +33963,7 @@
       "heading": "Essential Packages (Auto-Included)",
       "level": 3,
       "file": "10-export.org",
-      "line": 2772,
+      "line": 2774,
       "content": "| Package       | Purpose                              | |---------------+--------------------------------------| | inputenc    | Character encoding (UTF-8)           | | fontenc     | Font encoding (T1)                   | | hyperref    | Hyperlinks and PDF metadata          | | graphicx    | Image inclusion                      | | amsmath     | Mathematical typesetting             | | amssymb     | Math symbols                         | | booktabs    | Professional tables                  | |",
       "path": [
         "Appendix",
@@ -33997,7 +33998,7 @@
       "heading": "Optional Packages",
       "level": 3,
       "file": "10-export.org",
-      "line": 2786,
+      "line": 2788,
       "content": "| Package       | Purpose                              | Add With                        | |---------------+--------------------------------------+---------------------------------| | geometry    | Page layout                          | #+LATEX_HEADER:               | | natbib      | Bibliography                         | #+LATEX_HEADER:               | | minted      | Advanced syntax highlighting         | #+LATEX_HEADER:               | | tikz        | Graphics and diagrams                | #+",
       "path": [
         "Appendix",
@@ -34031,7 +34032,7 @@
       "heading": "HTML Classes and IDs",
       "level": 2,
       "file": "10-export.org",
-      "line": 2798,
+      "line": 2800,
       "content": "Exported HTML uses semantic classes for styling:",
       "path": [
         "Appendix"
@@ -34052,7 +34053,7 @@
       "heading": "Document Structure",
       "level": 3,
       "file": "10-export.org",
-      "line": 2802,
+      "line": 2804,
       "content": "- `.org-content' - Main content container - `.org-section' - Document section - `.org-preamble' - Document preamble - `#title-block' - Title, author, date header",
       "path": [
         "Appendix",
@@ -34082,7 +34083,7 @@
       "heading": "Headings and TOC",
       "level": 3,
       "file": "10-export.org",
-      "line": 2808,
+      "line": 2810,
       "content": "- `.org-toc' - Table of contents - `.section-number' - Section number prefix",
       "path": [
         "Appendix",
@@ -34106,7 +34107,7 @@
       "heading": "Text Elements",
       "level": 3,
       "file": "10-export.org",
-      "line": 2812,
+      "line": 2814,
       "content": "- `.org-todo' - TODO keyword - `.org-done' - DONE keyword - `.org-priority' - Priority marker - `.org-tags' - Tag container - `.org-tag' - Individual tag - `.org-timestamp' - Timestamp - `.org-underline' - Underlined text",
       "path": [
         "Appendix",
@@ -34140,7 +34141,7 @@
       "heading": "Blocks",
       "level": 3,
       "file": "10-export.org",
-      "line": 2821,
+      "line": 2823,
       "content": "- `.org-src-container' - Source block wrapper - `.src' - Source block pre element - `.example' - Example block - `.org-center' - Centered content - `.org-latex-environment' - LaTeX environment",
       "path": [
         "Appendix",
@@ -34170,7 +34171,7 @@
       "heading": "Tables and Lists",
       "level": 3,
       "file": "10-export.org",
-      "line": 2828,
+      "line": 2830,
       "content": "- `.org-table' - Table element - `.org-footnotes' - Footnotes container - `.org-footnote' - Individual footnote - `.org-footnote-ref' - Footnote reference link",
       "path": [
         "Appendix",
@@ -34199,7 +34200,7 @@
       "heading": "Admonitions",
       "level": 3,
       "file": "10-export.org",
-      "line": 2834,
+      "line": 2836,
       "content": "- `.admonition' - Generic admonition - `.org-warning' - Warning box - `.org-note' - Note box - `.org-tip' - Tip box - `.org-important' - Important box",
       "path": [
         "Appendix",
@@ -34226,7 +34227,7 @@
       "heading": "Troubleshooting Decision Tree",
       "level": 2,
       "file": "10-export.org",
-      "line": 2841,
+      "line": 2843,
       "content": "#+BEGIN_SRC text Export Problem? ├─ HTML Export │  ├─ Math not rendering → Check MathJax CDN, internet connection │  ├─ Images broken → Verify paths, file existence │  └─ Styling wrong → Check CSS inclusion, specificity ├─ PDF Export │  ├─ Compilation fails │  │  ├─ Missing package → Install via tlmgr/MiKTeX │  │  ├─ Unicode error → Switch to XeLaTeX/LuaLaTeX │  │  └─ Timeout → Review .log, reduce complexity │  ├─ Bibliography missing → Check .bib file, use latexmk │  └─ Images not found → Verif",
       "path": [
         "Appendix"
@@ -34260,7 +34261,7 @@
       "heading": "Related Topics",
       "level": 1,
       "file": "10-export.org",
-      "line": 2870,
+      "line": 2872,
       "content": "- [[file:46-org-preview.org][Org Preview]] - Live rendered preview while you edit - [[file:07-source-blocks.org][Source Code Blocks]] - Code execution in documents - [[file:11-latex-preview.org][LaTeX Preview]] - Math preview before export - [[file:19-references.org][References]] - Citations and bibliography in exports - [[file:04-tables.org][Tables]] - Table formatting in exports - [[file:26-configuration.org][Configuration]] - Export settings and customization - [[file:25-commands.org][Command",
       "path": [],
       "commands": [],
@@ -34292,7 +34293,7 @@
       "heading": "Navigation",
       "level": 1,
       "file": "10-export.org",
-      "line": 2881,
+      "line": 2883,
       "content": "- Previous: [[file:09-jupyter.org][Jupyter]] - Index: [[file:00-index.org][Documentation Index]] - Next: [[file:11-latex-preview.org][LaTeX Preview]]",
       "path": [],
       "commands": [],
@@ -94515,39 +94516,39 @@
       "level": 1,
       "file": "30-markdown-compatibility.org",
       "line": 10,
-      "content": "CLOSED: [2026-01-19 Mon 09:32] Scimax VS Code provides first-class support for org-mode files, with substantial structural editing and navigation support for Markdown documents as well. This chapter documents which features work in Markdown files and how to use them.",
+      "content": "Scimax VS Code provides first-class support for org-mode files, and most of its structural editing, navigation, task and code block commands also work in Markdown files. In a Markdown file the commands write Markdown syntax: =**bold**=, =[text](target)= links, =# TODO= headings with org-style SCHEDULED / DEADLINE lines, and results that render in the Markdown preview. This chapter documents which features work in Markdown files and how they differ from org.",
       "path": [],
       "commands": [],
       "keybindings": [],
       "keywords": [
         "markdown",
         "compatibility",
-        "closed",
-        "2026-01-19",
-        "mon",
-        "0932",
         "scimax",
         "code",
         "provides",
         "first-class",
         "support",
         "org-mode",
-        "substantial",
         "structural",
         "editing",
         "navigation",
-        "documents",
-        "well",
-        "chapter",
-        "features"
+        "task",
+        "block",
+        "commands",
+        "work",
+        "write",
+        "syntax",
+        "bold",
+        "text",
+        "target"
       ]
     },
     {
       "heading": "Design Philosophy",
       "level": 2,
       "file": "30-markdown-compatibility.org",
-      "line": 17,
-      "content": "The extension treats Markdown as a first-class citizen for *structural editing and navigation*. TODO keywords, priorities, SCHEDULED/DEADLINE lines and hashtags work in Markdown headings with the same syntax as org (see [[*Tasks, Planning and Hashtags in Markdown]]). Clocking and properties drawers are org only. | Category                | Markdown Support | Notes                              | |-------------------------+------------------+------------------------------------| | Structural editi",
+      "line": 20,
+      "content": "Commands that make sense in Markdown write Markdown. TODO keywords, priorities, SCHEDULED/DEADLINE lines and hashtags use the same syntax as org (see [[*Tasks, Planning and Hashtags in Markdown]]). Features that only exist in org syntax (clocking, property drawers, tangling) stay org-only rather than writing org text that Markdown renderers show literally. | Category             | Markdown Support | Notes                                                 | |----------------------+-----------------",
       "path": [
         "Markdown Compatibility"
       ],
@@ -94556,49 +94557,45 @@
       "keywords": [
         "design",
         "philosophy",
-        "extension",
-        "treats",
+        "commands",
+        "make",
+        "sense",
         "markdown",
-        "first-class",
-        "citizen",
-        "structural",
-        "editing",
-        "navigation",
+        "write",
         "todo",
         "keywords",
         "priorities",
         "scheduleddeadline",
         "lines",
         "hashtags",
-        "work",
-        "headings",
         "syntax",
-        "org"
+        "org",
+        "tasks",
+        "planning",
+        "features",
+        "exist",
+        "clocking"
       ]
     },
     {
       "heading": "Supported Features",
       "level": 1,
       "file": "30-markdown-compatibility.org",
-      "line": 40,
-      "content": "CLOSED: [2026-01-19 Mon 09:33]",
+      "line": 45,
+      "content": "",
       "path": [],
       "commands": [],
       "keybindings": [],
       "keywords": [
         "supported",
-        "features",
-        "closed",
-        "2026-01-19",
-        "mon",
-        "0933"
+        "features"
       ]
     },
     {
       "heading": "Document Outline and Navigation",
       "level": 2,
       "file": "30-markdown-compatibility.org",
-      "line": 43,
+      "line": 47,
       "content": "CLOSED: [2026-01-19 Mon 09:33] Markdown files have full support for the VS Code outline view and breadcrumb navigation.",
       "path": [
         "Supported Features"
@@ -94625,8 +94622,8 @@
       "heading": "Outline View",
       "level": 3,
       "file": "30-markdown-compatibility.org",
-      "line": 49,
-      "content": "CLOSED: [2026-01-19 Mon 09:33] The extension provides a =DocumentSymbolProvider= for Markdown that recognizes: - Headings (lines starting with =#=) - Fenced code blocks (=```language= or =~~~language=) - YAML frontmatter title Open the Outline view in the Explorer sidebar or press =Ctrl+Shift+O= to see the document structure.",
+      "line": 53,
+      "content": "The extension provides a =DocumentSymbolProvider= for Markdown that recognizes: - ATX headings (lines starting with =#= to =######=) - Fenced code blocks (=```language= or =~~~language=) - YAML frontmatter title Open the Outline view in the Explorer sidebar or press =Ctrl+Shift+O= to see the document structure.",
       "path": [
         "Supported Features",
         "Document Outline and Navigation"
@@ -94638,15 +94635,12 @@
       "keywords": [
         "outline",
         "view",
-        "closed",
-        "2026-01-19",
-        "mon",
-        "0933",
         "extension",
         "provides",
         "documentsymbolprovider",
         "markdown",
         "recognizes",
+        "atx",
         "headings",
         "lines",
         "starting",
@@ -94655,14 +94649,17 @@
         "blocks",
         "language",
         "yaml",
-        "frontmatter"
+        "frontmatter",
+        "title",
+        "open",
+        "explorer"
       ]
     },
     {
       "heading": "Breadcrumbs",
       "level": 3,
       "file": "30-markdown-compatibility.org",
-      "line": 61,
+      "line": 64,
       "content": "CLOSED: [2026-01-19 Mon 09:33] Breadcrumbs show the current heading hierarchy in the editor title bar. This works automatically for Markdown files.",
       "path": [
         "Supported Features",
@@ -94692,7 +94689,7 @@
       "heading": "Jump to Heading",
       "level": 3,
       "file": "30-markdown-compatibility.org",
-      "line": 67,
+      "line": 70,
       "content": "CLOSED: [2026-01-19 Mon 09:34] Press =C-c C-j= to open a quick-pick menu of all headings in the current file. Type to filter and press Enter to jump.  `Cmd-C/Shift-o' also works.",
       "path": [
         "Supported Features",
@@ -94725,11 +94722,45 @@
       ]
     },
     {
+      "heading": "What Counts as a Heading",
+      "level": 2,
+      "file": "30-markdown-compatibility.org",
+      "line": 76,
+      "content": "A heading is a line that starts with one to six =#= characters followed by a space. Every heading command, speed key, fold, outline entry and refile target ignores =#= lines in these places, because they are not headings there: - inside fenced code blocks (=```= or =~~~=), such as a =# comment= in Python - in YAML front matter at the top of the file (between =---= lines) - inside HTML comments (=<!-- ... -->=) So a speed key pressed at the start of =# install deps= inside a =```bash= block types",
+      "path": [
+        "Supported Features"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "counts",
+        "heading",
+        "line",
+        "starts",
+        "one",
+        "six",
+        "characters",
+        "followed",
+        "space",
+        "command",
+        "speed",
+        "key",
+        "fold",
+        "outline",
+        "entry",
+        "refile",
+        "target",
+        "ignores",
+        "lines",
+        "places"
+      ]
+    },
+    {
       "heading": "Heading Navigation",
       "level": 2,
       "file": "30-markdown-compatibility.org",
-      "line": 73,
-      "content": "CLOSED: [2026-01-19 Mon 09:35] All heading navigation commands work in Markdown: | Key       | Command                   | Description                      | |-----------+---------------------------+----------------------------------| | C-c C-n   | Next Heading              | Move to next heading (any level) | | C-c C-p   | Previous Heading          | Move to previous heading         | | C-c C-u   | Parent Heading            | Move to parent (higher level)    | | C-c C-j   | Jump to Heading     ",
+      "line": 94,
+      "content": "CLOSED: [2026-01-19 Mon 09:35] All heading navigation commands work in Markdown: | Key     | Command          | Description                      | |---------+------------------+----------------------------------| | C-c C-n | Next Heading     | Move to next heading (any level) | | C-c C-p | Previous Heading | Move to previous heading         | | C-c C-u | Parent Heading   | Move to parent (higher level)    | | C-c C-j | Jump to Heading  | Quick-pick menu of all headings  | Speed commands (when cu",
       "path": [
         "Supported Features"
       ],
@@ -94753,7 +94784,7 @@
         "key",
         "command",
         "description",
-        "------------------------------------------------------------------------",
+        "-------------------------------------------------------------",
         "c-c",
         "c-n",
         "next",
@@ -94767,8 +94798,8 @@
       "heading": "Heading Manipulation",
       "level": 2,
       "file": "30-markdown-compatibility.org",
-      "line": 96,
-      "content": "CLOSED: [2026-01-19 Mon 09:35] Change heading levels and move subtrees: | Key         | Command           | Description                      | |-------------+-------------------+----------------------------------| | M-<left>    | Promote Heading   | Decrease level (## -> #)         | | M-<right>   | Demote Heading    | Increase level (# -> ##)         | | M-S-<left>  | Promote Subtree   | Promote heading and all children | | M-S-<right> | Demote Subtree    | Demote heading and all children  | | ",
+      "line": 117,
+      "content": "Change heading levels and move subtrees: | Key         | Command           | Description                      | |-------------+-------------------+----------------------------------| | M-<left>    | Promote Heading   | Decrease level (## -> #)         | | M-<right>   | Demote Heading    | Increase level (# -> ##)         | | M-S-<left>  | Promote Subtree   | Promote heading and all children | | M-S-<right> | Demote Subtree    | Demote heading and all children  | | M-<up>      | Move Subtree Up  ",
       "path": [
         "Supported Features"
       ],
@@ -94779,10 +94810,6 @@
       "keywords": [
         "heading",
         "manipulation",
-        "closed",
-        "2026-01-19",
-        "mon",
-        "0935",
         "change",
         "levels",
         "move",
@@ -94796,15 +94823,19 @@
         "decrease",
         "level",
         "m-right",
-        "demote"
+        "demote",
+        "increase",
+        "m-s-left",
+        "subtree",
+        "children"
       ]
     },
     {
       "heading": "Insert Headings",
       "level": 3,
       "file": "30-markdown-compatibility.org",
-      "line": 110,
-      "content": "CLOSED: [2026-01-19 Mon 09:35] | Key        | Command           | Description                           | |------------+-------------------+---------------------------------------| | C-<return> | Insert Heading    | Insert new heading at same level      | | -          | Insert Subheading | Insert heading one level deeper       | The extension automatically uses =#= characters for Markdown (not =*= like org).",
+      "line": 132,
+      "content": "| Key        | Command           | Description                      | |------------+-------------------+----------------------------------| | C-<return> | Insert Heading    | Insert new heading at same level | | -          | Insert Subheading | Insert heading one level deeper  | The extension uses =#= characters for Markdown (not =*= like org), and a subheading under a =######= heading stays at level 6.",
       "path": [
         "Supported Features",
         "Heading Manipulation"
@@ -94814,14 +94845,10 @@
       "keywords": [
         "insert",
         "headings",
-        "closed",
-        "2026-01-19",
-        "mon",
-        "0935",
         "key",
         "command",
         "description",
-        "----------------------------------------------------------------------",
+        "-----------------------------------------------------------------",
         "c-return",
         "heading",
         "new",
@@ -94830,16 +94857,20 @@
         "one",
         "deeper",
         "extension",
-        "automatically",
-        "uses"
+        "uses",
+        "characters",
+        "markdown",
+        "like",
+        "org",
+        "under"
       ]
     },
     {
       "heading": "Subtree Operations",
       "level": 2,
       "file": "30-markdown-compatibility.org",
-      "line": 120,
-      "content": "CLOSED: [2026-01-19 Mon 09:35] All subtree operations work in Markdown: | Command                    | Speed Key | Description                    | |----------------------------+-----------+--------------------------------| | scimax.org.markSubtree     | @         | Select entire subtree          | | scimax.org.killSubtree     | w         | Cut subtree to clipboard       | | scimax.org.cloneSubtree    | W         | Duplicate subtree below        | | scimax.org.yankSubtree     | y         | Paste",
+      "line": 142,
+      "content": "All subtree operations work in Markdown: | Command                    | Speed Key | Description                    | |----------------------------+-----------+--------------------------------| | scimax.org.markSubtree     | m, @      | Select entire subtree          | | scimax.org.killSubtree     | k         | Cut subtree to clipboard       | | scimax.org.cloneSubtree    | W         | Duplicate subtree below        | | scimax.speed.yankSubtree   | y         | Paste subtree from clipboard   | | s",
       "path": [
         "Supported Features"
       ],
@@ -94847,16 +94878,12 @@
         "scimax.org.markSubtree",
         "scimax.org.killSubtree",
         "scimax.org.cloneSubtree",
-        "scimax.org.yankSubtree"
+        "scimax.speed.yankSubtree"
       ],
       "keybindings": [],
       "keywords": [
         "subtree",
         "operations",
-        "closed",
-        "2026-01-19",
-        "mon",
-        "0935",
         "work",
         "markdown",
         "command",
@@ -94877,8 +94904,8 @@
       "heading": "Yank Subtree Level Adjustment",
       "level": 3,
       "file": "30-markdown-compatibility.org",
-      "line": 134,
-      "content": "CLOSED: [2026-01-19 Mon 09:35] When yanking (pasting) a subtree, the extension automatically adjusts heading levels to match the context: #+BEGIN_SRC markdown ## Target Section <!-- Yank a subtree that was cut from a different level --> <!-- Headings are automatically adjusted to match ## level --> #+END_SRC",
+      "line": 159,
+      "content": "When yanking (pasting) a subtree, the extension adjusts heading levels to match the context. Only real headings change: =#= comments inside code blocks in the subtree are left alone, and no heading goes past level 6. #+BEGIN_SRC markdown ## Target Section <!-- Yank a subtree that was cut from a different level --> <!-- Headings are automatically adjusted to match ## level --> #+END_SRC",
       "path": [
         "Supported Features",
         "Subtree Operations"
@@ -94890,30 +94917,256 @@
         "subtree",
         "level",
         "adjustment",
-        "closed",
-        "2026-01-19",
-        "mon",
-        "0935",
         "yanking",
         "pasting",
         "extension",
-        "automatically",
         "adjusts",
         "heading",
         "levels",
         "match",
         "context",
-        "beginsrc",
+        "real",
+        "headings",
+        "change",
+        "comments",
+        "inside",
+        "code",
+        "blocks",
+        "left"
+      ]
+    },
+    {
+      "heading": "Speed Commands",
+      "level": 2,
+      "file": "30-markdown-compatibility.org",
+      "line": 172,
+      "content": "Speed commands work at the beginning of Markdown headings (column 0 of a heading line, see [[*What Counts as a Heading][What Counts as a Heading]]). | Keys          | Action                                                 | |---------------+--------------------------------------------------------| | n p f b u j g | Navigate: next, previous, sibling, parent, jump, go to | | c C o Tab     | Visibility: cycle, show children, overview, fold       | | U D           | Move subtree up / down           ",
+      "path": [
+        "Supported Features"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "speed",
+        "commands",
+        "work",
+        "beginning",
         "markdown",
-        "target"
+        "headings",
+        "column",
+        "heading",
+        "line",
+        "counts",
+        "keys",
+        "action",
+        "-----------------------------------------------------------------------",
+        "navigate",
+        "next",
+        "previous",
+        "sibling",
+        "parent",
+        "jump",
+        "tab"
+      ]
+    },
+    {
+      "heading": "Folding",
+      "level": 2,
+      "file": "30-markdown-compatibility.org",
+      "line": 192,
+      "content": "CLOSED: [2026-01-19 Mon 09:40] Markdown headings support folding via the standard VS Code folding mechanism: - Press =Tab= on a heading to cycle fold state - Press =Shift+Tab= anywhere for global fold cycling - Use the fold icons in the gutter Fenced code blocks and Pandoc fenced divs (=::: {.callout-note}= ... =:::=, nested to any depth, and MyST =:::{note}= fences) fold as well.",
+      "path": [
+        "Supported Features"
+      ],
+      "commands": [],
+      "keybindings": [
+        "Shift+Tab"
+      ],
+      "keywords": [
+        "folding",
+        "closed",
+        "2026-01-19",
+        "mon",
+        "0940",
+        "markdown",
+        "headings",
+        "support",
+        "via",
+        "standard",
+        "code",
+        "mechanism",
+        "press",
+        "tab",
+        "heading",
+        "cycle",
+        "fold",
+        "state",
+        "shifttab",
+        "anywhere"
+      ]
+    },
+    {
+      "heading": "Text Markup and Comments",
+      "level": 2,
+      "file": "30-markdown-compatibility.org",
+      "line": 204,
+      "content": "The markup commands write Markdown syntax in Markdown files: | Key        | Command                        | Org        | Markdown          | |------------+--------------------------------+------------+-------------------| | M-b, C-c b | scimax.markup.bold             | =*text*=   | =**text**=        | | M-i, C-c i | scimax.markup.italic           | =/text/=   | =*text*=          | | M-u, C-c _ | scimax.markup.underline        | =_text_=   | =<u>text</u>=     | | M-c, C-c ` | scimax.markup.code ",
+      "path": [
+        "Supported Features"
+      ],
+      "commands": [
+        "scimax.markup.bold",
+        "scimax.markup.italic",
+        "scimax.markup.underline",
+        "scimax.markup.code"
+      ],
+      "keybindings": [
+        "M-b",
+        "C-c",
+        "M-i",
+        "M-u",
+        "M-c"
+      ],
+      "keywords": [
+        "text",
+        "markup",
+        "comments",
+        "commands",
+        "write",
+        "markdown",
+        "syntax",
+        "key",
+        "command",
+        "org",
+        "---------------------------------------------------------------------------",
+        "m-b",
+        "c-c",
+        "m-i",
+        "m-u",
+        "utextu",
+        "m-c"
+      ]
+    },
+    {
+      "heading": "Lists and Return",
+      "level": 2,
+      "file": "30-markdown-compatibility.org",
+      "line": 224,
+      "content": "=Return= (DWIM return) in a Markdown file: - On a list item (=-=, =+=, =*= or =1.=), starts the next item; on an empty item, removes it. =*= at column 0 is a list bullet in Markdown, not a heading. - On a checkbox item (=- [ ] ...=), starts a new checkbox item. - In a table, moves to the next row. - Inside a fenced code block, front matter or an HTML comment, inserts a plain newline, so =- key: value= in a YAML block and =| pipes= in code are left alone. =C-c C-c= on a checkbox (~scimax.markdown",
+      "path": [
+        "Supported Features"
+      ],
+      "commands": [
+        "scimax.markdown"
+      ],
+      "keybindings": [
+        "C-c C-c"
+      ],
+      "keywords": [
+        "lists",
+        "return",
+        "dwim",
+        "markdown",
+        "list",
+        "item",
+        "starts",
+        "next",
+        "empty",
+        "removes",
+        "column",
+        "bullet",
+        "heading",
+        "checkbox",
+        "new",
+        "table",
+        "moves",
+        "row",
+        "inside",
+        "fenced"
+      ]
+    },
+    {
+      "heading": "Links",
+      "level": 2,
+      "file": "30-markdown-compatibility.org",
+      "line": 239,
+      "content": "| Key     | Command               | In Markdown                                              | |---------+-----------------------+----------------------------------------------------------| | C-c C-o | scimax.org.openLink   | Follows =[text](target)= and =![alt](image)= links       | | C-c l   | scimax.org.storeLink  | On a heading, stores a link to it                        | | C-c C-l | scimax.org.insertLink | Inserts =[description](target)=; edits the link at point | =C-c C-o= follows: - URLs",
+      "path": [
+        "Supported Features"
+      ],
+      "commands": [
+        "scimax.org.openLink",
+        "scimax.org.storeLink",
+        "scimax.org.insertLink"
+      ],
+      "keybindings": [
+        "C-c C-o",
+        "C-c",
+        "C-c C-l"
+      ],
+      "keywords": [
+        "links",
+        "key",
+        "command",
+        "markdown",
+        "------------------------------------------------------------------------------------------",
+        "c-c",
+        "c-o",
+        "follows",
+        "text",
+        "target",
+        "alt",
+        "image",
+        "heading",
+        "stores",
+        "link",
+        "c-l",
+        "inserts",
+        "description",
+        "edits",
+        "point"
+      ]
+    },
+    {
+      "heading": "Tables",
+      "level": 2,
+      "file": "30-markdown-compatibility.org",
+      "line": 264,
+      "content": "Org table editing works on GitHub-flavored Markdown pipe tables: #+BEGIN_SRC markdown | Name | Count | Price | |:-----|:-----:|------:| | a    |   1   |  2.50 | #+END_SRC - =Tab= / =S-Tab= move between cells and realign the table. - Alignment colons in the delimiter row are kept: =:---= left, =:---:= center, =---:= right. Cells are padded to match, and the alignment moves with its column when you move, insert or delete columns. - The header row and the delimiter row stay at the top. Inserting a ",
+      "path": [
+        "Supported Features"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "tables",
+        "org",
+        "table",
+        "editing",
+        "works",
+        "github-flavored",
+        "markdown",
+        "pipe",
+        "beginsrc",
+        "name",
+        "count",
+        "price",
+        "-----",
+        "------",
+        "250",
+        "endsrc",
+        "tab",
+        "s-tab",
+        "move",
+        "between"
       ]
     },
     {
       "heading": "Code Block Support",
       "level": 2,
       "file": "30-markdown-compatibility.org",
-      "line": 147,
-      "content": "CLOSED: [2026-01-19 Mon 09:37] Markdown fenced code blocks have full support for: - Detection and navigation - Execution via Babel/Jupyter - Block manipulation (split, merge, clone)",
+      "line": 287,
+      "content": "Markdown fenced code blocks support: - Detection and navigation - Execution via Babel/Jupyter - Block manipulation (split, merge, clone, kill, move)",
       "path": [
         "Supported Features"
       ],
@@ -94923,14 +95176,9 @@
         "code",
         "block",
         "support",
-        "closed",
-        "2026-01-19",
-        "mon",
-        "0937",
         "markdown",
         "fenced",
         "blocks",
-        "full",
         "detection",
         "navigation",
         "execution",
@@ -94939,15 +95187,17 @@
         "manipulation",
         "split",
         "merge",
-        "clone"
+        "clone",
+        "kill",
+        "move"
       ]
     },
     {
       "heading": "Fenced Block Syntax",
       "level": 3,
       "file": "30-markdown-compatibility.org",
-      "line": 156,
-      "content": "CLOSED: [2026-01-19 Mon 09:37] Both backtick and tilde fences are supported: #+BEGIN_SRC markdown ```python print(\"Hello from Python\") ``` ~~~javascript console.log(\"Hello from JS\"); ~~~ #+END_SRC",
+      "line": 295,
+      "content": "Both backtick and tilde fences are supported, with the language as a single word or in braces: #+BEGIN_SRC markdown ```python print(\"Hello from Python\") ``` ~~~javascript console.log(\"Hello from JS\"); ~~~ ```{python} print(\"Quarto/Pandoc chunk form\") ``` #+END_SRC The fence must start at column 0. A fence with extra text after the language (=```python title=\"x\"=) or a hyphenated language (=```jupyter-python=) is not treated as a code block; use the braced form (=```{jupyter-python}=) for Jupyter",
       "path": [
         "Supported Features",
         "Code Block Support"
@@ -94958,14 +95208,14 @@
         "fenced",
         "block",
         "syntax",
-        "closed",
-        "2026-01-19",
-        "mon",
-        "0937",
         "backtick",
         "tilde",
         "fences",
         "supported",
+        "language",
+        "single",
+        "word",
+        "braces",
         "beginsrc",
         "markdown",
         "python",
@@ -94973,15 +95223,16 @@
         "hello",
         "javascript",
         "consolelog",
-        "endsrc"
+        "quartopandoc",
+        "chunk"
       ]
     },
     {
       "heading": "Code Block Navigation",
       "level": 3,
       "file": "30-markdown-compatibility.org",
-      "line": 171,
-      "content": "CLOSED: [2026-01-19 Mon 09:53] | Key       | Command              | Description                    | |-----------+----------------------+--------------------------------| | C-c C-v n | Next Source Block    | Jump to next fenced block      | | C-c C-v p | Previous Source Block| Jump to previous fenced block  | | C-c C-v g | Jump to Source Block | Quick-pick menu of all blocks  |",
+      "line": 319,
+      "content": "CLOSED: [2026-01-19 Mon 09:53] | Key       | Command               | Description                   | |-----------+-----------------------+-------------------------------| | C-c C-v n | Next Source Block     | Jump to next fenced block     | | C-c C-v p | Previous Source Block | Jump to previous fenced block | | C-c C-v g | Jump to Source Block  | Quick-pick menu of all blocks |",
       "path": [
         "Supported Features",
         "Code Block Support"
@@ -95017,8 +95268,8 @@
       "heading": "Code Block Execution",
       "level": 3,
       "file": "30-markdown-compatibility.org",
-      "line": 180,
-      "content": "CLOSED: [2026-01-19 Mon 09:50] Press =C-c C-c= inside a fenced code block to execute it. Results appear below the block. Supported languages include Python, JavaScript, TypeScript, Shell, and any language with a Jupyter kernel installed.",
+      "line": 328,
+      "content": "Press =C-c C-c= inside a fenced code block to execute it. Results go below the block, between two HTML comments that the Markdown preview and Pandoc hide: #+BEGIN_SRC markdown ```python print(6 * 7) ``` <!-- results --> ``` 42 ``` <!-- /results --> #+END_SRC Running the block again replaces these results instead of adding a second copy. Images from Jupyter kernels are written as =![](.ob-jupyter/plot.png)=, so they show in the preview. Table results become GFM tables. Supported languages include",
       "path": [
         "Supported Features",
         "Code Block Support"
@@ -95031,31 +95282,31 @@
         "code",
         "block",
         "execution",
-        "closed",
-        "2026-01-19",
-        "mon",
-        "0950",
         "press",
         "c-c",
         "inside",
         "fenced",
         "execute",
         "results",
-        "appear",
         "below",
-        "supported",
-        "languages",
-        "include",
-        "python",
-        "javascript"
+        "between",
+        "two",
+        "html",
+        "comments",
+        "markdown",
+        "preview",
+        "pandoc",
+        "hide",
+        "beginsrc",
+        "python"
       ]
     },
     {
       "heading": "Code Block Manipulation",
       "level": 3,
       "file": "30-markdown-compatibility.org",
-      "line": 189,
-      "content": "CLOSED: [2026-01-19 Mon 09:50] | Command                        | Description                          | |--------------------------------+--------------------------------------| | scimax.ob.splitBlock           | Split block at cursor                | | scimax.ob.mergeWithPrevious    | Merge with previous block            | | scimax.ob.mergeWithNext        | Merge with next block                | | scimax.ob.insertBlockAbove     | Insert new block above               | | scimax.ob.insertBlockBe",
+      "line": 356,
+      "content": "| Command                        | Description                     | |--------------------------------+---------------------------------| | scimax.ob.splitBlock           | Split block at cursor           | | scimax.ob.mergeWithPrevious    | Merge with previous block       | | scimax.ob.mergeWithNext        | Merge with next block           | | scimax.ob.insertBlockAbove     | Insert new block above          | | scimax.ob.insertBlockBelow     | Insert new block below          | | scimax.ob.inser",
       "path": [
         "Supported Features",
         "Code Block Support"
@@ -95065,20 +95316,17 @@
         "scimax.ob.mergeWithPrevious",
         "scimax.ob.mergeWithNext",
         "scimax.ob.insertBlockAbove",
-        "scimax.ob.insertBlockBe"
+        "scimax.ob.insertBlockBelow",
+        "scimax.ob.inser"
       ],
       "keybindings": [],
       "keywords": [
         "code",
         "block",
         "manipulation",
-        "closed",
-        "2026-01-19",
-        "mon",
-        "0950",
         "command",
         "description",
-        "----------------------------------------------------------------------",
+        "-----------------------------------------------------------------",
         "split",
         "cursor",
         "merge",
@@ -95086,177 +95334,166 @@
         "next",
         "insert",
         "new",
-        "above"
+        "above",
+        "below"
       ]
     },
     {
-      "heading": "Speed Commands",
+      "heading": "Tasks and Planning",
       "level": 2,
       "file": "30-markdown-compatibility.org",
-      "line": 205,
-      "content": "CLOSED: [2026-01-19 Mon 09:40] Speed commands work at the beginning of Markdown headings (column 0 of a line starting with =#=).",
-      "path": [
-        "Supported Features"
-      ],
-      "commands": [],
-      "keybindings": [],
-      "keywords": [
-        "speed",
-        "commands",
-        "closed",
-        "2026-01-19",
-        "mon",
-        "0940",
-        "work",
-        "beginning",
-        "markdown",
-        "headings",
-        "column",
-        "line",
-        "starting"
-      ]
-    },
-    {
-      "heading": "Navigation Speed Commands",
-      "level": 3,
-      "file": "30-markdown-compatibility.org",
-      "line": 211,
-      "content": "CLOSED: [2026-01-19 Mon 09:40] | Key | Action                               | |-----+--------------------------------------| | n   | Next heading                         | | p   | Previous heading                     | | f   | Forward to same-level heading        | | b   | Back to same-level heading           | | u   | Up to parent heading                 | | j   | Jump to heading (quick-pick)         | | g   | Go to... (navigation menu)           |",
-      "path": [
-        "Supported Features",
-        "Speed Commands"
-      ],
-      "commands": [],
-      "keybindings": [],
-      "keywords": [
-        "navigation",
-        "speed",
-        "commands",
-        "closed",
-        "2026-01-19",
-        "mon",
-        "0940",
-        "key",
-        "action",
-        "-------------------------------------------",
-        "next",
-        "heading",
-        "previous",
-        "forward",
-        "same-level",
-        "back",
-        "parent",
-        "jump",
-        "quick-pick",
-        "menu"
-      ]
-    },
-    {
-      "heading": "Structure Speed Commands",
-      "level": 3,
-      "file": "30-markdown-compatibility.org",
-      "line": 224,
-      "content": "CLOSED: [2026-01-19 Mon 09:40] | Key | Action                    | |-----+---------------------------| | @   | Mark (select) subtree     | | w   | Kill (cut) subtree        | | W   | Clone subtree             | | y   | Yank (paste) subtree      | | s   | Narrow to subtree         | | S   | Widen (show all)          |",
-      "path": [
-        "Supported Features",
-        "Speed Commands"
-      ],
-      "commands": [],
-      "keybindings": [],
-      "keywords": [
-        "structure",
-        "speed",
-        "commands",
-        "closed",
-        "2026-01-19",
-        "mon",
-        "0940",
-        "key",
-        "action",
-        "--------------------------------",
-        "mark",
-        "select",
-        "subtree",
-        "kill",
-        "cut",
-        "clone",
-        "yank",
-        "paste",
-        "narrow",
-        "widen"
-      ]
-    },
-    {
-      "heading": "Visibility Speed Commands",
-      "level": 3,
-      "file": "30-markdown-compatibility.org",
-      "line": 236,
-      "content": "CLOSED: [2026-01-19 Mon 09:40] | Key | Action               | |-----+----------------------| | c   | Cycle visibility     | | C   | Show children        | | o   | Overview (fold all)  |",
-      "path": [
-        "Supported Features",
-        "Speed Commands"
-      ],
-      "commands": [],
-      "keybindings": [],
-      "keywords": [
-        "visibility",
-        "speed",
-        "commands",
-        "closed",
-        "2026-01-19",
-        "mon",
-        "0940",
-        "key",
-        "action",
-        "---------------------------",
-        "cycle",
-        "show",
-        "children",
-        "overview",
-        "fold"
-      ]
-    },
-    {
-      "heading": "Folding",
-      "level": 2,
-      "file": "30-markdown-compatibility.org",
-      "line": 245,
-      "content": "CLOSED: [2026-01-19 Mon 09:40] Markdown headings support folding via the standard VS Code folding mechanism: - Press =Tab= on a heading to cycle fold state - Press =Shift+Tab= anywhere for global fold cycling - Use the fold icons in the gutter Fenced code blocks and Pandoc fenced divs (=::: {.callout-note}= ... =:::=, nested to any depth, and MyST =:::{note}= fences) fold as well.",
+      "line": 375,
+      "content": "Markdown files have two kinds of task: TODO headings and checkbox tasks. Checkbox tasks carry their dates as =@due(...)= / =@scheduled(...)= tags, and =C-c C-s= / =C-c C-d= above the first heading insert those tags.",
       "path": [
         "Supported Features"
       ],
       "commands": [],
       "keybindings": [
-        "Shift+Tab"
+        "C-c C-s",
+        "C-c C-d"
       ],
       "keywords": [
-        "folding",
-        "closed",
-        "2026-01-19",
-        "mon",
-        "0940",
+        "tasks",
+        "planning",
         "markdown",
+        "two",
+        "kinds",
+        "task",
+        "todo",
         "headings",
-        "support",
-        "via",
-        "standard",
-        "code",
-        "mechanism",
-        "press",
-        "tab",
+        "checkbox",
+        "carry",
+        "dates",
+        "due",
+        "scheduled",
+        "tags",
+        "c-c",
+        "c-s",
+        "c-d",
+        "above",
+        "first",
+        "heading"
+      ]
+    },
+    {
+      "heading": "TODO Headings",
+      "level": 3,
+      "file": "30-markdown-compatibility.org",
+      "line": 381,
+      "content": "A heading whose first word is a TODO keyword is a task, with org-style SCHEDULED / DEADLINE lines under it. See [[*Tasks, Planning and Hashtags in Markdown]] for the syntax, commands and agenda.",
+      "path": [
+        "Supported Features",
+        "Tasks and Planning"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "todo",
+        "headings",
         "heading",
-        "cycle",
-        "fold",
-        "state",
-        "shifttab",
-        "anywhere"
+        "whose",
+        "first",
+        "word",
+        "keyword",
+        "task",
+        "org-style",
+        "scheduled",
+        "deadline",
+        "lines",
+        "under",
+        "tasks",
+        "planning",
+        "hashtags",
+        "markdown",
+        "syntax",
+        "commands",
+        "agenda"
+      ]
+    },
+    {
+      "heading": "Checkbox Tasks",
+      "level": 3,
+      "file": "30-markdown-compatibility.org",
+      "line": 388,
+      "content": "#+BEGIN_SRC markdown - [ ] Email reviewers @due(2026-01-22) @project(paper) #urgent - [x] Upload data @closed(2026-01-10) #+END_SRC | Command                            | Description                              | |------------------------------------+------------------------------------------| | scimax.markdown.insertTask         | Insert a new checkbox task               | | scimax.markdown.toggleCheckbox     | Toggle the checkbox (=C-c C-c=)          | | scimax.markdown.insertPriority     | A",
+      "path": [
+        "Supported Features",
+        "Tasks and Planning"
+      ],
+      "commands": [
+        "scimax.markdown.insertTask",
+        "scimax.markdown.toggleCheckbox",
+        "scimax.markdown.insertPriority"
+      ],
+      "keybindings": [
+        "C-c C-c"
+      ],
+      "keywords": [
+        "checkbox",
+        "tasks",
+        "beginsrc",
+        "markdown",
+        "email",
+        "reviewers",
+        "due",
+        "2026-01-22",
+        "project",
+        "paper",
+        "urgent",
+        "upload",
+        "data",
+        "closed",
+        "2026-01-10",
+        "endsrc",
+        "command",
+        "description",
+        "------------------------------------------------------------------------------",
+        "insert"
+      ]
+    },
+    {
+      "heading": "Export",
+      "level": 2,
+      "file": "30-markdown-compatibility.org",
+      "line": 410,
+      "content": "=C-c C-e= (~scimax.markdown.exportMenu~) exports the Markdown file with Pandoc to HTML, PDF, LaTeX or Word, writing the output next to the source with the new extension. This works for =.md=, =.markdown= and other Markdown extensions; the export never writes over the source file. Code blocks are not executed during export.",
+      "path": [
+        "Supported Features"
+      ],
+      "commands": [
+        "scimax.markdown.exportMenu"
+      ],
+      "keybindings": [
+        "C-c C-e"
+      ],
+      "keywords": [
+        "export",
+        "c-c",
+        "c-e",
+        "exports",
+        "markdown",
+        "pandoc",
+        "html",
+        "pdf",
+        "latex",
+        "word",
+        "writing",
+        "output",
+        "next",
+        "source",
+        "new",
+        "extension",
+        "works",
+        "extensions",
+        "never",
+        "writes"
       ]
     },
     {
       "heading": "Markdown Preview",
       "level": 2,
       "file": "30-markdown-compatibility.org",
-      "line": 257,
+      "line": 418,
       "content": "VS Code's Markdown preview (=Cmd+Shift+V=, =Cmd+K V= to the side) gets these additions from Scimax: - *MyST directives and roles* (Jupyter Book) render as callouts, figures and highlighted code instead of raw =:::{...}= text. See [[file:45-myst-preview.org][MyST Preview]]. - *Reveal Cursor in Markdown Preview* (~scimax.marp.revealInPreview~) scrolls the preview so the element on the cursor line is at its top, opening a preview to the side if none is showing. It relies on ~markdown.preview.scroll",
       "path": [
         "Supported Features"
@@ -95294,7 +95531,7 @@
       "heading": "Quarto Documents",
       "level": 1,
       "file": "30-markdown-compatibility.org",
-      "line": 281,
+      "line": 442,
       "content": "Quarto files (=.qmd=) are Pandoc Markdown with executable code chunks. Scimax works alongside the official [[https://marketplace.visualstudio.com/items?itemName=quarto.quarto][Quarto extension]] (=quarto.quarto=), which gives =.qmd= files their language (~quarto~). Each extension does its own part: | Feature                                           | Provided by | |---------------------------------------------------+-------------| | Syntax highlighting, YAML header completion       | Quarto    ",
       "path": [],
       "commands": [],
@@ -95326,7 +95563,7 @@
       "heading": "Code chunks",
       "level": 2,
       "file": "30-markdown-compatibility.org",
-      "line": 303,
+      "line": 464,
       "content": "Scimax recognizes Quarto's chunk fences (=```{python}=, =```{r, echo=FALSE}=) as code blocks, along with plain fences, =```{.python}= display blocks and =```{=html}= raw blocks. Blocks that scimax inserts in a =.qmd= file use the chunk form, so Quarto executes them; splitting, cloning and merging keep it. =C-c C-c= in a chunk runs it with Quarto's *Run Cell* (~quarto.runCurrentCell~) rather than scimax's own execution, because chunk output belongs in the rendered page, not in the source. Quarto'",
       "path": [
         "Quarto Documents"
@@ -95362,7 +95599,7 @@
       "heading": "Callouts and other divs",
       "level": 2,
       "file": "30-markdown-compatibility.org",
-      "line": 320,
+      "line": 481,
       "content": "Fenced divs (callouts, =::: {.columns}=, panels, =::: {#fig-x}= figure divs) fold from the opening =:::= to its matching close, including nested divs.",
       "path": [
         "Quarto Documents"
@@ -95389,7 +95626,7 @@
       "heading": "Tasks, Planning and Hashtags in Markdown",
       "level": 1,
       "file": "30-markdown-compatibility.org",
-      "line": 325,
+      "line": 486,
       "content": "Markdown headings can be org tasks. A heading may start with a TODO keyword (bare, or in brackets as =[TODO]= so it renders visibly), then a priority cookie; tags are =#tag= words or an org =:a:b:= group at the end of the title. A planning line with SCHEDULED, DEADLINE and CLOSED timestamps may follow the heading directly: #+BEGIN_SRC markdown ## TODO [#A] Write the introduction #paper #writing SCHEDULED: <2026-11-03 Tue> DEADLINE: <2026-11-07 Fri> ## [NEXT] Send the draft to coauthors ## DONE C",
       "path": [],
       "commands": [],
@@ -95421,7 +95658,7 @@
       "heading": "Highlighting",
       "level": 2,
       "file": "30-markdown-compatibility.org",
-      "line": 343,
+      "line": 504,
       "content": "Task headings are coloured as in org: TODO keywords red, done keywords green, and the priority, =:tags:= and the SCHEDULED / DEADLINE / CLOSED line with its timestamps in the theme's org colours. They are semantic tokens (=orgTodo=, =orgDone=, =orgPriority=, =orgTag=, =orgPlanning=, =orgTimestamp=), so =editor.semanticTokenColorCustomizations= can change them.",
       "path": [
         "Tasks, Planning and Hashtags in Markdown"
@@ -95455,7 +95692,7 @@
       "heading": "Keywords",
       "level": 2,
       "file": "30-markdown-compatibility.org",
-      "line": 351,
+      "line": 512,
       "content": "The default keywords are =TODO NEXT WAIT WAITING HOLD SOMEDAY IN-PROGRESS= (active) and =DONE CANCELLED CANCELED= (done). Declare others with a =#+TODO:= line, inside an HTML comment so it does not render: #+BEGIN_SRC markdown <!-- #+TODO: TODO REVIEW | DONE REJECTED --> #+END_SRC Put the declaration somewhere other than the first line when the first line is a heading.",
       "path": [
         "Tasks, Planning and Hashtags in Markdown"
@@ -95489,7 +95726,7 @@
       "heading": "Commands",
       "level": 2,
       "file": "30-markdown-compatibility.org",
-      "line": 364,
+      "line": 525,
       "content": "| Key        | Speed key | Action                                          | |------------+-----------+-------------------------------------------------| | =C-c C-t=  | =t=       | Cycle the heading's TODO keyword                | | =C-c ,=    | =,=       | Set the priority                                | | =C-c C-s=  | =s=       | Schedule the heading the cursor is under        | | =C-c C-d=  | =d=       | Set a deadline on the heading the cursor is under | | =C-c C-c=  |           | Toggle a ",
       "path": [
         "Tasks, Planning and Hashtags in Markdown"
@@ -95529,7 +95766,7 @@
       "heading": "Checkbox Statistics",
       "level": 2,
       "file": "30-markdown-compatibility.org",
-      "line": 383,
+      "line": 544,
       "content": "A =[n/m]= or =[n%]= cookie on a heading counts the checkboxes in its section; on a list item, its direct child checkboxes. Toggling a checkbox (=C-c C-c= or a click) updates the cookies above it, and =C-c C-c= on a line with a cookie recounts it. As in org, a heading's cookie also counts its direct subheadings with TODO keywords when you change one with =C-c C-t=. #+BEGIN_SRC markdown ## Checkboxes [2/3] - [x] task 1 - [x] task 2 - [ ] task 3 #+END_SRC",
       "path": [
         "Tasks, Planning and Hashtags in Markdown"
@@ -95566,7 +95803,7 @@
       "heading": "Agenda",
       "level": 2,
       "file": "30-markdown-compatibility.org",
-      "line": 398,
+      "line": 559,
       "content": "Indexed Markdown files take part in the database agenda and TODO lists (=C-c a=), with priority, tags and planning dates. The first database sync after updating re-indexes Markdown files. The agenda view for the current file (=C-c a < a=) works on a Markdown file; agendas limited to a project read only its org files.",
       "path": [
         "Tasks, Planning and Hashtags in Markdown"
@@ -95602,7 +95839,7 @@
       "heading": "Hashtags",
       "level": 2,
       "file": "30-markdown-compatibility.org",
-      "line": 406,
+      "line": 567,
       "content": "=#tags= in Markdown are drawn in blue, hover and click like in org (see [[file:18-database-search.org::*Hashtags in the Editor][Hashtags in the Editor]]), and are indexed. A heading's own =#= marks are not hashtags, but =#tags= in its title are.",
       "path": [
         "Tasks, Planning and Hashtags in Markdown"
@@ -95632,8 +95869,8 @@
       "heading": "Features Not Available in Markdown",
       "level": 1,
       "file": "30-markdown-compatibility.org",
-      "line": 413,
-      "content": "CLOSED: [2026-01-19 Mon 09:40] The following org-mode features are *not* supported in Markdown files because they require org-specific syntax:",
+      "line": 574,
+      "content": "These org-mode features have no Markdown form and stay org-only. Their commands either do nothing in Markdown files or work only in org files.",
       "path": [],
       "commands": [],
       "keybindings": [],
@@ -95641,71 +95878,57 @@
         "features",
         "available",
         "markdown",
-        "closed",
-        "2026-01-19",
-        "mon",
-        "0940",
-        "following",
         "org-mode",
-        "supported",
-        "because",
-        "require",
-        "org-specific",
-        "syntax"
+        "form",
+        "stay",
+        "org-only",
+        "commands",
+        "either",
+        "nothing",
+        "work",
+        "org"
       ]
     },
     {
-      "heading": "Planning",
+      "heading": "Time and Metadata",
       "level": 2,
       "file": "30-markdown-compatibility.org",
-      "line": 419,
-      "content": "| Feature    | Reason                                         | |------------+------------------------------------------------| | Clocking   | Org syntax: =CLOCK: [timestamp]--[timestamp]=  |",
+      "line": 579,
+      "content": "| Feature    | Reason                                        | |------------+-----------------------------------------------| | Clocking   | Org syntax: =CLOCK: [timestamp]--[timestamp]= | | Properties | Org syntax: =:PROPERTIES:= drawer             | | LOGBOOK    | Org syntax: =:LOGBOOK:= drawer                | The speed keys =I= (clock in), =e= (effort) and =P= (set property) insert org drawers even in Markdown files, where nothing reads them back. Avoid them in Markdown.",
       "path": [
         "Features Not Available in Markdown"
       ],
       "commands": [],
       "keybindings": [],
       "keywords": [
-        "planning",
+        "time",
+        "metadata",
         "feature",
         "reason",
-        "------------------------------------------------------------",
+        "-----------------------------------------------------------",
         "clocking",
         "org",
         "syntax",
         "clock",
-        "timestamp"
-      ]
-    },
-    {
-      "heading": "Metadata",
-      "level": 2,
-      "file": "30-markdown-compatibility.org",
-      "line": 425,
-      "content": "| Feature         | Reason                                    | |-----------------+-------------------------------------------| | Properties      | Org syntax: =:PROPERTIES:= drawer         | | LOGBOOK         | Org syntax: =:LOGBOOK:= drawer            |",
-      "path": [
-        "Features Not Available in Markdown"
-      ],
-      "commands": [],
-      "keybindings": [],
-      "keywords": [
-        "metadata",
-        "feature",
-        "reason",
-        "------------------------------------------------------------",
+        "timestamp",
         "properties",
-        "org",
-        "syntax",
         "drawer",
-        "logbook"
+        "logbook",
+        "speed",
+        "keys",
+        "effort",
+        "set",
+        "property",
+        "insert",
+        "drawers"
       ]
     },
     {
       "heading": "Special Elements",
       "level": 2,
       "file": "30-markdown-compatibility.org",
-      "line": 432,
-      "content": "CLOSED: [2026-01-19 Mon 09:40] | Feature         | Reason                                    | |-----------------+-------------------------------------------| | Inline tasks    | Org syntax: 15+ stars                     | | Dynamic blocks  | Org syntax: =#+BEGIN:=                    | | Special blocks  | Org syntax: =#+BEGIN_QUOTE=, etc.         |",
+      "line": 591,
+      "content": "| Feature             | Reason                                  | |---------------------+-----------------------------------------| | Inline tasks        | Org syntax: 15+ stars                   | | Dynamic blocks      | Org syntax: =#+BEGIN:=                  | | Special blocks      | Org syntax: =#+BEGIN_QUOTE=, etc.       | | Table formulas      | Org syntax: =#+TBLFM:=                  | | Tangle, noweb       | Need org header arguments               | | LaTeX preview       | Inline preview",
       "path": [
         "Features Not Available in Markdown"
       ],
@@ -95714,13 +95937,9 @@
       "keywords": [
         "special",
         "elements",
-        "closed",
-        "2026-01-19",
-        "mon",
-        "0940",
         "feature",
         "reason",
-        "------------------------------------------------------------",
+        "--------------------------------------------------------------",
         "inline",
         "tasks",
         "org",
@@ -95730,34 +95949,35 @@
         "blocks",
         "begin",
         "beginquote",
-        "etc"
+        "etc",
+        "table",
+        "formulas",
+        "tblfm",
+        "tangle",
+        "noweb"
       ]
     },
     {
       "heading": "Tips for Markdown Users",
       "level": 1,
       "file": "30-markdown-compatibility.org",
-      "line": 441,
-      "content": "CLOSED: [2026-01-19 Mon 09:40]",
+      "line": 605,
+      "content": "",
       "path": [],
       "commands": [],
       "keybindings": [],
       "keywords": [
         "tips",
         "markdown",
-        "users",
-        "closed",
-        "2026-01-19",
-        "mon",
-        "0940"
+        "users"
       ]
     },
     {
       "heading": "Maximizing Compatibility",
       "level": 2,
       "file": "30-markdown-compatibility.org",
-      "line": 444,
-      "content": "CLOSED: [2026-01-19 Mon 09:41] To get the most out of Scimax VS Code with Markdown: 1. *Use speed commands* - Position cursor at column 0 of headings for rapid single-key operations 2. *Use fenced code blocks* - The extension fully supports =```language= blocks for execution and manipulation 3. *Use the outline view* - Provides visual navigation similar to org's sparse tree features 4. *Use jump commands* - =C-c C-j= for headings, =C-c C-v g= for code blocks",
+      "line": 607,
+      "content": "To get the most out of Scimax VS Code with Markdown: 1. *Use speed commands* - Position cursor at column 0 of headings for rapid single-key operations 2. *Use fenced code blocks* - The extension supports =```language= blocks for execution and manipulation 3. *Use the outline view* - Provides visual navigation similar to org's sparse tree features 4. *Use jump commands* - =C-c C-j= for headings, =C-c C-v g= for code blocks 5. *Use =# TODO= headings with SCHEDULED / DEADLINE lines* - they show up ",
       "path": [
         "Tips for Markdown Users"
       ],
@@ -95769,10 +95989,6 @@
       "keywords": [
         "maximizing",
         "compatibility",
-        "closed",
-        "2026-01-19",
-        "mon",
-        "0941",
         "get",
         "out",
         "scimax",
@@ -95786,15 +96002,19 @@
         "headings",
         "rapid",
         "single-key",
-        "operations"
+        "operations",
+        "fenced",
+        "blocks",
+        "extension",
+        "supports"
       ]
     },
     {
       "heading": "When to Use Org-Mode Instead",
       "level": 2,
       "file": "30-markdown-compatibility.org",
-      "line": 460,
-      "content": "CLOSED: [2026-01-19 Mon 09:41] Consider using org-mode files when you need: - Task management with TODO states and priorities - Scheduling and deadlines with agenda integration - Time tracking with clocking - Inherited properties and tags - Advanced export features Org files can be exported to Markdown when sharing with others who don't use org-mode.",
+      "line": 625,
+      "content": "Consider using org-mode files when you need: - Time tracking with clocking - Inherited properties and tags - Per-block header arguments, tangling and noweb - Table formulas - Advanced export features Org files can be exported to Markdown when sharing with others who don't use org-mode.",
       "path": [
         "Tips for Markdown Users"
       ],
@@ -95803,31 +96023,31 @@
       "keywords": [
         "org-mode",
         "instead",
-        "closed",
-        "2026-01-19",
-        "mon",
-        "0941",
         "consider",
         "need",
-        "task",
-        "management",
-        "todo",
-        "states",
-        "priorities",
-        "scheduling",
-        "deadlines",
-        "agenda",
-        "integration",
         "time",
         "tracking",
-        "clocking"
+        "clocking",
+        "inherited",
+        "properties",
+        "tags",
+        "per-block",
+        "header",
+        "arguments",
+        "tangling",
+        "noweb",
+        "table",
+        "formulas",
+        "advanced",
+        "export",
+        "features"
       ]
     },
     {
       "heading": "Related Topics",
       "level": 1,
       "file": "30-markdown-compatibility.org",
-      "line": 474,
+      "line": 638,
       "content": "- [[file:45-myst-preview.org][MyST Markdown Preview]] - Jupyter Book directives and roles in the preview - [[file:44-marp.org][Marp Slides]] - jump from a Marp slide preview to its source - [[file:25-commands.org][Commands]] - Markdown File Export commands (Pandoc) - [[file:02-document-structure.org][Document Structure]] - Full org-mode structure documentation - [[file:23-speed-commands.org][Speed Commands]] - Complete speed command reference - [[file:07-source-blocks.org][Source Blocks]] - Code",
       "path": [],
       "commands": [],
@@ -95859,7 +96079,7 @@
       "heading": "Navigation",
       "level": 1,
       "file": "30-markdown-compatibility.org",
-      "line": 487,
+      "line": 656,
       "content": "CLOSED: [2026-01-19 Mon 09:44] - Previous: [[file:29-unsupported-features.org][Unsupported Features]] - Index: [[file:00-index.org][Documentation Index]] - Next: [[file:31-publishing.org][Publishing]]",
       "path": [],
       "commands": [],

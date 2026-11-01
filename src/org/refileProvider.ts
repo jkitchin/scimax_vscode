@@ -6,6 +6,8 @@
  */
 
 import * as vscode from 'vscode';
+import { shiftHeadingLevels } from '../shared/headingText';
+import { isMarkdownNonProseLine } from '../shared/markdownDocument';
 import { getHeadingLevel, getSubtreeRange } from './speedCommands/context';
 
 /**
@@ -28,11 +30,16 @@ function collectRefileTargets(
 ): RefileTarget[] {
     const targets: RefileTarget[] = [];
     const isOrg = document.languageId === 'org';
-    const headingPattern = isOrg ? /^(\*+)\s+(.*)$/ : /^(#+)\s+(.*)$/;
+    const headingPattern = isOrg ? /^(\*+)\s+(.*)$/ : /^(#{1,6})\s+(.*)$/;
 
     for (let i = 0; i < document.lineCount; i++) {
         // Skip lines in the excluded range (source subtree)
         if (i >= excludeRange.startLine && i <= excludeRange.endLine) {
+            continue;
+        }
+
+        // A `# comment` in a markdown code block is not a refile target
+        if (isMarkdownNonProseLine(document, i)) {
             continue;
         }
 
@@ -77,22 +84,7 @@ function adjustSubtreeLevels(
         return text;
     }
 
-    const delta = targetLevel - currentLevel;
-    const charPattern = isOrg ? '\\*' : '#';  // Escaped for regex
-    const charLiteral = isOrg ? '*' : '#';    // Literal for replacement
-    const pattern = new RegExp(`^(${charPattern}+)(\\s)`, 'gm');
-
-    return text.replace(pattern, (match, stars, space) => {
-        const newLevel = Math.max(1, stars.length + delta);
-
-        // For markdown, warn if level would exceed 6
-        if (!isOrg && newLevel > 6) {
-            // Cap at 6 for markdown
-            return charLiteral.repeat(6) + space;
-        }
-
-        return charLiteral.repeat(newLevel) + space;
-    });
+    return shiftHeadingLevels(text, targetLevel - currentLevel, isOrg);
 }
 
 /**

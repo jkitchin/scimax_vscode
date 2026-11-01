@@ -1023,7 +1023,7 @@ export class ScimaxDbCore {
                         stack.push(fullPath);
                     } else if (item.isFile()) {
                         const ext = path.extname(item.name).toLowerCase();
-                        if (ext === '.org' || ext === '.md') yield fullPath;
+                        if (ext === '.org' || ext === '.md' || ext === '.markdown') yield fullPath;
                     }
                 }
                 directoriesProcessed++;
@@ -1035,7 +1035,7 @@ export class ScimaxDbCore {
                     // Entry is a single file (e.g. added to scimax.db.include
                     // via "Add file to agenda"), not a directory.
                     const ext = path.extname(dir).toLowerCase();
-                    if ((ext === '.org' || ext === '.md') && !this.isExcluded(dir)) {
+                    if ((ext === '.org' || ext === '.md' || ext === '.markdown') && !this.isExcluded(dir)) {
                         yield dir;
                     }
                 } else if (error?.code !== 'EACCES' && error?.code !== 'ENOENT') {
@@ -1100,7 +1100,7 @@ export class ScimaxDbCore {
 
     private getFileType(filePath: string): 'org' | 'md' {
         const ext = path.extname(filePath).toLowerCase();
-        if (ext === '.md') return 'md';
+        if (ext === '.md' || ext === '.markdown') return 'md';
         return 'org';
     }
 
@@ -1154,7 +1154,7 @@ export class ScimaxDbCore {
                 return skip(`file with too many lines (${lineCount})`);
             }
 
-            const knownTextExt = ['.org', '.md', '.txt'];
+            const knownTextExt = ['.org', '.md', '.markdown', '.txt'];
             const ext = path.extname(filePath).toLowerCase();
             if (!knownTextExt.includes(ext) && this.isBinaryContent(content)) {
                 return skip('binary file');
@@ -2018,9 +2018,9 @@ export class ScimaxDbCore {
     }
 
     /**
-     * Bring indexed org files up to date with the disk: re-index the ones
-     * changed since they were indexed (e.g. synced from another machine) and
-     * drop the ones deleted. Stats every indexed org file in parallel, which
+     * Bring indexed org and markdown files up to date with the disk: re-index
+     * the ones changed since they were indexed (e.g. synced from another
+     * machine) and drop the ones deleted. Stats every indexed file in parallel, which
      * takes well under a second for tens of thousands of files.
      *
      * A file is dropped only when its directory still exists, so an unmounted

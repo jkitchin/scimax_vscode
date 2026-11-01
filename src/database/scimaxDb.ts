@@ -166,7 +166,7 @@ export class ScimaxDb extends ScimaxDbCore {
     // ----------------------------------------------------------
 
     private setupFileWatcher(): void {
-        this.fileWatcher = vscode.workspace.createFileSystemWatcher('**/*.{org,md}', false, false, false);
+        this.fileWatcher = vscode.workspace.createFileSystemWatcher('**/*.{org,md,markdown}', false, false, false);
         this.fileWatcher.onDidCreate(uri => this.queueIndex(uri.fsPath));
         this.fileWatcher.onDidChange(uri => this.queueIndex(uri.fsPath));
         this.fileWatcher.onDidDelete(uri => this.removeFile(uri.fsPath));
@@ -175,7 +175,7 @@ export class ScimaxDb extends ScimaxDbCore {
         const saveHandler = vscode.workspace.onDidSaveTextDocument(doc => {
             const filePath = doc.uri.fsPath;
             const ext = path.extname(filePath).toLowerCase();
-            if (ext === '.org' || ext === '.md') {
+            if (ext === '.org' || ext === '.md' || ext === '.markdown') {
                 this.queueIndex(filePath);
             }
         });

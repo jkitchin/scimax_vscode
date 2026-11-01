@@ -1,5 +1,6 @@
 import * as vscode from 'vscode';
 import { escapeHtml } from '../utils/escapeUtils';
+import { isMarkdownLike } from '../shared/markdownLike';
 
 // Decoration type for hiding overflow text in truncated columns
 let truncationDecorationType: vscode.TextEditorDecorationType | undefined;
@@ -21,6 +22,12 @@ let ellipsisDecorationType: vscode.TextEditorDecorationType | undefined;
 
 type ColumnAlignment = 'l' | 'c' | 'r';
 
+/**
+ * GFM delimiter-row alignment: ':---' left, ':---:' center, '---:' right,
+ * '---' none (null).
+ */
+type GfmAlignment = ColumnAlignment | null;
+
 interface TableInfo {
     startLine: number;
     endLine: number;
@@ -32,6 +39,14 @@ interface TableInfo {
     columnMinWidths: (number | undefined)[]; // Minimum widths from cookies
     columnMaxWidths: (number | undefined)[]; // Max display widths for truncation (from <N> without alignment)
     columnSpecs: ColumnSpec[]; // Raw cookies from the column spec row (empty if none)
+    /**
+     * Markdown only: per-column alignment from the GFM delimiter row (the
+     * first separator row). Undefined for org tables and for Markdown tables
+     * without a delimiter row.
+     */
+    gfmAlignments?: GfmAlignment[];
+    /** Markdown only: the GFM delimiter row is line 2 of the table (index 1). */
+    hasGfmHeader?: boolean;
 }
 
 /**
@@ -322,6 +337,21 @@ function isSeparatorRow(line: string): boolean {
         const content = cell.trim();
         // Cell is separator-like if empty or contains only dashes, colons, spaces
         return content === '' || /^[-:]+$/.test(content);
+    });
+}
+
+/**
+ * Parse the per-column alignment of a GFM delimiter row such as
+ * |:-----|:---:|------:|---|
+ */
+function parseGfmDelimiterRow(line: string): GfmAlignment[] {
+    return parseRowSimple(line).map(cell => {
+        const left = cell.startsWith(':');
+        const right = cell.length > 1 && cell.endsWith(':');
+        if (left && right) return 'c';
+        if (right) return 'r';
+        if (left) return 'l';
+        return null;
     });
 }
 
@@ -640,6 +670,18 @@ function findTableAtCursor(document: vscode.TextDocument, position: vscode.Posit
     const columnAlignments: ColumnAlignment[] = [];
     const columnMinWidths: (number | undefined)[] = [];
     const columnMaxWidths: (number | undefined)[] = [];
+    // Markdown: alignment comes from the GFM delimiter row
+    let gfmAlignments: GfmAlignment[] | undefined;
+    let hasGfmHeader = false;
+    if (isMarkdownLike(document.languageId) && separatorLines.length > 0) {
+        const parsed = parseGfmDelimiterRow(document.lineAt(separatorLines[0]).text);
+        gfmAlignments = [];
+        for (let i = 0; i < maxColumns; i++) {
+            gfmAlignments.push(parsed[i] ?? null);
+        }
+        hasGfmHeader = separatorLines[0] === startLine + 1;
+    }
+
     for (let i = 0; i < maxColumns; i++) {
         if (i < columnSpecs.length) {
             columnAlignments.push(columnSpecs[i].alignment);
@@ -647,7 +689,7 @@ function findTableAtCursor(document: vscode.TextDocument, position: vscode.Posit
             columnMaxWidths.push(columnSpecs[i].maxWidth);
             columnWidths[i] = applyColumnSpecWidth(columnWidths[i], columnSpecs[i]);
         } else {
-            columnAlignments.push('l');
+            columnAlignments.push(gfmAlignments?.[i] ?? 'l');
             columnMinWidths.push(undefined);
             columnMaxWidths.push(undefined);
         }
@@ -663,7 +705,9 @@ function findTableAtCursor(document: vscode.TextDocument, position: vscode.Posit
         columnAlignments,
         columnMinWidths,
         columnMaxWidths,
-        columnSpecs
+        columnSpecs,
+        gfmAlignments,
+        hasGfmHeader
     };
 }
 
@@ -693,15 +737,30 @@ function formatRow(
  * Data row:  | cell | = "| " + cell.padEnd(w) + " |"
  * Separator: |------| = "|" + "-".repeat(w+2) + "|"
  */
-function formatSeparator(columnWidths: number[], isOrg: boolean): string {
+function formatSeparator(columnWidths: number[], isOrg: boolean, gfmAlignments?: GfmAlignment[]): string {
     // Each column section in data row is: " " + cell(w) + " " = w+2 chars
-    const dashes = columnWidths.map(w => '-'.repeat(w + 2));
+    const dashes = columnWidths.map((w, i) => {
+        const align = isOrg ? null : gfmAlignments?.[i] ?? null;
+        if (!align) return '-'.repeat(w + 2);
+        // Keep GFM alignment colons; total section width stays w+2
+        const left = align === 'l' || align === 'c' ? ':' : '';
+        const right = align === 'r' || align === 'c' ? ':' : '';
+        return left + '-'.repeat(Math.max(1, w + 2 - left.length - right.length)) + right;
+    });
     if (isOrg) {
         return '|' + dashes.join('+') + '|';
     } else {
         // Markdown uses | instead of + for column separators
         return '|' + dashes.join('|') + '|';
     }
+}
+
+/**
+ * Cell padding alignment for a Markdown table from its GFM delimiter row
+ * (undefined, i.e. left, for org tables and tables without one)
+ */
+function gfmCellAlignments(gfmAlignments?: GfmAlignment[]): ColumnAlignment[] | undefined {
+    return gfmAlignments?.map(a => a ?? 'l');
 }
 
 /**
@@ -806,12 +865,21 @@ export async function moveRowUp(): Promise<boolean> {
     // Can't move first row up
     if (currentRowIndex <= 0) return false;
 
-    // Don't swap with separator rows in a way that breaks structure
-    const prevRowIndex = currentRowIndex - 1;
-
     // Get the actual lines
     const currentLineNum = position.line;
-    const prevLineNum = currentLineNum - 1;
+    let prevLineNum = currentLineNum - 1;
+
+    // Markdown: the GFM delimiter row must stay line 2 of the table. It
+    // cannot move, and the first body row moving up swaps with the header.
+    if (table.hasGfmHeader) {
+        if (currentRowIndex === 1) {
+            vscode.window.showInformationMessage('Cannot move the delimiter row of a Markdown table');
+            return false;
+        }
+        if (currentRowIndex === 2) {
+            prevLineNum = table.startLine;
+        }
+    }
 
     const currentLineText = document.lineAt(currentLineNum).text;
     const prevLineText = document.lineAt(prevLineNum).text;
@@ -851,7 +919,20 @@ export async function moveRowDown(): Promise<boolean> {
     if (currentRowIndex >= table.rows.length - 1) return false;
 
     const currentLineNum = position.line;
-    const nextLineNum = currentLineNum + 1;
+    let nextLineNum = currentLineNum + 1;
+
+    // Markdown: the GFM delimiter row must stay line 2 of the table. It
+    // cannot move, and the header moving down swaps with the first body row.
+    if (table.hasGfmHeader) {
+        if (currentRowIndex === 1) {
+            vscode.window.showInformationMessage('Cannot move the delimiter row of a Markdown table');
+            return false;
+        }
+        if (currentRowIndex === 0) {
+            if (table.rows.length < 3) return false;
+            nextLineNum = table.startLine + 2;
+        }
+    }
 
     const currentLineText = document.lineAt(currentLineNum).text;
     const nextLineText = document.lineAt(nextLineNum).text;
@@ -904,6 +985,11 @@ export async function moveColumnLeft(): Promise<boolean> {
     if (colIndex <= 0) return false;
 
     const isOrg = document.languageId === 'org';
+    // GFM alignment moves with its column
+    const gfm = table.gfmAlignments ? [...table.gfmAlignments] : undefined;
+    if (gfm && colIndex < gfm.length) {
+        [gfm[colIndex - 1], gfm[colIndex]] = [gfm[colIndex], gfm[colIndex - 1]];
+    }
 
     // First pass: swap columns and collect new cells
     const newRows: string[][] = [];
@@ -934,9 +1020,9 @@ export async function moveColumnLeft(): Promise<boolean> {
     for (let i = 0; i < newRows.length; i++) {
         const lineNum = table.startLine + i;
         if (table.separatorLines.includes(lineNum)) {
-            newLines.push(formatSeparator(newColumnWidths, isOrg));
+            newLines.push(formatSeparator(newColumnWidths, isOrg, gfm));
         } else {
-            newLines.push(formatRow(newRows[i], newColumnWidths));
+            newLines.push(formatRow(newRows[i], newColumnWidths, gfmCellAlignments(gfm)));
         }
     }
 
@@ -980,6 +1066,11 @@ export async function moveColumnRight(): Promise<boolean> {
     if (colIndex >= maxCols - 1) return false;
 
     const isOrg = document.languageId === 'org';
+    // GFM alignment moves with its column
+    const gfm = table.gfmAlignments ? [...table.gfmAlignments] : undefined;
+    if (gfm && colIndex < gfm.length - 1) {
+        [gfm[colIndex], gfm[colIndex + 1]] = [gfm[colIndex + 1], gfm[colIndex]];
+    }
 
     // First pass: swap columns and collect new cells
     const newRows: string[][] = [];
@@ -1010,9 +1101,9 @@ export async function moveColumnRight(): Promise<boolean> {
     for (let i = 0; i < newRows.length; i++) {
         const lineNum = table.startLine + i;
         if (table.separatorLines.includes(lineNum)) {
-            newLines.push(formatSeparator(newColumnWidths, isOrg));
+            newLines.push(formatSeparator(newColumnWidths, isOrg, gfm));
         } else {
-            newLines.push(formatRow(newRows[i], newColumnWidths));
+            newLines.push(formatRow(newRows[i], newColumnWidths, gfmCellAlignments(gfm)));
         }
     }
 
@@ -1148,7 +1239,7 @@ async function moveCell(dRow: number, dCol: number): Promise<boolean> {
         if (i === table.specRow) {
             newLines.push(formatSpecRow(columnWidths, table.columnAlignments, table.columnMinWidths, table.columnMaxWidths));
         } else if (!row) {
-            newLines.push(formatSeparator(columnWidths, isOrg));
+            newLines.push(formatSeparator(columnWidths, isOrg, table.gfmAlignments));
         } else {
             const cells = [...row];
             while (cells.length < columnWidths.length) {
@@ -1222,18 +1313,23 @@ export async function insertRowBelow(): Promise<boolean> {
 
     // Create a new empty row with same number of columns
     const currentRow = table.rows[position.line - table.startLine];
-    const numCols = currentRow ? currentRow.length : table.columnWidths.length;
+    // Separator and spec rows are empty placeholders: use the table width
+    const numCols = currentRow && currentRow.length ? currentRow.length : table.columnWidths.length;
     const emptyCells = new Array(numCols).fill('');
     const newRow = formatRow(emptyCells, table.columnWidths);
 
-    // Insert after current line
+    // Insert after current line. Markdown: below the header means below the
+    // GFM delimiter row, which must stay directly under the header.
+    const insertLine = table.hasGfmHeader && position.line === table.startLine
+        ? table.startLine + 2
+        : position.line + 1;
     await editor.edit(editBuilder => {
-        const insertPosition = new vscode.Position(position.line + 1, 0);
+        const insertPosition = new vscode.Position(insertLine, 0);
         editBuilder.insert(insertPosition, newRow + '\n');
     });
 
     // Move cursor to new row
-    const newPosition = new vscode.Position(position.line + 1, position.character);
+    const newPosition = new vscode.Position(insertLine, position.character);
     editor.selection = new vscode.Selection(newPosition, newPosition);
 
     return true;
@@ -1254,17 +1350,36 @@ export async function insertRowAbove(): Promise<boolean> {
 
     // Create a new empty row with same number of columns
     const currentRow = table.rows[position.line - table.startLine];
-    const numCols = currentRow ? currentRow.length : table.columnWidths.length;
+    // Separator and spec rows are empty placeholders: use the table width
+    const numCols = currentRow && currentRow.length ? currentRow.length : table.columnWidths.length;
     const emptyCells = new Array(numCols).fill('');
     const newRow = formatRow(emptyCells, table.columnWidths);
 
+    // Markdown: the header row and GFM delimiter row must stay together at
+    // the top. Nothing can go above the header; above the delimiter means the
+    // first body row.
+    let insertLine = position.line;
+    if (table.hasGfmHeader) {
+        if (position.line === table.startLine) {
+            vscode.window.showInformationMessage('Cannot insert a row above the header of a Markdown table');
+            return false;
+        }
+        if (position.line === table.startLine + 1) {
+            insertLine = table.startLine + 2;
+        }
+    }
+
     // Insert before current line
     await editor.edit(editBuilder => {
-        const insertPosition = new vscode.Position(position.line, 0);
+        const insertPosition = new vscode.Position(insertLine, 0);
         editBuilder.insert(insertPosition, newRow + '\n');
     });
 
-    // Cursor stays on same line number (which is now the new row)
+    if (insertLine !== position.line) {
+        const newPosition = new vscode.Position(insertLine, position.character);
+        editor.selection = new vscode.Selection(newPosition, newPosition);
+    }
+    // Otherwise the cursor stays on same line number (now the new row)
     return true;
 }
 
@@ -1280,6 +1395,15 @@ export async function deleteRow(): Promise<boolean> {
     const table = findTableAtCursor(document, position);
 
     if (!table) return false;
+
+    // Markdown: deleting the header or GFM delimiter row would leave an
+    // invalid table
+    if (table.hasGfmHeader && position.line <= table.startLine + 1) {
+        vscode.window.showInformationMessage(position.line === table.startLine
+            ? 'Cannot delete the header row of a Markdown table'
+            : 'Cannot delete the delimiter row of a Markdown table');
+        return false;
+    }
 
     // Don't delete if only one data row remains
     const dataRows = table.rows.filter((_, i) => !table.separatorLines.includes(table.startLine + i));
@@ -1321,15 +1445,18 @@ export async function insertColumnLeft(): Promise<boolean> {
     const newColumnWidths = [...table.columnWidths];
     newColumnWidths.splice(colIndex, 0, 3); // Default width of 3
 
+    const gfm = table.gfmAlignments ? [...table.gfmAlignments] : undefined;
+    gfm?.splice(colIndex, 0, null); // New column has no alignment
+
     const newLines: string[] = [];
     for (let i = table.startLine; i <= table.endLine; i++) {
         const lineText = document.lineAt(i).text;
         if (isSeparatorRow(lineText)) {
-            newLines.push(formatSeparator(newColumnWidths, isOrg));
+            newLines.push(formatSeparator(newColumnWidths, isOrg, gfm));
         } else {
             const cells = parseRow(lineText);
             cells.splice(colIndex, 0, '');
-            newLines.push(formatRow(cells, newColumnWidths));
+            newLines.push(formatRow(cells, newColumnWidths, gfmCellAlignments(gfm)));
         }
     }
 
@@ -1366,15 +1493,18 @@ export async function insertColumnRight(): Promise<boolean> {
     const newColumnWidths = [...table.columnWidths];
     newColumnWidths.splice(colIndex + 1, 0, 3); // Default width of 3
 
+    const gfm = table.gfmAlignments ? [...table.gfmAlignments] : undefined;
+    gfm?.splice(colIndex + 1, 0, null); // New column has no alignment
+
     const newLines: string[] = [];
     for (let i = table.startLine; i <= table.endLine; i++) {
         const lineText = document.lineAt(i).text;
         if (isSeparatorRow(lineText)) {
-            newLines.push(formatSeparator(newColumnWidths, isOrg));
+            newLines.push(formatSeparator(newColumnWidths, isOrg, gfm));
         } else {
             const cells = parseRow(lineText);
             cells.splice(colIndex + 1, 0, '');
-            newLines.push(formatRow(cells, newColumnWidths));
+            newLines.push(formatRow(cells, newColumnWidths, gfmCellAlignments(gfm)));
         }
     }
 
@@ -1417,15 +1547,18 @@ export async function deleteColumn(): Promise<boolean> {
     const newColumnWidths = [...table.columnWidths];
     newColumnWidths.splice(colIndex, 1);
 
+    const gfm = table.gfmAlignments ? [...table.gfmAlignments] : undefined;
+    gfm?.splice(colIndex, 1);
+
     const newLines: string[] = [];
     for (let i = table.startLine; i <= table.endLine; i++) {
         const lineText = document.lineAt(i).text;
         if (isSeparatorRow(lineText)) {
-            newLines.push(formatSeparator(newColumnWidths, isOrg));
+            newLines.push(formatSeparator(newColumnWidths, isOrg, gfm));
         } else {
             const cells = parseRow(lineText);
             cells.splice(colIndex, 1);
-            newLines.push(formatRow(cells, newColumnWidths));
+            newLines.push(formatRow(cells, newColumnWidths, gfmCellAlignments(gfm)));
         }
     }
 
@@ -1471,7 +1604,7 @@ async function alignTableAt(editor: vscode.TextEditor, position: vscode.Position
         const lineText = document.lineAt(lineNum).text;
 
         if (table.separatorLines.includes(lineNum)) {
-            newLines.push(formatSeparator(columnWidths, isOrg));
+            newLines.push(formatSeparator(columnWidths, isOrg, table.gfmAlignments));
         } else if (i === table.specRow) {
             // Format the column spec row
             newLines.push(formatSpecRow(columnWidths, table.columnAlignments, table.columnMinWidths, table.columnMaxWidths));
@@ -1865,8 +1998,19 @@ export async function insertSeparator(): Promise<boolean> {
     const isOrg = document.languageId === 'org';
     const separator = formatSeparator(table.columnWidths, isOrg);
 
+    // Markdown: GFM allows only the one delimiter row, under the header. Add
+    // it if the table lacks one; a second dashes row would be a body row.
+    let insertLine = position.line + 1;
+    if (isMarkdownLike(document.languageId)) {
+        if (table.separatorLines.length > 0) {
+            vscode.window.showInformationMessage('Markdown tables have a single delimiter row under the header; no separator inserted');
+            return false;
+        }
+        insertLine = table.startLine + 1;
+    }
+
     await editor.edit(editBuilder => {
-        const insertPosition = new vscode.Position(position.line + 1, 0);
+        const insertPosition = new vscode.Position(insertLine, 0);
         editBuilder.insert(insertPosition, separator + '\n');
     });
 
@@ -2454,7 +2598,7 @@ export async function sortByColumn(): Promise<void> {
 
     // Add separator after headers
     if (headerLines.length > 0 || firstSeparatorIdx > 0) {
-        newLines.push(formatSeparator(columnWidths, isOrg));
+        newLines.push(formatSeparator(columnWidths, isOrg, table.gfmAlignments));
     }
 
     // Add sorted body rows

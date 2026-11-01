@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import { pushKill } from '../killRing/commands';
-import { markdownFencedLineMask } from '../shared/markdownFences';
+import { markdownNonProseMask } from '../shared/markdownFences';
 import { contributedKeybindings } from '../utils/keybindingLabels';
 import { isMarkdownLike } from '../shared/markdownLike';
 
@@ -372,7 +372,7 @@ function headingsInEditor(editor: vscode.TextEditor): RawMatch[] {
 
     // Likewise a "# comment" inside a markdown code fence is code, not a heading
     const inFence = isMarkdownLike(language)
-        ? markdownFencedLineMask(editor.document.getText().split('\n'))
+        ? markdownNonProseMask(editor.document.getText().split('\n'))
         : [];
 
     const matches: RawMatch[] = [];

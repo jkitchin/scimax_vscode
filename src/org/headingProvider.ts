@@ -1,4 +1,5 @@
 import * as vscode from 'vscode';
+import { markdownHeadingLevel } from '../shared/markdownDocument';
 
 /**
  * Heading manipulation for org-mode and markdown
@@ -16,11 +17,14 @@ function getOrgHeadingLevel(line: string): number {
 }
 
 /**
- * Check if line is a markdown heading and return its level
+ * Heading level of a document line, or 0. Markdown `#` lines inside code
+ * blocks, front matter and HTML comments are not headings.
  */
-function getMarkdownHeadingLevel(line: string): number {
-    const match = line.match(/^(#{1,6})\s/);
-    return match ? match[1].length : 0;
+function headingLevelAt(document: vscode.TextDocument, lineNumber: number): number {
+    if (document.languageId === 'org') {
+        return getOrgHeadingLevel(document.lineAt(lineNumber).text);
+    }
+    return markdownHeadingLevel(document, lineNumber);
 }
 
 // List item patterns
@@ -133,7 +137,7 @@ export async function promoteHeading(): Promise<boolean> {
         return true;
     } else {
         // Markdown
-        const level = getMarkdownHeadingLevel(lineText);
+        const level = headingLevelAt(document, position.line);
         if (level <= 1) return false; // Can't promote level 1
 
         // Remove one hash
@@ -216,7 +220,7 @@ export async function demoteHeading(): Promise<boolean> {
         return true;
     } else {
         // Markdown
-        const level = getMarkdownHeadingLevel(lineText);
+        const level = headingLevelAt(document, position.line);
         if (level === 0) return false; // Not a heading
         if (level >= 6) return false; // Max markdown heading level
 
@@ -270,8 +274,8 @@ export async function promoteSubtree(): Promise<boolean> {
     const lineText = document.lineAt(position.line).text;
     const isOrg = document.languageId === 'org';
 
-    const getLevel = isOrg ? getOrgHeadingLevel : getMarkdownHeadingLevel;
-    const headingLevel = getLevel(lineText);
+    const getLevel = (lineNumber: number) => headingLevelAt(document, lineNumber);
+    const headingLevel = getLevel(position.line);
 
     if (headingLevel === 0) return false; // Not a heading
     if (headingLevel <= 1) return false; // Can't promote level 1
@@ -281,8 +285,7 @@ export async function promoteSubtree(): Promise<boolean> {
     let endLine = startLine;
 
     for (let i = startLine + 1; i < document.lineCount; i++) {
-        const checkLine = document.lineAt(i).text;
-        const checkLevel = getLevel(checkLine);
+        const checkLevel = getLevel(i);
         if (checkLevel > 0 && checkLevel <= headingLevel) {
             // Found a heading at same or higher level, subtree ends
             break;
@@ -296,7 +299,7 @@ export async function promoteSubtree(): Promise<boolean> {
         for (let i = startLine; i <= endLine; i++) {
             const line = document.lineAt(i);
             const text = line.text;
-            const level = getLevel(text);
+            const level = getLevel(i);
             if (level > 0) {
                 // Remove one prefix character
                 const newText = text.replace(new RegExp(`^\\${prefix}`), '');
@@ -320,8 +323,8 @@ export async function demoteSubtree(): Promise<boolean> {
     const lineText = document.lineAt(position.line).text;
     const isOrg = document.languageId === 'org';
 
-    const getLevel = isOrg ? getOrgHeadingLevel : getMarkdownHeadingLevel;
-    const headingLevel = getLevel(lineText);
+    const getLevel = (lineNumber: number) => headingLevelAt(document, lineNumber);
+    const headingLevel = getLevel(position.line);
 
     if (headingLevel === 0) return false; // Not a heading
     if (!isOrg && headingLevel >= 6) return false; // Max markdown level
@@ -331,8 +334,7 @@ export async function demoteSubtree(): Promise<boolean> {
     let endLine = startLine;
 
     for (let i = startLine + 1; i < document.lineCount; i++) {
-        const checkLine = document.lineAt(i).text;
-        const checkLevel = getLevel(checkLine);
+        const checkLevel = getLevel(i);
         if (checkLevel > 0 && checkLevel <= headingLevel) {
             // Found a heading at same or higher level, subtree ends
             break;
@@ -346,7 +348,7 @@ export async function demoteSubtree(): Promise<boolean> {
         for (let i = startLine; i <= endLine; i++) {
             const line = document.lineAt(i);
             const text = line.text;
-            const level = getLevel(text);
+            const level = getLevel(i);
             if (level > 0) {
                 // Add one prefix character
                 const newText = prefix + text;
@@ -370,8 +372,8 @@ export async function moveHeadingUp(): Promise<boolean> {
     const lineText = document.lineAt(position.line).text;
     const isOrg = document.languageId === 'org';
 
-    const getLevel = isOrg ? getOrgHeadingLevel : getMarkdownHeadingLevel;
-    const headingLevel = getLevel(lineText);
+    const getLevel = (lineNumber: number) => headingLevelAt(document, lineNumber);
+    const headingLevel = getLevel(position.line);
 
     // Check if we're on a list item
     const listIndent = getListItemIndent(lineText, isOrg);
@@ -386,8 +388,7 @@ export async function moveHeadingUp(): Promise<boolean> {
     let currentEnd = currentStart;
 
     for (let i = currentStart + 1; i < document.lineCount; i++) {
-        const checkLine = document.lineAt(i).text;
-        const checkLevel = getLevel(checkLine);
+        const checkLevel = getLevel(i);
         if (checkLevel > 0 && checkLevel <= headingLevel) {
             break;
         }
@@ -399,8 +400,7 @@ export async function moveHeadingUp(): Promise<boolean> {
     const prevEnd = currentStart - 1;
 
     for (let i = currentStart - 1; i >= 0; i--) {
-        const checkLine = document.lineAt(i).text;
-        const checkLevel = getLevel(checkLine);
+        const checkLevel = getLevel(i);
         if (checkLevel === headingLevel) {
             prevStart = i;
             break;
@@ -514,8 +514,8 @@ export async function moveHeadingDown(): Promise<boolean> {
     const lineText = document.lineAt(position.line).text;
     const isOrg = document.languageId === 'org';
 
-    const getLevel = isOrg ? getOrgHeadingLevel : getMarkdownHeadingLevel;
-    const headingLevel = getLevel(lineText);
+    const getLevel = (lineNumber: number) => headingLevelAt(document, lineNumber);
+    const headingLevel = getLevel(position.line);
 
     // Check if we're on a list item
     const listIndent = getListItemIndent(lineText, isOrg);
@@ -530,8 +530,7 @@ export async function moveHeadingDown(): Promise<boolean> {
     let currentEnd = currentStart;
 
     for (let i = currentStart + 1; i < document.lineCount; i++) {
-        const checkLine = document.lineAt(i).text;
-        const checkLevel = getLevel(checkLine);
+        const checkLevel = getLevel(i);
         if (checkLevel > 0 && checkLevel <= headingLevel) {
             break;
         }
@@ -545,14 +544,13 @@ export async function moveHeadingDown(): Promise<boolean> {
     if (nextStart >= document.lineCount) return false;
 
     const nextLineText = document.lineAt(nextStart).text;
-    const nextLevel = getLevel(nextLineText);
+    const nextLevel = getLevel(nextStart);
 
     if (nextLevel !== headingLevel) return false; // No next sibling at same level
 
     // Find end of next sibling's subtree
     for (let i = nextStart + 1; i < document.lineCount; i++) {
-        const checkLine = document.lineAt(i).text;
-        const checkLevel = getLevel(checkLine);
+        const checkLevel = getLevel(i);
         if (checkLevel > 0 && checkLevel <= headingLevel) {
             break;
         }
@@ -648,10 +646,10 @@ export async function insertHeading(): Promise<void> {
 
     // Find the nearest heading to determine level
     let level = 1;
-    const getLevel = isOrg ? getOrgHeadingLevel : getMarkdownHeadingLevel;
+    const getLevel = (lineNumber: number) => headingLevelAt(document, lineNumber);
 
     for (let i = position.line; i >= 0; i--) {
-        const lineLevel = getLevel(document.lineAt(i).text);
+        const lineLevel = getLevel(i);
         if (lineLevel > 0) {
             level = lineLevel;
             break;
@@ -686,10 +684,10 @@ export async function insertSubheading(): Promise<void> {
 
     // Find the nearest heading to determine level
     let level = 1;
-    const getLevel = isOrg ? getOrgHeadingLevel : getMarkdownHeadingLevel;
+    const getLevel = (lineNumber: number) => headingLevelAt(document, lineNumber);
 
     for (let i = position.line; i >= 0; i--) {
-        const lineLevel = getLevel(document.lineAt(i).text);
+        const lineLevel = getLevel(i);
         if (lineLevel > 0) {
             level = lineLevel + 1; // One level deeper
             break;

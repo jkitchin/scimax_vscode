@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import { isInTable, nextCell } from '../org/tableProvider';
-import { findFencedDivs, findMarkdownFencedBlocks, markdownFencedLineMask } from '../shared/markdownFences';
+import { findFencedDivs, findMarkdownFencedBlocks, markdownNonProseMask } from '../shared/markdownFences';
 import { isMarkdownLike } from '../shared/markdownLike';
 import { visibleLineFor } from './foldCycle';
 
@@ -288,7 +288,7 @@ export class MarkdownFoldingRangeProvider implements vscode.FoldingRangeProvider
 
         // Lines inside fenced code blocks are code, not headings
         const fencedBlocks = findMarkdownFencedBlocks(lines);
-        const inFence = markdownFencedLineMask(lines);
+        const inFence = markdownNonProseMask(lines);
         for (const block of fencedBlocks) {
             if (block.end > block.start) {
                 ranges.push(new vscode.FoldingRange(block.start, block.end, vscode.FoldingRangeKind.Region));
@@ -507,7 +507,7 @@ async function toggleFoldAtCursor(): Promise<void> {
 
     // In markdown, a `#` line inside a fenced code block is code, not a heading
     const inFence = isMarkdownLike(langId)
-        ? markdownFencedLineMask(document.getText().split('\n'))
+        ? markdownNonProseMask(document.getText().split('\n'))
         : undefined;
     const isHeadingAt = (lineNum: number, text: string) =>
         !inFence?.[lineNum] && checkFn(text);

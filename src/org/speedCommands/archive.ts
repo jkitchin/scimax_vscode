@@ -5,6 +5,7 @@
  */
 
 import * as vscode from 'vscode';
+import { shiftHeadingLevels } from '../../shared/headingText';
 import * as path from 'path';
 import * as fs from 'fs';
 import { getHeadingLevel, getSubtreeRange } from './context';
@@ -200,10 +201,7 @@ export async function archiveToSibling(): Promise<void> {
     let subtreeText = document.getText(subtreeRange);
 
     // Demote the subtree by one level
-    const headingPattern = document.languageId === 'org' ? /^(\*+)/gm : /^(#+)/gm;
-    subtreeText = subtreeText.replace(headingPattern, (match, stars) => {
-        return (document.languageId === 'org' ? '*' : '#') + stars;
-    });
+    subtreeText = shiftHeadingLevels(subtreeText, 1, document.languageId === 'org');
 
     // Add :ARCHIVE: tag to the demoted heading
     const firstLine = subtreeText.split('\n')[0];

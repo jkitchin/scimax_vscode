@@ -17,6 +17,8 @@ import * as structure from './structure';
 import { orgSort } from './sort';
 import { isSectionLine } from '../../latex/latexNavigation';
 import { isMarkdownLike } from '../../shared/markdownLike';
+import { findMarkdownFencedBlocks, matchCodeFenceOpen } from '../../shared/markdownFences';
+import { markdownHeadingLevel } from '../../shared/markdownDocument';
 
 /**
  * Check if cursor is at the start of a heading (column 0)
@@ -30,7 +32,8 @@ export function isAtHeadingStart(document: vscode.TextDocument, position: vscode
     if (document.languageId === 'org') {
         return /^\*+\s/.test(line);
     } else if (isMarkdownLike(document.languageId)) {
-        return /^#+\s/.test(line);
+        // Not a `# comment` inside a code block, front matter or HTML comment
+        return markdownHeadingLevel(document, position.line) > 0;
     }
 
     return false;
@@ -48,8 +51,12 @@ export function isAtSrcBlockStart(document: vscode.TextDocument, position: vscod
     if (document.languageId === 'org') {
         return /^#\+begin_src\s/i.test(line);
     } else if (isMarkdownLike(document.languageId)) {
-        // Check for markdown fenced code block opening
-        return /^(`{3,}|~{3,})\w+$/.test(line);
+        // An opening fence that names a language (```python, ```{python}),
+        // not a fence-looking line inside another code block
+        const open = matchCodeFenceOpen(line);
+        if (!open || !open.language) return false;
+        const lines = document.getText().split(/\r?\n/);
+        return findMarkdownFencedBlocks(lines).some(block => block.start === position.line);
     }
 
     return false;
@@ -108,12 +115,12 @@ export function getHeadingLevel(document: vscode.TextDocument, lineNum: number):
         const match = line.match(/^(\*+)\s/);
         return match ? match[1].length : 0;
     } else if (isMarkdownLike(document.languageId)) {
-        const match = line.match(/^(#+)\s/);
-        return match ? match[1].length : 0;
+        return markdownHeadingLevel(document, lineNum);
     }
 
     return 0;
 }
+
 
 /**
  * Get the range of a subtree (heading + all children)
