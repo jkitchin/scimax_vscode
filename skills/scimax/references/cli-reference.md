@@ -28,27 +28,49 @@ scimax agenda overdue                       # Past-due scheduled/deadline items
 
 ## Search
 
-Full-text search across all indexed org files.
+Full-text search across all indexed org files (SQLite FTS5, BM25 ranking).
 
 ```bash
-scimax search "query"                        # Basic search
-scimax search "query" --limit 20            # More results (default: 10)
-scimax search "query" --format json         # Machine-readable output
-scimax search "machine learning" --limit 5  # Find notes on a topic
+scimax search "query"                        # Basic search (default limit: 20)
+scimax search "query" --limit 50            # More results
+scimax search "query" --json                # Machine-readable output
+scimax search "methods for reducing overfitting" --semantic   # Vector search
 ```
 
+`--semantic` embeds the query with the Ollama model from the user's VS Code
+settings (`scimax.db.embeddingProvider`, `scimax.db.ollamaUrl`,
+`scimax.db.ollamaModel`) and searches stored embeddings. It fails with a
+message if the database has no embeddings or no provider is configured; fall
+back to plain full-text search in that case.
+
+### Heading search
+
+Search heading titles, tags, and TODO states from the index:
+
+```bash
+scimax search headings "proposal"                  # Title matches
+scimax search headings -t proposal                 # Tagged :proposal:
+scimax search headings --todo TODO                 # All TODO headings
+scimax search headings -t grant --todo NEXT --json # Combine filters
+```
+
+At least one of a query, `-t`/`--tag`, or `--todo` is required. Default limit
+is 50 (`--limit N` to change). JSON results include `title`, `file_path`,
+`line_number`, `level`, `todo_state`, `tags`, and `priority`.
+
 **Guidance:**
-- For programmatic use (e.g., to read matching files), use `--format json`
+- For programmatic use (e.g., to read matching files), use `--json`
+- Prefer `scimax search headings` over grepping for tagged or TODO headings;
+  it covers every indexed file and returns structured results
+- Use `--semantic` when the user asks conceptually ("notes about X") and exact
+  words may not match
 - After getting results, use the `Read` tool to open and inspect matching files
-- Use `Grep` to find specific patterns within org files:
+- Fall back to `Grep` for patterns the index does not cover, or for files that
+  are not indexed yet:
   ```bash
-  # Find all TODO headings with a tag
   Grep: pattern="^\*+\s+TODO.*:research:", glob="**/*.org"
   ```
-- Use `Glob` to discover org files before searching:
-  ```bash
-  Glob: pattern="**/*.org", path="~/org"
-  ```
+- If results look stale, run `scimax db sync` first
 
 ---
 

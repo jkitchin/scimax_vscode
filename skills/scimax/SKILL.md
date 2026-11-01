@@ -45,6 +45,9 @@ Related skills, installed alongside this one: **scimax-org** (org-mode syntax an
 | All TODOs | `scimax agenda todos` |
 | Overdue items | `scimax agenda overdue` |
 | Search notes | `scimax search "query"` |
+| Semantic search | `scimax search "query" --semantic` |
+| Find tagged headings | `scimax search headings -t tag` |
+| Find headings by TODO state | `scimax search headings --todo NEXT` |
 | Export to HTML | `scimax export file.org --format html` |
 | Export to PDF | `scimax export file.org --format pdf` |
 | Tangle source blocks | `scimax tangle setup.org` |
