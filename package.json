@@ -1370,6 +1370,10 @@
         "title": "Scimax: Copy Markdown (Clipboard)"
       },
       {
+        "command": "scimax.org.emailHeading",
+        "title": "Scimax: Email Heading"
+      },
+      {
         "command": "scimax.org.previewHtml",
         "title": "Scimax: Preview HTML",
         "icon": "$(open-preview)"
@@ -2507,6 +2511,10 @@
       {
         "command": "scimax.org.addIdToHeading",
         "title": "Scimax: Add ID to Heading"
+      },
+      {
+        "command": "scimax.org.gotoId",
+        "title": "Scimax: Go to Heading by ID"
       },
       {
         "command": "scimax.org.addDependency",
@@ -7247,6 +7255,29 @@
           "type": "boolean",
           "default": true,
           "description": "Show total clocked time as inline decorations on headlines"
+        },
+        "scimax.emailHeading.client": {
+          "type": "string",
+          "enum": [
+            "gmail",
+            "mailto"
+          ],
+          "enumDescriptions": [
+            "Open a Gmail compose window in the browser",
+            "Open the system mail client with a mailto: link"
+          ],
+          "default": "gmail",
+          "description": "Where Scimax: Email Heading composes the email."
+        },
+        "scimax.emailHeading.gmailAccount": {
+          "type": "string",
+          "default": "",
+          "description": "Gmail account to compose from when signed in to several (an email address or account index, passed as authuser). Empty uses the default account."
+        },
+        "scimax.emailHeading.includeId": {
+          "type": "boolean",
+          "default": true,
+          "description": "Append the heading's :ID: (created as a UUID if missing) to emails sent with Scimax: Email Heading, so you can find the heading later with Scimax: Go to Heading by ID. No file path is included."
         },
         "scimax.export.clipboard.preferRichText": {
           "type": "boolean",

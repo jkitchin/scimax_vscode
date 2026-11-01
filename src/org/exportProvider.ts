@@ -24,6 +24,7 @@ import { exportToIpynb, exportToIpynbParticipant, type IpynbExportOptions } from
 import type { OrgDocumentNode, HeadlineElement } from '../parser/orgElementTypes';
 import { isBodyOnlyMode } from '../hydra/menus/exportMenu';
 import { registerClipboardCommands } from './clipboardExport';
+import { registerEmailHeadingCommands } from './emailHeading';
 import { tryRouteCustomExport } from '../export/commands';
 import { ExporterRegistry } from '../export/customExporter';
 import { resolveProfileForDocument, runProfile, readBuildKeywords } from '../latex/buildProfileService';
@@ -2103,6 +2104,7 @@ export function registerExportCommands(context: vscode.ExtensionContext): void {
 
     // Register clipboard export commands (ox-clip style)
     registerClipboardCommands(context);
+    registerEmailHeadingCommands(context);
 }
 
 /**

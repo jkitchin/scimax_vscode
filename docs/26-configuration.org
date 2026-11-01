@@ -56,6 +56,9 @@ General settings that apply across Scimax features.
 | Setting                          | Type   | Default | Description                                       |
 |----------------------------------+--------+---------+---------------------------------------------------|
 | scimax.email                     | string | ""      | Email for API integrations (OpenAlex)             |
+| scimax.emailHeading.client       | string | "gmail" | Compose in =gmail= or the =mailto= client         |
+| scimax.emailHeading.gmailAccount | string | ""      | Gmail account to compose from (authuser)          |
+| scimax.emailHeading.includeId    | bool   | true    | Append the heading =:ID:= to the email body       |
 | scimax.externalTerminal.app      | string | ""      | macOS terminal app to open (auto-detect if empty) |
 | scimax.externalTerminal.command  | string | ""      | Terminal executable, overrides auto-detection     |
 | scimax.externalTerminal.args     | array  | []      | Arguments for that executable (=${dir}= expanded) |
@@ -80,6 +83,14 @@ This email is used for services that offer better access to identified users. Cu
 #+end_src
 
 You can also configure this via the command =scimax.ref.configureOpenAlex= which provides a quick pick menu for setting both your email and optional API key.
+
+*** ⚠️ scimax.emailHeading.client / .gmailAccount / .includeId
+
+Settings for =Scimax: Email Heading= (=scimax.org.emailHeading=). See [[file:10-export.org::*Email a Heading][Email a Heading]].
+
+- =scimax.emailHeading.client= (default ="gmail"=): =gmail= opens a Gmail compose window in the browser. =mailto= opens the system mail client.
+- =scimax.emailHeading.gmailAccount= (default =""=): the Google account to compose from when you are signed in to several. Use an email address or an account index.
+- =scimax.emailHeading.includeId= (default =true=): append the heading's =:ID:= to the email (creating a UUID if needed), so you can find the heading later with =Scimax: Go to Heading by ID=. No file path is sent.
 
 *** scimax.externalTerminal.app / .command / .args
 
