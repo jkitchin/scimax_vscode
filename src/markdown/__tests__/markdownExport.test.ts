@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest';
+import * as path from 'path';
 import { defaultExportPath, defaultMainFont, frontMatterHasKey, missingCharacters, pdfArgs } from '../markdownExport';
 
 describe('defaultMainFont', () => {
@@ -76,12 +77,12 @@ describe('missingCharacters', () => {
 
 describe('defaultExportPath', () => {
     it('replaces .md with the format extension', () => {
-        expect(defaultExportPath('/a/notes.md', 'html')).toBe('/a/notes.html');
+        expect(defaultExportPath(path.join('a', 'notes.md'), 'html')).toBe(path.join('a', 'notes.html'));
     });
 
     it('never returns the source path for other markdown extensions', () => {
         for (const name of ['notes.markdown', 'notes.mkd', 'notes.qmd', 'notes.MD', 'notes']) {
-            const input = `/a/${name}`;
+            const input = path.join('a', name);
             const out = defaultExportPath(input, 'html');
             expect(out).not.toBe(input);
             expect(out.endsWith('.html')).toBe(true);
