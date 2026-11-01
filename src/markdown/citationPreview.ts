@@ -53,6 +53,23 @@ export function frontMatterBibliography(src: string): string[] {
     return m ? asList(loadYaml(m[1])?.bibliography) : [];
 }
 
+let fallbackLookup: ((key: string) => BibEntry | undefined) | undefined;
+
+/**
+ * Where to look up a key the document's own bibliography does not have:
+ * Scimax's reference manager (configured, workspace and added .bib files),
+ * set by the extension, so the previews know what the editor's citation
+ * hover knows.
+ */
+export function setFallbackCitationLookup(lookup: ((key: string) => BibEntry | undefined) | undefined): void {
+    fallbackLookup = lookup;
+}
+
+/** True when keys can be found without a bibliography file. */
+export function hasFallbackCitationLookup(): boolean {
+    return !!fallbackLookup;
+}
+
 /** Bibliography files for a document: front matter first, then the project config. */
 export function bibliographyPaths(docPath: string, frontMatter: string[]): string[] {
     const docDir = path.dirname(docPath);
@@ -97,7 +114,20 @@ function loadBib(file: string): CachedBib | undefined {
 
 const stripBraces = (s: string) => s.replace(/[{}]/g, '');
 
-/** Author, year and full reference for a key, or undefined if it is not in the files. */
+function labelFor(entry: BibEntry): { author: string; year: string; full: string } {
+    return {
+        author: stripBraces(formatAuthors(entry.author, 2)),
+        year: entry.year || 'n.d.',
+        full: stripBraces(formatCitation(entry, 'full')),
+    };
+}
+
+const fallbackLabels = new WeakMap<BibEntry, { author: string; year: string; full: string }>();
+
+/**
+ * Author, year and full reference for a key: from the files, then the
+ * fallback lookup. Undefined when it is in neither.
+ */
 export function lookupCitation(key: string, bibFiles: string[]): { author: string; year: string; full: string } | undefined {
     for (const file of bibFiles) {
         const bib = loadBib(file);
@@ -107,16 +137,21 @@ export function lookupCitation(key: string, bibFiles: string[]): { author: strin
         }
         let label = bib.labels.get(key);
         if (!label) {
-            label = {
-                author: stripBraces(formatAuthors(entry.author, 2)),
-                year: entry.year || 'n.d.',
-                full: stripBraces(formatCitation(entry, 'full')),
-            };
+            label = labelFor(entry);
             bib.labels.set(key, label);
         }
         return label;
     }
-    return undefined;
+    const entry = fallbackLookup?.(key);
+    if (!entry) {
+        return undefined;
+    }
+    let label = fallbackLabels.get(entry);
+    if (!label) {
+        label = labelFor(entry);
+        fallbackLabels.set(entry, label);
+    }
+    return label;
 }
 
 /** Items of a bracketed citation body: "see @a, p. 3; @b". Undefined if it is not one. */

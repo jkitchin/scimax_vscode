@@ -71,7 +71,7 @@ caption; a directive with no title shows its kind (/Proposition/). The
 jumps to the section. A label defined in another file shows as the label. Scroll sync and VS Code's double-click-to-source still work
 inside directives.
 
-* Citations and Equation References
+* 👀 Citations and Equation References
 
 Citations render as author-year text, with the full reference as a tooltip:
 
@@ -85,8 +85,10 @@ Citations render as author-year text, with the full reference as a tooltip:
 
 The bibliography is the ~bibliography:~ key in the file's front matter, or
 ~project.bibliography~ in the nearest ~myst.yml~ above the file, or
-~bibtex_bibfiles~ in a Jupyter Book ~_config.yml~. A key that is not in it is
-shown in red. A bare ~@word~ is only treated as a citation when the word is a
+~bibtex_bibfiles~ in a Jupyter Book ~_config.yml~. Keys not there are looked
+up in the bibliographies Scimax has loaded (~scimax.ref.bibliographyFiles~ and
+the =.bib= files in the workspace), as the editor's citation hover does. A key
+found in neither is shown in red. A bare ~@word~ is only treated as a citation when the word is a
 key, so handles and e-mail addresses are left alone.
 
 A labelled display equation, ~$$ ... $$ (eq-label)~ or a ~{math}~ directive

@@ -14,6 +14,7 @@ import * as path from 'path';
 import type { Marp, MarpOptions } from '@marp-team/marp-core';
 import render from 'dom-serializer';
 import { parseDocument } from 'htmlparser2';
+import { useSlideCitations } from './slideCitations';
 
 export interface RenderedDeck {
     html: string;
@@ -27,6 +28,12 @@ export interface RenderOptions {
     math?: 'mathjax' | 'katex' | 'off';
     /** Contents of custom theme CSS files. */
     themes?: string[];
+    /**
+     * The deck's file. When set, citations (`[@key]`, `@key`) and MyST roles
+     * render as in the Markdown preview, from the bibliography in the front
+     * matter or the project config next to the file.
+     */
+    documentPath?: string;
 }
 
 type MarpConstructor = new (options?: MarpOptions) => Marp;
@@ -124,7 +131,13 @@ function newMarp<T extends Marp>(
 
 /** Render a deck with each slide as an inline SVG (`<svg data-marpit-svg>`). */
 export function renderDeck(text: string, options: RenderOptions = {}): RenderedDeck {
-    const { html, css } = newMarp(loadMarp(), options).render(text);
+    const marp = newMarp(loadMarp(), options);
+    if (!options.documentPath) {
+        const { html, css } = marp.render(text);
+        return { html, css };
+    }
+    useSlideCitations(marp.markdown);
+    const { html, css } = marp.render(text, { currentDocument: { fsPath: options.documentPath } });
     return { html, css };
 }
 

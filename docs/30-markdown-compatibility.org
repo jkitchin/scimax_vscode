@@ -415,7 +415,7 @@ new extension. This works for =.md=, =.markdown= and other Markdown
 extensions; the export never writes over the source file. Code blocks are not
 executed during export.
 
-** Markdown Preview
+** 👀 Markdown Preview
 
 VS Code's Markdown preview (=Cmd+Shift+V=, =Cmd+K V= to the side) gets these
 additions from Scimax:
@@ -436,8 +436,18 @@ additions from Scimax:
   does. The other markdown export commands and the export menu also work from
   the preview.
 
-Files with ~marp: true~ in their front matter are previewed as slides; see
-[[file:44-marp.org][Marp Slides]].
+Files with ~marp: true~ in their front matter are previewed as slides, with
+citations rendered; see [[file:44-marp.org][Marp Slides]].
+
+** ⚠️ Equation Hover
+
+Hovering LaTeX math in a Markdown or Quarto file shows it typeset, as in org
+files: =$...$=, =\(...\)=, =$$...$$= and =\[...\]= (on one line or
+across lines), and math environments such as =\begin{equation}=. Math in
+code fences, inline code, front matter and HTML comments is skipped. The hover
+uses the org LaTeX renderer, so it needs =latex= and =dvisvgm= (or
+=dvipng=), and ~scimax.latexPreview.enabled~ turns it off. Equations are
+shown without numbers. See [[file:11-latex-preview.org][LaTeX Preview]].
 
 * Quarto Documents
 
@@ -639,6 +649,7 @@ org-mode.
 
 - [[file:45-myst-preview.org][MyST Markdown Preview]] - Jupyter Book directives and roles in the preview
 - [[file:44-marp.org][Marp Slides]] - jump from a Marp slide preview to its source
+- [[file:11-latex-preview.org][LaTeX Preview]] - the renderer behind the equation hover
 - [[file:25-commands.org][Commands]] - Markdown File Export commands (Pandoc)
 - [[file:02-document-structure.org][Document Structure]] - Full org-mode structure documentation
 - [[file:23-speed-commands.org][Speed Commands]] - Complete speed command reference

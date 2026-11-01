@@ -28,7 +28,7 @@ const documentEquationCounters = new Map<string, Map<string, number>>();
 /**
  * LaTeX math environments that support equation numbering
  */
-const NUMBERED_ENVIRONMENTS = new Set([
+export const NUMBERED_ENVIRONMENTS = new Set([
     'equation',
     'align',
     'gather',
@@ -41,7 +41,7 @@ const NUMBERED_ENVIRONMENTS = new Set([
 /**
  * LaTeX math environments (starred versions are unnumbered)
  */
-const MATH_ENVIRONMENTS = new Set([
+export const MATH_ENVIRONMENTS = new Set([
     ...NUMBERED_ENVIRONMENTS,
     'equation*',
     'align*',
@@ -511,12 +511,14 @@ function buildLatexDocument(
         }
     } else if (fragment.type === 'display') {
         // Wrap in equation* for display math (unnumbered)
+        // Trimmed: `$$` on its own line leaves a newline at each end, and a
+        // blank line in math mode is a paragraph break (`Missing $ inserted`).
         lines.push('\\begin{equation*}');
-        lines.push(fragment.content);
+        lines.push(fragment.content.trim());
         lines.push('\\end{equation*}');
     } else {
         // Inline math - wrap in $...$ for preview
-        lines.push(`$\\displaystyle ${fragment.content}$`);
+        lines.push(`$\\displaystyle ${fragment.content.trim()}$`);
     }
 
     lines.push('');
@@ -593,6 +595,21 @@ export async function checkLatexAvailable(): Promise<{ available: boolean; messa
 /**
  * Render LaTeX to SVG
  */
+/**
+ * The useful part of a failed latex run. TeX writes its errors to stdout
+ * (`! Missing $ inserted.` and the `l.12 ...` line), so stderr is usually
+ * empty; it is used when TeX could not run at all.
+ */
+export function latexErrorText(result: { stdout: string; stderr: string }): string {
+    const lines = result.stdout.split(/\r?\n/);
+    const at = lines.findIndex(line => line.startsWith('!'));
+    if (at >= 0) {
+        const end = lines.findIndex((line, i) => i > at && /^l\.\d+/.test(line));
+        return lines.slice(at, end >= 0 ? end + 2 : at + 4).join('\n').trim();
+    }
+    return result.stderr.trim();
+}
+
 export async function renderLatexToSvg(
     fragment: LatexFragment,
     settings: LatexDocumentSettings,
@@ -640,7 +657,7 @@ export async function renderLatexToSvg(
             if (!pdfResult.success) {
                 return {
                     success: false,
-                    error: `LaTeX compilation failed:\n${pdfResult.stderr || latexResult.stderr}`,
+                    error: `LaTeX compilation failed:\n${latexErrorText(pdfResult) || latexErrorText(latexResult)}`,
                 };
             }
 

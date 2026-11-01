@@ -3,6 +3,8 @@ import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
 import { firstSlideSvg, isMarpText, renderDeck, slideStarts } from '../slideRenderer';
+import { setFallbackCitationLookup } from '../../markdown/citationPreview';
+import { parseBibTeX } from '../../references/bibtexParser';
 
 const DECK = '---\nmarp: true\nheadingDivider: 2\n---\n\n# One\n\n## Two\n\n```\n---\n```\n\n---\n\nThree\n';
 
@@ -82,5 +84,45 @@ describe('firstSlideSvg', () => {
         expect(svg).toContain('src="data:image/png;base64,iVBORw=="');
         expect(svg).toContain('src="https://example.org/b.png"');
         fs.rmSync(dir, { recursive: true });
+    });
+});
+
+describe('renderDeck citations', () => {
+    it('renders [@key] when the deck path is given', () => {
+        const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'deck-cite-'));
+        try {
+            fs.writeFileSync(path.join(dir, 'refs.bib'),
+                '@book{boyd2004convex,\n  author = {Boyd, Stephen and Vandenberghe, Lieven},\n  title = {Convex Optimization},\n  year = {2004}\n}\n');
+            const deck = '---\nmarp: true\nbibliography: refs.bib\n---\n\n# Title\n\nSee [@boyd2004convex] and @boyd2004convex.\n\n---\n\n# Two\n\nNo citations, [@unknown].\n';
+            const { html } = renderDeck(deck, { documentPath: path.join(dir, 'deck.md') });
+            expect(html).toContain('(<span class="scimax-cite"');
+            expect(html).toContain('Boyd and Vandenberghe, 2004');
+            expect(renderDeck(deck).html).toContain('[@boyd2004convex]');
+            // The full reference sits at the foot of the citing slide only, once.
+            const slides = html.split('</section>');
+            expect(slides[0].match(/class="scimax-slide-refs"/g)).toHaveLength(1);
+            expect(slides[0]).toMatch(/<div class="scimax-slide-refs"[^>]*>.*<li>[^<]*Convex Optimization[^<]*<\/li>/s);
+            expect(slides[0].match(/<li>/g)).toHaveLength(1);
+            expect(slides[1]).not.toContain('scimax-slide-refs');
+        } finally {
+            fs.rmSync(dir, { recursive: true, force: true });
+        }
+    });
+});
+
+describe('renderDeck citations without a bibliography: line', () => {
+    it('finds keys through the fallback lookup (the reference manager)', () => {
+        const entries = new Map(parseBibTeX(
+            '@article{kitchin-2025,\n  author = {Kitchin, John},\n  title = {Beyond Fourier},\n  journal = {J. Chem. Phys.},\n  year = {2025}\n}\n'
+        ).entries.map(e => [e.key, e]));
+        setFallbackCitationLookup(key => entries.get(key));
+        try {
+            const deck = '---\nmarp: true\n---\n\n# Title\n\nSee [@kitchin-2025].\n';
+            const { html } = renderDeck(deck, { documentPath: path.join(os.tmpdir(), 'no-such-dir', 'deck.md') });
+            expect(html).toContain('Kitchin, 2025');
+            expect(html).toMatch(/scimax-slide-refs.*Beyond Fourier/s);
+        } finally {
+            setFallbackCitationLookup(undefined);
+        }
     });
 });

@@ -15,7 +15,7 @@
  */
 
 import {
-    bibliographyPaths, CitationMode, frontMatterBibliography, parseCitationItems, renderCitation,
+    bibliographyPaths, CitationMode, frontMatterBibliography, hasFallbackCitationLookup, parseCitationItems, renderCitation,
 } from './citationPreview';
 
 /* eslint-disable @typescript-eslint/no-explicit-any -- markdown-it ships no types here */
@@ -516,7 +516,7 @@ export function mystPreviewPlugin(md: MarkdownIt, options: MystPreviewOptions = 
     rules.scimax_cite = (tokens: Token[], idx: number, _opts: any, env: any) => {
         const { items, mode, bare, frontBibs } = tokens[idx].meta;
         const files = bibFiles(env, frontBibs);
-        if (bare && !files.length) {
+        if (bare && !files.length && !hasFallbackCitationLookup()) {
             return escape(`@${items[0].key}`);
         }
         const html = renderCitation(items, mode, files, escape);
