@@ -1819,8 +1819,9 @@ still inserts the last killed rectangle as a rectangle.
 
 Text you highlight with the mouse (drag, double-click a word, triple-click a
 line) is copied to the system clipboard and pushed onto the kill ring as soon
-as you let go, like copy-on-select in a terminal. Paste it with =Cmd+V= or
-=C-y=. The clipboard you had before is not lost: it is pulled onto the ring
+as you let go, like copy-on-select in a terminal. A notification in the
+lower right shows what was copied and closes itself after two seconds (turn
+it off with =scimax.autoCopy.notify=). Paste it with =Cmd+V= or =C-y=. The clipboard you had before is not lost: it is pulled onto the ring
 first, so =M-y= gets it back.
 
 Only mouse selections are copied. Regions made with Shift+arrows or =C-SPC= are

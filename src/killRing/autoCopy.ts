@@ -8,13 +8,35 @@ import { pushKill, killRingHead } from './commands';
  * Only mouse selections count, so shift-arrow or C-SPC regions are left alone
  * and selecting text with the keyboard to paste over it still works. The copy
  * waits until the selection stops changing, so a drag copies once, at the end.
+ * A notification shows what was copied (`scimax.autoCopy.notify`).
  * Turn it off with `scimax.autoCopy.enabled` or `scimax.autoCopy.toggle`.
  */
 
 const SETTLE_MS = 250;
+const NOTIFY_MS = 2000;
+const PREVIEW_CHARS = 60;
 
 function isEnabled(): boolean {
     return vscode.workspace.getConfiguration('scimax.autoCopy').get<boolean>('enabled', true);
+}
+
+/** One-line preview of copied text for the notification. */
+export function copyPreview(text: string): string {
+    const oneLine = text.replace(/\s+/g, ' ').trim();
+    return oneLine.length > PREVIEW_CHARS ? oneLine.slice(0, PREVIEW_CHARS - 1) + '…' : oneLine;
+}
+
+/**
+ * Show a notification (lower right) that closes itself: a progress
+ * notification goes away when its task resolves, unlike an information
+ * message, which stays until it times out or is dismissed.
+ */
+function notifyCopied(text: string): void {
+    if (!vscode.workspace.getConfiguration('scimax.autoCopy').get<boolean>('notify', true)) return;
+    void vscode.window.withProgress(
+        { location: vscode.ProgressLocation.Notification, title: `Copied: ${copyPreview(text)}` },
+        () => new Promise<void>(resolve => setTimeout(resolve, NOTIFY_MS))
+    );
 }
 
 /** The selected text, one selection per line for multiple cursors (as Cmd+C does). */
@@ -41,7 +63,7 @@ export function registerAutoCopy(context: vscode.ExtensionContext): void {
                 const text = selectedText(editor.document, editor.selections);
                 if (!text.trim() || text === killRingHead()) return;
                 await pushKill(text);
-                vscode.window.setStatusBarMessage(`Auto-copied ${text.length} characters`, 1500);
+                notifyCopied(text);
             }, SETTLE_MS);
         }),
 

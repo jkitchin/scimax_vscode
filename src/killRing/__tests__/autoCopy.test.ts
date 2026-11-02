@@ -2,6 +2,8 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 
 const state = vi.hoisted(() => ({
     enabled: true,
+    notify: true,
+    notices: [] as string[],
     handler: undefined as undefined | ((e: unknown) => void),
 }));
 
@@ -9,15 +11,23 @@ vi.mock('vscode', () => ({
     TextEditorSelectionChangeKind: { Keyboard: 1, Mouse: 2, Command: 3 },
     EndOfLine: { LF: 1, CRLF: 2 },
     ConfigurationTarget: { Global: 1 },
+    ProgressLocation: { Notification: 15 },
     window: {
         onDidChangeTextEditorSelection: (h: (e: unknown) => void) => {
             state.handler = h;
             return { dispose() {} };
         },
         setStatusBarMessage: vi.fn(),
+        withProgress: (opts: { title: string }, task: () => Promise<void>) => {
+            state.notices.push(opts.title);
+            return task();
+        },
     },
     workspace: {
-        getConfiguration: () => ({ get: () => state.enabled, update: vi.fn() }),
+        getConfiguration: () => ({
+            get: (key: string) => (key === 'notify' ? state.notify : state.enabled),
+            update: vi.fn(),
+        }),
     },
     commands: { registerCommand: () => ({ dispose() {} }) },
 }));
@@ -29,7 +39,7 @@ vi.mock('../commands', () => ({
     killRingHead: () => head,
 }));
 
-import { registerAutoCopy, selectedText } from '../autoCopy';
+import { registerAutoCopy, selectedText, copyPreview } from '../autoCopy';
 
 type Sel = { text: string; isEmpty: boolean };
 const sel = (text: string): Sel => ({ text, isEmpty: text === '' });
@@ -52,12 +62,23 @@ describe('selectedText', () => {
     });
 });
 
+describe('copyPreview', () => {
+    it('collapses whitespace and shortens long text', () => {
+        expect(copyPreview('  a\n\tb  ')).toBe('a b');
+        const preview = copyPreview('x'.repeat(100));
+        expect(preview).toHaveLength(60);
+        expect(preview.endsWith('…')).toBe(true);
+    });
+});
+
 describe('auto-copy', () => {
     beforeEach(() => {
         vi.useFakeTimers();
         pushKill.mockClear();
         head = undefined;
         state.enabled = true;
+        state.notify = true;
+        state.notices = [];
         registerAutoCopy({ subscriptions: [] } as never);
     });
     afterEach(() => vi.useRealTimers());
@@ -70,6 +91,15 @@ describe('auto-copy', () => {
         await vi.advanceTimersByTimeAsync(300);
         expect(pushKill).toHaveBeenCalledTimes(1);
         expect(pushKill).toHaveBeenCalledWith('hello');
+        expect(state.notices).toEqual(['Copied: hello']);
+    });
+
+    it('can copy without the notification', async () => {
+        state.notify = false;
+        fire(makeEditor([sel('hello')]));
+        await vi.advanceTimersByTimeAsync(300);
+        expect(pushKill).toHaveBeenCalledWith('hello');
+        expect(state.notices).toEqual([]);
     });
 
     it('ignores keyboard and command selections', async () => {
