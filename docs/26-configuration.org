@@ -1642,15 +1642,30 @@ color must be opaque. Any CSS color works.
 - [[file:24-keybindings.org][Keybindings]] - Jump keybindings (=C-c j c=, =C-c j w=, …)
 - [[file:25-commands.org][Commands]] - Full command reference
 
-* Kill Ring Settings
+* 👀 Kill Ring Settings
 
-| Setting                 | Type   | Default | Description                                    |
-|-------------------------+--------+---------+------------------------------------------------|
-| scimax.killRing.maxSize | number | 120     | Maximum number of entries kept in the kill ring |
+| Setting                 | Type    | Default | Description                                                |
+|-------------------------+---------+---------+------------------------------------------------------------|
+| scimax.killRing.maxSize | number  | 120     | Maximum number of entries kept in the kill ring            |
+| scimax.autoCopy.enabled | boolean | true    | Copy mouse-highlighted text to the clipboard and kill ring |
+| scimax.autoCopy.notify  | boolean | true    | Show a notification with the auto-copied text              |
 
-This is the equivalent of Emacs =kill-ring-max=. When the ring is full, the
-oldest kill is dropped. The ring lives in memory only and starts empty each
-session.
+=scimax.killRing.maxSize= is the equivalent of Emacs =kill-ring-max=. When the
+ring is full, the oldest kill is dropped. The ring lives in memory only and
+starts empty each session.
+
+** ⚠️ Auto-Copy
+
+With =scimax.autoCopy.enabled= on (the default), text you highlight with the
+mouse is copied as soon as you release it. Keyboard selections are never
+auto-copied. To opt out, add this to =settings.json=, or run
+=scimax.autoCopy.toggle=:
+
+#+begin_src json
+"scimax.autoCopy.enabled": false
+#+end_src
+
+See [[file:25-commands.org::#auto-copy][Auto-Copy]] for details.
 
 ** Related Topics
 

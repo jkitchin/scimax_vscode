@@ -277,7 +277,11 @@ When adding new features, update the corresponding documentation in `docs/`:
 **Important**: When modifying any documentation file:
 1. Add a "Related Topics" section with cross-links to related documentation
 2. Update `docs/index.org` to include new topics in the Topic Index table
-3. Ensure tables are properly aligned using org-mode table format (`|` separators)
+3. Ensure tables are properly aligned using org-mode table format (`|` separators).
+   **Never call `emacs` (e.g. `emacs --batch ... org-table-align`)** — this
+   project is scimax; align with its own CLI after `npm run compile`:
+   `node out/cli/index.js table align <file> --line <n>` (only the table at
+   line n; omit `--line` for every table, `--check` to verify).
 4. Mark changed/new headings with status emojis using the `#+TODO: ⚠️ 👀 | ✅` workflow:
    - `⚠️` - New heading (needs review)
    - `👀` - Changed heading (needs review)
@@ -562,6 +566,7 @@ scimax db stats                 # Show database statistics
 scimax search "query"           # Full-text search
 scimax agenda today             # Show today's agenda
 scimax export file.org --format html  # Export to HTML
+scimax table align notes.org --check  # Align org/Markdown tables (exit 1 if unaligned)
 ```
 
 The CLI is useful for:

@@ -295,6 +295,39 @@ scimax tangle setup.org --json
 
 Relative =:tangle= paths are resolved against the directory of the source file, and parent directories are created as needed. Note that =--only= filters *named* blocks; unnamed blocks with a =:tangle= target are always tangled.
 
+** ⚠️ Table Align
+
+Align the org-mode and Markdown tables in files, in place. It is the same
+alignment as pressing =TAB= in a table in VS Code (=scimax.table.align=), so a
+file aligned from the terminal matches one aligned in the editor. Files ending
+in =.md=, =.markdown= or =.qmd= get Markdown (GFM) tables; everything else is
+treated as org.
+
+#+begin_src bash
+# Align every table in a file
+scimax table align notes.org
+
+# Several files at once
+scimax table align docs/*.org
+
+# Only the table containing line 42 (leaves the other tables alone)
+scimax table align README.md --line 42
+
+# Check without writing: exits 1 if any table is not aligned (for CI)
+scimax table align docs/*.org --check
+
+# Print the result instead of writing the file
+scimax table align notes.org --stdout
+
+# Structured JSON output (tables found and changed per file)
+scimax table align notes.org --json
+#+end_src
+
+Links are measured as the editor shows them with =scimax.org.descriptiveLinks=
+on: =[[url][desc]]= counts as =desc=. Pass =--raw-links= to measure links as
+written, which is how Emacs =org-table-align= lines them up. Tables inside
+blocks (=#+begin_src= ... =#+end_src=, Markdown code fences) are not touched.
+
 ** Marp Slides
 
 Build a Marp deck into one self-contained HTML file with the presenter tools
@@ -1175,3 +1208,4 @@ The CLI has some limitations compared to the VS Code extension:
 - [[file:03.6-project-management.org][Project Management]] - Task tables, Gantt charts, assignees
 - [[file:25-commands.org::*AI Agent Skills][AI Agent Skills command]] - Install the skills from VS Code
 - [[file:44-marp.org][Marp Slides]] - Slides the scimax-presentations skill builds
+- [[file:04-tables.org][Tables]] - Table editing and alignment in the editor

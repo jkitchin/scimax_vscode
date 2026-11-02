@@ -2293,6 +2293,10 @@
         "title": "Scimax: Clear Kill Ring"
       },
       {
+        "command": "scimax.autoCopy.toggle",
+        "title": "Scimax: Toggle Auto-Copy of Mouse Selections"
+      },
+      {
         "command": "scimax.editmarks.insertion",
         "title": "Scimax: Mark Insertion"
       },
@@ -7329,6 +7333,16 @@
           "minimum": 1,
           "maximum": 1000,
           "description": "Maximum number of entries kept in the kill ring (Emacs kill-ring-max)"
+        },
+        "scimax.autoCopy.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Copy text to the clipboard and kill ring as soon as you highlight it with the mouse (copy-on-select). Keyboard selections are not copied. Set to false to turn it off."
+        },
+        "scimax.autoCopy.notify": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show a brief notification with the text that auto-copy put on the clipboard."
         },
         "scimax.logLevel": {
           "type": "string",
