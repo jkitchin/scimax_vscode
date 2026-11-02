@@ -28,6 +28,7 @@ import { agendaCommand } from './commands/agenda';
 import { searchCommand } from './commands/search';
 import { exportCommand } from './commands/export';
 import { tangleCommand } from './commands/tangle';
+import { tableCommand } from './commands/table';
 import { citeCommand } from './commands/cite';
 import { dbCommand } from './commands/db';
 import { publishCommand } from './commands/publish';
@@ -148,6 +149,7 @@ COMMANDS:
     search headings         Search headings by title, tag, or TODO state
     export <file>           Export org file to HTML, PDF, or LaTeX
     tangle <file>           Extract source blocks to their :tangle target files
+    table align <file>...   Align org/Markdown tables in place (--check, --line, --stdout)
     cite <subcommand>       Citation operations (extract, check, convert)
     db <subcommand>         Database operations (sync, clear, stats, scan, check, remove, ignore)
     journal [date]          Open journal entry (today, tomorrow, "next friday", etc.)
@@ -173,6 +175,9 @@ EXAMPLES:
     scimax export --list-exporters
     scimax tangle setup.org
     scimax tangle setup.org --only init,config
+    scimax table align notes.org
+    scimax table align docs/*.org --check
+    scimax table align README.md --line 42
     scimax cite extract paper.org
     scimax cite check paper.org --bib refs.bib
     scimax db sync
@@ -238,6 +243,9 @@ async function main(): Promise<void> {
                 break;
             case 'tangle':
                 await tangleCommand(config, args);
+                break;
+            case 'table':
+                await tableCommand(config, args);
                 break;
             case 'cite':
                 await citeCommand(config, args);
