@@ -1,4 +1,4 @@
-# Build the 33 x 48 in poster. The themes come from .marprc.yml.
+# Build the 34 x 46 in poster. The themes come from .marprc.yml.
 all: scimax-poster.html
 
 scimax-poster.html: scimax-poster.md poster.css .marprc.yml

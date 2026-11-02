@@ -25,26 +25,12 @@ math: katex
 
 <div class="lede">
 
-Your notes, papers, code, data and plans live in **plain text you own**. scimax makes the editor **understand their structure** (headings, tasks, citations, equations, code), so you write once and then **search it, run it, schedule it, publish it and present it**. It brings the Emacs scimax and org-mode experience to VS Code, with no Emacs required.
+Your notes, papers, code, data and plans live in **plain text you own**: diffable, greppable, durable and free of lock-in, in org-mode, Markdown/MyST or LaTeX. scimax makes the editor **understand their structure** (headings, tasks, citations, equations, code), so you write once and then **search it, run it, schedule it, publish it and present it**. It brings the Emacs scimax and org-mode experience to VS Code, with no Emacs required.
 
 </div>
 
 <div class="grid">
 <div class="col">
-<div class="card">
-
-## Why plain text?
-
-- **Diffable:** `git` sees every change
-- **Greppable:** every tool can read it
-- **Durable and portable:** readable in 30 years, no lock-in
-- **Structured:** headings, lists, tables and code are just text conventions
-
-### Three formats, one toolkit
-
-org-mode, Markdown/MyST and LaTeX share navigation, citations, search and export.
-
-</div>
 <div class="card">
 
 ## Structure-aware editing
@@ -58,7 +44,7 @@ org-mode, Markdown/MyST and LaTeX share navigation, citations, search and export
 - **Live LaTeX** preview and entities
 
 </div>
-<div class="card amber grow">
+<div class="card amber">
 
 ## Executable documents
 
@@ -74,6 +60,16 @@ np.linspace(0, 1, 5).mean()
 
 - `C-c C-c` runs a block; results land in the document
 - Python, R, Julia, shell, SQL, JS/TS, or **any Jupyter kernel**; tangling and noweb for literate programs
+
+</div>
+<div class="card grow">
+
+## Presentations with Marp
+
+- Slides are **Markdown**, with a slide sorter
+- Present in the browser: **pen**, **laser**, **notes**, timer
+- **Live Python** cells run in the browser with Pyodide
+- One self-contained HTML file, or PDF and PPTX; *this poster is one too*
 
 </div>
 </div>
@@ -108,14 +104,16 @@ np.linspace(0, 1, 5).mean()
 - **Semantic** search with local Ollama embeddings: notes never leave your machine
 - **Hybrid** search fuses both by reciprocal rank fusion
 
-### CLI and AI agent skills
+### From the terminal
 
-The same index powers the editor, the `scimax` CLI and agent skills for Claude Code, Copilot, Codex and Cursor.
+The same index powers the editor and the `scimax` CLI.
 
 ```bash
 scimax search "activation energy"
 scimax agenda today
 scimax db sync    # cron-friendly
+scimax export paper.org --format html
+scimax publish
 ```
 
 </div>
@@ -135,29 +133,26 @@ scimax db sync    # cron-friendly
 - **Journal** and **capture** templates, all indexed
 
 </div>
-<div class="card">
-
-## Presentations with Marp
-
-- Slides are **Markdown**; slide sorter and menus to edit them
-- Present in the browser: **pen**, **laser**, **notes**, timer
-- **Live Python** cells run in the browser with Pyodide
-- One self-contained HTML file, or PDF and PPTX
-- *This poster is a Marp deck too.*
-
-</div>
 <div class="card amber grow">
 
-## Built with Claude Code
+## AI agent skills
 
-Tested, and audited for security and performance.
+Four [Agent Skills](https://agentskills.io) teach Claude Code, Copilot, Codex and Cursor to drive the `scimax` CLI over **your own notes**.
 
-<div class="stats">
-<div class="stat"><b>230k</b><span>lines of TypeScript</span></div>
-<div class="stat"><b>4,000+</b><span>unit tests</span></div>
-<div class="stat"><b>1,541</b><span>commands</span></div>
-<div class="stat"><b>58</b><span>documentation files</span></div>
+<div class="skills">
+<div class="skill"><b>scimax</b><span>search, agenda, journal, export; morning briefings and weekly reviews</span></div>
+<div class="skill"><b>scimax-org</b><span>org syntax, source blocks, tables and citations</span></div>
+<div class="skill"><b>scimax-projects</b><span>what's next, what's blocked, the critical path</span></div>
+<div class="skill"><b>scimax-presentations</b><span>Beamer and Marp decks, and this poster</span></div>
 </div>
+
+<p class="ask">“What's on my plate today?”<br>“What is blocking the reactor paper?”<br>“Make a poster about this project.”<br>“Prep me for tomorrow's group meeting.”</p>
+
+```bash
+scimax skill install
+```
+
+Or run *Scimax: Install AI Agent Skills* in VS Code.
 
 </div>
 </div>

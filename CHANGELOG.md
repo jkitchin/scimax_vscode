@@ -15,7 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- **A poster example** - `examples/scimax-poster` is a 33 x 48 in poster about Scimax, made as a one-slide Marp deck with a custom theme size (`@size poster 3168px 4608px`); `make` builds the HTML and a full-size PDF.
+- **A poster example** - `examples/scimax-poster` is a 34 x 46 in poster about Scimax, made as a one-slide Marp deck with a custom theme size (`@size poster 3264px 4416px`); `make` builds the HTML and a full-size PDF.
 - **Posters in the presentations skill** - The `scimax-presentations` agent skill now covers making a poster as a one-slide Marp deck: theme `@size` for common poster sizes, registering the theme in `.marprc.yml`, type sizes, the column layout, the build and a fit check.
 - **Narrow to subtree and widen (speed keys `N` and `S`)** - `scimax.speed.narrowToSubtree` folds everything outside the current subtree and its parent headings, leaving the cursor where it is; `scimax.speed.widen` unfolds everything. This narrows by folding, so search and edits still reach the hidden text.
 

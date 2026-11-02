@@ -180,7 +180,7 @@ For explorables (sliders, animations, step-through demos):
 
 ## Posters
 
-A conference poster is a **one-slide Marp deck** with a theme whose `@size` is the poster. The same tools build it, preview it in VS Code and present it, and `--pdf` gives a PDF that prints at full size. A working 33 x 48 in example is `examples/scimax-poster` in the scimax_vscode repo.
+A conference poster is a **one-slide Marp deck** with a theme whose `@size` is the poster. The same tools build it, preview it in VS Code and present it, and `--pdf` gives a PDF that prints at full size. A working 34 x 46 in example (`@size poster 3264px 4416px`) is `examples/scimax-poster` in the scimax_vscode repo.
 
 **Size.** Marp works in CSS pixels at 96 px/in, so give the theme `@size <name> <W>px <H>px` and set the same `width`/`height` on `section`; the front matter then says `size: <name>`.
 

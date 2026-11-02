@@ -2,16 +2,16 @@
  * scimax-poster: the scimax Marp theme at poster size.
  *
  * @theme scimax-poster
- * @size poster 3168px 4608px
+ * @size poster 3264px 4416px
  *
- * 3168 x 4608 CSS px = 33 x 48 in at 96 px/in, so the PDF prints at full size.
+ * 3264 x 4416 CSS px = 34 x 46 in at 96 px/in, so the PDF prints at full size.
  */
 
 @import 'scimax';
 
 section {
-  width: 3168px;
-  height: 4608px;
+  width: 3264px;
+  height: 4416px;
   padding: 0;
   font-size: 42px;
   line-height: 1.35;
@@ -124,14 +124,14 @@ section::before { display: none; }
 }
 
 section pre {
-  font-size: 36px;
+  font-size: 33px;
   line-height: 1.35;
   padding: 30px 36px;
   border-radius: 12px;
   margin: 10px 0 24px;
 }
 section code { font-size: 0.85em; }
-section pre code { font-size: 36px; }
+section pre code { font-size: 33px; }
 
 section table {
   font-size: 40px;
@@ -141,27 +141,33 @@ section table {
 }
 section table th, section table td { padding: 12px 18px; }
 
-/* Big numbers */
-.stats {
+/* Agent skills */
+.skills {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr;
   gap: 30px;
-  margin-top: 10px;
+  margin: 10px 0 30px;
 }
-.stat {
+.skill {
   background: var(--sx-pale);
-  border-radius: 14px;
-  padding: 26px 20px;
-  text-align: center;
+  border-left: 10px solid var(--sx-blue);
+  border-radius: 12px;
+  padding: 26px 30px;
 }
-.stat b {
-  display: block;
-  font-family: var(--sx-sans);
-  font-size: 100px;
-  line-height: 1.05;
+.skill b {
+  display: inline;
+  font-family: var(--sx-mono);
+  font-size: 40px;
   color: var(--sx-band);
+  margin-right: 14px;
 }
-.stat span { font-size: 38px; color: var(--sx-fg); }
+.skill span { font-size: 38px; line-height: 1.3; }
+.ask {
+  font-style: italic;
+  font-size: 44px;
+  color: var(--sx-level-2);
+  margin: 0 0 28px !important;
+}
 
 /* Footer */
 .foot {
