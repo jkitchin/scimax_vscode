@@ -173,13 +173,19 @@
     say(`Saved ${describe(c)} → ${name}`);
   }
 
-  // ---- ink as SVG: one overlay per slide, in the slide's own 1280 x 720 coordinates ----
-  const SW = 1280, SH = 720;
-  function inkSvg(strokes, extraClass = "") {
+  // ---- ink as SVG: one overlay per slide, in the slide's own coordinates ----
+  // A slide's size is its viewBox: 1280 x 720 for Marp's 16:9, anything a theme's @size says
+  // (a poster, 4:3). Pen widths are for a 1280-wide slide and scale with the slide's width.
+  const slideSize = svg => {
+    const vb = svg && svg.viewBox && svg.viewBox.baseVal;
+    return vb && vb.width && vb.height ? [vb.width, vb.height] : [1280, 720];
+  };
+  function inkSvg(strokes, extraClass = "", [SW, SH] = [1280, 720]) {
+    const k = SW / 1280;
     const lines = strokes.map(s => {
       const p = PENS[s.pen], pts = s.pts.length === 1 ? [s.pts[0], [s.pts[0][0] + 1e-4, s.pts[0][1]]] : s.pts;
       const xy = pts.map(([u, v]) => `${(u * SW).toFixed(1)},${(v * SH).toFixed(1)}`).join(" ");
-      return `<polyline data-pen="${s.pen}" points="${xy}" fill="none" stroke="${p.color}" stroke-width="${p.width}" stroke-linecap="round" stroke-linejoin="round"/>`;
+      return `<polyline data-pen="${s.pen}" points="${xy}" fill="none" stroke="${p.color}" stroke-width="${+(p.width * k).toFixed(2)}" stroke-linecap="round" stroke-linejoin="round"/>`;
     }).join("");
     return `<svg class="marp-ink${extraClass}" viewBox="0 0 ${SW} ${SH}" preserveAspectRatio="none" ` +
       `style="position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:50">${lines}</svg>`;
@@ -191,8 +197,8 @@
     document.querySelectorAll("svg.marp-ink:not(.print-ink)").forEach(el => { el.dataset.hidden = "1"; el.style.display = "none"; });
     slides().forEach((svg, i) => {
       const strokes = ink[idOf(svg, i)], sec = sectionOf(svg);
-      if (strokes && strokes.length && sec) sec.insertAdjacentHTML("beforeend", inkSvg(strokes, " print-ink"));
-      if (sec) (notes[idOf(svg, i)] || []).forEach(n => sec.appendChild(printNote(n)));
+      if (strokes && strokes.length && sec) sec.insertAdjacentHTML("beforeend", inkSvg(strokes, " print-ink", slideSize(svg)));
+      if (sec) (notes[idOf(svg, i)] || []).forEach(n => sec.appendChild(printNote(n, slideSize(svg))));
     });
   });
   addEventListener("afterprint", () => {
@@ -234,11 +240,11 @@
     const clean = kept.join("\n");
     const { head, chunks, seps } = splitSlides(clean);
     // The Markdown has the slides as built: hidden ones too, not ones added in the slideshow
-    const n = window.__marpSlides ? window.__marpSlides.original : slides().length;
+    const n = window.__marpSlides ? window.__marpSlides.original : slides().length, size = slideSize(slides()[0]);
     if (n && chunks.length !== n) throw new Error(`the Markdown has ${chunks.length} slides but the deck shows ${n}`);
     chunks.forEach((c, i) => {
       const strokes = ink[String(i + 1)], nts = notes[String(i + 1)], add = [];
-      if (strokes && strokes.length) add.push("", inkSvg(strokes));
+      if (strokes && strokes.length) add.push("", inkSvg(strokes, "", size));
       if (nts && nts.length) add.push("", NOTES_TAG + JSON.stringify(nts).replace(/</g, "\\u003c") + "</script>");
       if (!add.length) return;
       let last = c.length - 1;
@@ -386,6 +392,7 @@
     } catch (e) { /* no or bad ink block */ }
     if (nothing(count(bInk, bNotes))) slides().forEach((svg, i) => {
       svg.querySelectorAll("svg.marp-ink:not(.print-ink) polyline").forEach(pl => {
+        const [SW, SH] = slideSize(pl.ownerSVGElement);
         const pen = +pl.getAttribute("data-pen"), pts = (pl.getAttribute("points") || "").trim().split(/\s+/)
           .map(p => p.split(",").map(Number)).filter(p => p.length === 2 && p.every(isFinite)).map(([x, y]) => [x / SW, y / SH]);
         if (PENS[pen] && pts.length) (bInk[idOf(svg, i)] = bInk[idOf(svg, i)] || []).push({ pen, pts });
@@ -612,7 +619,10 @@
   let lastX = innerWidth / 2, lastY = innerHeight / 3;
   addEventListener("pointermove", e => { lastX = e.clientX; lastY = e.clientY; }, true);
   const noteEls = new Map();                   // note id -> element, for the visible slide
-  const noteFont = () => Math.max(11, slideRect().height / 34);
+  // Notes are sized by the slide's height, but no taller than a 4:3 slide of its width, so a
+  // portrait page (a poster) gets notes the size a landscape slide of that width would.
+  const noteSide = (w, h) => Math.min(h, 0.75 * w);
+  const noteFont = () => { const r = slideRect(); return Math.max(11, noteSide(r.width, r.height) / 34); };
 
   function newNote() {
     const r = slideRect(), w = 0.28;
@@ -743,13 +753,15 @@
     for (const t of ["keydown", "keyup", "keypress"]) el.addEventListener(t, e => e.stopPropagation());
     return el;
   }
-  // a note as it appears on paper (Cmd/Ctrl+P), in the slide's own 1280 x 720 coordinates
-  function printNote(n) {
-    const d = document.createElement("div");
+  // a note as it appears on paper (Cmd/Ctrl+P), in the slide's own coordinates; its text and
+  // padding are sized for a 720-high slide and scaled like the notes on screen (noteSide)
+  function printNote(n, [SW, SH] = [1280, 720]) {
+    const d = document.createElement("div"), k = noteSide(SW, SH) / 720;
     d.className = "mp-print-note" + (n.min ? " min" : "");
     paint(d, n.color);
-    Object.assign(d.style, { left: n.x * SW + "px", top: n.y * SH + "px", width: n.w * SW + "px" });
-    if (n.h && !n.min) d.style.height = n.h * SH + "px";
+    Object.assign(d.style, { left: n.x * SW + "px", top: n.y * SH + "px", width: n.w * SW / k + "px",
+      transform: k === 1 ? "" : `scale(${k})`, transformOrigin: "0 0" });
+    if (n.h && !n.min) d.style.height = n.h * SH / k + "px";
     if (n.min) d.textContent = "📝"; else d.appendChild(Object.assign(document.createElement("div"), { className: "mp-md" })).appendChild(renderMarkdown(n.text));
     return d;
   }
@@ -1170,8 +1182,8 @@
     document.querySelectorAll("svg.thumb-ink, .mp-print-note").forEach(el => el.remove());
     slides().forEach((svg, i) => {
       const strokes = ink[idOf(svg, i)], sec = sectionOf(svg);
-      if (strokes && strokes.length && sec) sec.insertAdjacentHTML("beforeend", inkSvg(strokes, " thumb-ink"));
-      if (sec) (notes[idOf(svg, i)] || []).forEach(n => sec.appendChild(printNote(n)));
+      if (strokes && strokes.length && sec) sec.insertAdjacentHTML("beforeend", inkSvg(strokes, " thumb-ink", slideSize(svg)));
+      if (sec) (notes[idOf(svg, i)] || []).forEach(n => sec.appendChild(printNote(n, slideSize(svg))));
     });
   }
   document.readyState === "loading" ? addEventListener("DOMContentLoaded", ready) : ready();

@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **Ink and notes on slides that are not 16:9** - The presenter tools saved and printed ink on a fixed 1280 x 720 canvas stretched over the slide, so on a 4:3 slide or a poster (a theme `@size` such as 33 x 48 in) printed pen strokes were skewed, printed sticky notes landed small in the top-left corner, and on-screen notes were sized by the slide's height, so on a tall page they were huge. Ink now uses each slide's own size, and notes are sized as on a landscape slide of the same width. 16:9 and 4:3 decks look as before.
+- **`scimax marp build` ignored the deck's `.marprc` themes** - The HTML build passed Scimax's bundled themes with `--theme-set`, which replaces a `.marprc`'s `themeSet` in Marp CLI, so a deck whose theme was set there was built with the default 1280 x 720 slide; the `--pdf` build had the opposite problem and could not find `theme: scimax`. Both now get the bundled themes and the `.marprc` ones, as the VS Code preview and Present already did.
+
+### Added
+
+- **A poster example** - `examples/scimax-poster` is a 33 x 48 in poster about Scimax, made as a one-slide Marp deck with a custom theme size (`@size poster 3168px 4608px`); `make` builds the HTML and a full-size PDF.
+
 ## [0.13.0] - 2026-11-01
 
 ### Added
