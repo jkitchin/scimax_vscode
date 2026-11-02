@@ -1812,10 +1812,34 @@ environment, killing or copying a BibTeX entry, the jump kill-line and
 copy-line actions, and rectangle kill and copy. Rectangle yank (=C-x r y=)
 still inserts the last killed rectangle as a rectangle.
 
+** ⚠️ Auto-Copy (Copy on Select)
+:PROPERTIES:
+:CUSTOM_ID: auto-copy
+:END:
+
+Text you highlight with the mouse (drag, double-click a word, triple-click a
+line) is copied to the system clipboard and pushed onto the kill ring as soon
+as you let go, like copy-on-select in a terminal. Paste it with =Cmd+V= or
+=C-y=. The clipboard you had before is not lost: it is pulled onto the ring
+first, so =M-y= gets it back.
+
+Only mouse selections are copied. Regions made with Shift+arrows or =C-SPC= are
+left alone, so selecting with the keyboard and pasting over the selection still
+works. If you highlight with the mouse and then press =Cmd+V=, you paste the
+highlighted text back over itself; use =M-y= to pick the older entry instead.
+
+It is on by default. Turn it off with =scimax.autoCopy.enabled= set to =false=,
+or flip it with the command below.
+
+| Command ID                 | Description                          | Default Keybinding |
+|----------------------------+--------------------------------------+--------------------|
+| [[cmd:scimax.autoCopy.toggle]] | Toggle Auto-Copy of Mouse Selections | -                  |
+
 ** Related Topics
 
 - [[file:24-keybindings.org][Keybindings]] - Kill Ring keys
 - [[#mark-ring][Mark Ring]] - setting the region with =C-SPC=
+- [[file:26-configuration.org::*Kill Ring Settings][Configuration]] - =scimax.autoCopy.enabled=
 - [[file:26-configuration.org][Configuration]] - =scimax.killRing.maxSize=
 4. Timestamps show how long ago each mark was set
 

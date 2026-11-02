@@ -42,6 +42,11 @@ async function writeHeadToClipboard(): Promise<void> {
     await vscode.env.clipboard.writeText(head);
 }
 
+/** The newest kill ring entry. */
+export function killRingHead(): string | undefined {
+    return ring.head();
+}
+
 /**
  * Put text on the kill ring and the system clipboard as a new entry.
  * Use this for kills and copies that are not deleted from a contiguous

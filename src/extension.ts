@@ -100,6 +100,7 @@ import { registerFuzzySearchCommands } from './fuzzySearch/commands';
 import { registerJumpCommands } from './jump/commands';
 import { registerMarkCommands } from './mark/markRing';
 import { registerKillRingCommands } from './killRing/commands';
+import { registerAutoCopy } from './killRing/autoCopy';
 import { registerRecenterCommands } from './recenter/recenter';
 import { registerCitationManipulationCommands, checkCitationContext } from './references/citationManipulation';
 import { registerBibtexSpeedCommands } from './references/bibtexSpeedCommands';
@@ -1221,6 +1222,7 @@ async function activateScimax(context: vscode.ExtensionContext) {
     // Register Mark Ring Commands (Emacs-style mark ring)
     activationStep('registerMarkCommands', () => registerMarkCommands(context));
     activationStep('registerKillRingCommands', () => registerKillRingCommands(context));
+    activationStep('registerAutoCopy', () => registerAutoCopy(context));
 
     // Register Recenter Command (Emacs-style C-l recenter-top-bottom)
     activationStep('registerRecenterCommands', () => registerRecenterCommands(context));
