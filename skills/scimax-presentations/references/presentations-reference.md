@@ -96,7 +96,7 @@ scimax marp build talk.md --json                # result as JSON (missing files,
 - It embeds a copy of the Markdown and a pristine base64 copy of the page, which the `s` key uses to save an annotated copy.
 - The file is about 2.3× the size of its content, typically 1–4 MB.
 
-**From a Makefile:** `html: ; scimax marp build slides.md -- --theme-set theme/x.css`.
+**From a Makefile:** `html: ; scimax marp build slides.md -- --theme-set theme/x.css`, or list the theme under `themeSet` in a `.marprc.yml` next to the deck (the build passes those themes along with the bundled ones).
 
 ### Presenter tools (tell the user these when you hand over a deck)
 
@@ -178,6 +178,66 @@ For explorables (sliders, animations, step-through demos):
   3. Swap them with `@media print { iframe { display: none } img.fallback { display: block } }`.
 - **Example:** `discopt-plugins/doe-book/doe-slides` is a full example. It has 12 widgets, a custom theme, verified code snippets in `code/*.py`, and a Makefile.
 
+## Posters
+
+A conference poster is a **one-slide Marp deck** with a theme whose `@size` is the poster. The same tools build it, preview it in VS Code and present it, and `--pdf` gives a PDF that prints at full size. A working 33 x 48 in example is `examples/scimax-poster` in the scimax_vscode repo.
+
+**Size.** Marp works in CSS pixels at 96 px/in, so give the theme `@size <name> <W>px <H>px` and set the same `width`/`height` on `section`; the front matter then says `size: <name>`.
+
+| Poster | `@size` |
+|---|---|
+| 33 x 48 in (portrait) | `@size poster 3168px 4608px` |
+| 36 x 48 in (portrait) | `@size poster 3456px 4608px` |
+| 48 x 36 in (landscape) | `@size poster 4608px 3456px` |
+| A0, 841 x 1189 mm | `@size poster 3179px 4494px` |
+
+**Theme** (`poster.css`), registered in a `.marprc.yml` next to the deck so Marp CLI, `scimax marp build` and the VS Code preview, thumbnails and Present all find it with no `--theme-set`:
+
+```css
+/*!
+ * @theme my-poster
+ * @size poster 3168px 4608px
+ */
+@import 'scimax';                 /* or 'default' */
+
+section {
+  width: 3168px; height: 4608px;
+  padding: 0; font-size: 42px; line-height: 1.35;
+  align-content: start;           /* the default theme centres content vertically */
+  display: flex; flex-direction: column;
+}
+section::before { display: none; } /* drop the scimax header band */
+```
+
+```yaml
+# .marprc.yml
+themeSet:
+  - ./poster.css
+```
+
+```markdown
+---
+marp: true
+theme: my-poster
+size: poster
+paginate: false
+presenter: true
+---
+```
+
+**Type scale.** A poster is read from 1 to 2 m away. About 42 px body text, 54 px subheadings, 80 px section headings and 150 to 200 px for the title read well at 33 x 48 in (roughly 2.5 times a 1280-wide slide). Shrink a section's text before the body goes below about 36 px; cut words instead.
+
+**Layout** is raw HTML around Markdown (leave a blank line between a tag and the Markdown inside it). The pattern that works: a title `.banner` (logo, `# title`, authors, a QR code `<img>` to the paper or repo), an optional one-paragraph `.lede`, a `.grid` of `.col` columns (`display: grid; grid-template-columns: 1fr 1fr 1fr`) each holding `.card` boxes with an `## heading`, and a `.foot` strip. Give the last card of each column `flex: 1` (a `.grow` class, with `.col { display: flex; flex-direction: column }`) so the column bottoms line up. Images in cards should be `width: 100%`.
+
+**Build:** `scimax marp build poster.md --pdf` makes `poster.html` (presenter tools: pen, notes and zoom on the poster) and `poster.pdf` at full print size. Embedded screenshots make the HTML large (10 MB or more), so treat both as build output. A Makefile rule:
+
+```make
+poster.html: poster.md poster.css .marprc.yml
+	scimax marp build poster.md --pdf
+```
+
+**Check the fit** before printing: nothing may run past the bottom of `section` (the last child's bottom ≤ the poster height in slide coordinates), and no card may overflow its column. A small PNG is a quick look: `marp poster.md --no-stdin --images png --image-scale 0.25 -o preview.png` (run from the deck folder so `.marprc.yml` applies).
+
 ## Making a deck: workflow
 
 1. **Outline first.** Write about one slide per 1.5–2 minutes, so roughly 30 slides for an hour. Give each section the same structure, for example question → premise → case study → code.
@@ -200,5 +260,6 @@ For explorables (sliders, animations, step-through demos):
 | Content vertically centred / colour band missing | The default theme's `align-content` / `::before` clearfix; see Custom theme |
 | Python cell: "could not start" | No internet (Pyodide comes from jsdelivr) |
 | Text or plot cut off at the slide bottom | Rebuild with `scimax marp build`: cells fit the slide. Plain HTML still overflows, so split the slide |
+| Poster built at 1280 x 720 | The theme has no `@size`, the front matter has no matching `size:`, or the theme is not in `.marprc.yml` / `--theme-set` |
 | Widget blank in PDF | Iframes don't print; use the fallback-image pattern |
 | `s` saves Markdown instead of HTML | The deck wasn't built with `scimax marp build` (no embedded copy) |
