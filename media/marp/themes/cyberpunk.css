@@ -1,0 +1,549 @@
+/*!
+ * Cyberpunk: a Marp theme of neon magenta, cyan and acid yellow on a dark,
+ * scan-lined night, with glowing terminal type.
+ *
+ * @theme cyberpunk
+ * @author Scimax
+ *
+ * @auto-scaling true
+ * @size 16:9 1280px 720px
+ * @size 4:3 960px 720px
+ *
+ * Classes (`<!-- _class: lead -->`, or `class:` for the whole deck):
+ *   lead    centred title slide over a neon horizon grid
+ *   invert  black on acid yellow, for section slides
+ * Spans: <span class="todo">TODO</span> and <span class="done">DONE</span>.
+ */
+
+section {
+  --cp-bg: #0b0b16;
+  --cp-bg-2: #141428;
+  --cp-fg: #d8e2f0;
+  --cp-dim: #7c86a6;
+  --cp-magenta: #ff2bd6;
+  --cp-cyan: #00f0ff;
+  --cp-yellow: #fcee0a;
+  --cp-green: #39ff8f;
+  --cp-red: #ff3860;
+  --cp-violet: #a970ff;
+  --cp-card: rgba(0, 240, 255, 0.06);
+  --cp-code-bg: #05050c;
+  --cp-sans: "Rajdhani", "Orbitron", "Eurostile", "Bank Gothic", "DIN Alternate", "Avenir Next Condensed", "Arial Narrow", "Helvetica Neue", Arial, sans-serif;
+  --cp-body: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Roboto, Arial, sans-serif;
+  --cp-mono: "JetBrains Mono", "Fira Code", "SF Mono", Menlo, Consolas, "DejaVu Sans Mono", monospace;
+
+  width: 1280px;
+  height: 720px;
+  box-sizing: border-box;
+  padding: 64px 80px;
+  display: block;
+  place-content: safe center center;
+  flex-flow: column nowrap;
+  align-items: stretch;
+  background-color: var(--cp-bg);
+  background-image:
+    repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.025) 0 1px, transparent 1px 4px),
+    radial-gradient(ellipse at 100% 0%, rgba(255, 43, 214, 0.16), transparent 55%),
+    radial-gradient(ellipse at 0% 100%, rgba(0, 240, 255, 0.12), transparent 55%);
+  color: var(--cp-fg);
+  font-family: var(--cp-body);
+  font-size: 29px;
+  line-height: 1.45;
+  word-wrap: break-word;
+}
+
+section > :first-child,
+section > header:first-child + * {
+  margin-top: 0;
+}
+
+section > :last-child,
+section[data-footer] > :nth-last-child(2) {
+  margin-bottom: 0;
+}
+
+/* Headings: wide, uppercase, glowing */
+
+section h1,
+section h2,
+section h3,
+section h4,
+section h5,
+section h6 {
+  font-family: var(--cp-sans);
+  font-weight: 700;
+  line-height: 1.1;
+  margin: 0 0 0.6em;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+section h1 {
+  font-size: 1.95em;
+  color: var(--cp-cyan);
+  text-shadow: 2px 0 0 var(--cp-magenta), -2px 0 0 rgba(0, 240, 255, 0.6), 0 0 18px rgba(0, 240, 255, 0.55);
+}
+
+section h2 {
+  font-size: 1.45em;
+  color: var(--cp-magenta);
+  padding-bottom: 0.25em;
+  text-shadow: 0 0 12px rgba(255, 43, 214, 0.6);
+  background-image: linear-gradient(90deg, var(--cp-magenta), var(--cp-cyan) 55%, transparent);
+  background-size: 100% 2px;
+  background-position: bottom left;
+  background-repeat: no-repeat;
+}
+
+section h2::before {
+  content: "// ";
+  color: var(--cp-yellow);
+  text-shadow: none;
+}
+
+section h3 {
+  font-size: 1.15em;
+  color: var(--cp-yellow);
+  text-shadow: 0 0 10px rgba(252, 238, 10, 0.45);
+}
+
+section h4,
+section h5,
+section h6 {
+  font-size: 1em;
+  color: var(--cp-green);
+}
+
+section[data-color] h1,
+section[data-color] h2,
+section[data-color] h3,
+section[data-color] h4,
+section[data-color] h5,
+section[data-color] h6 {
+  color: currentcolor;
+}
+
+/* Text */
+
+section p,
+section ul,
+section ol,
+section blockquote,
+section pre,
+section table,
+section dl {
+  margin: 0 0 0.7em;
+}
+
+section ul,
+section ol {
+  padding-left: 1.3em;
+}
+
+section ul {
+  list-style-type: "\25B8  ";
+}
+
+section ul ul {
+  list-style-type: "\2014  ";
+}
+
+section li + li,
+section li > ul,
+section li > ol {
+  margin-top: 0.2em;
+}
+
+section li > ul,
+section li > ol {
+  margin-bottom: 0;
+}
+
+section li::marker {
+  color: var(--cp-cyan);
+}
+
+section ol li::marker {
+  color: var(--cp-magenta);
+  font-family: var(--cp-mono);
+  font-weight: 700;
+}
+
+section strong {
+  font-weight: 700;
+  color: var(--cp-yellow);
+}
+
+section em {
+  color: var(--cp-cyan);
+}
+
+section a {
+  color: var(--cp-cyan);
+  text-decoration: none;
+  border-bottom: 1px dashed var(--cp-cyan);
+}
+
+section mark {
+  background: var(--cp-magenta);
+  color: #000;
+  padding: 0 0.15em;
+}
+
+section hr {
+  border: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--cp-magenta), var(--cp-cyan));
+  box-shadow: 0 0 10px rgba(0, 240, 255, 0.6);
+  margin: 0.8em 0;
+}
+
+section img {
+  max-width: 100%;
+}
+
+section .todo,
+section .done {
+  font-family: var(--cp-mono);
+  font-weight: 700;
+  padding: 0 0.25em;
+}
+
+section .todo {
+  color: #000;
+  background: var(--cp-red);
+}
+
+section .done {
+  color: var(--cp-green);
+  border: 1px solid var(--cp-green);
+}
+
+/* Quotes: a clipped HUD panel with a magenta edge */
+
+section blockquote {
+  background: var(--cp-card);
+  border-left: 4px solid var(--cp-magenta);
+  padding: 0.5em 0.9em;
+  color: var(--cp-fg);
+  clip-path: polygon(0 0, calc(100% - 22px) 0, 100% 22px, 100% 100%, 0 100%);
+  box-shadow: inset 0 0 0 1px rgba(0, 240, 255, 0.35);
+}
+
+section blockquote > :last-child {
+  margin-bottom: 0;
+}
+
+/* Code: a terminal */
+
+section code,
+section kbd,
+section pre,
+section samp {
+  font-family: var(--cp-mono);
+}
+
+section code {
+  background: rgba(255, 43, 214, 0.14);
+  color: #ff8aea;
+  border-radius: 2px;
+  padding: 0.1em 0.3em;
+  font-size: 0.82em;
+}
+
+section kbd {
+  background: var(--cp-bg-2);
+  color: var(--cp-cyan);
+  border: 1px solid var(--cp-cyan);
+  border-radius: 3px;
+  box-shadow: 0 0 6px rgba(0, 240, 255, 0.5);
+  padding: 0.05em 0.45em;
+  font-size: 0.75em;
+}
+
+section pre {
+  background: var(--cp-code-bg);
+  border: 1px solid rgba(0, 240, 255, 0.5);
+  border-left: 4px solid var(--cp-cyan);
+  box-shadow: 0 0 16px rgba(0, 240, 255, 0.18), inset 0 0 30px rgba(0, 240, 255, 0.05);
+  color: #c7f9ff;
+  font-size: 0.7em;
+  line-height: 1.45;
+  padding: 0.6em 0.9em;
+  overflow: auto;
+  clip-path: polygon(0 0, calc(100% - 18px) 0, 100% 18px, 100% 100%, 0 100%);
+}
+
+section pre code {
+  background: none;
+  border-radius: 0;
+  padding: 0;
+  font-size: 1em;
+  color: inherit;
+}
+
+/* Syntax colours: neon */
+section .hljs-keyword,
+section .hljs-selector-tag,
+section .hljs-doctag { color: #ff2bd6; font-weight: 700; }
+section .hljs-string,
+section .hljs-regexp,
+section .hljs-addition { color: #39ff8f; }
+section .hljs-comment,
+section .hljs-quote { color: #6a7396; font-style: italic; }
+section .hljs-title,
+section .hljs-section { color: #fcee0a; }
+section .hljs-built_in,
+section .hljs-literal,
+section .hljs-number,
+section .hljs-symbol { color: #ff9e3d; }
+section .hljs-variable,
+section .hljs-params,
+section .hljs-attr,
+section .hljs-attribute,
+section .hljs-template-variable,
+section .hljs-type { color: #00f0ff; }
+section .hljs-meta { color: #a970ff; }
+section .hljs-deletion { color: #ff3860; }
+
+/* Tables: a data readout */
+
+section table {
+  border-collapse: collapse;
+  font-size: 0.85em;
+}
+
+section th,
+section td {
+  padding: 0.25em 0.7em;
+  border-bottom: 1px solid rgba(0, 240, 255, 0.2);
+}
+
+section th {
+  background: rgba(255, 43, 214, 0.18);
+  color: var(--cp-magenta);
+  font-family: var(--cp-sans);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  border-bottom: 2px solid var(--cp-magenta);
+}
+
+section tbody tr:nth-child(2n) {
+  background: rgba(0, 240, 255, 0.05);
+}
+
+/* Header and footer: HUD strips */
+
+header,
+footer {
+  position: absolute;
+  left: 0;
+  right: 0;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 10px 80px;
+  font-family: var(--cp-mono);
+  font-size: 17px;
+  line-height: 1.3;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+header {
+  top: 0;
+  color: var(--cp-yellow);
+  background: linear-gradient(90deg, rgba(252, 238, 10, 0.12), transparent 70%);
+  border-bottom: 1px solid var(--cp-yellow);
+}
+
+header::before {
+  content: "\25A0  ";
+  color: var(--cp-magenta);
+}
+
+footer {
+  bottom: 0;
+  color: var(--cp-dim);
+  background: linear-gradient(90deg, transparent 30%, rgba(0, 240, 255, 0.1));
+  border-top: 1px solid rgba(0, 240, 255, 0.4);
+}
+
+header a,
+footer a {
+  color: inherit;
+  border-bottom: 0;
+}
+
+section[data-header] {
+  padding-top: 84px;
+}
+
+section[data-footer] {
+  padding-bottom: 76px;
+}
+
+/* Page numbers: a readout */
+
+section::after {
+  content: "[" attr(data-marpit-pagination) "/" attr(data-marpit-pagination-total) "]";
+  position: absolute;
+  right: 28px;
+  bottom: 12px;
+  padding: 0;
+  font-family: var(--cp-mono);
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--cp-cyan);
+  text-shadow: 0 0 8px rgba(0, 240, 255, 0.7);
+}
+
+section[data-footer]::after {
+  z-index: 1;
+}
+
+/* lead: a title over a neon horizon grid */
+
+section.lead {
+  display: flex;
+  justify-content: center;
+  text-align: center;
+  background-color: var(--cp-bg);
+  background-image:
+    repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.03) 0 1px, transparent 1px 4px),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1280 720' preserveAspectRatio='xMidYMid slice'%3E%3Cdefs%3E%3ClinearGradient id='s' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%23fcee0a'/%3E%3Cstop offset='1' stop-color='%23ff2bd6'/%3E%3C/linearGradient%3E%3ClinearGradient id='f' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%23ff2bd6' stop-opacity='.9'/%3E%3Cstop offset='1' stop-color='%2300f0ff' stop-opacity='.35'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cg opacity='.35'%3E%3Ccircle cx='640' cy='545' r='170' fill='url(%23s)'/%3E%3Cg fill='%230b0b16'%3E%3Crect x='440' y='478' width='400' height='7'/%3E%3Crect x='440' y='500' width='400' height='10'/%3E%3Crect x='440' y='522' width='400' height='13'/%3E%3C/g%3E%3C/g%3E%3Crect x='0' y='545' width='1280' height='175' fill='%230b0b16'/%3E%3Cg stroke='url(%23f)' stroke-width='2' fill='none'%3E%3Cpath d='M0 545H1280M0 556H1280M0 571H1280M0 592H1280M0 621H1280M0 662H1280M0 720H1280'/%3E%3Cpath d='M640 545L640 720M560 545L320 720M480 545L0 720M400 545L-320 720M720 545L960 720M800 545L1280 720M880 545L1600 720M320 545L-640 720M960 545L1920 720'/%3E%3C/g%3E%3C/svg%3E");
+  background-size: auto, cover;
+  background-position: center;
+}
+
+section.lead h1 {
+  font-size: 2.5em;
+  margin-bottom: 0.3em;
+  color: #fff;
+  text-shadow: 3px 0 0 var(--cp-magenta), -3px 0 0 var(--cp-cyan), 0 0 28px rgba(255, 43, 214, 0.8);
+}
+
+section.lead h2 {
+  background-image: none;
+  color: var(--cp-cyan);
+  text-shadow: 0 0 12px rgba(0, 240, 255, 0.7);
+}
+
+section.lead h2::before {
+  content: none;
+}
+
+section.lead p {
+  font-size: 1.05em;
+}
+
+section.lead ul,
+section.lead ol {
+  display: inline-block;
+  text-align: left;
+}
+
+/* invert: black on acid yellow, for section slides */
+
+section.invert {
+  --cp-fg: #0b0b16;
+  background-color: var(--cp-yellow);
+  background-image:
+    repeating-linear-gradient(-45deg, rgba(0, 0, 0, 0.06) 0 14px, transparent 14px 28px),
+    linear-gradient(135deg, transparent 0 calc(100% - 140px), #0b0b16 calc(100% - 140px) calc(100% - 128px), transparent calc(100% - 128px) calc(100% - 110px), var(--cp-magenta) calc(100% - 110px));
+  color: #0b0b16;
+}
+
+section.invert h1,
+section.invert h2,
+section.invert h3,
+section.invert h4,
+section.invert h5,
+section.invert h6 {
+  color: #0b0b16;
+  text-shadow: 3px 3px 0 var(--cp-cyan);
+}
+
+section.invert h2 {
+  background-image: linear-gradient(90deg, #0b0b16, transparent);
+}
+
+section.invert h2::before {
+  color: var(--cp-magenta);
+}
+
+section.invert strong {
+  color: #b0009a;
+}
+
+section.invert em {
+  color: #005f66;
+}
+
+section.invert a {
+  color: #0b0b16;
+  border-bottom-color: #0b0b16;
+}
+
+section.invert li::marker {
+  color: #0b0b16;
+}
+
+section.invert code {
+  background: #0b0b16;
+  color: var(--cp-yellow);
+}
+
+section.invert pre code {
+  background: none;
+  color: inherit;
+}
+
+section.invert blockquote {
+  background: rgba(11, 11, 22, 0.08);
+  border-left-color: #0b0b16;
+  box-shadow: inset 0 0 0 1px rgba(11, 11, 22, 0.4);
+}
+
+section.invert::after {
+  color: #0b0b16;
+  text-shadow: none;
+}
+
+section.invert header {
+  color: #0b0b16;
+  background: rgba(11, 11, 22, 0.1);
+  border-bottom-color: #0b0b16;
+}
+
+section.invert footer {
+  color: #0b0b16;
+  background: rgba(11, 11, 22, 0.1);
+  border-top-color: #0b0b16;
+}
+
+section.invert .done {
+  color: #006b33;
+  border-color: #006b33;
+}
+
+section.invert th {
+  background: #0b0b16;
+  color: var(--cp-yellow);
+  border-bottom-color: #0b0b16;
+}
+
+section.invert th,
+section.invert td {
+  border-bottom-color: rgba(11, 11, 22, 0.3);
+}
+
+section.invert tbody tr:nth-child(2n) {
+  background: rgba(11, 11, 22, 0.07);
+}
+
+section.lead.invert h1 {
+  color: #0b0b16;
+  text-shadow: 4px 4px 0 var(--cp-magenta), -2px -2px 0 var(--cp-cyan);
+}

@@ -257,17 +257,17 @@ In a Marp deck, Scimax completes directive names as you type them at the
 start of a front matter line or inside ~<!-- -->~, then their values, and
 shows what a directive does when you hover over it.
 
-| Directive                                                                     | Scope  | Values offered                                                      |
-|-------------------------------------------------------------------------------+--------+---------------------------------------------------------------------|
-| ~theme~                                                                       | Global | ~default~, ~gaia~, ~uncover~, ~scimax~, and themes from ~scimax.marp.themes~ |
-| ~paginate~                                                                    | Local  | ~true~, ~false~, ~hold~, ~skip~                                     |
-| ~headingDivider~                                                              | Global | ~1~ to ~6~                                                          |
-| ~size~                                                                        | Global | ~16:9~, ~4:3~                                                       |
-| ~math~                                                                        | Global | ~mathjax~, ~katex~                                                  |
-| ~class~                                                                       | Local  | ~lead~, ~invert~                                                    |
-| ~transition~                                                                  | Local  | The HTML slideshow transitions (~fade~, ~push~, ...)                |
-| ~header~, ~footer~, ~color~, ~background*~                                    | Local  | (free text; ~background*~ positions, repeats and sizes are offered) |
-| ~style~, ~lang~, ~title~, ~author~, ~description~, ~keywords~, ~url~, ~image~ | Global | (free text)                                                         |
+| Directive                                                                     | Scope  | Values offered                                                                                         |
+|-------------------------------------------------------------------------------+--------+--------------------------------------------------------------------------------------------------------|
+| ~theme~                                                                       | Global | ~default~, ~gaia~, ~uncover~, ~scimax~, ~steampunk~, ~cyberpunk~, and themes from ~scimax.marp.themes~ |
+| ~paginate~                                                                    | Local  | ~true~, ~false~, ~hold~, ~skip~                                                                        |
+| ~headingDivider~                                                              | Global | ~1~ to ~6~                                                                                             |
+| ~size~                                                                        | Global | ~16:9~, ~4:3~                                                                                          |
+| ~math~                                                                        | Global | ~mathjax~, ~katex~                                                                                     |
+| ~class~                                                                       | Local  | ~lead~, ~invert~                                                                                       |
+| ~transition~                                                                  | Local  | The HTML slideshow transitions (~fade~, ~push~, ...)                                                   |
+| ~header~, ~footer~, ~color~, ~background*~                                    | Local  | (free text; ~background*~ positions, repeats and sizes are offered)                                    |
+| ~style~, ~lang~, ~title~, ~author~, ~description~, ~keywords~, ~url~, ~image~ | Global | (free text)                                                                                            |
 
 * Slide Thumbnails
 
@@ -584,10 +584,41 @@ theme does ~@import 'scimax';~ and changes only what you set. The CSS is in
 ~media/marp/themes/scimax.css~ in the extension. Marp for VS Code's own
 preview does not know the theme; Scimax's previews and exports do.
 
-** Custom themes
+** ⚠️ The steampunk and cyberpunk themes
 
-/New Custom Theme.../ asks for a name and a theme to start from (Marp's or
-~scimax~), then:
+Two more themes ship with Scimax and work the same way as ~scimax~: no theme
+file or setting needed, and the thumbnails, preview, slideshow, exports and
+~scimax marp build~ all know them. Both have the same ~lead~ and ~invert~
+classes and the same ~todo~ / ~done~ spans as ~scimax~, and fitted headings
+work.
+
+#+begin_src markdown
+---
+marp: true
+theme: steampunk   # or cyberpunk
+paginate: true
+---
+#+end_src
+
+| Theme       | Slides   | Look                                                                                                                                                                                                   |
+|-------------+----------+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| ~steampunk~ | All      | Aged parchment in a brass and copper frame, Victorian serif type (Baskerville, Didot), headings in oxblood and copper, quotes on riveted brass plates, code on dark iron, page numbers on brass gauges |
+|             | ~lead~   | A title framed in brass, with gears in the corners                                                                                                                                                     |
+|             | ~invert~ | Brass type on dark iron, with gears                                                                                                                                                                    |
+| ~cyberpunk~ | All      | A dark, scan-lined night in neon magenta, cyan and acid yellow, glowing uppercase headings, ~//~ before level 2, quotes and code in clipped-corner panels, ~[n/N]~ page numbers                        |
+|             | ~lead~   | A title over a neon horizon grid and setting sun                                                                                                                                                       |
+|             | ~invert~ | Black on acid-yellow hazard stripes                                                                                                                                                                    |
+
+The fonts are ones that come with macOS or are common elsewhere, with plain
+serif or sans-serif fallbacks, so nothing is downloaded and decks look the
+same offline. The CSS is in ~media/marp/themes/steampunk.css~ and
+~media/marp/themes/cyberpunk.css~ in the extension; to change one, choose
+/New Custom Theme.../ and start from it.
+
+** 👀 Custom themes
+
+/New Custom Theme.../ asks for a name and a theme to start from (Marp's,
+~scimax~, ~steampunk~ or ~cyberpunk~), then:
 
 1. writes ~themes/<name>.css~ in the workspace folder (next to the deck
    outside a workspace), with ~/* @theme <name> */~, ~@import '<base>';~ and
