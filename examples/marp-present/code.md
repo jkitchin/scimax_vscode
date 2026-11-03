@@ -11,7 +11,7 @@ paginate: true
 
 Highlighted code, live Python cells, and code that fails on purpose.
 
-Open with **Present** (`C-c C-e`) to run the cells.
+Open with **Present** to run the cells.
 Click a cell to edit it, **Shift+Enter** or **▶** runs it, **Esc** leaves the editor.
 
 ---
