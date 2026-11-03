@@ -34,6 +34,8 @@ export const SPEED_COMMAND_DEFINITIONS: SpeedCommandDefinition[] = [
     { key: 'c', command: 'scimax.org.cycleGlobalFold', description: 'Cycle global visibility', category: 'visibility' },
     { key: 'C', command: 'scimax.speed.showChildren', description: 'Show all children', category: 'visibility' },
     { key: 'o', command: 'scimax.speed.overview', description: 'Overview (fold all)', category: 'visibility' },
+    { key: 'N', command: 'scimax.speed.narrowToSubtree', description: 'Narrow to subtree (fold the rest)', category: 'visibility' },
+    { key: 'S', command: 'scimax.speed.widen', description: 'Widen (unfold all)', category: 'visibility' },
     { key: 'Tab', command: 'scimax.org.toggleFold', description: 'Cycle fold at point', category: 'visibility' },
 
     // Structure Editing

@@ -19,6 +19,7 @@ import {
 } from '../../marp/presenterBundle';
 import { fetchFontCached, offlinePythonFiles } from '../../marp/presenterDownloads';
 import { bundledThemeFiles } from '../../marp/bundledThemes';
+import { findMarpCliConfig } from '../../marp/marpConfig';
 import { scimaxGlobalStorageDir } from '../globalStorage';
 
 interface CliConfig {
@@ -146,6 +147,10 @@ export async function marpCommand(_config: CliConfig, args: ParsedArgs): Promise
     const markdown = fs.readFileSync(input, 'utf8');
     const presenter = deckWantsPresenter(markdown, args.flags.plain === true);
     const extra = args.passthrough ?? [];
+    // Scimax's own themes, such as `theme: scimax`, plus the `themeSet` of a
+    // .marprc next to the deck: a --theme-set argument replaces the config's
+    // themeSet in Marp CLI, so it has to be passed along here.
+    const themeFiles = [...bundledThemeFiles(), ...(findMarpCliConfig(deckDir)?.themeFiles ?? [])];
     const say = (message: string) => {
         if (!json) {
             console.error(message);
@@ -163,8 +168,7 @@ export async function marpCommand(_config: CliConfig, args: ParsedArgs): Promise
             // Presenter decks may use HTML widgets (e.g. iframes).
             enableHtml: presenter,
             engine: presenter ? path.join(MEDIA_DIR, 'engine.cjs') : undefined,
-            // Scimax's own themes, such as `theme: scimax`
-            themeFiles: bundledThemeFiles(),
+            themeFiles,
         })], deckDir, json);
 
         if (presenter) {
@@ -206,7 +210,7 @@ export async function marpCommand(_config: CliConfig, args: ParsedArgs): Promise
     let pdf: string | undefined;
     if (args.flags.pdf === true) {
         pdf = output.replace(/\.html?$/i, '') + '.pdf';
-        await runMarp([...extra, ...buildMarpArgs(input, pdf, 'pdf', { allowLocalFiles: true, enableHtml: presenter })], deckDir, json);
+        await runMarp([...extra, ...buildMarpArgs(input, pdf, 'pdf', { allowLocalFiles: true, enableHtml: presenter, themeFiles })], deckDir, json);
     }
 
     const issues = presenter ? offlineIssues({ markdown, report, plan, pythonError }) : [];

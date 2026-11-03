@@ -1199,14 +1199,16 @@ CLOSED: [2026-01-17 Sat 12:48]
 | [[cmd:scimax.speed.firstHeading]]    | First Heading        | -         |
 | [[cmd:scimax.speed.lastHeading]]     | Last Heading         | -         |
 
-** ✅ Visibility
+** 👀 Visibility
 CLOSED: [2026-01-17 Sat 12:48]
 
-| Command ID                         | Description         | Speed Key |
-|------------------------------------+---------------------+-----------|
-| [[cmd:scimax.org.cycleGlobalFold]] | Cycle Global Fold   | c         |
-| [[cmd:scimax.speed.showChildren]]  | Show All Children   | C (S-c)   |
-| [[cmd:scimax.speed.overview]]      | Overview (Fold All) | o         |
+| Command ID                       | Description                       | Speed Key |
+|----------------------------------+-----------------------------------+-----------|
+| [[cmd:scimax.org.cycleGlobalFold]]   | Cycle Global Fold                 | c         |
+| [[cmd:scimax.speed.showChildren]]    | Show All Children                 | C (S-c)   |
+| [[cmd:scimax.speed.overview]]        | Overview (Fold All)               | o         |
+| [[cmd:scimax.speed.narrowToSubtree]] | Narrow to Subtree (Fold the Rest) | N (S-n)   |
+| [[cmd:scimax.speed.widen]]           | Widen (Unfold All)                | S (S-s)   |
 
 ** ✅ Structure Editing
 CLOSED: [2026-01-17 Sat 12:48]

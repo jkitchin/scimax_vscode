@@ -361,7 +361,9 @@ export function registerSpeedCommands(context: vscode.ExtensionContext): void {
     // Visibility commands
     context.subscriptions.push(
         vscode.commands.registerCommand('scimax.speed.showChildren', visibility.showAllChildren),
-        vscode.commands.registerCommand('scimax.speed.overview', visibility.showOverview)
+        vscode.commands.registerCommand('scimax.speed.overview', visibility.showOverview),
+        vscode.commands.registerCommand('scimax.speed.narrowToSubtree', visibility.narrowToSubtree),
+        vscode.commands.registerCommand('scimax.speed.widen', visibility.widen)
     );
 
     // Initialize clocking with persistence

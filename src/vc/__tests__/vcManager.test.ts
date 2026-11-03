@@ -110,12 +110,16 @@ describe('pure helpers', () => {
     });
 });
 
-describe('against a git repository', () => {
+// Each test spawns many git processes, which is slow on Windows CI runners;
+// the default 5s timeout is too tight there.
+const GIT_TIMEOUT_MS = 30000;
+
+describe('against a git repository', { timeout: GIT_TIMEOUT_MS }, () => {
     let repo: string;
 
     beforeEach(async () => {
         repo = await makeRepo();
-    });
+    }, GIT_TIMEOUT_MS);
 
     afterEach(() => {
         fs.rmSync(repo, { recursive: true, force: true });
