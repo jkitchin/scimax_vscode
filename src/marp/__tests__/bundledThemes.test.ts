@@ -26,6 +26,8 @@ describe('bundled themes', () => {
     it.each([
         ['steampunk', '--sp-brass'],
         ['cyberpunk', '--cp-magenta'],
+        ['steel', '--st-molten'],
+        ['steelpunk', '--sk-hazard'],
     ])('renders a deck with theme: %s', (name, variable) => {
         const css = bundledThemeFiles().map(file => fs.readFileSync(file, 'utf8'));
         const deck = renderDeck(`---\nmarp: true\ntheme: ${name}\npaginate: true\n---\n\n<!-- _class: lead -->\n# <!-- fit --> Hi\n\n---\n\n<!-- _class: invert -->\n## Part\n`, { themes: css });

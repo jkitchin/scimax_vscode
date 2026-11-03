@@ -108,7 +108,7 @@ describe('MARP_HEADER_SNIPPET', () => {
         const { MARP_HEADER_SNIPPET } = await import('../marpAuthoring');
         const lines = MARP_HEADER_SNIPPET.split('\n');
         expect(lines.slice(0, 2)).toEqual(['---', 'marp: true']);
-        expect(lines[2]).toBe('theme: ${1|default,gaia,uncover,scimax,steampunk,cyberpunk|}');
+        expect(lines[2]).toBe('theme: ${1|default,gaia,uncover,scimax,steampunk,cyberpunk,steel,steelpunk|}');
         expect(lines[4]).toBe('presenter: true');
         expect(lines[5]).toBe('---');
     });
