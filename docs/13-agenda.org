@@ -1071,7 +1071,7 @@ agenda buffer's hover does. =Escape= or moving on hides it.
 
 The view reloads when the agenda refreshes and whenever an org file is saved.
 
-*** Agenda View Keys
+*** 👀 Agenda View Keys
 
 The keys follow the agenda buffer where it has the same action:
 
@@ -1083,6 +1083,8 @@ The keys follow the agenda buffer where it has the same action:
 | =Enter=          | Open the item beside the view        |
 | =Space=          | Show or hide the item's tooltip      |
 | =t=              | Cycle the item's TODO state          |
+| =C-c C-d=        | Set the item's DEADLINE              |
+| =C-c C-s=        | Set the item's SCHEDULED date        |
 | =f=, =b=         | Page forward, back                   |
 | =.=              | Back to today                        |
 | =d=, =w=, =m=    | Day, week, month span                |
@@ -1092,6 +1094,9 @@ The keys follow the agenda buffer where it has the same action:
 
 =Shift+F10= or the context-menu key opens the right-click menu for the
 selected item.
+
+=d= is the day span, as in org's agenda, so the deadline is on =C-c C-d=
+(also *Deadline...* in the right-click menu).
 
 ** ✅ Opening Items
 CLOSED: [2026-01-18 Sun 12:53]
