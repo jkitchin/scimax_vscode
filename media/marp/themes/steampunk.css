@@ -1,0 +1,572 @@
+/*!
+ * Steampunk: a Marp theme of brass, copper and riveted iron on aged
+ * parchment, set in Victorian book faces.
+ *
+ * @theme steampunk
+ * @author Scimax
+ *
+ * @auto-scaling true
+ * @size 16:9 1280px 720px
+ * @size 4:3 960px 720px
+ *
+ * Classes (`<!-- _class: lead -->`, or `class:` for the whole deck):
+ *   lead    centred title slide on parchment, framed in brass, with gears
+ *   invert  brass on dark iron, with gears, for section slides
+ * Spans: <span class="todo">TODO</span> and <span class="done">DONE</span>.
+ */
+
+section {
+  --sp-bg: #f1e4c6;
+  --sp-bg-edge: #d9c296;
+  --sp-fg: #3b2a1a;
+  --sp-brass: #b5893b;
+  --sp-brass-light: #e0bd6e;
+  --sp-copper: #a9562b;
+  --sp-iron: #2b241e;
+  --sp-iron-light: #4a3f35;
+  --sp-oxblood: #7a2a1f;
+  --sp-verdigris: #3f7d6e;
+  --sp-link: #7a3e17;
+  --sp-card: #e6d3a8;
+  --sp-rule: #c7a868;
+  --sp-code-bg: #2b241e;
+  --sp-code-fg: #f1e4c6;
+  --sp-serif: "Baskerville", "Libre Baskerville", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif;
+  --sp-display: "Didot", "Bodoni 72", "Bodoni MT", "Playfair Display", "Baskerville", Georgia, serif;
+  --sp-mono: "American Typewriter", "Courier Prime", "Courier New", Courier, monospace;
+
+  width: 1280px;
+  height: 720px;
+  box-sizing: border-box;
+  padding: 64px 84px;
+  display: block;
+  place-content: safe center center;
+  flex-flow: column nowrap;
+  align-items: stretch;
+  background-color: var(--sp-bg);
+  background-image: radial-gradient(ellipse at center, rgba(255, 248, 230, 0.55) 0%, rgba(255, 248, 230, 0) 60%, rgba(120, 80, 30, 0.22) 100%);
+  color: var(--sp-fg);
+  font-family: var(--sp-serif);
+  font-size: 30px;
+  line-height: 1.45;
+  word-wrap: break-word;
+  /* a brass rule with rivets inset from the edge */
+  box-shadow: inset 0 0 0 10px var(--sp-bg), inset 0 0 0 13px var(--sp-brass), inset 0 0 0 15px var(--sp-bg), inset 0 0 0 16px var(--sp-copper);
+}
+
+section > :first-child,
+section > header:first-child + * {
+  margin-top: 0;
+}
+
+section > :last-child,
+section[data-footer] > :nth-last-child(2) {
+  margin-bottom: 0;
+}
+
+/* Headings: engraved display face in copper and iron */
+
+section h1,
+section h2,
+section h3,
+section h4,
+section h5,
+section h6 {
+  font-family: var(--sp-display);
+  font-weight: 700;
+  line-height: 1.15;
+  margin: 0 0 0.6em;
+  letter-spacing: 0.02em;
+}
+
+section h1 {
+  font-size: 1.9em;
+  color: var(--sp-oxblood);
+  text-shadow: 1px 1px 0 rgba(255, 245, 220, 0.8), -1px -1px 0 rgba(90, 50, 20, 0.25);
+}
+
+section h2 {
+  font-size: 1.45em;
+  color: var(--sp-iron);
+  padding-bottom: 0.25em;
+  border-bottom: 0;
+  background-image: linear-gradient(90deg, var(--sp-copper), var(--sp-brass-light) 50%, rgba(181, 137, 59, 0));
+  background-size: 100% 3px;
+  background-position: bottom left;
+  background-repeat: no-repeat;
+}
+
+section h2::before {
+  content: "\2699\FE0E  ";
+  color: var(--sp-brass);
+  font-weight: 400;
+}
+
+section h3 {
+  font-size: 1.15em;
+  color: var(--sp-copper);
+  font-style: italic;
+}
+
+section h4,
+section h5,
+section h6 {
+  font-size: 1em;
+  color: var(--sp-verdigris);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+section[data-color] h1,
+section[data-color] h2,
+section[data-color] h3,
+section[data-color] h4,
+section[data-color] h5,
+section[data-color] h6 {
+  color: currentcolor;
+}
+
+/* Text */
+
+section p,
+section ul,
+section ol,
+section blockquote,
+section pre,
+section table,
+section dl {
+  margin: 0 0 0.7em;
+}
+
+section ul,
+section ol {
+  padding-left: 1.3em;
+}
+
+section ul {
+  list-style-type: "\2756  ";
+}
+
+section ul ul {
+  list-style-type: "\2726  ";
+}
+
+section li + li,
+section li > ul,
+section li > ol {
+  margin-top: 0.2em;
+}
+
+section li > ul,
+section li > ol {
+  margin-bottom: 0;
+}
+
+section li::marker {
+  color: var(--sp-brass);
+}
+
+section ol li::marker {
+  color: var(--sp-copper);
+  font-family: var(--sp-display);
+  font-weight: 700;
+}
+
+section strong {
+  font-weight: 700;
+  color: var(--sp-oxblood);
+}
+
+section em {
+  color: var(--sp-iron-light);
+}
+
+section a {
+  color: var(--sp-link);
+  text-decoration: underline;
+  text-decoration-color: var(--sp-brass);
+  text-underline-offset: 0.15em;
+}
+
+section mark {
+  background: rgba(224, 189, 110, 0.6);
+  color: inherit;
+  padding: 0 0.15em;
+}
+
+section hr {
+  border: 0;
+  height: 3px;
+  background: linear-gradient(90deg, rgba(181, 137, 59, 0), var(--sp-brass) 20%, var(--sp-copper) 50%, var(--sp-brass) 80%, rgba(181, 137, 59, 0));
+  margin: 0.8em 0;
+}
+
+section img {
+  max-width: 100%;
+}
+
+section .todo,
+section .done {
+  font-family: var(--sp-display);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+}
+
+section .todo { color: var(--sp-copper); }
+section .done { color: var(--sp-verdigris); }
+
+/* Quotes: a brass plate held by four rivets */
+
+section blockquote {
+  position: relative;
+  background:
+    radial-gradient(circle at 12px 12px, var(--sp-brass-light) 0 3px, var(--sp-copper) 4px, transparent 5px),
+    radial-gradient(circle at calc(100% - 12px) 12px, var(--sp-brass-light) 0 3px, var(--sp-copper) 4px, transparent 5px),
+    radial-gradient(circle at 12px calc(100% - 12px), var(--sp-brass-light) 0 3px, var(--sp-copper) 4px, transparent 5px),
+    radial-gradient(circle at calc(100% - 12px) calc(100% - 12px), var(--sp-brass-light) 0 3px, var(--sp-copper) 4px, transparent 5px),
+    linear-gradient(160deg, #ecdcb4, var(--sp-card));
+  border: 2px solid var(--sp-brass);
+  border-radius: 4px;
+  padding: 0.6em 1.2em;
+  color: var(--sp-fg);
+  font-style: italic;
+  box-shadow: 2px 3px 0 rgba(90, 55, 20, 0.25);
+}
+
+section blockquote > :last-child {
+  margin-bottom: 0;
+}
+
+/* Code: a dark iron boiler plate with brass trim */
+
+section code,
+section kbd,
+section pre,
+section samp {
+  font-family: var(--sp-mono);
+}
+
+section code {
+  background: rgba(181, 137, 59, 0.22);
+  color: var(--sp-iron);
+  border-radius: 3px;
+  padding: 0.1em 0.3em;
+  font-size: 0.85em;
+}
+
+section kbd {
+  background: linear-gradient(#f3e3bd, #d9c296);
+  border: 1px solid var(--sp-copper);
+  border-radius: 50%/40%;
+  box-shadow: 0 2px 0 var(--sp-iron-light);
+  padding: 0.05em 0.5em;
+  font-size: 0.75em;
+}
+
+section pre {
+  background: var(--sp-code-bg);
+  border: 3px solid var(--sp-brass);
+  border-radius: 6px;
+  box-shadow: inset 0 0 0 2px var(--sp-iron), inset 0 0 18px rgba(0, 0, 0, 0.6);
+  color: var(--sp-code-fg);
+  font-size: 0.7em;
+  line-height: 1.45;
+  padding: 0.7em 1em;
+  overflow: auto;
+}
+
+section pre code {
+  background: none;
+  border-radius: 0;
+  padding: 0;
+  font-size: 1em;
+  color: inherit;
+}
+
+/* Syntax colours: brass, copper and verdigris on iron */
+section .hljs-keyword,
+section .hljs-selector-tag,
+section .hljs-doctag { color: #e0bd6e; font-weight: 700; }
+section .hljs-string,
+section .hljs-regexp,
+section .hljs-addition { color: #8cc7a8; }
+section .hljs-comment,
+section .hljs-quote { color: #9c8b72; font-style: italic; }
+section .hljs-title,
+section .hljs-section { color: #f0915a; }
+section .hljs-built_in,
+section .hljs-literal,
+section .hljs-number,
+section .hljs-symbol { color: #e3a07a; }
+section .hljs-variable,
+section .hljs-params,
+section .hljs-attr,
+section .hljs-attribute,
+section .hljs-template-variable,
+section .hljs-type { color: #d8c9a3; }
+section .hljs-meta { color: #9c8b72; }
+section .hljs-deletion { color: #e06c5a; }
+
+/* Tables: a ledger */
+
+section table {
+  border-collapse: collapse;
+  font-size: 0.85em;
+  border-top: 3px double var(--sp-copper);
+  border-bottom: 3px double var(--sp-copper);
+}
+
+section th,
+section td {
+  padding: 0.25em 0.7em;
+  border-bottom: 1px solid var(--sp-rule);
+}
+
+section th {
+  background: var(--sp-iron);
+  color: var(--sp-brass-light);
+  font-family: var(--sp-display);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  border-bottom: 2px solid var(--sp-brass);
+}
+
+section tbody tr:nth-child(2n) {
+  background: rgba(181, 137, 59, 0.14);
+}
+
+/* Header and footer: riveted iron bands with brass edges */
+
+header,
+footer {
+  position: absolute;
+  left: 0;
+  right: 0;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 10px 84px;
+  font-family: var(--sp-display);
+  font-size: 18px;
+  line-height: 1.3;
+  letter-spacing: 0.06em;
+  color: var(--sp-brass-light);
+  background-color: var(--sp-iron);
+  background-image:
+    radial-gradient(circle, var(--sp-brass-light) 0 2px, var(--sp-copper) 3px, transparent 4px);
+  background-size: 40px 100%;
+  background-repeat: repeat-x;
+  background-position: 20px center;
+}
+
+header {
+  top: 0;
+  border-bottom: 3px solid var(--sp-brass);
+  /* keep rivets off the text */
+  background-image:
+    linear-gradient(90deg, transparent 0 60px, var(--sp-iron) 60px calc(100% - 60px), transparent calc(100% - 60px)),
+    radial-gradient(circle, var(--sp-brass-light) 0 2px, var(--sp-copper) 3px, transparent 4px);
+  background-size: 100% 100%, 40px 100%;
+  background-position: 0 0, 20px center;
+  background-repeat: no-repeat, repeat-x;
+}
+
+footer {
+  bottom: 0;
+  border-top: 3px solid var(--sp-brass);
+  background-image:
+    linear-gradient(90deg, transparent 0 60px, var(--sp-iron) 60px calc(100% - 60px), transparent calc(100% - 60px)),
+    radial-gradient(circle, var(--sp-brass-light) 0 2px, var(--sp-copper) 3px, transparent 4px);
+  background-size: 100% 100%, 40px 100%;
+  background-position: 0 0, 20px center;
+  background-repeat: no-repeat, repeat-x;
+}
+
+header a,
+footer a {
+  color: inherit;
+}
+
+section[data-header] {
+  padding-top: 86px;
+}
+
+section[data-footer] {
+  padding-bottom: 78px;
+}
+
+/* Page numbers: on a brass gauge */
+
+section::after {
+  position: absolute;
+  right: 26px;
+  bottom: 22px;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #f6dc9a, var(--sp-brass) 60%, #7c5a22);
+  border: 2px solid var(--sp-copper);
+  box-shadow: 0 2px 3px rgba(40, 25, 10, 0.4);
+  font-family: var(--sp-display);
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--sp-iron);
+}
+
+section[data-footer]::after {
+  z-index: 1;
+  bottom: 12px;
+  width: 36px;
+  height: 36px;
+  font-size: 15px;
+}
+
+/* lead: a title slide framed in brass, with gears in the corners */
+
+section.lead {
+  display: flex;
+  justify-content: center;
+  text-align: center;
+  background-color: var(--sp-bg);
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Cg fill='none'%3E%3Ccircle cx='100' cy='100' r='80' stroke='%23b5893b' stroke-width='24' stroke-dasharray='18 13.4' opacity='.55'/%3E%3Ccircle cx='100' cy='100' r='62' stroke='%23b5893b' stroke-width='14' opacity='.55'/%3E%3Ccircle cx='100' cy='100' r='22' stroke='%23a9562b' stroke-width='10' opacity='.6'/%3E%3Cpath d='M100 40V160M40 100H160M58 58L142 142M142 58L58 142' stroke='%23b5893b' stroke-width='8' opacity='.45'/%3E%3C/g%3E%3C/svg%3E"),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Cg fill='none'%3E%3Ccircle cx='100' cy='100' r='80' stroke='%23a9562b' stroke-width='24' stroke-dasharray='14 11.1' opacity='.45'/%3E%3Ccircle cx='100' cy='100' r='62' stroke='%23a9562b' stroke-width='12' opacity='.45'/%3E%3Ccircle cx='100' cy='100' r='20' stroke='%23b5893b' stroke-width='10' opacity='.55'/%3E%3Cpath d='M100 40V160M48 70L152 130M48 130L152 70' stroke='%23a9562b' stroke-width='7' opacity='.4'/%3E%3C/g%3E%3C/svg%3E"),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Cg fill='none'%3E%3Ccircle cx='100' cy='100' r='80' stroke='%23b5893b' stroke-width='24' stroke-dasharray='18 13.4' opacity='.4'/%3E%3Ccircle cx='100' cy='100' r='62' stroke='%23b5893b' stroke-width='14' opacity='.4'/%3E%3Ccircle cx='100' cy='100' r='22' stroke='%23a9562b' stroke-width='10' opacity='.45'/%3E%3C/g%3E%3C/svg%3E"),
+    radial-gradient(ellipse at center, rgba(255, 248, 230, 0.75) 0%, rgba(255, 248, 230, 0) 55%, rgba(120, 80, 30, 0.3) 100%);
+  background-repeat: no-repeat;
+  background-size: 300px 300px, 190px 190px, 240px 240px, cover;
+  background-position: -90px -90px, 170px -60px, calc(100% + 80px) calc(100% + 80px), center;
+  box-shadow: inset 0 0 0 18px var(--sp-bg), inset 0 0 0 24px var(--sp-brass), inset 0 0 0 27px var(--sp-bg), inset 0 0 0 29px var(--sp-copper);
+}
+
+section.lead h1 {
+  font-size: 2.4em;
+  margin-bottom: 0.25em;
+  padding: 0 0.4em;
+}
+
+section.lead h2 {
+  background-image: none;
+  font-style: italic;
+  font-weight: 400;
+  color: var(--sp-copper);
+}
+
+section.lead h2::before {
+  content: none;
+}
+
+section.lead h1::after {
+  content: "";
+  display: block;
+  width: 60%;
+  height: 3px;
+  margin: 0.25em auto 0;
+  background: linear-gradient(90deg, rgba(181, 137, 59, 0), var(--sp-brass) 25%, var(--sp-copper) 50%, var(--sp-brass) 75%, rgba(181, 137, 59, 0));
+}
+
+section.lead p {
+  font-size: 1.05em;
+}
+
+section.lead ul,
+section.lead ol {
+  display: inline-block;
+  text-align: left;
+}
+
+/* invert: brass on dark iron, with gears, for section slides */
+
+section.invert {
+  background-color: var(--sp-iron);
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Cg fill='none'%3E%3Ccircle cx='100' cy='100' r='80' stroke='%23b5893b' stroke-width='24' stroke-dasharray='18 13.4' opacity='.22'/%3E%3Ccircle cx='100' cy='100' r='62' stroke='%23b5893b' stroke-width='14' opacity='.22'/%3E%3Ccircle cx='100' cy='100' r='22' stroke='%23a9562b' stroke-width='10' opacity='.3'/%3E%3Cpath d='M100 40V160M40 100H160M58 58L142 142M142 58L58 142' stroke='%23b5893b' stroke-width='8' opacity='.18'/%3E%3C/g%3E%3C/svg%3E"),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Cg fill='none'%3E%3Ccircle cx='100' cy='100' r='80' stroke='%23a9562b' stroke-width='24' stroke-dasharray='14 11.1' opacity='.25'/%3E%3Ccircle cx='100' cy='100' r='62' stroke='%23a9562b' stroke-width='12' opacity='.25'/%3E%3Ccircle cx='100' cy='100' r='20' stroke='%23b5893b' stroke-width='10' opacity='.3'/%3E%3C/g%3E%3C/svg%3E"),
+    radial-gradient(ellipse at 40% 40%, #4a3f35 0%, #2b241e 60%, #15110d 100%);
+  background-repeat: no-repeat;
+  background-size: 520px 520px, 300px 300px, cover;
+  background-position: calc(100% + 140px) -120px, calc(100% + 60px) calc(100% + 110px), center;
+  box-shadow: inset 0 0 0 10px var(--sp-iron), inset 0 0 0 13px var(--sp-brass), inset 0 0 0 15px var(--sp-iron), inset 0 0 0 16px var(--sp-copper);
+  color: #ecdcb4;
+}
+
+section.invert h1,
+section.invert h2,
+section.invert h4,
+section.invert h5,
+section.invert h6 {
+  color: var(--sp-brass-light);
+  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.6);
+}
+
+section.invert h3 {
+  color: #f0915a;
+}
+
+section.invert strong {
+  color: #f4c77d;
+}
+
+section.invert em {
+  color: #d8c9a3;
+}
+
+section.invert a {
+  color: #f0b27a;
+}
+
+section.invert li::marker {
+  color: var(--sp-brass-light);
+}
+
+section.invert code {
+  background: rgba(224, 189, 110, 0.18);
+  color: #f6e7c1;
+}
+
+section.invert pre code {
+  background: none;
+  color: inherit;
+}
+
+section.invert pre {
+  background: #1a1511;
+}
+
+section.invert blockquote {
+  background: linear-gradient(160deg, rgba(74, 63, 53, 0.9), rgba(43, 36, 30, 0.9));
+  color: inherit;
+}
+
+section.invert header,
+section.invert footer {
+  background-color: #15110d;
+}
+
+section.invert .todo { color: #f0915a; }
+section.invert .done { color: #8cc7a8; }
+
+section.invert th {
+  background: #15110d;
+}
+
+section.invert th,
+section.invert td {
+  border-bottom-color: rgba(224, 189, 110, 0.3);
+}
+
+section.invert tbody tr:nth-child(2n) {
+  background: rgba(224, 189, 110, 0.08);
+}
+
+section.lead.invert {
+  box-shadow: inset 0 0 0 18px var(--sp-iron), inset 0 0 0 24px var(--sp-brass), inset 0 0 0 27px var(--sp-iron), inset 0 0 0 29px var(--sp-copper);
+}
+
+section.lead.invert h1::after {
+  background: linear-gradient(90deg, rgba(224, 189, 110, 0), var(--sp-brass-light) 25%, #f0915a 50%, var(--sp-brass-light) 75%, rgba(224, 189, 110, 0));
+}

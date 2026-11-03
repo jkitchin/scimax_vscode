@@ -18,7 +18,7 @@ import {
 import { parseDocument, replaceDocumentText, slidesInSelection } from './deckEdits';
 import { marpHtmlEnabled, marpThemeUris } from './marpSettings';
 import { STANDARD_THEMES, themeNames } from './marpDirectives';
-import { isBundledThemeFile, SCIMAX_THEMES } from './bundledThemes';
+import { isBundledThemeFile, SCIMAX_THEME_DESCRIPTIONS, SCIMAX_THEMES } from './bundledThemes';
 import { parseTimer, presenterOffline, presenterRequested } from './presenterBundle';
 import {
     customThemeCss, ensureStyleBlock, frontMatterRange, frontMatterValue, MARP_HEADER_SNIPPET, IMAGE_PLACEMENTS, ImageFilter, imageMarkdown,
@@ -565,7 +565,7 @@ async function setTheme(): Promise<void> {
             theme: t.name,
             description: [
                 t.name === current ? 'current' : '',
-                t.file ? vscode.workspace.asRelativePath(t.file) : SCIMAX_THEMES.includes(t.name) ? 'Scimax, in the unicorn\'s blues' : 'built in',
+                t.file ? vscode.workspace.asRelativePath(t.file) : SCIMAX_THEMES.includes(t.name) ? SCIMAX_THEME_DESCRIPTIONS[t.name] : 'built in',
             ]
                 .filter(Boolean).join(' · '),
         })),
