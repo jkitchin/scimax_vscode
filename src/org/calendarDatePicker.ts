@@ -15,6 +15,8 @@ export interface CalendarDatePickerOptions {
     markedTooltip?: string;
     /** First day of the week in the grid (default: sunday) */
     weekStartsOn?: 'sunday' | 'monday';
+    /** The date highlighted when the picker opens (default: today); Enter selects it */
+    initialDate?: Date;
 }
 
 /** Format a date as YYYY-MM-DD in local time (the key format for markedDates) */
@@ -61,7 +63,8 @@ export async function showCalendarDatePicker(
         const today = new Date();
         // The highlighted date that arrow keys move and Enter selects.
         // The displayed month always follows it.
-        let cursor = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+        const start = options.initialDate && !isNaN(options.initialDate.getTime()) ? options.initialDate : today;
+        let cursor = new Date(start.getFullYear(), start.getMonth(), start.getDate());
 
         function updateContent() {
             panel.webview.html = getCalendarHtml(
