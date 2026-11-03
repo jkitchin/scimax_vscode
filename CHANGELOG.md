@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **Ink and notes on slides that are not 16:9** - The presenter tools saved and printed ink on a fixed 1280 x 720 canvas stretched over the slide, so on a 4:3 slide or a poster (a theme `@size` such as 33 x 48 in) printed pen strokes were skewed, printed sticky notes landed small in the top-left corner, and on-screen notes were sized by the slide's height, so on a tall page they were huge. Ink now uses each slide's own size, and notes are sized as on a landscape slide of the same width. 16:9 and 4:3 decks look as before.
+- **`scimax marp build` ignored the deck's `.marprc` themes** - The HTML build passed Scimax's bundled themes with `--theme-set`, which replaces a `.marprc`'s `themeSet` in Marp CLI, so a deck whose theme was set there was built with the default 1280 x 720 slide; the `--pdf` build had the opposite problem and could not find `theme: scimax`. Both now get the bundled themes and the `.marprc` ones, as the VS Code preview and Present already did.
+- **Project switcher (`C-c p p`) order was stale in older windows** - Each window read the project list once at startup, so projects opened in another window did not move to the top. The switcher now re-reads the list each time it opens, most recently opened first.
+
+### Added
+
+- **A poster example** - `examples/scimax-poster` is a 34 x 46 in poster about Scimax, made as a one-slide Marp deck with a custom theme size (`@size poster 3264px 4416px`); `make` builds the HTML and a full-size PDF.
+- **Posters in the presentations skill** - The `scimax-presentations` agent skill now covers making a poster as a one-slide Marp deck: theme `@size` for common poster sizes, registering the theme in `.marprc.yml`, type sizes, the column layout, the build and a fit check.
+- **Narrow to subtree and widen (speed keys `N` and `S`)** - `scimax.speed.narrowToSubtree` folds everything outside the current subtree and its parent headings, leaving the cursor where it is; `scimax.speed.widen` unfolds everything. This narrows by folding, so search and edits still reach the hidden text.
+
 ## [0.13.0] - 2026-11-01
 
 ### Added

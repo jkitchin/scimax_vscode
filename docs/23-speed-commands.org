@@ -151,17 +151,23 @@ The `g' key opens a submenu with additional navigation choices:
 | 1   | First heading       | Jump to first heading in document |
 | $   | Last heading        | Jump to last heading in document  |
 
-** ✅ Visibility/Folding Commands
+** 👀 Visibility/Folding Commands
 CLOSED: [2026-01-15 Thu 14:46]
 
 Control how much content is visible in your document.
 
-| Key | Command                 | Description                                   |
-|-----+-------------------------+-----------------------------------------------|
-| c   | Cycle global visibility | Cycle through: overview → contents → show all |
-| C   | Show all children       | Unfold all children of current subtree        |
-| o   | Overview                | Fold all headings (show only top-level)       |
+| Key   | Command                 | Description                                   |
+|-------+-------------------------+-----------------------------------------------|
+| c     | Cycle global visibility | Cycle through: overview → contents → show all |
+| C     | Show all children       | Unfold all children of current subtree        |
+| o     | Overview                | Fold all headings (show only top-level)       |
+| N     | Narrow to subtree       | Fold everything except the current subtree    |
+| S     | Widen                   | Unfold everything (undo N)                    |
 | <tab> | Cycle fold at point     | Toggle folding of current heading             |
+
+=N= narrows by folding, not the way Emacs narrows a buffer: the rest of the file is
+hidden but still there, so search, replace, select all and go to line still reach it,
+and unfolding a heading outside the subtree shows it again. =S= unfolds everything.
 
 ** ✅ Structure Editing Commands
 CLOSED: [2026-10-30 Fri 08:02]

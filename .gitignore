@@ -48,6 +48,10 @@ docx-export-debug.org
 examples/templates/org/beamer-demo.tex
 examples/templates/org/beamer-demo.pdf
 
+# Poster build artifacts (source: examples/scimax-poster/scimax-poster.md)
+examples/scimax-poster/scimax-poster.html
+examples/scimax-poster/scimax-poster.pdf
+
 # TypeScript compiled config files
 vitest.config.d.mts
 vitest.config.d.mts.map

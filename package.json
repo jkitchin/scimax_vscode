@@ -2989,6 +2989,14 @@
         "title": "Scimax: Overview (Fold All)"
       },
       {
+        "command": "scimax.speed.narrowToSubtree",
+        "title": "Scimax: Narrow to Subtree (Fold the Rest)"
+      },
+      {
+        "command": "scimax.speed.widen",
+        "title": "Scimax: Widen (Unfold All)"
+      },
+      {
         "command": "scimax.speed.clockIn",
         "title": "Scimax: Clock In"
       },
@@ -5850,6 +5858,16 @@
       {
         "command": "scimax.speed.overview",
         "key": "o",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/ && scimax.atHeadingStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
+      },
+      {
+        "command": "scimax.speed.narrowToSubtree",
+        "key": "shift+n",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/ && scimax.atHeadingStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
+      },
+      {
+        "command": "scimax.speed.widen",
+        "key": "shift+s",
         "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/ && scimax.atHeadingStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {

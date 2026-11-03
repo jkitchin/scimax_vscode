@@ -31,6 +31,8 @@ const findFileButton: vscode.QuickInputButton = {
  * With alternate actions via M-o or item buttons
  */
 async function switchProject(manager: ProjectileManager): Promise<void> {
+    // Other windows may have opened projects since this one loaded the list
+    await manager.reload();
     const projects = manager.getProjects();
 
     if (projects.length === 0) {

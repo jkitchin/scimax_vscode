@@ -56,11 +56,7 @@ export class ProjectileManager {
     async initialize(): Promise<void> {
         // Load saved projects (prefer database if available)
         if (this.db) {
-            const dbProjects = await this.db.getProjects();
-            for (const record of dbProjects) {
-                const project = projectRecordToProject(record);
-                this.projects.set(project.path, project);
-            }
+            await this.reload();
         } else {
             // Fallback to globalState (for backward compatibility)
             const savedProjects = this.context.globalState.get<Project[]>('scimax.projects', []);
@@ -79,6 +75,20 @@ export class ProjectileManager {
 
         // Notify listeners that projects have been loaded
         this._onProjectsChanged.fire();
+    }
+
+    /**
+     * Reload projects from the database, which other VS Code windows also
+     * update (e.g. lastOpened when a project is opened there)
+     */
+    async reload(): Promise<void> {
+        if (!this.db) return;
+        const dbProjects = await this.db.getProjects();
+        this.projects.clear();
+        for (const record of dbProjects) {
+            const project = projectRecordToProject(record);
+            this.projects.set(project.path, project);
+        }
     }
 
     /**

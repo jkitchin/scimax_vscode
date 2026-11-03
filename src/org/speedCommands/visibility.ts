@@ -37,6 +37,87 @@ export async function showAllChildren(): Promise<void> {
 }
 
 /**
+ * Narrow to the current subtree by folding everything else, like org's
+ * narrow-to-subtree. Folded text is still in the buffer (search and edits
+ * reach it); widen() unfolds it again.
+ *
+ * Only headings outside the subtree and its ancestors are folded, so the
+ * cursor is never inside a fold and stays where it is.
+ */
+export async function narrowToSubtree(): Promise<void> {
+    const editor = vscode.window.activeTextEditor;
+    if (!editor) return;
+
+    const document = editor.document;
+    const { startLine, endLine } = getSubtreeRange(document, editor.selection.active.line);
+    const level = getHeadingLevel(document, startLine);
+    if (level === 0) {
+        vscode.window.setStatusBarMessage('Not in a subtree', 2000);
+        return;
+    }
+
+    // Headings that contain the subtree stay open
+    const ancestors = new Set<number>();
+    for (let i = startLine - 1, l = level; i >= 0 && l > 1; i--) {
+        const h = getHeadingLevel(document, i);
+        if (h > 0 && h < l) {
+            ancestors.add(i);
+            l = h;
+        }
+    }
+
+    // The outermost headings outside the subtree and its ancestors. A heading
+    // with no fold region is skipped: folding it would fold its parent.
+    const foldLines: number[] = [];
+    for (let i = 0; i < document.lineCount; i++) {
+        if (i === startLine) {
+            i = endLine;
+            continue;
+        }
+        if (getHeadingLevel(document, i) === 0 || ancestors.has(i)) continue;
+        const range = getSubtreeRange(document, i);
+        if (hasFoldRegion(document, range.startLine, range.endLine)) foldLines.push(i);
+        i = range.endLine;
+    }
+
+    const selections = editor.selections;
+    await vscode.commands.executeCommand('editor.unfoldAll');
+    if (foldLines.length > 0) {
+        await vscode.commands.executeCommand('editor.fold', {
+            selectionLines: foldLines,
+            direction: 'down',
+            levels: 1
+        });
+    }
+    editor.selections = selections;
+    editor.revealRange(new vscode.Range(startLine, 0, startLine, 0), vscode.TextEditorRevealType.AtTop);
+
+    const heading = document.lineAt(startLine).text.replace(/^[*#]+\s+/, '');
+    vscode.window.setStatusBarMessage(`Narrowed to: ${heading}`, 2000);
+}
+
+/**
+ * Whether the folding provider makes a region for a heading's subtree: it
+ * needs a line after the heading, and at the end of the file blank lines
+ * don't count.
+ */
+function hasFoldRegion(document: vscode.TextDocument, startLine: number, endLine: number): boolean {
+    let last = endLine;
+    if (endLine === document.lineCount - 1) {
+        while (last > startLine && document.lineAt(last).isEmptyOrWhitespace) last--;
+    }
+    return last > startLine;
+}
+
+/**
+ * Widen after narrowToSubtree (unfold everything)
+ */
+export async function widen(): Promise<void> {
+    await vscode.commands.executeCommand('editor.unfoldAll');
+    vscode.window.setStatusBarMessage('Widened', 2000);
+}
+
+/**
  * Fold everything to show only top-level headings (overview)
  */
 export async function showOverview(): Promise<void> {

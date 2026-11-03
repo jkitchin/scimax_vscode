@@ -613,7 +613,7 @@ Speed commands are single-key shortcuts available when the cursor is at the *beg
 | j   | Jump to heading (quick picker)    |
 | g   | Goto menu (additional navigation) |
 
-** Visibility Speed Commands
+** 👀 Visibility Speed Commands
 
 | Key   | Action                            |
 |-------+-----------------------------------|
@@ -626,6 +626,7 @@ Speed commands are single-key shortcuts available when the cursor is at the *beg
 | 3     | Show level 3 headings             |
 | 0     | Show all headings                 |
 | N     | Narrow to subtree                 |
+| S     | Widen (unfold all)                |
 
 ** Structure Editing Speed Commands
 
