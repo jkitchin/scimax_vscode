@@ -17,7 +17,7 @@
  */
 (() => {
   const view = new URLSearchParams(location.search).get("view");
-  if (view === "next" || view === "overview" || window.__marpCaptions) return;   // the presenter view's next-slide preview, Marp's overview
+  if (view === "next" || view === "overview" || view === "mic" || window.__marpCaptions) return;   // the presenter view's next-slide preview, Marp's overview
   const Recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
   const ROLE = view === "presenter" ? "presenter" : "audience";
   const KEY = "marp-captions:" + location.pathname;

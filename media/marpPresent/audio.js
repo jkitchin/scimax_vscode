@@ -4,7 +4,11 @@
  *
  *   M (shift+m)  open or close the Microphone panel (also in the right-click menu)
  *
- * The panel shows which microphone is in use (and lets you pick another), a live level meter,
+ * The panel opens in a window of its own (this deck with ?view=mic, showing only the panel), so it
+ * never covers the slides: put it beside them, or on the laptop screen while the slides are on the
+ * projector. It has a Record / Stop button for the talk (recorder.js; V opens the window); recording from it asks
+ * which tab to share, as from the presenter view: pick the slideshow. If pop-ups are blocked, the
+ * panel opens at the right edge of the slideshow instead. The panel shows which microphone is in use (and lets you pick another), a live level meter,
  * an input gain, a limiter that keeps loud moments from clipping, a voice filter (less rumble
  * and less "boxy" room sound), the browser's echo cancellation, noise suppression and automatic
  * gain, and a 5 second test that plays back what the recording will sound like. The settings are
@@ -19,6 +23,7 @@
 (() => {
   const view = new URLSearchParams(location.search).get("view");
   if (view === "next" || view === "overview" || (window.__marpMic && window.__marpMic.panel)) return;
+  const micView = view === "mic";   // the Microphone window: only the panel
   const PREFS = "marp-audio";
   const DEFAULTS = { deviceId: "", label: "", gain: 0, limiter: true, voice: false,
     echoCancellation: true, noiseSuppression: true, autoGainControl: true };
@@ -84,6 +89,16 @@
     listeners.forEach(f => { try { f(s); } catch (e) { console.log("[marp-audio] " + e.message); } });
     render();
   }));
+  // Settings changed in another window of this deck (the Microphone window): use them here too,
+  // so captions and a recording in the slideshow follow the panel
+  addEventListener("storage", e => {
+    if (e.key !== PREFS) return;
+    const old = prefs;
+    try { prefs = { ...DEFAULTS, ...JSON.parse(e.newValue || "{}") }; } catch (err) { return; }
+    retune();
+    if (old.deviceId !== prefs.deviceId || Object.keys(processing()).some(k => !!old[k] !== !!prefs[k])) reopen();
+    render();
+  });
   const track = () => mic.stream && mic.stream.getAudioTracks()[0];
   const label = () => (track() && track().label) || prefs.label || "";
 
@@ -123,8 +138,8 @@
   // ---- the panel
   const css = document.createElement("style");
   css.textContent = `
-.mp-audio { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 100006; width: min(440px, calc(100vw - 32px));
-  max-height: calc(100vh - 32px); overflow: auto; box-sizing: border-box; padding: 14px 16px 12px; border-radius: 12px;
+.mp-audio { position: fixed; top: 12px; right: 12px; z-index: 100006; width: min(380px, calc(100vw - 24px));
+  max-height: calc(100vh - 24px); overflow: auto; box-sizing: border-box; padding: 14px 16px 12px; border-radius: 12px;
   background: rgba(24, 26, 31, .97); color: #e5e7eb; box-shadow: 0 12px 40px rgba(0, 0, 0, .45); display: none;
   font: 14px/1.4 system-ui, -apple-system, "Segoe UI", sans-serif; text-align: left; }
 .mp-audio * { box-sizing: border-box; }
@@ -152,7 +167,18 @@
 .mp-audio button.b { padding: 5px 12px; border-radius: 6px; border: 1px solid #4b5563; background: #2a2e36; color: #f3f4f6; font: inherit; cursor: pointer; }
 .mp-audio button.b:hover { background: #374151; }
 .mp-audio button.b.rec { border-color: #dc2626; }
+.mp-audio .recrow { display: flex; align-items: center; gap: 10px; padding-bottom: 10px; border-bottom: 1px solid #374151; }
+.mp-audio .recrow .b { min-width: 92px; font-weight: 600; }
+.mp-audio .recrow .b.on { background: #dc2626; border-color: #dc2626; color: #fff; }
+.mp-audio .recrow .b:disabled { opacity: .5; cursor: default; }
+.mp-audio .rstat { font-size: 12px; color: #9ca3af; font-variant-numeric: tabular-nums; }
+.mp-audio .rstat.on { color: #fca5a5; }
 .mp-audio .tip { font-size: 12px; color: #9ca3af; margin-top: 10px; border-top: 1px solid #374151; padding-top: 8px; }
+html.mp-mic-view, html.mp-mic-view body { margin: 0; background: #181a1f; overflow: auto; }
+html.mp-mic-view body > :not(.mp-audio) { display: none !important; }
+html.mp-mic-view .mp-audio { position: static; width: auto; max-height: none; border-radius: 0; box-shadow: none; }
+.mp-audio .msg { font-size: 12px; color: #fcd34d; min-height: 0; margin-top: 6px; }
+.mp-audio .msg:empty { display: none; }
 @media print { .mp-audio { display: none !important; } }`;
   document.head.appendChild(css);
   const panel = document.createElement("div");
@@ -161,6 +187,8 @@
   panel.setAttribute("aria-label", "Microphone");
   panel.innerHTML = `
 <h3>🎙 Microphone <button class="x" title="Close (Esc)" aria-label="Close">×</button></h3>
+<div class="row recrow"><button class="b recbtn" title="Record the talk (V)">● Record</button><span class="rstat"></span></div>
+<div class="msg" role="status"></div>
 <div class="row"><div class="cap">Input</div><select class="dev"></select>
   <div class="using"></div><div class="warn"></div></div>
 <div class="row"><div class="cap">Level (what is recorded)</div>
@@ -184,6 +212,23 @@ With a good microphone that close, echo cancellation, noise suppression and auto
   for (const db of [-48, -36, -24, -18, -12, -6, 0]) {
     const t = document.createElement("div"); t.className = "tick"; t.style.left = at(db) + "%"; $(".meter").appendChild(t);
     const s = document.createElement("span"); s.textContent = db; s.style.left = Math.min(at(db), 97) + "%"; $(".scale").appendChild(s);
+  }
+
+  // ---- the Record / Stop button: recorder.js does the recording
+  const pad2 = n => String(n).padStart(2, "0");
+  const clock = ms => { const t = Math.max(0, Math.round(ms / 1000)); return Math.floor(t / 60) + ":" + pad2(t % 60); };
+  let recTimer = 0;
+  function renderRec() {
+    const R = window.__marpRecorder, btn = $(".recbtn"), st = $(".rstat");
+    const s = R && R.status ? R.status() : null;
+    btn.disabled = !s || (s.on && !s.here);
+    btn.classList.toggle("on", !!(s && s.here));
+    btn.textContent = s && s.here ? "■ Stop" : "● Record";
+    st.classList.toggle("on", !!(s && s.on));
+    st.textContent = !s ? "Recording is not available here"
+      : s.here ? "● REC " + clock(Date.now() - s.since) + " · Stop saves the video"
+      : s.on ? "Recording in the other window: stop it there"
+      : s.remote ? "Asks which tab to share: pick the slideshow" : "Records this tab with your voice";
   }
 
   let shown = false, ctx = null, src = null, meterChain = null, pre = null, post = null, buf = null, raf = 0, hold = -Infinity, holdAt = 0, clipAt = 0, testing = null;
@@ -247,6 +292,8 @@ With a good microphone that close, echo cancellation, noise suppression and auto
     shown = true;
     panel.style.display = "block";
     render();
+    renderRec();
+    recTimer = setInterval(renderRec, 500);
     let stream;
     try { stream = await get(); } catch (e) {
       $(".using").textContent = "No microphone: " + e.message + " (allow it with the icon in the address bar)";
@@ -270,8 +317,15 @@ With a good microphone that close, echo cancellation, noise suppression and auto
   }
   function hide() {
     if (!shown) return;
+    if (micView) {
+      const R = window.__marpRecorder;
+      if (R && R.status && R.status().here) { note("Recording from this window: Stop first, then close it"); return; }
+      window.close();
+      return;
+    }
     shown = false;
     panel.style.display = "none";
+    clearInterval(recTimer);
     cancelAnimationFrame(raf);
     if (testing) testing.stop();
     const a = $("audio"); if (a) { a.pause(); a.remove(); }
@@ -283,10 +337,72 @@ With a good microphone that close, echo cancellation, noise suppression and auto
       release();
     }
   }
-  const toggle = () => shown ? hide() : show();
+
+  // ---- the Microphone window. Opened by name, so M finds the one already open (even after the
+  // slideshow reloads) instead of loading it again, which would end a recording made there.
+  const WIN = "marp-mic:" + location.pathname;
+  let micWin = null;
+  const winOpen = () => { try { return !!(micWin && !micWin.closed); } catch (e) { return false; } };
+  function openWindow() {
+    const w = window.open("", WIN, "popup,width=400,height=820");
+    if (!w) return false;
+    let fresh = false;
+    try { fresh = w.location.href === "about:blank"; } catch (e) { /* the deck, already open */ }
+    if (fresh) {
+      const u = new URL(location.href);
+      u.search = "?view=mic"; u.hash = "";
+      w.location.href = u.href;
+    }
+    micWin = w;
+    try { w.focus(); } catch (e) { /* ok */ }
+    return true;
+  }
+  /** Show the panel: the Microphone window (opened, or brought to the front), or here if pop-ups are blocked. */
+  function present() {
+    if (micView || shown) { show(); return; }
+    if (winOpen()) { try { micWin.focus(); } catch (e) { /* ok */ } return; }
+    if (openWindow()) return;
+    say("Pop-ups are blocked for this page: the Microphone panel opens here instead");
+    show();
+  }
+  function toggle() {
+    if (micView) { hide(); return; }
+    if (shown) { hide(); return; }
+    if (winOpen()) {
+      const R = window.__marpRecorder, s = R && R.status && R.status();
+      if (s && s.on && !s.here) { try { micWin.focus(); } catch (e) { /* ok */ } return; }   // recording there
+      micWin.close(); micWin = null; return;
+    }
+    if (openWindow()) return;
+    say("Pop-ups are blocked for this page: the Microphone panel opens here instead");
+    show();
+  }
+  // Messages in the Microphone window, which has no slideshow to show them
+  let noteTimer = 0;
+  function note(msg) {
+    const m = $(".msg");
+    m.textContent = msg;
+    clearTimeout(noteTimer);
+    noteTimer = setTimeout(() => { m.textContent = ""; }, 8000);
+  }
+  if (micView) {
+    window.__marpSay = window.__marpSay || note;
+    document.documentElement.classList.add("mp-mic-view");
+    document.title = "🎙 Microphone · " + document.title;
+    show();
+  }
 
   // ---- the controls
   $(".x").addEventListener("click", hide);
+  $(".recbtn").addEventListener("click", async () => {
+    const R = window.__marpRecorder;
+    if (!R || !R.toggle) return;
+    const s = R.status();
+    // The slideshow records itself, and this panel would be in the video: close it
+    if (!s.here && !s.remote) hide();
+    await R.toggle();
+    renderRec();
+  });
   $(".dev").addEventListener("change", e => {
     const o = e.target.selectedOptions[0];
     prefs.deviceId = e.target.value;
@@ -381,6 +497,8 @@ With a good microphone that close, echo cancellation, noise suppression and auto
     /** The name of the microphone in use (or chosen). */
     label,
     panel: toggle,
-    menuItems: () => [{ label: "Microphone…", key: "⇧M", check: shown, run: toggle }],
+    /** Open the panel (V: get ready to record there). */
+    present,
+    menuItems: () => [{ label: "Microphone…", key: "⇧M", check: shown || winOpen(), run: toggle }],
   };
 })();

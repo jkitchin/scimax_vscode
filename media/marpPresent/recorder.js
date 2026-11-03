@@ -1,7 +1,8 @@
 /* marp-present: record the talk. The slides, the mouse and your voice, as a video, for a deck
  * built by scimax with `presenter: true`.
  *
- *   V (shift+v)  start recording / stop and save it
+ *   V (shift+v)  open the Microphone window (audio.js), to check the microphone and then press
+ *                ● Record there; while recording, stop and save it
  *   right-click  "Highlight the mouse while recording", "Save the recording…" (again, if the
  *                first save was cancelled), "Save captions of the recording (.vtt)"
  *
@@ -29,6 +30,9 @@
   const view = new URLSearchParams(location.search).get("view");
   if (view === "next" || view === "overview" || window.__marpRecorder) return;   // the presenter view's next-slide preview, Marp's overview
   const presenterView = view === "presenter";
+  // Windows that record the slideshow tab rather than themselves: the presenter view and the
+  // Microphone window (audio.js, ?view=mic)
+  const remote = presenterView || view === "mic";
   const KEY = "marp-rec:" + location.pathname;
   const PREFS = "marp-rec-prefs";
   const ALIVE = 6000;                // a recording window that has not said it is recording for this long has gone
@@ -65,14 +69,14 @@
     if (!navigator.mediaDevices || !navigator.mediaDevices.getDisplayMedia || !window.MediaRecorder) {
       say("Recording needs Chrome, Edge or Firefox"); return;
     }
-    if (recordingSomewhere()) { say("Already recording in the other window: press V there to stop"); return; }
+    if (recordingSomewhere()) { say("Already recording in another window: stop it there"); return; }
     let display;
     try {
       display = await navigator.mediaDevices.getDisplayMedia({
         video: { width: { max: 1920 }, height: { max: 1080 }, frameRate: { max: 30 }, displaySurface: "browser" },
         audio: { suppressLocalAudioPlayback: false },
-        preferCurrentTab: !presenterView,          // the slideshow records itself; the presenter view asks for its tab
-        selfBrowserSurface: presenterView ? "exclude" : "include",
+        preferCurrentTab: !remote,                 // the slideshow records itself; the other windows ask for its tab
+        selfBrowserSurface: remote ? "exclude" : "include",
         surfaceSwitching: "exclude",
         systemAudio: "exclude",
       });
@@ -134,8 +138,8 @@
     document.title = "● REC " + title;
     quietSince = 0; quietWarned = false;
     const micName = mic && (mic.getAudioTracks()[0] || {}).label;
-    say(mic ? `Recording with ${micName || "the microphone"} (M changes it): V again stops and saves the video`
-      : "Recording without a microphone: V again stops it and saves the video");
+    say(mic ? `Recording with ${micName || "the microphone"}: ■ Stop or V saves the video`
+      : "Recording without a microphone: ■ Stop or V saves the video");
   }
   // Every frame the size of the first one, letterboxed: an MP4 that QuickTime can play (avc1)
   // breaks when the size changes mid-stream (resizing the window, going full screen). Frames
@@ -302,7 +306,7 @@ body:has(.bespoke-marp-overview[data-open="1"]) .mp-rec-cursor { visibility: hid
 
   function render() {
     const on = recordingSomewhere();
-    ring.style.display = on && prefs.cursor && inside && !presenterView ? "block" : "none";
+    ring.style.display = on && prefs.cursor && inside && !remote ? "block" : "none";
     // The presenter view is not recorded: show that the talk is
     badge.style.display = on && presenterView ? "block" : "none";
     if (on && presenterView) {
@@ -324,9 +328,16 @@ body:has(.bespoke-marp-overview[data-open="1"]) .mp-rec-cursor { visibility: hid
     if (t && (t.isContentEditable || (t.closest && t.closest(".pyc")))) return;   // typing in a code cell
     if (window.__marpEdits && window.__marpEdits.editing) return;                // editing the slides (d)
     e.preventDefault();
-    toggle();
+    keyed();
   }
   const toggle = () => recorder ? stop() : start();
+  // V: stop a recording made here; otherwise open the Microphone window, to check the microphone
+  // and start from its Record button (in that window itself, V records)
+  function keyed() {
+    if (recorder) { stop(); return; }
+    const M = window.__marpMic;
+    if (view !== "mic" && M && M.present) M.present(); else start();
+  }
   addEventListener("keydown", onKey, true);
 
   addEventListener("storage", e => { if (e.key === KEY) { loadShared(); render(); } });
@@ -337,8 +348,12 @@ body:has(.bespoke-marp-overview[data-open="1"]) .mp-rec-cursor { visibility: hid
 
   // For presenter.js's right-click menu
   window.__marpRecorder = {
+    /** Start recording, or stop and save it (as V). */
+    toggle: () => toggle(),
+    /** here: recording in this window; on: recording in this or the other window. */
+    status: () => ({ here: !!recorder, on: recordingSomewhere(), since: recorder ? started : shared.since || Date.now(), remote }),
     menuItems: () => [
-      { label: recorder ? "Stop recording and save" : "Record the talk", key: "⇧V", check: !!recorder, run: toggle },
+      { label: recorder ? "Stop recording and save" : "Record the talk…", key: "⇧V", check: !!recorder, run: keyed },
       { label: "Highlight the mouse while recording", check: !!prefs.cursor, run: () => { prefs.cursor = !prefs.cursor; savePrefs(); } },
       ...(last ? [{ label: "Save the recording…", run: saveRecording }] : []),
       ...(last && cues().length ? [{ label: "Save captions of the recording (.vtt)…", run: saveCaptions }] : []),

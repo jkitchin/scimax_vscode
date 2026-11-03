@@ -17,7 +17,7 @@
  */
 (() => {
   const view = new URLSearchParams(location.search).get("view");
-  if (view === "next" || view === "overview" || window.__marpTimer) return;   // the presenter view's next-slide preview, Marp's overview
+  if (view === "next" || view === "overview" || view === "mic" || window.__marpTimer) return;   // the presenter view's next-slide preview, Marp's overview
   const DURATION = Math.round(+window.__MARP_TIMER__) || 0;   // the deck's time; 0 = none (one can be added)
 
   const KEY = "marp-timer:" + location.pathname;

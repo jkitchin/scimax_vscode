@@ -46,7 +46,7 @@
  */
 (() => {
   const params = new URLSearchParams(location.search);
-  if (params.get("view") === "presenter" || params.get("view") === "next") return;  // presenter window
+  if (["presenter", "next", "mic"].includes(params.get("view"))) return;  // presenter window, microphone window (audio.js)
   if (window.__annotate) return;
   window.__annotate = true;
   // Marp's overview (the four squares) shows the deck in a frame with ?view=overview: there the
