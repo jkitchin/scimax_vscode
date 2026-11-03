@@ -734,8 +734,8 @@ scripts and makes the same HTML as the =h= export.
 | A number, then Enter      | Jump to that slide (=12= Enter goes to slide 12)                                 |
 | =d=                       | Edit the slides' text and layout in place (see below)                            |
 | =v=                       | Live captions on or off (see below)                                              |
-| =V= (=Shift+V=)           | Start recording the talk / stop and save the video (see below)                   |
-| =M= (=Shift+M=)           | The Microphone panel: which microphone, its level, gain and settings (see below) |
+| =V= (=Shift+V=)           | Get ready to record: opens the Microphone window; while recording, stop and save |
+| =M= (=Shift+M=)           | The Microphone panel: microphone, level, gain, settings, Record/Stop (see below) |
 | =Cmd+P= / =Ctrl+P=        | Print; "Save as PDF" keeps every slide's ink as vector graphics                  |
 
 Marp's own keys (=F= full screen, =P= presenter view, arrows) still work, also
@@ -876,11 +876,17 @@ transcript" empties it.
 
 ** 👀 Recording the talk
 
-=V= (=Shift+V=) records the slideshow, the mouse and your voice as a video.
-Chrome asks you to share "this tab". Press =V= again to stop. Chrome then
-asks where to save the video (=<deck>-<date>-<time>.mp4=). If you cancel,
-"Save the recording…" in the right-click menu asks again, until the next
-recording.
+The slideshow can record itself, the mouse and your voice as a video. =V=
+(=Shift+V=) does not start recording at once: it opens the Microphone window
+(see below), where you can check the microphone and its level, record a
+5 second test, and get situated. Press =● Record= there when you are ready.
+Chrome asks which tab to share: pick the slideshow. =■ Stop= in the window,
+or =V= while recording, stops. Chrome then asks where to save the video
+(=<deck>-<date>-<time>.mp4=). If you cancel, "Save the recording…" in the
+right-click menu asks again, until the next recording. If the browser blocks
+pop-ups for the deck, =V= opens the panel at the top right of the slideshow
+instead, and =● Record= there records this tab (the panel closes first so it
+is not in the video).
 
 - *Format.* Chrome and Edge write MP4 (H.264 video, AAC audio) that QuickTime
   and other players can play. Firefox writes WebM. The video is the size of
@@ -905,24 +911,39 @@ recording.
   #+begin_src sh
   ffmpeg -i talk.mp4 -i talk.vtt -c copy -c:s mov_text talk-captioned.mp4
   #+end_src
-- *Presenter view.* Pressing =V= in Marp's presenter view asks which tab to
-  share: pick the slideshow. The presenter view shows =● REC=, the time and
+- *Presenter view.* =V= in Marp's presenter view opens the same Microphone
+  window. While recording, the presenter view shows =● REC=, the time and
   a small level meter for the microphone, and is not recorded itself.
 
-Start recording before you go full screen: the sharing dialog can take the
-browser out of full screen. The video stays in the browser until you stop.
+Open the Microphone window and start recording before you go full screen:
+opening a window and the sharing dialog can take the browser out of full
+screen. The video stays in the browser until you stop.
 Closing the tab while recording asks first, and live reload waits until the
 recording is saved. If you stop with Chrome's own "Stop sharing" button, the
 video goes to the Downloads folder.
 
-** ⚠️ The microphone
+** 👀 The microphone
 
-=M= (=Shift+M=), or "Microphone…" in the right-click menu, opens a panel to
+=M= (=Shift+M=), =V=, or "Microphone…" in the right-click menu, opens a panel to
 set up the microphone for recordings and captions, like the audio controls of
-a streaming app. =M= or =Esc= closes it.
+a streaming app. The panel opens in a small window of its own, so it never
+covers the slides: put it beside them, or on the laptop screen while the
+slides are on the projector. =M= in the slideshow closes it again, as do =Esc=
+and =×= in the window. If the browser blocks pop-ups for the deck, the panel
+opens at the top right of the slideshow instead.
+
+The window's top row has a =● Record= / =■ Stop= button for recording the
+talk. As from the presenter view, Chrome asks which tab to share: pick the
+slideshow. The window is not recorded, so it can stay open for the whole talk,
+showing the recording time and the level meter, and =■ Stop= saves the video.
+While it is recording, closing the window asks you to stop first. In the window, =V=
+also starts and stops recording. When a recording was started in another
+window, the button is greyed out and says so. Settings changed in the window apply at once to captions and a
+recording in the slideshow.
 
 | Control           | Effect                                                                                            |
 |-------------------+---------------------------------------------------------------------------------------------------|
+| Record / Stop     | Records the talk (asks for the slideshow tab); shows the time while recording                     |
 | Input             | Which microphone: the system default or a named one. "In use" shows the one actually open         |
 | Level             | A live meter of what is recorded, with a peak marker and a verdict: silent, quiet, good, too loud |
 | Gain              | -12 to +24 dB, applied to the recording at once                                                   |
