@@ -32,7 +32,9 @@
   style.textContent = `
 .pyc { margin: 8px 0; border-radius: 10px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,.12); background: #f6f8fa;
   display: flex; flex-direction: column; }
-.pyc-bar, .pyc-ed { flex: none; }
+.pyc-bar { flex: none; }
+.pyc-ed { flex: 0 1 auto; min-height: 0; display: flex; flex-direction: column; }   /* the editor scrolls before the output is squeezed */
+.pyc-ed .cm-editor { flex: 0 1 auto; min-height: 2.6em; }
 .pyc-bar { display: flex; align-items: center; gap: 0.5em; padding: 0.2em 0.7em; background: rgba(0,0,0,.05);
   font: 0.62em/1.6 Helvetica, Arial, sans-serif; color: #6b7280; }
 .pyc-bar button { font: 600 1em Helvetica, Arial, sans-serif; border: 1px solid #cbd5e1; background: white; color: #1f2937;
@@ -41,6 +43,7 @@
 .pyc-bar button:hover { background: #1f2937; color: white; border-color: #1f2937; }
 .pyc-bar .n { font-family: ui-monospace, Menlo, monospace; min-width: 2.6em; }
 .pyc-bar .st { flex: 1; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.pyc-bar .st.err { color: #b91c1c; font-weight: 600; font-family: ui-monospace, Menlo, monospace; }
 .pyc-bar .busy::before { content: ""; display: inline-block; width: 0.7em; height: 0.7em; margin-right: 0.4em; border-radius: 50%;
   border: 2px solid #16a34a; border-right-color: transparent; animation: pyc-spin .8s linear infinite; vertical-align: -1px; }
 @keyframes pyc-spin { to { transform: rotate(360deg); } }
@@ -106,6 +109,8 @@ warnings.filterwarnings("ignore", message=".*non-interactive.*")
 from pyodide.code import eval_code_async
 
 async def __pycells_run(code, name):
+    import linecache   # so a traceback shows the cell's lines, like Jupyter
+    linecache.cache[name] = (len(code), None, code.splitlines(True), name)
     r = await eval_code_async(code, globals(), filename=name)
     return None if r is None else repr(r)
 
@@ -333,7 +338,7 @@ self.onmessage = e => {
   }
   function submit(cell) {
     const id = ++nextId, name = "<cell " + (cells.indexOf(cell) + 1) + ">";
-    if (!cell.hidden) { cell.out.textContent = ""; cell.n.textContent = "[*]"; cell.setStatus("queued", true); cell.running = true; }
+    if (!cell.hidden) { cell.out.textContent = ""; cell.error = ""; cell.n.textContent = "[*]"; cell.setStatus("queued", true); cell.running = true; }
     handlers.set(id, m => {
       if (cell.hidden) {                     // setup cells report problems only
         if (m.type === "error") cells.filter(c => !c.hidden)[0]?.show("error", "setup cell failed:\n" + m.text);
@@ -343,7 +348,7 @@ self.onmessage = e => {
       if (m.type === "status") cell.setStatus(m.text, true);
       else if (m.type === "stream") cell.show(m.name, m.text);
       else if (m.type === "result") cell.show("result", m.text);
-      else if (m.type === "error") cell.show("error", m.text);
+      else if (m.type === "error") { cell.show("error", m.text); cell.error = m.text.trim().split("\n").pop(); }
       else if (m.type === "image") {
         const img = document.createElement("img"); img.src = "data:image/png;base64," + m.png;
         img.title = "click for full size";
@@ -351,8 +356,9 @@ self.onmessage = e => {
         img.addEventListener("load", () => fit(cell));
         cell.out.appendChild(img); fit(cell);
       } else if (m.type === "done") {
-        cell.n.textContent = "[" + (++counter) + "]"; cell.setStatus(m.ok ? "" : "error"); handlers.delete(id);
+        cell.n.textContent = "[" + (++counter) + "]"; cell.setStatus(m.ok ? "" : cell.error || "error", false, !m.ok); handlers.delete(id);
         cell.running = false; cell.ran = true; fit(cell);
+        if (!m.ok) cell.out.scrollTop = cell.out.scrollHeight;       // the error's last line is the one that matters
       } else if (m.type === "restart") { cell.setStatus("restarted"); }
     });
     getWorker().postMessage({ id, code: cell.code(), name });
@@ -381,6 +387,9 @@ self.onmessage = e => {
     const bar = box.querySelector(".pyc-bar").offsetHeight, ed = box.querySelector(".cm-editor");
     const share = cell.out.childElementCount ? 0.4 : 0.55;              // output gets more room once there is some
     ed.style.maxHeight = Math.min(330, Math.max(60, share * (avail - bar))) + "px";
+    // the output keeps up to 45% of the cell even when the editor is made taller (e.g. by a slide's CSS)
+    cell.out.style.minHeight = "";
+    cell.out.style.minHeight = cell.out.childElementCount ? Math.min(cell.out.scrollHeight + 1, 0.45 * (avail - bar)) + "px" : "";
     const room = avail - bar - box.querySelector(".pyc-ed").offsetHeight - 14;
     cell.out.querySelectorAll("img:not(.full)").forEach(img => { img.style.maxHeight = Math.max(80, room) + "px"; });
   }
@@ -408,7 +417,7 @@ self.onmessage = e => {
     cell.out = box.querySelector(".pyc-out");
     cell.n = box.querySelector(".n");
     const st = box.querySelector(".st");
-    cell.setStatus = (t, busy) => { cell.statusText = t; st.textContent = t; st.classList.toggle("busy", !!busy); };
+    cell.setStatus = (t, busy, err) => { cell.statusText = t; st.textContent = t; st.title = t; st.classList.toggle("busy", !!busy); st.classList.toggle("err", !!err); };
     cell.show = (kind, text) => {
       const last = cell.out.lastElementChild;
       if (last && last.tagName === "PRE" && last.className === kind && kind !== "result") { last.textContent += text; return; }

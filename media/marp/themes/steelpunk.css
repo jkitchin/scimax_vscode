@@ -1,0 +1,585 @@
+/*!
+ * Steelpunk: a Marp theme of late-20th-century hardware, the way steampunk
+ * is the 19th century's. Riveted gunmetal plate, polished chrome, tread
+ * plate, jet-turbine intakes, hazard stripes and stencilled military
+ * markings: hardware, not software.
+ *
+ * @theme steelpunk
+ * @author Scimax
+ *
+ * @auto-scaling true
+ * @size 16:9 1280px 720px
+ * @size 4:3 960px 720px
+ *
+ * Classes (`<!-- _class: lead -->`, or `class:` for the whole deck):
+ *   lead    centred title in chrome on tread plate, with a turbine and hazard bands
+ *   invert  stencilled black on polished chrome, for section slides
+ * Spans: <span class="todo">TODO</span> and <span class="done">DONE</span>.
+ */
+
+section {
+  --sk-bg: #2a2e33;
+  --sk-panel: #33383e;
+  --sk-fg: #e3e7eb;
+  --sk-dim: #9aa3ac;
+  --sk-chrome: #d9dee3;
+  --sk-chrome-dark: #5d656e;
+  --sk-hazard: #f5c400;
+  --sk-black: #121416;
+  --sk-red: #d7261e;
+  --sk-amber: #ffb000;
+  --sk-olive: #8a9a5b;
+  --sk-rust: #a5522a;
+  --sk-chrome-text: linear-gradient(180deg, #ffffff 0%, #e2e6ea 38%, #6e7781 50%, #ffffff 51%, #b8c0c8 70%, #f4f6f8 100%);
+  --sk-hazard-stripes: repeating-linear-gradient(-45deg, #f5c400 0 14px, #121416 14px 28px);
+  --sk-rivet: radial-gradient(circle, #f4f6f8 0 1.5px, #9aa3ac 3px, #3a3f45 5px, rgba(0, 0, 0, 0.5) 6px, transparent 7px);
+  --sk-stencil: "Stencil", "Stencil Std", "Allerta Stencil", "Stardos Stencil", "DIN Condensed", "Bebas Neue", "Oswald", Impact, "Arial Narrow", sans-serif;
+  --sk-body: "DIN Alternate", "Eurostile", "Microgramma", "Bahnschrift", "Helvetica Neue", Roboto, Arial, sans-serif;
+  --sk-mono: "OCR A Std", "OCR A Extended", "OCR-A", "Share Tech Mono", "SF Mono", Menlo, Consolas, monospace;
+
+  width: 1280px;
+  height: 720px;
+  box-sizing: border-box;
+  padding: 66px 84px;
+  display: block;
+  place-content: safe center center;
+  flex-flow: column nowrap;
+  align-items: stretch;
+  background-color: var(--sk-bg);
+  /* an armour plate: corner rivets, an inset panel seam, faint tread, grime */
+  background-image:
+    var(--sk-rivet), var(--sk-rivet), var(--sk-rivet), var(--sk-rivet),
+    radial-gradient(ellipse at 50% 40%, transparent 55%, rgba(10, 8, 6, 0.55) 100%),
+    radial-gradient(ellipse at 90% 105%, rgba(165, 82, 42, 0.22), transparent 45%),
+    repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.022) 0 1px, transparent 1px 3px),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40' width='40' height='40'%3E %3Cg opacity='0.35'%3E%3Cg transform='translate(10 10) rotate(45)'%3E%3Crect x='-11' y='-2' width='22' height='5' rx='2.5' fill='%231c1f22'/%3E%3Crect x='-11' y='-3' width='22' height='4.5' rx='2.2' fill='%234a5057'/%3E%3Crect x='-9' y='-2.6' width='15' height='1.2' rx='.6' fill='%23fff' opacity='.35'/%3E%3C/g%3E%3Cg transform='translate(30 30) rotate(45)'%3E%3Crect x='-11' y='-2' width='22' height='5' rx='2.5' fill='%231c1f22'/%3E%3Crect x='-11' y='-3' width='22' height='4.5' rx='2.2' fill='%234a5057'/%3E%3Crect x='-9' y='-2.6' width='15' height='1.2' rx='.6' fill='%23fff' opacity='.35'/%3E%3C/g%3E%3Cg transform='translate(30 10) rotate(-45)'%3E%3Crect x='-11' y='-2' width='22' height='5' rx='2.5' fill='%231c1f22'/%3E%3Crect x='-11' y='-3' width='22' height='4.5' rx='2.2' fill='%234a5057'/%3E%3Crect x='-9' y='-2.6' width='15' height='1.2' rx='.6' fill='%23fff' opacity='.35'/%3E%3C/g%3E%3Cg transform='translate(10 30) rotate(-45)'%3E%3Crect x='-11' y='-2' width='22' height='5' rx='2.5' fill='%231c1f22'/%3E%3Crect x='-11' y='-3' width='22' height='4.5' rx='2.2' fill='%234a5057'/%3E%3Crect x='-9' y='-2.6' width='15' height='1.2' rx='.6' fill='%23fff' opacity='.35'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E"),
+    linear-gradient(170deg, #363b41, #24282c);
+  background-size: 16px 16px, 16px 16px, 16px 16px, 16px 16px, 100% 100%, 100% 100%, 100% 100%, 40px 40px, 100% 100%;
+  background-position: 18px 18px, calc(100% - 18px) 18px, 18px calc(100% - 18px), calc(100% - 18px) calc(100% - 18px), 0 0, 0 0, 0 0, 0 0, 0 0;
+  background-repeat: no-repeat, no-repeat, no-repeat, no-repeat, no-repeat, no-repeat, no-repeat, repeat, no-repeat;
+  box-shadow: inset 0 0 0 42px transparent, inset 0 0 0 43px rgba(0, 0, 0, 0.45), inset 0 0 0 44px rgba(255, 255, 255, 0.07);
+  color: var(--sk-fg);
+  font-family: var(--sk-body);
+  font-size: 29px;
+  line-height: 1.45;
+  word-wrap: break-word;
+}
+
+section > :first-child,
+section > header:first-child + * {
+  margin-top: 0;
+}
+
+section > :last-child,
+section[data-footer] > :nth-last-child(2) {
+  margin-bottom: 0;
+}
+
+/* Headings: stencilled; h1 in polished chrome with a cut through it */
+
+section h1,
+section h2,
+section h3,
+section h4,
+section h5,
+section h6 {
+  font-family: var(--sk-stencil);
+  font-weight: 700;
+  line-height: 1.05;
+  margin: 0 0 0.55em;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+section h1 {
+  font-size: 2.15em;
+  color: var(--sk-chrome);
+  background: var(--sk-chrome-text);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 2px 0 #121416) drop-shadow(0 4px 6px rgba(0, 0, 0, 0.6));
+}
+
+section h2 {
+  font-size: 1.55em;
+  color: var(--sk-fg);
+  padding-bottom: 0.32em;
+  background-image: var(--sk-hazard-stripes);
+  background-size: 100% 8px;
+  background-position: bottom left;
+  background-repeat: no-repeat;
+  text-shadow: 0 2px 0 var(--sk-black);
+}
+
+section h3 {
+  font-size: 1.2em;
+  color: var(--sk-hazard);
+  text-shadow: 0 2px 0 var(--sk-black);
+}
+
+section h4,
+section h5,
+section h6 {
+  font-size: 1em;
+  color: var(--sk-dim);
+  letter-spacing: 0.14em;
+}
+
+section h1 code,
+section h2 code,
+section h3 code,
+section h4 code,
+section h5 code,
+section h6 code {
+  -webkit-text-fill-color: currentcolor;
+}
+
+section[data-color] h1,
+section[data-color] h2,
+section[data-color] h3,
+section[data-color] h4,
+section[data-color] h5,
+section[data-color] h6 {
+  color: currentcolor;
+  -webkit-text-fill-color: currentcolor;
+  background: none;
+}
+
+/* Text */
+
+section p,
+section ul,
+section ol,
+section blockquote,
+section pre,
+section table,
+section dl {
+  margin: 0 0 0.7em;
+}
+
+section ul,
+section ol {
+  padding-left: 1.3em;
+}
+
+section ul {
+  list-style-type: "\25A0  ";
+}
+
+section ul ul {
+  list-style-type: "\25B6  ";
+}
+
+section li + li,
+section li > ul,
+section li > ol {
+  margin-top: 0.2em;
+}
+
+section li > ul,
+section li > ol {
+  margin-bottom: 0;
+}
+
+section li::marker {
+  color: var(--sk-hazard);
+}
+
+section ul ul li::marker {
+  color: var(--sk-dim);
+}
+
+section ol li::marker {
+  color: var(--sk-hazard);
+  font-family: var(--sk-mono);
+  font-weight: 700;
+}
+
+section strong {
+  font-weight: 700;
+  color: var(--sk-hazard);
+}
+
+section em {
+  color: var(--sk-chrome);
+}
+
+section a {
+  color: var(--sk-amber);
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+
+section mark {
+  background: var(--sk-hazard);
+  color: var(--sk-black);
+  padding: 0 0.15em;
+}
+
+section hr {
+  border: 0;
+  height: 8px;
+  background: var(--sk-hazard-stripes);
+  margin: 0.8em 0;
+}
+
+section img {
+  max-width: 100%;
+}
+
+/* TODO is a warning label, DONE a passed inspection stamp */
+
+section .todo,
+section .done {
+  font-family: var(--sk-stencil);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  padding: 0 0.3em;
+}
+
+section .todo {
+  color: #fff;
+  background: var(--sk-red);
+  box-shadow: inset 0 0 0 2px var(--sk-black);
+}
+
+section .done {
+  color: var(--sk-olive);
+  border: 2px solid var(--sk-olive);
+  border-radius: 3px;
+}
+
+/* Quotes: a stamped data plate, bevelled and bolted */
+
+section blockquote {
+  background:
+    var(--sk-rivet), var(--sk-rivet), var(--sk-rivet), var(--sk-rivet),
+    linear-gradient(180deg, #4a5057, #33383e);
+  background-size: 14px 14px, 14px 14px, 14px 14px, 14px 14px, 100% 100%;
+  background-position: 6px 6px, calc(100% - 6px) 6px, 6px calc(100% - 6px), calc(100% - 6px) calc(100% - 6px), 0 0;
+  background-repeat: no-repeat;
+  border: 1px solid #121416;
+  border-radius: 4px;
+  box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.18), inset 0 -2px 0 rgba(0, 0, 0, 0.4), 0 4px 10px rgba(0, 0, 0, 0.45);
+  padding: 0.55em 1.3em;
+  color: var(--sk-fg);
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.6);
+}
+
+section blockquote > :last-child {
+  margin-bottom: 0;
+}
+
+/* Code: an amber phosphor CRT in a steel bezel */
+
+section code,
+section kbd,
+section pre,
+section samp {
+  font-family: var(--sk-mono);
+}
+
+section code {
+  background: rgba(255, 176, 0, 0.13);
+  color: var(--sk-amber);
+  border-radius: 2px;
+  padding: 0.1em 0.3em;
+  font-size: 0.82em;
+}
+
+section kbd {
+  background: linear-gradient(180deg, #e2e6ea, #9aa3ac);
+  color: var(--sk-black);
+  border: 1px solid var(--sk-black);
+  border-radius: 3px;
+  box-shadow: 0 3px 0 #121416, inset 0 1px 0 #fff;
+  padding: 0.05em 0.45em;
+  font-size: 0.75em;
+}
+
+section pre {
+  background:
+    repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.25) 0 1px, transparent 1px 3px),
+    radial-gradient(ellipse at center, #1d1606 0%, #0b0904 100%);
+  border: 6px solid #4a5057;
+  border-radius: 10px;
+  box-shadow: inset 0 0 0 2px #121416, inset 0 0 24px rgba(0, 0, 0, 0.8), 0 0 0 1px #121416, 0 4px 10px rgba(0, 0, 0, 0.5);
+  color: var(--sk-amber);
+  text-shadow: 0 0 5px rgba(255, 176, 0, 0.55);
+  font-size: 0.7em;
+  line-height: 1.45;
+  padding: 0.6em 0.9em;
+  overflow: auto;
+}
+
+section pre code {
+  background: none;
+  border-radius: 0;
+  padding: 0;
+  font-size: 1em;
+  color: inherit;
+}
+
+/* Syntax colours: phosphor amber in a few intensities */
+section .hljs-keyword,
+section .hljs-selector-tag,
+section .hljs-doctag { color: #ffd166; font-weight: 700; }
+section .hljs-string,
+section .hljs-regexp,
+section .hljs-addition { color: #ffe9a8; }
+section .hljs-comment,
+section .hljs-quote { color: #9c6c00; font-style: italic; text-shadow: none; }
+section .hljs-title,
+section .hljs-section { color: #fff3cf; font-weight: 700; }
+section .hljs-built_in,
+section .hljs-literal,
+section .hljs-number,
+section .hljs-symbol { color: #ff9a3c; }
+section .hljs-variable,
+section .hljs-params,
+section .hljs-attr,
+section .hljs-attribute,
+section .hljs-template-variable,
+section .hljs-type { color: #ffc24d; }
+section .hljs-meta { color: #b88a2a; }
+section .hljs-deletion { color: #ff6a4d; }
+
+/* Tables: a stencilled spec plate */
+
+section table {
+  border-collapse: collapse;
+  font-size: 0.85em;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+}
+
+section th,
+section td {
+  padding: 0.25em 0.75em;
+  border: 1px solid #121416;
+}
+
+section th {
+  background: linear-gradient(180deg, #e2e6ea, #9aa3ac);
+  color: var(--sk-black);
+  font-family: var(--sk-stencil);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.6);
+}
+
+section td {
+  background: rgba(51, 56, 62, 0.85);
+}
+
+section tbody tr:nth-child(2n) td {
+  background: rgba(64, 70, 77, 0.85);
+}
+
+/* Header: a hazard band with a stencilled label. Footer: tread plate. */
+
+header,
+footer {
+  position: absolute;
+  left: 0;
+  right: 0;
+  box-sizing: border-box;
+  margin: 0;
+  font-family: var(--sk-stencil);
+  font-size: 19px;
+  line-height: 1.3;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+header {
+  top: 0;
+  padding: 8px 84px 18px;
+  color: var(--sk-hazard);
+  background:
+    var(--sk-hazard-stripes) bottom left / 100% 10px no-repeat,
+    linear-gradient(180deg, #1a1d20, #121416);
+}
+
+footer {
+  bottom: 0;
+  padding: 9px 84px;
+  color: var(--sk-chrome);
+  text-shadow: 0 1px 0 #000;
+  background-color: #3a3f45;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40' width='40' height='40'%3E %3Cg opacity='1'%3E%3Cg transform='translate(10 10) rotate(45)'%3E%3Crect x='-11' y='-2' width='22' height='5' rx='2.5' fill='%23202327'/%3E%3Crect x='-11' y='-3' width='22' height='4.5' rx='2.2' fill='%235b6168'/%3E%3Crect x='-9' y='-2.6' width='15' height='1.2' rx='.6' fill='%23fff' opacity='.35'/%3E%3C/g%3E%3Cg transform='translate(30 30) rotate(45)'%3E%3Crect x='-11' y='-2' width='22' height='5' rx='2.5' fill='%23202327'/%3E%3Crect x='-11' y='-3' width='22' height='4.5' rx='2.2' fill='%235b6168'/%3E%3Crect x='-9' y='-2.6' width='15' height='1.2' rx='.6' fill='%23fff' opacity='.35'/%3E%3C/g%3E%3Cg transform='translate(30 10) rotate(-45)'%3E%3Crect x='-11' y='-2' width='22' height='5' rx='2.5' fill='%23202327'/%3E%3Crect x='-11' y='-3' width='22' height='4.5' rx='2.2' fill='%235b6168'/%3E%3Crect x='-9' y='-2.6' width='15' height='1.2' rx='.6' fill='%23fff' opacity='.35'/%3E%3C/g%3E%3Cg transform='translate(10 30) rotate(-45)'%3E%3Crect x='-11' y='-2' width='22' height='5' rx='2.5' fill='%23202327'/%3E%3Crect x='-11' y='-3' width='22' height='4.5' rx='2.2' fill='%235b6168'/%3E%3Crect x='-9' y='-2.6' width='15' height='1.2' rx='.6' fill='%23fff' opacity='.35'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E"), linear-gradient(180deg, #4a5057, #2a2e33);
+  background-size: 40px 40px, 100% 100%;
+  border-top: 2px solid #121416;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+header a,
+footer a {
+  color: inherit;
+}
+
+section[data-header] {
+  padding-top: 92px;
+}
+
+section[data-footer] {
+  padding-bottom: 78px;
+}
+
+/* Page numbers: a stencilled unit number on a black plate */
+
+section::after {
+  content: "UNIT " attr(data-marpit-pagination);
+  position: absolute;
+  right: 56px;
+  bottom: 26px;
+  padding: 2px 10px;
+  background: var(--sk-black);
+  border: 1px solid #4a5057;
+  font-family: var(--sk-stencil);
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  color: var(--sk-hazard);
+}
+
+section[data-footer]::after {
+  z-index: 1;
+  bottom: 9px;
+  right: 28px;
+}
+
+/* lead: chrome title on tread plate, with a turbine intake and hazard bands */
+
+section.lead {
+  display: flex;
+  justify-content: center;
+  text-align: center;
+  background-color: #2a2e33;
+  background-image:
+    var(--sk-hazard-stripes),
+    var(--sk-hazard-stripes),
+    radial-gradient(ellipse at center, rgba(18, 20, 22, 0.88) 0%, rgba(18, 20, 22, 0.6) 40%, rgba(18, 20, 22, 0.15) 75%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1000 1000'%3E %3Cdefs%3E %3CradialGradient id='c' cx='.38' cy='.32' r='.8'%3E%3Cstop offset='0' stop-color='%23f4f6f8'/%3E%3Cstop offset='.5' stop-color='%238a939c'/%3E%3Cstop offset='1' stop-color='%232a2e33'/%3E%3C/radialGradient%3E %3ClinearGradient id='b' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%23d9dee3'/%3E%3Cstop offset='.5' stop-color='%235d656e'/%3E%3Cstop offset='1' stop-color='%23b8c0c8'/%3E%3C/linearGradient%3E %3C/defs%3E %3Cg opacity='0.9'%3E %3Ccircle cx='500' cy='500' r='470' fill='none' stroke='url(%23b)' stroke-width='60'/%3E %3Ccircle cx='500' cy='500' r='430' fill='none' stroke='%2315171a' stroke-width='16'/%3E %3Ccircle cx='500' cy='500' r='400' fill='%231b1e22'/%3E %3Cg fill='url(%23b)' stroke='%2315171a' stroke-width='3'%3E%3Cpath d='M620 500Q750 512 861 620L834 681Q768 530 619 512Z'/%3E%3Cpath d='M615 534Q736 582 812 716L769 768Q754 600 611 545Z'/%3E%3Cpath d='M601 565Q703 646 739 796L683 833Q721 664 594 574Z'/%3E%3Cpath d='M579 591Q654 697 646 851L582 871Q672 715 569 598Z'/%3E%3Cpath d='M550 609Q592 732 541 878L474 879Q610 750 539 613Z'/%3E%3Cpath d='M517 619Q523 749 433 874L368 856Q541 767 505 620Z'/%3E%3Cpath d='M483 619Q452 745 330 840L273 805Q470 763 471 617Z'/%3E%3Cpath d='M450 609Q385 722 241 778L196 729Q403 740 440 604Z'/%3E%3Cpath d='M421 591Q327 681 173 694L144 634Q345 699 413 583Z'/%3E%3Cpath d='M399 565Q283 624 132 594L121 528Q301 642 393 555Z'/%3E%3Cpath d='M385 534Q257 558 120 487L128 420Q275 576 382 522Z'/%3E%3Cpath d='M380 500Q250 488 139 380L166 319Q268 506 381 488Z'/%3E%3Cpath d='M385 466Q264 418 188 284L231 232Q282 436 389 455Z'/%3E%3Cpath d='M399 435Q297 354 261 204L317 167Q315 372 406 426Z'/%3E%3Cpath d='M421 409Q346 303 354 149L418 129Q364 321 431 402Z'/%3E%3Cpath d='M450 391Q408 268 459 122L526 121Q426 286 461 387Z'/%3E%3Cpath d='M483 381Q477 251 567 126L632 144Q495 269 495 380Z'/%3E%3Cpath d='M517 381Q548 255 670 160L727 195Q566 273 529 383Z'/%3E%3Cpath d='M550 391Q615 278 759 222L804 271Q633 296 560 396Z'/%3E%3Cpath d='M579 409Q673 319 827 306L856 366Q691 337 587 417Z'/%3E%3Cpath d='M601 435Q717 376 868 406L879 472Q735 394 607 445Z'/%3E%3Cpath d='M615 466Q743 442 880 513L872 580Q761 460 618 478Z'/%3E%3C/g%3E %3Ccircle cx='500' cy='500' r='130' fill='url(%23c)' stroke='%2315171a' stroke-width='6'/%3E %3Cpath d='M500 420A80 80 0 0 1 580 500' fill='none' stroke='%23fff' stroke-width='10' opacity='.5'/%3E %3C/g%3E%3C/svg%3E"),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40' width='40' height='40'%3E %3Cg opacity='1'%3E%3Cg transform='translate(10 10) rotate(45)'%3E%3Crect x='-11' y='-2' width='22' height='5' rx='2.5' fill='%23202327'/%3E%3Crect x='-11' y='-3' width='22' height='4.5' rx='2.2' fill='%235b6168'/%3E%3Crect x='-9' y='-2.6' width='15' height='1.2' rx='.6' fill='%23fff' opacity='.35'/%3E%3C/g%3E%3Cg transform='translate(30 30) rotate(45)'%3E%3Crect x='-11' y='-2' width='22' height='5' rx='2.5' fill='%23202327'/%3E%3Crect x='-11' y='-3' width='22' height='4.5' rx='2.2' fill='%235b6168'/%3E%3Crect x='-9' y='-2.6' width='15' height='1.2' rx='.6' fill='%23fff' opacity='.35'/%3E%3C/g%3E%3Cg transform='translate(30 10) rotate(-45)'%3E%3Crect x='-11' y='-2' width='22' height='5' rx='2.5' fill='%23202327'/%3E%3Crect x='-11' y='-3' width='22' height='4.5' rx='2.2' fill='%235b6168'/%3E%3Crect x='-9' y='-2.6' width='15' height='1.2' rx='.6' fill='%23fff' opacity='.35'/%3E%3C/g%3E%3Cg transform='translate(10 30) rotate(-45)'%3E%3Crect x='-11' y='-2' width='22' height='5' rx='2.5' fill='%23202327'/%3E%3Crect x='-11' y='-3' width='22' height='4.5' rx='2.2' fill='%235b6168'/%3E%3Crect x='-9' y='-2.6' width='15' height='1.2' rx='.6' fill='%23fff' opacity='.35'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E"),
+    linear-gradient(180deg, #3a3f45, #24282c);
+  background-size: 100% 26px, 100% 26px, 100% 100%, 640px 640px, 40px 40px, 100% 100%;
+  background-position: top left, bottom left, 0 0, calc(100% + 250px) 50%, 0 0, 0 0;
+  background-repeat: no-repeat, no-repeat, no-repeat, no-repeat, repeat, no-repeat;
+  box-shadow: none;
+}
+
+section.lead h1 {
+  font-size: 3em;
+  margin-bottom: 0.18em;
+  filter: drop-shadow(0 3px 0 #121416) drop-shadow(0 6px 14px rgba(0, 0, 0, 0.8));
+}
+
+section.lead h2 {
+  background-image: none;
+  color: var(--sk-hazard);
+  font-size: 1.15em;
+  letter-spacing: 0.3em;
+  padding-bottom: 0;
+}
+
+section.lead p {
+  font-size: 1.05em;
+  text-shadow: 0 2px 4px #000;
+}
+
+section.lead ul,
+section.lead ol {
+  display: inline-block;
+  text-align: left;
+}
+
+/* invert: stencilled black on polished chrome, for section slides */
+
+section.invert {
+  --sk-fg: #121416;
+  background-color: #c9cfd5;
+  background-image:
+    var(--sk-rivet), var(--sk-rivet), var(--sk-rivet), var(--sk-rivet),
+    linear-gradient(90deg, var(--sk-red) 0 22px, var(--sk-black) 22px 26px, transparent 26px),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1000 1000'%3E %3Cdefs%3E %3CradialGradient id='c' cx='.38' cy='.32' r='.8'%3E%3Cstop offset='0' stop-color='%23f4f6f8'/%3E%3Cstop offset='.5' stop-color='%238a939c'/%3E%3Cstop offset='1' stop-color='%232a2e33'/%3E%3C/radialGradient%3E %3ClinearGradient id='b' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%23d9dee3'/%3E%3Cstop offset='.5' stop-color='%235d656e'/%3E%3Cstop offset='1' stop-color='%23b8c0c8'/%3E%3C/linearGradient%3E %3C/defs%3E %3Cg opacity='0.16'%3E %3Ccircle cx='500' cy='500' r='470' fill='none' stroke='url(%23b)' stroke-width='60'/%3E %3Ccircle cx='500' cy='500' r='430' fill='none' stroke='%2315171a' stroke-width='16'/%3E %3Ccircle cx='500' cy='500' r='400' fill='%231b1e22'/%3E %3Cg fill='url(%23b)' stroke='%2315171a' stroke-width='3'%3E%3Cpath d='M620 500Q750 512 861 620L834 681Q768 530 619 512Z'/%3E%3Cpath d='M615 534Q736 582 812 716L769 768Q754 600 611 545Z'/%3E%3Cpath d='M601 565Q703 646 739 796L683 833Q721 664 594 574Z'/%3E%3Cpath d='M579 591Q654 697 646 851L582 871Q672 715 569 598Z'/%3E%3Cpath d='M550 609Q592 732 541 878L474 879Q610 750 539 613Z'/%3E%3Cpath d='M517 619Q523 749 433 874L368 856Q541 767 505 620Z'/%3E%3Cpath d='M483 619Q452 745 330 840L273 805Q470 763 471 617Z'/%3E%3Cpath d='M450 609Q385 722 241 778L196 729Q403 740 440 604Z'/%3E%3Cpath d='M421 591Q327 681 173 694L144 634Q345 699 413 583Z'/%3E%3Cpath d='M399 565Q283 624 132 594L121 528Q301 642 393 555Z'/%3E%3Cpath d='M385 534Q257 558 120 487L128 420Q275 576 382 522Z'/%3E%3Cpath d='M380 500Q250 488 139 380L166 319Q268 506 381 488Z'/%3E%3Cpath d='M385 466Q264 418 188 284L231 232Q282 436 389 455Z'/%3E%3Cpath d='M399 435Q297 354 261 204L317 167Q315 372 406 426Z'/%3E%3Cpath d='M421 409Q346 303 354 149L418 129Q364 321 431 402Z'/%3E%3Cpath d='M450 391Q408 268 459 122L526 121Q426 286 461 387Z'/%3E%3Cpath d='M483 381Q477 251 567 126L632 144Q495 269 495 380Z'/%3E%3Cpath d='M517 381Q548 255 670 160L727 195Q566 273 529 383Z'/%3E%3Cpath d='M550 391Q615 278 759 222L804 271Q633 296 560 396Z'/%3E%3Cpath d='M579 409Q673 319 827 306L856 366Q691 337 587 417Z'/%3E%3Cpath d='M601 435Q717 376 868 406L879 472Q735 394 607 445Z'/%3E%3Cpath d='M615 466Q743 442 880 513L872 580Q761 460 618 478Z'/%3E%3C/g%3E %3Ccircle cx='500' cy='500' r='130' fill='url(%23c)' stroke='%2315171a' stroke-width='6'/%3E %3Cpath d='M500 420A80 80 0 0 1 580 500' fill='none' stroke='%23fff' stroke-width='10' opacity='.5'/%3E %3C/g%3E%3C/svg%3E"),
+    linear-gradient(172deg, #f4f6f8 0%, #c3cad1 22%, #8f98a1 34%, #e9edf0 46%, #b3bbc3 62%, #7d868f 78%, #d5dbe0 100%);
+  background-size: 16px 16px, 16px 16px, 16px 16px, 16px 16px, 100% 100%, 720px 720px, 100% 100%;
+  background-position: 18px 18px, calc(100% - 18px) 18px, 18px calc(100% - 18px), calc(100% - 18px) calc(100% - 18px), 0 0, calc(100% + 260px) 50%, 0 0;
+  background-repeat: no-repeat;
+  box-shadow: inset 0 0 80px rgba(40, 44, 48, 0.45);
+  color: #121416;
+}
+
+section.invert h1,
+section.invert h2,
+section.invert h3,
+section.invert h4,
+section.invert h5,
+section.invert h6 {
+  color: #121416;
+  -webkit-text-fill-color: #121416;
+  background-color: transparent;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.7);
+  filter: none;
+}
+
+section.invert h1 {
+  background-image: none;
+}
+
+section.invert h3 {
+  color: var(--sk-red);
+  -webkit-text-fill-color: var(--sk-red);
+}
+
+section.invert strong {
+  color: var(--sk-red);
+}
+
+section.invert em {
+  color: #3a3f45;
+}
+
+section.invert a {
+  color: #121416;
+}
+
+section.invert li::marker {
+  color: var(--sk-red);
+}
+
+section.invert code {
+  background: var(--sk-black);
+  color: var(--sk-amber);
+  -webkit-text-fill-color: var(--sk-amber);
+}
+
+section.invert pre code {
+  background: none;
+  color: inherit;
+}
+
+section.invert blockquote {
+  color: #e3e7eb;
+}
+
+section.invert td {
+  color: #e3e7eb;
+}
+
+section.invert .done {
+  color: #4e5a2a;
+  border-color: #4e5a2a;
+}
+
+section.lead.invert {
+  background-image:
+    var(--sk-hazard-stripes),
+    var(--sk-hazard-stripes),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1000 1000'%3E %3Cdefs%3E %3CradialGradient id='c' cx='.38' cy='.32' r='.8'%3E%3Cstop offset='0' stop-color='%23f4f6f8'/%3E%3Cstop offset='.5' stop-color='%238a939c'/%3E%3Cstop offset='1' stop-color='%232a2e33'/%3E%3C/radialGradient%3E %3ClinearGradient id='b' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%23d9dee3'/%3E%3Cstop offset='.5' stop-color='%235d656e'/%3E%3Cstop offset='1' stop-color='%23b8c0c8'/%3E%3C/linearGradient%3E %3C/defs%3E %3Cg opacity='0.16'%3E %3Ccircle cx='500' cy='500' r='470' fill='none' stroke='url(%23b)' stroke-width='60'/%3E %3Ccircle cx='500' cy='500' r='430' fill='none' stroke='%2315171a' stroke-width='16'/%3E %3Ccircle cx='500' cy='500' r='400' fill='%231b1e22'/%3E %3Cg fill='url(%23b)' stroke='%2315171a' stroke-width='3'%3E%3Cpath d='M620 500Q750 512 861 620L834 681Q768 530 619 512Z'/%3E%3Cpath d='M615 534Q736 582 812 716L769 768Q754 600 611 545Z'/%3E%3Cpath d='M601 565Q703 646 739 796L683 833Q721 664 594 574Z'/%3E%3Cpath d='M579 591Q654 697 646 851L582 871Q672 715 569 598Z'/%3E%3Cpath d='M550 609Q592 732 541 878L474 879Q610 750 539 613Z'/%3E%3Cpath d='M517 619Q523 749 433 874L368 856Q541 767 505 620Z'/%3E%3Cpath d='M483 619Q452 745 330 840L273 805Q470 763 471 617Z'/%3E%3Cpath d='M450 609Q385 722 241 778L196 729Q403 740 440 604Z'/%3E%3Cpath d='M421 591Q327 681 173 694L144 634Q345 699 413 583Z'/%3E%3Cpath d='M399 565Q283 624 132 594L121 528Q301 642 393 555Z'/%3E%3Cpath d='M385 534Q257 558 120 487L128 420Q275 576 382 522Z'/%3E%3Cpath d='M380 500Q250 488 139 380L166 319Q268 506 381 488Z'/%3E%3Cpath d='M385 466Q264 418 188 284L231 232Q282 436 389 455Z'/%3E%3Cpath d='M399 435Q297 354 261 204L317 167Q315 372 406 426Z'/%3E%3Cpath d='M421 409Q346 303 354 149L418 129Q364 321 431 402Z'/%3E%3Cpath d='M450 391Q408 268 459 122L526 121Q426 286 461 387Z'/%3E%3Cpath d='M483 381Q477 251 567 126L632 144Q495 269 495 380Z'/%3E%3Cpath d='M517 381Q548 255 670 160L727 195Q566 273 529 383Z'/%3E%3Cpath d='M550 391Q615 278 759 222L804 271Q633 296 560 396Z'/%3E%3Cpath d='M579 409Q673 319 827 306L856 366Q691 337 587 417Z'/%3E%3Cpath d='M601 435Q717 376 868 406L879 472Q735 394 607 445Z'/%3E%3Cpath d='M615 466Q743 442 880 513L872 580Q761 460 618 478Z'/%3E%3C/g%3E %3Ccircle cx='500' cy='500' r='130' fill='url(%23c)' stroke='%2315171a' stroke-width='6'/%3E %3Cpath d='M500 420A80 80 0 0 1 580 500' fill='none' stroke='%23fff' stroke-width='10' opacity='.5'/%3E %3C/g%3E%3C/svg%3E"),
+    linear-gradient(172deg, #f4f6f8 0%, #c3cad1 22%, #8f98a1 34%, #e9edf0 46%, #b3bbc3 62%, #7d868f 78%, #d5dbe0 100%);
+  background-size: 100% 26px, 100% 26px, 720px 720px, 100% 100%;
+  background-position: top left, bottom left, calc(100% + 260px) 50%, 0 0;
+}

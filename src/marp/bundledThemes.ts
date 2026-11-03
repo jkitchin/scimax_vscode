@@ -9,7 +9,16 @@ import * as fs from 'fs';
 import * as path from 'path';
 
 /** Names of the bundled themes (each file's `@theme` name). */
-export const SCIMAX_THEMES = ['scimax'];
+export const SCIMAX_THEMES = ['scimax', 'steampunk', 'cyberpunk', 'steel', 'steelpunk'];
+
+/** One-line description of each bundled theme, for theme pickers. */
+export const SCIMAX_THEME_DESCRIPTIONS: Record<string, string> = {
+    scimax: 'Scimax, in the unicorn\'s blues',
+    steampunk: 'Scimax, brass and copper on parchment',
+    cyberpunk: 'Scimax, neon on a dark night',
+    steel: 'Scimax, Pittsburgh steel, molten and sparking',
+    steelpunk: 'Scimax, chrome, rivets and hazard stripes',
+};
 
 let themesDir: string | null | undefined;
 

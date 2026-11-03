@@ -257,17 +257,17 @@ In a Marp deck, Scimax completes directive names as you type them at the
 start of a front matter line or inside ~<!-- -->~, then their values, and
 shows what a directive does when you hover over it.
 
-| Directive                                                                     | Scope  | Values offered                                                      |
-|-------------------------------------------------------------------------------+--------+---------------------------------------------------------------------|
-| ~theme~                                                                       | Global | ~default~, ~gaia~, ~uncover~, ~scimax~, and themes from ~scimax.marp.themes~ |
-| ~paginate~                                                                    | Local  | ~true~, ~false~, ~hold~, ~skip~                                     |
-| ~headingDivider~                                                              | Global | ~1~ to ~6~                                                          |
-| ~size~                                                                        | Global | ~16:9~, ~4:3~                                                       |
-| ~math~                                                                        | Global | ~mathjax~, ~katex~                                                  |
-| ~class~                                                                       | Local  | ~lead~, ~invert~                                                    |
-| ~transition~                                                                  | Local  | The HTML slideshow transitions (~fade~, ~push~, ...)                |
-| ~header~, ~footer~, ~color~, ~background*~                                    | Local  | (free text; ~background*~ positions, repeats and sizes are offered) |
-| ~style~, ~lang~, ~title~, ~author~, ~description~, ~keywords~, ~url~, ~image~ | Global | (free text)                                                         |
+| Directive                                                                     | Scope  | Values offered                                                                                                               |
+|-------------------------------------------------------------------------------+--------+------------------------------------------------------------------------------------------------------------------------------|
+| ~theme~                                                                       | Global | ~default~, ~gaia~, ~uncover~, ~scimax~, ~steampunk~, ~cyberpunk~, ~steel~, ~steelpunk~, and themes from ~scimax.marp.themes~ |
+| ~paginate~                                                                    | Local  | ~true~, ~false~, ~hold~, ~skip~                                                                                              |
+| ~headingDivider~                                                              | Global | ~1~ to ~6~                                                                                                                   |
+| ~size~                                                                        | Global | ~16:9~, ~4:3~                                                                                                                |
+| ~math~                                                                        | Global | ~mathjax~, ~katex~                                                                                                           |
+| ~class~                                                                       | Local  | ~lead~, ~invert~                                                                                                             |
+| ~transition~                                                                  | Local  | The HTML slideshow transitions (~fade~, ~push~, ...)                                                                         |
+| ~header~, ~footer~, ~color~, ~background*~                                    | Local  | (free text; ~background*~ positions, repeats and sizes are offered)                                                          |
+| ~style~, ~lang~, ~title~, ~author~, ~description~, ~keywords~, ~url~, ~image~ | Global | (free text)                                                                                                                  |
 
 * Slide Thumbnails
 
@@ -584,10 +584,48 @@ theme does ~@import 'scimax';~ and changes only what you set. The CSS is in
 ~media/marp/themes/scimax.css~ in the extension. Marp for VS Code's own
 preview does not know the theme; Scimax's previews and exports do.
 
-** Custom themes
+** ⚠️ The steampunk, cyberpunk, steel and steelpunk themes
 
-/New Custom Theme.../ asks for a name and a theme to start from (Marp's or
-~scimax~), then:
+Four more themes ship with Scimax and work the same way as ~scimax~: no theme
+file or setting needed, and the thumbnails, preview, slideshow, exports and
+~scimax marp build~ all know them. All have the same ~lead~ and ~invert~
+classes and the same ~todo~ / ~done~ spans as ~scimax~, and fitted headings
+work.
+
+#+begin_src markdown
+---
+marp: true
+theme: steampunk   # or cyberpunk, steel, steelpunk
+paginate: true
+---
+#+end_src
+
+| Theme       | Slides   | Look                                                                                                                                                                                                                                                |
+|-------------+----------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| ~steampunk~ | All      | Aged parchment in a brass and copper frame, Victorian serif type (Baskerville, Didot), headings in oxblood and copper, quotes on riveted brass plates, code on dark iron, page numbers on brass gauges                                              |
+|             | ~lead~   | A title framed in brass, with gears in the corners                                                                                                                                                                                                  |
+|             | ~invert~ | Brass type on dark iron, with gears                                                                                                                                                                                                                 |
+| ~cyberpunk~ | All      | A dark, scan-lined night in neon magenta, cyan and acid yellow, glowing uppercase headings, ~//~ before level 2, quotes and code in clipped-corner panels, ~[n/N]~ page numbers                                                                     |
+|             | ~lead~   | A title over a neon horizon grid and setting sun                                                                                                                                                                                                    |
+|             | ~invert~ | Black on acid-yellow hazard stripes                                                                                                                                                                                                                 |
+| ~steel~     | All      | Industrial Pittsburgh: brushed steel and mill soot in black and gold, condensed signage headings, h1 in white-hot to red liquid steel, h2 over a molten bar, sparks off the top corner, quotes on steel plates, I-beam header, glowing page numbers |
+|             | ~lead~   | A title beside a white-hot pour into a molten pool, throwing a shower of sparks                                                                                                                                                                     |
+|             | ~invert~ | Dark type on flowing liquid steel                                                                                                                                                                                                                   |
+| ~steelpunk~ | All      | Late-20th-century hardware: riveted gunmetal plate, stencilled military type, h1 in polished chrome, h2 over hazard stripes, quotes on bolted data plates, code on an amber CRT, tread-plate footer, ~UNIT n~ page numbers                          |
+|             | ~lead~   | A chrome title on diamond plate between hazard bands, beside a jet-turbine intake                                                                                                                                                                   |
+|             | ~invert~ | Black stencil on polished chrome, with a red stripe and rivets                                                                                                                                                                                      |
+
+The fonts are ones that come with macOS or are common elsewhere, with plain
+serif or sans-serif fallbacks, so nothing is downloaded and decks look the
+same offline. The CSS is in ~media/marp/themes/steampunk.css~,
+~media/marp/themes/cyberpunk.css~, ~media/marp/themes/steel.css~ and
+~media/marp/themes/steelpunk.css~ in the extension; to change one, choose
+/New Custom Theme.../ and start from it.
+
+** 👀 Custom themes
+
+/New Custom Theme.../ asks for a name and a theme to start from (Marp's,
+~scimax~, ~steampunk~, ~cyberpunk~, ~steel~ or ~steelpunk~), then:
 
 1. writes ~themes/<name>.css~ in the workspace folder (next to the deck
    outside a workspace), with ~/* @theme <name> */~, ~@import '<base>';~ and
@@ -667,37 +705,38 @@ Code, use the CLI: ~scimax marp build talk.md --open~ (see
 [[file:30-cli.org::*Marp Slides][Marp Slides in the CLI]]). It uses the same
 scripts and makes the same HTML as the =h= export.
 
-** Keys in the slideshow
+** 👀 Keys in the slideshow
 
-| Key                       | Effect                                                                         |
-|---------------------------+--------------------------------------------------------------------------------|
-| =a=                       | Turn the pen on or off (widgets cannot be clicked while it is on)              |
-| =1= to =5=                | Pen colour while the pen is on: red, blue, green, black, yellow highlighter    |
-| =r=                       | Eraser: drag over strokes to remove them; =r= again turns it off               |
-| =z=                       | Undo the last stroke (or the last erase) on this slide                         |
-| =c= / =C=                 | Clear this slide / every slide                                                 |
-| =l=                       | Laser pointer: a dot that follows the mouse                                    |
-| =1= to =5=                | Laser colour while the laser is on: red, blue, green, black, yellow            |
-| =n=                       | New sticky note at the mouse; type Markdown, click away to render it           |
-| Right-click               | A menu with all of these (Shift+right-click gives the browser's own menu)      |
-| Hold the mouse on a slide | Spotlight: the screen darkens except a circle around the cursor (not on        |
-|                           | buttons, links, code cells or widgets, or while the pen or eraser is on)       |
-| =s=                       | Save a standalone copy of the deck with the ink, ~<deck>-annotated.html~       |
-| =m=                       | Save the Markdown source with the ink as SVG, ~<deck>-annotated.md~            |
-| =S=                       | Save only the ink, as JSON                                                     |
-| =i=                       | Load ink from such a JSON file (or drag the file onto the deck)                |
-| =t= / =T=                 | Start or pause the talk timer / reset it to the full time                      |
-| =+= / =-=                 | Add a minute to the talk timer / take one off                                  |
-| =Alt+T= (=Option+T=)      | Type a new time for the talk timer (=20=, =12:30=, =90s=), or add one          |
-| =e= / =E=                 | Start or pause this slide's exercise countdown / reset it                      |
-| =b= / =w=                 | Black / white screen, to pause for discussion; again, =Esc= or a click returns |
-| =x=                       | Zoom: drag a box (or click) to magnify it; =x= or =Esc= zooms out              |
-| =g=                       | Go to a slide: type a number or words from its title or text, then Enter       |
-| A number, then Enter      | Jump to that slide (=12= Enter goes to slide 12)                               |
-| =d=                       | Edit the slides' text and layout in place (see below)                          |
-| =v=                       | Live captions on or off (see below)                                            |
-| =V= (=Shift+V=)           | Start recording the talk / stop and save the video (see below)                 |
-| =Cmd+P= / =Ctrl+P=        | Print; "Save as PDF" keeps every slide's ink as vector graphics                |
+| Key                       | Effect                                                                           |
+|---------------------------+----------------------------------------------------------------------------------|
+| =a=                       | Turn the pen on or off (widgets cannot be clicked while it is on)                |
+| =1= to =5=                | Pen colour while the pen is on: red, blue, green, black, yellow highlighter      |
+| =r=                       | Eraser: drag over strokes to remove them; =r= again turns it off                 |
+| =z=                       | Undo the last stroke (or the last erase) on this slide                           |
+| =c= / =C=                 | Clear this slide / every slide                                                   |
+| =l=                       | Laser pointer: a dot that follows the mouse                                      |
+| =1= to =5=                | Laser colour while the laser is on: red, blue, green, black, yellow              |
+| =n=                       | New sticky note at the mouse; type Markdown, click away to render it             |
+| Right-click               | A menu with all of these (Shift+right-click gives the browser's own menu)        |
+| Hold the mouse on a slide | Spotlight: the screen darkens except a circle around the cursor (not on          |
+|                           | buttons, links, code cells or widgets, or while the pen or eraser is on)         |
+| =s=                       | Save a standalone copy of the deck with the ink, ~<deck>-annotated.html~         |
+| =m=                       | Save the Markdown source with the ink as SVG, ~<deck>-annotated.md~              |
+| =S=                       | Save only the ink, as JSON                                                       |
+| =i=                       | Load ink from such a JSON file (or drag the file onto the deck)                  |
+| =t= / =T=                 | Start or pause the talk timer / reset it to the full time                        |
+| =+= / =-=                 | Add a minute to the talk timer / take one off                                    |
+| =Alt+T= (=Option+T=)      | Type a new time for the talk timer (=20=, =12:30=, =90s=), or add one            |
+| =e= / =E=                 | Start or pause this slide's exercise countdown / reset it                        |
+| =b= / =w=                 | Black / white screen, to pause for discussion; again, =Esc= or a click returns   |
+| =x=                       | Zoom: drag a box (or click) to magnify it; =x= or =Esc= zooms out                |
+| =g=                       | Go to a slide: type a number or words from its title or text, then Enter         |
+| A number, then Enter      | Jump to that slide (=12= Enter goes to slide 12)                                 |
+| =d=                       | Edit the slides' text and layout in place (see below)                            |
+| =v=                       | Live captions on or off (see below)                                              |
+| =V= (=Shift+V=)           | Start recording the talk / stop and save the video (see below)                   |
+| =M= (=Shift+M=)           | The Microphone panel: which microphone, its level, gain and settings (see below) |
+| =Cmd+P= / =Ctrl+P=        | Print; "Save as PDF" keeps every slide's ink as vector graphics                  |
 
 Marp's own keys (=F= full screen, =P= presenter view, arrows) still work, also
 after you click into a widget: the arrows, =PageUp=, =PageDown=, =Home= and
@@ -835,7 +874,7 @@ section per slide:
 The transcript grows over every talk given from the deck until "Clear
 transcript" empties it.
 
-** Recording the talk
+** 👀 Recording the talk
 
 =V= (=Shift+V=) records the slideshow, the mouse and your voice as a video.
 Chrome asks you to share "this tab". Press =V= again to stop. Chrome then
@@ -851,7 +890,10 @@ recording.
   made of slides gives a small file.
 - *Sound.* Your microphone is mixed with any sound the deck plays (videos,
   audio). Captions and the recording share one microphone, so Chrome asks
-  for it once per page. Chrome does not remember the microphone permission
+  for it once per page. The microphone, and how its sound is processed, are
+  set in the Microphone panel (=M=, see below). Recording starts with a
+  notice that names the microphone in use. If it records nothing for 15
+  seconds, a notice says so. Chrome does not remember the microphone permission
   for slideshows opened from a file, so it asks again after a reload.
 - *The mouse.* A recording of a tab does not show the mouse pointer, so while
   recording the slideshow draws a yellow ring around it, which shrinks when
@@ -864,14 +906,46 @@ recording.
   ffmpeg -i talk.mp4 -i talk.vtt -c copy -c:s mov_text talk-captioned.mp4
   #+end_src
 - *Presenter view.* Pressing =V= in Marp's presenter view asks which tab to
-  share: pick the slideshow. The presenter view shows =● REC= and the time,
-  and is not recorded itself.
+  share: pick the slideshow. The presenter view shows =● REC=, the time and
+  a small level meter for the microphone, and is not recorded itself.
 
 Start recording before you go full screen: the sharing dialog can take the
 browser out of full screen. The video stays in the browser until you stop.
 Closing the tab while recording asks first, and live reload waits until the
 recording is saved. If you stop with Chrome's own "Stop sharing" button, the
 video goes to the Downloads folder.
+
+** ⚠️ The microphone
+
+=M= (=Shift+M=), or "Microphone…" in the right-click menu, opens a panel to
+set up the microphone for recordings and captions, like the audio controls of
+a streaming app. =M= or =Esc= closes it.
+
+| Control           | Effect                                                                                            |
+|-------------------+---------------------------------------------------------------------------------------------------|
+| Input             | Which microphone: the system default or a named one. "In use" shows the one actually open         |
+| Level             | A live meter of what is recorded, with a peak marker and a verdict: silent, quiet, good, too loud |
+| Gain              | -12 to +24 dB, applied to the recording at once                                                   |
+| Limiter           | Holds loud moments just under full scale, so they do not clip (on by default)                     |
+| Voice filter      | Cuts rumble below 90 Hz and some of a room's "boxy" build-up around 350 Hz (off by default)       |
+| Echo cancellation | The browser's: removes sound from your speakers, not the room's echo                              |
+| Noise suppression | The browser's: removes steady noise such as fans; can make a distant voice sound hollow           |
+| Automatic gain    | The browser's: evens out the level, but also turns up the room between sentences                  |
+| Test: record 5 s  | Records five seconds through these settings and plays it back                                     |
+| Defaults          | Puts the settings back (keeps the microphone)                                                     |
+
+The settings are kept in the browser and apply to every deck. Changing them
+during a recording or while captions are on carries on with the new settings.
+If the chosen microphone is unplugged, the system default is used.
+
+*Echo, or a voice that sounds "in a box".* This is almost always the
+microphone being far from your mouth, so it records the room's reflections as
+much as your voice. Webcam, monitor and laptop microphones are like this; the
+panel warns when the microphone in use looks like one. No setting removes
+room echo after it is recorded. Choose a USB or headset microphone and put it
+a hand's width or two from your mouth. With a microphone that close, turning
+off echo cancellation, noise suppression and automatic gain often sounds more
+natural, and the voice filter can help a bit in a bare room.
 
 ** Editing slides in the slideshow
 
@@ -983,7 +1057,7 @@ another machine or share it, press =s=: the browser downloads one HTML file
 with the theme, images, iframes, fonts, tools and ink inside. Open it
 anywhere, keep annotating, and press =s= again.
 
-** Live Python cells
+** 👀 Live Python cells
 
 Mark a Python code block with ~run~ to make it a cell you can edit and run
 during the talk:
@@ -1009,6 +1083,19 @@ it and =Esc= to leave the editor so the arrow keys change slides again. =↺=
 restores the original code and =⟲= restarts Python. All cells share one
 Python session, like a notebook. Output shows printed text, errors, the value
 of the last expression and matplotlib figures.
+
+Code that fails is useful for teaching, so errors stay in view. The cell
+shows the traceback with the failing lines of code (as Jupyter does), and the
+error message itself (e.g. ~NameError: name 'y' is not defined~) also appears
+in red in the cell's bar. The output keeps up to 45% of the cell's height,
+even when the slide's CSS makes the editor taller (e.g. ~.pyc .cm-editor {
+max-height: 600px !important; }~); the editor scrolls instead.
+
+~examples/marp-present/code.md~ has a slide for each kind of code: plain
+highlighted code, live cells (the last value, shared variables, ~hidden~ and
+~auto~ cells, a plot, ~%pip~) and broken cells for teaching (NameError,
+SyntaxError, IndentationError, TypeError, an error inside a function,
+IndexError, KeyError, numpy, ~raise~, ~try~/~except~, a warning).
 
 Python is [[https://pyodide.org][Pyodide]], running in the browser. With ~presenter: true~ it is
 downloaded from the jsdelivr CDN when the deck opens, so *running cells needs

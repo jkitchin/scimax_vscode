@@ -80,10 +80,12 @@
   }
   // ---- one microphone for the page, shared with the recorder. Chrome does not remember the
   // microphone permission for file: pages, so asking again (every restart of the recogniser)
-  // would mean a prompt each time; one open track is asked for once.
+  // would mean a prompt each time; one open track is asked for once. audio.js provides it, with
+  // the choice of microphone and its settings; this is for a page built without audio.js.
   const mic = { stream: null, users: 0, pending: null };
   const live = s => s && s.getAudioTracks().some(t => t.readyState === "live");
-  window.__marpMic = {
+  if (!window.__marpMic) window.__marpMic = {
+    current: () => mic.stream,
     async get() {
       mic.users++;
       try {
@@ -105,6 +107,8 @@
     return micHeld;
   }
   function dropMic() { if (micHeld) { micHeld = false; window.__marpMic.release(); } }
+  // Another microphone chosen (audio.js): the recogniser starts again on it (onend)
+  if (window.__marpMic.onChange) window.__marpMic.onChange(() => { if (rec) { try { rec.abort(); } catch (e) { /* stopped */ } } });
   let trackOk = true;    // this browser's recogniser takes a MediaStreamTrack (Chrome 135+)
 
   let starting = false, restart = 0;
@@ -158,7 +162,8 @@
       if (listening && state.on && state.owner === ROLE) restart = setTimeout(() => { if (listening) listen(); }, Math.min(5000, 200 * 2 ** failures));
       else listening = false;
     };
-    const track = micHeld && trackOk && mic.stream && mic.stream.getAudioTracks()[0];
+    const stream = micHeld && trackOk && window.__marpMic.current && window.__marpMic.current();
+    const track = stream && stream.getAudioTracks()[0];
     try {
       if (track) {
         try { rec.start(track); } catch (e) {

@@ -22,4 +22,16 @@ describe('bundled themes', () => {
         // @auto-scaling makes fitted headings scale
         expect(deck.html).toContain('data-auto-scaling');
     });
+
+    it.each([
+        ['steampunk', '--sp-brass'],
+        ['cyberpunk', '--cp-magenta'],
+        ['steel', '--st-molten'],
+        ['steelpunk', '--sk-hazard'],
+    ])('renders a deck with theme: %s', (name, variable) => {
+        const css = bundledThemeFiles().map(file => fs.readFileSync(file, 'utf8'));
+        const deck = renderDeck(`---\nmarp: true\ntheme: ${name}\npaginate: true\n---\n\n<!-- _class: lead -->\n# <!-- fit --> Hi\n\n---\n\n<!-- _class: invert -->\n## Part\n`, { themes: css });
+        expect(deck.css).toContain(variable);
+        expect(deck.html).toContain('data-auto-scaling');
+    });
 });

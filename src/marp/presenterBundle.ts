@@ -34,6 +34,7 @@ const SHOW_MARK = 'marp-present: show tools';
 const EDIT_MARK = 'marp-present: slide editing';
 const SLIDES_MARK = 'marp-present: slide structure';
 const CAPTIONS_MARK = 'marp-present: live captions';
+const AUDIO_MARK = 'marp-present: microphone';
 const RECORDER_MARK = 'marp-present: record the talk';
 /** The start of Marp CLI's slideshow (bespoke) script, which takes the slides as they are when it runs. */
 const BESPOKE_SCRIPT = /<script>(?=\/\*!! License: [^\n]*marp-cli)/;
@@ -65,6 +66,8 @@ export interface PresenterAssets {
     edit: string;
     /** Slides added and hidden in the slideshow; runs before Marp's own script. */
     slides: string;
+    /** The shared microphone and its settings panel (captions and the recorder use it). */
+    audio: string;
     /** Live captions from the microphone. */
     captions: string;
     /** Recording the talk as a video. */
@@ -324,8 +327,8 @@ export function addSlidesScript(html: string, assets: PresenterAssets): string {
  * Add the presenter tools (and the Python cell runner, if the deck has run
  * cells) before the last </body>. Scripts already in the page are not added again.
  * The talk timer is always added: without `window.__MARP_TIMER__` it shows
- * nothing until one is added in the slideshow. So are live captions and
- * recording, which show nothing until they are turned on.
+ * nothing until one is added in the slideshow. So are live captions,
+ * recording and the microphone panel, which show nothing until they are turned on.
  */
 export function addPresenterScripts(html: string, assets: PresenterAssets): string {
     html = addSlidesScript(html, assets);
@@ -342,6 +345,9 @@ export function addPresenterScripts(html: string, assets: PresenterAssets): stri
     }
     if (!html.includes(TIMER_MARK)) {
         files.push(assets.timer);
+    }
+    if (!html.includes(AUDIO_MARK)) {
+        files.push(assets.audio);   // before captions and the recorder, which use its microphone
     }
     if (!html.includes(CAPTIONS_MARK)) {
         files.push(assets.captions);
@@ -436,6 +442,7 @@ export function presenterAssets(mediaDir: string): PresenterAssets {
         show: path.join(mediaDir, 'showtools.js'),
         edit: path.join(mediaDir, 'editor.js'),
         slides: path.join(mediaDir, 'slides.js'),
+        audio: path.join(mediaDir, 'audio.js'),
         captions: path.join(mediaDir, 'captions.js'),
         recorder: path.join(mediaDir, 'recorder.js'),
     };

@@ -1018,10 +1018,11 @@
         run: () => fs ? document.exitFullscreen() : document.documentElement.requestFullscreen().catch(() => {}) },
       // timer.js: a deck without a timer can have one added (one it has is right-clicked on itself)
       ...(window.__marpTimer && !window.__marpTimer.active() ? [{ label: "Add a talk timer…", key: MAC ? "⌥T" : "Alt+T", run: () => window.__marpTimer.add() }] : []),
-      // captions.js and recorder.js: live captions, recording the talk
+      // captions.js, recorder.js and audio.js: live captions, recording the talk, the microphone
       ...(window.__marpCaptions || window.__marpRecorder ? ["-"] : []),
       ...(window.__marpCaptions ? window.__marpCaptions.menuItems() : []),
       ...(window.__marpRecorder ? window.__marpRecorder.menuItems() : []),
+      ...(window.__marpMic && window.__marpMic.menuItems ? window.__marpMic.menuItems() : []),   // audio.js
       { note: "Hold the mouse button on a slide for a spotlight · Shift+right-click for the browser's menu" },
     ];
   }
