@@ -1021,7 +1021,7 @@ another machine or share it, press =s=: the browser downloads one HTML file
 with the theme, images, iframes, fonts, tools and ink inside. Open it
 anywhere, keep annotating, and press =s= again.
 
-** Live Python cells
+** 👀 Live Python cells
 
 Mark a Python code block with ~run~ to make it a cell you can edit and run
 during the talk:
@@ -1047,6 +1047,19 @@ it and =Esc= to leave the editor so the arrow keys change slides again. =↺=
 restores the original code and =⟲= restarts Python. All cells share one
 Python session, like a notebook. Output shows printed text, errors, the value
 of the last expression and matplotlib figures.
+
+Code that fails is useful for teaching, so errors stay in view. The cell
+shows the traceback with the failing lines of code (as Jupyter does), and the
+error message itself (e.g. ~NameError: name 'y' is not defined~) also appears
+in red in the cell's bar. The output keeps up to 45% of the cell's height,
+even when the slide's CSS makes the editor taller (e.g. ~.pyc .cm-editor {
+max-height: 600px !important; }~); the editor scrolls instead.
+
+~examples/marp-present/code.md~ has a slide for each kind of code: plain
+highlighted code, live cells (the last value, shared variables, ~hidden~ and
+~auto~ cells, a plot, ~%pip~) and broken cells for teaching (NameError,
+SyntaxError, IndentationError, TypeError, an error inside a function,
+IndexError, KeyError, numpy, ~raise~, ~try~/~except~, a warning).
 
 Python is [[https://pyodide.org][Pyodide]], running in the browser. With ~presenter: true~ it is
 downloaded from the jsdelivr CDN when the deck opens, so *running cells needs
