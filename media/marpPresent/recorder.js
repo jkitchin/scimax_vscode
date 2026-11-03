@@ -18,6 +18,9 @@
  * records. The video is held by the browser until you stop (Chrome keeps large recordings on
  * disk), then saved; closing the tab while recording asks first, and live reload waits.
  *
+ * The microphone is audio.js's (M opens its panel: which microphone, gain, limiter, filters); its
+ * sound goes through that panel's processing, and the presenter view's ● REC shows its level.
+ *
  * With live captions on (captions.js, v), what was said during the recording can be saved as
  * WebVTT subtitles next to the video; ffmpeg can add them as a subtitle track:
  *   ffmpeg -i talk.mp4 -i talk.vtt -c copy -c:s mov_text talk-captioned.mp4
@@ -55,6 +58,8 @@
 
   // ---- recording, in this window
   let recorder = null, chunks = [], streams = [], sized = null, micShared = false, audio = null, started = 0, last = null, title = document.title;
+  // The microphone's path into the mix (audio.js: gain, filter, limiter), and its level
+  let micSource = null, micChain = null, micMeter = null, micBuf = null, unhook = null, quietSince = 0, quietWarned = false;
 
   async function start() {
     if (!navigator.mediaDevices || !navigator.mediaDevices.getDisplayMedia || !window.MediaRecorder) {
@@ -87,12 +92,30 @@
     if ("contentHint" in video) video.contentHint = "detail";   // sharp text over smooth motion
     sized = fixedSize(video);
     const tracks = [sized];
-    const sound = [display, mic].filter(s => s && s.getAudioTracks().length);
-    if (sound.length) {
+    const hasMic = !!(mic && mic.getAudioTracks().length), hasTab = display.getAudioTracks().length > 0;
+    if (hasMic || hasTab) {
       // the microphone and the tab's own sound, mixed into one track
       audio = new AudioContext();
       const mix = audio.createMediaStreamDestination();
-      sound.forEach(s => audio.createMediaStreamSource(s).connect(mix));
+      if (hasTab) audio.createMediaStreamSource(display).connect(mix);
+      if (hasMic) {
+        const M = window.__marpMic;
+        micChain = M && M.chain ? M.chain(audio) : null;
+        const into = micChain ? micChain.input : mix;
+        if (micChain) micChain.output.connect(mix);
+        micMeter = audio.createAnalyser(); micMeter.fftSize = 4096; micBuf = new Float32Array(4096);
+        (micChain ? micChain.output : into).connect(micMeter);
+        micSource = audio.createMediaStreamSource(mic);
+        micSource.connect(into);
+        // another microphone chosen while recording (audio.js): carry on with it
+        if (M && M.onChange) unhook = M.onChange(s => {
+          if (!audio) return;
+          if (micSource) micSource.disconnect();
+          micSource = audio.createMediaStreamSource(s);
+          micSource.connect(into);
+          say("Recording with " + (s.getAudioTracks()[0] || {}).label);
+        });
+      }
       audio.resume().catch(() => {});
       tracks.push(mix.stream.getAudioTracks()[0]);
     }
@@ -109,7 +132,10 @@
     started = Date.now();
     publish(true);
     document.title = "● REC " + title;
-    say("Recording" + (mic ? "" : " without a microphone") + ": V again stops it and saves the video");
+    quietSince = 0; quietWarned = false;
+    const micName = mic && (mic.getAudioTracks()[0] || {}).label;
+    say(mic ? `Recording with ${micName || "the microphone"} (M changes it): V again stops and saves the video`
+      : "Recording without a microphone: V again stops it and saves the video");
   }
   // Every frame the size of the first one, letterboxed: an MP4 that QuickTime can play (avc1)
   // breaks when the size changes mid-stream (resizing the window, going full screen). Frames
@@ -153,6 +179,9 @@
     streams.forEach(s => s.getTracks().forEach(t => t.stop()));
     if (sized) { sized.stop(); sized = null; }
     streams = [];
+    if (unhook) { unhook(); unhook = null; }
+    if (micChain) { micChain.dispose(); micChain = null; }
+    micSource = micMeter = micBuf = null;
     if (micShared) { micShared = false; window.__marpMic.release(); }
     if (audio) { audio.close().catch(() => {}); audio = null; }
   }
@@ -238,6 +267,9 @@ html.laser-on .mp-rec-cursor { display: none !important; }
 .mp-rec-badge { position: fixed; top: 10px; left: 12px; z-index: 100002; padding: 4px 10px; border-radius: 999px; display: none;
   background: rgba(220, 38, 38, .92); color: #fff; font: 600 14px/1 system-ui, -apple-system, sans-serif; font-variant-numeric: tabular-nums; }
 body:has(.bespoke-marp-overview[data-open="1"]) .mp-rec-cursor { visibility: hidden; }
+.mp-rec-badge .lv { display: inline-block; width: 44px; height: 6px; margin-left: 8px; vertical-align: middle; border-radius: 3px; overflow: hidden; background: rgba(255, 255, 255, .3); }
+.mp-rec-badge .lv > i { display: block; height: 100%; width: 0; background: #fff; transition: width .1s linear; }
+.mp-rec-badge .lv.hot > i { background: #fde047; }
 @media print { .mp-rec-cursor, .mp-rec-badge { display: none !important; } }`;
   document.head.appendChild(css);
   const ring = document.createElement("div");
@@ -245,6 +277,7 @@ body:has(.bespoke-marp-overview[data-open="1"]) .mp-rec-cursor { visibility: hid
   ring.appendChild(document.createElement("div"));
   const badge = document.createElement("div");
   badge.className = "mp-rec-badge";
+  badge.innerHTML = '<span class="t"></span><span class="lv" title="Microphone level"><i></i></span>';
   document.body.append(ring, badge);
 
   let inside = true;
@@ -272,7 +305,14 @@ body:has(.bespoke-marp-overview[data-open="1"]) .mp-rec-cursor { visibility: hid
     ring.style.display = on && prefs.cursor && inside && !presenterView ? "block" : "none";
     // The presenter view is not recorded: show that the talk is
     badge.style.display = on && presenterView ? "block" : "none";
-    if (on && presenterView) badge.textContent = "● REC " + duration(Date.now() - (recorder ? started : shared.since || Date.now()));
+    if (on && presenterView) {
+      badge.querySelector(".t").textContent = "● REC " + duration(Date.now() - (recorder ? started : shared.since || Date.now()));
+      // the microphone's level, from whichever window records (-60 dB to 0)
+      const lv = badge.querySelector(".lv"), db = typeof shared.level === "number" ? shared.level : null;
+      lv.style.display = db === null ? "none" : "";
+      lv.classList.toggle("hot", db !== null && db > -2);
+      lv.firstChild.style.width = db === null ? "0" : Math.max(0, Math.min(100, (db + 60) / 60 * 100)) + "%";
+    }
   }
 
   // ---- keys
@@ -304,6 +344,27 @@ body:has(.bespoke-marp-overview[data-open="1"]) .mp-rec-cursor { visibility: hid
       ...(last && cues().length ? [{ label: "Save captions of the recording (.vtt)…", run: saveCaptions }] : []),
     ],
   };
+
+  // The microphone's level while recording: for the presenter view's badge, and a warning when
+  // it has been silent so long that it is probably the wrong one or muted
+  setInterval(() => {
+    if (!recorder || !micMeter) return;
+    micMeter.getFloatTimeDomainData(micBuf);
+    let peak = 0;
+    for (const v of micBuf) { const a = Math.abs(v); if (a > peak) peak = a; }
+    const db = peak > 0 ? Math.max(-60, Math.round(20 * Math.log10(peak))) : -60;
+    shared.level = db;
+    try { localStorage.setItem(KEY, JSON.stringify(shared)); } catch (e) { /* storage blocked */ }
+    if (presenterView) render();
+    const now = Date.now();
+    if (db > -55) { quietSince = 0; quietWarned = false; }
+    else if (!quietSince) quietSince = now;
+    else if (!quietWarned && now - quietSince > 15000) {
+      quietWarned = true;
+      const name = window.__marpMic && window.__marpMic.label ? window.__marpMic.label() : "";
+      say(`No sound from the microphone${name ? " (" + name + ")" : ""} for 15 s: M checks it`);
+    }
+  }, 200);
 
   hookAll();
   addEventListener("load", hookAll);
