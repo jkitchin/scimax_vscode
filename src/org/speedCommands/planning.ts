@@ -100,12 +100,38 @@ function getPlanningIndent(document: vscode.TextDocument, headingLine: number): 
  * The calendar has a text input at the top for typing date expressions,
  * quick buttons (Today, Tomorrow, Next Week), and a calendar grid.
  */
-async function promptForDate(title: string): Promise<Date | null> {
+async function promptForDate(title: string, initialDate?: Date): Promise<Date | null> {
     if (!extensionUri) {
         vscode.window.showErrorMessage('Calendar picker not available - extension not properly initialized');
         return null;
     }
-    return showCalendarDatePicker(extensionUri, title);
+    return showCalendarDatePicker(extensionUri, title, { initialDate });
+}
+
+/**
+ * The heading's current SCHEDULED or DEADLINE timestamp, if it has one: its date
+ * and what follows the day name (time, repeater, warning, e.g. " 10:00 +1w -2d").
+ */
+export function existingPlanningTimestamp(
+    document: vscode.TextDocument,
+    headingLine: number,
+    keyword: 'SCHEDULED' | 'DEADLINE'
+): { date: Date; rest: string } | undefined {
+    const planning = findPlanningLine(document, headingLine, keyword);
+    if (!planning?.hasKeyword) return undefined;
+    return parsePlanningTimestamp(planning.text, keyword);
+}
+
+/** Parse `KEYWORD: <2026-11-05 Thu 10:00 +1w>` out of a planning line. */
+export function parsePlanningTimestamp(
+    line: string,
+    keyword: 'SCHEDULED' | 'DEADLINE'
+): { date: Date; rest: string } | undefined {
+    const m = line.match(new RegExp(`${keyword}:\\s*<(\\d{4})-(\\d{2})-(\\d{2})(?:\\s+[^\\s\\d>+.-][^\\s>]*)?([^>]*)>`));
+    if (!m) return undefined;
+    const date = new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]));
+    if (isNaN(date.getTime())) return undefined;
+    return { date, rest: m[4].trimEnd() };
 }
 
 /**
@@ -171,8 +197,9 @@ async function addPlanningTimestamp(keyword: 'SCHEDULED' | 'DEADLINE', options?:
     const shiftDependents = keyword === 'DEADLINE' ? await import('../shiftDependents') : undefined;
     const deadlineBefore = shiftDependents?.deadlineAt(document, headingLine);
 
-    // Prompt for date
-    const date = await promptForDate(`Set ${keyword}`);
+    // Prompt for date, starting from the current one when there is one
+    const current = existingPlanningTimestamp(document, headingLine, keyword);
+    const date = await promptForDate(`Set ${keyword}`, current?.date);
     if (!date) return;
 
     // Restore focus to the original document and get fresh editor reference
@@ -180,7 +207,10 @@ async function addPlanningTimestamp(keyword: 'SCHEDULED' | 'DEADLINE', options?:
     const doc = await vscode.workspace.openTextDocument(documentUri);
     const activeEditor = await vscode.window.showTextDocument(doc, { preserveFocus: false });
 
-    const timestamp = formatOrgTimestamp(date);
+    // A new date keeps the old timestamp's time, repeater and warning period
+    const timestamp = current?.rest
+        ? formatOrgTimestamp(date).replace(/>$/, current.rest + '>')
+        : formatOrgTimestamp(date);
     const indent = getPlanningIndent(activeEditor.document, headingLine);
 
     // Get TODO workflow for auto-setting TODO state
