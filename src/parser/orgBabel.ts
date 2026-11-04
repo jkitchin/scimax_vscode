@@ -41,6 +41,11 @@ export interface ExecutionContext {
     env?: Record<string, string>;
     /** Session name (for persistent sessions) */
     session?: string;
+    /**
+     * Show the value of the last expression after the printed output, as
+     * Jupyter does (Python sessions). Markdown blocks without :results set it.
+     */
+    showLastValue?: boolean;
     /** Input from previous block (:var) */
     variables?: Record<string, unknown>;
     /** Timeout in milliseconds */
@@ -727,6 +732,34 @@ async function executeInPythonSession(
             // Indent the code and wrap in a function
             const indentedCode = fullCode.split('\n').map(line => '    ' + line).join('\n');
             fullCode = `def __org_babel_fn__():\n${indentedCode}\n__org_babel_result__ = __org_babel_fn__()\nif __org_babel_result__ is not None:\n    print(__org_babel_result__)`;
+        }
+        else if (context.showLastValue && context.results?.collection !== 'value') {
+            // Like a Jupyter cell: printed output, then the repr of the last
+            // expression unless it is None or the line ends with ';'
+            fullCode = [
+                `__org_babel_tree__ = __import__('ast').parse(${JSON.stringify(fullCode)})`,
+                `__org_babel_last__ = __org_babel_tree__.body.pop() if __org_babel_tree__.body and isinstance(__org_babel_tree__.body[-1], __import__('ast').Expr) and not ${/;\s*$/.test(fullCode) ? 'True' : 'False'} else None`,
+                `exec(compile(__org_babel_tree__, '<org-babel>', 'exec'))`,
+                `if __org_babel_last__ is not None:`,
+                `    __org_babel_result__ = eval(compile(__import__('ast').Expression(__org_babel_last__.value), '<org-babel>', 'eval'))`,
+                `    if __org_babel_result__ is not None:`,
+                `        print(repr(__org_babel_result__))`,
+            ].join('\n');
+        }
+        else if (context.results?.collection === 'value') {
+            // :results value: run the block, then print the value of its last
+            // expression, in the session's namespace (like the non-session runner)
+            fullCode = [
+                `__org_babel_tree__ = __import__('ast').parse(${JSON.stringify(fullCode)})`,
+                `__org_babel_last__ = __org_babel_tree__.body.pop() if __org_babel_tree__.body and isinstance(__org_babel_tree__.body[-1], __import__('ast').Expr) else None`,
+                // Printed output is not the value, as in the non-session runner
+                `with __import__('contextlib').redirect_stdout(__import__('io').StringIO()):`,
+                `    exec(compile(__org_babel_tree__, '<org-babel>', 'exec'))`,
+                `    __org_babel_result__ = eval(compile(__import__('ast').Expression(__org_babel_last__.value), '<org-babel>', 'eval')) if __org_babel_last__ is not None else None`,
+                `if __org_babel_last__ is not None:`,
+                `    if __org_babel_result__ is not None:`,
+                `        print(__org_babel_result__)`,
+            ].join('\n');
         }
 
         // Queue the request

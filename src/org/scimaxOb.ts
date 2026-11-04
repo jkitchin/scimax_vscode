@@ -197,7 +197,7 @@ function findOrgBlockAtCursor(lines: string[], position: vscode.Position): Block
  */
 function findMarkdownBlockAtCursor(lines: string[], position: vscode.Position): BlockPosition | null {
     // Find all fence blocks and check if cursor is inside one
-    const blocks: Array<{ start: number; end: number; fence: string; language: string; braced: boolean }> = [];
+    const blocks: Array<{ start: number; end: number; fence: string; language: string; braced: boolean; parameters: string }> = [];
 
     let i = 0;
     while (i < lines.length) {
@@ -227,7 +227,8 @@ function findMarkdownBlockAtCursor(lines: string[], position: vscode.Position): 
                     end: closingLine,
                     fence,
                     language,
-                    braced: fenceMatch.braced
+                    braced: fenceMatch.braced,
+                    parameters: fenceMatch.parameters ?? ''
                 });
                 i = closingLine + 1;
                 continue;
@@ -248,7 +249,7 @@ function findMarkdownBlockAtCursor(lines: string[], position: vscode.Position): 
                 resultsEnd: results?.end,
                 block: {
                     language: block.language || 'text',
-                    parameters: '',
+                    parameters: block.parameters,
                     code,
                     startLine: block.start,
                     endLine: block.end,
@@ -380,7 +381,8 @@ function findPreviousBlock(
  */
 function generateBlockOpen(language: string, format: BlockFormat, fence?: string, parameters?: string, braced?: boolean): string {
     if (format === 'markdown') {
-        return `${fence || '```'}${braced ? `{${language}}` : language}`;
+        // Braced (Quarto) chunks keep their options inside the braces; parameters are org header args
+        return `${fence || '```'}${braced ? `{${language}}` : language}${!braced && parameters ? ' ' + parameters : ''}`;
     } else {
         return `#+BEGIN_SRC ${language}${parameters ? ' ' + parameters : ''}`;
     }
@@ -1200,10 +1202,10 @@ export async function editHeader(): Promise<void> {
         return;
     }
 
-    // Markdown fences carry no org header arguments; rewriting the fence line
-    // as #+BEGIN_SRC would leave an unmatched closing fence
-    if (blockPos.block.format === 'markdown') {
-        vscode.window.showInformationMessage('Header arguments are only supported on org source blocks');
+    // A Markdown fence takes org header arguments after the language (```python :session s);
+    // a Quarto chunk (```{python}) keeps its options in the braces instead
+    if (blockPos.block.format === 'markdown' && blockPos.block.braced) {
+        vscode.window.showInformationMessage('Quarto chunks take their options inside the braces, not org header arguments');
         return;
     }
 
@@ -1251,7 +1253,7 @@ export async function editHeader(): Promise<void> {
         ? `${block.parameters} ${selected.label} ${newValue}`
         : `${selected.label} ${newValue}`;
 
-    const newBeginLine = `#+BEGIN_SRC ${block.language} ${newParams}`;
+    const newBeginLine = generateBlockOpen(block.language, block.format, block.fence, newParams, block.braced);
 
     await editor.edit(editBuilder => {
         const beginLine = editor.document.lineAt(block.startLine);
@@ -1270,10 +1272,10 @@ export async function updateHeader(key: string, value: string): Promise<void> {
 
     if (!blockPos) return;
 
-    // Markdown fences carry no org header arguments; rewriting the fence line
-    // as #+BEGIN_SRC would leave an unmatched closing fence
-    if (blockPos.block.format === 'markdown') {
-        vscode.window.showInformationMessage('Header arguments are only supported on org source blocks');
+    // A Markdown fence takes org header arguments after the language (```python :session s);
+    // a Quarto chunk (```{python}) keeps its options in the braces instead
+    if (blockPos.block.format === 'markdown' && blockPos.block.braced) {
+        vscode.window.showInformationMessage('Quarto chunks take their options inside the braces, not org header arguments');
         return;
     }
 
@@ -1292,7 +1294,7 @@ export async function updateHeader(key: string, value: string): Promise<void> {
         newParams = block.parameters ? `${block.parameters} ${paramKey} ${value}` : `${paramKey} ${value}`;
     }
 
-    const newBeginLine = `#+BEGIN_SRC ${block.language} ${newParams}`;
+    const newBeginLine = generateBlockOpen(block.language, block.format, block.fence, newParams, block.braced);
 
     await editor.edit(editBuilder => {
         const beginLine = editor.document.lineAt(block.startLine);
