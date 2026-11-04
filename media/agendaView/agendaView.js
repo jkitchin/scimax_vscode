@@ -627,6 +627,28 @@
         if (i >= 0) select(i);
     });
 
+    // C-c C-d / C-c C-s set the selected item's DEADLINE / SCHEDULED, as in org's agenda.
+    // Stopping the keys here also keeps VS Code from starting its own C-c chord.
+    const PLANNING = { d: 'deadline', s: 'schedule' };
+    let ctrlC = 0;
+    list.addEventListener('keydown', e => {
+        if (!e.ctrlKey || e.metaKey || e.altKey) return;
+        const key = e.key.toLowerCase();
+        if (key === 'c') {
+            ctrlC = Date.now();
+        } else if (key in PLANNING && Date.now() - ctrlC < 2000) {
+            ctrlC = 0;
+            const row = current();
+            if (row) vscode.postMessage({ type: 'planning', action: PLANNING[key], filePath: row.file, line: row.line, title: row.title });
+        } else {
+            ctrlC = 0;
+            return;
+        }
+        hidePreview();
+        e.preventDefault();
+        e.stopPropagation();
+    });
+
     const MOVE = { ArrowDown: 1, ArrowUp: -1, n: 1, p: -1, j: 1, k: -1 };
     list.addEventListener('keydown', e => {
         if (e.metaKey || e.ctrlKey || e.altKey) return;

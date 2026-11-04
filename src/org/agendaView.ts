@@ -76,6 +76,7 @@ type FromWebview =
     | { type: 'options'; options: ViewOptions }
     | { type: 'open'; filePath: string; line: number; title?: string }
     | { type: 'cycleTodo'; filePath: string; line: number; title?: string }
+    | { type: 'planning'; action: 'deadline' | 'schedule'; filePath: string; line: number; title?: string }
     | { type: 'preview'; id: number; filePath: string; line: number; title?: string }
     | { type: 'close' };
 
@@ -273,6 +274,12 @@ class AgendaWebview implements vscode.Disposable {
                     'scimax.org.cycleTodo'
                 );
                 break;
+            case 'planning':
+                await runOnTask(
+                    { view: AGENDA_VIEW_TYPE, filePath: message.filePath, line: message.line, title: message.title },
+                    message.action === 'deadline' ? 'scimax.speed.deadline' : 'scimax.speed.schedule'
+                );
+                break;
             case 'preview':
                 await this.preview(message.id, message.filePath, message.line, message.title);
                 break;
@@ -368,7 +375,7 @@ class AgendaWebview implements vscode.Disposable {
   <span id="range" class="muted"></span>
   <span id="count" class="muted"></span>
   <span class="spacer"></span>
-  <span class="muted">Double-click or Enter opens an item; hover (or Space) shows its context; right-click for more. n/p move, f/b page, t cycles TODO, q closes.</span>
+  <span class="muted">Double-click or Enter opens an item; hover (or Space) shows its context; right-click for more. n/p move, f/b page, t cycles TODO, C-c C-d / C-c C-s set the deadline / scheduled date, q closes.</span>
 </div>
 <div id="list" class="list" tabindex="0" role="listbox" aria-label="Agenda items"></div>
 <div id="preview" class="preview" role="tooltip" hidden></div>
