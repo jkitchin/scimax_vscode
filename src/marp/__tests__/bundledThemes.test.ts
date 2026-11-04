@@ -34,4 +34,19 @@ describe('bundled themes', () => {
         expect(deck.css).toContain(variable);
         expect(deck.html).toContain('data-auto-scaling');
     });
+
+    it('labels code blocks with their language, the same way in every theme', () => {
+        const block = (css: string) => {
+            const m = css.match(/\/\* scimax: code language label[\s\S]*?end scimax: code language label \*\//);
+            return m ? m[0] : null;
+        };
+        const blocks = bundledThemeFiles().map(file => block(fs.readFileSync(file, 'utf8')));
+        expect(blocks[0]).not.toBeNull();
+        blocks.forEach(b => expect(b).toBe(blocks[0]));
+
+        const css = fs.readFileSync(bundledThemeFiles()[0], 'utf8');
+        const deck = renderDeck('---\nmarp: true\ntheme: scimax\n---\n\n```sql\nSELECT 1;\n```\n', { themes: [css] });
+        expect(deck.html).toContain('class="language-sql"');
+        expect(deck.css).toMatch(/code\.language-sql\)::after\s*\{\s*content:\s*"SQL"/);
+    });
 });

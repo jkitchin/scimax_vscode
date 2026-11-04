@@ -569,3 +569,73 @@ section.invert .done {
 section.lead.invert h1 {
   font-size: 2.8em;
 }
+
+/* scimax: code language label (keep this block the same in every bundled theme) */
+/* The language of a highlighted code block, as a tag in its top-right corner. Live Python
+   cells (data-run) have their own controls and no tag; languages not listed here get none. */
+section pre:not([data-run]):has(> code[class*="language-"]) {
+  position: relative;
+}
+section pre:not([data-run]):has(> code[class*="language-"])::after {
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 0.2em 0.7em;
+  border-bottom-left-radius: 4px;
+  background: rgba(128, 128, 128, 0.16);
+  color: inherit;
+  opacity: 0.75;
+  font-family: system-ui, -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+  font-size: 0.6em;
+  font-weight: 600;
+  line-height: 1.4;
+  letter-spacing: 0.03em;
+  text-transform: none;
+  pointer-events: none;
+}
+section pre:not([data-run]):has(> code.language-python)::after,
+section pre:not([data-run]):has(> code.language-py)::after { content: "Python"; }
+section pre:not([data-run]):has(> code.language-bash)::after { content: "Bash"; }
+section pre:not([data-run]):has(> code.language-sh)::after,
+section pre:not([data-run]):has(> code.language-shell)::after,
+section pre:not([data-run]):has(> code.language-zsh)::after { content: "Shell"; }
+section pre:not([data-run]):has(> code.language-console)::after,
+section pre:not([data-run]):has(> code.language-shell-session)::after { content: "Console"; }
+section pre:not([data-run]):has(> code.language-javascript)::after,
+section pre:not([data-run]):has(> code.language-js)::after { content: "JavaScript"; }
+section pre:not([data-run]):has(> code.language-typescript)::after,
+section pre:not([data-run]):has(> code.language-ts)::after { content: "TypeScript"; }
+section pre:not([data-run]):has(> code.language-sql)::after { content: "SQL"; }
+section pre:not([data-run]):has(> code.language-json)::after { content: "JSON"; }
+section pre:not([data-run]):has(> code.language-yaml)::after,
+section pre:not([data-run]):has(> code.language-yml)::after { content: "YAML"; }
+section pre:not([data-run]):has(> code.language-toml)::after { content: "TOML"; }
+section pre:not([data-run]):has(> code.language-r)::after { content: "R"; }
+section pre:not([data-run]):has(> code.language-julia)::after { content: "Julia"; }
+section pre:not([data-run]):has(> code.language-matlab)::after { content: "MATLAB"; }
+section pre:not([data-run]):has(> code.language-fortran)::after { content: "Fortran"; }
+section pre:not([data-run]):has(> code.language-c)::after { content: "C"; }
+section pre:not([data-run]):has(> code.language-cpp)::after,
+section pre:not([data-run]):has(> code.language-c\+\+)::after { content: "C++"; }
+section pre:not([data-run]):has(> code.language-java)::after { content: "Java"; }
+section pre:not([data-run]):has(> code.language-rust)::after,
+section pre:not([data-run]):has(> code.language-rs)::after { content: "Rust"; }
+section pre:not([data-run]):has(> code.language-go)::after { content: "Go"; }
+section pre:not([data-run]):has(> code.language-html)::after { content: "HTML"; }
+section pre:not([data-run]):has(> code.language-xml)::after { content: "XML"; }
+section pre:not([data-run]):has(> code.language-css)::after { content: "CSS"; }
+section pre:not([data-run]):has(> code.language-latex)::after,
+section pre:not([data-run]):has(> code.language-tex)::after { content: "LaTeX"; }
+section pre:not([data-run]):has(> code.language-markdown)::after,
+section pre:not([data-run]):has(> code.language-md)::after { content: "Markdown"; }
+section pre:not([data-run]):has(> code.language-elisp)::after,
+section pre:not([data-run]):has(> code.language-emacs-lisp)::after,
+section pre:not([data-run]):has(> code.language-lisp)::after { content: "Lisp"; }
+section pre:not([data-run]):has(> code.language-diff)::after { content: "Diff"; }
+section pre:not([data-run]):has(> code.language-dockerfile)::after { content: "Dockerfile"; }
+section pre:not([data-run]):has(> code.language-makefile)::after,
+section pre:not([data-run]):has(> code.language-make)::after { content: "Makefile"; }
+section pre:not([data-run]):has(> code.language-text)::after,
+section pre:not([data-run]):has(> code.language-plaintext)::after,
+section pre:not([data-run]):has(> code.language-txt)::after { content: "Plain text"; }
+/* end scimax: code language label */
