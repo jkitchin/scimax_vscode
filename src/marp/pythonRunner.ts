@@ -5,7 +5,9 @@
  * code that works here works in the talk. All cells of a deck share one
  * Python; `hidden` setup cells run first, as in the slideshow.
  *
- * C-c C-c in a run cell runs it (context key scimax.marp.inRunCell).
+ * C-c C-c in a run cell runs it (context key scimax.marp.inRunCell). C-c C-c
+ * in a plain ```python block of a deck also runs it here (scimax.marp.runCode,
+ * called by Babel), so its output is not written onto the slide.
  */
 
 import { randomBytes } from 'crypto';
@@ -184,13 +186,15 @@ class PythonRunner {
         const all = runCells(text);
         const setup = all.filter(cell => cell.flags.includes('hidden')).map(cell => cell.code);
         for (const cell of cells) {
+            // 0 for a plain ```python block, which is not a run cell
             const number = all.findIndex(c => c.startLine === cell.startLine) + 1;
             const hidden = cell.flags.includes('hidden') ? ', hidden' : '';
+            const slide = slideOf(text, cell.startLine);
             await this.post({
                 type: 'run',
                 code: cell.code,
-                name: `<cell ${number}>`,
-                label: `Slide ${slideOf(text, cell.startLine)}, cell ${number}${hidden}`,
+                name: number ? `<cell ${number}>` : `<line ${cell.startLine + 1}>`,
+                label: number ? `Slide ${slide}, cell ${number}${hidden}` : `Slide ${slide}, line ${cell.startLine + 1}`,
                 line: cell.startLine + 1,
                 setup,
             });
@@ -238,6 +242,14 @@ export function registerMarpPythonRunner(context: vscode.ExtensionContext): void
                 return;
             }
             await runner.run(editor.document, [cell]);
+        }),
+        // A plain ```python block of the deck (no header arguments), from C-c C-c (babelProvider.ts)
+        vscode.commands.registerCommand('scimax.marp.runCode', async (block?: { code: string; startLine: number; endLine: number }) => {
+            const editor = deckEditor();
+            if (!editor || !block) {
+                return;
+            }
+            await runner.run(editor.document, [{ code: block.code, flags: [], startLine: block.startLine, endLine: block.endLine }]);
         }),
         vscode.commands.registerCommand('scimax.marp.runAllCells', async () => {
             const editor = deckEditor();

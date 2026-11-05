@@ -19,6 +19,7 @@ Click a cell to edit it, **Shift+Enter** or **▶** runs it, **Esc** leaves the 
 ## Highlighted code (not run)
 
 A plain fence is ordinary, highlighted code, in any language.
+In VS Code, C-c C-c in a Python one shows what it does in the Python panel.
 
 ```python
 def mean(xs):

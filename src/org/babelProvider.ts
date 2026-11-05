@@ -24,7 +24,8 @@ import { normalizeLineEndings } from '../utils/escapeUtils';
 import { getKernelManager } from '../jupyter/kernelManager';
 import { isMarkdownLike } from '../shared/markdownLike';
 import { matchCodeFenceOpen } from '../shared/markdownFences';
-import { findMarkdownResults, orgResultsToMarkdown } from '../shared/markdownResults';
+import { orgResultsToMarkdown } from '../shared/markdownResults';
+import { findMarkdownSourceBlocks, markdownDefaultHeaders, markdownSourceBlockAt, runsInMarpPanel } from '../shared/markdownBabel';
 
 // Output channel for Babel execution
 let outputChannel: vscode.OutputChannel | undefined;
@@ -775,56 +776,12 @@ function findSourceBlockAtCursor(
  * Find the markdown fenced block at cursor position
  */
 function findMarkdownFencedBlockAtCursor(document: vscode.TextDocument, position: vscode.Position): SourceBlockInfo | null {
-    const lines = normalizeLineEndings(document.getText()).split('\n');
-    let i = 0;
-    while (i < lines.length) {
-        const line = lines[i];
-        const fenceMatch = matchCodeFenceOpen(line);
+    return markdownSourceBlockAt(normalizeLineEndings(document.getText()).split('\n'), position.line) ?? null;
+}
 
-        if (fenceMatch) {
-            const fence = fenceMatch.fence;
-            const fenceChar = fence[0];
-            const fenceLen = fence.length;
-            const language = fenceMatch.language || 'text';
-
-            // Look for closing fence
-            let closingLine = -1;
-            for (let j = i + 1; j < lines.length; j++) {
-                const closeMatch = lines[j].match(new RegExp(`^${fenceChar}{${fenceLen},}\\s*$`));
-                if (closeMatch) {
-                    closingLine = j;
-                    break;
-                }
-            }
-
-            if (closingLine !== -1) {
-                // Check if cursor is inside this block
-                if (position.line >= i && position.line <= closingLine) {
-                    // Extract code content
-                    const codeLines = lines.slice(i + 1, closingLine);
-                    const code = codeLines.join('\n');
-                    // Earlier results (between <!-- results --> markers) are replaced on re-run
-                    const results = findMarkdownResults(lines, closingLine);
-
-                    return {
-                        language: language,
-                        parameters: '',
-                        code: code,
-                        startLine: i,
-                        endLine: closingLine,
-                        codeStartLine: i + 1,
-                        codeEndLine: closingLine - 1,
-                        resultsLine: results?.start,
-                        resultsEndLine: results?.end,
-                    };
-                }
-                i = closingLine + 1;
-                continue;
-            }
-        }
-        i++;
-    }
-    return null;
+/** All fenced code blocks of a markdown document */
+function findAllMarkdownSourceBlocks(document: vscode.TextDocument): SourceBlockInfo[] {
+    return findMarkdownSourceBlocks(normalizeLineEndings(document.getText()).split('\n'));
 }
 
 /**
@@ -1109,9 +1066,17 @@ async function executeBlock(
 
     // Parse header arguments with file-level inheritance
     // Priority: block headers > language-specific file headers > generic file headers
-    const fileLevelHeaders = getFileLevelHeaderArgs(editor.document, language);
+    // Markdown blocks rarely have header arguments: by default they share one session per file
+    const fileLevelHeaders = {
+        ...(isMarkdownLike(editor.document.languageId) ? markdownDefaultHeaders(editor.document.uri.fsPath) : {}),
+        ...getFileLevelHeaderArgs(editor.document, language),
+    };
     const blockHeaders = parseHeaderArguments(block.parameters);
     const headers: HeaderArguments = { ...fileLevelHeaders, ...blockHeaders };
+    // The parser reads :session none as no session, which would let a file-level one through
+    if (/:session\s+none\b/i.test(block.parameters)) {
+        delete headers.session;
+    }
 
     // Check if evaluation is disabled
     if (headers.eval === 'no' || headers.eval === 'never-export') {
@@ -1208,6 +1173,10 @@ async function executeBlock(
         timeout: 60000, // 60 second default timeout
         variables: resolvedVars,
         results: headers.results ? parseResultsFormat(headers.results) : undefined,
+        // The block's own :session wins in executeSourceBlock; this carries file-level defaults
+        session: headers.session,
+        // Markdown blocks show the last expression's value too, like notebook cells
+        showLastValue: isMarkdownLike(editor.document.languageId) && !headers.results,
     };
 
     // Handle :file header for Python matplotlib
@@ -1461,6 +1430,16 @@ async function executeSourceBlockAtCursor(lineNumber?: number): Promise<void> {
     if (langId === 'markdown') {
         // For markdown, use the markdown fenced block finder
         block = findMarkdownFencedBlockAtCursor(editor.document, position);
+        // In a Marp deck, results written into the file would show on the slide
+        if (block && runsInMarpPanel(block)) {
+            const { isMarpText } = await import('../marp/slideRenderer');
+            if (isMarpText(editor.document.getText())) {
+                await vscode.commands.executeCommand('scimax.marp.runCode', {
+                    code: block.code, startLine: block.startLine, endLine: block.endLine,
+                });
+                return;
+            }
+        }
     } else {
         // For org, use the org source block finder
         if (lineNumber !== undefined) {
@@ -1860,7 +1839,9 @@ async function clearResultsAtCursor(blockLine?: number): Promise<void> {
 
     // Otherwise, find the source block
     let block: SourceBlockInfo | null;
-    if (blockLine !== undefined) {
+    if (isMarkdownLike(document.languageId)) {
+        block = findMarkdownFencedBlockAtCursor(document, new vscode.Position(targetLine, 0));
+    } else if (blockLine !== undefined) {
         // Find the block at the specified line
         const blocks = findAllSourceBlocks(document);
         block = blocks.find(b => b.startLine === blockLine) || null;
@@ -2343,6 +2324,11 @@ export class BabelCodeLensProvider implements vscode.CodeLensProvider {
     private _onDidChangeCodeLenses = new vscode.EventEmitter<void>();
     readonly onDidChangeCodeLenses = this._onDidChangeCodeLenses.event;
 
+    /** Ask VS Code to show the buttons again (e.g. after a setting change) */
+    refresh(): void {
+        this._onDidChangeCodeLenses.fire();
+    }
+
     // Pre-cache supported languages to avoid repeated lookups
     private supportedLanguageCache = new Map<string, boolean>();
 
@@ -2355,7 +2341,11 @@ export class BabelCodeLensProvider implements vscode.CodeLensProvider {
             return [];
         }
 
-        if (document.languageId !== 'org') {
+        const markdown = document.languageId === 'markdown';
+        if (document.languageId !== 'org' && !markdown) {
+            return [];
+        }
+        if (markdown && !vscode.workspace.getConfiguration('scimax.babel').get<boolean>('markdownCodeLens', true)) {
             return [];
         }
 
@@ -2372,7 +2362,7 @@ export class BabelCodeLensProvider implements vscode.CodeLensProvider {
                 return [];
             }
 
-            blocks = findAllSourceBlocks(document);
+            blocks = markdown ? findAllMarkdownSourceBlocks(document) : findAllSourceBlocks(document);
 
             // Update cache (use LRU-style eviction)
             if (blockCache.size >= MAX_BLOCK_CACHE_SIZE) {
@@ -2405,6 +2395,10 @@ export class BabelCodeLensProvider implements vscode.CodeLensProvider {
                 isSupported = executorRegistry.isSupported(block.language);
                 this.supportedLanguageCache.set(block.language, isSupported);
             }
+            // Markdown files are full of example code: only runnable blocks get buttons
+            if (markdown && !isSupported) {
+                continue;
+            }
 
             // Data/markup languages that are not meant to be executed
             // Don't show "(unsupported)" for these - they're for data, not code
@@ -2425,6 +2419,7 @@ export class BabelCodeLensProvider implements vscode.CodeLensProvider {
                     new vscode.CodeLens(range, {
                         title: '▶ Run',
                         command: 'scimax.org.executeBlock',
+                        arguments: [block.startLine],
                         tooltip: `Execute ${block.language} block`,
                     })
                 );
@@ -2477,6 +2472,10 @@ export class BabelCodeLensProvider implements vscode.CodeLensProvider {
             }
         }
 
+        if (markdown) {
+            return codeLenses;
+        }
+
         // Add code lenses for #+CALL: lines
         const text = document.getText();
         const lines = text.split('\n');
@@ -2520,10 +2519,16 @@ export class BabelCodeLensProvider implements vscode.CodeLensProvider {
  * Register the Code Lens provider
  */
 export function registerBabelCodeLens(context: vscode.ExtensionContext): void {
+    const provider = new BabelCodeLensProvider();
     context.subscriptions.push(
         vscode.languages.registerCodeLensProvider(
-            { language: 'org', scheme: 'file' },
-            new BabelCodeLensProvider()
-        )
+            [{ language: 'org', scheme: 'file' }, { language: 'markdown', scheme: 'file' }],
+            provider
+        ),
+        vscode.workspace.onDidChangeConfiguration(event => {
+            if (event.affectsConfiguration('scimax.babel.markdownCodeLens')) {
+                provider.refresh();
+            }
+        })
     );
 }

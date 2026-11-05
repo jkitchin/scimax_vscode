@@ -471,6 +471,7 @@ Quick reference to find specific features across documentation.
 | Marp go to slide        | [[file:44-marp.org][Marp Slides]]                 | =g= slide list, or a slide number then Enter                                                |
 | Marp editing toolbar    | [[file:44-marp.org][Marp Slides]]                 | Insert text, images and tables; font, size, colour; copy and paste in the slideshow         |
 | Marp slide editing      | [[file:44-marp.org][Marp Slides]]                 | =d= edits text and layout in the slideshow, saved with =s=                                  |
+| Markdown code blocks    | [[file:30-markdown-compatibility.org::*Code Block Execution][Markdown Compatibility]]      | [[file:07-source-blocks.org][Source Blocks]] - =C-c C-c= / ▶ Run, header args on the fence, shared session                |
 | Markdown export         | [[file:10-export.org][Export]]                      | Pandoc-backed export of `.md` to HTML, LaTeX, PDF, DOCX                                     |
 | Markdown PDF engine     | [[file:26-configuration.org][Configuration]]               | xelatex by default so Unicode typesets; ~scimax.markdown.export.mainFont~ sets the font     |
 | Markdown support        | [[file:30-markdown-compatibility.org][Markdown Compatibility]]      | [[file:02-document-structure.org][Document Structure]], [[file:23-speed-commands.org][Speed Commands]], [[file:07-source-blocks.org][Source Blocks]]                                           |

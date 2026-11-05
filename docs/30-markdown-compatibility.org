@@ -32,7 +32,7 @@ writing org text that Markdown renderers show literally.
 | Speed commands       | Most             | Clocking and property keys are org-only               |
 | Text markup          | Full             | Writes =**bold**=, =*italic*=, =`code`=, =~~strike~~= |
 | Tables               | Full (GFM)       | Alignment colons kept; formulas are org-only          |
-| Code block execution | Partial          | Runs fenced blocks; no per-block header arguments     |
+| Code block execution | Most             | Header arguments on the fence; shared session         |
 | TODO states          | Full             | =## TODO Title= or =## [TODO] Title=                  |
 | Priorities           | Full             | =## TODO [#A] Title=                                  |
 | Scheduling/Deadlines | Full             | SCHEDULED / DEADLINE line under the heading           |
@@ -311,10 +311,11 @@ print("Quarto/Pandoc chunk form")
 ```
 #+END_SRC
 
-The fence must start at column 0. A fence with extra text after the language
-(=```python title="x"=) or a hyphenated language (=```jupyter-python=) is not
-treated as a code block; use the braced form (=```{jupyter-python}=) for
-Jupyter languages.
+The fence must start at column 0. Org header arguments may follow the language
+(=```python :results output=, =```jupyter-python :session s=). Other text after
+the language (=```python title="x"=) means the fence is not treated as a code
+block. Markdown renderers use only the first word as the language, so header
+arguments do not change how the preview, GitHub or Marp show the block.
 
 *** ✅ Code Block Navigation
 CLOSED: [2026-01-19 Mon 09:53]
@@ -347,11 +348,53 @@ copy. Images from Jupyter kernels are written as =![](.ob-jupyter/plot.png)=,
 so they show in the preview. Table results become GFM tables.
 
 Supported languages include Python, JavaScript, TypeScript, Shell, and any
-language with a Jupyter kernel installed.
+language with a Jupyter kernel installed. A *▶ Run* button above each runnable
+block runs it, and *✕ Clear* removes its results. Turn the buttons off with
+~scimax.babel.markdownCodeLens~ ([[file:26-configuration.org][Configuration]]).
 
-Markdown blocks have no per-block header arguments (=:session=, =:var=,
-=:results=, =:eval no=). A file-wide =#+PROPERTY: header-args ...= line applies
-to all blocks. Execute-all, tangle and noweb references are org-only.
+Most Markdown code blocks have no header arguments, so a Markdown file has
+defaults that make it work like a notebook:
+
+- Its blocks share one session per file, so a variable set in one Python block
+  is there in the next.
+- As in a Jupyter cell, a Python block shows its printed output and then the
+  value of its last line, unless that value is =None= or the line ends with
+  =;=. A block ending in =math.pi * r**2= shows the area without a =print=.
+
+Header arguments on the fence change this for one block, as in org (any
+=:results= turns off the last-line value):
+
+#+BEGIN_SRC markdown
+```python
+data = [3, 1, 4, 1, 5]
+```
+
+```python
+print(sorted(data))
+```
+
+```python
+sorted(data)[-1]
+```
+
+```python :session none
+print("a fresh Python, without data")
+```
+
+```python :results value
+sum(data)
+```
+#+END_SRC
+
+The precedence is the block's header arguments, then a file-wide
+=#+PROPERTY: header-args ...= line, then the Markdown defaults. Execute-all,
+tangle and noweb references are org-only.
+
+In a Marp deck, =C-c C-c= on a ~```python~ block with no header arguments runs
+it in the deck's Python panel instead, and nothing is written into the deck
+(results would show on the slide). Give the block a header argument (for
+example =```python :results output=) to write its results into the file. See
+[[file:44-marp.org::*Running cells in VS Code][Running cells in VS Code]].
 
 *** 👀 Code Block Manipulation
 
@@ -369,8 +412,10 @@ to all blocks. Execute-all, tangle and noweb references are org-only.
 The extension preserves the fence style (=```= or =~~~=) when manipulating
 blocks. Kill and move take the block's results with it. Merging puts the
 merged block where the first one was, drops both blocks' results and keeps any
-text between the blocks. The header-argument commands (~scimax.ob.editHeader~)
-are org-only and show a message in Markdown.
+text between the blocks. Split, clone and insert keep the fence's header
+arguments. The header-argument commands (~scimax.ob.editHeader~) add them after
+the language; Quarto chunks (=```{python}=) keep their options in the braces
+instead.
 
 ** ⚠️ Tasks and Planning
 

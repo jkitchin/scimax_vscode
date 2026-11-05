@@ -7710,6 +7710,11 @@
           "default": "",
           "description": "Path to Jupyter executable"
         },
+        "scimax.babel.markdownCodeLens": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show Run / Clear buttons above the runnable code blocks (```python, ```bash, ...) of Markdown files."
+        },
         "scimax.ref.bibliographyFiles": {
           "type": "array",
           "items": {

@@ -1136,7 +1136,7 @@ deck opens, along with the packages the cells import.
 In PDF, PowerPoint and image exports a ~run~ cell is ordinary highlighted code,
 and a ~run hidden~ cell is left out.
 
-** Running cells in VS Code
+** 👀 Running cells in VS Code
 
 Press =C-c C-c= in a ~run~ cell to run it while you write the deck, without
 presenting. The output shows in a /Python/ panel beside the editor, from the
@@ -1159,6 +1159,12 @@ same Pyodide the slideshow uses, so code that works there works in the talk.
   first cell runs.
 - Cells run only in a trusted workspace. The cells are also in Insert →
   Python Cell... and the commands are in the Marp menu's Insert section.
+- =C-c C-c= in a plain ~```python~ block (no ~run~, no header arguments) also
+  runs it in this panel, labelled with its slide and line, so you can try a
+  code example without writing its output onto the slide. The block stays
+  ordinary highlighted code in the talk. A block with header arguments
+  (=```python :results output=) runs with Babel and writes its results into
+  the deck ([[file:30-markdown-compatibility.org::*Code Block Execution][Code Block Execution]]).
 - =C-c C-c= elsewhere in a Markdown file keeps its usual meaning (run a Babel
   code block, toggle a checkbox).
 
