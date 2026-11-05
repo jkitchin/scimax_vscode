@@ -18,6 +18,9 @@
  * slideshow draws the ring and the presenter view shows ● REC with the time, whichever window
  * records. The video is held by the browser until you stop (Chrome keeps large recordings on
  * disk), then saved; closing the tab while recording asks first, and live reload waits.
+ * In Chrome/Edge, stopping opens a save dialog (named <deck>-YYYY-MM-DD-HHMM) to choose where the
+ * video goes; stopped from Chrome's "Stop sharing" bar, a "Save the recording…" button opens it.
+ * Firefox downloads the video.
  *
  * The microphone is audio.js's (M opens its panel: which microphone, gain, limiter, filters); its
  * sound goes through that panel's processing, and the presenter view's ● REC shows its level.
@@ -70,6 +73,7 @@
       say("Recording needs Chrome, Edge or Firefox"); return;
     }
     if (recordingSomewhere()) { say("Already recording in another window: stop it there"); return; }
+    hideSaveButton();
     let display;
     try {
       display = await navigator.mediaDevices.getDisplayMedia({
@@ -177,7 +181,27 @@
     return out;
   }
   function stop() {
-    if (recorder && recorder.state !== "inactive") recorder.stop();
+    if (!recorder || recorder.state === "inactive") return;
+    askWhere();
+    recorder.stop();
+  }
+  // The file name to suggest: <deck>-YYYY-MM-DD-HHMM, and the extension the browser records in
+  const recordingName = t => { const d = new Date(t); return `${DECK}-${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}-${pad(d.getHours())}${pad(d.getMinutes())}`; };
+  const mimeOf = r => (r.mimeType || chunks[0] && chunks[0].type || "video/webm").split(";")[0];
+  const extOf = type => type === "video/mp4" ? ".mp4" : ".webm";
+  // Chrome/Edge show a save dialog only during a key press or click, and the video is ready a
+  // moment after stopping, so the dialog opens as you stop (V, ■ Stop, the menu) and the video is
+  // written to the chosen file when it is ready. `where` resolves to the file, "cancelled", or null
+  // (no dialog: Firefox, or stopped from Chrome's "Stop sharing" bar).
+  let where = null;
+  function askWhere() {
+    where = null;
+    if (!window.showSaveFilePicker) return;
+    const type = mimeOf(recorder), ext = extOf(type);
+    try {
+      where = showSaveFilePicker({ suggestedName: recordingName(started) + ext, types: [{ description: "Video", accept: { [type]: [ext] } }] })
+        .catch(e => e.name === "AbortError" ? "cancelled" : null);
+    } catch (e) { where = null; }
   }
   function release() {
     streams.forEach(s => s.getTracks().forEach(t => t.stop()));
@@ -190,7 +214,7 @@
     if (audio) { audio.close().catch(() => {}); audio = null; }
   }
   function finished() {
-    const type = (recorder.mimeType || chunks[0] && chunks[0].type || "video/webm").split(";")[0];
+    const type = mimeOf(recorder);
     recorder = null;
     release();
     publish(false);
@@ -198,15 +222,30 @@
     const blob = new Blob(chunks, { type });
     chunks = [];
     if (!blob.size) { say("The recording is empty"); return; }
-    const d = new Date(started);
-    const name = `${DECK}-${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}-${pad(d.getHours())}${pad(d.getMinutes())}`;
-    last = { blob, name, ext: type === "video/mp4" ? ".mp4" : ".webm", started, ended: Date.now(), saved: false };
-    saveRecording();
+    last = { blob, name: recordingName(started), ext: extOf(type), started, ended: Date.now(), saved: false };
+    const pending = where;
+    where = null;
+    saveRecording(pending);
   }
-  async function saveRecording() {
+  async function saveRecording(pending) {
     if (!last) return;
+    hideSaveButton();
     const mb = (last.blob.size / 1e6).toFixed(last.blob.size < 1e7 ? 1 : 0);
-    const ok = await saveFile(last.blob, last.name + last.ext, "Video", last.ext);
+    const handle = pending ? await pending : null;
+    let ok;
+    if (handle === "cancelled") ok = false;
+    else if (handle) {
+      try {
+        const w = await handle.createWritable(); await w.write(last.blob); await w.close();
+        say(`Saved ${handle.name}`);
+        ok = true;
+      } catch (e) { say("Could not save the recording: " + e.message); ok = false; }
+    } else if (window.showSaveFilePicker && navigator.userActivation && !navigator.userActivation.isActive) {
+      // Stopped without a key press or click (Chrome's "Stop sharing" bar): the dialog needs one
+      showSaveButton();
+      say("Recording stopped: click Save the recording… to choose where it goes");
+      return;
+    } else ok = await saveFile(last.blob, last.name + last.ext, "Video", last.ext);
     if (ok) {
       last.saved = true;
       const captions = cues().length ? " · right-click → Save captions of the recording for subtitles" : "";
@@ -215,8 +254,20 @@
       say("The recording was not saved: right-click → Save the recording… (until the next recording)");
     }
   }
-  // As captions.js: a file picker in Chrome/Edge, a download elsewhere. Stopping from Chrome's
-  // "Stop sharing" bar is not a key press, so the picker is refused and the video downloads.
+  // A button to click when the recording stopped without a key press, so the save dialog can open
+  let saveButton = null;
+  function showSaveButton() {
+    hideSaveButton();
+    const b = saveButton = document.createElement("button");
+    b.textContent = "💾 Save the recording…";
+    b.style.cssText = "position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:2147483647;"
+      + "font:600 16px system-ui,sans-serif;padding:10px 18px;border-radius:8px;border:0;cursor:pointer;"
+      + "background:#c62828;color:#fff;box-shadow:0 2px 12px rgba(0,0,0,.4)";
+    b.addEventListener("click", e => { e.stopPropagation(); saveRecording(); });
+    document.body.appendChild(b);
+  }
+  function hideSaveButton() { if (saveButton) { saveButton.remove(); saveButton = null; } }
+  // As captions.js: a file picker in Chrome/Edge, a download elsewhere.
   async function saveFile(blob, name, what, ext) {
     if (window.__marpCaptions) return window.__marpCaptions.saveFile(blob, name, what, ext);
     const a = document.createElement("a");
@@ -355,7 +406,7 @@ body:has(.bespoke-marp-overview[data-open="1"]) .mp-rec-cursor { visibility: hid
     menuItems: () => [
       { label: recorder ? "Stop recording and save" : "Record the talk…", key: "⇧V", check: !!recorder, run: keyed },
       { label: "Highlight the mouse while recording", check: !!prefs.cursor, run: () => { prefs.cursor = !prefs.cursor; savePrefs(); } },
-      ...(last ? [{ label: "Save the recording…", run: saveRecording }] : []),
+      ...(last ? [{ label: "Save the recording…", run: () => saveRecording() }] : []),
       ...(last && cues().length ? [{ label: "Save captions of the recording (.vtt)…", run: saveCaptions }] : []),
     ],
   };

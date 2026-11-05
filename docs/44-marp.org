@@ -886,8 +886,9 @@ The slideshow can record itself, the mouse and your voice as a video. =V=
 (see below), where you can check the microphone and its level, record a
 5 second test, and get situated. Press =● Record= there when you are ready.
 Chrome asks which tab to share: pick the slideshow. =■ Stop= in the window,
-or =V= while recording, stops. Chrome then asks where to save the video
-(=<deck>-<date>-<time>.mp4=). If you cancel, "Save the recording…" in the
+or =V= while recording, stops. Chrome then opens a save dialog, with
+=<deck>-<date>-<time>.mp4= as the suggested name, so you choose the name and
+folder (Firefox downloads the video instead). If you cancel, "Save the recording…" in the
 right-click menu asks again, until the next recording. If the browser blocks
 pop-ups for the deck, =V= opens the panel at the top right of the slideshow
 instead, and =● Record= there records this tab (the panel closes first so it
@@ -924,8 +925,10 @@ Open the Microphone window and start recording before you go full screen:
 opening a window and the sharing dialog can take the browser out of full
 screen. The video stays in the browser until you stop.
 Closing the tab while recording asks first, and live reload waits until the
-recording is saved. If you stop with Chrome's own "Stop sharing" button, the
-video goes to the Downloads folder.
+recording is saved. If you stop with Chrome's own "Stop sharing" button, a
+"Save the recording…" button appears on the slideshow: Chrome only opens the
+save dialog after a click or key press, so click it to choose where the video
+goes.
 
 ** 👀 The microphone
 
@@ -1104,8 +1107,12 @@ np.linspace(0, 1, 5)
 Insert one with Insert → Python Cell... ([[cmd:scimax.marp.insert.pythonCell]]),
 which also adds ~presenter: true~ if the deck does not have it.
 
-In the slideshow, click a cell to edit it, press =Shift+Enter= (or =▶=) to run
-it and =Esc= to leave the editor so the arrow keys change slides again. =↺=
+In the slideshow, click a cell to edit it. =Shift+Enter= (or =▶=) runs it and
+leaves the editor, so the arrow keys change slides again without reaching for
+the mouse. =Ctrl+Enter= (=Cmd+Enter= on macOS) runs it and keeps editing, for
+when you want to change the code and run it again. =Esc= leaves the editor
+without running. =PageUp= and =PageDown=, which presentation clickers send,
+always change slides, even while you are editing a cell. =↺=
 restores the original code and =⟲= restarts Python. All cells share one
 Python session, like a notebook. Output shows printed text, errors, the value
 of the last expression and matplotlib figures.

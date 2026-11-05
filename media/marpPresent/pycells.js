@@ -4,7 +4,9 @@
  * `hidden` is setup code that is not shown and runs before the first cell). While presenting:
  *
  *   click a cell to edit it (Python highlighting, auto-indent, brackets)
- *   Shift+Enter or ▶ runs it · Esc leaves the editor (so the arrow keys change slides again)
+ *   Shift+Enter or ▶ runs it and leaves the editor, so the arrow keys change slides again
+ *   Ctrl/Cmd+Enter runs it and keeps editing · Esc leaves the editor
+ *   PageUp/PageDown (a presentation clicker) always change slides, even while editing
  *   ↺ puts the original code back · ⟲ restarts Python
  *
  * All cells share one Python (like a notebook), running in a Web Worker so the slides stay
@@ -405,7 +407,7 @@ self.onmessage = e => {
     const cs = getComputedStyle(pre);
     const box = document.createElement("div");
     box.className = "pyc";
-    box.innerHTML = '<div class="pyc-bar"><button class="run" title="Run (Shift+Enter)">▶ Run</button>' +
+    box.innerHTML = '<div class="pyc-bar"><button class="run" title="Run (Shift+Enter; Ctrl/Cmd+Enter runs and keeps editing)">▶ Run</button>' +
       '<span class="n">[ ]</span><span class="st"></span>' +
       '<button class="reset" title="Put the original code back">↺</button>' +
       '<button class="restart" title="Restart Python (clears all variables)">⟲</button></div>' +
@@ -431,7 +433,9 @@ self.onmessage = e => {
         doc: original,
         extensions: [
           Prec.highest(keymap.of([
-            { key: "Shift-Enter", run: () => { execute(cell); return true; } },
+            // run and leave the editor (the arrow keys change slides again), or run and keep editing
+            { key: "Shift-Enter", run: v => { execute(cell); v.contentDOM.blur(); return true; } },
+            { key: "Mod-Enter", run: () => { execute(cell); return true; } },
             { key: "Escape", run: v => { v.contentDOM.blur(); return true; } },
           ])),
           history(), drawSelection(), highlightActiveLine(), indentOnInput(), bracketMatching(), closeBrackets(),
@@ -441,12 +445,24 @@ self.onmessage = e => {
       }),
     });
     cell.code = () => view.state.doc.toString();
-    box.querySelector(".run").addEventListener("click", () => execute(cell));
+    box.querySelector(".run").addEventListener("click", () => { execute(cell); view.contentDOM.blur(); });
+    // a clicked button does not keep the focus, so the arrow keys go on changing slides
+    box.querySelectorAll("button").forEach(b => b.addEventListener("click", () => b.blur()));
     box.querySelector(".reset").addEventListener("click", () =>
       view.dispatch({ changes: { from: 0, to: view.state.doc.length, insert: original } }));
     box.querySelector(".restart").addEventListener("click", restart);
-    // keys typed into a cell belong to the cell, not to the slide show or the presenter tools
-    for (const t of ["keydown", "keyup", "keypress"]) box.addEventListener(t, e => e.stopPropagation());
+    // keys typed into a cell's editor belong to the cell, not to the slide show or the presenter tools
+    const ed = box.querySelector(".pyc-ed");
+    for (const t of ["keydown", "keyup", "keypress"]) box.addEventListener(t, e => { if (ed.contains(e.target)) e.stopPropagation(); });
+    // except PageUp/PageDown, what a presentation clicker sends: they always change slides. Caught
+    // before the editor sees them, they leave the editor and go to the slide show (as presenter.js
+    // forwards keys from widget iframes)
+    box.addEventListener("keydown", e => {
+      if (!/^Page(Up|Down)$/.test(e.key) || e.ctrlKey || e.metaKey || e.altKey || !ed.contains(e.target)) return;
+      e.preventDefault(); e.stopPropagation();
+      view.contentDOM.blur();
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: e.key, code: e.code, shiftKey: e.shiftKey, bubbles: true, cancelable: true }));
+    }, true);
   });
 
   // Python starts downloading in the background as soon as the deck opens (after a moment, so the
