@@ -38,6 +38,18 @@ describe('code fence openers', () => {
         expect(matchCodeFenceOpen('```{=html}')?.language).toBe('html');
     });
 
+    it('reads org header arguments after a bare language', () => {
+        expect(matchCodeFenceOpen('```python :session main :results output')).toEqual(
+            { fence: '```', language: 'python', braced: false, parameters: ':session main :results output' });
+        expect(matchCodeFenceOpen('```jupyter-python :session s')?.language).toBe('jupyter-python');
+        expect(matchCodeFenceOpen('```python')?.parameters).toBeUndefined();
+    });
+
+    it('does not match words after the language that are not header arguments', () => {
+        // A Marp run cell
+        expect(matchCodeFenceOpen('```python run')).toBeNull();
+    });
+
     it('rejects lines that are not fence openers', () => {
         expect(matchCodeFenceOpen('``inline``')).toBeNull();
         expect(matchCodeFenceOpen('text ```{python}')).toBeNull();

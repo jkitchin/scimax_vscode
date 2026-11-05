@@ -825,12 +825,13 @@ Use the command =Scimax: Open Log File Directory= to open the directory containi
 
 Configure Python and Jupyter paths for source block execution.
 
-** Settings Overview
+** 👀 Settings Overview
 
-| Setting                      | Type   | Default | Description                        |
-|------------------------------+--------+---------+------------------------------------|
-| scimax.literate.pythonPath | string | ""    | Path to Python executable          |
-| scimax.literate.jupyterPath | string | ""    | Path to Jupyter executable         |
+| Setting                       | Type    | Default | Description                                             |
+|-------------------------------+---------+---------+---------------------------------------------------------|
+| scimax.literate.pythonPath    | string  | ""      | Path to Python executable                               |
+| scimax.literate.jupyterPath   | string  | ""      | Path to Jupyter executable                              |
+| scimax.babel.markdownCodeLens | boolean | true    | Run / Clear buttons above runnable Markdown code blocks |
 
 ** Detailed Configuration
 
@@ -866,6 +867,15 @@ Or with virtual environment:
   "scimax.literate.jupyterPath": "~/anaconda3/bin/jupyter"
 }
 #+end_src
+
+*** ⚠️ scimax.babel.markdownCodeLens
+
+- *Type*: boolean
+- *Default*: ~true~
+- *Description*: Show *▶ Run* and *✕ Clear* buttons above the runnable code
+  blocks (=```python=, =```bash=, ...) of Markdown files. Blocks in languages
+  without an executor get no buttons. =C-c C-c= runs a block either way. See
+  [[file:30-markdown-compatibility.org::*Code Block Execution][Code Block Execution]].
 
 * Reference/Citation Settings
 

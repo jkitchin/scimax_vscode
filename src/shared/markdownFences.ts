@@ -70,20 +70,29 @@ export interface CodeFenceOpen {
     fence: string;      // the fence characters (``` or ~~~, possibly longer)
     language: string;   // '' when the fence names no language
     braced: boolean;    // Quarto/Pandoc chunk form: ```{python} or ```{r, echo=FALSE}
+    /** Org-style header arguments after the language: ```python :session main */
+    parameters?: string;
 }
 
-const PLAIN_CODE_FENCE = /^(`{3,}|~{3,})(\w*)$/;
+// The language may be followed by org header arguments (```python :results output).
+// Other words after the language (```python run, a Marp run cell) are not matched.
+const PLAIN_CODE_FENCE = /^(`{3,}|~{3,})([\w+-]*)(?:[ \t]+(:[^`]*?))?[ \t]*$/;
 const BRACED_CODE_FENCE = /^(`{3,}|~{3,})\{[.=]?([\w+-]+)[^}]*\}\s*$/;
 
 /**
  * Match the opening fence of a code block that names its language as a bare
  * word (```python) or in braces as Quarto and Pandoc do (```{python},
- * ```{r, echo=FALSE}, ```{.python}, ```{=html}).
+ * ```{r, echo=FALSE}, ```{.python}, ```{=html}). A bare language may be
+ * followed by org header arguments: ```python :session main :results output.
  */
 export function matchCodeFenceOpen(line: string): CodeFenceOpen | null {
     const plain = line.match(PLAIN_CODE_FENCE);
     if (plain) {
-        return { fence: plain[1], language: plain[2], braced: false };
+        const open: CodeFenceOpen = { fence: plain[1], language: plain[2], braced: false };
+        if (plain[3]) {
+            open.parameters = plain[3];
+        }
+        return open;
     }
     const braced = line.match(BRACED_CODE_FENCE);
     if (braced) {
