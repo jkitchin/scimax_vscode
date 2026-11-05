@@ -544,7 +544,7 @@ Each sets a key in the front matter, or removes it.
 | Edit Current Theme   | [[cmd:scimax.marp.theme.edit]]       | Opens the theme's CSS file; for a built-in theme, offers a custom theme based on it |
 | Add Deck Style Block | [[cmd:scimax.marp.theme.styleBlock]] | A ~style: |~ block in the front matter for small CSS changes                        |
 
-** The scimax theme
+** 👀 The scimax theme
 
 ~theme: scimax~ dresses a deck in the blues of the crystal Scimax unicorn,
 with the amber of its horn, laid out like [[https://orgmode.org][orgmode.org]]: a pale background, serif
@@ -575,6 +575,11 @@ footer: Your name · Your university
 - ~<span class="todo">TODO</span>~ and ~<span class="done">DONE</span>~
   colour a keyword: TODO in amber, DONE in grey.
 - Fitted headings (~# <!-- fit --> Title~) work.
+- A code block shows its language in a small tag in its top-right corner
+  (Python, JavaScript, SQL, Plain text, ...), taken from the fence:
+  ~```sql~ is tagged SQL. Common languages are named; a fence with another
+  language, or none, gets no tag. Live Python cells (~```python run~) have
+  their own controls instead. All the bundled themes do this.
 - The fonts are ones orgmode.org uses when they are installed (Droid Serif, Noto
   Serif) and otherwise Cambria or Georgia, so nothing is downloaded and the
   deck looks the same offline.
