@@ -716,8 +716,9 @@ scripts and makes the same HTML as the =h= export.
 |---------------------------+----------------------------------------------------------------------------------|
 | =a=                       | Turn the pen on or off (widgets cannot be clicked while it is on)                |
 | =1= to =5=                | Pen colour while the pen is on: red, blue, green, black, yellow highlighter      |
-| =r=                       | Eraser: drag over strokes to remove them; =r= again turns it off                 |
-| =z=                       | Undo the last stroke (or the last erase) on this slide                           |
+| =r=                       | Stroke eraser: drag over strokes to remove them whole; =r= again turns it off    |
+| =R= (=Shift+R=)           | Eraser that rubs out only the ink under it, cutting strokes there                |
+| =z=                       | Undo the last change to this slide's ink (a stroke, an erase, a lasso move)      |
 | =c= / =C=                 | Clear this slide / every slide                                                   |
 | =l=                       | Laser pointer: a dot that follows the mouse                                      |
 | =1= to =5=                | Laser colour while the laser is on: red, blue, green, black, yellow              |
@@ -1082,6 +1083,35 @@ Images are kept in the browser's local storage with the other edits. That
 storage is limited (a few megabytes for all decks opened from files), so if
 it fills up, a message says so; press =s= to save the deck with its edits
 before reloading.
+
+*** ⚠️ Annotating while editing
+
+The bar's second row, *Annotate*, draws on the slide, so you can sketch on a
+blank slide (=N= adds one) without leaving edit mode:
+
+| Button          | Effect                                                                |
+|-----------------+-----------------------------------------------------------------------|
+| ✎ Pen          | Draw on the slide                                                     |
+| ✏ Pencil       | A soft, grainy pencil line                                            |
+| ▬ Highlighter   | Draw wide, see-through strokes                                        |
+| ⌫ Eraser        | Rub out only the ink under it: a stroke it crosses is cut there       |
+| ⌫ Strokes       | Remove every stroke it touches, whole                                 |
+| ◌ Lasso         | Circle ink to select it, then drag it to move it, Delete to remove it |
+| Colour swatches | The drawing tool's colour; with a lasso selection, recolour it        |
+| Colour box      | Any other colour                                                      |
+
+Click a tool again to turn it off. While a tool is on, the mouse draws
+instead of selecting text and images. =Cmd+Z= (=Ctrl+Z=) undoes ink: a
+stroke, an eraser drag, a lasso move, a recolour or a delete. =1=-=5= pick
+the usual pen colours. =Esc= clears the lasso's selection, then turns the
+tool off; the next =Esc= stops editing. The other buttons and *Done* turn
+the tool off too.
+
+This is the same ink as the pen (=a=): it is saved with =s=, printed, and
+cleared with =c=. A pen or highlighter stroke in one of the usual colours
+(keys =1=-=5=) is stored as before, so older decks read it; other colours
+and the pencil need this version. The pencil's grain is drawn on screen and
+kept in saved and printed copies.
 
 ** Keeping the ink
 

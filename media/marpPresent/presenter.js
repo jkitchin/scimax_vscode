@@ -3,8 +3,9 @@
  *
  *   a        toggle the pen (widgets are not clickable while it is on)
  *   1-5      pen colour: red, blue, green, black, yellow highlighter
- *   z        undo the last stroke on this slide
- *   r        toggle the eraser: drag over strokes to remove them (z puts them back)
+ *   z        undo the last change to this slide's ink (a stroke, an eraser drag, a lasso move, ...)
+ *   r        toggle the stroke eraser: drag over strokes to remove them whole (z puts them back)
+ *   R        toggle the eraser that rubs out only the ink under it, cutting strokes there
  *   c        clear this slide        shift+C  clear every slide
  *   l        toggle the laser pointer (a dot with a fading tail that follows the mouse, also over widgets);
  *            while it is on, 1-5 pick its colour: red, blue, green, black, yellow (remembered)
@@ -25,6 +26,8 @@
  *   S        save just the annotations as JSON (a backup you can load again)
  *   i        load annotations from such a JSON file (or drag the file onto the deck)
  *   d        edit the slides' text and layout in place (editor.js); s and S save the edits too
+ *            While editing, the bar's Annotate row has a pen, a pencil and a highlighter in any colour,
+ *            both erasers, and a lasso (select strokes, then drag, Delete or recolour them): window.__marpInk
  *   Cmd/Ctrl+P  print → "Save as PDF" gives every slide with its ink, as vector graphics
  *
  * The keys also work while a widget has keyboard focus (e.g. after dragging a slider).
@@ -60,6 +63,25 @@
     { color: "#111827", width: 4 },
     { color: "rgba(250, 204, 21, 0.45)", width: 22 },       // highlighter
   ];
+  // A stroke is {pen, pts} with one of the PENS (keys 1-5), or {c, hl, pts} / {c, pencil, pts}: any
+  // colour ("#rrggbb") as a pen, a highlighter or a pencil (the editor's Annotate tools). A pen or
+  // highlighter stroke that matches one of the PENS is kept as {pen}, so decks saved by older
+  // versions and these read each other's ink.
+  const HEX = /^#[0-9a-f]{6}$/i, HL_HEX = "#facc15", PENCIL_HEX = "#4b5563";
+  const PEN_W = 4, HL_W = 22, PENCIL_W = 5, HL_ALPHA = 0.45;
+  const rgba = (hex, a) => `rgba(${parseInt(hex.slice(1, 3), 16)}, ${parseInt(hex.slice(3, 5), 16)}, ${parseInt(hex.slice(5, 7), 16)}, ${a})`;
+  // "pen", "hl" or "pencil"
+  const kindOf = s => (s.c ? (s.pencil ? "pencil" : s.hl ? "hl" : "pen") : s.pen === 4 ? "hl" : "pen");
+  const look = s => (!s.c ? PENS[s.pen] : s.pencil ? { color: s.c, width: PENCIL_W }
+    : { color: s.hl ? rgba(s.c, HL_ALPHA) : s.c, width: s.hl ? HL_W : PEN_W });
+  const presetOf = (c, kind) => (kind === "hl" ? (c.toLowerCase() === HL_HEX ? 4 : -1)
+    : kind === "pen" ? PENS.findIndex((p, i) => i < 4 && p.color === c.toLowerCase()) : -1);
+  const strokeOf = (c, kind, pts) => {
+    const i = presetOf(c, kind);
+    if (i >= 0) return { pen: i, pts };
+    return kind === "pencil" ? { c: c.toLowerCase(), pencil: true, pts } : { c: c.toLowerCase(), hl: kind === "hl", pts };
+  };
+  const validStroke = s => !!(s && Array.isArray(s.pts) && (s.c !== undefined ? typeof s.c === "string" && HEX.test(s.c) : PENS[s.pen]));
   // The laser pointer's colours, as "r,g,b": the pens' colours
   const LASERS = [["255,32,48", "red"], ["37,99,235", "blue"], ["5,150,105", "green"], ["17,24,39", "black"], ["250,204,21", "yellow"]];
   const LASER_PREF = "marp-laser-colour";
@@ -132,9 +154,17 @@
   const save = () => { try { localStorage.setItem(KEY, JSON.stringify(ink)); } catch (e) { /* private mode */ } };
   const saveNotes = () => { try { localStorage.setItem(KEY + ":notes", JSON.stringify(notes)); } catch (e) { /* private mode */ } };
 
-  let enabled = false, pen = 0, stroke = null, laserOn = false;
-  let erasing = false, rubbing = null;                // the eraser, and the strokes one drag of it removed
-  const erased = {};                                  // per slide: what each drag removed, for z
+  let enabled = false, stroke = null, laserOn = false;
+  let brush = "pen";                                  // what the pen draws: "pen", "pencil" or "hl" (highlighter)
+  const colors = { pen: PENS[0].color, pencil: PENCIL_HEX, hl: HL_HEX };
+  // the eraser: whole strokes it touches, or (area) only the ink under it; what one drag of it changed
+  let erasing = false, rubArea = false, rubbing = null, rubLast = null;
+  let lassoOn = false, lasso = null, sel = [], moving = null;   // the lasso: the loop drawn, the strokes it selected, a move
+  // Undo (z): per slide, the strokes as they were before each change (a stroke, an eraser drag, a move, ...)
+  const history = {};
+  const checkpoint = (id = slideId()) => { const h = history[id] = history[id] || []; h.push(JSON.stringify(ink[id] || [])); if (h.length > 200) h.shift(); };
+  const inkListeners = [];                            // the editor's Annotate bar follows the tools
+  const forget = () => { Object.keys(history).forEach(id => delete history[id]); sel = []; lasso = moving = null; };   // the ink was replaced
 
   // ---- save / load annotations as a JSON file ----
   const DECK = decodeURIComponent(location.pathname.split("/").pop() || "slides").replace(/\.html?$/, "");
@@ -153,7 +183,7 @@
   const describe = c => [(c.strokes || c.notes) && [c.strokes && plural(c.strokes, "stroke"), c.notes && plural(c.notes, "note")]
       .filter(Boolean).join(" and ") + " on " + plural(c.slides, "slide"),
     editCount() && plural(editCount(), "text or layout edit")].filter(Boolean).join(", and ");
-  const validInk = o => o && typeof o === "object" && Object.values(o).every(v => Array.isArray(v) && v.every(s => s && Array.isArray(s.pts) && PENS[s.pen]));
+  const validInk = o => o && typeof o === "object" && Object.values(o).every(v => Array.isArray(v) && v.every(validStroke));
   const validNotes = o => o && typeof o === "object" && Object.values(o).every(v => Array.isArray(v) && v.every(n => n && typeof n.text === "string" && isFinite(n.x) && isFinite(n.y)));
   function download(text, name, type) {
     const a = document.createElement("a");
@@ -180,15 +210,22 @@
     const vb = svg && svg.viewBox && svg.viewBox.baseVal;
     return vb && vb.width && vb.height ? [vb.width, vb.height] : [1280, 720];
   };
+  let filterCount = 0;
   function inkSvg(strokes, extraClass = "", [SW, SH] = [1280, 720]) {
-    const k = SW / 1280;
+    const k = SW / 1280, fid = "mp-pencil-" + (++filterCount);   // ids unique in the page: one filter per overlay
+    // Pencil grain: fractal noise as an alpha mask over the stroke
+    const defs = strokes.some(s => s.pencil) ? `<defs><filter id="${fid}" x="-10%" y="-10%" width="120%" height="120%">` +
+      `<feTurbulence type="fractalNoise" baseFrequency="1.1" numOctaves="2" seed="7" result="n"/>` +
+      `<feColorMatrix in="n" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 2.2 -0.55" result="g"/>` +
+      `<feComposite in="SourceGraphic" in2="g" operator="in"/></filter></defs>` : "";
     const lines = strokes.map(s => {
-      const p = PENS[s.pen], pts = s.pts.length === 1 ? [s.pts[0], [s.pts[0][0] + 1e-4, s.pts[0][1]]] : s.pts;
+      const p = look(s), pts = s.pts.length === 1 ? [s.pts[0], [s.pts[0][0] + 1e-4, s.pts[0][1]]] : s.pts;
       const xy = pts.map(([u, v]) => `${(u * SW).toFixed(1)},${(v * SH).toFixed(1)}`).join(" ");
-      return `<polyline data-pen="${s.pen}" points="${xy}" fill="none" stroke="${p.color}" stroke-width="${+(p.width * k).toFixed(2)}" stroke-linecap="round" stroke-linejoin="round"/>`;
+      const kind = s.c ? `data-c="${s.c}"${s.hl ? ' data-hl="1"' : ""}${s.pencil ? ` data-pencil="1" filter="url(#${fid})"` : ""}` : `data-pen="${s.pen}"`;
+      return `<polyline ${kind} points="${xy}" fill="none" stroke="${p.color}" stroke-width="${+(p.width * k).toFixed(2)}" stroke-linecap="round" stroke-linejoin="round"/>`;
     }).join("");
     return `<svg class="marp-ink${extraClass}" viewBox="0 0 ${SW} ${SH}" preserveAspectRatio="none" ` +
-      `style="position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:50">${lines}</svg>`;
+      `style="position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:50">${defs}${lines}</svg>`;
   }
   const sectionOf = svg => svg.querySelector("foreignObject > section") || svg.querySelector("section");
 
@@ -393,9 +430,10 @@
     if (nothing(count(bInk, bNotes))) slides().forEach((svg, i) => {
       svg.querySelectorAll("svg.marp-ink:not(.print-ink) polyline").forEach(pl => {
         const [SW, SH] = slideSize(pl.ownerSVGElement);
-        const pen = +pl.getAttribute("data-pen"), pts = (pl.getAttribute("points") || "").trim().split(/\s+/)
+        const pen = +pl.getAttribute("data-pen"), c = pl.getAttribute("data-c"), pts = (pl.getAttribute("points") || "").trim().split(/\s+/)
           .map(p => p.split(",").map(Number)).filter(p => p.length === 2 && p.every(isFinite)).map(([x, y]) => [x / SW, y / SH]);
-        if (PENS[pen] && pts.length) (bInk[idOf(svg, i)] = bInk[idOf(svg, i)] || []).push({ pen, pts });
+        const s = !c ? { pen, pts } : pl.hasAttribute("data-pencil") ? { c, pencil: true, pts } : { c, hl: pl.hasAttribute("data-hl"), pts };
+        if (validStroke(s) && pts.length) (bInk[idOf(svg, i)] = bInk[idOf(svg, i)] || []).push(s);
       });
       svg.querySelectorAll("script.marp-notes").forEach(sc => {
         try { const v = JSON.parse(sc.textContent); if (validNotes({ x: v })) bNotes[idOf(svg, i)] = (bNotes[idOf(svg, i)] || []).concat(v); } catch (e) { /* ignore */ }
@@ -405,7 +443,7 @@
     let seen = null; try { seen = localStorage.getItem(KEY + ":baked"); } catch (e) { /* ignore */ }
     if (nothing(count(bInk, bNotes)) || sig === seen) return;
     try { localStorage.setItem(KEY + ":before-load", JSON.stringify({ ink, notes })); localStorage.setItem(KEY + ":baked", sig); } catch (e) { /* ignore */ }
-    ink = bInk; notes = bNotes; save(); saveNotes(); redraw(); buildNotes();
+    ink = bInk; notes = bNotes; forget(); save(); saveNotes(); redraw(); buildNotes();
   }
   function loadText(text, name) {
     let data;
@@ -413,7 +451,7 @@
     const valid = data && data.format === "marp-ink" && validInk(data.ink) && (data.notes === undefined || validNotes(data.notes));
     if (!valid) { say(`${name} is not an annotation file saved from these slides`); return; }
     try { localStorage.setItem(KEY + ":before-load", JSON.stringify({ ink, notes })); } catch (e) { /* ignore */ }
-    ink = data.ink; notes = data.notes || {}; stroke = null; save(); saveNotes(); redraw(); buildNotes();
+    ink = data.ink; notes = data.notes || {}; stroke = null; forget(); save(); saveNotes(); redraw(); buildNotes();
     if (data.edits && window.__marpEdits) window.__marpEdits.replace(data.edits);
     say(`Loaded ${describe(total())} from ${name}` +
         (data.deck && data.deck !== DECK ? ` (saved from "${data.deck}")` : ""));
@@ -453,8 +491,42 @@
   // Points are stored as fractions of the slide, so ink stays put when the slide rescales.
   const toSlide = e => { const r = slideRect(); return [(e.clientX - r.left) / r.width, (e.clientY - r.top) / r.height]; };
 
+  // Pencil: the stroke painted with a grain texture of its colour, over a faint solid core
+  const grains = {};
+  function grain(c) {
+    if (grains[c]) return grains[c];
+    const t = document.createElement("canvas"), N = 96;
+    t.width = t.height = N;
+    const g = t.getContext("2d"), img = g.createImageData(N, N);
+    const [R, G, B] = [1, 3, 5].map(i => parseInt(c.slice(i, i + 2), 16));
+    let seed = 12345;                                   // the same grain every time
+    const rnd = () => ((seed = (seed * 1103515245 + 12345) & 0x7fffffff) / 0x7fffffff);
+    for (let i = 0; i < N * N; i++) {
+      const a = rnd();
+      img.data.set([R, G, B, a < 0.45 ? 0 : Math.round(110 + 145 * rnd())], i * 4);
+    }
+    g.putImageData(img, 0, 0);
+    return (grains[c] = ctx.createPattern(t, "repeat"));
+  }
+  function tracePath(s, r) {
+    ctx.beginPath();
+    s.pts.forEach(([u, v], i) => {
+      const x = r.left + u * r.width, y = r.top + v * r.height;
+      i ? ctx.lineTo(x, y) : ctx.moveTo(x, y);
+    });
+    if (s.pts.length === 1) ctx.lineTo(r.left + s.pts[0][0] * r.width + 0.1, r.top + s.pts[0][1] * r.height);
+  }
   function drawStroke(s, r) {
-    const p = PENS[s.pen];
+    if (s.pencil) {
+      const w = PENCIL_W * r.width / 1280;
+      tracePath(s, r);
+      ctx.save();
+      ctx.globalAlpha = 0.35; ctx.strokeStyle = s.c; ctx.lineWidth = w * 0.4; ctx.stroke();
+      ctx.globalAlpha = 0.95; ctx.strokeStyle = grain(s.c); ctx.lineWidth = w; ctx.stroke();
+      ctx.restore();
+      return;
+    }
+    const p = look(s);
     ctx.strokeStyle = p.color;
     ctx.lineWidth = p.width * r.width / 1280;             // widths scale with the slide
     ctx.beginPath();
@@ -467,8 +539,31 @@
   }
   function redraw() {
     ctx.clearRect(0, 0, innerWidth, innerHeight);
+    const r = slideRect(), list = ink[slideId()] || [];
+    list.forEach(s => drawStroke(s, r));
+    sel = sel.filter(s => list.includes(s));            // undo, another slide, ... leave nothing stale selected
+    const b = selBox();
+    if (b || lasso) {
+      ctx.save();
+      ctx.setLineDash([6, 4]); ctx.lineWidth = 1.5; ctx.strokeStyle = "#2563eb"; ctx.fillStyle = "rgba(37, 99, 235, .07)";
+      if (b) { ctx.fillRect(b.x0, b.y0, b.x1 - b.x0, b.y1 - b.y0); ctx.strokeRect(b.x0, b.y0, b.x1 - b.x0, b.y1 - b.y0); }
+      if (lasso) { ctx.beginPath(); lasso.forEach(([x, y], i) => (i ? ctx.lineTo(x, y) : ctx.moveTo(x, y))); ctx.closePath(); ctx.fill(); ctx.stroke(); }
+      ctx.restore();
+    }
+  }
+  // The selection's box on screen (padded), or null
+  function selBox() {
+    if (!sel.length) return null;
     const r = slideRect();
-    (ink[slideId()] || []).forEach(s => drawStroke(s, r));
+    let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
+    sel.forEach(s => {
+      const pad = look(s).width * r.width / 1280 / 2 + 6;
+      s.pts.forEach(([u, v]) => {
+        const x = r.left + u * r.width, y = r.top + v * r.height;
+        x0 = Math.min(x0, x - pad); y0 = Math.min(y0, y - pad); x1 = Math.max(x1, x + pad); y1 = Math.max(y1, y + pad);
+      });
+    });
+    return { x0, y0, x1, y1 };
   }
   function resize() {
     const scale = window.devicePixelRatio || 1;
@@ -482,9 +577,14 @@
     redraw();
   }
   function showBadge() {
-    badge.style.display = enabled || erasing ? "block" : "none";
-    badge.style.background = erasing ? "rgba(75,85,99,.9)" : PENS[pen].color.replace("0.45", "0.9");
-    badge.textContent = erasing ? "⌫ eraser  ·  drag over ink to remove it  ·  r: off  z: undo" : "✎ pen " + (pen + 1) + "  ·  a: off  z: undo  c: clear";
+    // while editing, the editor's bar shows the tool instead
+    badge.style.display = (enabled || erasing || lassoOn) && !window.__marpEditing ? "block" : "none";
+    badge.style.background = erasing || lassoOn ? "rgba(75,85,99,.9)" : brush === "hl" ? rgba(colors.hl, 0.9) : colors[brush];
+    badge.textContent = erasing ? (rubArea ? "⌫ eraser  ·  drag to rub out the ink under it  ·  R: off  z: undo"
+                                           : "⌫ stroke eraser  ·  drag over ink to remove whole strokes  ·  r: off  z: undo")
+      : lassoOn ? "◌ lasso  ·  circle ink to select it, drag to move, Delete removes  ·  z: undo"
+      : { pen: "✎ pen", pencil: "✏ pencil", hl: "▬ highlighter" }[brush] + "  ·  a: off  z: undo  c: clear";
+    inkListeners.forEach(f => f());
   }
 
   // ---- spotlight: hold the mouse button to darken everything but a circle at the cursor ----
@@ -497,7 +597,7 @@
       `rgba(0,0,0,0) ${radius - 1}px, rgba(0,0,0,.72) ${radius + 1}px)`;
   }
   function spotStart(e) {
-    if (overview || e.button !== 0 || enabled || erasing || e.ctrlKey || e.metaKey || e.altKey || e.shiftKey) return;
+    if (overview || e.button !== 0 || enabled || erasing || lassoOn || e.ctrlKey || e.metaKey || e.altKey || e.shiftKey) return;
     if (menuOpen()) return;                                    // this click just closes the menu
     if (e.target && e.target.closest && e.target.closest(INTERACTIVE)) return;
     spotOn = true;
@@ -858,7 +958,7 @@
     const r = slideRect(), x = e.clientX, y = e.clientY, reach = 10;
     const px = ([u, v]) => [r.left + u * r.width, r.top + v * r.height];
     const near = s => {
-      const pts = s.pts.map(px), half = PENS[s.pen].width * r.width / 1280 / 2 + reach;
+      const pts = s.pts.map(px), half = look(s).width * r.width / 1280 / 2 + reach;
       for (let i = 0; i < pts.length; i++) {
         const [ax, ay] = pts[i], [bx, by] = pts[Math.min(i + 1, pts.length - 1)];
         const dx = bx - ax, dy = by - ay, len = dx * dx + dy * dy;
@@ -873,18 +973,84 @@
     }
     if (gone) redraw();
   }
+  // The area eraser rubs out only the ink under it: a stroke it crosses is cut there, into the
+  // pieces on either side. Strokes are first filled in with points every few pixels, so a cut can
+  // fall between the points they were drawn with; the eraser's path is filled in the same way, so
+  // a quick drag leaves no gaps.
+  const RUB_R = 12;                                     // slide pixels (of a 1280-wide slide)
+  function rubArea_(e) {
+    const id = slideId(), list = ink[id];
+    if (!list || !list.length) return;
+    const r = slideRect(), R = RUB_R * r.width / 1280, step = Math.max(1, R / 3);
+    const to = [e.clientX, e.clientY], from = rubLast || to;
+    rubLast = to;
+    const n = Math.max(1, Math.ceil(Math.hypot(to[0] - from[0], to[1] - from[1]) / (R / 2)));
+    const spots = Array.from({ length: n + 1 }, (_, i) => [from[0] + (to[0] - from[0]) * i / n, from[1] + (to[1] - from[1]) * i / n]);
+    const px = ([u, v]) => [r.left + u * r.width, r.top + v * r.height];
+    let changed = false;
+    for (let i = list.length - 1; i >= 0; i--) {
+      const st = list[i], reach = R + look(st).width * r.width / 1280 / 2;
+      const hit = ([x, y]) => spots.some(([sx, sy]) => Math.hypot(x - sx, y - sy) <= reach);
+      // dense points, in slide coordinates
+      const dense = [];
+      st.pts.forEach((p, k) => {
+        if (k) {
+          const q = st.pts[k - 1], [ax, ay] = px(q), [bx, by] = px(p);
+          const m = Math.ceil(Math.hypot(bx - ax, by - ay) / step);
+          for (let j = 1; j < m; j++) dense.push([q[0] + (p[0] - q[0]) * j / m, q[1] + (p[1] - q[1]) * j / m]);
+        }
+        dense.push(p);
+      });
+      const keep = dense.map(p => !hit(px(p)));
+      if (keep.every(Boolean)) continue;
+      const runs = [];
+      let run = [];
+      dense.forEach((p, k) => { if (keep[k]) run.push(p); else { if (run.length > 1) runs.push(run); run = []; } });
+      if (run.length > 1) runs.push(run);
+      const { pts, ...style } = st;
+      list.splice(i, 1, ...runs.map(rp => Object.assign({}, style, { pts: rp })));
+      changed = true;
+    }
+    if (changed) { rubbing.push(true); if (!list.length) delete ink[id]; redraw(); }
+  }
+  // Is a point inside the lasso's loop? (even-odd rule)
+  const inLoop = (x, y, loop) => {
+    let inside = false;
+    for (let i = 0, j = loop.length - 1; i < loop.length; j = i++) {
+      const [xi, yi] = loop[i], [xj, yj] = loop[j];
+      if ((yi > y) !== (yj > y) && x < (xj - xi) * (y - yi) / (yj - yi) + xi) inside = !inside;
+    }
+    return inside;
+  };
+  const inSel = (x, y) => { const b = selBox(); return !!b && x >= b.x0 && x <= b.x1 && y >= b.y0 && y <= b.y1; };
   canvas.addEventListener("pointerdown", e => {
-    if (!enabled && !erasing) return;
+    if (!enabled && !erasing && !lassoOn) return;
     e.preventDefault(); e.stopPropagation();
     canvas.setPointerCapture(e.pointerId);
-    if (erasing) { rubbing = []; rubOut(e); return; }
-    stroke = { pen, pts: [toSlide(e)] };
+    if (lassoOn) {                                      // drag the selection, or draw a new loop
+      if (inSel(e.clientX, e.clientY)) {
+        checkpoint();
+        moving = { x: e.clientX, y: e.clientY, from: sel.map(st => st.pts), moved: false };
+      } else { sel = []; lasso = [[e.clientX, e.clientY]]; }
+      redraw(); showBadge(); return;
+    }
+    if (erasing) { checkpoint(); rubbing = []; rubLast = null; rubArea ? rubArea_(e) : rubOut(e); return; }
+    checkpoint();
+    stroke = strokeOf(colors[brush], brush, [toSlide(e)]);
     (ink[slideId()] = ink[slideId()] || []).push(stroke);
-    delete erased[slideId()];                           // z now undoes this stroke, not an erase
     redraw();
   });
   canvas.addEventListener("pointermove", e => {
-    if (rubbing) { e.preventDefault(); e.stopPropagation(); rubOut(e); return; }
+    if (lassoOn && !lasso && !moving) { canvas.style.cursor = inSel(e.clientX, e.clientY) ? "move" : "crosshair"; return; }
+    if (lasso) { e.preventDefault(); lasso.push([e.clientX, e.clientY]); redraw(); return; }
+    if (moving) {
+      e.preventDefault();
+      const r = slideRect(), du = (e.clientX - moving.x) / r.width, dv = (e.clientY - moving.y) / r.height;
+      if (Math.hypot(e.clientX - moving.x, e.clientY - moving.y) > 2) moving.moved = true;
+      sel.forEach((st, k) => { st.pts = moving.from[k].map(([u, v]) => [u + du, v + dv]); });
+      redraw(); return;
+    }
+    if (rubbing) { e.preventDefault(); e.stopPropagation(); rubArea ? rubArea_(e) : rubOut(e); return; }
     if (!stroke) return;
     e.preventDefault(); e.stopPropagation();
     stroke.pts.push(toSlide(e));
@@ -893,18 +1059,57 @@
   const end = () => {
     if (stroke) { stroke = null; save(); }
     if (rubbing) {
-      if (rubbing.length) { (erased[slideId()] = erased[slideId()] || []).push(rubbing); save(); }
-      rubbing = null;
+      if (rubbing.length) save(); else (history[slideId()] || []).pop();   // nothing erased: nothing to undo
+      rubbing = rubLast = null;
+    }
+    if (lasso) {                                        // select the strokes mostly inside the loop
+      const loop = lasso, r = slideRect();
+      lasso = null;
+      if (loop.length > 2) {
+        sel = (ink[slideId()] || []).filter(st => {
+          const n = st.pts.filter(([u, v]) => inLoop(r.left + u * r.width, r.top + v * r.height, loop)).length;
+          return n > 0 && n >= st.pts.length / 2;
+        });
+      }
+      redraw(); showBadge();
+    }
+    if (moving) {
+      if (moving.moved) save(); else (history[slideId()] || []).pop();
+      moving = null;
     }
   };
+  function deleteSelection() {
+    if (!sel.length) return false;
+    const id = slideId();
+    checkpoint(id);
+    ink[id] = (ink[id] || []).filter(st => !sel.includes(st));
+    if (!ink[id].length) delete ink[id];
+    sel = []; save(); redraw(); showBadge();
+    return true;
+  }
+  function recolorSelection(c) {
+    checkpoint();
+    sel.forEach(st => { const ns = strokeOf(c, kindOf(st), st.pts); delete st.pen; delete st.c; delete st.hl; delete st.pencil; Object.assign(st, ns); });
+    save(); redraw();
+  }
+  // Pick one of the PENS (keys 1-5, the right-click menu's swatches)
+  function pickPreset(i) {
+    brush = i === 4 ? "hl" : "pen";
+    colors[brush] = i === 4 ? HL_HEX : PENS[i].color;
+  }
   canvas.addEventListener("pointerup", end);
   canvas.addEventListener("pointercancel", end);
 
   // The canvas takes the mouse while the pen or the eraser is on (other tools check this)
   const ERASER_CURSOR = "url(\"data:image/svg+xml," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"><circle cx="12" cy="12" r="10" fill="rgba(255,255,255,.5)" stroke="#374151" stroke-width="1.5"/></svg>') + "\") 12 12, cell";
+  // The area eraser's cursor: a circle the size of what it rubs out
+  function areaCursor() {
+    const d = Math.max(8, Math.min(120, Math.round(2 * RUB_R * slideRect().width / 1280))), h = d / 2;
+    return "url(\"data:image/svg+xml," + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="${d + 2}" height="${d + 2}"><circle cx="${h + 1}" cy="${h + 1}" r="${h}" fill="rgba(255,255,255,.45)" stroke="#374151" stroke-width="1.2"/></svg>`) + `") ${h + 1} ${h + 1}, cell`;
+  }
   function setCanvas() {
-    canvas.style.pointerEvents = enabled || erasing ? "auto" : "none";
-    canvas.style.cursor = erasing ? ERASER_CURSOR : "";
+    canvas.style.pointerEvents = enabled || erasing || lassoOn ? "auto" : "none";
+    canvas.style.cursor = erasing ? (rubArea ? areaCursor() : ERASER_CURSOR) : lassoOn ? "crosshair" : "";
   }
   function onKey(e) {
     if (e.key === "Escape" && menuOpen()) { e.preventDefault(); e.stopPropagation(); closeMenu(); return; }   // not Marp's overview too
@@ -913,6 +1118,7 @@
     if (/^(TEXTAREA|SELECT)$/.test((e.target && e.target.tagName) || "")) return;
     if (e.target && e.target.tagName === "INPUT" && e.target.type !== "range") return;
     if (e.target && (e.target.isContentEditable || (e.target.closest && e.target.closest(".pyc")))) return;  // typing in a code cell
+    if (lassoOn && /^(Delete|Backspace|Escape)$/.test(e.key) && window.__marpInk.key(e)) { e.preventDefault(); return; }
     if (act(e.key)) { if (e.key === "n") e.preventDefault(); closeMenu(); }
   }
   // One action per key; the keyboard and the right-click menu both come here. Returns true if handled.
@@ -920,15 +1126,16 @@
     const id = slideId();
     if (k === "a" || k === "A") {
       enabled = !enabled;
-      if (enabled) { erasing = false; if (laserOn) setLaser(false); }
-      setCanvas();
-    } else if (k === "r" || k === "R") {
-      erasing = !erasing;
-      if (erasing) { enabled = false; if (laserOn) setLaser(false); }
-      setCanvas();
+      if (enabled) { erasing = lassoOn = false; sel = []; if (laserOn) setLaser(false); }
+      setCanvas(); redraw();
+    } else if (k === "r" || k === "R") {                // r: whole strokes, R: only the ink under the eraser
+      const area = k === "R";
+      erasing = !(erasing && rubArea === area); rubArea = area;
+      if (erasing) { enabled = lassoOn = false; sel = []; if (laserOn) setLaser(false); }
+      setCanvas(); redraw();
     } else if (k === "l" || k === "L") {
       setLaser(!laserOn);
-      if (laserOn) { enabled = erasing = false; setCanvas(); }
+      if (laserOn) { enabled = erasing = lassoOn = false; sel = []; setCanvas(); redraw(); }
     } else if (k === "s") {
       saveStandalone(); return true;
     } else if (k === "m") {
@@ -940,17 +1147,19 @@
     } else if (k === "n") {
       newNote(); return true;
     } else if (k === "c") {
+      if (ink[id]) checkpoint(id);
       delete ink[id]; save(); redraw();
     } else if (k === "C") {
+      Object.keys(ink).forEach(i => checkpoint(i));    // z gives each slide its ink back
       ink = {}; save(); redraw();
-    } else if (k === "z" && erased[id] && erased[id].length) {
-      const list = ink[id] = ink[id] || [];             // put back what the last drag of the eraser removed
-      erased[id].pop().slice().reverse().forEach(({ i, s }) => list.splice(i, 0, s));
+    } else if (k === "z" && ((history[id] && history[id].length) || (ink[id] && ink[id].length))) {
+      if (history[id] && history[id].length) {          // the strokes as they were before the last change
+        const before = JSON.parse(history[id].pop());
+        if (before.length) ink[id] = before; else delete ink[id];
+      } else ink[id].pop();                             // ink from an earlier session: a stroke at a time
       save(); redraw();
-    } else if (k === "z" && ink[id] && ink[id].length) {
-      ink[id].pop(); save(); redraw();
     } else if (enabled && k >= "1" && k <= String(PENS.length)) {
-      pen = +k - 1;
+      pickPreset(+k - 1);
     } else if (laserOn && k >= "1" && k <= String(LASERS.length)) {
       setLaserColour(+k - 1);
       say("Laser pointer: " + LASERS[laserColour][1]);
@@ -959,6 +1168,46 @@
     return true;
   }
   addEventListener("keydown", onKey, true);
+
+  // ---- for the editor's Annotate tools (editor.js): this pen, highlighter, eraser and lasso ----
+  const toolName = () => (lassoOn ? "lasso" : erasing ? (rubArea ? "rub" : "erase") : enabled ? brush : "");
+  function setTool(t) {
+    enabled = t === "pen" || t === "pencil" || t === "hl"; erasing = t === "erase" || t === "rub"; lassoOn = t === "lasso";
+    if (enabled) brush = t;
+    if (erasing) rubArea = t === "rub";
+    if (t && laserOn) setLaser(false);
+    if (!lassoOn) { sel = []; lasso = moving = null; }
+    stroke = null;
+    setCanvas(); redraw(); showBadge();
+  }
+  const colorOf = st => st.c || (st.pen === 4 ? HL_HEX : PENS[st.pen].color);
+  window.__marpInk = {
+    tool: toolName,                                   // "pen", "pencil", "hl", "rub", "erase", "lasso" or ""
+    setTool,
+    // The colour to show: the selection's (lasso), else the pen's, pencil's or highlighter's
+    color: () => (sel.length ? colorOf(sel[0]) : colors[enabled ? brush : "pen"]),
+    // A colour recolours the lasso's selection, else is the drawing tool's (with no drawing tool on, it picks the pen)
+    setColor(c) {
+      if (typeof c !== "string" || !HEX.test(c)) return;
+      c = c.toLowerCase();
+      if (sel.length) recolorSelection(c);
+      else if (enabled) colors[brush] = c;
+      else { colors.pen = c; setTool("pen"); return; }
+      showBadge();
+    },
+    // Keys while a tool is on (the editor passes them here while editing). True if used.
+    key(e) {
+      const k = e.key, mod = e.metaKey || e.ctrlKey;
+      if (!toolName() || e.altKey) return false;
+      if (k === "Escape") { if (sel.length) { sel = []; redraw(); showBadge(); } else setTool(""); return true; }
+      if ((k === "Delete" || k === "Backspace") && !mod) return deleteSelection();
+      if ((k === "z" || k === "Z") && !e.shiftKey) { act("z"); return true; }        // z, or Cmd/Ctrl+Z
+      if (!mod && enabled && k >= "1" && k <= String(PENS.length)) { pickPreset(+k - 1); showBadge(); return true; }
+      return false;
+    },
+    hasSelection: () => sel.length > 0,
+    onChange: f => { inkListeners.push(f); },
+  };
 
   // ---- right-click menu: every tool in one place, each with its key ----
   const menu = document.createElement("div");
@@ -996,7 +1245,8 @@
     return [...noteItems,
       { label: "Pen", key: "a", check: enabled, run: () => act("a") },
       { swatches: true },
-      { label: "Eraser", key: "r", check: erasing, off: !total().strokes && !erasing, run: () => act("r") },
+      { label: "Eraser (whole strokes)", key: "r", check: erasing && !rubArea, off: !total().strokes && !erasing, run: () => act("r") },
+      { label: "Eraser (only what is under it)", key: "⇧R", check: erasing && rubArea, off: !total().strokes && !erasing, run: () => act("R") },
       { label: "Laser pointer", key: "l", check: laserOn, run: () => act("l") },
       { laserSwatches: true },
       { label: "Add a note here", key: "n", run: () => { lastX = menuX; lastY = menuY; act("n"); } },
@@ -1045,8 +1295,8 @@
           const b = document.createElement("button");
           b.style.background = p.color.replace("0.45", "1");
           b.title = (i === 4 ? "highlighter" : "pen colour") + " (" + (i + 1) + ")";
-          if (enabled && pen === i) b.className = "on";
-          b.addEventListener("click", () => { closeMenu(); pen = i; if (!enabled) act("a"); else showBadge(); });
+          if (enabled && presetOf(colors[brush], brush) === i) b.className = "on";
+          b.addEventListener("click", () => { closeMenu(); pickPreset(i); if (!enabled) act("a"); else showBadge(); });
           row.appendChild(b);
         });
       } else if (item.laserSwatches) {
@@ -1107,7 +1357,7 @@
     const id = slideId();
     if (id === shown) return;
     shown = id;
-    stroke = null;
+    stroke = null; sel = []; lasso = moving = null;
     closeMenu();
     redraw(); buildNotes();
     setTimeout(() => { redraw(); layoutNotes(); }, 450);       // again once the slide transition has settled
@@ -1151,7 +1401,7 @@
     ["pointerdown", "mousedown", "click"].forEach(t => box.addEventListener(t, e => e.stopPropagation()));
     box.append(text, button("Keep", () => {}), button("Start fresh", () => {
       try { localStorage.setItem(KEY + ":before-load", JSON.stringify({ ink, notes, edits: edits() })); } catch (e) { /* ignore */ }
-      ink = {}; notes = {}; stroke = null; save(); saveNotes(); redraw(); buildNotes();
+      ink = {}; notes = {}; stroke = null; forget(); save(); saveNotes(); redraw(); buildNotes();
       if (window.__marpEdits && editCount()) window.__marpEdits.replace({});
       say(`Starting fresh. The earlier annotations are kept in this browser under "${KEY}:before-load".`);
     }));
