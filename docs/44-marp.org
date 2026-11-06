@@ -1124,9 +1124,32 @@ in red in the cell's bar. The output keeps up to 45% of the cell's height,
 even when the slide's CSS makes the editor taller (e.g. ~.pyc .cm-editor {
 max-height: 600px !important; }~); the editor scrolls instead.
 
+*** ⚠️ Input from the audience: ~input()~
+
+~input()~ works in a cell: it shows the prompt and a text box under the cell.
+Type the answer and press =Enter=; the prompt and answer stay in the output, as
+in a terminal, and ~input()~ returns the answer (always a string). =Esc= cancels,
+which raises ~EOFError~ as Python does at the end of input. While the box has
+the focus, keys go to it (the arrow keys move the cursor, not the slide);
+=PageUp= and =PageDown= from a clicker still change slides, and the box waits
+for you when you come back. It works inside functions and loops too.
+
+#+begin_src markdown
+```python run
+val: str = input("Enter your value: ")
+print(type(val))
+print("doubled:", 2 * float(val))
+```
+#+end_src
+
+The cell has to pause Python while you type, which needs WebAssembly JSPI:
+*Chrome and Edge* have it (so does VS Code's Python panel). In a browser
+without it, ~input()~ stops the cell with a message saying so; set the value in
+the code instead. A ~run hidden~ setup cell gets no input (~EOFError~).
+
 ~examples/marp-present/code.md~ has a slide for each kind of code: plain
 highlighted code, live cells (the last value, shared variables, ~hidden~ and
-~auto~ cells, a plot, ~%pip~) and broken cells for teaching (NameError,
+~auto~ cells, ~input()~, a plot, ~%pip~) and broken cells for teaching (NameError,
 SyntaxError, IndentationError, TypeError, an error inside a function,
 IndexError, KeyError, numpy, ~raise~, ~try~/~except~, a warning).
 
@@ -1159,6 +1182,8 @@ same Pyodide the slideshow uses, so code that works there works in the talk.
   cells run first, once, before the first cell you run.
 - Each output is labelled with its slide and cell number; click the label to
   go to the cell. *Clear* removes the output and *Restart* restarts Python.
+- ~input()~ shows a text box in the panel, as in the slideshow (=Enter=
+  answers, =Esc= cancels).
 - The panel is for one deck at a time: running a cell of another deck
   restarts Python for that deck.
 - A ~presenter: offline~ deck runs from the Python files it carries, so this

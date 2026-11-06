@@ -131,6 +131,19 @@ print(GREETING)
 
 ---
 
+## Asking for input
+
+`input()` shows a box under the cell: type, then Enter (Esc cancels).
+It always returns a string. Needs Chrome or Edge.
+
+```python run
+val: str = input("Enter your value: ")
+print(type(val))
+print("doubled:", 2 * float(val))
+```
+
+---
+
 ## A plot
 
 Figures show under the cell. Click one for full size.

@@ -81,6 +81,10 @@ body .pyc-out pre.error { color: var(--vscode-errorForeground); background: none
 body .pyc-out pre.result { color: var(--vscode-textPreformat-foreground, var(--vscode-foreground)); }
 body .pyc-out pre.note { color: var(--vscode-descriptionForeground); font-style: italic; }
 body .pyc-out img { display: block; max-width: 100%; max-height: none; margin: 4px 0; background: white; cursor: default; }
+body .pyc-in { padding: 2px 0 4px; font-family: var(--vscode-editor-font-family); font-size: var(--vscode-editor-font-size); }
+body .pyc-in span { color: var(--vscode-foreground); }
+body .pyc-in input { color: var(--vscode-input-foreground); background: var(--vscode-input-background);
+  border: 1px solid var(--vscode-focusBorder); }
 </style>
 </head>
 <body>
