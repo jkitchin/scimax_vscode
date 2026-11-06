@@ -7,7 +7,7 @@ import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
 
-import { findNotebooksJson, getNotebookProjectPaths } from '../settings';
+import { findNotebooksJson, getNotebookProjectPaths, parseJsonc, shouldExclude } from '../settings';
 
 describe('findNotebooksJson', () => {
     let tmpDir: string;
@@ -96,5 +96,48 @@ describe('getNotebookProjectPaths', () => {
         fs.writeFileSync(stub, JSON.stringify({}));
         process.env.SCIMAX_NOTEBOOKS_JSON = stub;
         expect(getNotebookProjectPaths()).toEqual([]);
+    });
+});
+
+describe('parseJsonc', () => {
+    it('keeps glob patterns that look like block comments', () => {
+        // A string-blind /* ... */ regex cut from the first pattern's "/**" to
+        // a later "**/", silently dropping every setting in between.
+        const text = `{
+    "scimax.agenda.exclude": [
+        "**/node_modules/**",
+        "/Users/me/projects/scimax_vscode/**"
+    ],
+    "scimax.db.include": ["/Users/me/notes"],
+    "scimax.db.exclude": ["/Users/me/.vscode/**"]
+}`;
+        expect(parseJsonc(text)).toEqual({
+            'scimax.agenda.exclude': ['**/node_modules/**', '/Users/me/projects/scimax_vscode/**'],
+            'scimax.db.include': ['/Users/me/notes'],
+            'scimax.db.exclude': ['/Users/me/.vscode/**'],
+        });
+    });
+
+    it('strips comments and trailing commas outside strings only', () => {
+        const text = `{
+    // a line comment
+    "url": "https://example.com", /* a block comment */
+    "quote": "say \\"//not a comment\\"",
+    "list": ["a/*b*/c", "d",  // trailing
+    ],
+}`;
+        expect(parseJsonc(text)).toEqual({
+            url: 'https://example.com',
+            quote: 'say "//not a comment"',
+            list: ['a/*b*/c', 'd'],
+        });
+    });
+});
+
+describe('shouldExclude', () => {
+    it('excludes files under a directory glob', () => {
+        const patterns = ['/Users/me/projects/scimax_vscode/**'];
+        expect(shouldExclude('/Users/me/projects/scimax_vscode/docs/13-agenda.org', patterns)).toBe(true);
+        expect(shouldExclude('/Users/me/notes/todo.org', patterns)).toBe(false);
     });
 });

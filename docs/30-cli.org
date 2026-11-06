@@ -455,7 +455,7 @@ scimax cite list references.bib
 scimax cite list references.bib --format json
 #+end_src
 
-** Journal
+** 👀 Journal
 
 Open or create journal entries from the terminal.
 
@@ -474,7 +474,18 @@ scimax journal --date -1w
 
 # JSON output (for scripting)
 scimax journal --json
+
+# Look up a past entry without opening VS Code or creating it
+scimax journal --date -1d --no-create --no-open --json
+scimax journal --date=-1d --no-open
 #+end_src
+
+| Flag          | Effect                                                              |
+|---------------+---------------------------------------------------------------------|
+| =--date=      | Date expression; negative offsets work (=--date -1d=, =--date=-1d=) |
+| =--no-open=   | Print the entry path without opening VS Code                        |
+| =--no-create= | Never create a missing entry; reports =exists: false=               |
+| =--json=      | JSON output with =date=, =weekday=, =path=, =exists=                |
 
 The journal directory is configured via =scimax.journal.directory= in VS Code settings. New entries use the default template (customizable via =scimax.journal.customTemplate= setting).
 

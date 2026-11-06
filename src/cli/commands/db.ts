@@ -17,6 +17,7 @@ import {
     findOrgFiles,
     getDirectoriesToScan,
     getVSCodeSettingsPath,
+    parseJsonc,
     shouldExclude
 } from '../settings';
 
@@ -646,10 +647,7 @@ function addToSettingsExclude(pattern: string): string[] {
     if (fs.existsSync(settingsPath)) {
         const content = fs.readFileSync(settingsPath, 'utf-8');
         try {
-            const stripped = content
-                .replace(/\/\/.*$/gm, '')
-                .replace(/\/\*[\s\S]*?\*\//g, '');
-            rawSettings = JSON.parse(stripped);
+            rawSettings = parseJsonc(content);
         } catch {
             throw new Error(`Could not parse ${settingsPath}. Edit scimax.db.exclude manually.`);
         }

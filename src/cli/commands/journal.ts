@@ -6,6 +6,10 @@
  *   scimax journal tomorrow           Open a specific date's journal entry
  *   scimax journal --date "next friday"
  *   scimax journal --date 2026-03-15
+ *   scimax journal --date -1d --no-create --no-open --json
+ *
+ *   --no-create   do not create a missing entry (report whether it exists)
+ *   --no-open     do not open the entry in VS Code
  */
 
 import * as fs from 'fs';
@@ -88,6 +92,17 @@ export async function journalCommand(_config: CliConfig, args: ParsedArgs): Prom
 
     const entryPath = getEntryPath(journalDir, format, date);
     const exists = fs.existsSync(entryPath);
+    const create = !args.flags['no-create'];
+    const ctx = buildTemplateContext(date);
+
+    if (!exists && !create) {
+        if (args.flags.json === true) {
+            console.log(JSON.stringify({ date: ctx.date, weekday: ctx.weekday, path: entryPath, exists: false, created: false }, null, 2));
+        } else {
+            console.log(`No journal entry for ${ctx.date} (${ctx.weekday})`);
+        }
+        return;
+    }
 
     // Create the entry if it doesn't exist
     if (!exists) {
@@ -101,13 +116,12 @@ export async function journalCommand(_config: CliConfig, args: ParsedArgs): Prom
         fs.writeFileSync(entryPath, content, 'utf8');
     }
 
-    const ctx = buildTemplateContext(date);
-
     if (args.flags.json === true) {
         console.log(JSON.stringify({
             date: ctx.date,
             weekday: ctx.weekday,
             path: entryPath,
+            exists: true,
             created: !exists,
         }, null, 2));
     } else {
@@ -115,6 +129,10 @@ export async function journalCommand(_config: CliConfig, args: ParsedArgs): Prom
             console.log(`Created journal entry for ${ctx.date} (${ctx.weekday})`);
         }
         console.log(vscodeLinkAt(entryPath, 1));
+    }
+
+    if (args.flags['no-open']) {
+        return;
     }
 
     // Open in VS Code

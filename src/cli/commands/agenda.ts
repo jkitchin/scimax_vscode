@@ -98,8 +98,14 @@ export async function agendaCommand(config: CliConfig, args: ParsedArgs): Promis
     }
 }
 
+/** Files hidden from the agenda by scimax.agenda.exclude, as in the VS Code agenda. */
+function isAgendaExcluded(filePath: string, settings: AgendaSettings): boolean {
+    return shouldExclude(filePath, settings.exclude);
+}
+
 function filterAgendaItems(items: AgendaItem[], settings: AgendaSettings): AgendaItem[] {
     return items.filter((item: AgendaItem) => {
+        if (isAgendaExcluded(item.heading.file_path, settings)) return false;
         const todoState = item.heading.todo_state;
         if (!todoState) return true; // plain scheduled/deadline with no TODO keyword
         // Done per the file's own #+TODO line (todo_type) or the configured list
@@ -237,7 +243,7 @@ async function showTodos(db: ScimaxDbCore, flags: Record<string, string | boolea
         states.map(s => db.searchHeadings('', { todoState: s, limit }))
     );
 
-    const todos: HeadingRecord[] = perState.flat().sort((a, b) =>
+    const todos: HeadingRecord[] = perState.flat().filter(h => !isAgendaExcluded(h.file_path, settings)).sort((a, b) =>
         a.file_path === b.file_path
             ? a.line_number - b.line_number
             : a.file_path.localeCompare(b.file_path)
@@ -313,6 +319,7 @@ async function showOverdue(db: ScimaxDbCore, settings: AgendaSettings, json: boo
 
     const overdue = items.filter((i: AgendaItem) => {
         if ((i.days_until ?? 0) >= 0) return false;
+        if (isAgendaExcluded(i.heading.file_path, settings)) return false;
         const todoState = i.heading.todo_state;
         if (!settings.showDone && todoState
             && (i.heading.todo_type === 'done' || settings.doneStates.includes(todoState))) {
@@ -360,7 +367,7 @@ function customSource(db: ScimaxDbCore, settings: AgendaSettings, stuck: StuckPr
     return createDbAgendaSource(db, {
         doneStates: settings.doneStates,
         requireTodoState: settings.requireTodoState,
-        isExcluded: file => shouldExclude(file, settings.exclude),
+        isExcluded: file => isAgendaExcluded(file, settings),
         stuckProjects: stuck,
     });
 }
