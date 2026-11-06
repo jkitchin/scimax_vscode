@@ -23,14 +23,17 @@ The database is built on SQLite (via `@libsql/client') with support for vector s
 * ✅ What Gets Indexed
 CLOSED: [2026-01-17 Sat 11:45]
 
-** ✅ File Types
-CLOSED: [2026-01-17 Sat 11:45]
+** 👀 File Types
 
-The database automatically indexes three types of files:
+The database indexes the file types listed in =scimax.db.fileExtensions=,
+which defaults to:
 
-- `.org' files - Org-mode documents
-- `.md' files - Markdown documents
-- `.ipynb' files - Jupyter notebooks
+- =.org= files - Org-mode documents
+- =.md= files - Markdown documents
+
+Add others (e.g. ="markdown"=) to that setting; anything that isn't =.org= is
+parsed as Markdown. The extension and the =scimax= CLI both read this one
+setting. See [[file:26-configuration.org::*scimax.db.fileExtensions][scimax.db.fileExtensions]].
 
 ** ✅ Indexed Content
 CLOSED: [2026-01-17 Sat 11:45]
@@ -141,7 +144,72 @@ is skipped, and if the file was indexed before, its entry is dropped.
 
 [[cmd:workbench.action.openSettings2]]
 
-[[cmd:workbench.action.openSettings2?@scimax][Open Scimax Settings]]        
+[[cmd:workbench.action.openSettings2?@scimax][Open Scimax Settings]]
+
+** ⚠️ Choosing What Gets Indexed
+
+By default the index covers four sources: every registered scimax project
+(=scimax.db.includeProjects=), the folders open in VS Code
+(=scimax.db.includeWorkspace=), the journal (=scimax.db.includeJournal=) and
+=scimax.db.include=. Every folder you open in VS Code is registered as a project
+and stays one, so a few broad folders (=~/Dropbox=, =~/projects=) can put far
+more in scope than you meant: cloud-drive mirrors, cloned repositories and build
+output, each with its own copies of TODOs that then show up in the agenda.
+
+Your home directory and the folders above it (=/Users=, =/=) are never
+registered automatically when opened, and are never used as indexing roots even
+if an older version registered them, since that would index everything under
+=~=.
+
+=scimax.db.include= takes single =.org= / =.md= files as well as folders, in
+both the extension and the CLI (=scimax db sync=).
+
+To index only what you choose, list it in a scope file and apply it with
+=scripts/scope-db.js=. The script writes the settings and removes everything
+outside the scope from the database, keeping the embeddings of files that stay,
+so nothing has to be re-embedded. Keep the scope file somewhere synced
+(e.g. Dropbox) and run the same command on each machine.
+
+#+BEGIN_SRC json
+{
+  "include": ["~/Dropbox/projects", "~/Dropbox/proposals", "~/Dropbox/*.org"],
+  "exclude": ["**/_build/**", "**/_site/**", "**/venv/**"],
+  "includeJournal": true,
+  "includeProjects": false,
+  "includeWorkspace": false
+}
+#+END_SRC
+
+- =include= takes folders, single files, and =*= globs within one folder
+  (=~/Dropbox/*.org= indexes the top-level files without the subfolders).
+  Paths may start with =~=. Entries that don't exist on a machine are skipped.
+- =exclude= is added to the existing =scimax.db.exclude=; the built-in baseline
+  still applies.
+- =includeProjects= and =includeWorkspace= default to =false= in the scope file,
+  so the index is exactly the listed folders plus the journal.
+- =fileExtensions= (optional) sets =scimax.db.fileExtensions=; without it the
+  current setting is used. Indexed files of other types are removed too.
+
+#+BEGIN_SRC sh
+# Dry run: what would be kept and removed, grouped by folder
+node scripts/scope-db.js --config ~/Dropbox/scimax-db-scope.json
+
+# Apply (quit VS Code first)
+node scripts/scope-db.js --config ~/Dropbox/scimax-db-scope.json --apply
+#+END_SRC
+
+=--apply= refuses to run while another process has the database open. It backs
+up =settings.json= (=settings.json.bak-<time>=) and the database
+(=scimax-db.backup-<time>.sqlite=, skip with =--no-backup=), removes the
+out-of-scope files in one transaction, then compacts the database with
+=VACUUM=. Use =--settings= and =--db= for non-default locations.
+
+The script runs from a scimax-vscode checkout after =npm run compile=, or from
+the installed extension. It uses the extension's own exclude matching, so the
+script and the extension agree on what is out of scope.
+
+Unlike =scimax db prune=, which removes only entries matching an exclude
+pattern, the script also removes files outside every included folder.
 
 * ✅ Full-Text Search
 CLOSED: [2026-01-17 Sat 11:46]

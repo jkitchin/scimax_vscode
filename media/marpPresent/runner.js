@@ -39,6 +39,7 @@
     if (worker) worker.terminate();
     worker = null; counter = 0; setupDone = false;
     handlers.clear();
+    log.querySelectorAll(".pyc-in").forEach(row => row.remove());   // unanswered input() boxes
     setStatus(note || "Python restarted: variables cleared");
   }
 
@@ -48,6 +49,25 @@
     const p = document.createElement("pre");
     p.className = kind; p.textContent = text;
     out.appendChild(p);
+  }
+
+  // input(): a prompt and a text box at the end of the entry's output. Enter answers, Esc cancels
+  // (EOFError). The worker echoes "prompt answer" to stdout, so the box goes away after.
+  function ask(out, prompt, reply) {
+    const row = document.createElement("div"), label = document.createElement("span"), input = document.createElement("input");
+    row.className = "pyc-in"; label.textContent = prompt;
+    input.type = "text"; input.spellcheck = false; input.autocomplete = "off";
+    input.setAttribute("aria-label", prompt || "input()");
+    row.append(label, input);
+    out.appendChild(row);
+    setStatus("waiting for input", true);
+    const answer = value => { row.remove(); setStatus("running…", true); reply(value); };
+    input.addEventListener("keydown", e => {
+      if (e.key === "Enter" && !e.isComposing) { e.preventDefault(); answer(input.value); }
+      else if (e.key === "Escape") { e.preventDefault(); answer(null); }
+    });
+    row.scrollIntoView({ block: "end" });
+    input.focus();
   }
 
   function entry(label, line, code) {
@@ -73,7 +93,8 @@
 
   function submit(code, name, onMessage) {
     const id = ++nextId;
-    handlers.set(id, m => { onMessage(m); if (m.type === "done") handlers.delete(id); });
+    const reply = value => getWorker().postMessage({ type: "input-reply", id, value });
+    handlers.set(id, m => { onMessage(m, reply); if (m.type === "done") handlers.delete(id); });
     getWorker().postMessage({ id, code, name });
   }
 
@@ -81,12 +102,14 @@
     const e = entry(msg.label, msg.line, msg.code);
     if (!setupDone) {
       setupDone = true;
-      (msg.setup || []).forEach((code, i) => submit(code, "<setup cell " + (i + 1) + ">", m => {
-        if (m.type === "error") show(e.out, "error", "setup cell " + (i + 1) + " failed:\n" + m.text);
+      (msg.setup || []).forEach((code, i) => submit(code, "<setup cell " + (i + 1) + ">", (m, reply) => {
+        if (m.type === "input") reply(null);                          // setup cells get no input
+        else if (m.type === "error") show(e.out, "error", "setup cell " + (i + 1) + " failed:\n" + m.text);
       }));
     }
-    submit(msg.code, msg.name, m => {
+    submit(msg.code, msg.name, (m, reply) => {
       if (m.type === "status") setStatus(m.text, true);
+      else if (m.type === "input") ask(e.out, m.prompt, reply);
       else if (m.type === "stream") show(e.out, m.name, m.text);
       else if (m.type === "result") show(e.out, "result", m.text);
       else if (m.type === "error") show(e.out, "error", m.text);
@@ -95,6 +118,7 @@
         img.src = "data:image/png;base64," + m.png;
         e.out.appendChild(img);
       } else if (m.type === "done") {
+        e.out.querySelectorAll(".pyc-in").forEach(row => row.remove());
         e.n.textContent = "[" + (++counter) + "]";
         e.box.classList.toggle("failed", !m.ok);
         setStatus(m.ok ? "Python ready" : "error");

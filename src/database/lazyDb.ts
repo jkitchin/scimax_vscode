@@ -12,6 +12,7 @@ import { ScimaxDb } from './scimaxDb';
 import { createEmbeddingServiceAsync } from './embeddingService';
 import { initSecretStorage } from './secretStorage';
 import { resolveScimaxPath } from '../utils/pathResolver';
+import { isTooBroadForProject } from '../shared/projectRoots';
 import { databaseLogger as log } from '../utils/logger';
 
 let scimaxDb: ScimaxDb | null = null;
@@ -202,7 +203,8 @@ function scheduleStaleFileCheck(db: ScimaxDb): void {
                     interface Project { path: string; }
                     const projects = extensionContext.globalState.get<Project[]>('scimax.projects', []);
                     for (const project of projects) {
-                        if (fs.existsSync(project.path)) {
+                        // A project registered at ~ (or above) would index the whole home directory
+                        if (fs.existsSync(project.path) && !isTooBroadForProject(project.path)) {
                             allDirectories.push(project.path);
                         }
                     }

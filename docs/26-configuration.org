@@ -434,8 +434,9 @@ Configure the full-text search database and semantic search capabilities.
 | scimax.db.includeProjects        | boolean | true                     | Include scimax projects                                          |
 | scimax.db.include                | array   | =[]=                     | Additional directories/files                                     |
 | scimax.db.exclude                | array   | =[]=                     | Extra patterns/paths to exclude                                  |
+| scimax.db.fileExtensions         | array   | =["org", "md"]=          | File types to index                                              |
 | scimax.db.autoIndex              | boolean | false                    | Auto-index workspace on activation                               |
-| scimax.db.dirsPerSession         | number  | 5                        | Directories scanned per background indexing session             |
+| scimax.db.dirsPerSession         | number  | 5                        | Directories scanned per background indexing session              |
 | scimax.db.autoCheckStale         | boolean | false                    | Find and re-index externally modified files on startup           |
 | scimax.db.checkStaleOnActivation | boolean | true                     | Prompt to refresh on activation if indexed files changed on disk |
 | scimax.db.staleCheckDelayMs      | number  | 5000                     | Delay before the startup stale-file check (ms)                   |
@@ -509,6 +510,25 @@ CLOSED: [2026-10-02 Fri 06:58]
     "**/archive/**",
     "~/notes/scratch.org"
   ]
+}
+#+end_src
+
+*** ⚠️ scimax.db.fileExtensions
+
+- *Type*: array of strings
+- *Default*: =["org", "md"]=
+- *Description*: File types the database indexes, as extensions without the
+  dot (a leading dot and upper case are accepted too). =.org= files are parsed
+  as org-mode; every other type is parsed as Markdown. This is the only place
+  the list is defined: the directory scan, the file watcher, saving a file and
+  the =scimax= CLI all use it, and a file of any other type is skipped (and
+  dropped from the index if it was there). An empty list means the default.
+  Reload the window after changing it.
+
+*Example* (also index =.markdown= files):
+#+begin_src json
+{
+  "scimax.db.fileExtensions": ["org", "md", "markdown"]
 }
 #+end_src
 

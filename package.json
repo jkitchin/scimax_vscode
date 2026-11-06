@@ -7462,6 +7462,17 @@
           "default": [],
           "description": "Additional patterns or paths to exclude from indexing (globs like **/archive/** and absolute paths). These are added to a built-in list that always applies: node_modules, VCS directories, build output, and editor state such as VS Code's local history."
         },
+        "scimax.db.fileExtensions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [
+            "org",
+            "md"
+          ],
+          "markdownDescription": "File types to index, as extensions without the dot (e.g. `org`, `md`, `markdown`). `.org` files are parsed as org-mode, every other type as Markdown. Used by the extension and the `scimax` CLI. Reload the window after changing it."
+        },
         "scimax.db.autoIndex": {
           "type": "boolean",
           "default": false,

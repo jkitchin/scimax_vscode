@@ -21,6 +21,8 @@
  * cells, then prefetches every cell's packages and imports (in slide order) without running
  * them, so the first Run is quick. A Run jumps ahead of the prefetching.
  * Output: printed text, errors, the value of the last expression, matplotlib figures.
+ * input() shows a text box under the cell (Enter answers, Esc cancels with EOFError); it needs a
+ * browser with WebAssembly JSPI (Chrome, Edge) and says so elsewhere.
  * Needs internet to run code; editing works offline. A deck built with `presenter: offline` carries
  * Pyodide and the packages its cells import (<script id="marp-pyodide">), so those run offline;
  * anything else (other packages, %pip) is still downloaded when there is a connection. Requires vendor/codemirror.js (global CM).
@@ -60,6 +62,11 @@
   background: none !important; border: 0 !important; box-shadow: none; color: #111827; }
 .pyc-out pre.stderr { color: #b45309; } .pyc-out pre.error { color: #b91c1c; background: #fef2f2 !important; }
 .pyc-out pre.result { color: #1d4ed8; } .pyc-out pre.note { color: #6b7280; font-style: italic; }
+.pyc-in { display: flex; align-items: baseline; gap: 0.4em; padding: 2px 14px 6px; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; }
+.pyc-in span { white-space: pre; color: #111827; }
+.pyc-in input { flex: 1; min-width: 6em; font: inherit; color: #111827; background: #f0fdf4; border: 1px solid #16a34a;
+  border-radius: 4px; padding: 1px 6px; outline: none; }
+.pyc-in input:focus { box-shadow: 0 0 0 2px rgba(22,163,74,.35); }
 .pyc-out img { display: block; max-width: 100%; max-height: 280px; margin: 4px auto; cursor: zoom-in; }
 .pyc-out img.full { max-width: none; max-height: none; cursor: zoom-out; }
 @media print { .pyc-bar button { display: none; } .pyc .cm-editor { max-height: none; } .pyc { max-height: none !important; } }`;
@@ -135,6 +142,24 @@ def __pycells_preimport(code):
             except Exception:
                 pass
 
+# input(): the worker can't block on the page, so the prompt goes to the cell (a text box) and
+# Python waits for the answer with run_sync, which needs WebAssembly JSPI (Chrome, Edge). The
+# prompt and answer are echoed like a terminal; Esc in the box gives EOFError, as at end of input.
+import builtins
+def __pycells_input(prompt=""):
+    from pyodide.ffi import run_sync, can_run_sync
+    prompt = str(prompt)
+    if not can_run_sync():
+        raise RuntimeError("input() needs a browser that can pause Python while you type "
+                           "(WebAssembly JSPI: Chrome or Edge). Set the value in the code instead.")
+    import js
+    answer = run_sync(js.pycellsAsk(prompt))
+    if not isinstance(answer, str):
+        raise EOFError("input cancelled")
+    print(prompt + answer)
+    return answer
+builtins.input = __pycells_input
+
 def __pycells_figures():
     if "matplotlib.pyplot" not in sys.modules:
         return []
@@ -185,6 +210,10 @@ async function pipInstall(names) {
 }
 
 const quietly = async f => { quiet = true; try { return await f(); } finally { quiet = false; } };
+
+// input(): ask the page for a line for the running cell; null (Esc, or a setup cell) means no input
+const asks = new Map();
+self.pycellsAsk = prompt => new Promise(resolve => { asks.set(cur, resolve); post("input", { prompt }); });
 
 // %pip / !pip install lines: collected, and blanked so the rest keeps its line numbers
 function stripPip(code) {
@@ -249,6 +278,7 @@ async function run({ id, code, name }) {
     let t = String(e && e.message || e);
     const i = t.indexOf('File "' + name + '"');                 // drop Pyodide's own frames
     if (i > 0) t = "Traceback (most recent call last):\\n  " + t.slice(i);
+    t = t.replace(/  File "<exec>", line \\d+, in __pycells_input\\n/g, "");   // our input(), not the cell's code
     post("error", { text: t });
     post("done", { ok: false });
   }
@@ -268,6 +298,12 @@ async function pump() {
 }
 self.onmessage = e => {
   if (e.data.type === "offline") { OFFLINE = e.data.files; return; }
+  if (e.data.type === "input-reply") {
+    const resolve = asks.get(e.data.id);
+    // undefined, not null: Python gets None for undefined (null arrives as a JsNull object)
+    if (resolve) { asks.delete(e.data.id); resolve(typeof e.data.value === "string" ? e.data.value : undefined); }
+    return;
+  }
   (e.data.type === "prefetch" ? prefetches : runs).push(e.data); pump();
 };
 `;
@@ -342,12 +378,14 @@ self.onmessage = e => {
     const id = ++nextId, name = "<cell " + (cells.indexOf(cell) + 1) + ">";
     if (!cell.hidden) { cell.out.textContent = ""; cell.error = ""; cell.n.textContent = "[*]"; cell.setStatus("queued", true); cell.running = true; }
     handlers.set(id, m => {
+      if (m.type === "input" && cell.hidden) { getWorker().postMessage({ type: "input-reply", id, value: null }); return; }
       if (cell.hidden) {                     // setup cells report problems only
         if (m.type === "error") cells.filter(c => !c.hidden)[0]?.show("error", "setup cell failed:\n" + m.text);
         if (m.type === "done" || m.type === "restart") handlers.delete(id);
         return;
       }
       if (m.type === "status") cell.setStatus(m.text, true);
+      else if (m.type === "input") cell.ask(m.prompt, value => getWorker().postMessage({ type: "input-reply", id, value }));
       else if (m.type === "stream") cell.show(m.name, m.text);
       else if (m.type === "result") cell.show("result", m.text);
       else if (m.type === "error") { cell.show("error", m.text); cell.error = m.text.trim().split("\n").pop(); }
@@ -358,10 +396,11 @@ self.onmessage = e => {
         img.addEventListener("load", () => fit(cell));
         cell.out.appendChild(img); fit(cell);
       } else if (m.type === "done") {
+        if (cell.endAsk) cell.endAsk();
         cell.n.textContent = "[" + (++counter) + "]"; cell.setStatus(m.ok ? "" : cell.error || "error", false, !m.ok); handlers.delete(id);
         cell.running = false; cell.ran = true; fit(cell);
         if (!m.ok) cell.out.scrollTop = cell.out.scrollHeight;       // the error's last line is the one that matters
-      } else if (m.type === "restart") { cell.setStatus("restarted"); }
+      } else if (m.type === "restart") { if (cell.endAsk) cell.endAsk(); cell.setStatus("restarted"); }
     });
     getWorker().postMessage({ id, code: cell.code(), name });
   }
@@ -426,6 +465,27 @@ self.onmessage = e => {
       const p = document.createElement("pre"); p.className = kind; p.textContent = text;
       cell.out.appendChild(p);
     };
+    // input(): a prompt and a text box at the end of the output. Enter answers, Esc cancels
+    // (EOFError). The worker echoes "prompt answer" to stdout, so the box is removed after.
+    cell.ask = (prompt, reply) => {
+      if (cell.endAsk) cell.endAsk();
+      const row = document.createElement("div"), label = document.createElement("span"), input = document.createElement("input");
+      row.className = "pyc-in"; label.textContent = prompt;
+      input.type = "text"; input.className = "pyc-input"; input.spellcheck = false; input.autocomplete = "off";
+      input.setAttribute("aria-label", prompt || "input()");
+      row.append(label, input);
+      cell.out.appendChild(row);
+      cell.setStatus("waiting for input", true);
+      cell.endAsk = () => { row.remove(); cell.endAsk = null; };
+      const answer = value => { cell.endAsk(); cell.setStatus("running…", true); reply(value); fit(cell); };
+      input.addEventListener("keydown", e => {
+        if (e.key === "Enter" && !e.isComposing) { e.preventDefault(); answer(input.value); }
+        else if (e.key === "Escape") { e.preventDefault(); answer(null); }
+      });
+      fit(cell);
+      cell.out.scrollTop = cell.out.scrollHeight;
+      input.focus({ preventScroll: true });
+    };
 
     const view = new EditorView({
       parent: box.querySelector(".pyc-ed"),
@@ -451,16 +511,18 @@ self.onmessage = e => {
     box.querySelector(".reset").addEventListener("click", () =>
       view.dispatch({ changes: { from: 0, to: view.state.doc.length, insert: original } }));
     box.querySelector(".restart").addEventListener("click", restart);
-    // keys typed into a cell's editor belong to the cell, not to the slide show or the presenter tools
+    // keys typed into a cell's editor or its input() box belong to the cell, not to the slide show
+    // or the presenter tools
     const ed = box.querySelector(".pyc-ed");
-    for (const t of ["keydown", "keyup", "keypress"]) box.addEventListener(t, e => { if (ed.contains(e.target)) e.stopPropagation(); });
+    const typing = t => ed.contains(t) || (t instanceof HTMLInputElement && cell.out.contains(t));
+    for (const t of ["keydown", "keyup", "keypress"]) box.addEventListener(t, e => { if (typing(e.target)) e.stopPropagation(); });
     // except PageUp/PageDown, what a presentation clicker sends: they always change slides. Caught
     // before the editor sees them, they leave the editor and go to the slide show (as presenter.js
     // forwards keys from widget iframes)
     box.addEventListener("keydown", e => {
-      if (!/^Page(Up|Down)$/.test(e.key) || e.ctrlKey || e.metaKey || e.altKey || !ed.contains(e.target)) return;
+      if (!/^Page(Up|Down)$/.test(e.key) || e.ctrlKey || e.metaKey || e.altKey || !typing(e.target)) return;
       e.preventDefault(); e.stopPropagation();
-      view.contentDOM.blur();
+      if (ed.contains(e.target)) view.contentDOM.blur(); else e.target.blur();   // an input() box stays, unanswered
       document.dispatchEvent(new KeyboardEvent("keydown", { key: e.key, code: e.code, shiftKey: e.shiftKey, bubbles: true, cancelable: true }));
     }, true);
   });

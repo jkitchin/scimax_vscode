@@ -37,6 +37,8 @@ export {
 import { ScimaxDbCore, ScimaxDbCoreOptions } from './scimaxDbCore';
 
 import { withBaselineExcludes } from '../shared/ignorePatterns';
+import { isTooBroadForProject } from '../shared/projectRoots';
+import { indexableFilesGlob } from '../shared/indexableFiles';
 /**
  * ScimaxDb - VS Code wrapper around ScimaxDbCore.
  *
@@ -122,6 +124,7 @@ export class ScimaxDb extends ScimaxDbCore {
     public async initialize(): Promise<void> {
         // Apply VS Code config before core init
         this.setIgnorePatterns(this.loadIgnorePatterns());
+        this.setFileExtensions(vscode.workspace.getConfiguration('scimax.db').get<string[]>('fileExtensions'));
         this.setResilienceConfig(this.loadResilienceConfig());
         this.setSizeLimits(this.loadSizeLimits());
 
@@ -166,7 +169,10 @@ export class ScimaxDb extends ScimaxDbCore {
     // ----------------------------------------------------------
 
     private setupFileWatcher(): void {
-        this.fileWatcher = vscode.workspace.createFileSystemWatcher('**/*.{org,md,markdown}', false, false, false);
+        this.fileWatcher = vscode.workspace.createFileSystemWatcher(
+            indexableFilesGlob(vscode.workspace.getConfiguration('scimax.db').get<string[]>('fileExtensions')),
+            false, false, false
+        );
         this.fileWatcher.onDidCreate(uri => this.queueIndex(uri.fsPath));
         this.fileWatcher.onDidChange(uri => this.queueIndex(uri.fsPath));
         this.fileWatcher.onDidDelete(uri => this.removeFile(uri.fsPath));
@@ -174,8 +180,7 @@ export class ScimaxDb extends ScimaxDbCore {
 
         const saveHandler = vscode.workspace.onDidSaveTextDocument(doc => {
             const filePath = doc.uri.fsPath;
-            const ext = path.extname(filePath).toLowerCase();
-            if (ext === '.org' || ext === '.md' || ext === '.markdown') {
+            if (this.isIndexable(filePath)) {
                 this.queueIndex(filePath);
             }
         });
@@ -492,7 +497,10 @@ export class ScimaxDb extends ScimaxDbCore {
 
         if (dbConfig.get<boolean>('includeProjects', true)) {
             const projects = this.context.globalState.get<any[]>('scimax.projects', []);
-            for (const project of projects) add(project?.path);
+            for (const project of projects) {
+                // A project registered at ~ (or above) would index the whole home directory
+                if (project?.path && !isTooBroadForProject(project.path)) add(project.path);
+            }
         }
 
         if (dbConfig.get<boolean>('includeWorkspace', true)) {
