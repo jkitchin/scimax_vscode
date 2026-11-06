@@ -7,7 +7,8 @@ import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
 
-import { findNotebooksJson, getNotebookProjectPaths, parseJsonc, shouldExclude } from '../settings';
+import { findNotebooksJson, findOrgFiles, getDirectoriesToScan, getNotebookProjectPaths, parseJsonc, shouldExclude } from '../settings';
+import type { ScimaxSettings } from '../settings';
 
 describe('findNotebooksJson', () => {
     let tmpDir: string;
@@ -139,5 +140,82 @@ describe('shouldExclude', () => {
         const patterns = ['/Users/me/projects/scimax_vscode/**'];
         expect(shouldExclude('/Users/me/projects/scimax_vscode/docs/13-agenda.org', patterns)).toBe(true);
         expect(shouldExclude('/Users/me/notes/todo.org', patterns)).toBe(false);
+    });
+});
+
+describe('file entries in scimax.db.include', () => {
+    let tmpDir: string;
+
+    beforeEach(() => {
+        tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'scimax-cli-test-'));
+        fs.mkdirSync(path.join(tmpDir, 'notes'));
+        fs.writeFileSync(path.join(tmpDir, 'notes', 'a.org'), '* a\n');
+        fs.writeFileSync(path.join(tmpDir, 'dashboard.org'), '* TODO dash\n');
+        fs.writeFileSync(path.join(tmpDir, 'readme.md'), '# readme\n');
+        fs.writeFileSync(path.join(tmpDir, 'data.csv'), 'x,y\n');
+    });
+
+    afterEach(() => {
+        fs.rmSync(tmpDir, { recursive: true, force: true });
+    });
+
+    const settingsWith = (include: string[]) => ({
+        db: { include, exclude: [] },
+        journal: { directory: '' },
+        agenda: { include: [] },
+    }) as unknown as ScimaxSettings;
+
+    it('keeps org and markdown files as scan roots, drops other files', () => {
+        const roots = getDirectoriesToScan(settingsWith([
+            path.join(tmpDir, 'notes'),
+            path.join(tmpDir, 'dashboard.org'),
+            path.join(tmpDir, 'readme.md'),
+            path.join(tmpDir, 'data.csv'),
+            path.join(tmpDir, 'missing.org'),
+        ]));
+        expect(roots).toContain(path.join(tmpDir, 'notes'));
+        expect(roots).toContain(path.join(tmpDir, 'dashboard.org'));
+        expect(roots).toContain(path.join(tmpDir, 'readme.md'));
+        expect(roots).not.toContain(path.join(tmpDir, 'data.csv'));
+        expect(roots).not.toContain(path.join(tmpDir, 'missing.org'));
+    });
+
+    it('findOrgFiles returns a file root as itself', () => {
+        const file = path.join(tmpDir, 'dashboard.org');
+        expect(findOrgFiles(file, [])).toEqual([file]);
+    });
+
+    it('findOrgFiles applies excludes and the size limit to a file root', () => {
+        const file = path.join(tmpDir, 'dashboard.org');
+        expect(findOrgFiles(file, [file])).toEqual([]);
+        fs.writeFileSync(file, 'x'.repeat(2 * 1024 * 1024));
+        expect(findOrgFiles(file, [], { maxFileSizeMB: 1 })).toEqual([]);
+    });
+});
+
+describe('findOrgFiles honors scimax.db.fileExtensions', () => {
+    let tmpDir: string;
+
+    beforeEach(() => {
+        tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'scimax-cli-test-'));
+        for (const name of ['a.org', 'b.md', 'c.markdown', 'd.txt']) {
+            fs.writeFileSync(path.join(tmpDir, name), 'x\n');
+        }
+    });
+
+    afterEach(() => {
+        fs.rmSync(tmpDir, { recursive: true, force: true });
+    });
+
+    const names = (files: string[]) => files.map(f => path.basename(f)).sort();
+
+    it('finds org and md by default', () => {
+        expect(names(findOrgFiles(tmpDir, []))).toEqual(['a.org', 'b.md']);
+    });
+
+    it('uses the configured list', () => {
+        expect(names(findOrgFiles(tmpDir, [], { fileExtensions: ['org'] }))).toEqual(['a.org']);
+        expect(names(findOrgFiles(tmpDir, [], { fileExtensions: ['org', 'md', 'markdown'] })))
+            .toEqual(['a.org', 'b.md', 'c.markdown']);
     });
 });

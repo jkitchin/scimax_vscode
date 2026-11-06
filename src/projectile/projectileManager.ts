@@ -2,6 +2,7 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 import * as fs from 'fs';
 import type { ScimaxDb, ProjectRecord } from '../database/scimaxDb';
+import { isTooBroadForProject } from '../shared/projectRoots';
 
 export interface Project {
     name: string;
@@ -99,6 +100,10 @@ export class ProjectileManager {
         if (!folders) return;
 
         for (const folder of folders) {
+            // Opening ~ (or /) in VS Code shouldn't make it a project: with
+            // scimax.db.includeProjects on, that indexes the whole home directory.
+            // It can still be added explicitly with scimax.projectile.add.
+            if (isTooBroadForProject(folder.uri.fsPath)) continue;
             await this.addProject(folder.uri.fsPath);
         }
     }
