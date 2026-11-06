@@ -23,7 +23,7 @@ The database is built on SQLite (via `@libsql/client') with support for vector s
 * ✅ What Gets Indexed
 CLOSED: [2026-01-17 Sat 11:45]
 
-** 👀 File Types
+** File Types
 
 The database indexes the file types listed in =scimax.db.fileExtensions=,
 which defaults to:
@@ -146,7 +146,8 @@ is skipped, and if the file was indexed before, its entry is dropped.
 
 [[cmd:workbench.action.openSettings2?@scimax][Open Scimax Settings]]
 
-** ⚠️ Choosing What Gets Indexed
+** ✅ Choosing What Gets Indexed
+CLOSED: [2026-11-06 Fri 14:18]
 
 By default the index covers four sources: every registered scimax project
 (=scimax.db.includeProjects=), the folders open in VS Code
@@ -275,7 +276,7 @@ content: python           # Search only in content
 NEAR(neural network, 5)   # Words within 5 tokens of each other
 #+END_SRC
 
-**** ⚠️ Punctuation in Queries
+**** Punctuation in Queries
 
 Words with punctuation are searched as phrases, so citation keys, file
 names and hyphenated words can be typed as they are:
@@ -899,13 +900,13 @@ CLOSED: [2026-01-17 Sat 12:04]
 
   `Scimax: Search Hashtags' (`scimax.db.searchHashtags'). [[cmd:scimax.db.searchHashtags]]
 
-*** 👀 Features
+*** Features
 - Lists all hashtags found (`#tagname')
 - Shows file count per hashtag
 - Lists every line with the selected hashtag, in every file
 - Case-insensitive matching
 
-*** ⚠️ Hashtags in the Editor
+*** Hashtags in the Editor
 
 In org and Markdown files a hashtag is drawn in blue and works like a link:
 
@@ -920,7 +921,7 @@ In org and Markdown files a hashtag is drawn in blue and works like a link:
 The colour is the =entity.name.tag.hashtag.org= scope (default =#4682B4=);
 change it with =editor.tokenColorCustomizations=.
 
-*** ⚠️ Completing and Inserting Hashtags
+*** Completing and Inserting Hashtags
 
 - Type =#= (or =#res=) and press =Tab= to get a completion menu of known
   hashtags: those in the current file first, most used first, then every
@@ -933,7 +934,7 @@ change it with =editor.tokenColorCustomizations=.
 In Markdown, the =#= marks of a heading are not hashtags, but =#tags= in its
 title are; =#tags= at the end of a heading are also its tags in the agenda.
 
-*** 👀 Hashtag Format
+*** Hashtag Format
 
 A hashtag is =#= followed by a letter and then letters, digits, =_= or =-=,
 at the start of a line or after a space or =(=. =#web-dev=, =#py3= and
@@ -1435,7 +1436,7 @@ Ollama embedding model name.
 
 * Command Reference
 
-** ⚠️ All Database Commands (C-c d ?)
+** All Database Commands (C-c d ?)
 
 =C-c d ?= ([[cmd:scimax.db.help]]) lists every database command. The ones
 bound under =C-c d= show their key, and typing it runs the command at once, so

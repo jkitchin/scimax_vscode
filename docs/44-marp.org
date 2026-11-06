@@ -111,7 +111,7 @@ default).
 The command has no default keybinding. To add one, open Keyboard Shortcuts
 and search for ~scimax.marp.revealInPreview~.
 
-* 👀 Slide Preview
+* Slide Preview
 
 The slide preview shows the slide under the editor cursor, fitted to its
 tab, and follows the cursor as you move and type. Open it with the preview
@@ -165,7 +165,7 @@ render citations and each slide's references the same way. Marp CLI is given
 the citation plugins as its engine, along with the reference manager's
 entries for the keys the deck cites.
 
-* 👀 Slideshow
+* Slideshow
 
 To present, Scimax makes Marp's HTML slideshow of the deck and opens it in the
 browser. Marp CLI builds it (see [[*Marp CLI][Marp CLI]]), and it is written to a private folder
@@ -544,7 +544,7 @@ Each sets a key in the front matter, or removes it.
 | Edit Current Theme   | [[cmd:scimax.marp.theme.edit]]       | Opens the theme's CSS file; for a built-in theme, offers a custom theme based on it |
 | Add Deck Style Block | [[cmd:scimax.marp.theme.styleBlock]] | A ~style: |~ block in the front matter for small CSS changes                        |
 
-** 👀 The scimax theme
+** The scimax theme
 
 ~theme: scimax~ dresses a deck in the blues of the crystal Scimax unicorn,
 with the amber of its horn, laid out like [[https://orgmode.org][orgmode.org]]: a pale background, serif
@@ -589,7 +589,7 @@ theme does ~@import 'scimax';~ and changes only what you set. The CSS is in
 ~media/marp/themes/scimax.css~ in the extension. Marp for VS Code's own
 preview does not know the theme; Scimax's previews and exports do.
 
-** ⚠️ The steampunk, cyberpunk, steel and steelpunk themes
+** The steampunk, cyberpunk, steel and steelpunk themes
 
 Four more themes ship with Scimax and work the same way as ~scimax~: no theme
 file or setting needed, and the thumbnails, preview, slideshow, exports and
@@ -627,7 +627,7 @@ same offline. The CSS is in ~media/marp/themes/steampunk.css~,
 ~media/marp/themes/steelpunk.css~ in the extension; to change one, choose
 /New Custom Theme.../ and start from it.
 
-** 👀 Custom themes
+** Custom themes
 
 /New Custom Theme.../ asks for a name and a theme to start from (Marp's,
 ~scimax~, ~steampunk~, ~cyberpunk~, ~steel~ or ~steelpunk~), then:
@@ -710,7 +710,7 @@ Code, use the CLI: ~scimax marp build talk.md --open~ (see
 [[file:30-cli.org::*Marp Slides][Marp Slides in the CLI]]). It uses the same
 scripts and makes the same HTML as the =h= export.
 
-** 👀 Keys in the slideshow
+** Keys in the slideshow
 
 | Key                       | Effect                                                                           |
 |---------------------------+----------------------------------------------------------------------------------|
@@ -879,7 +879,7 @@ section per slide:
 The transcript grows over every talk given from the deck until "Clear
 transcript" empties it.
 
-** 👀 Recording the talk
+** Recording the talk
 
 The slideshow can record itself, the mouse and your voice as a video. =V=
 (=Shift+V=) does not start recording at once: it opens the Microphone window
@@ -930,7 +930,7 @@ recording is saved. If you stop with Chrome's own "Stop sharing" button, a
 save dialog after a click or key press, so click it to choose where the video
 goes.
 
-** 👀 The microphone
+** The microphone
 
 =M= (=Shift+M=), =V=, or "Microphone…" in the right-click menu, opens a panel to
 set up the microphone for recordings and captions, like the audio controls of
@@ -1086,7 +1086,7 @@ another machine or share it, press =s=: the browser downloads one HTML file
 with the theme, images, iframes, fonts, tools and ink inside. Open it
 anywhere, keep annotating, and press =s= again.
 
-** 👀 Live Python cells
+** Live Python cells
 
 Mark a Python code block with ~run~ to make it a cell you can edit and run
 during the talk:
@@ -1124,7 +1124,7 @@ in red in the cell's bar. The output keeps up to 45% of the cell's height,
 even when the slide's CSS makes the editor taller (e.g. ~.pyc .cm-editor {
 max-height: 600px !important; }~); the editor scrolls instead.
 
-*** ⚠️ Input from the audience: ~input()~
+*** Input from the audience: ~input()~
 
 ~input()~ works in a cell: it shows the prompt and a text box under the cell.
 Type the answer and press =Enter=; the prompt and answer stay in the output, as
@@ -1166,7 +1166,7 @@ deck opens, along with the packages the cells import.
 In PDF, PowerPoint and image exports a ~run~ cell is ordinary highlighted code,
 and a ~run hidden~ cell is left out.
 
-** 👀 Running cells in VS Code
+** Running cells in VS Code
 
 Press =C-c C-c= in a ~run~ cell to run it while you write the deck, without
 presenting. The output shows in a /Python/ panel beside the editor, from the
@@ -1423,7 +1423,7 @@ Markdown previews.
 
 * How It Works
 
-** 👀 Slides in the Markdown preview
+** Slides in the Markdown preview
 
 Scimax contributes a markdown-it plugin (~markdown.markdownItPlugins~,
 ~src/marp/marpPreviewPlugin.ts~). For a file with ~marp: true~ in its front

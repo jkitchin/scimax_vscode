@@ -84,7 +84,7 @@ This email is used for services that offer better access to identified users. Cu
 
 You can also configure this via the command =scimax.ref.configureOpenAlex= which provides a quick pick menu for setting both your email and optional API key.
 
-*** ⚠️ scimax.emailHeading.client / .gmailAccount / .includeId
+*** scimax.emailHeading.client / .gmailAccount / .includeId
 
 Settings for =Scimax: Email Heading= (=scimax.org.emailHeading=). See [[file:10-export.org::*Email a Heading][Email a Heading]].
 
@@ -513,7 +513,7 @@ CLOSED: [2026-10-02 Fri 06:58]
 }
 #+end_src
 
-*** ⚠️ scimax.db.fileExtensions
+*** scimax.db.fileExtensions
 
 - *Type*: array of strings
 - *Default*: =["org", "md"]=
@@ -845,7 +845,7 @@ Use the command =Scimax: Open Log File Directory= to open the directory containi
 
 Configure Python and Jupyter paths for source block execution.
 
-** 👀 Settings Overview
+** Settings Overview
 
 | Setting                       | Type    | Default | Description                                             |
 |-------------------------------+---------+---------+---------------------------------------------------------|
@@ -888,7 +888,7 @@ Or with virtual environment:
 }
 #+end_src
 
-*** ⚠️ scimax.babel.markdownCodeLens
+*** scimax.babel.markdownCodeLens
 
 - *Type*: boolean
 - *Default*: ~true~
@@ -1672,7 +1672,7 @@ color must be opaque. Any CSS color works.
 - [[file:24-keybindings.org][Keybindings]] - Jump keybindings (=C-c j c=, =C-c j w=, …)
 - [[file:25-commands.org][Commands]] - Full command reference
 
-* 👀 Kill Ring Settings
+* Kill Ring Settings
 
 | Setting                 | Type    | Default | Description                                                |
 |-------------------------+---------+---------+------------------------------------------------------------|
@@ -1684,7 +1684,7 @@ color must be opaque. Any CSS color works.
 ring is full, the oldest kill is dropped. The ring lives in memory only and
 starts empty each session.
 
-** ⚠️ Auto-Copy
+** Auto-Copy
 
 With =scimax.autoCopy.enabled= on (the default), text you highlight with the
 mouse is copied as soon as you release it. Keyboard selections are never
