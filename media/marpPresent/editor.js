@@ -3,6 +3,7 @@
  * they do not change the Markdown.
  *
  *   d          start / stop editing (or right-click → Edit text and layout)
+ *   N          (Shift+N) a new blank slide after this one, ready to edit (also while editing)
  *   double-click a heading, paragraph, image, ...: start editing it (text to type in, anything else selected)
  *
  * While editing:
@@ -205,7 +206,7 @@
   const slidesOn = () => canEdit && !!window.__marpSlides;
   const hiddenSlides = () => (window.__marpSlides && window.__marpSlides.hidden) || [];
   const isNew = svg => !!(svg && /^new-/.test(svg.dataset.mpFp || ""));
-  const NEW_SLIDE = "<h1>Title</h1>\n<p>Text</p>";
+  const NEW_SLIDE = "";                                    // blank: t adds a text box, Cmd/Ctrl+V pastes
   function restructure(fn, hash, resume) {
     endTyping(); select(null);
     const p = plan ? JSON.parse(JSON.stringify(plan)) : { hide: [], add: [], next: 1 };
@@ -229,7 +230,7 @@
       p.add.push({ id, after: svg.dataset.mpFp, from: svg.dataset.mpFp, html: NEW_SLIDE });
       // slides are added before any are moved: put this one after its slide, wherever that went
       if (p.move.length) p.move.push({ id, after: svg.dataset.mpFp });
-    }, n + 1, { goto: id, edit: true, type: true });
+    }, n + 1, { goto: id, edit: true, say: "New slide: t adds a text box" });
   }
   // Hide a slide of the deck; delete one added here (and its edits). From the overview, stay there
   function hideSlide(svg = activeSvg(), inOverview = false) {
@@ -291,7 +292,7 @@
     if (!slidesOn()) return [];
     const svg = activeSvg();
     return [
-      { label: "Add a slide after this one", run: addSlide },
+      { label: "Add a slide after this one", key: "N", run: addSlide },
       { label: isNew(svg) ? "Delete this slide" : "Hide this slide", off: slides().length < 2, run: hideSlide },
       ...hiddenSlides().slice(0, 12).map(h => ({ label: `Show hidden slide ${h.n}: ${h.title || "(untitled)"}`, run: () => showSlide(h.fp) })),
     ];
@@ -504,7 +505,7 @@ table[data-mpe-add] :is(td, th) { min-width: 3em; height: 1.4em; }
   bar.innerHTML = `<div class="row">` +
     `<button data-a="text" title="New text box (t)">+ Text</button><button data-a="image" title="Insert an image from a file (or paste one with Cmd/Ctrl+V)">+ Image</button>` +
     `<button data-a="table" title="Insert a table">+ Table</button><span class="sep"></span>` +
-    `<span class="slide-ctl"><button data-a="slide" title="A new slide after this one">+ Slide</button> <button data-a="hide"></button> ` +
+    `<span class="slide-ctl"><button data-a="slide" title="A new blank slide after this one (Shift+N)">+ Slide</button> <button data-a="hide"></button> ` +
     `<select data-a="hidden" title="Hidden slides: pick one to show it again"></select></span><span class="sep slide-ctl"></span>` +
     STYLE_CONTROLS + `<span class="sep"></span>` +
     `<button data-a="undo" title="Cmd/Ctrl+Z">Undo</button><button data-a="reset" title="Undo every edit on this slide">Reset slide</button>` +
@@ -963,10 +964,13 @@ table[data-mpe-add] :is(td, th) { min-width: 3em; height: 1.4em; }
   function onKey(e) {
     const k = e.key, mod = e.metaKey || e.ctrlKey;
     if (!editing) {
-      if (k === "d" && !mod && !e.altKey && canEdit) {
+      // d starts editing; N (Shift+N) adds a blank slide after this one and edits it. Cmd/Ctrl+N
+      // can't be used: browsers keep it for a new window and pages cannot override it.
+      if ((k === "d" || (k === "N" && slidesOn())) && !mod && !e.altKey && canEdit) {
         const t = e.target;
         if (t && (/^(TEXTAREA|SELECT|INPUT)$/.test(t.tagName || "") || t.isContentEditable || (t.closest && t.closest(".pyc")))) return;
-        e.preventDefault(); e.stopImmediatePropagation(); setEditing(true);
+        e.preventDefault(); e.stopImmediatePropagation();
+        if (k === "N") addSlide(); else setEditing(true);
       }
       return;
     }
@@ -1000,6 +1004,7 @@ table[data-mpe-add] :is(td, th) { min-width: 3em; height: 1.4em; }
     else if (k === "Escape") { if (!grid.hidden) grid.hidden = true; else if (selected) select(null); else setEditing(false); }
     else if (k === "d") setEditing(false);
     else if (k === "t") addText();
+    else if (k === "N" && slidesOn()) addSlide();
     else if (!selected) used = false;
     else if (k === "Enter") startTyping(selected);
     else if (k === "Tab" && !e.shiftKey) { const p = parentOf(selected); if (p) { downStack.push(selected); select(p, true); } }
@@ -1088,11 +1093,5 @@ table[data-mpe-add] :is(td, th) { min-width: 3em; height: 1.4em; }
     if (resume.edit) setEditing(true);
     if (resume.overview) document.dispatchEvent(new KeyboardEvent("keydown", { key: "o", bubbles: true, cancelable: true }));   // Marp's overview key
     if (resume.say) say(resume.say);
-    const slide = i >= 0 && slideOf(slides()[i]), first = slide && slide.section.querySelector("[data-mpe]");
-    // Type once the slide change (if any) is seen, or it ends the typing: Marp may open on the
-    // slide its overview last showed rather than the one in the address
-    let tries = 0;
-    const type = () => { if (lastSlide !== slides()[i] && tries++ < 30) setTimeout(type, 100); else startTyping(first, true); };
-    if (resume.type && first) setTimeout(type, 150);
   }, 0);
 })();
