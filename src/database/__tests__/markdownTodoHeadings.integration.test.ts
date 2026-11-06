@@ -83,7 +83,11 @@ describe('scimax.db.fileExtensions gates indexFile', () => {
             expect(await db.getFiles()).toEqual([]);
         } finally {
             await db.close();
-            fs.rmSync(dir, { recursive: true, force: true });
+            try {
+                fs.rmSync(dir, { recursive: true, force: true });
+            } catch {
+                // Windows can keep the closed database locked (EBUSY); the temp dir is reclaimed later
+            }
         }
     });
 });
