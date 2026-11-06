@@ -738,6 +738,7 @@ scripts and makes the same HTML as the =h= export.
 | =g=                       | Go to a slide: type a number or words from its title or text, then Enter         |
 | A number, then Enter      | Jump to that slide (=12= Enter goes to slide 12)                                 |
 | =d=                       | Edit the slides' text and layout in place (see below)                            |
+| =N= (=Shift+N=)           | A new blank slide after this one, opened for editing (see below)                 |
 | =v=                       | Live captions on or off (see below)                                              |
 | =V= (=Shift+V=)           | Get ready to record: opens the Microphone window; while recording, stop and save |
 | =M= (=Shift+M=)           | The Microphone panel: microphone, level, gain, settings, Record/Stop (see below) |
@@ -976,7 +977,7 @@ a hand's width or two from your mouth. With a microphone that close, turning
 off echo cancellation, noise suppression and automatic gain often sounds more
 natural, and the voice filter can help a bit in a bare room.
 
-** Editing slides in the slideshow
+** 👀 Editing slides in the slideshow
 
 For last-minute polish just before a talk, =d= lets you fix the slides in
 the slideshow itself: correct a typo, move a heading, make a figure bigger,
@@ -1000,11 +1001,12 @@ The edits stay in the HTML; they do not change the Markdown.
 | =Cmd+Z= / =Ctrl+Z=  | Undo (add Shift, or use =Cmd+Y=, to redo); the bar has Undo and Reset slide |
 | =Esc=               | Clear the selection, then stop editing                                      |
 | =t=                 | A new text box                                                              |
+| =N= (Shift+N)       | A new blank slide after this one (also when not editing)                    |
 | =Cmd+B= / =I= / =U= | Bold, italic, underline (=Ctrl= on Windows and Linux)                       |
 | =Cmd+/=             | Strikethrough                                                               |
 | =Cmd+C= / =Cmd+X=   | Copy / cut the selection (cut hides it, or removes an inserted element)     |
 | =Cmd+V=             | Paste a copied element, an image, or text (as a new text box)               |
-| + Slide (bar)       | A new slide after this one, with its look; type its title straight away     |
+| + Slide (bar)       | A new blank slide after this one, with its look; =t= adds text              |
 | Hide slide (bar)    | Leave this slide out of the show; on a slide added here, Delete slide       |
 | Hidden (bar)        | Pick a hidden slide to show it again                                        |
 
@@ -1022,6 +1024,11 @@ The edits stay in the HTML; they do not change the Markdown.
   as it is. Code cells, countdowns and widgets can be moved and resized but
   not typed in.
 - Printing (=Cmd+P=) shows the slides as edited.
+- =N= (Shift+N) adds a blank slide after the current one, whether or not you
+  are editing, and opens it for editing: =t= adds a text box, =Cmd+V= pastes.
+  It has the slide's look (theme, class, colours) but none of its content.
+  =Cmd+N= is not used because browsers keep it for a new window and a page
+  cannot take it over.
 - Adding, hiding, deleting or showing a slide reloads the page (Marp fixes
   its list of slides as the show opens) and comes back to that slide, still
   editing. The right-click menu has the same actions, also when you are not
@@ -1034,7 +1041,7 @@ The edits stay in the HTML; they do not change the Markdown.
   hidden in the slideshow stay in the overview, greyed out with a dashed
   border where they were; click one (or right-click, Show this slide again)
   to bring it back. Each change reloads the slideshow and opens the overview
-  again, except Add, which goes to the new slide so you can type its title.
+  again, except Add, which goes to the new slide, ready to edit.
   Slides hidden in the Markdown are not in the slideshow at all, so the
   overview does not show them.
 - Like the other edits, added, hidden and moved slides are kept in the HTML, not
