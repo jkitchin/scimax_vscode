@@ -192,7 +192,11 @@ scimax journal --date 2026-03-15            # Open a specific date
 scimax journal --date +2d                   # Two days from now
 scimax journal --date -1w                   # One week ago
 scimax journal --json                       # Output entry info as JSON
+scimax journal --date -1d --no-open --json  # Path of yesterday's entry, don't open VS Code
+scimax journal --date=-3d --no-create --no-open --json  # Look up only; never create
 ```
+
+**Flags:** `--no-open` prints the path without opening VS Code. `--no-create` never creates a missing entry; with `--json` it prints `{"exists": false, ...}`. `--json` output includes `exists`. Negative values work as `--date -1d` or `--date=-1d`.
 
 **Supported date expressions:** today, tomorrow, yesterday, day names (monday, fri), next/this day (next friday, this monday), relative (+2d, -1w, +3m), month+day (jan 15), ISO dates (2026-03-15).
 
@@ -201,7 +205,8 @@ scimax journal --json                       # Output entry info as JSON
 - New entries are created automatically from the configured template
 - The default template includes just `#+TITLE: DATE - WEEKDAY`
 - Users can customize the template via `scimax.journal.customTemplate` setting
-- The command opens the entry in VS Code automatically
+- The command opens the entry in VS Code unless `--no-open` is given
+- Use `--no-create --no-open` when only reading past entries (e.g. a weekly review), so no empty entries are created
 
 ---
 

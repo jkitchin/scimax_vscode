@@ -15,7 +15,7 @@ description: >-
 license: MIT
 compatibility: Requires the scimax CLI (installed with the scimax-vscode extension) on PATH.
 metadata:
-  version: "0.14.0"
+  version: "0.14.1"
   author: John Kitchin
 allowed-tools: Bash(scimax:*) Bash(code --goto:*) Bash(sqlite3:*) Read Glob Grep Write
 ---
@@ -102,7 +102,7 @@ When the user starts their day, asks "what's on my plate", or says "morning":
 
 When the user asks for a review, or on Friday afternoon:
 
-1. Read this week's journal entries (use `scimax journal --date -0d` through `scimax journal --date -6d` with `--json` to get paths, then Read each)
+1. Read this week's journal entries: `scimax journal --date -Nd --no-create --no-open --json` for N = 0..6 gives each path and `exists`; Read the ones that exist
 2. Run `scimax agenda todos` to see all open items
 3. Run `scimax agenda overdue` to find anything slipping
 4. Summarize: what was accomplished, what's still open, what's overdue
@@ -112,9 +112,9 @@ When the user asks for a review, or on Friday afternoon:
 
 When the user says "wrap up", "end of day", or "EOD":
 
-1. Open today's journal with `scimax journal`
+1. Get today's journal with `scimax journal --no-open --json` and Read it
 2. Run `scimax agenda today` to check if anything was missed
-3. Run `scimax agenda tomorrow` to preview tomorrow
+3. Run `scimax agenda week` to preview tomorrow (there is no `tomorrow` view)
 4. Ask: "What did you accomplish today?" and offer to add it to the journal
 5. Flag anything due tomorrow that needs prep
 

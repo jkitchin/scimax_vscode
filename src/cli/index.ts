@@ -38,6 +38,7 @@ import { projectCommand } from './commands/project';
 import { taskCommand } from './commands/task';
 import { marpCommand } from './commands/marp';
 import { scimaxGlobalStorageDir } from './globalStorage';
+import { parseArgs } from './parseArgs';
 
 interface CliConfig {
     dbPath: string;
@@ -86,53 +87,6 @@ function findConfig(): CliConfig {
     return {
         dbPath: vscodeDbPath,
         rootDir: process.cwd(),
-    };
-}
-
-/**
- * Parse command-line arguments into structured format
- */
-function parseArgs(argv: string[]): { command: string; subcommand?: string; args: string[]; flags: Record<string, string | boolean>; passthrough: string[] } {
-    // Everything after `--` is left as is, for commands that hand it on (marp)
-    const dashes = argv.indexOf('--');
-    const args = dashes >= 0 ? argv.slice(0, dashes) : argv;
-    const passthrough = dashes >= 0 ? argv.slice(dashes + 1) : [];
-    const flags: Record<string, string | boolean> = {};
-    const positional: string[] = [];
-
-    for (let i = 0; i < args.length; i++) {
-        const arg = args[i];
-        if (arg.startsWith('--')) {
-            const key = arg.slice(2);
-            const next = args[i + 1];
-            if (next && !next.startsWith('-')) {
-                flags[key] = next;
-                i++;
-            } else {
-                flags[key] = true;
-            }
-        } else if (arg.startsWith('-') && arg.length === 2) {
-            const key = arg.slice(1);
-            const next = args[i + 1];
-            if (next && !next.startsWith('-')) {
-                flags[key] = next;
-                i++;
-            } else {
-                flags[key] = true;
-            }
-        } else if (arg.startsWith('-')) {
-            flags[arg.slice(1)] = true;
-        } else {
-            positional.push(arg);
-        }
-    }
-
-    return {
-        command: positional[0] || 'help',
-        subcommand: positional[1],
-        args: positional.slice(1),
-        flags,
-        passthrough,
     };
 }
 

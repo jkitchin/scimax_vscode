@@ -239,6 +239,61 @@ export function getNotebookProjectPaths(): string[] {
 }
 
 /**
+ * Strip comments and trailing commas from JSONC (VS Code's settings format),
+ * leaving string contents alone. A regex that ignores strings is not enough:
+ * glob patterns such as "**\/node_modules/**" contain `/*` and `*\/`, and
+ * would be cut out as a comment along with everything between them, while
+ * the rest still parses.
+ */
+export function stripJsonc(text: string): string {
+    let out = '';
+    let i = 0;
+    const n = text.length;
+    while (i < n) {
+        const c = text[i];
+        if (c === '"') {
+            // Copy a string literal through its closing quote, honouring escapes
+            let j = i + 1;
+            while (j < n && text[j] !== '"') {
+                j += text[j] === '\\' ? 2 : 1;
+            }
+            out += text.slice(i, j + 1);
+            i = j + 1;
+        } else if (c === '/' && text[i + 1] === '/') {
+            while (i < n && text[i] !== '\n') i++;
+        } else if (c === '/' && text[i + 1] === '*') {
+            const end = text.indexOf('*/', i + 2);
+            i = end < 0 ? n : end + 2;
+        } else if (c === ',') {
+            // Drop a trailing comma before } or ] (skipping whitespace and comments)
+            let j = i + 1;
+            for (;;) {
+                while (j < n && /\s/.test(text[j])) j++;
+                if (text[j] === '/' && text[j + 1] === '/') {
+                    while (j < n && text[j] !== '\n') j++;
+                } else if (text[j] === '/' && text[j + 1] === '*') {
+                    const end = text.indexOf('*/', j + 2);
+                    j = end < 0 ? n : end + 2;
+                } else {
+                    break;
+                }
+            }
+            if (text[j] !== '}' && text[j] !== ']') out += c;
+            i++;
+        } else {
+            out += c;
+            i++;
+        }
+    }
+    return out;
+}
+
+/** Parse JSONC text (comments, trailing commas) as VS Code reads settings.json. */
+export function parseJsonc(text: string): Record<string, unknown> {
+    return JSON.parse(stripJsonc(text));
+}
+
+/**
  * Read and parse VS Code settings.json
  * Handles JSONC (comments) and control characters in string values
  */
@@ -253,11 +308,7 @@ function readVSCodeSettings(): Record<string, unknown> {
 
         // Try full JSON parse first (fastest if it works)
         try {
-            // Remove single-line and multi-line comments
-            const jsonContent = content
-                .replace(/\/\/.*$/gm, '')
-                .replace(/\/\*[\s\S]*?\*\//g, '');
-            return JSON.parse(jsonContent);
+            return parseJsonc(content);
         } catch {
             // Full parse failed, extract scimax settings with regex
         }
