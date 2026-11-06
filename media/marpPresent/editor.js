@@ -26,7 +26,7 @@
  *
  * The bar's Annotate row draws on the slide with presenter.js's ink (window.__marpInk): a pen, a
  * pencil and a highlighter in any colour (swatches, or the colour box for any other), two erasers
- * (only the ink under it, or whole strokes), and a lasso
+ * (only the ink under it, or whole strokes), a size slider (the tool's width, the eraser's size), and a lasso
  * that selects the strokes you circle: drag them to move them, Delete removes them, a colour
  * recolours them. While one of these is on, the mouse draws instead of selecting; Cmd/Ctrl+Z
  * undoes ink, Esc turns the tool off (the next Esc stops editing), and the other buttons and Done
@@ -472,6 +472,8 @@ table[data-mpe-add] :is(td, th) { min-width: 3em; height: 1.4em; }
 .mp-edit-ui .row.ink .lbl { opacity: .75; margin-right: 2px; }
 .mp-edit-ui button.sw { width: 20px; height: 20px; min-width: 0; padding: 0; border-radius: 50%; border: 2px solid rgba(255,255,255,.75); }
 .mp-edit-ui button.sw.on { box-shadow: 0 0 0 2px #60a5fa; }
+.mp-edit-ui input[type=range] { width: 100px; padding: 0; background: transparent; accent-color: #60a5fa; cursor: pointer; }
+.mp-edit-ui .wv { min-width: 2.4em; font-variant-numeric: tabular-nums; opacity: .85; }
 .mp-edit-ui select, .mp-edit-ui input { font: inherit; color: #111827; background: #f9fafb; border: 0; border-radius: 6px; padding: 3px 4px; height: 25px; box-sizing: border-box; }
 .mp-edit-ui input[type=number] { width: 4.5em; }
 .mp-edit-ui input[type=color] { width: 30px; padding: 1px 2px; cursor: pointer; }
@@ -528,9 +530,11 @@ table[data-mpe-add] :is(td, th) { min-width: 3em; height: 1.4em; }
     `<button data-ink="hl" title="Highlighter">▬ Highlighter</button>` +
     `<button data-ink="rub" title="Eraser: rubs out only the ink under it (Shift+R)">⌫ Eraser</button>` +
     `<button data-ink="erase" title="Stroke eraser: removes every stroke it touches (r)">⌫ Strokes</button>` +
-    `<button data-ink="lasso" title="Lasso: circle ink to select it; drag it to move, Delete removes, a colour recolours">◌ Lasso</button>` +
+    `<button data-ink="lasso" title="Lasso: circle ink to select what is inside (part of a stroke too); drag it to move, Delete removes, a colour recolours">◌ Lasso</button>` +
     `<span class="sep"></span>${INK_COLORS.map(([c, n]) => `<button class="sw" data-ink-c="${c}" title="${n}" style="background:${c}"></button>`).join("")}` +
-    `<input data-ink-color type="color" title="Any colour"></div><div class="tip"></div>` +
+    `<input data-ink-color type="color" title="Any colour"><span class="sep"></span>` +
+    `<span class="lbl">Size</span><input data-ink-w type="range" min="1" max="80" step="0.5" title="Line width, or the eraser's size; with a lasso selection, resizes it">` +
+    `<span class="wv"></span></div><div class="tip"></div>` +
     `<div class="mp-edit-grid" hidden>${"<i></i>".repeat(ROWS * COLS)}<span></span></div>`;
   document.body.appendChild(bar);
   // The same controls over the words selected while typing
@@ -579,6 +583,10 @@ table[data-mpe-add] :is(td, th) { min-width: 3em; height: 1.4em; }
   });
   bar.querySelector('[data-a="hidden"]').addEventListener("change", e => { if (e.target.value) showSlide(e.target.value); });
   bar.querySelector("[data-ink-color]").addEventListener("change", e => inkColor(e.target.value));
+  // Size: live while dragging; a lasso selection is resized when the slider is let go
+  const sizeCtl = bar.querySelector("[data-ink-w]");
+  sizeCtl.addEventListener("input", () => { if (ink()) { ink().setWidth(+sizeCtl.value, false); bar.querySelector(".wv").textContent = sizeCtl.value; } });
+  sizeCtl.addEventListener("change", () => { if (ink()) ink().setWidth(+sizeCtl.value, true); sizeCtl.blur(); inkBar(); });
 
   // ---- Annotate: presenter.js's pen, highlighter, eraser and lasso, on the bar ----
   const ink = () => window.__marpInk || null;
@@ -593,6 +601,12 @@ table[data-mpe-add] :is(td, th) { min-width: 3em; height: 1.4em; }
     row.querySelectorAll("[data-ink]").forEach(b => b.classList.toggle("on", b.dataset.ink === t));
     row.querySelectorAll("[data-ink-c]").forEach(b => b.classList.toggle("on", !!t && b.dataset.inkC === c));
     row.querySelector("[data-ink-color]").value = c;
+    // a size for the pen, pencil, highlighter, the eraser that rubs out, or a lasso selection
+    const sized = ["pen", "pencil", "hl", "rub"].includes(t) || (t === "lasso" && I.hasSelection());
+    const size = row.querySelector("[data-ink-w]"), w = I.width();
+    size.disabled = !sized;
+    if (document.activeElement !== size) size.value = w;
+    row.querySelector(".wv").textContent = sized ? String(w) : "";
   }
   function inkTool(t) {
     const I = ink();
