@@ -146,7 +146,7 @@ is skipped, and if the file was indexed before, its entry is dropped.
 
 [[cmd:workbench.action.openSettings2?@scimax][Open Scimax Settings]]
 
-** 👀 Choosing What Gets Indexed
+** Choosing What Gets Indexed
 
 By default the index covers four sources: every registered scimax project
 (=scimax.db.includeProjects=), the folders open in VS Code
@@ -177,7 +177,7 @@ list the folders and files you want:
 }
 #+END_SRC
 
-*** ⚠️ How a file gets into the index
+*** How a file gets into the index
 
 | Route                   | What is indexed                                                              |
 |-------------------------+------------------------------------------------------------------------------|

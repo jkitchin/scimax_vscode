@@ -1,5 +1,5 @@
 {
-  "buildDate": "2026-11-07T18:02:36.913Z",
+  "buildDate": "2026-11-07T20:06:12.004Z",
   "count": 3764,
   "entries": [
     {
@@ -109178,7 +109178,7 @@
       "level": 2,
       "file": "44-marp.org",
       "line": 715,
-      "content": "| Key                       | Effect                                                                                               | |---------------------------+------------------------------------------------------------------------------------------------------| | =a=                       | Annotate: edit mode with the pen on and the Annotate row; =a= again ends it (see [[*Annotating while editing][Annotating]])         | | =1= to =5=                | Pen colour while the pen is on: red, blu",
+      "content": "| Key                       | Effect                                                                                                                      | |---------------------------+-----------------------------------------------------------------------------------------------------------------------------| | =a=                       | Annotate: edit mode with the pen on and the Annotate row; =a= again ends it (see [[*Annotating while editing][Annotating]]) | | =1= to =5=                | Pe",
       "path": [
         "Presenter Tools and Live Python"
       ],
@@ -109189,7 +109189,7 @@
         "slideshow",
         "key",
         "effect",
-        "---------------------------------------------------------------------------------------------------------------------------------",
+        "--------------------------------------------------------------------------------------------------------------------------------------------------------",
         "annotate",
         "edit",
         "mode",
@@ -109199,10 +109199,7 @@
         "ends",
         "annotating",
         "while",
-        "editing",
-        "colour",
-        "red",
-        "blu"
+        "editing"
       ]
     },
     {
@@ -115049,7 +115046,7 @@
       "heading": "Current Review Status",
       "level": 1,
       "file": "review-agenda.org",
-      "line": 55,
+      "line": 50,
       "content": ":PROPERTIES: :VISIBILITY: folded :END: The results from running the above block will appear here after execution. Items link directly to the source file and line number for quick navigation.",
       "path": [],
       "commands": [],
@@ -115081,7 +115078,7 @@
       "heading": "Workflow",
       "level": 2,
       "file": "review-agenda.org",
-      "line": 63,
+      "line": 58,
       "content": "1. Run the source block above with `C-c C-c' 2. Click on any item link to jump to that heading 3. Review the content 4. Change the heading's TODO state from ⚠️ to ✅ when satisfied 5. Re-run the block to update the agenda",
       "path": [
         "Current Review Status"
@@ -115117,7 +115114,7 @@
       "heading": "Legend",
       "level": 2,
       "file": "review-agenda.org",
-      "line": 71,
+      "line": 66,
       "content": "| State | Meaning                       | |-------+-------------------------------| | ⚠️    | New heading, needs review     | | 👀    | Changed heading, needs review | | ✅    | Reviewed and approved         |",
       "path": [
         "Current Review Status"
@@ -115142,7 +115139,7 @@
       "heading": "Add Review Markers to Unmarked Headings",
       "level": 1,
       "file": "review-agenda.org",
-      "line": 81,
+      "line": 76,
       "content": "Run this block to add ⚠️ to all headings that do not have a TODO state. #+begin_src python :results output import os, re TODO_STATES = [\"⚠️\", \"👀\", \"✅\", \"TODO\", \"DONE\", \"NEXT\", \"WAITING\", \"CANCELLED\"] def has_todo(line): m = re.match(r\"^\\*+\\s+(.*)$\", line) if not m: return True first = m.group(1).split()[0] if m.group(1).split() else \"\" return first in TODO_STATES total = 0 for fname in sorted(os.listdir(\".\")): if not fname.endswith(\".org\") or fname == \"review-agenda.org\": continue with open(fna",
       "path": [],
       "commands": [],
@@ -115174,7 +115171,7 @@
       "heading": "Add Review Markers (TypeScript API)",
       "level": 1,
       "file": "review-agenda.org",
-      "line": 116,
+      "line": 111,
       "content": "Uses the scimax org modification API to add ⚠️ markers to unmarked headings. #+begin_src typescript :results output import { org } from './src/parser/orgModify'; import * as fs from 'fs'; const TODO_STATES = ['⚠️', '👀', '✅', 'TODO', 'DONE', 'NEXT', 'WAITING', 'CANCELLED']; let total = 0; for (const fname of fs.readdirSync('.').filter(f => f.endsWith('.org') && f !== 'review-agenda.org')) { const doc = org.parseFile(fname); let changes: string[] = []; org.mapHeadlines(doc, h => { if (!h.properti",
       "path": [],
       "commands": [],
