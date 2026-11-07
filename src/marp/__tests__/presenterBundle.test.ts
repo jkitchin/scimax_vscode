@@ -77,6 +77,7 @@ describe('isLocalRef / scriptSafe', () => {
         expect(isLocalRef('data:image/png;base64,AA')).toBe(false);
         expect(isLocalRef('//cdn/a.png')).toBe(false);
         expect(isLocalRef('#x')).toBe(false);
+        expect(isLocalRef('%23x')).toBe(false);   // an encoded anchor, as in an SVG data URI's url(%23x)
         expect(isLocalRef('')).toBe(false);
     });
 

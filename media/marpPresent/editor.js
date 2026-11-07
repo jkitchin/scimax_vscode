@@ -5,6 +5,8 @@
  *   d          start / stop editing (or right-click → Edit text and layout)
  *   a          annotate: start editing with the pen on, for the Annotate row; a again stops
  *   c / C      (while editing) clear this slide's ink / every slide's; z undoes the ink (the bar's Clear buttons too)
+ *   r / R      (while editing) the stroke eraser / the eraser that rubs out; again: back to the pen
+ *   n          (while editing) a sticky note at the mouse, as in the slideshow
  *   N          (Shift+N) a new blank slide after this one, ready to edit (also while editing)
  *   double-click a heading, paragraph, image, ...: start editing it (text to type in, anything else selected)
  *
@@ -1100,6 +1102,11 @@ table[data-mpe-add] :is(td, th) { min-width: 3em; height: 1.4em; }
     else if (k === "d") setEditing(false);
     else if (k === "a" && ink()) annotate();
     else if ((k === "c" || k === "C") && ink()) ink().clear(k === "C");   // the ink: this slide / every slide
+    else if ((k === "r" || k === "R") && ink()) {           // r: whole-stroke eraser, R: rub out; again: back to the pen
+      const t = k === "R" ? "rub" : "erase";
+      inkTool(ink().tool() === t ? "pen" : t);
+    }
+    else if (k === "n" && ink() && ink().note) ink().note(); // a sticky note at the mouse
     else if (k === "z" && ink()) ink().undo();             // the ink's undo (Cmd/Ctrl+Z undoes edits)
     else if (k === "t") addText();
     else if (k === "N" && slidesOn()) addSlide();

@@ -49,7 +49,8 @@ No `timer:` in a deck? Right-click → *Add a talk timer...* during the show.
 
 ![width:300px](img/chart.png)
 
-- **a** pen on/off, **1**–**5** colours, **r** eraser, **z** undo, **c** / **C** clear
+- **a** annotate: the pen and a toolbar with the pencil, highlighter, eraser and lasso; **a** again ends it
+- **1**–**5** colours, **r** eraser, **z** undo, **c** clear this slide, **C** clear every slide
 - **l** laser pointer (**1**–**5** colour it), **n** sticky note at the mouse (Markdown works in it)
 - Hold the mouse button down for a spotlight
 

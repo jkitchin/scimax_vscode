@@ -94,9 +94,12 @@ export function scriptSafe(text: string): string {
     return text.replace(/<\/(script)/gi, '<\\/$1');
 }
 
-/** True for a reference to a local file (not a URL with a scheme, an anchor or //host). */
+/**
+ * True for a reference to a local file (not a URL with a scheme, an anchor or //host).
+ * An anchor may be URL-encoded (`url(%23a)`), as in an SVG data URI in a theme's CSS.
+ */
 export function isLocalRef(ref: string): boolean {
-    return ref.trim() !== '' && !/^(?:[a-z][a-z0-9+.-]*:|#|\/\/)/i.test(ref);
+    return ref.trim() !== '' && !/^(?:[a-z][a-z0-9+.-]*:|#|%23|\/\/)/i.test(ref);
 }
 
 function unescapeHtml(text: string): string {

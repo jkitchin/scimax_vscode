@@ -10,6 +10,10 @@ on:
       - 'src/publishing/**'
       - '_config.yml'
       - '.github/workflows/docs.yml'
+      - 'examples/marp-present/**'
+      - 'media/marp/**'
+      - 'media/marpPresent/**'
+      - 'src/marp/**'
   workflow_dispatch:
     # Allow manual triggering
 
@@ -53,6 +57,14 @@ jobs:
         run: |
           # The publish command outputs to docs-html per _config.yml
           mv docs-html _site
+
+      - name: Build the Marp example decks with presenter tools
+        run: |
+          # Self-contained HTML (images, fonts, scripts inlined); uses Marp CLI via npx
+          mkdir -p _site/slides
+          node out/cli/index.js marp build examples/marp-present/demo.md -o _site/slides/demo.html
+          node out/cli/index.js marp build examples/marp-present/code.md -o _site/slides/code.html
+          test -s _site/slides/demo.html && test -s _site/slides/code.html
 
       - name: Create index redirect
         run: |

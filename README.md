@@ -407,7 +407,11 @@ Scimax renders and edits [Marp](https://marp.app/) decks without the Marp extens
 - **Presenter tools** with `presenter: true`: pen, laser, sticky notes, spotlight, talk timer, editing slides in place, saving the annotated deck, and live Python cells (```` ```python run ````) that run in the browser with Pyodide.
 - **Edit slides with Claude Code** from the slide menu.
 
-Try `examples/marp-present/demo.md`. See [docs/44-marp.org](docs/44-marp.org).
+**Try the presenter tools in your browser** (no install needed):
+- [**Demo deck**](https://kitchingroup.cheme.cmu.edu/scimax_vscode/slides/demo.html): pen, laser, sticky notes, spotlight, timer, zoom and in-place editing. Right-click for a menu of every tool, or press `a` to annotate.
+- [**Live Python deck**](https://kitchingroup.cheme.cmu.edu/scimax_vscode/slides/code.html): Python cells that run in the browser with Pyodide, including plots and teaching examples of common errors.
+
+Their sources are [`examples/marp-present/demo.md`](examples/marp-present/demo.md) and [`examples/marp-present/code.md`](examples/marp-present/code.md). See [docs/44-marp.org](docs/44-marp.org).
 
 ---
 

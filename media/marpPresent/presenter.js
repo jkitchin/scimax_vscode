@@ -1475,9 +1475,12 @@
       newNote(); return true;
     } else if (k === "c") {
       if (ink[id]) checkpoint(id);
+      say(ink[id] ? "Cleared this slide's ink (z puts it back)" : "No ink on this slide");
       delete ink[id]; save(); redraw();
     } else if (k === "C") {
+      const n = Object.keys(ink).length;
       Object.keys(ink).forEach(i => checkpoint(i));    // z gives each slide its ink back
+      say(n ? `Cleared the ink on ${n} slide${n === 1 ? "" : "s"} (z on a slide puts its ink back)` : "No ink on any slide");
       ink = {}; save(); redraw();
     } else if (k === "z" && ((history[id] && history[id].length) || (ink[id] && ink[id].length))) {
       if (history[id] && history[id].length) {          // the strokes as they were before the last change
@@ -1549,6 +1552,7 @@
     onChange: f => { inkListeners.push(f); },
     clear: all => { act(all ? "C" : "c"); },          // this slide's ink, or every slide's (z puts it back)
     undo: () => { act("z"); },
+    note: () => { act("n"); },                         // a sticky note at the mouse
   };
 
   // ---- right-click menu: every tool in one place, each with its key ----
