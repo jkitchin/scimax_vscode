@@ -8,7 +8,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { minimatch } from 'minimatch';
-import { withBaselineExcludes } from '../shared/ignorePatterns';
+import { withBaselineExcludes, BASELINE_DB_EXCLUDE } from '../shared/ignorePatterns';
 import { DEFAULT_FILE_EXTENSIONS, isIndexableFile } from '../shared/indexableFiles';
 
 /**
@@ -527,7 +527,9 @@ export function findOrgFiles(
     try {
         const rootStats = fs.statSync(dir);
         if (rootStats.isFile()) {
-            if (isIndexableFile(dir, options.fileExtensions) && !shouldExclude(dir, excludePatterns) && rootStats.size <= maxBytes) {
+            // A file root is a file listed by its exact path (scimax.db.include): it beats a configured
+            // exclude pattern such as its folder; only the built-in excludes apply.
+            if (isIndexableFile(dir, options.fileExtensions) && !shouldExclude(dir, BASELINE_DB_EXCLUDE) && rootStats.size <= maxBytes) {
                 files.push(dir);
             }
             return files;

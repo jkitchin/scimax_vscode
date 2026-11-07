@@ -11,6 +11,7 @@ import { minimatch } from 'minimatch';
 import { createCliDatabase, createCliEmbeddingService, testCliEmbeddingService } from '../database';
 import type { ScimaxDbCore } from '../database';
 import { describeOptimize } from '../../database/scimaxDbCore';
+import { forcedFiles } from '../../shared/indexScope';
 import {
     loadSettings,
     expandPath,
@@ -683,9 +684,11 @@ async function pruneExcluded(config: CliConfig, args: ParsedArgs): Promise<void>
     const db = await createCliDatabase(config.dbPath);
     try {
         const files = await db.getFiles();
+        // A file listed by its exact path in scimax.db.include beats the patterns: it stays
+        const forced = new Set(forcedFiles(settings.db.include));
         const doomed = files
             .map(f => f.path)
-            .filter(p => shouldExclude(p, patterns));
+            .filter(p => !forced.has(path.resolve(p)) && shouldExclude(p, patterns));
 
         if (!json) {
             console.log(`Database: ${config.dbPath}`);
