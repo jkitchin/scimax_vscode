@@ -570,7 +570,7 @@ async function exportWithMarp(context: vscode.ExtensionContext, format: MarpExpo
             return;
         }
         const issues = offlineDeck(document) ? showOfflineIssues(document, { markdown: document.getText(), ...build }) : 0;
-        await announce(outputPath, `Exported ${path.basename(outputPath)} with presenter tools: a pen, l laser, n note, s save with ink`);
+        await announce(outputPath, `Exported ${path.basename(outputPath)} with presenter tools: a annotate, l laser, n note, s save with ink`);
         await announceOfflineIssues(document, issues);
         return;
     }
@@ -851,7 +851,7 @@ async function present(context: vscode.ExtensionContext, args?: PresentArgs, fro
     await vscode.env.openExternal(vscode.Uri.file(output));
     const reloadHint = liveReload ? '; saving the deck updates it' : '';
     vscode.window.setStatusBarMessage(presenter
-        ? `Slideshow opened: F full screen, P presenter view, a pen, l laser, n note, s save with ink${reloadHint}`
+        ? `Slideshow opened: F full screen, P presenter view, a annotate, l laser, n note, s save with ink${reloadHint}`
         : `Slideshow opened in the browser: F for full screen, P for presenter view${reloadHint}`, 6000);
 }
 

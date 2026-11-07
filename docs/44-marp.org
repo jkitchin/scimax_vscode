@@ -710,40 +710,40 @@ Code, use the CLI: ~scimax marp build talk.md --open~ (see
 [[file:30-cli.org::*Marp Slides][Marp Slides in the CLI]]). It uses the same
 scripts and makes the same HTML as the =h= export.
 
-** Keys in the slideshow
+** 👀 Keys in the slideshow
 
-| Key                       | Effect                                                                           |
-|---------------------------+----------------------------------------------------------------------------------|
-| =a=                       | Turn the pen on or off (widgets cannot be clicked while it is on)                |
-| =1= to =5=                | Pen colour while the pen is on: red, blue, green, black, yellow highlighter      |
-| =r=                       | Stroke eraser: drag over strokes to remove them whole; =r= again turns it off    |
-| =R= (=Shift+R=)           | Eraser that rubs out exactly the ink under it                                    |
-| =z=                       | Undo the last change to this slide's ink (a stroke, an erase, a lasso move)      |
-| =c= / =C=                 | Clear this slide / every slide                                                   |
-| =l=                       | Laser pointer: a dot that follows the mouse                                      |
-| =1= to =5=                | Laser colour while the laser is on: red, blue, green, black, yellow              |
-| =n=                       | New sticky note at the mouse; type Markdown, click away to render it             |
-| Right-click               | A menu with all of these (Shift+right-click gives the browser's own menu)        |
-| Hold the mouse on a slide | Spotlight: the screen darkens except a circle around the cursor (not on          |
-|                           | buttons, links, code cells or widgets, or while the pen or eraser is on)         |
-| =s=                       | Save a standalone copy of the deck with the ink, ~<deck>-annotated.html~         |
-| =m=                       | Save the Markdown source with the ink as SVG, ~<deck>-annotated.md~              |
-| =S=                       | Save only the ink, as JSON                                                       |
-| =i=                       | Load ink from such a JSON file (or drag the file onto the deck)                  |
-| =t= / =T=                 | Start or pause the talk timer / reset it to the full time                        |
-| =+= / =-=                 | Add a minute to the talk timer / take one off                                    |
-| =Alt+T= (=Option+T=)      | Type a new time for the talk timer (=20=, =12:30=, =90s=), or add one            |
-| =e= / =E=                 | Start or pause this slide's exercise countdown / reset it                        |
-| =b= / =w=                 | Black / white screen, to pause for discussion; again, =Esc= or a click returns   |
-| =x=                       | Zoom: drag a box (or click) to magnify it; =x= or =Esc= zooms out                |
-| =g=                       | Go to a slide: type a number or words from its title or text, then Enter         |
-| A number, then Enter      | Jump to that slide (=12= Enter goes to slide 12)                                 |
-| =d=                       | Edit the slides' text and layout in place (see below)                            |
-| =N= (=Shift+N=)           | A new blank slide after this one, opened for editing (see below)                 |
-| =v=                       | Live captions on or off (see below)                                              |
-| =V= (=Shift+V=)           | Get ready to record: opens the Microphone window; while recording, stop and save |
-| =M= (=Shift+M=)           | The Microphone panel: microphone, level, gain, settings, Record/Stop (see below) |
-| =Cmd+P= / =Ctrl+P=        | Print; "Save as PDF" keeps every slide's ink as vector graphics                  |
+| Key                       | Effect                                                                                       |
+|---------------------------+----------------------------------------------------------------------------------------------|
+| =a=                       | Annotate: edit mode with the pen on and the Annotate row; =a= again ends it (see [[*Annotating while editing][Annotating]]) |
+| =1= to =5=                | Pen colour while the pen is on: red, blue, green, black, yellow highlighter                  |
+| =r=                       | Stroke eraser: drag over strokes to remove them whole; =r= again turns it off                |
+| =R= (=Shift+R=)           | Eraser that rubs out exactly the ink under it                                                |
+| =z=                       | Undo the last change to this slide's ink (a stroke, an erase, a lasso move)                  |
+| =c= / =C=                 | Clear this slide / every slide                                                               |
+| =l=                       | Laser pointer: a dot that follows the mouse                                                  |
+| =1= to =5=                | Laser colour while the laser is on: red, blue, green, black, yellow                          |
+| =n=                       | New sticky note at the mouse; type Markdown, click away to render it                         |
+| Right-click               | A menu with all of these (Shift+right-click gives the browser's own menu)                    |
+| Hold the mouse on a slide | Spotlight: the screen darkens except a circle around the cursor (not on                      |
+|                           | buttons, links, code cells or widgets, or while the pen or eraser is on)                     |
+| =s=                       | Save a standalone copy of the deck with the ink, ~<deck>-annotated.html~                     |
+| =m=                       | Save the Markdown source with the ink as SVG, ~<deck>-annotated.md~                          |
+| =S=                       | Save only the ink, as JSON                                                                   |
+| =i=                       | Load ink from such a JSON file (or drag the file onto the deck)                              |
+| =t= / =T=                 | Start or pause the talk timer / reset it to the full time                                    |
+| =+= / =-=                 | Add a minute to the talk timer / take one off                                                |
+| =Alt+T= (=Option+T=)      | Type a new time for the talk timer (=20=, =12:30=, =90s=), or add one                        |
+| =e= / =E=                 | Start or pause this slide's exercise countdown / reset it                                    |
+| =b= / =w=                 | Black / white screen, to pause for discussion; again, =Esc= or a click returns               |
+| =x=                       | Zoom: drag a box (or click) to magnify it; =x= or =Esc= zooms out                            |
+| =g=                       | Go to a slide: type a number or words from its title or text, then Enter                     |
+| A number, then Enter      | Jump to that slide (=12= Enter goes to slide 12)                                             |
+| =d=                       | Edit the slides' text and layout in place (see below)                                        |
+| =N= (=Shift+N=)           | A new blank slide after this one, opened for editing (see below)                             |
+| =v=                       | Live captions on or off (see below)                                                          |
+| =V= (=Shift+V=)           | Get ready to record: opens the Microphone window; while recording, stop and save             |
+| =M= (=Shift+M=)           | The Microphone panel: microphone, level, gain, settings, Record/Stop (see below)             |
+| =Cmd+P= / =Ctrl+P=        | Print; "Save as PDF" keeps every slide's ink as vector graphics                              |
 
 Marp's own keys (=F= full screen, =P= presenter view, arrows) still work, also
 after you click into a widget: the arrows, =PageUp=, =PageDown=, =Home= and
@@ -1087,12 +1087,15 @@ before reloading.
 *** ⚠️ Annotating while editing
 
 The bar's second row, *Annotate*, draws on the slide, so you can sketch on a
-blank slide (=N= adds one) without leaving edit mode:
+blank slide (=N= adds one) without leaving edit mode. Pressing =a= in the
+slideshow starts edit mode with the pen on, so these tools are a click away;
+=a= again turns the tool off and leaves edit mode. (In the presenter view,
+which cannot edit, =a= turns the pen alone on or off.)
 
 | Button          | Effect                                                                                        |
 |-----------------+-----------------------------------------------------------------------------------------------|
 | ✎ Pen          | Draw on the slide                                                                             |
-| ✏ Pencil       | A soft, grainy pencil line                                                                    |
+| ✏ Pencil       | A soft, grainy pencil line that darkens where you go over it again                            |
 | ▬ Highlighter   | Draw wide, see-through strokes                                                                |
 | ⌫ Eraser        | Rub out exactly the ink under it; a stroke it crosses becomes separate pieces                 |
 | ⌫ Strokes       | Remove every stroke it touches, whole                                                         |
@@ -1100,6 +1103,8 @@ blank slide (=N= adds one) without leaving edit mode:
 | Colour swatches | The drawing tool's colour; with a lasso selection, recolour it                                |
 | Colour box      | Any other colour                                                                              |
 | Size            | The line width (or the eraser's size), remembered per tool; with a lasso selection, resize it |
+| Clear           | This slide's ink (=c=); =z= puts it back                                                      |
+| Clear all       | The ink on every slide (=Shift+C=); =z= puts each slide's back                                |
 
 Click a tool again to turn it off. While a tool is on, the mouse draws
 instead of selecting text and images. =Cmd+Z= (=Ctrl+Z=) undoes ink: a

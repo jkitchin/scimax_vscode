@@ -3,6 +3,8 @@
  * they do not change the Markdown.
  *
  *   d          start / stop editing (or right-click → Edit text and layout)
+ *   a          annotate: start editing with the pen on, for the Annotate row; a again stops
+ *   c / C      (while editing) clear this slide's ink / every slide's; z undoes the ink (the bar's Clear buttons too)
  *   N          (Shift+N) a new blank slide after this one, ready to edit (also while editing)
  *   double-click a heading, paragraph, image, ...: start editing it (text to type in, anything else selected)
  *
@@ -534,7 +536,10 @@ table[data-mpe-add] :is(td, th) { min-width: 3em; height: 1.4em; }
     `<span class="sep"></span>${INK_COLORS.map(([c, n]) => `<button class="sw" data-ink-c="${c}" title="${n}" style="background:${c}"></button>`).join("")}` +
     `<input data-ink-color type="color" title="Any colour"><span class="sep"></span>` +
     `<span class="lbl">Size</span><input data-ink-w type="range" min="1" max="80" step="0.5" title="Line width, or the eraser's size; with a lasso selection, resizes it">` +
-    `<span class="wv"></span></div><div class="tip"></div>` +
+    `<span class="wv"></span><span class="sep"></span>` +
+    `<button data-ink-clear="slide" title="Clear this slide's ink (c); z puts it back">Clear</button>` +
+    `<button data-ink-clear="all" title="Clear the ink on every slide (Shift+C); z puts each slide's back">Clear all</button>` +
+    `</div><div class="tip"></div>` +
     `<div class="mp-edit-grid" hidden>${"<i></i>".repeat(ROWS * COLS)}<span></span></div>`;
   document.body.appendChild(bar);
   // The same controls over the words selected while typing
@@ -568,6 +573,7 @@ table[data-mpe-add] :is(td, th) { min-width: 3em; height: 1.4em; }
     if (!b) return;
     if (b.dataset.ink) { const t = b.dataset.ink; inkTool(ink() && ink().tool() === t ? "" : t); return; }
     if (b.dataset.inkC) { inkColor(b.dataset.inkC); return; }
+    if (b.dataset.inkClear) { if (ink()) ink().clear(b.dataset.inkClear === "all"); return; }
     const a = b.dataset.a;
     if (a && a !== "undo" && a !== "done") inkTool("");      // the other tools need the mouse back
     if (a !== "table") grid.hidden = true;
@@ -614,6 +620,18 @@ table[data-mpe-add] :is(td, th) { min-width: 3em; height: 1.4em; }
     if (t) { endTyping(); select(null); }
     I.setTool(t);
     inkBar(); badge();
+  }
+  // a: annotate. Not editing: start editing with the pen on (the Annotate row has the other tools).
+  // Editing: a tool on → off, and if a started editing, stop editing too (a toggles annotating);
+  // no tool on → the pen.
+  let byAnnotate = false;
+  function annotate() {
+    const I = ink();
+    if (!I || !canEdit) return;
+    if (!editing) { setEditing(true); byAnnotate = true; inkTool("pen"); return; }
+    if (!I.tool()) { inkTool("pen"); return; }
+    inkTool("");
+    if (byAnnotate) setEditing(false);
   }
   function inkColor(c) {
     const I = ink();
@@ -721,6 +739,7 @@ table[data-mpe-add] :is(td, th) { min-width: 3em; height: 1.4em; }
     // The pen and the other ink tools start off: the bar's Annotate row turns them on
     if (ink()) ink().setTool("");
     editing = on;
+    byAnnotate = false;
     window.__marpEditing = on;
     document.documentElement.classList.toggle("mp-editing", on);
     if (!on) { endTyping(); select(null); }
@@ -1039,11 +1058,12 @@ table[data-mpe-add] :is(td, th) { min-width: 3em; height: 1.4em; }
     if (!editing) {
       // d starts editing; N (Shift+N) adds a blank slide after this one and edits it. Cmd/Ctrl+N
       // can't be used: browsers keep it for a new window and pages cannot override it.
-      if ((k === "d" || (k === "N" && slidesOn())) && !mod && !e.altKey && canEdit) {
+      // a starts editing with the pen on, so the Annotate row is there to change tool.
+      if ((k === "d" || (k === "a" && ink()) || (k === "N" && slidesOn())) && !mod && !e.altKey && canEdit) {
         const t = e.target;
         if (t && (/^(TEXTAREA|SELECT|INPUT)$/.test(t.tagName || "") || t.isContentEditable || (t.closest && t.closest(".pyc")))) return;
         e.preventDefault(); e.stopImmediatePropagation();
-        if (k === "N") addSlide(); else setEditing(true);
+        if (k === "N") addSlide(); else if (k === "a") annotate(); else setEditing(true);
       }
       return;
     }
@@ -1078,6 +1098,9 @@ table[data-mpe-add] :is(td, th) { min-width: 3em; height: 1.4em; }
     else if (mod) used = false;
     else if (k === "Escape") { if (!grid.hidden) grid.hidden = true; else if (selected) select(null); else setEditing(false); }
     else if (k === "d") setEditing(false);
+    else if (k === "a" && ink()) annotate();
+    else if ((k === "c" || k === "C") && ink()) ink().clear(k === "C");   // the ink: this slide / every slide
+    else if (k === "z" && ink()) ink().undo();             // the ink's undo (Cmd/Ctrl+Z undoes edits)
     else if (k === "t") addText();
     else if (k === "N" && slidesOn()) addSlide();
     else if (!selected) used = false;
@@ -1122,6 +1145,7 @@ table[data-mpe-add] :is(td, th) { min-width: 3em; height: 1.4em; }
     slideItems,
     overviewItems,
     toggle: () => setEditing(!editing),
+    annotate: () => annotate(),                             // presenter.js's a (its right-click menu)
     get editing() { return editing; },
     canEdit,
   };

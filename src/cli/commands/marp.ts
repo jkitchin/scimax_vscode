@@ -228,7 +228,7 @@ export async function marpCommand(_config: CliConfig, args: ParsedArgs): Promise
         }));
     } else {
         const size = (fs.statSync(output).size / 1e6).toFixed(1);
-        console.log(`Wrote ${output} (${size} MB)${presenter ? ' with presenter tools: a pen, l laser, n note, s save with ink' : ''}`);
+        console.log(`Wrote ${output} (${size} MB)${presenter ? ' with presenter tools: a annotate, l laser, n note, s save with ink' : ''}`);
         if (pdf) {
             console.log(`Wrote ${pdf}`);
         }

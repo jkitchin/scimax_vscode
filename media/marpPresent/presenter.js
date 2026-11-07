@@ -1,7 +1,8 @@
 /* marp-present: presenter tools for Marp HTML decks (pen, laser pointer, save with ink).
  * Part of scimax-vscode: add `presenter: true` to a Marp deck's front matter, then present or export HTML.
  *
- *   a        toggle the pen (widgets are not clickable while it is on)
+ *   a        annotate: editor.js's edit mode with the pen on and its Annotate row (a again: off);
+ *            in the presenter view, toggle the pen alone (widgets are not clickable while it is on)
  *   1-5      pen colour: red, blue, green, black, yellow highlighter
  *   z        undo the last change to this slide's ink (a stroke, an eraser drag, a lasso move, ...)
  *   r        toggle the stroke eraser: drag over strokes to remove them whole (z puts them back)
@@ -99,6 +100,30 @@
   // the same every time. A piece the eraser cut off keeps the seed and its distance along the
   // stroke (d0), so its graphite does not change, and its cut ends (open) are not made ragged.
   const seedOf = s => s.seed || (Math.floor(s.pts[0][0] * 7919 + s.pts[0][1] * 104729 + s.pts.length * 31) >>> 0) || 1;
+  // Graphite builds up: going over a place again darkens it. The grain has gaps, and a pass that
+  // used the same grain would land on the same gaps and never fill them. So each strand is cut into
+  // short pieces, painted one by one (a path that crosses itself would be painted once), each with
+  // one of GRAINS grains, picked from the stroke's seed and the distance along the stroke: the same
+  // for all the strands at a place, so one pass looks as grainy as ever, and a piece the eraser cut
+  // off keeps its grain.
+  const GRAINS = 8, PIECE = 24;                       // PIECE: slide pixels of a 1280-wide slide
+  function grainPieces(pts, dist, seed, SW) {
+    const len = PIECE * SW / 1280, pieces = [];
+    const bucket = d => Math.floor(d / len);
+    const grainOf = b => {
+      let h = (seed ^ Math.imul(b + 7, 0x85ebca6b)) >>> 0;
+      h = Math.imul(h ^ (h >>> 15), 0x2c1b3c6d) >>> 0;
+      return (h ^ (h >>> 13)) % GRAINS;
+    };
+    let start = 0;
+    for (let i = 1; i < pts.length; i++) {
+      if (i === pts.length - 1 || bucket(dist[i]) !== bucket(dist[start])) {
+        pieces.push({ pts: pts.slice(start, i + 1), grain: grainOf(bucket(dist[start])) });
+        start = i;                                    // pieces share their end points, butt to butt
+      }
+    }
+    return pieces;
+  }
   function pencilStrands(s, SW, SH) {
     const open = s.open || [false, false];
     const key = [s.pts.length, (s.pts[0] || []).join(), (s.pts[s.pts.length - 1] || []).join(), s.w, SW, SH, s.seed, s.d0, open.join()].join(":");
@@ -128,6 +153,7 @@
         const o = off + amp * Math.sin(D[i] * freq + phase);
         return [p[0] + N[i][0] * o, p[1] + N[i][1] * o];
       });
+      let dist = D;                                     // each point's distance along the stroke
       // ragged ends: the outer strands start later and stop sooner (not where the eraser cut). By
       // distance, not by point, so a piece cut off a stroke keeps its end as it was.
       const r1 = rnd(), r2 = rnd();                     // always drawn, so the rest of the grain stays put
@@ -142,11 +168,16 @@
           const f = D[i] > D[i - 1] ? (d - D[i - 1]) / (D[i] - D[i - 1]) : 0;
           return [pts[i - 1][0] + (pts[i][0] - pts[i - 1][0]) * f, pts[i - 1][1] + (pts[i][1] - pts[i - 1][1]) * f];
         };
-        if (to > from) pts = [at(from), ...pts.filter((_, i) => D[i] > from && D[i] < to), at(to)];
+        if (to > from) {
+          const keep = D.map((d, i) => i).filter(i => D[i] > from && D[i] < to);
+          pts = [at(from), ...keep.map(i => pts[i]), at(to)];
+          dist = [from, ...keep.map(i => D[i]), to];
+        }
       }
       if (pts.length < 2) continue;
       strands.push({
         pts,
+        pieces: grainPieces(pts, dist, seedOf(s), SW),
         width: Math.max(0.5, (w / n) * (0.8 + 0.9 * rnd())),
         alpha: (0.75 - 0.5 * edge * edge) * (0.65 + 0.35 * rnd()),
       });
@@ -309,10 +340,12 @@
     const k = SW / 1280, fid = "mp-pencil-" + (++filterCount);   // ids unique in the page: one filter per overlay
     // Pencil grain: fractal noise as an alpha mask over the stroke
     const masks = [];
-    const pencil = strokes.some(s => s.pencil) ? `<filter id="${fid}" x="-10%" y="-10%" width="120%" height="120%">` +
-      `<feTurbulence type="fractalNoise" baseFrequency="1.1" numOctaves="2" seed="7" result="n"/>` +
+    // (GRAINS of them, one noise seed each: see grainPieces)
+    const pencil = strokes.some(s => s.pencil) ? Array.from({ length: GRAINS }, (_, g) =>
+      `<filter id="${fid}-${g}" x="-10%" y="-10%" width="120%" height="120%">` +
+      `<feTurbulence type="fractalNoise" baseFrequency="1.1" numOctaves="2" seed="${7 + 101 * g}" result="n"/>` +
       `<feColorMatrix in="n" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 2.2 -0.55" result="g"/>` +
-      `<feComposite in="SourceGraphic" in2="g" operator="in"/></filter>` : "";
+      `<feComposite in="SourceGraphic" in2="g" operator="in"/></filter>`).join("") : "";
     // An eraser stroke masks everything drawn before it: that ink goes in a group with a mask that
     // is white except under the eraser. Its own polyline (unpainted) follows, for a saved deck to read back.
     let lines = "";
@@ -336,10 +369,15 @@
         if (s.pencil) {
           // the stroke itself, unpainted (it is what a saved deck reads back), and its strands with the
           // grain. The strands' data-pen="-1" is no pen, so neither this version nor an older one reads them as ink.
-          const strands = pencilStrands(s, SW, SH).map(st => `<polyline data-pen="-1" points="${st.pts.map(([x, y]) => `${x.toFixed(1)},${y.toFixed(1)}`).join(" ")}" ` +
-            `stroke-width="${st.width.toFixed(2)}" stroke-opacity="${st.alpha.toFixed(2)}"/>`).join("");
+          // Each strand's pieces, grouped by grain: butt ends, so pieces that meet do not overlap.
+          const byGrain = Array.from({ length: GRAINS }, () => "");
+          pencilStrands(s, SW, SH).forEach(st => st.pieces.forEach(pc => {
+            byGrain[pc.grain] += `<polyline data-pen="-1" points="${pc.pts.map(([x, y]) => `${x.toFixed(1)},${y.toFixed(1)}`).join(" ")}" ` +
+              `stroke-width="${st.width.toFixed(2)}" stroke-opacity="${st.alpha.toFixed(2)}"/>`;
+          }));
           return `<polyline ${kind} points="${xy}" fill="none" stroke="none"/>` +
-            `<g filter="url(#${fid})" fill="none" stroke="${s.c}" stroke-linecap="round" stroke-linejoin="round">${strands}</g>`;
+            `<g fill="none" stroke="${s.c}" stroke-linecap="butt" stroke-linejoin="round">` +
+            byGrain.map((g, i) => (g ? `<g filter="url(#${fid}-${i})">${g}</g>` : "")).join("") + `</g>`;
         }
         return `<polyline ${kind} points="${xy}" fill="none" stroke="${p.color}" stroke-width="${+(p.width * k).toFixed(2)}" stroke-linecap="round" stroke-linejoin="round"/>`;
       })();
@@ -653,13 +691,19 @@
       // the strands in a 1280-wide slide's pixels, then onto the screen
       const SH = 1280 * r.height / r.width, k = r.width / 1280;
       cx.save();
-      cx.strokeStyle = grain(s.c, cx);
+      const pattern = grain(s.c, cx);
+      cx.strokeStyle = pattern;
+      cx.lineCap = "butt";                              // pieces that meet do not overlap
+      cx.lineJoin = "round";
       pencilStrands(s, 1280, SH).forEach(st => {
         cx.globalAlpha = st.alpha;
         cx.lineWidth = st.width * k;
-        cx.beginPath();
-        st.pts.forEach(([x, y], i) => (i ? cx.lineTo(r.left + x * k, r.top + y * k) : cx.moveTo(r.left + x * k, r.top + y * k)));
-        cx.stroke();
+        st.pieces.forEach(pc => {                       // each piece on its own, with its grain (see grainPieces)
+          if (pattern.setTransform) pattern.setTransform(new DOMMatrix([1, 0, 0, 1, (pc.grain * 37) % 96, (pc.grain * 61) % 96]));
+          cx.beginPath();
+          pc.pts.forEach(([x, y], i) => (i ? cx.lineTo(r.left + x * k, r.top + y * k) : cx.moveTo(r.left + x * k, r.top + y * k)));
+          cx.stroke();
+        });
       });
       cx.restore();
       return;
@@ -1404,7 +1448,10 @@
   // One action per key; the keyboard and the right-click menu both come here. Returns true if handled.
   function act(k) {
     const id = slideId();
-    if (k === "a" || k === "A") {
+    const E = window.__marpEdits;
+    if ((k === "a" || k === "A") && E && E.canEdit && E.annotate) {
+      E.annotate(); return true;                        // editor.js: edit mode with the pen, and the Annotate row
+    } else if (k === "a" || k === "A") {                // the presenter view: the pen alone
       enabled = !enabled;
       if (enabled) { erasing = lassoOn = false; sel = []; if (laserOn) setLaser(false); }
       setCanvas(); redraw();
@@ -1500,6 +1547,8 @@
       showBadge();
     },
     onChange: f => { inkListeners.push(f); },
+    clear: all => { act(all ? "C" : "c"); },          // this slide's ink, or every slide's (z puts it back)
+    undo: () => { act("z"); },
   };
 
   // ---- right-click menu: every tool in one place, each with its key ----
