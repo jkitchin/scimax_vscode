@@ -7,3 +7,4 @@ export * from './ignorePatterns';
 export * from './fileWalker';
 export * from './projectRoots';
 export * from './indexableFiles';
+export * from './indexScope';

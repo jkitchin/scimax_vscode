@@ -1516,6 +1516,18 @@
         "title": "Scimax: Don't Index Current File (removes from database)"
       },
       {
+        "command": "scimax.db.alwaysIndexFile",
+        "title": "Scimax: Always Index File (even in an excluded folder)"
+      },
+      {
+        "command": "scimax.db.alwaysIndexCurrentFile",
+        "title": "Scimax: Always Index Current File (even in an excluded folder)"
+      },
+      {
+        "command": "scimax.db.removeOutOfScope",
+        "title": "Scimax: Remove Files Outside Indexed Folders..."
+      },
+      {
         "command": "scimax.db.setScope",
         "title": "Scimax: Set Search Scope"
       },
@@ -9168,6 +9180,16 @@
         },
         {
           "command": "scimax.agenda.ignoreFileFromTab",
+          "group": "2_files"
+        },
+        {
+          "command": "scimax.db.alwaysIndexFile",
+          "when": "resourceScheme == file && resourceExtname =~ /^\\.(org|md|markdown)$/",
+          "group": "2_files"
+        },
+        {
+          "command": "scimax.db.ignoreFile",
+          "when": "resourceScheme == file && resourceExtname =~ /^\\.(org|md|markdown)$/",
           "group": "2_files"
         },
         {
