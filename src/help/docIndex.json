@@ -1,5 +1,5 @@
 {
-  "buildDate": "2026-11-07T15:14:23.848Z",
+  "buildDate": "2026-11-07T15:38:53.586Z",
   "count": 3764,
   "entries": [
     {
@@ -109178,7 +109178,7 @@
       "level": 2,
       "file": "44-marp.org",
       "line": 715,
-      "content": "| Key                       | Effect                                                                                                                      | |---------------------------+-----------------------------------------------------------------------------------------------------------------------------| | =a=                       | Annotate: edit mode with the pen on and the Annotate row; =a= again ends it (see [[*Annotating while editing][Annotating]]) | | =1= to =5=                | Pe",
+      "content": "| Key                       | Effect                                                                                          | |---------------------------+-------------------------------------------------------------------------------------------------| | =a=                       | Annotate: edit mode with the pen on and the Annotate row; =a= again ends it (see [[*Annotating while editing][Annotating]])    | | =1= to =5=                | Pen colour while the pen is on: red, blue, green, black",
       "path": [
         "Presenter Tools and Live Python"
       ],
@@ -109189,7 +109189,7 @@
         "slideshow",
         "key",
         "effect",
-        "--------------------------------------------------------------------------------------------------------------------------------------------------------",
+        "----------------------------------------------------------------------------------------------------------------------------",
         "annotate",
         "edit",
         "mode",
@@ -109199,7 +109199,12 @@
         "ends",
         "annotating",
         "while",
-        "editing"
+        "editing",
+        "colour",
+        "red",
+        "blue",
+        "green",
+        "black"
       ]
     },
     {

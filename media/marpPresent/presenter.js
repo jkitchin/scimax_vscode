@@ -17,7 +17,7 @@
  *            gives the browser's own menu)
  *   (hold the mouse button on a slide)  spotlight: the screen darkens except a circle around
  *            the cursor, which follows the mouse until you let go. Not on buttons, links,
- *            sliders, code cells or widgets, and not while the pen is on.
+ *            sliders, code cells or widgets, and not while the pen is on or x picks a box to zoom.
  *   s        save a standalone copy of the whole deck with the ink in it (<deck>-annotated.html):
  *            one file with the theme, images, iframes, fonts and these tools inlined. Open it
  *            anywhere, keep annotating, press s again. (Needs a deck built by scimax with
@@ -810,7 +810,8 @@
   // ---- spotlight: hold the mouse button to darken everything but a circle at the cursor ----
   let spotOn = false;
   const INTERACTIVE = "a, button, input, select, textarea, label, summary, iframe, video, audio, [contenteditable], " +
-    ".pyc, .mp-note, .mp-note-icon, .mp-menu, .bespoke-marp-osc, [role=button], [onclick]";
+    ".pyc, .mp-note, .mp-note-icon, .mp-menu, .bespoke-marp-osc, [role=button], [onclick], " +
+    ".mp-zoom-pick";                                              // x: dragging the box to zoom into
   function placeSpot(x, y) {
     const r = slideRect(), radius = Math.max(40, 0.14 * r.height);     // scales with the slide
     spot.style.background = `radial-gradient(circle ${radius}px at ${x}px ${y}px, ` +
