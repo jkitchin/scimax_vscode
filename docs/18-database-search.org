@@ -146,8 +146,7 @@ is skipped, and if the file was indexed before, its entry is dropped.
 
 [[cmd:workbench.action.openSettings2?@scimax][Open Scimax Settings]]
 
-** ✅ Choosing What Gets Indexed
-CLOSED: [2026-11-06 Fri 14:18]
+** 👀 Choosing What Gets Indexed
 
 By default the index covers four sources: every registered scimax project
 (=scimax.db.includeProjects=), the folders open in VS Code
@@ -165,52 +164,23 @@ if an older version registered them, since that would index everything under
 =scimax.db.include= takes single =.org= / =.md= files as well as folders, in
 both the extension and the CLI (=scimax db sync=).
 
-To index only what you choose, list it in a scope file and apply it with
-=scripts/scope-db.js=. The script writes the settings and removes everything
-outside the scope from the database, keeping the embeddings of files that stay,
-so nothing has to be re-embedded. Keep the scope file somewhere synced
-(e.g. Dropbox) and run the same command on each machine.
+To index only what you choose, turn off the projects and workspace sources and
+list the folders and files you want:
 
 #+BEGIN_SRC json
 {
-  "include": ["~/Dropbox/projects", "~/Dropbox/proposals", "~/Dropbox/*.org"],
-  "exclude": ["**/_build/**", "**/_site/**", "**/venv/**"],
-  "includeJournal": true,
-  "includeProjects": false,
-  "includeWorkspace": false
+  "scimax.db.include": ["~/Dropbox/projects", "~/Dropbox/proposals", "~/Dropbox/dashboard.org"],
+  "scimax.db.exclude": ["**/_build/**", "**/_site/**", "**/venv/**"],
+  "scimax.db.includeJournal": true,
+  "scimax.db.includeProjects": false,
+  "scimax.db.includeWorkspace": false
 }
 #+END_SRC
 
-- =include= takes folders, single files, and =*= globs within one folder
-  (=~/Dropbox/*.org= indexes the top-level files without the subfolders).
-  Paths may start with =~=. Entries that don't exist on a machine are skipped.
-- =exclude= is added to the existing =scimax.db.exclude=; the built-in baseline
-  still applies.
-- =includeProjects= and =includeWorkspace= default to =false= in the scope file,
-  so the index is exactly the listed folders plus the journal.
-- =fileExtensions= (optional) sets =scimax.db.fileExtensions=; without it the
-  current setting is used. Indexed files of other types are removed too.
-
-#+BEGIN_SRC sh
-# Dry run: what would be kept and removed, grouped by folder
-node scripts/scope-db.js --config ~/Dropbox/scimax-db-scope.json
-
-# Apply (quit VS Code first)
-node scripts/scope-db.js --config ~/Dropbox/scimax-db-scope.json --apply
-#+END_SRC
-
-=--apply= refuses to run while another process has the database open. It backs
-up =settings.json= (=settings.json.bak-<time>=) and the database
-(=scimax-db.backup-<time>.sqlite=, skip with =--no-backup=), removes the
-out-of-scope files in one transaction, then compacts the database with
-=VACUUM=. Use =--settings= and =--db= for non-default locations.
-
-The script runs from a scimax-vscode checkout after =npm run compile=, or from
-the installed extension. It uses the extension's own exclude matching, so the
-script and the extension agree on what is out of scope.
-
-Unlike =scimax db prune=, which removes only entries matching an exclude
-pattern, the script also removes files outside every included folder.
+Changing these settings does not remove files that are already indexed.
+=scimax db prune= removes the ones that now match an exclude pattern; to drop
+everything outside the new folders, clear the database and rebuild it
+(=Scimax: Rebuild Database (from scratch)=), which embeds the files again.
 
 * ✅ Full-Text Search
 CLOSED: [2026-01-17 Sat 11:46]
