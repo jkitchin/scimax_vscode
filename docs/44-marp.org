@@ -165,7 +165,7 @@ render citations and each slide's references the same way. Marp CLI is given
 the citation plugins as its engine, along with the reference manager's
 entries for the keys the deck cites.
 
-* Slideshow
+* 👀 Slideshow
 
 To present, Scimax makes Marp's HTML slideshow of the deck and opens it in the
 browser. Marp CLI builds it (see [[*Marp CLI][Marp CLI]]), and it is written to a private folder
@@ -187,8 +187,8 @@ current slide.
 |----------------------------------------------+----------------------------------------------------------------------------|
 | =Right=, =Down=, =Space=, =Page Down=, click | Next slide                                                                 |
 | =Left=, =Up=, =Page Up=                      | Previous slide                                                             |
-| =F=                                          | Full screen                                                                |
-| =P=                                          | Presenter view: current and next slide, notes and a timer, in a new window |
+| =f=                                          | Full screen                                                                |
+| =p=                                          | Presenter view: current and next slide, notes and a timer, in a new window |
 | =Home= / =End=                               | First / last slide                                                         |
 
 The four squares in the slideshow's control bar (bottom left, between full
@@ -714,40 +714,47 @@ scripts and makes the same HTML as the =h= export.
 
 ** 👀 Keys in the slideshow
 
-| Key                       | Effect                                                                                          |
-|---------------------------+-------------------------------------------------------------------------------------------------|
-| =a=                       | Annotate: edit mode with the pen on and the Annotate row; =a= again ends it (see [[*Annotating while editing][Annotating]])    |
-| =1= to =5=                | Pen colour while the pen is on: red, blue, green, black, yellow highlighter                     |
-| =r=                       | Stroke eraser: drag over strokes to remove them whole; =r= again turns it off                   |
-| =R= (=Shift+R=)           | Eraser that rubs out exactly the ink under it                                                   |
-| =z=                       | Undo the last change to this slide's ink (a stroke, an erase, a lasso move)                     |
-| =c= / =C=                 | Clear this slide / every slide                                                                  |
-| =l=                       | Laser pointer: a dot that follows the mouse                                                     |
-| =1= to =5=                | Laser colour while the laser is on: red, blue, green, black, yellow                             |
-| =n=                       | New sticky note at the mouse; type Markdown, click away to render it                            |
-| Right-click               | A menu with all of these (Shift+right-click gives the browser's own menu)                       |
-| Hold the mouse on a slide | Spotlight: the screen darkens except a circle around the cursor (not on                         |
-|                           | buttons, links, code cells or widgets, while the pen or eraser is on, or while =x= picks a box) |
-| =s=                       | Save a standalone copy of the deck with the ink, ~<deck>-annotated.html~                        |
-| =m=                       | Save the Markdown source with the ink as SVG, ~<deck>-annotated.md~                             |
-| =S=                       | Save only the ink, as JSON                                                                      |
-| =i=                       | Load ink from such a JSON file (or drag the file onto the deck)                                 |
-| =t= / =T=                 | Start or pause the talk timer / reset it to the full time                                       |
-| =+= / =-=                 | Add a minute to the talk timer / take one off                                                   |
-| =Alt+T= (=Option+T=)      | Type a new time for the talk timer (=20=, =12:30=, =90s=), or add one                           |
-| =e= / =E=                 | Start or pause this slide's exercise countdown / reset it                                       |
-| =b= / =w=                 | Black / white screen, to pause for discussion; again, =Esc= or a click returns                  |
-| =x=                       | Zoom: drag a box (or click) to magnify it; =x= or =Esc= zooms out                               |
-| =g=                       | Go to a slide: type a number or words from its title or text, then Enter                        |
-| A number, then Enter      | Jump to that slide (=12= Enter goes to slide 12)                                                |
-| =d=                       | Edit the slides' text and layout in place (see below)                                           |
-| =N= (=Shift+N=)           | A new blank slide after this one, opened for editing (see below)                                |
-| =v=                       | Live captions on or off (see below)                                                             |
-| =V= (=Shift+V=)           | Get ready to record: opens the Microphone window; while recording, stop and save                |
-| =M= (=Shift+M=)           | The Microphone panel: microphone, level, gain, settings, Record/Stop (see below)                |
-| =Cmd+P= / =Ctrl+P=        | Print; "Save as PDF" keeps every slide's ink as vector graphics                                 |
+| Key                       | Effect                                                                                               |
+|---------------------------+------------------------------------------------------------------------------------------------------|
+| =a=                       | Annotate: edit mode with the pen on and the Annotate row; =a= again ends it (see [[*Annotating while editing][Annotating]])         |
+| =1= to =5=                | Pen colour while the pen is on: red, blue, green, black, yellow highlighter                          |
+| =r=                       | Stroke eraser: drag over strokes to remove them whole; =r= again turns it off                        |
+| =R= (=Shift+R=)           | Eraser that rubs out exactly the ink under it                                                        |
+| =z=                       | Undo the last change to this slide's ink (a stroke, an erase, a lasso move)                          |
+| =c= / =C=                 | Clear this slide / every slide                                                                       |
+| =l=                       | Laser pointer: a dot that follows the mouse                                                          |
+| =1= to =5=                | Laser colour while the laser is on: red, blue, green, black, yellow                                  |
+| =n=                       | New sticky note at the mouse; type Markdown, click away to render it                                 |
+| =h=                       | This slide's Markdown in a panel that follows the slides, with a Copy button; =h= or =Esc= closes it |
+| Right-click               | A menu with all of these (Shift+right-click gives the browser's own menu)                            |
+| Hold the mouse on a slide | Spotlight: the screen darkens except a circle around the cursor (not on                              |
+|                           | buttons, links, code cells or widgets, while the pen or eraser is on, or while =x= picks a box)      |
+| =s=                       | Save a standalone copy of the deck with the ink, ~<deck>-annotated.html~                             |
+| =m=                       | Save the Markdown source with the ink as SVG, ~<deck>-annotated.md~                                  |
+| =S=                       | Save only the ink, as JSON                                                                           |
+| =i=                       | Load ink from such a JSON file (or drag the file onto the deck)                                      |
+| =t= / =T=                 | Start or pause the talk timer / reset it to the full time                                            |
+| =+= / =-=                 | Add a minute to the talk timer / take one off                                                        |
+| =Alt+T= (=Option+T=)      | Type a new time for the talk timer (=20=, =12:30=, =90s=), or add one                                |
+| =e= / =E=                 | Start or pause this slide's exercise countdown / reset it                                            |
+| =b= / =w=                 | Black / white screen, to pause for discussion; again, =Esc= or a click returns                       |
+| =x=                       | Zoom: drag a box (or click) to magnify it; =x= or =Esc= zooms out                                    |
+| =g=                       | Go to a slide: type a number or words from its title or text, then Enter                             |
+| A number, then Enter      | Jump to that slide (=12= Enter goes to slide 12)                                                     |
+| =d=                       | Edit the slides' text and layout in place (see below)                                                |
+| =N= (=Shift+N=)           | A new blank slide after this one, opened for editing (see below)                                     |
+| =v=                       | Live captions on or off (see below)                                                                  |
+| =V= (=Shift+V=)           | Get ready to record: opens the Microphone window; while recording, stop and save                     |
+| =M= (=Shift+M=)           | The Microphone panel: microphone, level, gain, settings, Record/Stop (see below)                     |
+| =Cmd+P= / =Ctrl+P=        | Print; "Save as PDF" keeps every slide's ink as vector graphics                                      |
 
-Marp's own keys (=F= full screen, =P= presenter view, arrows) still work, also
+=h= shows how a slide is written: its Markdown, as in the deck (the first
+slide with the front matter), in a panel at the top right. The panel follows
+you from slide to slide, so you can walk through a deck and its source
+together; Copy puts the slide's Markdown on the clipboard. It needs the source
+in the HTML, which every deck built by Scimax has.
+
+Marp's own keys (=f= full screen, =p= presenter view, arrows) still work, also
 after you click into a widget: the arrows, =PageUp=, =PageDown=, =Home= and
 =End= go on to the slideshow unless the widget uses them itself, or you are
 typing in one of its fields. Moving the mouse over a widget that fills the slide
@@ -758,7 +765,7 @@ note's bar drags it; its =●= picks a colour, =–= shrinks it to an icon and
 =×= deletes it, and right-clicking a note offers the same three. The
 right-click menu also has Fullscreen (=f=).
 
-** Talk timer
+** 👀 Talk timer
 
 Give the length of the talk with a ~timer~ key and a small countdown sits in
 the top-right corner of every slide:
@@ -795,7 +802,7 @@ for good.
   was, and =T= resets to it; the deck file is not changed.
 - It turns amber in the last 5 minutes (the last fifth of a short talk), red
   in the last minute, and after time is up counts the overtime as =-1:05=.
-- The audience window and Marp's presenter view (=P=), where the countdown
+- The audience window and Marp's presenter view (=p=), where the countdown
   sits next to Marp's clock, show the same time: pausing in one pauses both.
   The time is kept in the browser's local storage, so a reload, or a live
   reload when you save the deck, does not reset it.
@@ -844,7 +851,7 @@ adds one and turns on the presenter tools.
   Enter. Without the list, type a slide number and press Enter: =1= =2=
   Enter goes to slide 12.
 
-** Live captions
+** 👀 Live captions
 
 =v= shows what you say as captions at the bottom of the slides, two lines at
 a time. Words still being recognised are grey. The captions fade out after a
@@ -858,7 +865,7 @@ The language comes from the deck's ~lang:~ directive (for example
 ~lang: de-DE~), or from the browser's language if the deck has none.
 
 Press =v= in the window you are working in. If you present from Marp's
-presenter view (=P=), press it there: the presenter view listens, and the
+presenter view (=p=), press it there: the presenter view listens, and the
 captions show on the audience screen and, smaller, in the presenter view.
 Live reload keeps them on, but Chrome may ask for the microphone again.
 

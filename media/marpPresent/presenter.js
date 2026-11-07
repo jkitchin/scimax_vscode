@@ -13,6 +13,7 @@
  *   n        new sticky note at the mouse: type Markdown, click away to render it; drag its bar
  *            to move it, ● picks a colour (yellow, pink, blue, green, orange), – shrinks it to a
  *            📝 icon (click to reopen), × deletes it; right-click a note for the same options
+ *   h        show / hide this slide's Markdown (how it is written) in a panel that follows the slides, with a Copy button
  *   right-click  a menu with all of these (Shift+right-click, or right-click in a text field,
  *            gives the browser's own menu)
  *   (hold the mouse button on a slide)  spotlight: the screen darkens except a circle around
@@ -811,7 +812,7 @@
   let spotOn = false;
   const INTERACTIVE = "a, button, input, select, textarea, label, summary, iframe, video, audio, [contenteditable], " +
     ".pyc, .mp-note, .mp-note-icon, .mp-menu, .bespoke-marp-osc, [role=button], [onclick], " +
-    ".mp-zoom-pick";                                              // x: dragging the box to zoom into
+    ".mp-zoom-pick, .mp-src";                                              // x: dragging the box to zoom into
   function placeSpot(x, y) {
     const r = slideRect(), radius = Math.max(40, 0.14 * r.height);     // scales with the slide
     spot.style.background = `radial-gradient(circle ${radius}px at ${x}px ${y}px, ` +
@@ -1438,6 +1439,7 @@
   }
   function onKey(e) {
     if (e.key === "Escape" && menuOpen()) { e.preventDefault(); e.stopPropagation(); closeMenu(); return; }   // not Marp's overview too
+    if (e.key === "Escape" && !srcPanel.hidden && !e.ctrlKey && !e.metaKey) { e.preventDefault(); e.stopPropagation(); toggleSource(false); return; }
     if (overview) return;
     if (e.ctrlKey || e.metaKey || e.altKey) return;
     if (/^(TEXTAREA|SELECT)$/.test((e.target && e.target.tagName) || "")) return;
@@ -1474,6 +1476,8 @@
       picker.click(); return true;
     } else if (k === "n") {
       newNote(); return true;
+    } else if (k === "h") {
+      toggleSource(); return true;
     } else if (k === "c") {
       if (ink[id]) checkpoint(id);
       say(ink[id] ? "Cleared this slide's ink (z puts it back)" : "No ink on this slide");
@@ -1556,6 +1560,62 @@
     note: () => { act("n"); },                         // a sticky note at the mouse
   };
 
+  // ---- h: this slide's Markdown, as written, in a panel that follows the slides ----
+  const srcPanel = document.createElement("div");
+  srcPanel.className = "annotate-layer mp-src";
+  srcPanel.hidden = true;
+  srcPanel.innerHTML = '<div class="hd"><span class="t"></span><button class="cp" title="Copy the Markdown">Copy</button>' +
+    '<button class="x" title="Close (h or Esc)" aria-label="Close">×</button></div><pre></pre>';
+  document.body.appendChild(srcPanel);
+  const srcCss = document.createElement("style");
+  srcCss.textContent = `
+.mp-src { position: fixed; z-index: 100002; top: 56px; right: 12px; width: min(46vw, 640px); max-height: calc(100vh - 120px);
+  display: flex; flex-direction: column; border-radius: 10px; background: rgba(24,26,33,.96); color: #e5e7eb;
+  box-shadow: 0 8px 30px rgba(0,0,0,.35); font: 13px/1.45 ui-monospace, Menlo, Consolas, monospace; overflow: hidden; }
+.mp-src[hidden] { display: none; }
+.mp-src .hd { display: flex; align-items: center; gap: 8px; padding: 6px 8px 6px 12px; background: rgba(255,255,255,.07);
+  font: 600 12px -apple-system, "Helvetica Neue", Helvetica, Arial, sans-serif; letter-spacing: .03em; user-select: none; }
+.mp-src .t { flex: 1; }
+.mp-src button { border: 0; border-radius: 6px; padding: 3px 9px; background: rgba(255,255,255,.12); color: inherit; font: inherit; cursor: pointer; }
+.mp-src button:hover { background: rgba(255,255,255,.24); }
+.mp-src pre { margin: 0; padding: 10px 14px 12px; overflow: auto; white-space: pre-wrap; overflow-wrap: anywhere; user-select: text; }`;
+  document.head.appendChild(srcCss);
+  // The slide's chunk of the deck's Markdown (slide 1 with the front matter); null: no source in the deck,
+  // "": a slide added in the slideshow
+  function slideMarkdown() {
+    loadSource();
+    if (!source) return null;
+    const id = slideId();
+    if (!/^\d+$/.test(id)) return "";
+    const { head, chunks } = splitSlides(source);
+    const c = chunks[+id - 1];
+    if (!c) return "";
+    const lines = (id === "1" ? [...head, ...c] : c)
+      .filter(l => !l.startsWith('<svg class="marp-ink') && !l.startsWith(NOTES_TAG));   // ink from an annotated .md
+    let a = 0, b = lines.length;
+    while (a < b && !lines[a].trim()) a++;
+    while (b > a && !lines[b - 1].trim()) b--;
+    return lines.slice(a, b).join("\n");
+  }
+  function fillSource() {
+    const md = slideMarkdown();
+    srcPanel.querySelector(".t").textContent = "Slide " + slideId() + " · Markdown";
+    srcPanel.querySelector("pre").textContent = md === null ? "This deck has no Markdown in it: build it with scimax to see its source."
+      : md === "" ? "This slide was added in the slideshow, so it has no Markdown." : md;
+    srcPanel.querySelector(".cp").hidden = !md;
+  }
+  function toggleSource(on = srcPanel.hidden) { srcPanel.hidden = !on; if (on) fillSource(); }
+  srcPanel.querySelector(".x").addEventListener("click", () => toggleSource(false));
+  srcPanel.querySelector(".cp").addEventListener("click", () => {
+    const md = slideMarkdown();
+    if (!md) return;
+    (navigator.clipboard ? navigator.clipboard.writeText(md) : Promise.reject())
+      .then(() => say("Copied this slide's Markdown"), () => say("Could not copy: select the text and press " + (MAC ? "⌘C" : "Ctrl+C")));
+  });
+  // Clicks, selections and scrolling in the panel are not pen strokes, spotlights or slide changes
+  ["pointerdown", "mousedown", "click", "wheel", "touchstart"].forEach(t => srcPanel.addEventListener(t, e => e.stopPropagation(), { passive: true }));
+  window.__marpSource = { toggle: () => toggleSource(), open: () => !srcPanel.hidden };   // editor.js passes h on while editing
+
   // ---- right-click menu: every tool in one place, each with its key ----
   const menu = document.createElement("div");
   menu.className = "annotate-layer mp-menu";
@@ -1611,6 +1671,7 @@
       { label: "Load annotations…", key: "i", run: () => act("i") },
       { label: "Print / save as PDF", key: MAC ? "⌘P" : "Ctrl+P", run: () => setTimeout(() => print(), 50) },
       "-",
+      { label: srcPanel.hidden ? "Show this slide's Markdown" : "Hide the Markdown", key: "h", check: !srcPanel.hidden, run: () => toggleSource() },
       { label: fs ? "Exit fullscreen" : "Fullscreen", key: "f",
         run: () => fs ? document.exitFullscreen() : document.documentElement.requestFullscreen().catch(() => {}) },
       // timer.js: a deck without a timer can have one added (one it has is right-clicked on itself)
@@ -1707,6 +1768,7 @@
     stroke = null; sel = []; lasso = moving = null;
     closeMenu();
     redraw(); buildNotes();
+    if (!srcPanel.hidden) fillSource();
     setTimeout(() => { redraw(); layoutNotes(); }, 450);       // again once the slide transition has settled
   }).observe(document.body, { subtree: true, attributes: true, attributeFilter: ["class"] });
   addEventListener("fullscreenchange", () => setTimeout(() => { resize(); layoutNotes(); }, 100));

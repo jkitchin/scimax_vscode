@@ -7,6 +7,7 @@
  *   c / C      (while editing) clear this slide's ink / every slide's; z undoes the ink (the bar's Clear buttons too)
  *   r / R      (while editing) the stroke eraser / the eraser that rubs out; again: back to the pen
  *   n          (while editing) a sticky note at the mouse, as in the slideshow
+ *   h          (also while editing) this slide's Markdown in a panel
  *   N          (Shift+N) a new blank slide after this one, ready to edit (also while editing)
  *   double-click a heading, paragraph, image, ...: start editing it (text to type in, anything else selected)
  *
@@ -1086,7 +1087,7 @@ table[data-mpe-add] :is(td, th) { min-width: 3em; height: 1.4em; }
       else if (k === "Enter" && e.shiftKey) { e.preventDefault(); document.execCommand("insertLineBreak"); }
       return;
     }
-    if (e.target && e.target.closest && e.target.closest(".mp-menu, .mp-goto, .mp-note")) return;
+    if (e.target && e.target.closest && e.target.closest(".mp-menu, .mp-goto, .mp-note, .mp-src")) return;
     // an Annotate tool takes Esc, Delete, Cmd/Ctrl+Z and 1-5 (presenter.js)
     if (inking() && ink().key(e)) { e.preventDefault(); e.stopImmediatePropagation(); return; }
     if (!selected && NAV.test(k) && !mod) return;           // change slide
@@ -1107,6 +1108,7 @@ table[data-mpe-add] :is(td, th) { min-width: 3em; height: 1.4em; }
       inkTool(ink().tool() === t ? "pen" : t);
     }
     else if (k === "n" && ink() && ink().note) ink().note(); // a sticky note at the mouse
+    else if (k === "h" && window.__marpSource) window.__marpSource.toggle();   // this slide's Markdown
     else if (k === "z" && ink()) ink().undo();             // the ink's undo (Cmd/Ctrl+Z undoes edits)
     else if (k === "t") addText();
     else if (k === "N" && slidesOn()) addSlide();

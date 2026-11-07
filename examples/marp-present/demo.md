@@ -13,10 +13,11 @@ math: katex
 
 Every slide shows a feature and how to try it.
 **Right-click** anywhere for a menu of the presenter tools.
+**h** on any slide shows the Markdown that makes it.
 
 Press → to begin. The talk timer in the corner starts when you do.
 
-<!-- Speaker notes look like this: any comment that is not a directive. Press P to see them in the presenter view. -->
+<!-- Speaker notes look like this: any comment that is not a directive. Press p to see them in the presenter view. -->
 
 ---
 
@@ -39,7 +40,7 @@ The pen, pointer, timer, Python and the rest, in the browser
 - **+** / **-** add or take off a minute; **Alt+T** types a new time
 - Right-click the timer for its menu: reset, set the time, back to the deck's
 - Amber in the last 5 minutes, red in the last minute, then it counts overtime
-- **P** opens Marp's presenter view, which shows the same time
+- **p** opens Marp's presenter view, which shows the same time
 
 No `timer:` in a deck? Right-click → *Add a talk timer...* during the show.
 
@@ -77,7 +78,8 @@ $$ \bar y \pm t_{0.975,\,n-1}\, \frac{s}{\sqrt n} $$
 
 * Bullets written with `*` appear one at a time
 * This slide fades in: `<!-- _transition: fade -->`
-* Press **P**: the presenter view has this slide's notes
+* Press **p**: the presenter view has this slide's notes
+* Press **h** to see how: the `*` bullets, the `_transition` comment and the notes
 
 <!-- These are the notes for the builds slide. Insert → Speaker Notes in the Marp menu adds a comment like this one. -->
 
