@@ -7,17 +7,42 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.14.0] - 2026-11-07
+
 ### Fixed
 
 - **Ink and notes on slides that are not 16:9** - The presenter tools saved and printed ink on a fixed 1280 x 720 canvas stretched over the slide, so on a 4:3 slide or a poster (a theme `@size` such as 33 x 48 in) printed pen strokes were skewed, printed sticky notes landed small in the top-left corner, and on-screen notes were sized by the slide's height, so on a tall page they were huge. Ink now uses each slide's own size, and notes are sized as on a landscape slide of the same width. 16:9 and 4:3 decks look as before.
 - **`scimax marp build` ignored the deck's `.marprc` themes** - The HTML build passed Scimax's bundled themes with `--theme-set`, which replaces a `.marprc`'s `themeSet` in Marp CLI, so a deck whose theme was set there was built with the default 1280 x 720 slide; the `--pdf` build had the opposite problem and could not find `theme: scimax`. Both now get the bundled themes and the `.marprc` ones, as the VS Code preview and Present already did.
 - **Project switcher (`C-c p p`) order was stale in older windows** - Each window read the project list once at startup, so projects opened in another window did not move to the top. The switcher now re-reads the list each time it opens, most recently opened first.
+- **CLI ignored settings with glob patterns** - The CLI read `settings.json` with a regex that took `/**` and `**/` inside glob patterns for comments, so parsing failed and it silently used the defaults (and `scimax db ignore` could write back a truncated file). It now uses a string-aware JSONC parser.
+- **CLI agenda excludes** - `scimax.agenda.exclude` now applies to the CLI's today, week, overdue and todos views, not only custom views.
+- **Negative CLI arguments** - `--date -1d` and `--date=-1d` were read as flags; they are now values.
+- **Errors from live Python cells could vanish** - A traceback could be squeezed to nothing when a slide's CSS made the editor taller. The output now keeps up to 45% of the cell, the error message shows in red in the cell's bar, and tracebacks show the failing lines, as Jupyter does (#77).
+- **Slide keys after code cells** - In a Marp slideshow, Shift+Enter and the Run button run a Python cell and leave the editor, so the arrow keys change slides (Ctrl/Cmd+Enter runs and keeps editing); PageUp/PageDown from a clicker always change slides.
+- **Slideshow keys while editing or annotating** - After `a`, keys such as `x`, `g`, `b`/`w`, `e`, `l`, `+`/`-`, `v` and Marp's `f`, `p` and `o` did nothing; `r`, `R` and `n` were swallowed too. The editor now keeps only the keys it uses, and Esc first closes a zoom, blank screen, zoom picker or typed slide number. `c` and `C` say what they cleared.
+- **No spotlight while `x` picks a box to zoom.**
+- **`p` and `f`, not `P` and `F`** - The demo deck and docs said to press `P` (presenter view) and `F` (full screen), which do nothing; Marp listens for lowercase keys.
+- **Changing a SCHEDULED or DEADLINE date dropped its time, repeater and warning period.** They are now kept, and `C-c C-d` / `C-c C-s` open the calendar on the heading's current date.
 
 ### Added
 
 - **A poster example** - `examples/scimax-poster` is a 34 x 46 in poster about Scimax, made as a one-slide Marp deck with a custom theme size (`@size poster 3264px 4416px`); `make` builds the HTML and a full-size PDF.
 - **Posters in the presentations skill** - The `scimax-presentations` agent skill now covers making a poster as a one-slide Marp deck: theme `@size` for common poster sizes, registering the theme in `.marprc.yml`, type sizes, the column layout, the build and a fit check.
 - **Narrow to subtree and widen (speed keys `N` and `S`)** - `scimax.speed.narrowToSubtree` folds everything outside the current subtree and its parent headings, leaving the cursor where it is; `scimax.speed.widen` unfolds everything. This narrows by folding, so search and edits still reach the hidden text.
+- **Index on save** - Saving an org or Markdown file indexes it wherever it is. A file changing on disk is re-indexed only if it is in the indexed folders or already in the database; before, the watcher indexed any file that changed in an open folder (git pulls, builds, agents). A file listed by exact path in `scimax.db.include` beats an excluded folder. New commands: *Always Index File* / *Always Index Current File* and *Remove Files Outside Indexed Folders...*; *Don't Index File* also takes the file out of `scimax.db.include`.
+- **`scimax.db.fileExtensions`** (default `["org", "md"]`) decides which file types are indexed, by the extension and the CLI alike (the CLI scanned only `.org` before). `.markdown` is no longer indexed by default. The home directory and its ancestors are never registered as projects or used as indexing roots.
+- **Run Markdown code blocks like notebook cells** - A Markdown file's blocks share one session, and a Python block shows its printed output and then the value of its last line. Org header arguments on the fence (```` ```python :session none ````) or a `#+PROPERTY: header-args` line override the defaults. Run / Clear CodeLens on runnable blocks (`scimax.babel.markdownCodeLens`). In a Marp deck, `C-c C-c` on a plain Python block runs it in the deck's Python panel.
+- **`input()` in live Python cells** - In Marp slides and the Python panel, `input()` shows a text box under the cell's output (Chrome and Edge; #77).
+- **`examples/marp-present/code.md`** - A deck with every kind of code in slides, including broken cells for teaching. It and the demo deck are published with the presenter tools on GitHub Pages and linked from the README.
+- **Four more bundled Marp themes** - `steampunk`, `cyberpunk`, `steel` and `steelpunk`; the theme picker describes each. Every bundled theme tags a highlighted code block with its language.
+- **Marp Microphone panel** - Shift+M (or `V` before recording) opens an OBS-style panel in its own window: the microphone in use, a level meter, gain, limiter, voice filter, Chrome's echo cancellation / noise suppression / auto gain, a test recording and Record / Stop. Captions and the recorder share its microphone. Stopping a recording asks where to save it.
+- **Annotate tools in the slideshow** - `a` opens an Annotate row with pen, pencil (graphite that darkens when gone over) and highlighter in any colour, a size slider, an eraser that rubs out only the ink under it, a stroke eraser, a lasso to move, recolour, resize or delete strokes, Clear and Clear all. `z` undoes every ink change.
+- **Shift+N adds a blank slide** in the slideshow and opens it for editing.
+- **`h` shows the slide's Markdown** - A panel with the current slide's Markdown as written, which follows the slides and has a Copy button.
+- **Auto-copy on mouse selection** - Text selected with the mouse is copied to the clipboard and kill ring, with a short notification (`scimax.autoCopy.enabled`, `scimax.autoCopy.notify`, *Toggle Auto Copy*).
+- **`scimax table align`** - Aligns org and Markdown tables from the command line, with `--line`, `--check`, `--stdout`, `--raw-links` and `--json`. The editor and CLI share the same code.
+- **`C-c C-d` / `C-c C-s` in the Agenda view** set the selected item's deadline or scheduled date.
+- **`scimax journal --no-create --no-open`**, and the JSON output reports `exists`.
 
 ## [0.13.0] - 2026-11-01
 
