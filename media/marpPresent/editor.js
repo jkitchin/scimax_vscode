@@ -1054,7 +1054,7 @@ table[data-mpe-add] :is(td, th) { min-width: 3em; height: 1.4em; }
     say("Edits on this slide undone (Cmd/Ctrl+Z brings them back)");
   }
 
-  // ---- keys: while editing, every key is ours, so Marp and the other tools do not see it ----
+  // ---- keys: while editing, the keys below are ours; the rest go on to Marp and the other tools ----
   const NAV = /^(ArrowLeft|ArrowRight|ArrowUp|ArrowDown|PageUp|PageDown|Home|End| )$/;
   function onKey(e) {
     const k = e.key, mod = e.metaKey || e.ctrlKey;
@@ -1088,12 +1088,13 @@ table[data-mpe-add] :is(td, th) { min-width: 3em; height: 1.4em; }
       return;
     }
     if (e.target && e.target.closest && e.target.closest(".mp-menu, .mp-goto, .mp-note, .mp-src")) return;
+    // Esc first closes what showtools.js opened (a zoom, a blank screen, the zoom picker, a typed slide number)
+    if (k === "Escape" && window.__marpShowEsc && window.__marpShowEsc()) return;
     // an Annotate tool takes Esc, Delete, Cmd/Ctrl+Z and 1-5 (presenter.js)
     if (inking() && ink().key(e)) { e.preventDefault(); e.stopImmediatePropagation(); return; }
     if (!selected && NAV.test(k) && !mod) return;           // change slide
     if (mod && (k === "s" || k === "p" || k === "P")) return;   // the browser's save and print
     if (k === "s" || k === "S") return;                     // presenter.js saves the deck
-    e.stopImmediatePropagation();
     let used = true;
     if (mod && (k === "z" || k === "Z")) undo(e.shiftKey);
     else if (mod && k === "y") undo(true);
@@ -1130,7 +1131,10 @@ table[data-mpe-add] :is(td, th) { min-width: 3em; height: 1.4em; }
       const dy = (cur.dy || 0) + (k === "ArrowUp" ? -step : k === "ArrowDown" ? step : 0);
       change(() => op.set({ dx, dy }));
     } else used = false;
-    if (used || !mod) e.preventDefault();
+    // A key the editor uses is its own; any other goes on to the slideshow's tools (x zoom, g go to,
+    // b / w, e, l, v, f, p, ...), so they work while editing and annotating too
+    if (used) { e.stopImmediatePropagation(); e.preventDefault(); }
+    else if (k === "Tab" && !mod) e.preventDefault();      // not the browser's focus moving through the toolbar
   }
   addEventListener("keydown", onKey, true);
 

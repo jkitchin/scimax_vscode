@@ -1093,13 +1093,19 @@ storage is limited (a few megabytes for all decks opened from files), so if
 it fills up, a message says so; press =s= to save the deck with its edits
 before reloading.
 
-*** Annotating while editing
+*** 👀 Annotating while editing
 
 The bar's second row, *Annotate*, draws on the slide, so you can sketch on a
 blank slide (=N= adds one) without leaving edit mode. Pressing =a= in the
 slideshow starts edit mode with the pen on, so these tools are a click away;
 =a= again turns the tool off and leaves edit mode. (In the presenter view,
 which cannot edit, =a= turns the pen alone on or off.)
+
+The slideshow's keys keep working while you edit or annotate: =x= zooms, =g=
+goes to a slide, =b= / =w= blank the screen, =+= / =-= change the talk timer,
+=h= shows the Markdown, and so on. Only the keys edit mode uses itself (=t= a
+text box, =d=, =a=, =c=, =r=, =z=, =n=, the arrows with something selected,
+...) do their editing job, and =Esc= first closes a zoom or a blank screen.
 
 | Button          | Effect                                                                                        |
 |-----------------+-----------------------------------------------------------------------------------------------|

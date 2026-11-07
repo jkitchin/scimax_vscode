@@ -350,6 +350,8 @@ svg[data-marpit-svg].mp-zoomed { transition: transform .35s ease; transform-orig
     if (used) { e.preventDefault(); e.stopPropagation(); }
   }
   addEventListener("keydown", onKey, true);
+  // editor.js runs first: while editing it lets Esc through to us when we have something to close
+  window.__marpShowEsc = () => !!(digits || picking || state.blank || state.zoom);
   // Widgets in iframes swallow keys; listen there too
   const hookFrame = f => { try { const w = f.contentWindow; if (w && !w.__marpShowHooked) { w.__marpShowHooked = true; w.addEventListener("keydown", onKey, true); } } catch (e) { /* cross-origin */ } };
   document.querySelectorAll("iframe").forEach(f => { hookFrame(f); f.addEventListener("load", () => hookFrame(f)); });
