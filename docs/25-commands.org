@@ -807,23 +807,26 @@ CLOSED: [2026-01-17 Sat 12:45]
 ** ✅ Database Maintenance
 CLOSED: [2026-01-17 Sat 12:46]
 
-| Command ID                    | Description           | Default Keybinding |
-|-------------------------------+-----------------------+--------------------|
-| [[cmd:scimax.db.optimize]]    | Optimize Database     | -                  |
-| [[cmd:scimax.db.clear]]       | Clear Database        | -                  |
-| [[cmd:scimax.db.stats]]       | Show Database Stats   | -                  |
-| [[cmd:scimax.db.rebuild]]     | Rebuild Database      | -                  |
-| [[cmd:scimax.db.backup]]      | Backup Database       | -                  |
-| [[cmd:scimax.db.restore]]     | Restore Database      | -                  |
-| [[cmd:scimax.db.verify]]           | Verify Database              | -                  |
-| [[cmd:scimax.db.toggleAutoScan]]   | Toggle Auto-Scan on Save     | -                  |
-| [[cmd:scimax.db.cancelSync]]       | Cancel Database Sync         | -                  |
-| [[cmd:scimax.db.cancelEmbeddings]] | Cancel Embedding Generation  | -                  |
-| [[cmd:scimax.database.refresh]]    | Refresh Database             | -                  |
-| [[cmd:scimax.db.removeCurrentFile]]| Remove Current File from Database | -             |
-| [[cmd:scimax.db.removeFile]]       | Remove File from Database    | -                  |
-| [[cmd:scimax.db.ignoreCurrentFile]]| Add Current File to Ignore Patterns | -           |
-| [[cmd:scimax.db.ignoreFile]]       | Add File to Ignore Patterns  | -                  |
+| Command ID                           | Description                                            | Default Keybinding |
+|--------------------------------------+--------------------------------------------------------+--------------------|
+| [[cmd:scimax.db.optimize]]               | Optimize Database                                      | -                  |
+| [[cmd:scimax.db.clear]]                  | Clear Database                                         | -                  |
+| [[cmd:scimax.db.stats]]                  | Show Database Stats                                    | -                  |
+| [[cmd:scimax.db.rebuild]]                | Rebuild Database                                       | -                  |
+| [[cmd:scimax.db.backup]]                 | Backup Database                                        | -                  |
+| [[cmd:scimax.db.restore]]                | Restore Database                                       | -                  |
+| [[cmd:scimax.db.verify]]                 | Verify Database                                        | -                  |
+| [[cmd:scimax.db.toggleAutoScan]]         | Toggle Auto-Scan on Save                               | -                  |
+| [[cmd:scimax.db.cancelSync]]             | Cancel Database Sync                                   | -                  |
+| [[cmd:scimax.db.cancelEmbeddings]]       | Cancel Embedding Generation                            | -                  |
+| [[cmd:scimax.database.refresh]]          | Refresh Database                                       | -                  |
+| [[cmd:scimax.db.removeCurrentFile]]      | Remove Current File from Database                      | -                  |
+| [[cmd:scimax.db.removeFile]]             | Remove File from Database                              | -                  |
+| [[cmd:scimax.db.ignoreCurrentFile]]      | Add Current File to Ignore Patterns                    | -                  |
+| [[cmd:scimax.db.ignoreFile]]             | Add File to Ignore Patterns                            | -                  |
+| [[cmd:scimax.db.alwaysIndexCurrentFile]] | Always Index Current File (even in an excluded folder) | -                  |
+| [[cmd:scimax.db.alwaysIndexFile]]        | Always Index File (even in an excluded folder)         | -                  |
+| [[cmd:scimax.db.removeOutOfScope]]       | Remove Files Outside Indexed Folders                   | -                  |
 
 ** ✅ Link Graph Visualization
 CLOSED: [2026-04-12 Sun 19:49]

@@ -39,6 +39,7 @@ import { ScimaxDbCore, ScimaxDbCoreOptions } from './scimaxDbCore';
 import { withBaselineExcludes } from '../shared/ignorePatterns';
 import { isTooBroadForProject } from '../shared/projectRoots';
 import { indexableFilesGlob } from '../shared/indexableFiles';
+import { forcedFiles, underRoots } from '../shared/indexScope';
 /**
  * ScimaxDb - VS Code wrapper around ScimaxDbCore.
  *
@@ -124,6 +125,7 @@ export class ScimaxDb extends ScimaxDbCore {
     public async initialize(): Promise<void> {
         // Apply VS Code config before core init
         this.setIgnorePatterns(this.loadIgnorePatterns());
+        this.setForcedFiles(forcedFiles(vscode.workspace.getConfiguration('scimax.db').get<string[]>('include')));
         this.setFileExtensions(vscode.workspace.getConfiguration('scimax.db').get<string[]>('fileExtensions'));
         this.setResilienceConfig(this.loadResilienceConfig());
         this.setSizeLimits(this.loadSizeLimits());
@@ -168,16 +170,49 @@ export class ScimaxDb extends ScimaxDbCore {
     // File watcher
     // ----------------------------------------------------------
 
+    // The indexed roots (folders and files), kept up to date with the settings
+    private roots: string[] = [];
+    private refreshScope(): void {
+        this.roots = this.collectIndexDirectories();
+        this.setIgnorePatterns(this.loadIgnorePatterns());
+        this.setForcedFiles(forcedFiles(vscode.workspace.getConfiguration('scimax.db').get<string[]>('include')));
+    }
+
+    /**
+     * Files outside the indexed roots: in the database because they were saved, or
+     * from before the roots changed. They stay until removed (Remove Files Outside
+     * Indexed Folders).
+     */
+    public async filesOutsideRoots(): Promise<string[]> {
+        this.refreshScope();
+        return (await this.getFiles()).map(f => f.path).filter(p => !underRoots(p, this.roots));
+    }
+
+    // A file changed on disk (a git pull, a build, another program): index it if it is in the
+    // indexed roots or already in the database. A file elsewhere gets in only when you save it.
+    private onDiskChange(filePath: string): void {
+        if (underRoots(filePath, this.roots)) { this.queueIndex(filePath); return; }
+        this.isIndexed(filePath).then(yes => { if (yes) this.queueIndex(filePath); }, () => { /* not now */ });
+    }
+
     private setupFileWatcher(): void {
+        this.refreshScope();
+        this.context.subscriptions.push(vscode.workspace.onDidChangeConfiguration(e => {
+            if (e.affectsConfiguration('scimax.db') || e.affectsConfiguration('scimax.journal') || e.affectsConfiguration('scimax.directory')) {
+                this.refreshScope();
+            }
+        }));
+        this.context.subscriptions.push(vscode.workspace.onDidChangeWorkspaceFolders(() => this.refreshScope()));
         this.fileWatcher = vscode.workspace.createFileSystemWatcher(
             indexableFilesGlob(vscode.workspace.getConfiguration('scimax.db').get<string[]>('fileExtensions')),
             false, false, false
         );
-        this.fileWatcher.onDidCreate(uri => this.queueIndex(uri.fsPath));
-        this.fileWatcher.onDidChange(uri => this.queueIndex(uri.fsPath));
+        this.fileWatcher.onDidCreate(uri => this.onDiskChange(uri.fsPath));
+        this.fileWatcher.onDidChange(uri => this.onDiskChange(uri.fsPath));
         this.fileWatcher.onDidDelete(uri => this.removeFile(uri.fsPath));
         this.context.subscriptions.push(this.fileWatcher);
 
+        // Saving a file indexes it wherever it is (unless it is excluded)
         const saveHandler = vscode.workspace.onDidSaveTextDocument(doc => {
             const filePath = doc.uri.fsPath;
             if (this.isIndexable(filePath)) {

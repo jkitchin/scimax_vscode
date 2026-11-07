@@ -185,9 +185,17 @@ describe('file entries in scimax.db.include', () => {
         expect(findOrgFiles(file, [])).toEqual([file]);
     });
 
-    it('findOrgFiles applies excludes and the size limit to a file root', () => {
+    it('a file root beats configured excludes (a file beats a folder), not the built-in ones', () => {
         const file = path.join(tmpDir, 'dashboard.org');
-        expect(findOrgFiles(file, [file])).toEqual([]);
+        expect(findOrgFiles(file, [file, tmpDir + '/**'])).toEqual([file]);
+        const nm = path.join(tmpDir, 'node_modules');
+        fs.mkdirSync(nm);
+        fs.writeFileSync(path.join(nm, 'x.org'), '* x\n');
+        expect(findOrgFiles(path.join(nm, 'x.org'), [])).toEqual([]);
+    });
+
+    it('findOrgFiles applies the size limit to a file root', () => {
+        const file = path.join(tmpDir, 'dashboard.org');
         fs.writeFileSync(file, 'x'.repeat(2 * 1024 * 1024));
         expect(findOrgFiles(file, [], { maxFileSizeMB: 1 })).toEqual([]);
     });

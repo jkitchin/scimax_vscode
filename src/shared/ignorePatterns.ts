@@ -94,10 +94,17 @@ export function withBaselineExcludes(configured: string[] | undefined): string[]
  * baseline plus `configured`). Glob patterns match with minimatch; others
  * must equal the path. A leading `~` is the home directory.
  */
-export function isExcludedPath(filePath: string, configured: string[] | undefined): boolean {
+export function isExcludedPath(
+    filePath: string,
+    configured: string[] | undefined,
+    forced?: ReadonlySet<string>
+): boolean {
     // minimatch matches a Windows path by its / form; do the same for exact paths.
     const target = process.platform === 'win32' ? filePath.replace(/\\/g, '/') : filePath;
-    for (const pattern of withBaselineExcludes(configured)) {
+    // A file forced in by its exact path (scimax.db.include) beats a configured
+    // exclude pattern such as its folder; only the built-in baseline still applies.
+    const patterns = forced && forced.has(path.resolve(filePath)) ? BASELINE_DB_EXCLUDE : withBaselineExcludes(configured);
+    for (const pattern of patterns) {
         const expanded = expandHome(pattern);
         if (expanded.includes('*')
             ? minimatch(filePath, expanded, { matchBase: true })

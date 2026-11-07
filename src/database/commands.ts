@@ -17,6 +17,7 @@ import { describeOptimize } from './scimaxDbCore';
 import { databaseLogger as log } from '../utils/logger';
 import { showFuzzyQuickPick } from '../utils/fuzzyQuickPick';
 import { runDispatcher, DispatchEntry } from '../org/agendaProvider';
+import { forcedFiles, samePath, settingsPath } from '../shared/indexScope';
 
 /**
  * Debounce function for dynamic QuickPick updates
@@ -1011,6 +1012,9 @@ export function registerDbCommands(
                 { key: '', label: 'Remove File from Database', run: run('scimax.db.removeFile') },
                 { key: '', label: "Don't Index Current File", description: 'Removes it and skips it in future scans', run: run('scimax.db.ignoreCurrentFile') },
                 { key: '', label: "Don't Index File", description: 'Removes it and skips it in future scans', run: run('scimax.db.ignoreFile') },
+                { key: '', label: 'Always Index Current File', description: 'Even in an excluded folder (a file beats a folder)', run: run('scimax.db.alwaysIndexCurrentFile') },
+                { key: '', label: 'Always Index File', description: 'Even in an excluded folder (a file beats a folder)', run: run('scimax.db.alwaysIndexFile') },
+                { key: '', label: 'Remove Files Outside Indexed Folders', description: 'Saved elsewhere, or left from before: pick which to remove', run: run('scimax.db.removeOutOfScope') },
                 { key: '', label: 'Show Database Stats', run: run('scimax.db.stats') },
                 { key: '', label: 'Show Search Capabilities', run: run('scimax.db.searchCapabilities') },
                 { key: '', label: 'Configure Embedding Service', run: run('scimax.db.configureEmbeddings') },
@@ -1196,9 +1200,10 @@ export function registerDbCommands(
 
     // Add file to ignore patterns (by path argument)
     context.subscriptions.push(
-        vscode.commands.registerCommand('scimax.db.ignoreFile', async (filePath?: string) => {
+        vscode.commands.registerCommand('scimax.db.ignoreFile', async (arg?: string | vscode.Uri) => {
             const db = await requireDatabase();
             if (!db) return;
+            let filePath = arg instanceof vscode.Uri ? arg.fsPath : arg;   // from an editor tab's menu: a Uri
 
             // If no path provided, use current file
             if (!filePath) {
@@ -1248,6 +1253,11 @@ export function registerDbCommands(
             // Add the new pattern
             const newPatterns = [...currentPatterns, patternChoice.pattern];
             await config.update('exclude', newPatterns, vscode.ConfigurationTarget.Global);
+            // A file forced in by its exact path would beat the pattern: it is not forced any more
+            const include = config.get<string[]>('include') || [];
+            if (include.some(e => samePath(e, filePath!))) {
+                await config.update('include', include.filter(e => !samePath(e, filePath!)), vscode.ConfigurationTarget.Global);
+            }
 
             // Also remove from database
             await db.removeFile(filePath);
@@ -1262,6 +1272,79 @@ export function registerDbCommands(
     context.subscriptions.push(
         vscode.commands.registerCommand('scimax.db.ignoreCurrentFile', async () => {
             await vscode.commands.executeCommand('scimax.db.ignoreFile');
+        })
+    );
+
+    // Always index a file: its exact path goes in scimax.db.include, which beats an exclude
+    // pattern (e.g. its folder). An exact exclude of the file itself is taken out.
+    context.subscriptions.push(
+        vscode.commands.registerCommand('scimax.db.alwaysIndexFile', async (arg?: string | vscode.Uri) => {
+            const db = await requireDatabase();
+            if (!db) return;
+            let filePath = arg instanceof vscode.Uri ? arg.fsPath : arg;
+            if (!filePath) filePath = vscode.window.activeTextEditor?.document.uri.fsPath;
+            if (!filePath) {
+                const picked = await vscode.window.showOpenDialog({ canSelectMany: false, openLabel: 'Always Index', filters: { 'Org and Markdown': ['org', 'md', 'markdown'] } });
+                filePath = picked?.[0]?.fsPath;
+            }
+            if (!filePath) return;
+            if (!db.isIndexable(filePath)) {
+                vscode.window.showWarningMessage(`${path.basename(filePath)} is not a type the database indexes (scimax.db.fileExtensions)`);
+                return;
+            }
+            const config = vscode.workspace.getConfiguration('scimax.db');
+            const include = config.get<string[]>('include') || [];
+            const exclude = config.get<string[]>('exclude') || [];
+            if (!include.some(e => samePath(e, filePath!))) {
+                await config.update('include', [...include, settingsPath(filePath)], vscode.ConfigurationTarget.Global);
+            }
+            if (exclude.some(e => samePath(e, filePath!))) {
+                await config.update('exclude', exclude.filter(e => !samePath(e, filePath!)), vscode.ConfigurationTarget.Global);
+            }
+            db.setForcedFiles(forcedFiles(vscode.workspace.getConfiguration('scimax.db').get<string[]>('include')));   // now, before indexing it
+            await db.indexFile(filePath, { queueEmbeddings: true });
+            const builtIn = db.isExcluded(filePath);
+            vscode.window.showInformationMessage(builtIn
+                ? `${path.basename(filePath)} is in a folder the database never indexes (e.g. node_modules or editor history)`
+                : `Always indexing ${settingsPath(filePath)} (added to scimax.db.include)`);
+        }),
+        vscode.commands.registerCommand('scimax.db.alwaysIndexCurrentFile', async () => {
+            await vscode.commands.executeCommand('scimax.db.alwaysIndexFile');
+        })
+    );
+
+    // Files outside the indexed folders (saved there, or left from before the folders changed):
+    // pick which to remove, by folder
+    context.subscriptions.push(
+        vscode.commands.registerCommand('scimax.db.removeOutOfScope', async () => {
+            const db = await requireDatabase();
+            if (!db) return;
+            const files = await db.filesOutsideRoots();
+            if (!files.length) {
+                vscode.window.showInformationMessage('Every indexed file is in the indexed folders (scimax.db.include, the journal, ...)');
+                return;
+            }
+            const byFolder = new Map<string, string[]>();
+            for (const f of files) {
+                const dir = path.dirname(f);
+                byFolder.set(dir, [...(byFolder.get(dir) || []), f]);
+            }
+            const items = [...byFolder].sort((a, b) => b[1].length - a[1].length).map(([dir, list]) => ({
+                label: settingsPath(dir),
+                description: `${list.length} file${list.length === 1 ? '' : 's'}`,
+                detail: list.slice(0, 4).map(f => path.basename(f)).join(', ') + (list.length > 4 ? ', ...' : ''),
+                picked: true,
+                files: list,
+            }));
+            const chosen = await vscode.window.showQuickPick(items, {
+                canPickMany: true,
+                title: `${files.length} indexed file${files.length === 1 ? '' : 's'} outside the indexed folders`,
+                placeHolder: 'Untick the folders to keep, then press Enter to remove the rest from the database',
+            });
+            if (!chosen || !chosen.length) return;
+            const doomed = chosen.flatMap(c => c.files);
+            const removed = await db.removeFiles(doomed);
+            vscode.window.showInformationMessage(`Removed ${removed} file${removed === 1 ? '' : 's'} from the database (the files themselves are not touched)`);
         })
     );
 

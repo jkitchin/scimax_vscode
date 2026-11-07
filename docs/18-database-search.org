@@ -177,10 +177,34 @@ list the folders and files you want:
 }
 #+END_SRC
 
-Changing these settings does not remove files that are already indexed.
-=scimax db prune= removes the ones that now match an exclude pattern; to drop
-everything outside the new folders, clear the database and rebuild it
-(=Scimax: Rebuild Database (from scratch)=), which embeds the files again.
+*** ⚠️ How a file gets into the index
+
+| Route                   | What is indexed                                                              |
+|-------------------------+------------------------------------------------------------------------------|
+| The indexed folders     | Scanned, watched and kept up to date (=scimax.db.include=, the journal, ...) |
+| Saving a file           | That file, wherever it is (opening it is not enough); it stays until removed |
+| A file changing on disk | Only if it is in the indexed folders or already in the index                 |
+| =scimax.db.exclude=     | Kept out by every route, except a file forced in by its exact path           |
+
+So a file you work on outside your folders is indexed when you save it, and
+stays up to date after that; files that merely change on disk elsewhere (a
+=git pull=, a build, another program writing files) are left out.
+
+A file beats a folder: =Scimax: Always Index File=
+([[cmd:scimax.db.alwaysIndexFile]], also on an editor tab's right-click menu)
+puts the file's exact path in =scimax.db.include=, and it is indexed even if
+its folder is excluded, e.g. one notes file in an ignored repository.
+=Scimax: Don't Index File= ([[cmd:scimax.db.ignoreFile]]) does the opposite
+(and takes the file out of =scimax.db.include= if it was there). The built-in
+excludes (=node_modules=, VS Code's history, ...) apply to every file.
+
+Files outside the indexed folders stay until you remove them. =Scimax: Remove
+Files Outside Indexed Folders...= ([[cmd:scimax.db.removeOutOfScope]]) lists
+them by folder, all ticked; untick the ones to keep and press Enter to remove
+the rest from the index (the files themselves are not touched). It is also the
+way to tidy up after narrowing =scimax.db.include=.
+=scimax db prune= on the command line removes indexed files that match an
+exclude pattern.
 
 * ✅ Full-Text Search
 CLOSED: [2026-01-17 Sat 11:46]

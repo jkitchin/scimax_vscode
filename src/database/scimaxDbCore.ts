@@ -938,6 +938,17 @@ export class ScimaxDbCore {
         this.options.ignorePatterns = patterns;
     }
 
+    /** Files forced in by their exact path (scimax.db.include): an exclude pattern does not keep them out. */
+    private forced: ReadonlySet<string> = new Set();
+    public setForcedFiles(files: string[]): void {
+        this.forced = new Set(files.map(f => path.resolve(f)));
+    }
+
+    /** Is this file in the database? */
+    public async isIndexed(filePath: string): Promise<boolean> {
+        return !!(await this.getFileByPath(filePath));
+    }
+
     /** Set scimax.db.fileExtensions (e.g. ['org', 'md']); empty means the default. */
     public setFileExtensions(extensions: string[] | undefined): void {
         this.indexableExtensions = normalizeExtensions(extensions);
@@ -1012,7 +1023,7 @@ export class ScimaxDbCore {
     public isExcluded(filePath: string): boolean {
         // The baseline is unconditional: a configured exclude list adds to it,
         // it never replaces it. See BASELINE_DB_EXCLUDE for why.
-        return isExcludedPath(filePath, this.options.ignorePatterns);
+        return isExcludedPath(filePath, this.options.ignorePatterns, this.forced);
     }
 
     // ----------------------------------------------------------
