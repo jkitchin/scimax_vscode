@@ -6,6 +6,10 @@ import { forcedFiles, underRoots, settingsPath, samePath } from '../indexScope';
 import { isExcludedPath } from '../ignorePatterns';
 import { ScimaxDbCore } from '../../database/scimaxDbCore';
 
+// Exclude patterns are globs, written with forward slashes on every platform (a backslash in a
+// glob is an escape), so a Windows temp path is turned into one
+const glob = (p: string) => p.replace(/\\/g, '/');
+
 describe('indexScope', () => {
     let dir: string;
     beforeEach(() => {
@@ -43,7 +47,7 @@ describe('indexScope', () => {
 
     it('a forced file beats an excluded folder, but not the built-in excludes', () => {
         const keep = path.join(dir, 'archive', 'keep.org'), old = path.join(dir, 'archive', 'old.org');
-        const exclude = [path.join(dir, 'archive') + '/**'];
+        const exclude = [glob(path.join(dir, 'archive')) + '/**'];
         const forced = new Set([keep]);
         expect(isExcludedPath(keep, exclude, forced)).toBe(false);
         expect(isExcludedPath(old, exclude, forced)).toBe(true);
@@ -54,7 +58,7 @@ describe('indexScope', () => {
 
     it('indexFile indexes a forced file in an excluded folder and skips its neighbour', async () => {
         const keep = path.join(dir, 'archive', 'keep.org'), old = path.join(dir, 'archive', 'old.org');
-        const db = new ScimaxDbCore({ dbPath: path.join(dir, 'test.db'), ignorePatterns: [path.join(dir, 'archive') + '/**'] });
+        const db = new ScimaxDbCore({ dbPath: path.join(dir, 'test.db'), ignorePatterns: [glob(path.join(dir, 'archive')) + '/**'] });
         await db.initialize();
         try {
             db.setForcedFiles([keep]);
