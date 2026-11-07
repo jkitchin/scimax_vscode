@@ -9,6 +9,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { minimatch } from 'minimatch';
 import { withBaselineExcludes } from '../shared/ignorePatterns';
+import { DEFAULT_FILE_EXTENSIONS, isIndexableFile } from '../shared/indexableFiles';
 
 /**
  * Database settings (scimax.db.*)
@@ -16,6 +17,8 @@ import { withBaselineExcludes } from '../shared/ignorePatterns';
 export interface DbSettings {
     include: string[];
     exclude: string[];
+    /** scimax.db.fileExtensions: file types to index, e.g. ['org', 'md'] */
+    fileExtensions: string[];
     maxFileSizeMB: number;
     maxFileLines: number;
 }
@@ -422,6 +425,7 @@ export function loadSettings(): ScimaxSettings {
             exclude: withBaselineExcludes(
                 getSetting<string[]>(settings, 'scimax.db.exclude', defaultDbExclude)
             ),
+            fileExtensions: getSetting<string[]>(settings, 'scimax.db.fileExtensions', [...DEFAULT_FILE_EXTENSIONS]),
             maxFileSizeMB: getSetting<number>(settings, 'scimax.db.maxFileSizeMB', 10),
             maxFileLines: getSetting<number>(settings, 'scimax.db.maxFileLines', 5000),
         },
@@ -506,16 +510,31 @@ export function loadSettings(): ScimaxSettings {
 }
 
 /**
- * Find org files in a directory, respecting exclude patterns
- * This is the unified file discovery function that matches extension behavior
+ * Find indexable files (scimax.db.fileExtensions, default org and md) in a
+ * directory, or the file itself when `dir` is a file, respecting exclude
+ * patterns. Matches the extension's findFilesGenerator.
  */
 export function findOrgFiles(
     dir: string,
     excludePatterns: string[],
-    options: { maxFileSizeMB?: number } = {}
+    options: { maxFileSizeMB?: number; fileExtensions?: string[] } = {}
 ): string[] {
     const files: string[] = [];
     const maxBytes = (options.maxFileSizeMB || 10) * 1024 * 1024;
+
+    // A scan root can be a single file listed in scimax.db.include, as the
+    // extension allows (getDirectoriesToScan keeps only indexable ones).
+    try {
+        const rootStats = fs.statSync(dir);
+        if (rootStats.isFile()) {
+            if (isIndexableFile(dir, options.fileExtensions) && !shouldExclude(dir, excludePatterns) && rootStats.size <= maxBytes) {
+                files.push(dir);
+            }
+            return files;
+        }
+    } catch {
+        return files;
+    }
 
     const scan = (currentDir: string): void => {
         try {
@@ -535,7 +554,7 @@ export function findOrgFiles(
                         continue;
                     }
                     scan(fullPath);
-                } else if (entry.isFile() && entry.name.endsWith('.org')) {
+                } else if (entry.isFile() && isIndexableFile(entry.name, options.fileExtensions)) {
                     // Check file size
                     try {
                         const stats = fs.statSync(fullPath);
@@ -564,6 +583,8 @@ export function findOrgFiles(
  *   - NotebookManager project paths from notebooks.json
  *
  * Each path is expanded (~), checked for existence, and deduplicated.
+ * Entries may be single files of an indexed type as well as directories;
+ * findOrgFiles returns a file root as itself.
  */
 export function getDirectoriesToScan(settings: ScimaxSettings): string[] {
     const dirs: string[] = [];
@@ -573,7 +594,11 @@ export function getDirectoriesToScan(settings: ScimaxSettings): string[] {
         const expanded = expandPath(raw);
         if (dirs.includes(expanded)) return;
         try {
-            if (fs.existsSync(expanded) && fs.statSync(expanded).isDirectory()) {
+            if (!fs.existsSync(expanded)) return;
+            const stats = fs.statSync(expanded);
+            // Files are allowed too (e.g. ~/Dropbox/dashboard.org in
+            // scimax.db.include), matching the extension's directory walk.
+            if (stats.isDirectory() || (stats.isFile() && isIndexableFile(expanded, settings.db.fileExtensions))) {
                 dirs.push(expanded);
             }
         } catch {

@@ -50,8 +50,7 @@ CLOSED: [2026-01-19 Mon 09:33]
 Markdown files have full support for the VS Code outline view and breadcrumb
 navigation.
 
-*** ✅ Outline View
-CLOSED: [2026-11-06 Fri 07:21]
+*** Outline View
 
 The extension provides a =DocumentSymbolProvider= for Markdown that recognizes:
 
@@ -74,8 +73,7 @@ CLOSED: [2026-01-19 Mon 09:34]
 Press =C-c C-j= to open a quick-pick menu of all headings in the current file.
 Type to filter and press Enter to jump.  `Cmd-C/Shift-o' also works.
 
-** ✅ What Counts as a Heading
-CLOSED: [2026-11-06 Fri 07:21]
+** What Counts as a Heading
 
 A heading is a line that starts with one to six =#= characters followed by a
 space. Every heading command, speed key, fold, outline entry and refile target
@@ -131,8 +129,7 @@ Change heading levels and move subtrees:
 
 Markdown has six heading levels, so demoting stops at =######=.
 
-*** ✅ Insert Headings
-CLOSED: [2026-11-06 Fri 07:21]
+*** Insert Headings
 
 | Key        | Command           | Description                      |
 |------------+-------------------+----------------------------------|
@@ -142,8 +139,7 @@ CLOSED: [2026-11-06 Fri 07:21]
 The extension uses =#= characters for Markdown (not =*= like org), and a
 subheading under a =######= heading stays at level 6.
 
-** ✅ Subtree Operations
-CLOSED: [2026-11-06 Fri 07:21]
+** Subtree Operations
 
 All subtree operations work in Markdown:
 
@@ -173,8 +169,7 @@ in the subtree are left alone, and no heading goes past level 6.
 <!-- Headings are automatically adjusted to match ## level -->
 #+END_SRC
 
-** ✅ Speed Commands
-CLOSED: [2026-11-06 Fri 07:21]
+** Speed Commands
 
 Speed commands work at the beginning of Markdown headings (column 0 of a
 heading line, see [[*What Counts as a Heading][What Counts as a Heading]]).
@@ -207,7 +202,7 @@ Fenced code blocks and Pandoc fenced divs (=::: {.callout-note}= ... =:::=,
 nested to any depth, and MyST =:::{note}= fences) fold as well.
 
 ** ✅ Text Markup and Comments
-CLOSED: [2026-11-06 Fri 07:21]
+CLOSED: [2026-11-06 Fri 14:21]
 
 The markup commands write Markdown syntax in Markdown files:
 
@@ -227,8 +222,7 @@ The markup commands write Markdown syntax in Markdown files:
 (=<!-- ... -->=), using VS Code's Toggle Line Comment. In org it adds =# =,
 which in Markdown would make the line a heading.
 
-** ✅ Lists and Return
-CLOSED: [2026-11-06 Fri 07:21]
+** Lists and Return
 
 =Return= (DWIM return) in a Markdown file:
 
@@ -243,8 +237,7 @@ CLOSED: [2026-11-06 Fri 07:21]
 =C-c C-c= on a checkbox (~scimax.markdown.toggleCheckbox~) toggles it in
 Markdown and Quarto files.
 
-** ✅ Links
-CLOSED: [2026-11-06 Fri 07:21]
+** Links
 
 | Key     | Command               | In Markdown                                              |
 |---------+-----------------------+----------------------------------------------------------|
@@ -269,8 +262,7 @@ To link to a heading, put the cursor on it and press =C-c l=, then press
 =[Methods](#methods)=; in another Markdown file, =[Methods](notes.md#methods)=.
 Org-style =[[...]]= links in Markdown files still work with =C-c C-o=.
 
-** ✅ Tables
-CLOSED: [2026-11-06 Fri 07:21]
+** Tables
 
 Org table editing works on GitHub-flavored Markdown pipe tables:
 
@@ -293,8 +285,7 @@ Org table editing works on GitHub-flavored Markdown pipe tables:
 Rows must start with =|=. Tables written without the outer pipes
 (=a | b= / =--|--=) are not recognized. Table formulas (=#+TBLFM:=) are org-only.
 
-** ✅ Code Block Support
-CLOSED: [2026-11-06 Fri 07:22]
+** Code Block Support
 
 Markdown fenced code blocks support:
 
@@ -302,8 +293,7 @@ Markdown fenced code blocks support:
 - Execution via Babel/Jupyter
 - Block manipulation (split, merge, clone, kill, move)
 
-*** ✅ Fenced Block Syntax
-CLOSED: [2026-11-06 Fri 07:21]
+*** Fenced Block Syntax
 
 Both backtick and tilde fences are supported, with the language as a single
 word or in braces:
@@ -328,7 +318,8 @@ the language (=```python title="x"=) means the fence is not treated as a code
 block. Markdown renderers use only the first word as the language, so header
 arguments do not change how the preview, GitHub or Marp show the block.
 
-*** Code Block Navigation
+*** ✅ Code Block Navigation
+CLOSED: [2026-01-19 Mon 09:53]
 
 | Key       | Command               | Description                   |
 |-----------+-----------------------+-------------------------------|
@@ -336,8 +327,7 @@ arguments do not change how the preview, GitHub or Marp show the block.
 | C-c C-v p | Previous Source Block | Jump to previous fenced block |
 | C-c C-v g | Jump to Source Block  | Quick-pick menu of all blocks |
 
-*** ✅ Code Block Execution
-CLOSED: [2026-11-06 Fri 07:21]
+*** Code Block Execution
 
 Press =C-c C-c= inside a fenced code block to execute it. Results go below the
 block, between two HTML comments that the Markdown preview and Pandoc hide:
@@ -407,8 +397,7 @@ it in the deck's Python panel instead, and nothing is written into the deck
 example =```python :results output=) to write its results into the file. See
 [[file:44-marp.org::*Running cells in VS Code][Running cells in VS Code]].
 
-*** ✅ Code Block Manipulation
-CLOSED: [2026-11-06 Fri 07:21]
+*** Code Block Manipulation
 
 | Command                        | Description                     |
 |--------------------------------+---------------------------------|
@@ -429,23 +418,20 @@ arguments. The header-argument commands (~scimax.ob.editHeader~) add them after
 the language; Quarto chunks (=```{python}=) keep their options in the braces
 instead.
 
-** ✅ Tasks and Planning
-CLOSED: [2026-11-06 Fri 07:21]
+** Tasks and Planning
 
 Markdown files have two kinds of task: TODO headings and checkbox tasks.
 Checkbox tasks carry their dates as =@due(...)= / =@scheduled(...)= tags, and
 =C-c C-s= / =C-c C-d= above the first heading insert those tags.
 
-*** ✅ TODO Headings
-CLOSED: [2026-11-06 Fri 07:21]
+*** Headings
 
 A heading whose first word is a TODO keyword is a task, with org-style
 SCHEDULED / DEADLINE lines under it. See
 [[*Tasks, Planning and Hashtags in Markdown]] for the syntax, commands and
 agenda.
 
-*** ✅ Checkbox Tasks
-CLOSED: [2026-11-06 Fri 07:21]
+*** Checkbox Tasks
 
 #+BEGIN_SRC markdown
 - [ ] Email reviewers @due(2026-01-22) @project(paper) #urgent
@@ -467,8 +453,7 @@ date, is in the past. A tag is a =#word= that starts with a letter and follows
 a space or the start of the line, so =#123= and the =#section= part of a URL
 are not tags. Invalid dates such as =@due(2026-02-30)= are ignored.
 
-** ✅ Export
-CLOSED: [2026-11-06 Fri 07:21]
+** Export
 
 =C-c C-e= (~scimax.markdown.exportMenu~) exports the Markdown file with Pandoc
 to HTML, PDF, LaTeX or Word, writing the output next to the source with the
@@ -500,8 +485,7 @@ additions from Scimax:
 Files with ~marp: true~ in their front matter are previewed as slides, with
 citations rendered; see [[file:44-marp.org][Marp Slides]].
 
-** ✅ Equation Hover
-CLOSED: [2026-11-06 Fri 07:21]
+** Equation Hover
 
 Hovering LaTeX math in a Markdown or Quarto file shows it typeset, as in org
 files: =$...$=, =\(...\)=, =$$...$$= and =\[...\]= (on one line or
@@ -555,8 +539,7 @@ meanings, and =Cmd+Shift+K= on a citation still deletes it there.
 Fenced divs (callouts, =::: {.columns}=, panels, =::: {#fig-x}= figure divs)
 fold from the opening =:::= to its matching close, including nested divs.
 
-* ✅ Tasks, Planning and Hashtags in Markdown
-CLOSED: [2026-11-06 Fri 07:22]
+* Tasks, Planning and Hashtags in Markdown
 
 Markdown headings can be org tasks. A heading may start with a TODO keyword
 (bare, or in brackets as =[TODO]= so it renders visibly), then a priority
@@ -574,8 +557,7 @@ SCHEDULED: <2026-11-03 Tue> DEADLINE: <2026-11-07 Fri>
 CLOSED: [2026-10-30 Fri 14:12]
 #+END_SRC
 
-** ✅ Highlighting
-CLOSED: [2026-11-06 Fri 07:22]
+** Highlighting
 
 Task headings are coloured as in org: TODO keywords red, done keywords
 green, and the priority, =:tags:= and the SCHEDULED / DEADLINE / CLOSED line
@@ -583,8 +565,7 @@ with its timestamps in the theme's org colours. They are semantic tokens
 (=orgTodo=, =orgDone=, =orgPriority=, =orgTag=, =orgPlanning=,
 =orgTimestamp=), so =editor.semanticTokenColorCustomizations= can change them.
 
-** ✅ Keywords
-CLOSED: [2026-11-06 Fri 07:22]
+** Keywords
 
 The default keywords are =TODO NEXT WAIT WAITING HOLD SOMEDAY IN-PROGRESS=
 (active) and =DONE CANCELLED CANCELED= (done). Declare others with a
@@ -597,8 +578,7 @@ The default keywords are =TODO NEXT WAIT WAITING HOLD SOMEDAY IN-PROGRESS=
 Put the declaration somewhere other than the first line when the first line
 is a heading.
 
-** ✅ Commands
-CLOSED: [2026-11-06 Fri 07:22]
+** Commands
 
 | Key        | Speed key | Action                                          |
 |------------+-----------+-------------------------------------------------|
@@ -617,8 +597,7 @@ in the agenda. Above the first heading they insert =@scheduled(...)= /
 =@due(...)= at the cursor, as before. Cycling a =[TODO]= heading writes the
 keyword bare (=TODO=).
 
-** ✅ Checkbox Statistics
-CLOSED: [2026-11-06 Fri 07:22]
+** Checkbox Statistics
 
 A =[n/m]= or =[n%]= cookie on a heading counts the checkboxes in its section;
 on a list item, its direct child checkboxes. Toggling a checkbox (=C-c C-c=
@@ -633,8 +612,7 @@ subheadings with TODO keywords when you change one with =C-c C-t=.
 - [ ] task 3
 #+END_SRC
 
-** ✅ Agenda
-CLOSED: [2026-11-06 Fri 07:22]
+** Agenda
 
 Indexed Markdown files take part in the database agenda and TODO lists
 (=C-c a=), with priority, tags and planning dates. The first database sync
@@ -642,8 +620,7 @@ after updating re-indexes Markdown files. The agenda view for the current
 file (=C-c a < a=) works on a Markdown file; agendas limited to a project
 read only its org files.
 
-** ✅ Hashtags
-CLOSED: [2026-11-06 Fri 07:22]
+** Hashtags
 
 =#tags= in Markdown are drawn in blue, hover and click like in org (see
 [[file:18-database-search.org::*Hashtags in the Editor][Hashtags in the Editor]]),
@@ -655,8 +632,7 @@ title are.
 These org-mode features have no Markdown form and stay org-only. Their
 commands either do nothing in Markdown files or work only in org files.
 
-** ✅ Time and Metadata
-CLOSED: [2026-11-06 Fri 07:22]
+** Time and Metadata
 
 | Feature    | Reason                                        |
 |------------+-----------------------------------------------|
@@ -668,8 +644,7 @@ The speed keys =I= (clock in), =e= (effort) and =P= (set property) insert org
 drawers even in Markdown files, where nothing reads them back. Avoid them in
 Markdown.
 
-** ✅ Special Elements
-CLOSED: [2026-11-06 Fri 07:22]
+** Special Elements
 
 | Feature             | Reason                                  |
 |---------------------+-----------------------------------------|
@@ -683,11 +658,9 @@ CLOSED: [2026-11-06 Fri 07:22]
 | Capture into a file | Capture templates write org headings    |
 | Backlinks           | Links in Markdown files are not indexed |
 
-* ✅ Tips for Markdown Users
-CLOSED: [2026-11-06 Fri 07:22]
+* Tips for Markdown Users
 
-** ✅ Maximizing Compatibility
-CLOSED: [2026-11-06 Fri 07:22]
+** Maximizing Compatibility
 
 To get the most out of Scimax VS Code with Markdown:
 
@@ -705,8 +678,7 @@ To get the most out of Scimax VS Code with Markdown:
 5. *Use =# TODO= headings with SCHEDULED / DEADLINE lines* - they show up in
    the org agenda next to your org tasks
 
-** ✅ When to Use Org-Mode Instead
-CLOSED: [2026-11-06 Fri 07:22]
+** When to Use Org-Mode Instead
 
 Consider using org-mode files when you need:
 
@@ -719,8 +691,7 @@ Consider using org-mode files when you need:
 Org files can be exported to Markdown when sharing with others who don't use
 org-mode.
 
-* ✅ Related Topics
-CLOSED: [2026-11-06 Fri 07:22]
+* Related Topics
 
 - [[file:45-myst-preview.org][MyST Markdown Preview]] - Jupyter Book directives and roles in the preview
 - [[file:44-marp.org][Marp Slides]] - jump from a Marp slide preview to its source

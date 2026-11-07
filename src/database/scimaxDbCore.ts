@@ -27,6 +27,7 @@ import {
 } from '../parser/orgParserAdapter';
 import { extractAnchors, normalizeAnchorText } from '../parser/orgAnchors';
 import { isExcludedPath } from '../shared/ignorePatterns';
+import { normalizeExtensions } from '../shared/indexableFiles';
 import { parseWarning, warningStart } from '../parser/deadlineWarning';
 import { parseMarkdownHeadings } from '../parser/markdownTasks';
 import { normalizeFtsQuery, literalFtsQuery } from './ftsQuery';
@@ -546,6 +547,8 @@ export interface ProjectRecord {
 export interface ScimaxDbCoreOptions {
     dbPath: string;
     ignorePatterns?: string[];
+    /** scimax.db.fileExtensions; default DEFAULT_FILE_EXTENSIONS (org, md) */
+    fileExtensions?: string[];
     maxFileSizeMB?: number;       // default 10
     maxParseSizeKB?: number;      // default 500
     maxFileLines?: number;        // default 5000
@@ -754,6 +757,8 @@ export class ScimaxDbCore {
 
     // Embedding dimensions
     private embeddingDimensions: number;
+    /** Normalized scimax.db.fileExtensions, e.g. ['.org', '.md'] */
+    private indexableExtensions: string[];
 
     // Async embedding queue
     private embeddingQueue: string[] = [];
@@ -778,6 +783,7 @@ export class ScimaxDbCore {
         this.options = options;
         this.parser = new UnifiedParserAdapter();
         this.embeddingDimensions = options.embeddingDimensions ?? 384;
+        this.indexableExtensions = normalizeExtensions(options.fileExtensions);
         this.queryTimeoutMs = options.queryTimeoutMs ?? 30000;
         this.maxRetryAttempts = options.maxRetryAttempts ?? 3;
     }
@@ -932,6 +938,16 @@ export class ScimaxDbCore {
         this.options.ignorePatterns = patterns;
     }
 
+    /** Set scimax.db.fileExtensions (e.g. ['org', 'md']); empty means the default. */
+    public setFileExtensions(extensions: string[] | undefined): void {
+        this.indexableExtensions = normalizeExtensions(extensions);
+    }
+
+    /** True when the file's type is one the database indexes (scimax.db.fileExtensions). */
+    public isIndexable(filePath: string): boolean {
+        return this.indexableExtensions.includes(path.extname(filePath).toLowerCase());
+    }
+
     public setResilienceConfig(config: { queryTimeoutMs?: number; maxRetryAttempts?: number }): void {
         if (config.queryTimeoutMs !== undefined) this.queryTimeoutMs = config.queryTimeoutMs;
         if (config.maxRetryAttempts !== undefined) this.maxRetryAttempts = config.maxRetryAttempts;
@@ -1021,9 +1037,8 @@ export class ScimaxDbCore {
                     if (this.isExcluded(fullPath)) continue;
                     if (item.isDirectory() && !item.name.startsWith('.')) {
                         stack.push(fullPath);
-                    } else if (item.isFile()) {
-                        const ext = path.extname(item.name).toLowerCase();
-                        if (ext === '.org' || ext === '.md' || ext === '.markdown') yield fullPath;
+                    } else if (item.isFile() && this.isIndexable(item.name)) {
+                        yield fullPath;
                     }
                 }
                 directoriesProcessed++;
@@ -1034,8 +1049,7 @@ export class ScimaxDbCore {
                 if (error?.code === 'ENOTDIR') {
                     // Entry is a single file (e.g. added to scimax.db.include
                     // via "Add file to agenda"), not a directory.
-                    const ext = path.extname(dir).toLowerCase();
-                    if ((ext === '.org' || ext === '.md' || ext === '.markdown') && !this.isExcluded(dir)) {
+                    if (this.isIndexable(dir) && !this.isExcluded(dir)) {
                         yield dir;
                     }
                 } else if (error?.code !== 'EACCES' && error?.code !== 'ENOENT') {
@@ -1099,9 +1113,9 @@ export class ScimaxDbCore {
     }
 
     private getFileType(filePath: string): 'org' | 'md' {
-        const ext = path.extname(filePath).toLowerCase();
-        if (ext === '.md' || ext === '.markdown') return 'md';
-        return 'org';
+        // Org files get the org parser; every other configured type
+        // (md, and e.g. markdown if added to scimax.db.fileExtensions) is Markdown.
+        return path.extname(filePath).toLowerCase() === '.org' ? 'org' : 'md';
     }
 
     // ----------------------------------------------------------
@@ -1114,6 +1128,14 @@ export class ScimaxDbCore {
         // directory walk, so check the excludes here too (VS Code's local
         // history, for one, is a folder of `.org` copies of every edit).
         if (this.isExcluded(filePath)) {
+            await this.removeFileData(filePath);
+            return;
+        }
+
+        // Same for file types: only scimax.db.fileExtensions are indexed, by
+        // every route. Dropping the old entry lets removing a type from the
+        // setting clear its files as they are next touched.
+        if (!this.isIndexable(filePath)) {
             await this.removeFileData(filePath);
             return;
         }
@@ -1154,9 +1176,9 @@ export class ScimaxDbCore {
                 return skip(`file with too many lines (${lineCount})`);
             }
 
-            const knownTextExt = ['.org', '.md', '.markdown', '.txt'];
-            const ext = path.extname(filePath).toLowerCase();
-            if (!knownTextExt.includes(ext) && this.isBinaryContent(content)) {
+            // Catches a binary file with an indexed extension. Only control
+            // characters count, so non-ASCII text is never mistaken for binary.
+            if (this.isBinaryContent(content)) {
                 return skip('binary file');
             }
 

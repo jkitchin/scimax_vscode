@@ -35,7 +35,8 @@ describe('markdown TODO headings (integration)', () => {
             '-->',
             '# Plain heading',
         ].join('\n'));
-        db = new ScimaxDbCore({ dbPath: path.join(dir, 'test.db') });
+        // .markdown is not in the default scimax.db.fileExtensions (org, md); opt in.
+        db = new ScimaxDbCore({ dbPath: path.join(dir, 'test.db'), fileExtensions: ['org', 'md', 'markdown'] });
         await db.initialize();
         await db.indexFile(file);
     }, SETUP_TIMEOUT_MS);
@@ -67,5 +68,26 @@ describe('markdown TODO headings (integration)', () => {
             ['deadline', 'Custom keyword', true],
             ['scheduled', 'Canonical task', true],
         ]);
+    });
+});
+
+describe('scimax.db.fileExtensions gates indexFile', () => {
+    it('skips a .markdown file under the default (org, md)', async () => {
+        const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'scimax-ext-'));
+        const file = path.join(dir, 'tasks.markdown');
+        fs.writeFileSync(file, '# TODO a task\n');
+        const db = new ScimaxDbCore({ dbPath: path.join(dir, 'test.db') });
+        await db.initialize();
+        try {
+            await db.indexFile(file);
+            expect(await db.getFiles()).toEqual([]);
+        } finally {
+            await db.close();
+            try {
+                fs.rmSync(dir, { recursive: true, force: true });
+            } catch {
+                // Windows can keep the closed database locked (EBUSY); the temp dir is reclaimed later
+            }
+        }
     });
 });

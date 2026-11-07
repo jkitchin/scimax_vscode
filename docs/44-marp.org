@@ -111,8 +111,7 @@ default).
 The command has no default keybinding. To add one, open Keyboard Shortcuts
 and search for ~scimax.marp.revealInPreview~.
 
-* ✅ Slide Preview
-CLOSED: [2026-11-06 Fri 07:22]
+* Slide Preview
 
 The slide preview shows the slide under the editor cursor, fitted to its
 tab, and follows the cursor as you move and type. Open it with the preview
@@ -166,8 +165,7 @@ render citations and each slide's references the same way. Marp CLI is given
 the citation plugins as its engine, along with the reference manager's
 entries for the keys the deck cites.
 
-* ✅ Slideshow
-CLOSED: [2026-11-06 Fri 07:22]
+* Slideshow
 
 To present, Scimax makes Marp's HTML slideshow of the deck and opens it in the
 browser. Marp CLI builds it (see [[*Marp CLI][Marp CLI]]), and it is written to a private folder
@@ -546,8 +544,7 @@ Each sets a key in the front matter, or removes it.
 | Edit Current Theme   | [[cmd:scimax.marp.theme.edit]]       | Opens the theme's CSS file; for a built-in theme, offers a custom theme based on it |
 | Add Deck Style Block | [[cmd:scimax.marp.theme.styleBlock]] | A ~style: |~ block in the front matter for small CSS changes                        |
 
-** ✅ The scimax theme
-CLOSED: [2026-11-06 Fri 07:22]
+** The scimax theme
 
 ~theme: scimax~ dresses a deck in the blues of the crystal Scimax unicorn,
 with the amber of its horn, laid out like [[https://orgmode.org][orgmode.org]]: a pale background, serif
@@ -592,8 +589,7 @@ theme does ~@import 'scimax';~ and changes only what you set. The CSS is in
 ~media/marp/themes/scimax.css~ in the extension. Marp for VS Code's own
 preview does not know the theme; Scimax's previews and exports do.
 
-** ✅ The steampunk, cyberpunk, steel and steelpunk themes
-CLOSED: [2026-11-06 Fri 07:22]
+** The steampunk, cyberpunk, steel and steelpunk themes
 
 Four more themes ship with Scimax and work the same way as ~scimax~: no theme
 file or setting needed, and the thumbnails, preview, slideshow, exports and
@@ -631,8 +627,7 @@ same offline. The CSS is in ~media/marp/themes/steampunk.css~,
 ~media/marp/themes/steelpunk.css~ in the extension; to change one, choose
 /New Custom Theme.../ and start from it.
 
-** ✅ Custom themes
-CLOSED: [2026-11-06 Fri 07:22]
+** Custom themes
 
 /New Custom Theme.../ asks for a name and a theme to start from (Marp's,
 ~scimax~, ~steampunk~, ~cyberpunk~, ~steel~ or ~steelpunk~), then:
@@ -721,8 +716,9 @@ scripts and makes the same HTML as the =h= export.
 |---------------------------+----------------------------------------------------------------------------------|
 | =a=                       | Turn the pen on or off (widgets cannot be clicked while it is on)                |
 | =1= to =5=                | Pen colour while the pen is on: red, blue, green, black, yellow highlighter      |
-| =r=                       | Eraser: drag over strokes to remove them; =r= again turns it off                 |
-| =z=                       | Undo the last stroke (or the last erase) on this slide                           |
+| =r=                       | Stroke eraser: drag over strokes to remove them whole; =r= again turns it off    |
+| =R= (=Shift+R=)           | Eraser that rubs out exactly the ink under it                                    |
+| =z=                       | Undo the last change to this slide's ink (a stroke, an erase, a lasso move)      |
 | =c= / =C=                 | Clear this slide / every slide                                                   |
 | =l=                       | Laser pointer: a dot that follows the mouse                                      |
 | =1= to =5=                | Laser colour while the laser is on: red, blue, green, black, yellow              |
@@ -743,6 +739,7 @@ scripts and makes the same HTML as the =h= export.
 | =g=                       | Go to a slide: type a number or words from its title or text, then Enter         |
 | A number, then Enter      | Jump to that slide (=12= Enter goes to slide 12)                                 |
 | =d=                       | Edit the slides' text and layout in place (see below)                            |
+| =N= (=Shift+N=)           | A new blank slide after this one, opened for editing (see below)                 |
 | =v=                       | Live captions on or off (see below)                                              |
 | =V= (=Shift+V=)           | Get ready to record: opens the Microphone window; while recording, stop and save |
 | =M= (=Shift+M=)           | The Microphone panel: microphone, level, gain, settings, Record/Stop (see below) |
@@ -981,7 +978,7 @@ a hand's width or two from your mouth. With a microphone that close, turning
 off echo cancellation, noise suppression and automatic gain often sounds more
 natural, and the voice filter can help a bit in a bare room.
 
-** Editing slides in the slideshow
+** 👀 Editing slides in the slideshow
 
 For last-minute polish just before a talk, =d= lets you fix the slides in
 the slideshow itself: correct a typo, move a heading, make a figure bigger,
@@ -1005,11 +1002,12 @@ The edits stay in the HTML; they do not change the Markdown.
 | =Cmd+Z= / =Ctrl+Z=  | Undo (add Shift, or use =Cmd+Y=, to redo); the bar has Undo and Reset slide |
 | =Esc=               | Clear the selection, then stop editing                                      |
 | =t=                 | A new text box                                                              |
+| =N= (Shift+N)       | A new blank slide after this one (also when not editing)                    |
 | =Cmd+B= / =I= / =U= | Bold, italic, underline (=Ctrl= on Windows and Linux)                       |
 | =Cmd+/=             | Strikethrough                                                               |
 | =Cmd+C= / =Cmd+X=   | Copy / cut the selection (cut hides it, or removes an inserted element)     |
 | =Cmd+V=             | Paste a copied element, an image, or text (as a new text box)               |
-| + Slide (bar)       | A new slide after this one, with its look; type its title straight away     |
+| + Slide (bar)       | A new blank slide after this one, with its look; =t= adds text              |
 | Hide slide (bar)    | Leave this slide out of the show; on a slide added here, Delete slide       |
 | Hidden (bar)        | Pick a hidden slide to show it again                                        |
 
@@ -1027,6 +1025,11 @@ The edits stay in the HTML; they do not change the Markdown.
   as it is. Code cells, countdowns and widgets can be moved and resized but
   not typed in.
 - Printing (=Cmd+P=) shows the slides as edited.
+- =N= (Shift+N) adds a blank slide after the current one, whether or not you
+  are editing, and opens it for editing: =t= adds a text box, =Cmd+V= pastes.
+  It has the slide's look (theme, class, colours) but none of its content.
+  =Cmd+N= is not used because browsers keep it for a new window and a page
+  cannot take it over.
 - Adding, hiding, deleting or showing a slide reloads the page (Marp fixes
   its list of slides as the show opens) and comes back to that slide, still
   editing. The right-click menu has the same actions, also when you are not
@@ -1039,7 +1042,7 @@ The edits stay in the HTML; they do not change the Markdown.
   hidden in the slideshow stay in the overview, greyed out with a dashed
   border where they were; click one (or right-click, Show this slide again)
   to bring it back. Each change reloads the slideshow and opens the overview
-  again, except Add, which goes to the new slide so you can type its title.
+  again, except Add, which goes to the new slide, ready to edit.
   Slides hidden in the Markdown are not in the slideshow at all, so the
   overview does not show them.
 - Like the other edits, added, hidden and moved slides are kept in the HTML, not
@@ -1080,6 +1083,43 @@ Images are kept in the browser's local storage with the other edits. That
 storage is limited (a few megabytes for all decks opened from files), so if
 it fills up, a message says so; press =s= to save the deck with its edits
 before reloading.
+
+*** ⚠️ Annotating while editing
+
+The bar's second row, *Annotate*, draws on the slide, so you can sketch on a
+blank slide (=N= adds one) without leaving edit mode:
+
+| Button          | Effect                                                                                        |
+|-----------------+-----------------------------------------------------------------------------------------------|
+| ✎ Pen          | Draw on the slide                                                                             |
+| ✏ Pencil       | A soft, grainy pencil line                                                                    |
+| ▬ Highlighter   | Draw wide, see-through strokes                                                                |
+| ⌫ Eraser        | Rub out exactly the ink under it; a stroke it crosses becomes separate pieces                 |
+| ⌫ Strokes       | Remove every stroke it touches, whole                                                         |
+| ◌ Lasso         | Circle ink to select what is inside (part of a stroke too); drag to move, Delete to remove    |
+| Colour swatches | The drawing tool's colour; with a lasso selection, recolour it                                |
+| Colour box      | Any other colour                                                                              |
+| Size            | The line width (or the eraser's size), remembered per tool; with a lasso selection, resize it |
+
+Click a tool again to turn it off. While a tool is on, the mouse draws
+instead of selecting text and images. =Cmd+Z= (=Ctrl+Z=) undoes ink: a
+stroke, an eraser drag, a lasso move, a recolour, a resize or a delete. =1=-=5= pick
+the usual pen colours. =Esc= clears the lasso's selection, then turns the
+tool off; the next =Esc= stops editing. The other buttons and *Done* turn
+the tool off too.
+
+This is the same ink as the pen (=a=): it is saved with =s=, printed, and
+cleared with =c=. A pen or highlighter stroke in one of the usual colours
+(keys =1=-=5=) is stored as before, so older decks read it; other colours
+the pencil and the eraser (=⌫ Eraser=, =R=) need this version. The eraser
+rubs out exactly what is under it: a stroke it crosses becomes separate
+pieces, each keeping the eraser's edge, so the lasso picks up one piece and
+moving it does not bring the erased part back. The lasso cuts the same way:
+it selects only the ink inside its loop, so it can take part of a stroke,
+and both sides keep the loop's edge. Ink drawn later across the
+gap is not erased. A pencil line keeps its grain when part of it is rubbed
+out. All of this looks the same on screen as in saved and printed copies,
+and =Cmd+Z= takes an eraser drag back like any other stroke.
 
 ** Keeping the ink
 
@@ -1129,9 +1169,32 @@ in red in the cell's bar. The output keeps up to 45% of the cell's height,
 even when the slide's CSS makes the editor taller (e.g. ~.pyc .cm-editor {
 max-height: 600px !important; }~); the editor scrolls instead.
 
+*** Input from the audience: ~input()~
+
+~input()~ works in a cell: it shows the prompt and a text box under the cell.
+Type the answer and press =Enter=; the prompt and answer stay in the output, as
+in a terminal, and ~input()~ returns the answer (always a string). =Esc= cancels,
+which raises ~EOFError~ as Python does at the end of input. While the box has
+the focus, keys go to it (the arrow keys move the cursor, not the slide);
+=PageUp= and =PageDown= from a clicker still change slides, and the box waits
+for you when you come back. It works inside functions and loops too.
+
+#+begin_src markdown
+```python run
+val: str = input("Enter your value: ")
+print(type(val))
+print("doubled:", 2 * float(val))
+```
+#+end_src
+
+The cell has to pause Python while you type, which needs WebAssembly JSPI:
+*Chrome and Edge* have it (so does VS Code's Python panel). In a browser
+without it, ~input()~ stops the cell with a message saying so; set the value in
+the code instead. A ~run hidden~ setup cell gets no input (~EOFError~).
+
 ~examples/marp-present/code.md~ has a slide for each kind of code: plain
 highlighted code, live cells (the last value, shared variables, ~hidden~ and
-~auto~ cells, a plot, ~%pip~) and broken cells for teaching (NameError,
+~auto~ cells, ~input()~, a plot, ~%pip~) and broken cells for teaching (NameError,
 SyntaxError, IndentationError, TypeError, an error inside a function,
 IndexError, KeyError, numpy, ~raise~, ~try~/~except~, a warning).
 
@@ -1164,6 +1227,8 @@ same Pyodide the slideshow uses, so code that works there works in the talk.
   cells run first, once, before the first cell you run.
 - Each output is labelled with its slide and cell number; click the label to
   go to the cell. *Clear* removes the output and *Restart* restarts Python.
+- ~input()~ shows a text box in the panel, as in the slideshow (=Enter=
+  answers, =Esc= cancels).
 - The panel is for one deck at a time: running a cell of another deck
   restarts Python for that deck.
 - A ~presenter: offline~ deck runs from the Python files it carries, so this

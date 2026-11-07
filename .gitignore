@@ -64,6 +64,7 @@ vitest.config.mjs.map
 
 # Compiled build scripts
 scripts/*.js
+!scripts/scope-db.js
 scripts/*.js.map
 scripts/*.d.ts
 scripts/*.d.ts.map
