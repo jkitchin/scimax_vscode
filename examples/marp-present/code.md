@@ -7,7 +7,7 @@ paginate: true
 
 <!-- _class: lead -->
 
-# Code in Marp slides
+# Code in Scimax Marp slides
 
 Highlighted code, live Python cells, and code that fails on purpose.
 

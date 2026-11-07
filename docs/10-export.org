@@ -706,7 +706,7 @@ CLOSED: [2026-01-17 Sat 09:18]
 - Blockquotes
 - Citations (see below)
 
-*** ⚠️ Citations in Markdown
+*** Citations in Markdown
 
 Citations are written as Pandoc citations, and the document's bibliography
 goes in YAML front matter, so =pandoc --citeproc= formats the citations and
@@ -1112,7 +1112,7 @@ If rich clipboard tools aren't available, falls back to plain text clipboard wit
 * Export Keybindings
 
 
-** ⚠️ Email a Heading
+** Email a Heading
 
 =scimax.org.emailHeading= (=Scimax: Email Heading=) opens an email compose window for the heading at point, like the =email-heading= command in Emacs scimax. Put the cursor anywhere in a heading (the headline or its body) and run the command:
 

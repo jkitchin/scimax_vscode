@@ -295,7 +295,7 @@ scimax tangle setup.org --json
 
 Relative =:tangle= paths are resolved against the directory of the source file, and parent directories are created as needed. Note that =--only= filters *named* blocks; unnamed blocks with a =:tangle= target are always tangled.
 
-** ⚠️ Table Align
+** Table Align
 
 Align the org-mode and Markdown tables in files, in place. It is the same
 alignment as pressing =TAB= in a table in VS Code (=scimax.table.align=), so a
@@ -455,7 +455,7 @@ scimax cite list references.bib
 scimax cite list references.bib --format json
 #+end_src
 
-** 👀 Journal
+** Journal
 
 Open or create journal entries from the terminal.
 
