@@ -51,10 +51,14 @@ separate command. See [[*Custom Exporters by LaTeX Class][Custom Exporters by La
 
 See [[file:41-export-beamer.org][Beamer Export]] for the keyword/property reference.
 
-*** ✅ Markdown Exports
+*** 👀 Markdown Exports
 CLOSED: [2026-01-16 Fri 20:55]
 - `[m m]' Markdown file - Export to .md file
 - `[m o]' Markdown and open - Export to .md and open in VS Code
+- `[m s]' Marp slides - Export to a Marp slide deck (.md)
+- `[m S]' Marp slides and open - Export the deck and open the .md
+- `[m p]' Marp slides and present - Export the deck and start the slideshow
+  (see [[file:44-marp.org::*Writing Slides in Org][Writing Slides in Org]])
 
 *** ✅ Jupyter Notebook Exports
 CLOSED: [2026-01-24 Sat 17:34]

@@ -12,8 +12,8 @@ import { parseOrgFast } from './orgExportParser';
 import { parseCitationsFromLine, getNormalizedStyle } from '../references/citationParser';
 import { ALL_CITATION_COMMANDS } from '../references/citationTypes';
 
-const CITATION_LINK_TYPES = new Set(ALL_CITATION_COMMANDS.map(c => c.toLowerCase()));
-const BIBLIOGRAPHY_LINK_TYPES = new Set(['bibliography', 'bibliographystyle', 'bibstyle', 'printbibliography', 'nobibliography']);
+export const CITATION_LINK_TYPES = new Set(ALL_CITATION_COMMANDS.map(c => c.toLowerCase()));
+export const BIBLIOGRAPHY_LINK_TYPES = new Set(['bibliography', 'bibliographystyle', 'bibstyle', 'printbibliography', 'nobibliography']);
 
 type CiteStyle = 'textual' | 'parenthetical' | 'author' | 'year';
 
@@ -54,6 +54,32 @@ export function pandocCitation(
     return `[${items.join('; ')}]`;
 }
 
+/** An org-ref cite link (`cite:&a;&b`, `citet:a,b`) as a Pandoc citation. */
+export function pandocCitationLink(command: string, linkPath: string): string {
+    const parsed = parseCitationsFromLine(`[[${command}:${linkPath}]]`);
+    if (parsed.length === 0 || parsed[0].references.length === 0) {
+        const keys = linkPath.split(/[,;]/).map(k => k.trim().replace(/^[&@]/, '')).filter(Boolean);
+        return pandocCitation(keys.map(key => ({ key })), 'parenthetical');
+    }
+    const citation = parsed[0];
+    const normalized = getNormalizedStyle(citation);
+    const style: CiteStyle = normalized === 'numeric' ? 'parenthetical' : normalized;
+    return pandocCitation(citation.references, style, citation.commonPrefix, citation.commonSuffix);
+}
+
+/** An org-cite citation object (`[cite/t:@a]`) as a Pandoc citation. */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function pandocCitationObject(p: any): string {
+    const refs: PandocReference[] = p.references?.length
+        ? p.references
+        : (p.keys || []).map((key: string) => ({ key }));
+    if (refs.length === 0) return p.rawValue || '';
+    const style: CiteStyle = p.style === 't' || p.style === 'text' ? 'textual'
+        : p.style === 'na' || p.style === 'noauthor' ? 'year'
+            : 'parenthetical';
+    return pandocCitation(refs, style, p.prefix, p.suffix);
+}
+
 function yamlString(s: string): string {
     return /^[\w./~-]+$/.test(s) ? s : JSON.stringify(s);
 }
@@ -77,18 +103,6 @@ export function exportToMarkdown(content: string): string {
     const author = doc.keywords?.['AUTHOR'];
     if (title) lines.push(`# ${title}`, '');
     if (author) lines.push(`*${author}*`, '');
-
-    function citationLink(command: string, linkPath: string): string {
-        const parsed = parseCitationsFromLine(`[[${command}:${linkPath}]]`);
-        if (parsed.length === 0 || parsed[0].references.length === 0) {
-            const keys = linkPath.split(/[,;]/).map(k => k.trim().replace(/^[&@]/, '')).filter(Boolean);
-            return pandocCitation(keys.map(key => ({ key })), 'parenthetical');
-        }
-        const citation = parsed[0];
-        const normalized = getNormalizedStyle(citation);
-        const style: CiteStyle = normalized === 'numeric' ? 'parenthetical' : normalized;
-        return pandocCitation(citation.references, style, citation.commonPrefix, citation.commonSuffix);
-    }
 
     function convertElement(elem: any): void {
         switch (elem.type) {
@@ -191,21 +205,12 @@ export function exportToMarkdown(content: string): string {
                 case 'code':
                 case 'verbatim':
                     return `\`${obj.properties?.value || ''}\``;
-                case 'citation': {
-                    const p = obj.properties || {};
-                    const refs: PandocReference[] = p.references?.length
-                        ? p.references
-                        : (p.keys || []).map((key: string) => ({ key }));
-                    if (refs.length === 0) return p.rawValue || '';
-                    const style: CiteStyle = p.style === 't' || p.style === 'text' ? 'textual'
-                        : p.style === 'na' || p.style === 'noauthor' ? 'year'
-                            : 'parenthetical';
-                    return pandocCitation(refs, style, p.prefix, p.suffix);
-                }
+                case 'citation':
+                    return pandocCitationObject(obj.properties || {});
                 case 'link': {
                     const linkType = String(obj.properties?.linkType || '').toLowerCase();
                     const url = obj.properties?.path || '';
-                    if (CITATION_LINK_TYPES.has(linkType)) return citationLink(linkType, url);
+                    if (CITATION_LINK_TYPES.has(linkType)) return pandocCitationLink(linkType, url);
                     if (BIBLIOGRAPHY_LINK_TYPES.has(linkType)) {
                         if (linkType === 'bibliography' || linkType === 'nobibliography') addBibliography(url);
                         return '';

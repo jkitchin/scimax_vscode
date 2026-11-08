@@ -304,20 +304,23 @@ Quarto's preview (~quarto.preview~), the same as =Cmd+Shift+K=. See [[file:30-ma
 | C-c C-v i | Execute inline code         |
 | C-c C-v q | Queue block for execution   |
 
-* Export
+* 👀 Export
 
-| Key           | Action                        |
-|---------------+-------------------------------|
-| C-c C-e       | Export dispatcher (show menu) |
-| C-c C-e h h   | Export to HTML                |
-| C-c C-e h o   | Export to HTML and open       |
-| C-c C-e h p   | Open the live org preview     |
-| C-c C-e l l   | Export to LaTeX               |
-| C-c C-e l o   | Export to LaTeX and open      |
-| C-c C-e l p   | Export to PDF                 |
-| C-c C-e l v   | Open LaTeX preview            |
-| C-c C-e l s   | LaTeX forward sync            |
-| C-c C-e m m   | Export to Markdown            |
+| Key         | Action                            |
+|-------------+-----------------------------------|
+| C-c C-e     | Export dispatcher (show menu)     |
+| C-c C-e h h | Export to HTML                    |
+| C-c C-e h o | Export to HTML and open           |
+| C-c C-e h p | Open the live org preview         |
+| C-c C-e l l | Export to LaTeX                   |
+| C-c C-e l o | Export to LaTeX and open          |
+| C-c C-e l p | Export to PDF                     |
+| C-c C-e l v | Open LaTeX preview                |
+| C-c C-e l s | LaTeX forward sync                |
+| C-c C-e m m | Export to Markdown                |
+| C-c C-e m s | Export to Marp slides             |
+| C-c C-e m S | Export to Marp slides and open    |
+| C-c C-e m p | Export to Marp slides and present |
 
 In a Marp deck (Markdown with ~marp: true~), =C-c C-e= opens the Marp slide
 export menu instead (PDF, PowerPoint, Google Slides, HTML, images). There

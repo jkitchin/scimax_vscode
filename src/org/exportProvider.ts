@@ -10,6 +10,7 @@ import { spawn } from 'child_process';
 import { parseOrgFast } from '../parser/orgExportParser';
 import { exportToHtml, HtmlExportOptions } from '../parser/orgExportHtml';
 import { exportToMarkdown } from '../parser/orgExportMarkdown';
+import { exportToMarp, MarpExportOptions } from '../parser/orgExportMarp';
 import { exportToLatex, LatexExportOptions } from '../parser/orgExportLatex';
 import { exportToBeamer, BeamerExportOptions } from '../parser/orgExportBeamer';
 import { exportToDocx, DocxExportOptions } from '../parser/orgExportDocx';
@@ -169,6 +170,13 @@ const EXPORT_FORMATS: ExportFormat[] = [
         description: 'Export to Markdown format',
         extension: '.md',
         icon: '$(markdown)',
+    },
+    {
+        id: 'marp',
+        label: 'Marp Slides',
+        description: 'Export to a Marp slide deck (Markdown)',
+        extension: '.md',
+        icon: '$(preview)',
     },
     {
         id: 'docx',
@@ -1030,6 +1038,63 @@ async function exportMarkdown(content: string, _options: Partial<ExportOptions>)
     return exportToMarkdown(content);
 }
 
+/** The scimax.export.marp settings the user has set (keywords in the file win). */
+function marpExportSettings(): Partial<MarpExportOptions> {
+    const config = vscode.workspace.getConfiguration('scimax.export.marp');
+    const options: Partial<MarpExportOptions> = {};
+    const keys: Array<keyof MarpExportOptions> = [
+        'theme', 'headingDivider', 'paginate', 'math', 'presenter', 'titleSlide',
+        'titleSlideClass', 'fragments', 'nestBlocksUnderLists', 'languageMap', 'frontMatter',
+    ];
+    for (const key of keys) {
+        const value = config.get(key);
+        if (value !== undefined && value !== null) {
+            (options as Record<string, unknown>)[key] = value;
+        }
+    }
+    return options;
+}
+
+/**
+ * Export to a Marp slide deck (Markdown)
+ */
+function exportMarp(content: string): string {
+    return exportToMarp(content, marpExportSettings());
+}
+
+/**
+ * Export the org file to a Marp deck next to it, then open or present it.
+ */
+async function quickExportMarp(then?: 'open' | 'present'): Promise<void> {
+    const editor = vscode.window.activeTextEditor;
+    if (!editor || editor.document.languageId !== 'org') {
+        vscode.window.showWarningMessage('No org-mode file open');
+        return;
+    }
+    const inputPath = editor.document.uri.fsPath;
+    const inputDir = path.dirname(inputPath);
+    const inputName = path.basename(inputPath, '.org');
+    const content = preprocessContent(editor.document.getText(), inputDir);
+    const metadata = extractMetadata(parseOrgFast(content));
+    const outputPath = path.join(inputDir, getExportFileName(metadata.exportFileName, inputName, 'md'));
+    try {
+        await deleteExistingOutput(outputPath);
+        await fs.promises.writeFile(outputPath, exportMarp(content), 'utf-8');
+    } catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
+        vscode.window.showErrorMessage(`Marp export failed: ${message}`);
+        return;
+    }
+    if (then === 'present') {
+        await vscode.commands.executeCommand('scimax.marp.present', { file: outputPath });
+    } else if (then === 'open') {
+        const doc = await vscode.workspace.openTextDocument(outputPath);
+        await vscode.window.showTextDocument(doc);
+    } else {
+        vscode.window.showInformationMessage(`Exported slides to ${path.basename(outputPath)}`);
+    }
+}
+
 /**
  * Main export command - shows export dispatcher
  */
@@ -1166,6 +1231,11 @@ async function showExportDispatcher(): Promise<void> {
 
                     case 'markdown':
                         result = await exportMarkdown(content, options);
+                        await fs.promises.writeFile(outputPath, result, 'utf-8');
+                        break;
+
+                    case 'marp':
+                        result = exportMarp(content);
                         await fs.promises.writeFile(outputPath, result, 'utf-8');
                         break;
 
@@ -1681,6 +1751,12 @@ export function registerExportCommands(context: vscode.ExtensionContext): void {
     );
 
     context.subscriptions.push(
+        vscode.commands.registerCommand('scimax.org.exportMarp', () => quickExportMarp()),
+        vscode.commands.registerCommand('scimax.org.exportMarpOpen', () => quickExportMarp('open')),
+        vscode.commands.registerCommand('scimax.org.exportMarpPresent', () => quickExportMarp('present'))
+    );
+
+    context.subscriptions.push(
         vscode.commands.registerCommand(
             'scimax.org.exportDocx',
             quickExportDocx
@@ -2135,6 +2211,8 @@ async function exportDispatcher(): Promise<void> {
         // Markdown exports
         { label: '$(markdown) [m m] Markdown file', description: 'Export to .md file', value: 'md-file', keys: 'mm' },
         { label: '$(markdown) [m o] Markdown and open', description: 'Export to .md and open', value: 'md-open', keys: 'mo' },
+        { label: '$(preview) [m s] Marp slides', description: 'Export to a Marp deck (.md)', value: 'marp-file', keys: 'ms' },
+        { label: '$(play) [m p] Marp slides and present', description: 'Export to a Marp deck and start the slideshow', value: 'marp-present', keys: 'mp' },
         { label: '', kind: vscode.QuickPickItemKind.Separator, value: '', keys: '' },
         // DOCX exports
         { label: '$(file) [d d] Word document', description: 'Export to .docx file', value: 'docx-file', keys: 'dd' },
@@ -2316,6 +2394,14 @@ async function exportDispatcher(): Promise<void> {
                 const outputPath = path.join(inputDir, outputFileName);
                 const mdDoc = await vscode.workspace.openTextDocument(outputPath);
                 await vscode.window.showTextDocument(mdDoc);
+                break;
+            }
+            case 'marp-file': {
+                await quickExportMarp();
+                break;
+            }
+            case 'marp-present': {
+                await quickExportMarp('present');
                 break;
             }
             case 'docx-file': {

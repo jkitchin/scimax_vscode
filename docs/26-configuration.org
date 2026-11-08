@@ -2288,6 +2288,27 @@ set, Marp for VS Code's matching ~markdown.marp.*~ setting is used
 See [[file:44-marp.org::*Exporting Slides][Exporting Slides]]. The exports also follow ~scimax.marp.themes~ and
 ~scimax.marp.enableHtml~ (above).
 
+* ⚠️ Org to Marp Export Settings
+
+Settings for exporting an org file to a Marp deck (=C-c C-e m s=). Keywords in
+the file (~#+MARP_THEME:~ and so on) override them.
+
+| Setting                                 | Type           | Default   | Description                                 |
+|-----------------------------------------+----------------+-----------+---------------------------------------------|
+| scimax.export.marp.theme                | string         | "default" | Theme of the deck                           |
+| scimax.export.marp.headingDivider       | integer        | 2         | Heading levels that start slides            |
+| scimax.export.marp.paginate             | boolean        | true      | Slide numbers                               |
+| scimax.export.marp.math                 | string         | "katex"   | katex or mathjax                            |
+| scimax.export.marp.presenter            | boolean/string | true      | true, false or "offline"                    |
+| scimax.export.marp.titleSlide           | boolean        | true      | Make a title slide                          |
+| scimax.export.marp.titleSlideClass      | string         | "lead"    | Class of the title slide                    |
+| scimax.export.marp.fragments            | boolean        | true      | Reveal lists and sections step by step      |
+| scimax.export.marp.nestBlocksUnderLists | boolean        | true      | Move blocks after a list into its last item |
+| scimax.export.marp.languageMap          | object         | {}        | Extra source block language mappings        |
+| scimax.export.marp.frontMatter          | object         | {}        | Extra front matter for every deck           |
+
+See [[file:44-marp.org::*Writing Slides in Org][Writing Slides in Org]].
+
 * Common Configurations
 
 This section provides complete `settings.json' examples for different use cases.

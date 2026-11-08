@@ -5,19 +5,20 @@
 #+OPTIONS: toc:t num:t
 #+TODO: ⚠️ 👀 | ✅
 
-* Overview
+* 👀 Overview
 
 Scimax supports [[https://marp.app/][Marp]] slide decks on its own: a Markdown file whose front
 matter has ~marp: true~. It renders the slides with its own copy of Marp Core,
 so the [[https://marketplace.visualstudio.com/items?itemName=marp-team.marp-vscode][Marp for VS Code]] extension is not needed.
 
-| Task                             | How                                                                                                                     |
-|----------------------------------+-------------------------------------------------------------------------------------------------------------------------|
-| See one slide as you edit        | Slide preview: the play-preview button in the editor title bar ([[*Slide Preview][Slide Preview]])                      |
-| See and rearrange the whole deck | Slide Sorter ([[*Slide Thumbnails][Slide Thumbnails]], [[*Editing Slides][Editing Slides]])                         |
-| Present                          | =C-c C-e x=, the play button, or a ~marp:~ link in an org file ([[*Slideshow][Slideshow]])                              |
-| Write directives                 | Completion and hover in the front matter and comments ([[*Directives][Directives]])                                     |
-| Export                           | =C-c C-e= for PDF, PowerPoint, Google Slides, HTML, images ([[*Exporting Slides][Exporting Slides]])                    |
+| Task                             | How                                                                            |
+|----------------------------------+--------------------------------------------------------------------------------|
+| See one slide as you edit        | Slide preview: the play-preview button in the editor title bar ([[*Slide Preview][Slide Preview]]) |
+| See and rearrange the whole deck | Slide Sorter ([[*Slide Thumbnails][Slide Thumbnails]], [[*Editing Slides][Editing Slides]])                                |
+| Present                          | =C-c C-e x=, the play button, or a ~marp:~ link in an org file ([[*Slideshow][Slideshow]])     |
+| Write directives                 | Completion and hover in the front matter and comments ([[*Directives][Directives]])             |
+| Write the talk in org            | =C-c C-e m s= in the org file ([[*Writing Slides in Org][Writing Slides in Org]])                          |
+| Export                           | =C-c C-e= for PDF, PowerPoint, Google Slides, HTML, images ([[*Exporting Slides][Exporting Slides]])  |
 
 For help, *Scimax: Marp Help* ([[cmd:scimax.marp.help]], also at the bottom of
 the Marp menu, and as =C-c C-e ?=) opens this
@@ -1335,6 +1336,130 @@ closed or checked again.
   of a font service) fall back to local fonts without a connection.
 - The browser files live in ~media/marpPresent/~ of the extension; the Output
   panel (/Scimax Marp Export/) lists what was inlined and any missing files.
+
+* ⚠️ Writing Slides in Org
+
+You can write a talk as an org file and export it to a Marp deck. In the org
+file, =C-c C-e m s= writes ~talk.md~ next to ~talk.org~. =C-c C-e m S= also
+opens the ~.md~ file, and =C-c C-e m p= starts the slideshow. Each export
+replaces the ~.md~ file, so edit the org file, not the deck.
+
+| Command                          | Keys        | Effect                           |
+|----------------------------------+-------------+----------------------------------|
+| [[cmd:scimax.org.exportMarp]]        | C-c C-e m s | Export the deck                  |
+| [[cmd:scimax.org.exportMarpOpen]]    | C-c C-e m S | Export the deck and open the .md |
+| [[cmd:scimax.org.exportMarpPresent]] | C-c C-e m p | Export the deck and present it   |
+
+The exporter follows the conventions of =ox-marp=, an Emacs exporter by uliw.
+uliw suggested this feature and contributed its specification and examples in
+[[https://github.com/jkitchin/scimax_vscode/issues/77][issue #77]]. Thank you!
+Scimax adds its own slide features: notes, hidden slides, countdowns, live
+Python cells, citations and background images.
+
+** ⚠️ How org maps to slides
+
+| Org                                           | Marp                                                           |
+|-----------------------------------------------+----------------------------------------------------------------|
+| ~#+TITLE:~, ~#+AUTHOR:~, ~#+DATE:~            | Front matter, and a title slide (class ~lead~, no page number) |
+| ~#+SUBTITLE:~                                 | An italic line under the title on the title slide              |
+| Text before the first heading                 | The end of the title slide                                     |
+| ~*~ and ~**~ headings                         | Slides (~#~ and ~##~); ~headingDivider: 2~                     |
+| ~***~ heading                                 | A section revealed in one step (~<div data-marpit-fragment>~)  |
+| ~****~ and deeper headings                    | List items: ~* **Heading:** first paragraph~                   |
+| ~-~ and ~+~ lists                             | ~*~ lists, revealed one item at a time                         |
+| ~1.~ lists                                    | ~1)~ lists, revealed one item at a time                        |
+| ~[X]~ checkboxes, ~term :: definition~        | ~[x]~ checkboxes, ~**term:** definition~                       |
+| Blocks after a list                           | Moved into the last item, so they are revealed with it         |
+| ~#+begin_src jupyter-python~                  | A ~python~ fence (see ~languageMap~)                           |
+| ~#+begin_notes~ or a ~:NOTES:~ drawer         | Speaker notes (an HTML comment)                                |
+| ~#+begin_countdown 3:00~                      | A countdown timer                                              |
+| Other special blocks, ~#+begin_center~        | ~<div class="name">~                                           |
+| ~#+begin_export marp~ (or ~md~, ~html~)       | Copied as is; other back ends are dropped                      |
+| ~-----~                                       | ~---~, an explicit slide break                                 |
+| ~\(x\)~, ~\[x\]~, ~$$x$$~, LaTeX environments | ~$x$~ and ~$$~ blocks                                          |
+| ~[[cite:&key]]~, ~[cite:@key]~                    | Pandoc citations (~[@key]~), numbered per slide                |
+| ~#+BIBLIOGRAPHY:~, ~bibliography:~ links      | ~bibliography:~ in the front matter                            |
+| ~:noexport:~ tag, ~COMMENT~ headings          | Left out (and any tag in ~#+EXCLUDE_TAGS:~)                    |
+
+Fragment sections (~***~ headings) are raw HTML. A deck with ~presenter: true~
+(the default) always allows HTML. For other decks, turn on
+~scimax.marp.enableHtml~, or the section shows all at once.
+
+** ⚠️ Keywords
+
+Keywords in the file override the [[*Org export settings][settings]].
+
+| Keyword                                 | Front matter / effect                             |
+|-----------------------------------------+---------------------------------------------------|
+| ~#+MARP_THEME: gaia~                    | ~theme: gaia~                                     |
+| ~#+MARP_HEADING_DIVIDER: 1~             | ~headingDivider: 1~ (and shifts the levels above) |
+| ~#+MARP_PAGINATE: nil~                  | ~paginate: false~                                 |
+| ~#+MARP_MATH: mathjax~                  | ~math: mathjax~                                   |
+| ~#+MARP_PRESENTER: offline~             | ~presenter: offline~ (~nil~ for none)             |
+| ~#+MARP_SIZE: 4:3~                      | Any other ~MARP_X~ becomes ~x~ (camelCase)        |
+| ~#+MARP_FRONT_MATTER: key: value~       | A raw front matter line                           |
+| ~#+OPTIONS: marp-title-slide:nil~       | No title slide                                    |
+| ~#+OPTIONS: marp-fragments:nil~         | Plain ~-~ and ~1.~ lists, no fragment sections    |
+| ~#+PROPERTY: header-args :exports both~ | Default header arguments for source blocks        |
+
+** ⚠️ Slide properties and tags
+
+| Heading property or tag | Effect                                         |
+|-------------------------+------------------------------------------------|
+| ~:MARP_FIT: t~          | A fitted heading (~# <!-- fit -->~)            |
+| ~:MARP_CLASS: invert~   | ~<!-- _class: invert -->~ on that slide        |
+| ~:MARP_<X>: value~      | Any other ~<!-- _x: value -->~ local directive |
+| ~:hidden:~ tag          | A [[*Hidden slides][hidden slide]] (or ~:MARP_HIDDEN: t~)          |
+
+** ⚠️ Source blocks
+
+~:exports~ works as in org: ~code~ (the default), ~results~, ~both~ or ~none~.
+Results in a ~#+RESULTS:~ block or ~: output~ lines are exported with ~both~ or
+~results~.
+
+To make a [[*Live Python cells][live Python cell]], add ~:run t~ (or ~:marp-run t~). Use
+~:run auto~ to run it when the slide opens and ~:run hidden~ to hide the code.
+For full control, ~:marp "python run auto"~ (or ~:python "python run"~, the
+=ox-marp= form) sets the fence's info string.
+
+#+begin_example
+,#+begin_src jupyter-python :run t
+x = input("Your guess: ")
+print(int(x) ** 2)
+,#+end_src
+#+end_example
+
+** ⚠️ Images
+
+A link to an image becomes a Marp image. ~#+ATTR_MARP:~ adds Marp's image
+options:
+
+#+begin_example
+,#+ATTR_MARP: :bg right:40% :width 300px
+[[file:figures/plot.png]]
+#+end_example
+
+gives ~![bg right:40% w:300px](figures/plot.png)~. ~:bg~ alone makes a
+background image, ~:height~ becomes ~h:~, ~:alt~ sets the alt text and any
+other word (~sepia~, ~blur~) is kept. Without ~#+ATTR_MARP:~, the width and
+height of ~#+ATTR_HTML:~ or ~#+ATTR_ORG:~ are used. A ~#+CAPTION:~ becomes an
+italic line under the image.
+
+** ⚠️ Org export settings
+
+| Setting                                   | Default   | Effect                                      |
+|-------------------------------------------+-----------+---------------------------------------------|
+| ~scimax.export.marp.theme~                | ~default~ | Theme                                       |
+| ~scimax.export.marp.headingDivider~       | ~2~       | Heading levels that start slides            |
+| ~scimax.export.marp.paginate~             | ~true~    | Slide numbers                               |
+| ~scimax.export.marp.math~                 | ~katex~   | ~katex~ or ~mathjax~                        |
+| ~scimax.export.marp.presenter~            | ~true~    | ~true~, ~false~ or ~"offline"~              |
+| ~scimax.export.marp.titleSlide~           | ~true~    | Make a title slide                          |
+| ~scimax.export.marp.titleSlideClass~      | ~lead~    | Class of the title slide                    |
+| ~scimax.export.marp.fragments~            | ~true~    | Reveal lists and sections step by step      |
+| ~scimax.export.marp.nestBlocksUnderLists~ | ~true~    | Move blocks after a list into its last item |
+| ~scimax.export.marp.languageMap~          | ~{}~      | Extra language mappings for source blocks   |
+| ~scimax.export.marp.frontMatter~          | ~{}~      | Extra front matter for every deck           |
 
 * Exporting Slides
 

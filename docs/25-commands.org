@@ -412,12 +412,15 @@ in =latex-profiles.json= or settings. See [[file:10-export.org::*Build Profiles]
 | [[cmd:scimax.latex.showBuildProfile]]         | Show Active Build Profile       | -                  |
 | [[cmd:scimax.latex.createBuildProfilesFile]]  | Create Build Profiles File      | -                  |
 
-** ✅ Other Export Formats
+** 👀 Other Export Formats
 CLOSED: [2026-01-17 Sat 12:27]
 
-| Command ID                        | Description         | Default Keybinding |
-|-----------------------------------+---------------------+--------------------|
-| [[cmd:scimax.org.exportMarkdown]] | Export to Markdown  | C-c C-e m m        |
+| Command ID                       | Description                       | Default Keybinding |
+|----------------------------------+-----------------------------------+--------------------|
+| [[cmd:scimax.org.exportMarkdown]]    | Export to Markdown                | C-c C-e m m        |
+| [[cmd:scimax.org.exportMarp]]        | Export to Marp slides             | C-c C-e m s        |
+| [[cmd:scimax.org.exportMarpOpen]]    | Export to Marp slides and open    | C-c C-e m S        |
+| [[cmd:scimax.org.exportMarpPresent]] | Export to Marp slides and present | C-c C-e m p        |
 
 ** ✅ Markdown File Export
 CLOSED: [2026-04-12 Sun 19:49]

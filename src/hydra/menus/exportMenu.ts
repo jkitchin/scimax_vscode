@@ -354,6 +354,35 @@ export const markdownExportMenu: HydraMenuDefinition = {
                 },
             ],
         },
+        {
+            title: 'Marp slides',
+            items: [
+                {
+                    key: 's',
+                    label: 'Marp slides',
+                    description: 'Export to a Marp deck (.md)',
+                    icon: 'preview',
+                    exit: 'exit',
+                    action: 'scimax.org.exportMarp',
+                },
+                {
+                    key: 'S',
+                    label: 'Marp slides and open',
+                    description: 'Export the deck and open the .md',
+                    icon: 'link-external',
+                    exit: 'exit',
+                    action: 'scimax.org.exportMarpOpen',
+                },
+                {
+                    key: 'p',
+                    label: 'Marp slides and present',
+                    description: 'Export the deck and start the slideshow',
+                    icon: 'play',
+                    exit: 'exit',
+                    action: 'scimax.org.exportMarpPresent',
+                },
+            ],
+        },
     ],
 };
 

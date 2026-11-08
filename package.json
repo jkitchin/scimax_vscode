@@ -1148,6 +1148,18 @@
         "title": "Scimax: Export to Markdown"
       },
       {
+        "command": "scimax.org.exportMarp",
+        "title": "Scimax: Export to Marp Slides"
+      },
+      {
+        "command": "scimax.org.exportMarpOpen",
+        "title": "Scimax: Export to Marp Slides and Open"
+      },
+      {
+        "command": "scimax.org.exportMarpPresent",
+        "title": "Scimax: Export to Marp Slides and Present"
+      },
+      {
         "command": "scimax.org.exportIpynb",
         "title": "Scimax: Export to Jupyter Notebook"
       },
@@ -7087,6 +7099,73 @@
           },
           "default": [],
           "markdownDescription": "Custom Marp theme CSS files (paths relative to the workspace folder, or absolute) for the slide thumbnails, preview and exports. A theme file names itself with a `/* @theme name */` comment; use it with `theme: name` in the deck. When not set, `markdown.marp.themes` (Marp for VS Code) is used."
+        },
+        "scimax.export.marp.theme": {
+          "type": "string",
+          "default": "default",
+          "markdownDescription": "Marp theme for decks exported from org (`theme:` front matter). `#+MARP_THEME:` in the file wins."
+        },
+        "scimax.export.marp.headingDivider": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 6,
+          "default": 2,
+          "markdownDescription": "Org heading levels up to this one start a new slide in exported Marp decks. The next level becomes a fragment section and deeper levels become list items. `#+MARP_HEADING_DIVIDER:` wins."
+        },
+        "scimax.export.marp.paginate": {
+          "type": "boolean",
+          "default": true,
+          "markdownDescription": "Show slide numbers in exported Marp decks. `#+MARP_PAGINATE:` wins."
+        },
+        "scimax.export.marp.math": {
+          "type": "string",
+          "enum": [
+            "katex",
+            "mathjax"
+          ],
+          "default": "katex",
+          "markdownDescription": "Math typesetting written to exported Marp decks. `#+MARP_MATH:` wins."
+        },
+        "scimax.export.marp.presenter": {
+          "type": [
+            "boolean",
+            "string"
+          ],
+          "default": true,
+          "markdownDescription": "Write `presenter: true` to exported Marp decks so they open in the scimax presenter. Use `\"offline\"` for a presenter deck with no network access. `#+MARP_PRESENTER:` wins."
+        },
+        "scimax.export.marp.titleSlide": {
+          "type": "boolean",
+          "default": true,
+          "markdownDescription": "Make a title slide from `#+TITLE:`, `#+SUBTITLE:`, `#+AUTHOR:` and `#+DATE:` in exported Marp decks. `#+OPTIONS: marp-title-slide:nil` turns it off for one file."
+        },
+        "scimax.export.marp.titleSlideClass": {
+          "type": "string",
+          "default": "lead",
+          "markdownDescription": "Marp class for the exported title slide. Empty for none."
+        },
+        "scimax.export.marp.fragments": {
+          "type": "boolean",
+          "default": true,
+          "markdownDescription": "Reveal list items and sub-sections one at a time in exported Marp decks (`*` and `1)` lists, `data-marpit-fragment` sections). `#+OPTIONS: marp-fragments:nil` turns it off for one file."
+        },
+        "scimax.export.marp.nestBlocksUnderLists": {
+          "type": "boolean",
+          "default": true,
+          "markdownDescription": "Move source and example blocks that follow a list into its last item, so they are revealed with it."
+        },
+        "scimax.export.marp.languageMap": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "default": {},
+          "markdownDescription": "Extra source block language mappings for exported Marp decks, e.g. `{\"jupyter-python\": \"python\"}`. Added to the built-in map."
+        },
+        "scimax.export.marp.frontMatter": {
+          "type": "object",
+          "default": {},
+          "markdownDescription": "Extra front matter keys for every exported Marp deck, e.g. `{\"size\": \"4:3\"}`. `#+MARP_<KEY>:` keywords win."
         },
         "scimax.marp.enableHtml": {
           "type": "boolean",

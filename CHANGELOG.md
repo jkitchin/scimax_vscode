@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Export org to Marp slides** - `C-c C-e m s` exports an org file to a Marp deck (`m S` also opens it, `m p` also presents it). Headings become slides, step-by-step sections and list items, with `#+MARP_*` keywords, `:MARP_*:` slide properties, `#+ATTR_MARP:` image options, speaker notes, hidden slides, countdowns, live Python cells and citations. New `scimax.export.marp.*` settings. Thanks to uliw, who suggested this and contributed the ox-marp specification and examples in [#77](https://github.com/jkitchin/scimax_vscode/issues/77).
 - **`E` speed key emails a heading** - At the start of an org headline, `E` runs `Scimax: Email Heading`.
 - **Email Heading records a Gmail link and can mark the heading done** - After `Scimax: Email Heading` opens the compose window, the heading gets a `SENT_ON` timestamp and, for Gmail, an `EMAIL_LINK` property: a Gmail search for the heading's ID that opens the sent email and its replies later. A *Mark Done* button then sets the heading to the file's first done state with a `CLOSED` timestamp. New settings `scimax.emailHeading.recordSent` (default on) and `scimax.emailHeading.markDone` (`ask`, `always` or `never`; default `ask`).
 
