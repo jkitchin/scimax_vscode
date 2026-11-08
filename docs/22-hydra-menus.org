@@ -344,26 +344,33 @@ Org database operations including search and indexing.
 Database
 
 Search:
-  [l] Search View       - Live search with modes and filters
-  [I] Database View     - Stats, maintenance and settings
-  [s] Full-text Search  - Search all content
-  [v] Vector Search     - Semantic similarity search
-  [h] Search Headings   - Search by heading text
+  [l] Search View         - Live search with mode checkboxes and filters
+  [I] Database View       - Stats, maintenance and settings
+  [s] Full-text Search    - Search all content
+  [v] Semantic Search     - AI-powered similarity search
+  [y] Hybrid Search       - Combined keyword + semantic search
+  [h] Search Headings     - Search by heading text
+  [b] Search Code Blocks  - Search source blocks by language
+  [#] Search Hashtags     - Find files with #hashtags
 
-Tasks:
-  [t] Search TODOs  - Find TODO items
-  [a] Agenda        - View scheduled items
+Filter:
+  [:] Search by Tag       - Filter headings by org tags
+  [p] Search by Property  - Search property drawer values
 
-Links:
-  [l] Search Links  - Find org links
-  [b] Backlinks     - Find backlinks to current file
+Tasks & Agenda:
+  [t] Show TODOs  - List all TODO items
+  [a] Agenda      - View scheduled items
+  [d] Deadlines   - Show upcoming deadlines
 
-Index:
-  [i] Index Current File  - Re-index the current file
-  [I] Index All Files     - Re-index all files
+Browse & Index:
+  [f] Browse Files      - Browse all indexed files
+  [i] Sync All Files    - Reconcile the index with the filesystem
+  [c] Set Search Scope  - Limit searches to directory/project
 
-Statistics:
-  [S] Database Stats  - Show database statistics
+Maintenance:
+  [S] Database Stats        - Show database statistics
+  [o] Optimize Database     - Clean up and optimize (VACUUM)
+  [e] Configure Embeddings  - Setup Ollama/OpenAI for semantic search
 #+end_example
 
 *Example Usage*:
@@ -371,6 +378,28 @@ Statistics:
 1. Press C-c m, then d to open database menu
 2. Press s to perform full-text search
 3. Enter your search query
+
+** ⚠️ Applications Menu (scimax.applications)
+
+Open things outside the editor, mirroring the applications hydra from Emacs
+scimax.
+
+*Parent*: Main Menu
+*Access*: ~F12 a~ or ~C-c m a~
+
+#+begin_example
+Applications
+
+External Applications:
+  [a] Agenda                 - Show today's agenda
+  [b] Bash Terminal          - Open external terminal at current file location
+  [d] Dired                  - Open Dired in the current file's directory
+  [f] Finder / File Manager  - Reveal current file in system file manager
+#+end_example
+
+=b= runs [[cmd:scimax.openExternalTerminalHere]], which uses the terminal set in
+=scimax.externalTerminal.command= (or =.app= on macOS). =d= runs
+[[cmd:scimax.dired.openCurrent]]; see [[file:37-dired.org][Dired]].
 
 ** Version Control Menu (scimax.vc)
 
