@@ -608,7 +608,7 @@ Compose an email from the heading at point, record a Gmail link to it, and optio
 
 | Command ID                     | Description                               | Default Keybinding |
 |--------------------------------+-------------------------------------------+--------------------|
-| [[cmd:scimax.org.emailHeading]] | Email heading (Gmail or mailto)           | -                  |
+| [[cmd:scimax.org.emailHeading]] | Email heading (Gmail or mailto)           | E (speed key)      |
 | [[cmd:scimax.org.gotoId]]       | Go to heading by ID (prompts for the ID)  | -                  |
 
 ** Custom Exporters

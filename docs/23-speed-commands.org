@@ -413,6 +413,14 @@ The archived subtree is tagged with `:ARCHIVE:' and includes metadata:
 :END:
 #+END_EXAMPLE
 
+** ⚠️ Email Command
+
+| Key | Command       | Description                                             |
+|-----+---------------+---------------------------------------------------------|
+| E   | Email heading | Compose a Gmail email from the heading (org files only) |
+
+=E= runs =scimax.org.emailHeading=: the headline is the subject, the content is the body, and the =TO=, =CC= and =BCC= properties are the recipients. See [[file:10-export.org::*Email a Heading][Email a Heading]].
+
 * ✅ Tips for Effective Use
 CLOSED: [2026-01-15 Thu 14:50]
 

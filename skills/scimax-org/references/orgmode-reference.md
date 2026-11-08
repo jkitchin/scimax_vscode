@@ -424,7 +424,8 @@ John
 ### Sending it
 
 Put the cursor anywhere in the heading and run **Scimax: Email Heading**
-(`scimax.org.emailHeading`, command palette; no default key). It opens a Gmail
+(`scimax.org.emailHeading`, command palette), or press the speed key `E` with
+the cursor at the very start of the headline. It opens a Gmail
 compose window in the browser, filled in. The user reviews it and clicks Send in
 Gmail; scimax cannot send mail itself, and there is no CLI command for this.
 
