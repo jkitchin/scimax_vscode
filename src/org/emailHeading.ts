@@ -13,8 +13,8 @@
 
 import * as vscode from 'vscode';
 import { randomUUID } from 'crypto';
-import { getTodoStatesFromText, extractHeadingTitle } from './todoStates';
-import { ensureHeadingId } from './dependencyCommands';
+import { getTodoStatesFromText, extractHeadingTitle, getTodoWorkflowForDocument } from './todoStates';
+import { ensureHeadingId, findDrawer } from './dependencyCommands';
 
 export interface HeadingEmail {
     /** Line of the headline in the source text (0-based). */
@@ -218,6 +218,43 @@ export function buildGmailUrl(email: HeadingEmail, account?: string): string {
     return `https://mail.google.com/mail/?${params.join('&')}`;
 }
 
+/**
+ * Gmail URL that finds the sent email (and its thread) later: a search for
+ * the heading's ID, which the body carries in its `org-id:` footer. Gmail
+ * gives a compose link no message ID back, so a search is the stable handle.
+ */
+export function buildGmailSearchUrl(id: string, account?: string): string {
+    const query = encodeURIComponent(`"${id}"`);
+    if (account && /^\d+$/.test(account)) {
+        return `https://mail.google.com/mail/u/${account}/#search/${query}`;
+    }
+    const auth = account ? `?authuser=${encodeURIComponent(account)}` : '';
+    return `https://mail.google.com/mail/u/0/${auth}#search/${query}`;
+}
+
+/** Inactive org timestamp for `date`, e.g. `[2026-11-08 Sun 14:05]`. */
+export function inactiveTimestamp(date: Date): string {
+    const pad = (n: number) => String(n).padStart(2, '0');
+    const day = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][date.getDay()];
+    return `[${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ${day} ` +
+        `${pad(date.getHours())}:${pad(date.getMinutes())}]`;
+}
+
+/**
+ * The headline with its TODO keyword set to `doneState` (replacing any
+ * keyword in `todoStates`, or added after the stars). Null if `line` is not
+ * a headline or already has `doneState`.
+ */
+export function withTodoKeyword(line: string, todoStates: Set<string>, doneState: string): string | null {
+    const m = line.match(/^(\*+)\s+(.*)$/);
+    if (!m) return null;
+    const [, stars, rest] = m;
+    const first = rest.match(/^(\S+)(?:\s+|$)/);
+    if (first && first[1] === doneState) return null;
+    const title = first && todoStates.has(first[1]) ? rest.slice(first[0].length) : rest;
+    return `${stars} ${doneState}${title ? ' ' + title : ''}`;
+}
+
 /** RFC 6068 mailto: URL for the system mail client. */
 export function buildMailtoUrl(email: HeadingEmail): string {
     const params: string[] = [];
@@ -235,6 +272,69 @@ export function buildMailtoUrl(email: HeadingEmail): string {
         .filter(Boolean)
         .join(',');
     return `mailto:${to}${params.length ? '?' + params.join('&') : ''}`;
+}
+
+/** Line of the headline whose drawer has `:ID: id`, or -1. */
+function headingLineForId(document: vscode.TextDocument, id: string): number {
+    const lines = document.getText().split(/\r?\n/);
+    const esc = id.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const re = new RegExp(`^\\s*:ID:\\s*(?:id:)?${esc}\\s*$`, 'i');
+    const idx = lines.findIndex(l => re.test(l));
+    if (idx === -1) return -1;
+    return findHeadingAt(lines, idx)?.start ?? -1;
+}
+
+/** Set (or replace) properties in the heading's drawer, creating it if needed. */
+async function setHeadingProperties(
+    document: vscode.TextDocument,
+    headingLine: number,
+    props: Record<string, string>
+): Promise<boolean> {
+    const edit = new vscode.WorkspaceEdit();
+    let inserts = '';
+    const drawer = findDrawer(document, headingLine, 'ID');
+    for (const [name, value] of Object.entries(props)) {
+        const existingLine = findDrawer(document, headingLine, name).existingLine;
+        if (existingLine !== -1) {
+            edit.replace(document.uri, document.lineAt(existingLine).range, `:${name}: ${value}`);
+        } else {
+            inserts += `:${name}: ${value}\n`;
+        }
+    }
+    if (inserts) {
+        if (drawer.start !== -1 && drawer.end !== -1) {
+            edit.insert(document.uri, new vscode.Position(drawer.end, 0), inserts);
+        } else {
+            edit.insert(document.uri, new vscode.Position(drawer.insertAt, 0), `:PROPERTIES:\n${inserts}:END:\n`);
+        }
+    }
+    return vscode.workspace.applyEdit(edit);
+}
+
+/**
+ * Set the heading's TODO keyword to the document's first done state (and add
+ * CLOSED). `id` relocates the heading if the document changed meanwhile.
+ */
+async function markHeadingDone(document: vscode.TextDocument, headingLine: number, id?: string): Promise<void> {
+    if (id) {
+        const found = headingLineForId(document, id);
+        if (found !== -1) headingLine = found;
+    }
+    const workflow = getTodoWorkflowForDocument(document);
+    const doneState = workflow.doneStates[0] ?? 'DONE';
+    const todoStates = new Set<string>([...workflow.allStates, ...getTodoStatesFromText(document.getText())]);
+    const line = document.lineAt(headingLine);
+    const newLine = withTodoKeyword(line.text, todoStates, doneState);
+    if (newLine === null) return;
+    const first = line.text.match(/^\*+\s+(\S+)/)?.[1];
+    const wasDone = !!first && workflow.doneStates.includes(first);
+
+    const editor = await vscode.window.showTextDocument(document, { preserveFocus: true, preview: false });
+    const ok = await editor.edit(b => b.replace(line.range, newLine));
+    if (!ok) return;
+    // Loaded lazily: scimaxOrg pulls in much of the extension at import time
+    const { updateClosedTimestamp } = await import('./scimaxOrg');
+    await updateClosedTimestamp(editor, headingLine, wasDone, true);
 }
 
 /**
@@ -255,9 +355,11 @@ export async function emailHeading(): Promise<void> {
     }
 
     const config = vscode.workspace.getConfiguration('scimax.emailHeading');
+    let sentId: string | undefined;
     if (config.get<boolean>('includeId', true)) {
         const id = email.id ?? await ensureHeadingId(document, email.headingLine, randomUUID);
         if (id) {
+            sentId = id;
             email.body = appendIdFooter(email.body, id);
         } else {
             vscode.window.showWarningMessage('Could not add an ID to the heading; sending without one.');
@@ -291,6 +393,28 @@ export async function emailHeading(): Promise<void> {
         vscode.window.showInformationMessage(
             'Heading body is too long for a compose link; it was copied to the clipboard. Paste it into the email body.'
         );
+    }
+
+    // Record when it was sent and, for Gmail, a link that finds the email later
+    if (config.get<boolean>('recordSent', true)) {
+        const props: Record<string, string> = { SENT_ON: inactiveTimestamp(new Date()) };
+        if (client !== 'mailto' && sentId) props.EMAIL_LINK = buildGmailSearchUrl(sentId, account);
+        let line = email.headingLine;
+        if (sentId) {
+            const found = headingLineForId(document, sentId);
+            if (found !== -1) line = found;
+        }
+        await setHeadingProperties(document, line, props);
+    }
+
+    const markDone = config.get<string>('markDone', 'ask');
+    if (markDone === 'always') {
+        await markHeadingDone(document, email.headingLine, sentId);
+    } else if (markDone === 'ask') {
+        const choice = await vscode.window.showInformationMessage(
+            'Mark the heading done once the email is sent?', 'Mark Done'
+        );
+        if (choice === 'Mark Done') await markHeadingDone(document, email.headingLine, sentId);
     }
 }
 

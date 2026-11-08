@@ -11,6 +11,9 @@ import {
     normalizeAddresses,
     findHeadingAt,
     plainBodyLinks,
+    buildGmailSearchUrl,
+    inactiveTimestamp,
+    withTodoKeyword,
 } from '../emailHeading';
 
 const doc = `#+TITLE: Notes
@@ -172,5 +175,42 @@ describe('special characters survive the compose URL', () => {
             expect(q.get('su') ?? q.get('subject')).toBe('Q&A: 1+1 #3?');
             expect((q.get('body') ?? '').trim()).toBe('A & B + C # D ? E');
         }
+    });
+});
+
+describe('buildGmailSearchUrl', () => {
+    const id = '3f2a9c1e-5b7d';
+    it('searches the default account for the quoted ID', () => {
+        expect(buildGmailSearchUrl(id)).toBe('https://mail.google.com/mail/u/0/#search/%223f2a9c1e-5b7d%22');
+    });
+    it('uses /u/N for an account index', () => {
+        expect(buildGmailSearchUrl(id, '2')).toBe('https://mail.google.com/mail/u/2/#search/%223f2a9c1e-5b7d%22');
+    });
+    it('passes an address as authuser', () => {
+        expect(buildGmailSearchUrl(id, 'me@x.org'))
+            .toBe('https://mail.google.com/mail/u/0/?authuser=me%40x.org#search/%223f2a9c1e-5b7d%22');
+    });
+});
+
+describe('inactiveTimestamp', () => {
+    it('formats an inactive org timestamp with time', () => {
+        expect(inactiveTimestamp(new Date(2026, 10, 8, 9, 5))).toBe('[2026-11-08 Sun 09:05]');
+    });
+});
+
+describe('withTodoKeyword', () => {
+    const states = new Set(['TODO', 'NEXT', 'DONE']);
+    it('replaces an existing keyword', () => {
+        expect(withTodoKeyword('** TODO [#A] Send draft :work:', states, 'DONE')).toBe('** DONE [#A] Send draft :work:');
+    });
+    it('adds a keyword to a plain heading', () => {
+        expect(withTodoKeyword('* Send draft', states, 'DONE')).toBe('* DONE Send draft');
+    });
+    it('does not treat a non-keyword first word as a state', () => {
+        expect(withTodoKeyword('* Email Bob', states, 'DONE')).toBe('* DONE Email Bob');
+    });
+    it('returns null when already done or not a heading', () => {
+        expect(withTodoKeyword('* DONE Send draft', states, 'DONE')).toBeNull();
+        expect(withTodoKeyword('not a heading', states, 'DONE')).toBeNull();
     });
 });
