@@ -1,0 +1,263 @@
+/* Database view. Colours follow the search and agenda views. */
+:root {
+    --grid: var(--vscode-editorWidget-border, rgba(128, 128, 128, 0.25));
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: var(--vscode-font-family);
+    font-size: var(--vscode-font-size);
+    color: var(--vscode-foreground);
+    background: var(--vscode-editor-background);
+}
+
+header {
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background: var(--vscode-editor-background);
+    border-bottom: 1px solid var(--grid);
+}
+
+h1 { font-size: 1.3em; margin: 0; font-weight: 600; }
+h2 { font-size: 1.1em; margin: 0 0 8px; font-weight: 600; }
+h3 { font-size: 0.95em; margin: 0 0 6px; font-weight: 600; }
+
+main {
+    padding: 8px 16px 32px;
+    max-width: 1100px;
+}
+
+section {
+    padding: 12px 0;
+    border-bottom: 1px solid var(--grid);
+}
+
+section:last-child { border-bottom: none; }
+
+.spacer { flex: 1; }
+.muted { color: var(--vscode-descriptionForeground); }
+.warn { color: var(--vscode-editorWarning-foreground, #cca700); }
+.nowrap { white-space: nowrap; }
+
+code {
+    font-family: var(--vscode-editor-font-family);
+    font-size: 0.95em;
+    padding: 0 3px;
+    border-radius: 2px;
+    background: var(--vscode-textCodeBlock-background, rgba(128, 128, 128, 0.15));
+}
+
+button, input, select {
+    font: inherit;
+    border-radius: 2px;
+}
+
+button {
+    padding: 3px 8px;
+    color: var(--vscode-button-secondaryForeground, var(--vscode-foreground));
+    background: var(--vscode-button-secondaryBackground, transparent);
+    border: 1px solid var(--vscode-dropdown-border, transparent);
+    cursor: pointer;
+}
+
+button:hover {
+    background: var(--vscode-button-secondaryHoverBackground, var(--vscode-toolbar-hoverBackground));
+}
+
+button:focus-visible, input:focus, select:focus {
+    outline: 1px solid var(--vscode-focusBorder);
+    outline-offset: -1px;
+}
+
+button.link, button.gear {
+    padding: 0 4px;
+    color: var(--vscode-textLink-foreground);
+    background: transparent;
+    border: none;
+}
+
+button.link:hover { text-decoration: underline; background: transparent; }
+button.gear { color: var(--vscode-descriptionForeground); font-size: 1.05em; }
+button.gear:hover { color: var(--vscode-foreground); background: transparent; }
+
+input[type="text"], input[type="number"], input[type="search"], select {
+    padding: 3px 6px;
+    color: var(--vscode-input-foreground);
+    background: var(--vscode-input-background);
+    border: 1px solid var(--vscode-input-border, transparent);
+}
+
+select {
+    color: var(--vscode-dropdown-foreground);
+    background: var(--vscode-dropdown-background);
+    border-color: var(--vscode-dropdown-border, transparent);
+}
+
+/* Overview */
+.cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 8px;
+}
+
+.card {
+    padding: 8px 10px;
+    border: 1px solid var(--grid);
+    border-radius: 4px;
+}
+
+.card.warn { border-color: var(--vscode-editorWarning-foreground, #cca700); }
+.card.warn .cardValue { color: var(--vscode-editorWarning-foreground, #cca700); }
+.cardValue { font-size: 1.4em; font-weight: 600; overflow-wrap: anywhere; }
+.cardLabel { margin-top: 2px; }
+.cardDetail { font-size: 0.85em; margin-top: 2px; }
+
+.pathLine { margin-top: 8px; overflow-wrap: anywhere; }
+
+/* Actions */
+.actions {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 12px;
+}
+
+.actionGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+button.action { text-align: left; }
+
+button.action.danger {
+    color: var(--vscode-errorForeground, #e15759);
+}
+
+/* Tables */
+.twoCol {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 24px;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table td {
+    padding: 2px 6px;
+    vertical-align: middle;
+}
+
+.table tr:hover td { background: var(--vscode-list-hoverBackground); }
+.num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.barCell { width: 25%; min-width: 50px; }
+
+.bar {
+    height: 8px;
+    min-width: 2px;
+    border-radius: 2px;
+    background: var(--vscode-charts-blue, #4472c4);
+    opacity: 0.7;
+}
+
+.pathCell {
+    max-width: 0;
+    width: 60%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.pathCell button.link {
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-align: left;
+}
+
+/* Settings */
+#settingsFilter {
+    width: min(100%, 360px);
+    margin: 4px 0 8px;
+}
+
+.sectionTitle {
+    margin: 16px 0 4px;
+    padding-bottom: 2px;
+    border-bottom: 1px solid var(--grid);
+}
+
+.setting {
+    padding: 6px 8px;
+    border-left: 2px solid transparent;
+}
+
+.setting:hover { background: var(--vscode-list-hoverBackground); }
+.setting.changed { border-left-color: var(--vscode-settings-modifiedItemIndicator, var(--vscode-focusBorder)); }
+
+.settingHead {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.settingKey { font-weight: 600; }
+
+.where {
+    font-size: 0.8em;
+    padding: 0 5px;
+    border-radius: 8px;
+    color: var(--vscode-badge-foreground);
+    background: var(--vscode-badge-background);
+}
+
+.settingDesc {
+    margin: 2px 0 4px;
+    line-height: 1.4;
+}
+
+.settingControl input[type="text"] { width: min(100%, 420px); }
+.settingControl input[type="number"] { width: 10em; }
+
+.chips {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px;
+}
+
+.chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    padding: 1px 2px 1px 8px;
+    border-radius: 10px;
+    border: 1px solid var(--grid);
+    font-family: var(--vscode-editor-font-family);
+    font-size: 0.9em;
+    overflow-wrap: anywhere;
+}
+
+button.chipX {
+    padding: 0 5px;
+    border: none;
+    background: transparent;
+    color: var(--vscode-descriptionForeground);
+}
+
+button.chipX:hover { color: var(--vscode-errorForeground, #e15759); background: transparent; }
+
+.chipAdd {
+    display: inline-flex;
+    gap: 4px;
+}
+
+.chipAdd input[type="text"] { width: 16em; }

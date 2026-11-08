@@ -75,6 +75,8 @@ import { parseStartupOptions, applyStartupVisibility } from './org/speedCommands
 import { registerImageOverlayCommands } from './org/imageOverlayProvider';
 import { registerAgendaCommands, type AgendaManager } from './org/agendaProvider';
 import { registerAgendaView } from './org/agendaView';
+import { registerSearchView } from './search/searchView';
+import { registerDatabaseWebview } from './database/databaseView';
 import { registerTaskActions } from './org/taskActions';
 import { registerTableFormulaCommands } from './org/tableFormula';
 import { registerCaptureCommands } from './org/captureProvider';
@@ -974,6 +976,10 @@ async function activateScimax(context: vscode.ExtensionContext) {
     activationStep('registerAgendaView', () => {
         if (agendaManager) registerAgendaView(context, agendaManager, projectileManager);
     });
+
+    // Search and database views (webviews over the Scimax database).
+    activationStep('registerSearchView', () => registerSearchView(context));
+    activationStep('registerDatabaseWebview', () => registerDatabaseWebview(context));
 
     // Initialize Notebook Manager
     await activationStepAsync('NotebookManager', async () => {

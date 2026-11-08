@@ -333,7 +333,7 @@ Jump to Line:
 3. Type the first letter of target word
 4. Type the hint character shown at that location
 
-** ✅ Database Menu (scimax.database)
+** 👀 Database Menu (scimax.database)
 CLOSED: [2026-01-17 Sat 12:15]
 
 Org database operations including search and indexing.
@@ -344,6 +344,8 @@ Org database operations including search and indexing.
 Database
 
 Search:
+  [l] Search View       - Live search with modes and filters
+  [I] Database View     - Stats, maintenance and settings
   [s] Full-text Search  - Search all content
   [v] Vector Search     - Semantic similarity search
   [h] Search Headings   - Search by heading text

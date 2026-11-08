@@ -934,6 +934,29 @@ export class ScimaxDbCore {
         return this.searchScope;
     }
 
+    /** The SQLite file the index is kept in. */
+    public getDatabasePath(): string {
+        return this.options.dbPath;
+    }
+
+    /**
+     * How many indexed files each folder holds, most first: the folders that
+     * make up the index, to see what is in it and what could be excluded.
+     */
+    public async getFileCountsByFolder(limit = 15): Promise<Array<{ folder: string; files: number }>> {
+        if (!this.db) return [];
+        const result = await this.db.execute('SELECT path FROM files');
+        const counts = new Map<string, number>();
+        for (const row of result.rows) {
+            const folder = path.dirname(row.path as string);
+            counts.set(folder, (counts.get(folder) ?? 0) + 1);
+        }
+        return [...counts.entries()]
+            .map(([folder, files]) => ({ folder, files }))
+            .sort((a, b) => b.files - a.files || a.folder.localeCompare(b.folder))
+            .slice(0, limit);
+    }
+
     public setIgnorePatterns(patterns: string[]): void {
         this.options.ignorePatterns = patterns;
     }
@@ -2348,6 +2371,76 @@ export class ScimaxDbCore {
     }
 
     /**
+     * Headings for the search view: every whitespace-separated term must be
+     * in the title (case-insensitive), the heading must carry each required
+     * tag and none of the excluded ones (own or inherited), and have each
+     * property filter: `{ key }` for the property being set, `{ key, value }`
+     * for its value containing `value` (both case-insensitive). With no terms
+     * and no filters it returns nothing, rather than the whole index.
+     */
+    public async searchHeadingsFiltered(filter: {
+        terms?: string[];
+        requiredTags?: string[];
+        excludedTags?: string[];
+        properties?: Array<{ key: string; value?: string }>;
+        /** One of these states; '@open' and '@done' stand for any open or done state */
+        todoStates?: string[];
+        /** None of these states ('@open' and '@done' work here too) */
+        excludedTodoStates?: string[];
+        /** States that count as done besides those a file's #+TODO line marks done */
+        doneStates?: string[];
+        limit?: number;
+    }): Promise<HeadingRecord[]> {
+        if (!this.db) return [];
+        const terms = (filter.terms ?? []).filter(t => t.length > 0);
+        const required = filter.requiredTags ?? [];
+        const excluded = filter.excludedTags ?? [];
+        const props = filter.properties ?? [];
+        const todoIn = filter.todoStates ?? [];
+        const todoOut = filter.excludedTodoStates ?? [];
+        if (!terms.length && !required.length && !props.length && !todoIn.length) return [];
+        const doneStates = filter.doneStates ?? DEFAULT_DONE_STATES;
+        const esc = (s: string) => s.replace(/[\\%_]/g, c => '\\' + c);
+        const scope = this.getScopeClause('h.file_path');
+        let sql = `SELECT h.* FROM headings h JOIN files f ON f.id = h.file_id WHERE 1=1${scope.sql}`;
+        const args: any[] = [...scope.args];
+        for (const term of terms) {
+            sql += ` AND h.title LIKE ? ESCAPE '\\'`;
+            args.push(`%${esc(term)}%`);
+        }
+        const tagClause = `(h.tags LIKE ? ESCAPE '\\' OR h.inherited_tags LIKE ? ESCAPE '\\')`;
+        for (const tag of required) {
+            sql += ` AND ${tagClause}`;
+            args.push(`%"${esc(tag)}"%`, `%"${esc(tag)}"%`);
+        }
+        for (const tag of excluded) {
+            sql += ` AND NOT ${tagClause}`;
+            args.push(`%"${esc(tag)}"%`, `%"${esc(tag)}"%`);
+        }
+        for (const p of props) {
+            sql += ` AND json_valid(h.properties) AND EXISTS (SELECT 1 FROM json_each(h.properties) p
+                     WHERE upper(p.key) = upper(?)${p.value ? ` AND lower(p.value) LIKE ? ESCAPE '\\'` : ''})`;
+            args.push(p.key);
+            if (p.value) args.push(`%${esc(p.value.toLowerCase())}%`);
+        }
+        // COALESCE so a heading with no state is "not X" rather than unknown.
+        const doneList = doneStates.length ? doneStates.map(() => '?').join(', ') : `''`;
+        const isDone = `(h.todo_type = 'done' OR h.todo_state IN (${doneList}))`;
+        const stateClause = (state: string): string => {
+            if (state === '@done') { args.push(...doneStates); return `COALESCE(${isDone}, 0)`; }
+            if (state === '@open') { args.push(...doneStates); return `COALESCE(h.todo_state IS NOT NULL AND NOT ${isDone}, 0)`; }
+            args.push(state);
+            return `COALESCE(h.todo_state = ?, 0)`;
+        };
+        if (todoIn.length) sql += ` AND (${todoIn.map(stateClause).join(' OR ')})`;
+        for (const state of todoOut) sql += ` AND NOT ${stateClause(state)}`;
+        sql += ' ORDER BY f.mtime DESC, h.file_path, h.line_number LIMIT ?';
+        args.push(filter.limit ?? 500);
+        const result = await this.db.execute({ sql, args });
+        return result.rows as unknown as HeadingRecord[];
+    }
+
+    /**
      * Every heading in one file, in document order. Task tooling needs the
      * full outline (not just matches) to reconstruct parent/child structure,
      * which is how `:ORDERED:` sequencing is derived.
@@ -2653,6 +2746,15 @@ export class ScimaxDbCore {
             args: scope.args
         });
         return result.rows.map(r => r.name as string);
+    }
+
+    /** Each TODO state in the index, how many headings have it, and whether it is done there. */
+    public async getTodoStateCounts(): Promise<Array<{ state: string; count: number; done: boolean }>> {
+        if (!this.db) return [];
+        const result = await this.db.execute(`SELECT todo_state AS state, COUNT(*) AS count,
+            MAX(todo_type = 'done') AS done FROM headings WHERE todo_state IS NOT NULL
+            GROUP BY todo_state ORDER BY count DESC`);
+        return result.rows.map(r => ({ state: String(r.state), count: Number(r.count), done: Number(r.done) === 1 }));
     }
 
     public async getAllTodoStates(): Promise<string[]> {

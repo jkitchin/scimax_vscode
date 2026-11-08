@@ -102,18 +102,18 @@ CLOSED: [2026-10-22 Thu 09:53]
 Some paths are *always* ignored. This baseline cannot be turned off, because
 indexing these directories produces duplicates of real notes rather than notes:
 
-| Pattern group      | Patterns                                                       |
-|--------------------+----------------------------------------------------------------|
-| Dependencies       | =**/node_modules/**=                                           |
-| Version control    | =**/.git/**=, =**/.hg/**=, =**/.svn/**=                        |
-| Build output       | =**/dist/**=, =**/build/**=, =**/__pycache__/**=               |
-| Notebook checkouts | =**/.ipynb_checkpoints/**=                                     |
-| System             | =**/.Trash/**=, =**/Library/Caches/**=                         |
-| Editor state       | =**/Code/User/History/**=, =**/Code/User/globalStorage/**=,    |
-|                    | =**/Code/User/workspaceStorage/**=, =**/Code/agent-host/**=,   |
-|                    | the same paths for Code - Insiders, VSCodium and Cursor, and   |
-|                    | =**/.vscode/extensions/**=                                     |
-| Claude app state   | =**/Library/Application Support/Claude/**=                     |
+| Pattern group      | Patterns                                                     |
+|--------------------+--------------------------------------------------------------|
+| Dependencies       | =**/node_modules/**=                                         |
+| Version control    | =**/.git/**=, =**/.hg/**=, =**/.svn/**=                      |
+| Build output       | =**/dist/**=, =**/build/**=, =**/__pycache__/**=             |
+| Notebook checkouts | =**/.ipynb_checkpoints/**=                                   |
+| System             | =**/.Trash/**=, =**/Library/Caches/**=                       |
+| Editor state       | =**/Code/User/History/**=, =**/Code/User/globalStorage/**=,  |
+|                    | =**/Code/User/workspaceStorage/**=, =**/Code/agent-host/**=, |
+|                    | the same paths for Code - Insiders, VSCodium and Cursor, and |
+|                    | =**/.vscode/extensions/**=                                   |
+| Claude app state   | =**/Library/Application Support/Claude/**=                   |
 
 Editor state matters most. VS Code's *Local History* keeps a timestamped copy of
 every edit under the original file extension, so a single =project.org= edited
@@ -205,6 +205,85 @@ the rest from the index (the files themselves are not touched). It is also the
 way to tidy up after narrowing =scimax.db.include=.
 =scimax db prune= on the command line removes indexed files that match an
 exclude pattern.
+
+* ⚠️ Search View
+
+=C-c d v= ([[cmd:scimax.search.view]], =Scimax: Search View=) opens a search
+page beside your files, in the manner of the agenda view. Results update as you
+type, from the database, grouped by file with the lines that match.
+
+** ⚠️ The Query and the Modes
+
+Type in the query field at the top. Three checkboxes choose how to search; any
+mix may be on, and a file found by several shows a badge for each:
+
+| Mode      | Finds                                                        |
+|-----------+--------------------------------------------------------------|
+| Full text | Lines with the query words (FTS5 syntax: =AND=, =OR=, =NOT=, |
+|           | ="phrases"=, =prefix*=), with stem variants marked           |
+| Semantic  | Passages close in meaning; needs embeddings (see Semantic    |
+|           | Search). Results arrive a moment after the others            |
+| Headings  | Headings whose title holds every query word                  |
+
+Full text and Headings are on at first. The Semantic box is greyed out when
+semantic search is not available, and its tooltip says why. Files are ranked
+by reciprocal-rank fusion over the modes that found them.
+
+The query and filters are remembered for the next time the view opens. With
+text selected on one line, =C-c d v= starts with that text as the query.
+
+** ⚠️ Filters
+
+| Filter     | How it works                                                   |
+|------------+----------------------------------------------------------------|
+| Tags       | Click a tag once to require it (✓), again to exclude it (✕), |
+|            | and again to clear it. Inherited tags count                    |
+| TODO       | Same clicks as tags, on the states in the database, plus       |
+|            | =Any open= and =Any done=. Required states are OR'd: a heading |
+|            | needs one of them. Done means a done state in its file's       |
+|            | =#+TODO= line, or one in =scimax.agenda.doneStates=            |
+| Properties | =STATUS=draft, AUTHOR=: a key alone means the property is set; |
+|            | =KEY=value= means its value contains the text (any case)       |
+| Paths      | Comma-separated. Plain text matches anywhere in the path; a    |
+|            | glob (=*.md=, =notes/**=) matches the file name or the path    |
+|            | relative to its workspace folder                               |
+
+A line counts under the heading it sits in, so tag, TODO and property filters
+keep only lines in matching sections. With filters and an empty query, the
+view lists the headings that pass them, so requiring =Any open= with an empty
+query lists your open tasks. =Clear filters= resets them all, and
+=Database…= opens the Database View.
+
+** ⚠️ Results
+
+The =Sort= menu at the bottom orders the files:
+
+| Sort              | Order                                                           |
+|-------------------+-----------------------------------------------------------------|
+| Recently modified | Newest file first (the default)                                 |
+| Best match        | Reciprocal-rank fusion over the modes                           |
+| File name         | By file name, with numbers in numeric order (=b9= before =b10=) |
+
+Recently modified and File name reorder the best matches: the view fetches
+three times as many files as it shows, then sorts those, so a weak match in a
+recently edited file can still be left out of a long result list.
+
+Each file shows its name, folder, when it was modified and match badges, then
+its hits: the line number, the outline of headings above the line, and the line
+with the matches marked. Five hits show per file, with =Show N more= for the
+rest, and =More files= at the bottom loads another 50 files. Saving an org or Markdown
+file runs the search again once the database has reindexed it.
+
+| Key                    | Action                                       |
+|------------------------+----------------------------------------------|
+| =↓= or =Enter= (query) | Move into the results                        |
+| =n=, =j=, =↓=          | Next hit                                     |
+| =p=, =k=, =↑=          | Previous hit (=↑= on the first goes back up) |
+| =Enter=, =o=           | Open the file at the hit, beside the view    |
+| =/=, =Esc=             | Back to the query                            |
+| =q=                    | Close the view                               |
+
+Click a hit to select it and double-click to open it.
 
 * ✅ Full-Text Search
 CLOSED: [2026-01-17 Sat 11:46]
@@ -369,10 +448,10 @@ Known models and their embedding dimensions:
 
 | Model                    | Dimensions | Notes                |
 |--------------------------+------------+----------------------|
-| `nomic-embed-text'       |        768 | Default, recommended |
-| `all-minilm'             |        384 | Smaller, faster      |
-| `mxbai-embed-large'      |       1024 | Larger               |
-| `snowflake-arctic-embed' |       1024 | Larger               |
+| `nomic-embed-text'       | 768        | Default, recommended |
+| `all-minilm'             | 384        | Smaller, faster      |
+| `mxbai-embed-large'      | 1024       | Larger               |
+| `snowflake-arctic-embed' | 1024       | Larger               |
 
 Any other model name is assumed to produce 768-dimensional vectors.
 
@@ -653,11 +732,11 @@ Run =Scimax: Show Search Capabilities= (=scimax.db.searchCapabilities=) to see:
 
 Advanced search works without all features:
 
-| If Unavailable | Fallback |
-|----------------+----------|
-| Vector search  | FTS-only |
-| LLM expansion  | PRF-only |
-| Reranking      | Skip reranking |
+| If Unavailable   | Fallback                    |
+|------------------+-----------------------------|
+| Vector search    | FTS-only                    |
+| LLM expansion    | PRF-only                    |
+| Reranking        | Skip reranking              |
 | All LLM features | Equivalent to hybrid search |
 
 ** Configuration
@@ -736,12 +815,12 @@ To enable query expansion and reranking with Ollama:
 
 ** Performance Comparison
 
-| Mode     | Speed    | Recall | Precision | When to Use |
-|----------+----------+--------+-----------+-------------|
-| Fast     | <50ms    | Low    | High      | Exact matches |
-| Semantic | ~200ms   | High   | Medium    | Conceptual queries |
-| Hybrid   | ~300ms   | High   | High      | General purpose |
-| Advanced | 1-3s     | Highest| Highest   | Important searches |
+| Mode     | Speed  | Recall  | Precision | When to Use        |
+|----------+--------+---------+-----------+--------------------|
+| Fast     | <50ms  | Low     | High      | Exact matches      |
+| Semantic | ~200ms | High    | Medium    | Conceptual queries |
+| Hybrid   | ~300ms | High    | High      | General purpose    |
+| Advanced | 1-3s   | Highest | Highest   | Important searches |
 
 * Structured Queries
 
@@ -1100,6 +1179,46 @@ Search scope: all
 Search scope: directory (my-project)
 #+END_SRC
 
+* ⚠️ Database View
+
+=C-c d i= ([[cmd:scimax.db.view]], =Scimax: Database View=) opens a page about
+the database. The Database panel in the sidebar has buttons for it and for the
+Search View.
+
+** ⚠️ Overview
+
+Cards show the number of files (org and Markdown), headings, source blocks,
+chunks, the size of the database file, when a file was last indexed, whether
+semantic search is on (and how far the embedding queue has got), the search
+scope and the schema version. The path of the database file is below them,
+with =Reveal= to show it in the Finder or Explorer. The numbers update while a
+sync or the embedding queue runs; =Refresh= reads them again.
+
+** ⚠️ Actions
+
+Buttons run the database commands: sync, remove files outside the indexed
+folders, cancel sync, rebuild, optimize, verify, back up, restore and clear
+(rebuild and clear ask first), and open the Search View, the file browser,
+the search scope picker and the embedding setup.
+
+** ⚠️ Folders and Recent Files
+
+=Folders with the most files= lists the 15 folders with the most indexed
+files. =Exclude= adds a folder to =scimax.db.exclude= and offers to remove its
+files from the index now. =Recently changed files= opens a file on click.
+
+** ⚠️ Settings
+
+Every =scimax.db.*= and =scimax.search.*= setting is listed by section (what
+gets indexed, embeddings, syncing, limits, search), with its description and a
+control: a checkbox, number or text field, a menu, or a list of entries with
+=Add= (and =Browse…= for =scimax.db.include=). Changes save as you make them,
+to the workspace settings when the setting is set there and to your user
+settings otherwise. A changed setting has a bar at its left and a =Reset=
+link; ⚙ opens it in VS Code's Settings editor. =Open settings= and
+=settings.json= at the top open the editor and the JSON file. Type in the
+filter box to narrow the list.
+
 * Database Management
 
 ** Refreshing the Index
@@ -1428,9 +1547,9 @@ Ollama embedding model name.
 }
 #+END_SRC
 
-* Command Reference
+* 👀 Command Reference
 
-** All Database Commands (C-c d ?)
+** 👀 All Database Commands (C-c d ?)
 
 =C-c d ?= ([[cmd:scimax.db.help]]) lists every database command. The ones
 bound under =C-c d= show their key, and typing it runs the command at once, so
@@ -1441,6 +1560,8 @@ bound under =C-c d= show their key, and typing it runs the command at once, so
 |-----+-----------------------------------------------------------|
 | =d= | Database hydra menu                                       |
 | =s= | Search all files                                          |
+| =v= | Search View                                               |
+| =i= | Database View                                             |
 | =h= | Search headings                                           |
 | =f= | Browse indexed files                                      |
 | =t= | Show TODOs                                                |
@@ -1453,20 +1574,20 @@ bound under =C-c d= show their key, and typing it runs the command at once, so
 
 ** Search Commands
 
-| Command                      | Description                        |
-|------------------------------+------------------------------------|
-| scimax.db.search             | Full-text search (FTS5)            |
-| scimax.db.searchSemantic     | Semantic search (vector)           |
-| scimax.db.searchHybrid       | Hybrid search (FTS + vector)       |
-| scimax.db.searchAdvanced     | Advanced search (full pipeline)    |
-| scimax.db.searchCapabilities | Show search capabilities           |
-| scimax.db.searchHeadings     | Search headings                    |
-| scimax.db.searchByTag        | Search by org tag                  |
-| scimax.db.searchByProperty   | Search by property value           |
-| scimax.db.searchBlocks       | Search code blocks                 |
-| scimax.db.searchHashtags     | Search by hashtag                  |
+| Command                      | Description                     |
+|------------------------------+---------------------------------|
+| scimax.db.search             | Full-text search (FTS5)         |
+| scimax.db.searchSemantic     | Semantic search (vector)        |
+| scimax.db.searchHybrid       | Hybrid search (FTS + vector)    |
+| scimax.db.searchAdvanced     | Advanced search (full pipeline) |
+| scimax.db.searchCapabilities | Show search capabilities        |
+| scimax.db.searchHeadings     | Search headings                 |
+| scimax.db.searchByTag        | Search by org tag               |
+| scimax.db.searchByProperty   | Search by property value        |
+| scimax.db.searchBlocks       | Search code blocks              |
+| scimax.db.searchHashtags     | Search by hashtag               |
 
-** View Commands
+** 👀 View Commands
 
 | Command               | Description             |
 |-----------------------+-------------------------|
@@ -1474,22 +1595,24 @@ bound under =C-c d= show their key, and typing it runs the command at once, so
 | scimax.db.agenda      | Show agenda             |
 | scimax.db.deadlines   | Show upcoming deadlines |
 | scimax.db.browseFiles | Browse indexed files    |
+| scimax.search.view    | Search View             |
+| scimax.db.view        | Database View           |
 
 ** Management Commands
 
-| Command                       | Description                 |
-|-------------------------------+-----------------------------|
-| scimax.db.refresh             | Refresh database (incremental) |
+| Command                       | Description                     |
+|-------------------------------+---------------------------------|
+| scimax.db.refresh             | Refresh database (incremental)  |
 | scimax.db.rebuild             | Rebuild database (from scratch) |
-| scimax.db.optimize            | Optimize database           |
-| scimax.db.clear               | Clear database              |
-| scimax.db.stats               | Show database statistics    |
-| scimax.db.setScope            | Set search scope            |
-| scimax.db.configureEmbeddings | Configure embedding service |
-| scimax.db.backup              | Backup database to file     |
-| scimax.db.restore             | Restore database from file  |
-| scimax.db.rebuild             | Rebuild database completely |
-| scimax.db.verify              | Verify database integrity   |
+| scimax.db.optimize            | Optimize database               |
+| scimax.db.clear               | Clear database                  |
+| scimax.db.stats               | Show database statistics        |
+| scimax.db.setScope            | Set search scope                |
+| scimax.db.configureEmbeddings | Configure embedding service     |
+| scimax.db.backup              | Backup database to file         |
+| scimax.db.restore             | Restore database from file      |
+| scimax.db.rebuild             | Rebuild database completely     |
+| scimax.db.verify              | Verify database integrity       |
 
 * ✅ Database Maintenance
 CLOSED: [2026-01-22 Thu 21:17]
@@ -1547,10 +1670,10 @@ Use when:
 
 *** Options
 
-| Option        | Description                          |
-|---------------+--------------------------------------|
-| Full rebuild  | Complete reindex of all files        |
-| Projects only | Only rebuild project table           |
+| Option        | Description                   |
+|---------------+-------------------------------|
+| Full rebuild  | Complete reindex of all files |
+| Projects only | Only rebuild project table    |
 
 ** ✅ Database Verification
 CLOSED: [2026-01-22 Thu 21:18]
@@ -1579,11 +1702,11 @@ Database Verification Results:
 
 *** Status Values
 
-| Status       | Meaning                          |
-|--------------+----------------------------------|
-| OK           | Database is current and valid    |
-| NEEDS_REINDEX| Some files are stale or missing |
-| CORRUPTED    | Index integrity check failed     |
+| Status        | Meaning                         |
+|---------------+---------------------------------|
+| OK            | Database is current and valid   |
+| NEEDS_REINDEX | Some files are stale or missing |
+| CORRUPTED     | Index integrity check failed    |
 
 ** ✅ Project Integration
 CLOSED: [2026-01-22 Thu 21:44]
@@ -1921,8 +2044,9 @@ Simplified parser:
 - Cell indices tracked for navigation
 - Hashtags from markdown cells
 
-* Related Topics
+* 👀 Related Topics
 
+- [[file:13-agenda.org][Agenda]] - The agenda view, which the Search View is modelled on
 - [[file:01-getting-started.org][Getting Started]] - Initial setup and first steps
 - [[file:30-cli.org][Command-Line Interface]] - `scimax db sync', `scimax search' and other CLI commands
 - [[file:07-source-blocks.org][Source Blocks]] - Code execution and literate programming

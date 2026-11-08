@@ -14,6 +14,22 @@ export const databaseMenu: HydraMenuDefinition = {
             title: 'Search',
             items: [
                 {
+                    key: 'l',
+                    label: 'Search View',
+                    description: 'Live search with mode checkboxes and filters',
+                    icon: 'search-view-icon',
+                    exit: 'exit',
+                    action: 'scimax.search.view',
+                },
+                {
+                    key: 'I',
+                    label: 'Database View',
+                    description: 'Stats, maintenance and settings',
+                    icon: 'database',
+                    exit: 'exit',
+                    action: 'scimax.db.view',
+                },
+                {
                     key: 's',
                     label: 'Full-text Search',
                     description: 'Search all content',

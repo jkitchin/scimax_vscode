@@ -442,7 +442,7 @@ viewport. Moving the cursor resets the cycle to center.
 | C-c p a   | Add project                     |
 | C-c p S-f | Find file in all known projects |
 
-** Database and Agenda
+** 👀 Database and Agenda
 
 | Key       | Action                              |
 |-----------+-------------------------------------|
@@ -461,6 +461,8 @@ viewport. Moving the cursor resets the cycle to center.
 | C-c d d   | Database hydra menu                 |
 | C-c d f   | Browse indexed files                |
 | C-c d s   | Search database                     |
+| C-c d v   | Search View                         |
+| C-c d i   | Database View                       |
 | C-c d h   | Search headings                     |
 | C-c d t   | Show TODOs                          |
 | C-c d a   | Show agenda                         |

@@ -991,6 +991,8 @@ export function registerDbCommands(
                 { key: 'd', label: 'Database Menu', description: 'Database hydra menu', run: run('scimax.hydra.database') },
                 { key: 's', label: 'Search All Files', description: 'Full-text search', run: run('scimax.db.search') },
                 { key: 'h', label: 'Search Headings', description: 'Headings in indexed files', run: run('scimax.db.searchHeadings') },
+                { key: 'v', label: 'Search View', description: 'Search as you type, with filters', run: run('scimax.search.view') },
+                { key: 'i', label: 'Database View', description: 'Stats, maintenance and settings', run: run('scimax.db.view') },
                 { key: 'f', label: 'Browse Indexed Files', description: 'Open a file from the database', run: run('scimax.db.browseFiles') },
                 { key: 't', label: 'Show TODOs', description: 'Agenda TODO list', run: run('scimax.db.showTodos') },
                 { key: 'a', label: 'Show Agenda', description: 'Month agenda', run: run('scimax.db.agenda') },

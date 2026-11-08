@@ -1544,6 +1544,16 @@
         "title": "Scimax: Show Database Stats"
       },
       {
+        "command": "scimax.db.view",
+        "title": "Scimax: Database View",
+        "icon": "$(database)"
+      },
+      {
+        "command": "scimax.search.view",
+        "title": "Scimax: Search View",
+        "icon": "$(search)"
+      },
+      {
         "command": "scimax.setLogLevel",
         "title": "Scimax: Set Log Level"
       },
@@ -5472,6 +5482,18 @@
         "command": "scimax.hydra.database",
         "key": "ctrl+c d d",
         "mac": "ctrl+c d d",
+        "when": "!terminalFocus"
+      },
+      {
+        "command": "scimax.search.view",
+        "key": "ctrl+c d v",
+        "mac": "ctrl+c d v",
+        "when": "!terminalFocus"
+      },
+      {
+        "command": "scimax.db.view",
+        "key": "ctrl+c d i",
+        "mac": "ctrl+c d i",
         "when": "!terminalFocus"
       },
       {
@@ -10126,9 +10148,19 @@
           "group": "navigation"
         },
         {
+          "command": "scimax.search.view",
+          "when": "view == scimax.database",
+          "group": "navigation@1"
+        },
+        {
+          "command": "scimax.db.view",
+          "when": "view == scimax.database",
+          "group": "navigation@2"
+        },
+        {
           "command": "scimax.db.search",
           "when": "view == scimax.database",
-          "group": "navigation"
+          "group": "1_actions"
         },
         {
           "command": "scimax.db.refresh",

@@ -768,17 +768,19 @@ CLOSED: [2026-10-22 Thu 09:56]
 * ✅ Database and Search
 CLOSED: [2026-01-17 Sat 12:45]
 
-** ✅ Basic Database Operations
+** 👀 Basic Database Operations
 CLOSED: [2026-01-17 Sat 12:45]
 
-| Command ID                       | Description                     | Default Keybinding |
-|----------------------------------+---------------------------------+--------------------|
+| Command ID                   | Description                     | Default Keybinding |
+|------------------------------+---------------------------------+--------------------|
 | [[cmd:scimax.db.refresh]]        | Refresh Database (incremental)  | -                  |
 | [[cmd:scimax.db.reindex]]        | Sync Files                      | -                  |
 | [[cmd:scimax.db.rebuild]]        | Rebuild Database (from scratch) | -                  |
 | [[cmd:scimax.db.search]]         | Search All Files                | -                  |
 | [[cmd:scimax.db.searchHeadings]] | Search Headings                 | -                  |
 | [[cmd:scimax.db.browseFiles]]    | Browse Indexed Files            | -                  |
+| [[cmd:scimax.search.view]]       | Search View                     | C-c d v            |
+| [[cmd:scimax.db.view]]           | Database View                   | C-c d i            |
 | [[cmd:scimax.db.setScope]]       | Set Search Scope                | -                  |
 | [[cmd:scimax.showDbMenu]]        | Database Menu                   | C-M-v              |
 
