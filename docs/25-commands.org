@@ -602,9 +602,9 @@ Copy document content to clipboard in various formats for pasting into other app
 | [[cmd:scimax.org.clipboardLatex]]      | Copy as LaTeX                      | -                  |
 | [[cmd:scimax.org.clipboardMarkdown]]   | Copy as Markdown                   | -                  |
 
-** Email Heading
+** 👀 Email Heading
 
-Compose an email from the heading at point. See [[file:10-export.org::*Email a Heading][Email a Heading]].
+Compose an email from the heading at point, record a Gmail link to it, and optionally mark the heading done. See [[file:10-export.org::*Email a Heading][Email a Heading]].
 
 | Command ID                     | Description                               | Default Keybinding |
 |--------------------------------+-------------------------------------------+--------------------|
