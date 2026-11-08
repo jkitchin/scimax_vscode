@@ -7335,6 +7335,26 @@
           "default": true,
           "description": "Append the heading's :ID: (created as a UUID if missing) to emails sent with Scimax: Email Heading, so you can find the heading later with Scimax: Go to Heading by ID. No file path is included."
         },
+        "scimax.emailHeading.recordSent": {
+          "type": "boolean",
+          "default": true,
+          "description": "After Scimax: Email Heading opens the compose window, add a SENT_ON timestamp to the heading and, for Gmail with includeId on, an EMAIL_LINK property: a Gmail search URL that finds the sent email and its replies."
+        },
+        "scimax.emailHeading.markDone": {
+          "type": "string",
+          "enum": [
+            "ask",
+            "always",
+            "never"
+          ],
+          "enumDescriptions": [
+            "Show a Mark Done button after the compose window opens; click it once the email is sent",
+            "Mark the heading done as soon as the compose window opens",
+            "Leave the TODO state alone"
+          ],
+          "default": "ask",
+          "description": "Whether Scimax: Email Heading marks the heading with the file's first done state (DONE by default) and adds CLOSED."
+        },
         "scimax.export.clipboard.preferRichText": {
           "type": "boolean",
           "default": true,
