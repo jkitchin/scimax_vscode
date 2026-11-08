@@ -6067,6 +6067,11 @@
         "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/ && scimax.atHeadingStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
+        "command": "scimax.org.emailHeading",
+        "key": "shift+e",
+        "when": "editorTextFocus && editorLangId == 'org' && scimax.atHeadingStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
+      },
+      {
         "command": "scimax.speed.archiveToSibling",
         "key": "shift+4",
         "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/ && scimax.atHeadingStart && scimax.speedCommandsEnabled && !scimax.jumpActive"

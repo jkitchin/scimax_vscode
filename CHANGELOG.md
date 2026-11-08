@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **`E` speed key emails a heading** - At the start of an org headline, `E` runs `Scimax: Email Heading`.
 - **Email Heading records a Gmail link and can mark the heading done** - After `Scimax: Email Heading` opens the compose window, the heading gets a `SENT_ON` timestamp and, for Gmail, an `EMAIL_LINK` property: a Gmail search for the heading's ID that opens the sent email and its replies later. A *Mark Done* button then sets the heading to the file's first done state with a `CLOSED` timestamp. New settings `scimax.emailHeading.recordSent` (default on) and `scimax.emailHeading.markDone` (`ask`, `always` or `never`; default `ask`).
 
 ## [0.14.0] - 2026-11-07

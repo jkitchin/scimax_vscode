@@ -1114,7 +1114,7 @@ If rich clipboard tools aren't available, falls back to plain text clipboard wit
 
 ** 👀 Email a Heading
 
-=scimax.org.emailHeading= (=Scimax: Email Heading=) opens an email compose window for the heading at point, like the =email-heading= command in Emacs scimax. Put the cursor anywhere in a heading (the headline or its body) and run the command:
+=scimax.org.emailHeading= (=Scimax: Email Heading=) opens an email compose window for the heading at point, like the =email-heading= command in Emacs scimax. Put the cursor anywhere in a heading (the headline or its body) and run the command, or press =E= at the start of the headline (a speed command):
 
 | Email field | Comes from                                                         |
 |-------------+--------------------------------------------------------------------|

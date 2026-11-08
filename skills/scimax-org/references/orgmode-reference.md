@@ -385,6 +385,92 @@ actions). Requires the files to be indexed (`scimax db sync`).
 
 ---
 
+## Emailing a Heading (Gmail)
+
+A heading can be an email: the headline is the subject, the content is the body,
+and the drawer holds the recipients. Write it like this:
+
+```org
+* TODO Draft for the review meeting                  :email:
+  :PROPERTIES:
+  :TO: alice@example.com, Bob Smith <bob@example.com>
+  :CC: carol@example.com
+  :BCC: me@example.com
+  :END:
+Hi Alice and Bob,
+
+Here is the draft we discussed. The figures are in [[https://x.org/figs][this folder]].
+
+- Section 2 is new
+- Section 4 needs your numbers
+
+Thanks,
+John
+```
+
+| Email field | From |
+|---|---|
+| Subject | The headline, without TODO keyword, priority, tags or link markup; a `:SUBJECT:` (or `:MAIL_SUBJECT:`) property overrides it |
+| Body | The heading's content, subheadings included; the planning line and drawer are left out |
+| To / Cc / Bcc | `:TO:` / `:CC:` / `:BCC:` (or `:MAIL_TO:` / `:MAIL_CC:` / `:MAIL_BCC:`) |
+
+- Separate several addresses with commas or semicolons; `Name <addr>` is fine.
+- Write the body as plain text. Org links become plain text: a web link keeps
+  its address (`[[https://x.org][X]]` → `X (https://x.org)`); `file:`/`id:` links
+  become their description or file name, so no local path is sent. A `*` line
+  inside a `#+BEGIN_…` block is content, not a subheading.
+- Use a `TODO` keyword if the email is a task to finish; the send step can mark it done.
+
+### Sending it
+
+Put the cursor anywhere in the heading and run **Scimax: Email Heading**
+(`scimax.org.emailHeading`, command palette), or press the speed key `E` with
+the cursor at the very start of the headline. It opens a Gmail
+compose window in the browser, filled in. The user reviews it and clicks Send in
+Gmail; scimax cannot send mail itself, and there is no CLI command for this.
+
+The command also:
+
+1. Adds an `:ID:` (a UUID) if the heading has none, and appends it to the body
+   after a `--` line as `org-id: <id>`. **Scimax: Go to Heading by ID**
+   (`scimax.org.gotoId`) jumps back from an email.
+2. Records `:SENT_ON:` (an inactive timestamp) and, for Gmail, `:EMAIL_LINK:`: a
+   Gmail search for the ID that opens the sent email and its replies later
+   (`Ctrl+Click` or `C-c C-o`).
+3. Shows a **Mark Done** button: clicked after sending, it sets the file's first
+   done state and adds `CLOSED`.
+
+After sending and clicking Mark Done, the heading looks like:
+
+```org
+* DONE Draft for the review meeting                  :email:
+  CLOSED: [2026-11-08 Sun 14:07]
+  :PROPERTIES:
+  :TO: alice@example.com, Bob Smith <bob@example.com>
+  :CC: carol@example.com
+  :ID: 3f2a9c1e-5b7d-4e2a-9c1f-0a1b2c3d4e5f
+  :SENT_ON: [2026-11-08 Sun 14:05]
+  :EMAIL_LINK: https://mail.google.com/mail/u/0/#search/%223f2a9c1e-5b7d-4e2a-9c1f-0a1b2c3d4e5f%22
+  :END:
+```
+
+Settings (`scimax.emailHeading.*`):
+
+| Setting | Default | Effect |
+|---|---|---|
+| `client` | `"gmail"` | `gmail` (browser compose) or `mailto` (system mail client; no `EMAIL_LINK`) |
+| `gmailAccount` | `""` | Account to compose from when signed in to several (address or index) |
+| `includeId` | `true` | Append the `org-id:` footer (needed for `EMAIL_LINK`) |
+| `recordSent` | `true` | Add `SENT_ON` and `EMAIL_LINK` |
+| `markDone` | `"ask"` | `ask` (Mark Done button), `always`, or `never` |
+
+Limits: a compose link cannot attach files. A body longer than about 8000
+characters (encoded) does not fit in the link: the window opens without a body
+and the body is copied to the clipboard to paste in. To look up an address for
+`:TO:`, use **Scimax: Pick Entity** on a `:person:` heading (see Entities above).
+
+---
+
 ## Source Blocks
 
 ```org

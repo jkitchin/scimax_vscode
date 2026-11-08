@@ -7,10 +7,12 @@ description: >-
   source blocks and header arguments, tables and formulas, LaTeX, footnotes,
   org-ref citations and bibliographies, clocking, export keywords, and entities
   (contacts, locations, reagents via :person:/:location: tags and the Pick
-  Entity selector). Use when the user asks how to write something in org-mode,
+  Entity selector), and emailing a heading via Gmail (TO/CC/BCC properties,
+  EMAIL_LINK, mark done). Use when the user asks how to write something in org-mode,
   about org syntax, how to cite, a source block or header argument, an org
   table, link, timestamp or property, anchors or backlinks, adding a note or
-  footnote, or inserting a contact, email or address.
+  footnote, inserting a contact, email or address, or writing an org heading
+  to send as a Gmail email (Scimax: Email Heading).
 license: MIT
 metadata:
   version: "0.14.0"
@@ -47,6 +49,7 @@ entities).
 | `:PROPERTIES:`, `:LOGBOOK:` | Properties and Drawers |
 | `:DEPENDS:`, `:ORDERED:`, `:ASSIGNEE:`, `project-table`, `gantt` | Task Dependencies and Project Management |
 | Contacts, locations, reagents | Entities (Contacts, Locations, …) |
+| Writing a heading as an email, `:TO:`/`:CC:`, sending via Gmail, `EMAIL_LINK`, mark done | Emailing a Heading (Gmail) |
 | `#+BEGIN_SRC` and header arguments | Source Blocks |
 | Quote, example, export blocks | Blocks |
 | Tables and `#+TBLFM` | Tables |
@@ -67,3 +70,5 @@ the command line, use the **scimax** skill (`scimax cite check file.org`).
   style, property names).
 - Point out the editor command when one exists (for example, Pick Entity for contacts),
   as described in the reference.
+- When asked to draft an email, write it as a heading in the user's org file (Emailing a
+  Heading) and tell them to run **Scimax: Email Heading** on it; you cannot send it.
