@@ -21,6 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **Inline code after `~=~` was not exported** - In HTML, Markdown, Marp, LaTeX and the other exports, a line such as ``press ~=~ to diff, =u= to unmark`` kept `=u=` as literal text: the `=` inside `~=~` started a code span running to the end of `=u=`, which was then dropped as overlapping and took `=u=` with it. Code and verbatim spans are now found together, left to right.
 - **Dired `% m` no longer also marks the file at point** - The key after a dired prefix (`%`, `C-x`) was handled twice: by the prefix and again as a plain key, so `% m` marked the current file as well as asking for a regex, and `C-x v u` from dired also unmarked it.
 - **`Shift+Right`/`Shift+Left` on Markdown TODO headings skipped CLOSED and repeaters** - In Markdown, shift-arrow cycling on a `## TODO` heading used its own TODO/DONE-only cycle: it added no `CLOSED` timestamp, a repeating `SCHEDULED`/`DEADLINE` (`+1w`) did not move on, `#+TODO:` keywords and `[TODO]` were ignored, and dependency checks and `[n/m]` cookies were skipped. It now works as in org and as `C-c C-t` does.
 - **Movies keep their start time in `deck.html`** - Saving a slideshow as one `deck.html` (`s`, or the `h` export) replaced `<video src="talk.mp4#t=95">` with the movie data and dropped `#t=95`, so the movie started at the beginning. The media fragment is now kept.

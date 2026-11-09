@@ -591,6 +591,16 @@ The theorem statement.
             expect(values('=a= =b= and =a=, done')).toEqual(['a', 'b', 'a']);
             expect(values('a = b = c, and x=y=z')).toEqual([]);
         });
+
+        it('finds a code span after a verbatim span holding its marker', () => {
+            const spans = (text: string) => parseObjectsFast(text)
+                .filter(o => o.type === 'verbatim' || o.type === 'code')
+                .map((o: any) => [o.type, o.properties.value]);
+            // The = inside ~=~ must not start a span that swallows =u=
+            expect(spans('x ~=~ y =u= z')).toEqual([['code', '='], ['verbatim', 'u']]);
+            expect(spans('x =~= y ~u~ z')).toEqual([['verbatim', '~'], ['code', 'u']]);
+            expect(spans('keys ~=~, ~u~ and =v=.')).toEqual([['code', '='], ['code', 'u'], ['verbatim', 'v']]);
+        });
     });
 
     describe('Complex Documents', () => {

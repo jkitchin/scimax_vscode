@@ -460,22 +460,39 @@ export function parseObjectsFast(text: string): OrgObject[] {
         }));
     }
 
-    if (text.includes('=')) {
-        collectMatches(CODE_PATTERN, (m) => ({
-            type: 'verbatim' as const,  // =text= is verbatim in org-mode
-            range: { start: m.index!, end: m.index! + m[0].length },
-            postBlank: 0,
-            properties: { value: emphContent(m) },
-        }));
-    }
-
-    if (text.includes('~')) {
-        collectMatches(VERBATIM_PATTERN, (m) => ({
-            type: 'code' as const,  // ~text~ is code in org-mode
-            range: { start: m.index!, end: m.index! + m[0].length },
-            postBlank: 0,
-            properties: { value: emphContent(m) },
-        }));
+    // =code= and ~verbatim~ are scanned together, left to right, each search
+    // starting where the last span ended. Scanned separately, the `=` inside
+    // `~=~` would start a code match that runs on to the end of a later
+    // `=u=`; it is dropped as overlapping, and `=u=`, already consumed by it,
+    // is lost.
+    const hasCode = text.includes('=');
+    const hasVerbatim = text.includes('~');
+    if (hasCode || hasVerbatim) {
+        const spans: RegExpExecArray[] = [];
+        let from = 0;
+        while (from < scanText.length && spans.length < 10000) {
+            CODE_PATTERN.lastIndex = from;
+            VERBATIM_PATTERN.lastIndex = from;
+            const c = hasCode ? CODE_PATTERN.exec(scanText) : null;
+            const v = hasVerbatim ? VERBATIM_PATTERN.exec(scanText) : null;
+            const m = c && (!v || c.index <= v.index) ? c : v;
+            if (!m) break;
+            spans.push(m);
+            from = m.index + Math.max(m[0].length, 1);
+        }
+        for (const m of spans) {
+            allMatches.push({
+                start: m.index,
+                end: m.index + m[0].length,
+                object: {
+                    // =text= is verbatim and ~text~ is code in org-mode
+                    type: scanText[m.index] === '=' ? 'verbatim' : 'code',
+                    range: { start: m.index, end: m.index + m[0].length },
+                    postBlank: 0,
+                    properties: { value: emphContent(m) },
+                } as OrgObject,
+            });
+        }
     }
 
     // Emacs-style command markup: `command'
