@@ -112,7 +112,7 @@ CLOSED: [2026-01-16 Fri 07:42]
 
 Scimax comes with eight pre-built hydra menus covering all major features:
 
-** ✅ Main Menu (scimax.main)
+** 👀 Main Menu (scimax.main)
 CLOSED: [2026-10-22 Thu 09:54]
 
 The main entry point for all Scimax features.
@@ -128,6 +128,7 @@ Features:
   [n] Notebook      - Project notebooks
   [p] Projects      - Project switching (projectile)
   [t] Templates     - Document templates
+  [f] Files         - Find, open, rename and delete files
   [a] Applications  - External applications (terminal, file manager)
   [v] Version Control - Git: next action, commit, push, pull
 
@@ -400,6 +401,45 @@ External Applications:
 =b= runs [[cmd:scimax.openExternalTerminalHere]], which uses the terminal set in
 =scimax.externalTerminal.command= (or =.app= on macOS). =d= runs
 [[cmd:scimax.dired.openCurrent]]; see [[file:37-dired.org][Dired]].
+
+** ⚠️ Files Menu (scimax.files)
+
+Find, open and manage files, like the file hydra in Emacs scimax. Most
+actions work on the file in the active editor.
+
+*Parent*: Main Menu
+*Access*: ~F12 f~ or ~C-c m f~
+
+#+begin_example
+Files
+
+Find:
+  [f] Find file               - Find a file from the current folder
+  [w] Find file in workspace  - Find a file from the workspace root
+  [r] Recent files            - Search recently opened files
+  [d] Dired here              - Open Dired in the current file's folder
+
+Open outside VS Code:
+  [o] Reveal in Finder        - Show the current file in the system file manager
+  [t] External terminal here  - Open the system terminal in the current file's folder
+  [e] Open in default app     - Open the current file in its default application
+
+This file:
+  [c] Copy path               - Copy the full path of the current file
+  [C] Copy relative path      - Copy the path relative to the workspace
+  [i] Insert file             - Insert another file's contents at the cursor
+  [R] Rename file             - Rename or move the current file
+  [D] Delete file             - Move the current file to the trash (asks first)
+#+end_example
+
+=R= runs [[cmd:scimax.file.rename]]. The new name is relative to the file's
+folder, so =archive/notes.org= or =../notes.org= moves the file; missing
+folders are created and the editor follows the file. =D= runs
+[[cmd:scimax.file.delete]]: it asks first, saves unsaved changes, moves the
+file to the trash and closes its tabs. =e= runs
+[[cmd:scimax.file.openInDefaultApp]] (a PDF opens in your PDF viewer, a
+=.docx= in Word). =t= is the same as =F12 a b= in the
+[[*Applications Menu (scimax.applications)][Applications Menu]].
 
 ** Version Control Menu (scimax.vc)
 

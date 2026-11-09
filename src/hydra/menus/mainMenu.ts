@@ -53,6 +53,14 @@ export const mainMenu: HydraMenuDefinition = {
                     action: 'scimax.templates',
                 },
                 {
+                    key: 'f',
+                    label: 'Files',
+                    description: 'Find, open, rename and delete files',
+                    icon: 'files',
+                    exit: 'submenu',
+                    action: 'scimax.files',
+                },
+                {
                     key: 'a',
                     label: 'Applications',
                     description: 'External applications (terminal, file manager)',

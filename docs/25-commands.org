@@ -1384,7 +1384,7 @@ CLOSED: [2026-01-21 Wed 11:34]
 | [[cmd:scimax.latex.insertTable]]    | Insert Table    | -                  |
 | [[cmd:scimax.latex.insertEquation]] | Insert Equation | -                  |
 
-** ✅ Utilities
+** 👀 Utilities
 CLOSED: [2026-01-21 Wed 11:34]
 
 | Command ID                                     | Description                  | Default Keybinding |
@@ -1967,8 +1967,8 @@ CLOSED: [2026-10-30 Fri 10:54]
 
 Miscellaneous utility commands.
 
-| Command ID                              | Description                     | Default Keybinding |
-|-----------------------------------------+---------------------------------+--------------------|
+| Command ID                          | Description                     | Default Keybinding |
+|-------------------------------------+---------------------------------+--------------------|
 | [[cmd:scimax.findFile]]                 | Find File                       | C-x C-f            |
 | [[cmd:scimax.findFileOtherWindow]]      | Find File in New Window         | C-x 5 f, C-x 5 C-f |
 | [[cmd:scimax.findFileHome]]             | Find File in Home Directory     | -                  |
@@ -1979,6 +1979,9 @@ Miscellaneous utility commands.
 | [[cmd:scimax.killLine]]                 | Kill Line (copy to clipboard)   | C-k                |
 | [[cmd:scimax.openTerminalHere]]         | Open Integrated Terminal in Dir | -                  |
 | [[cmd:scimax.openExternalTerminalHere]] | Open External Terminal in Dir   | -                  |
+| [[cmd:scimax.file.openInDefaultApp]]    | Open File in Default App        | F12 f e            |
+| [[cmd:scimax.file.rename]]              | Rename or Move Current File     | F12 f R            |
+| [[cmd:scimax.file.delete]]              | Move Current File to Trash      | F12 f D            |
 | [[cmd:scimax.openInNewWindow]]          | Open File/Folder in New Window  | -                  |
 | [[cmd:scimax.dired.open]]               | Open Dired (Directory Editor)   | C-x d              |
 | [[cmd:scimax.dired.openOtherWindow]]    | Open Dired in New Window        | C-x 5 d            |

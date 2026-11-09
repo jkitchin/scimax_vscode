@@ -1,6 +1,6 @@
 {
-  "buildDate": "2026-11-08T21:39:00.668Z",
-  "count": 3784,
+  "buildDate": "2026-11-09T00:16:57.522Z",
+  "count": 3785,
   "entries": [
     {
       "heading": "Scimax VS Code",
@@ -70005,7 +70005,7 @@
       "level": 2,
       "file": "22-hydra-menus.org",
       "line": 115,
-      "content": "CLOSED: [2026-10-22 Thu 09:54] The main entry point for all Scimax features. *Access*: `C-c m' or command `Scimax: Main Menu' #+begin_example Scimax Features: [j] Journal       - Date-based journaling [r] References    - Bibliography management [n] Notebook      - Project notebooks [p] Projects      - Project switching (projectile) [t] Templates     - Document templates [a] Applications  - External applications (terminal, file manager) [v] Version Control - Git: next action, commit, push, pull",
+      "content": "CLOSED: [2026-10-22 Thu 09:54] The main entry point for all Scimax features. *Access*: `C-c m' or command `Scimax: Main Menu' #+begin_example Scimax Features: [j] Journal       - Date-based journaling [r] References    - Bibliography management [n] Notebook      - Project notebooks [p] Projects      - Project switching (projectile) [t] Templates     - Document templates [f] Files         - Find, open, rename and delete files [a] Applications  - External applications (terminal, file manager) [v] ",
       "path": [
         "Available Hydras"
       ],
@@ -70042,7 +70042,7 @@
       "heading": "Journal Menu (scimax.journal)",
       "level": 2,
       "file": "22-hydra-menus.org",
-      "line": 142,
+      "line": 143,
       "content": "CLOSED: [2026-01-17 Sat 12:15] Date-based journaling commands for creating and navigating entries. *Parent*: Main Menu #+begin_example Journal Open Entry: [t] Today           - Open today's journal entry [y] Yesterday       - Open yesterday's entry [w] Tomorrow        - Open tomorrow's entry [g] Go to Date      - Open entry for specific date Navigation: [p] Previous Entry  - Navigate to previous entry [n] Next Entry      - Navigate to next entry [v] Week View       - View entries for the week Cr",
       "path": [
         "Available Hydras"
@@ -70078,7 +70078,7 @@
       "heading": "References Menu (scimax.references)",
       "level": 2,
       "file": "22-hydra-menus.org",
-      "line": 177,
+      "line": 178,
       "content": "CLOSED: [2026-01-17 Sat 12:15] Bibliography and citation management powered by org-ref. *Parent*: Main Menu #+begin_example References Citations: [c] Insert Citation - Search and insert a citation [o] Open Entry      - Open a bibliography entry [u] Open URL        - Open URL for reference Add References: [d] Fetch from DOI    - Add entry from DOI [b] Fetch from BibTeX - Add entry from BibTeX string [n] New Entry         - Create new bibliography entry Search: [s] Search References - Search bibli",
       "path": [
         "Available Hydras"
@@ -70114,7 +70114,7 @@
       "heading": "Notebook Menu (scimax.notebook)",
       "level": 2,
       "file": "22-hydra-menus.org",
-      "line": 215,
+      "line": 216,
       "content": "CLOSED: [2026-01-17 Sat 12:15] Project-based organization for scientific computing. *Parent*: Main Menu #+begin_example Notebook Navigation: [o] Open Notebook   - Open an existing notebook [l] List Notebooks  - Show all notebooks Create: [n] New Notebook  - Create a new notebook [e] New Entry     - Add entry to current notebook Search: [s] Search Notebook - Search within current notebook Files: [f] Open File      - Open file from notebook [r] Recent Files   - Show recent notebook files #+end_exa",
       "path": [
         "Available Hydras"
@@ -70150,7 +70150,7 @@
       "heading": "Projectile Menu (scimax.projectile)",
       "level": 2,
       "file": "22-hydra-menus.org",
-      "line": 247,
+      "line": 248,
       "content": "CLOSED: [2026-01-17 Sat 12:15] Project management and switching inspired by Emacs projectile. *Parent*: Main Menu #+begin_example Projects (Projectile) Switch: [p] Switch Project  - Switch to another project Manage: [a] Add Project       - Add current folder as project [r] Remove Project    - Remove a project from list [s] Scan for Projects - Scan directories for projects Files: [f] Find File         - Find file in project [g] Search in Project - Search text in project #+end_example *Example Usa",
       "path": [
         "Available Hydras"
@@ -70186,7 +70186,7 @@
       "heading": "Search Menu (scimax.search)",
       "level": 2,
       "file": "22-hydra-menus.org",
-      "line": 276,
+      "line": 277,
       "content": "CLOSED: [2026-01-17 Sat 12:15] Comprehensive search across files and content. *Parent*: Main Menu #+begin_example Search Fuzzy Search: [f] Search Current File - Fuzzy search in current file [o] Search Open Files   - Search across all open files [h] Search Headings     - Search headings in current file Database Search: [s] Full-text Search  - Search all indexed content [v] Vector Search     - Semantic similarity search Tasks & Agenda: [t] Search TODOs  - Find TODO items [a] Agenda        - View a",
       "path": [
         "Available Hydras"
@@ -70222,7 +70222,7 @@
       "heading": "Jump Menu (scimax.jump)",
       "level": 2,
       "file": "22-hydra-menus.org",
-      "line": 306,
+      "line": 307,
       "content": "CLOSED: [2026-01-17 Sat 12:15] Avy-style quick navigation for jumping to visible text. *Parent*: Main Menu #+begin_example Jump (Avy) Jump to Character: [c] Jump to Char    - Jump to a character [2] Jump to 2 Chars - Jump to two characters Jump to Word: [w] Jump to Word - Jump to start of word Jump to Line: [l] Jump to Line  - Jump to a line [a] Jump Above    - Jump to line above cursor [b] Jump Below    - Jump to line below cursor #+end_example *Example Usage*: 1. Press C-c M, then g to open ju",
       "path": [
         "Available Hydras"
@@ -70260,7 +70260,7 @@
       "heading": "Database Menu (scimax.database)",
       "level": 2,
       "file": "22-hydra-menus.org",
-      "line": 336,
+      "line": 337,
       "content": "CLOSED: [2026-01-17 Sat 12:15] Org database operations including search and indexing. *Parent*: Main Menu #+begin_example Database Search: [l] Search View         - Live search with mode checkboxes and filters [I] Database View       - Stats, maintenance and settings [s] Full-text Search    - Search all content [v] Semantic Search     - AI-powered similarity search [y] Hybrid Search       - Combined keyword + semantic search [h] Search Headings     - Search by heading text [b] Search Code Blocks",
       "path": [
         "Available Hydras"
@@ -70296,7 +70296,7 @@
       "heading": "Applications Menu (scimax.applications)",
       "level": 2,
       "file": "22-hydra-menus.org",
-      "line": 382,
+      "line": 383,
       "content": "Open things outside the editor, mirroring the applications hydra from Emacs scimax. *Parent*: Main Menu *Access*: ~F12 a~ or ~C-c m a~ #+begin_example Applications External Applications: [a] Agenda                 - Show today's agenda [b] Bash Terminal          - Open external terminal at current file location [d] Dired                  - Open Dired in the current file's directory [f] Finder / File Manager  - Reveal current file in system file manager #+end_example =b= runs [[cmd:scimax.openExt",
       "path": [
         "Available Hydras"
@@ -70332,10 +70332,48 @@
       ]
     },
     {
+      "heading": "Files Menu (scimax.files)",
+      "level": 2,
+      "file": "22-hydra-menus.org",
+      "line": 405,
+      "content": "Find, open and manage files, like the file hydra in Emacs scimax. Most actions work on the file in the active editor. *Parent*: Main Menu *Access*: ~F12 f~ or ~C-c m f~ #+begin_example Files Find: [f] Find file               - Find a file from the current folder [w] Find file in workspace  - Find a file from the workspace root [r] Recent files            - Search recently opened files [d] Dired here              - Open Dired in the current file's folder Open outside VS Code: [o] Reveal in Finder",
+      "path": [
+        "Available Hydras"
+      ],
+      "commands": [
+        "scimax.files"
+      ],
+      "keybindings": [
+        "C-c"
+      ],
+      "keywords": [
+        "menu",
+        "find",
+        "open",
+        "manage",
+        "like",
+        "hydra",
+        "emacs",
+        "scimax",
+        "actions",
+        "work",
+        "active",
+        "editor",
+        "parent",
+        "main",
+        "access",
+        "f12",
+        "c-c",
+        "beginexample",
+        "current",
+        "folder"
+      ]
+    },
+    {
       "heading": "Version Control Menu (scimax.vc)",
       "level": 2,
       "file": "22-hydra-menus.org",
-      "line": 404,
+      "line": 444,
       "content": "Git operations for the current file and repository, mirroring the =scimax-version-control= hydra from Emacs scimax. *Parent*: Main Menu *Access*: ~C-x v m~, or ~v~ in the main menu #+begin_example Version Control File: [n] Next Action  - Register, commit, resolve, or sync this file [s] Stage        - Stage the current file [d] Diff         - Diff the file against HEAD [l] Log          - History of the current file [r] Revert       - Discard changes to the file [g] Blame        - Toggle line-by-l",
       "path": [
         "Available Hydras"
@@ -70373,7 +70411,7 @@
       "heading": "Commands and Keybindings",
       "level": 1,
       "file": "22-hydra-menus.org",
-      "line": 436,
+      "line": 476,
       "content": "CLOSED: [2026-01-17 Sat 12:15]",
       "path": [],
       "commands": [],
@@ -70391,7 +70429,7 @@
       "heading": "Global Keybindings",
       "level": 2,
       "file": "22-hydra-menus.org",
-      "line": 439,
+      "line": 479,
       "content": "CLOSED: [2026-01-17 Sat 12:15] | Keybinding | Command                  | Description             | |------------+--------------------------+-------------------------| | C-c m      | scimax.hydra.main        | Open main menu          | | C-c C-m    | scimax.hydra.contextMenu | Open context-aware menu | [[cmd:scimax.hydra.main][C-c m]] opens the main hydra menu, while [[cmd:scimax.hydra.contextMenu][C-c C-m]] opens a menu tailored to the current file type.",
       "path": [
         "Commands and Keybindings"
@@ -70431,7 +70469,7 @@
       "heading": "Available Commands",
       "level": 2,
       "file": "22-hydra-menus.org",
-      "line": 449,
+      "line": 489,
       "content": "CLOSED: [2026-01-17 Sat 12:16] All hydra commands can be invoked through the command palette (Cmd/C-S-P):",
       "path": [
         "Commands and Keybindings"
@@ -70459,7 +70497,7 @@
       "heading": "scimax.hydra.show",
       "level": 3,
       "file": "22-hydra-menus.org",
-      "line": 454,
+      "line": 494,
       "content": "CLOSED: [2026-01-17 Sat 12:16] Show a specific hydra menu by ID. If no ID is provided, shows a picker to select from available menus. #+begin_src typescript // Show main menu await vscode.commands.executeCommand('scimax.hydra.show', 'scimax.main'); // Show menu picker await vscode.commands.executeCommand('scimax.hydra.show'); #+end_src",
       "path": [
         "Commands and Keybindings",
@@ -70497,7 +70535,7 @@
       "heading": "scimax.hydra.hide",
       "level": 3,
       "file": "22-hydra-menus.org",
-      "line": 467,
+      "line": 507,
       "content": "CLOSED: [2026-01-17 Sat 12:16] Hide the currently visible hydra menu.",
       "path": [
         "Commands and Keybindings",
@@ -70523,7 +70561,7 @@
       "heading": "scimax.hydra.back",
       "level": 3,
       "file": "22-hydra-menus.org",
-      "line": 472,
+      "line": 512,
       "content": "CLOSED: [2026-01-17 Sat 12:16] Navigate back to the parent menu. If there's no parent, closes the menu.",
       "path": [
         "Commands and Keybindings",
@@ -70550,7 +70588,7 @@
       "heading": "scimax.hydra.main",
       "level": 3,
       "file": "22-hydra-menus.org",
-      "line": 477,
+      "line": 517,
       "content": "CLOSED: [2026-01-17 Sat 12:17] Open the main Scimax menu (scimax.main).",
       "path": [
         "Commands and Keybindings",
@@ -70576,7 +70614,7 @@
       "heading": "scimax.hydra.contextMenu",
       "level": 3,
       "file": "22-hydra-menus.org",
-      "line": 482,
+      "line": 522,
       "content": "CLOSED: [2026-01-17 Sat 12:17] Open a context-aware menu based on the current file type. Falls back to the main menu if no language-specific menu exists.",
       "path": [
         "Commands and Keybindings",
@@ -70608,7 +70646,7 @@
       "heading": "scimax.hydra.toggle",
       "level": 3,
       "file": "22-hydra-menus.org",
-      "line": 487,
+      "line": 527,
       "content": "CLOSED: [2026-01-17 Sat 12:17] Toggle visibility of a specific menu. #+begin_src typescript await vscode.commands.executeCommand('scimax.hydra.toggle', 'scimax.journal'); #+end_src",
       "path": [
         "Commands and Keybindings",
@@ -70639,7 +70677,7 @@
       "heading": "Configuration",
       "level": 1,
       "file": "22-hydra-menus.org",
-      "line": 496,
+      "line": 536,
       "content": "CLOSED: [2026-01-17 Sat 12:17]",
       "path": [],
       "commands": [],
@@ -70656,7 +70694,7 @@
       "heading": "Settings",
       "level": 2,
       "file": "22-hydra-menus.org",
-      "line": 499,
+      "line": 539,
       "content": "CLOSED: [2026-01-17 Sat 12:17] Configure hydra behavior through VS Code settings (File > Preferences > Settings or Cmd/C-,):",
       "path": [
         "Configuration"
@@ -70682,7 +70720,7 @@
       "heading": "scimax.hydra.showKeyHints",
       "level": 3,
       "file": "22-hydra-menus.org",
-      "line": 504,
+      "line": 544,
       "content": "CLOSED: [2026-01-17 Sat 12:17] Show keyboard shortcuts inline with menu items. - Type: boolean - Default: true When enabled, shows shortcuts like [t] before each menu item: #+begin_example [t] Today           - With key hints Today               - Without key hints #+end_example #+begin_src json { \"scimax.hydra.showKeyHints\": true } #+end_src",
       "path": [
         "Configuration",
@@ -70719,7 +70757,7 @@
       "heading": "scimax.hydra.singleKeySelection",
       "level": 3,
       "file": "22-hydra-menus.org",
-      "line": 525,
+      "line": 565,
       "content": "CLOSED: [2026-01-17 Sat 12:17] Select menu items with a single keypress (no Enter needed). - Type: boolean - Default: true When enabled, pressing a key immediately executes the command. When disabled, you must press Enter after selecting. #+begin_src json { \"scimax.hydra.singleKeySelection\": true } #+end_src",
       "path": [
         "Configuration",
@@ -70756,7 +70794,7 @@
       "heading": "scimax.hydra.dimNonMatching",
       "level": 3,
       "file": "22-hydra-menus.org",
-      "line": 541,
+      "line": 581,
       "content": "CLOSED: [2026-01-17 Sat 12:17] Dim menu items that don't match the current filter. - Type: boolean - Default: true When typing to filter, non-matching items are dimmed rather than hidden. #+begin_src json { \"scimax.hydra.dimNonMatching\": true } #+end_src",
       "path": [
         "Configuration",
@@ -70793,7 +70831,7 @@
       "heading": "scimax.hydra.sortByKey",
       "level": 3,
       "file": "22-hydra-menus.org",
-      "line": 557,
+      "line": 597,
       "content": "CLOSED: [2026-01-17 Sat 12:17] Sort menu items by their keyboard shortcut instead of definition order. - Type: boolean - Default: false When enabled, items are alphabetically sorted by key (a, b, c...) rather than their logical grouping. #+begin_src json { \"scimax.hydra.sortByKey\": false } #+end_src",
       "path": [
         "Configuration",
@@ -70830,7 +70868,7 @@
       "heading": "Example Configuration",
       "level": 2,
       "file": "22-hydra-menus.org",
-      "line": 573,
+      "line": 613,
       "content": "CLOSED: [2026-01-17 Sat 12:17] A complete hydra configuration might look like: #+begin_src json { \"scimax.hydra.showKeyHints\": true, \"scimax.hydra.singleKeySelection\": true, \"scimax.hydra.dimNonMatching\": true, \"scimax.hydra.sortByKey\": false } #+end_src",
       "path": [
         "Configuration"
@@ -70864,7 +70902,7 @@
       "heading": "Creating Custom Hydras",
       "level": 1,
       "file": "22-hydra-menus.org",
-      "line": 587,
+      "line": 627,
       "content": "CLOSED: [2026-01-17 Sat 12:17] You can create custom hydra menus programmatically in extension code or through configuration.",
       "path": [],
       "commands": [],
@@ -70891,7 +70929,7 @@
       "heading": "Menu Structure",
       "level": 2,
       "file": "22-hydra-menus.org",
-      "line": 592,
+      "line": 632,
       "content": "CLOSED: [2026-01-17 Sat 12:17] A hydra menu definition consists of: - Unique ID - Title and optional hint text - Groups of menu items - Optional parent menu for hierarchical navigation - Optional lifecycle hooks",
       "path": [
         "Creating Custom Hydras"
@@ -70925,7 +70963,7 @@
       "heading": "Using the Fluent Builder API",
       "level": 2,
       "file": "22-hydra-menus.org",
-      "line": 603,
+      "line": 643,
       "content": "CLOSED: [2026-01-17 Sat 12:17] The easiest way to create a custom menu is with the fluent builder: #+begin_src typescript import { HydraManager } from './hydra'; // Get the hydra manager instance const hydraManager = getHydraManager(); // Build a custom menu const menu = hydraManager.createMenuBuilder('my.custom.menu') .title('My Custom Menu') .hint('Press a key to select an action') .command('a', 'Action A', 'my.command.a') .persistentCommand('r', 'Refresh', 'my.command.refresh') .submenu('s', ",
       "path": [
         "Creating Custom Hydras"
@@ -70959,7 +70997,7 @@
       "heading": "Menu Item Types",
       "level": 2,
       "file": "22-hydra-menus.org",
-      "line": 628,
+      "line": 668,
       "content": "CLOSED: [2026-01-17 Sat 12:17]",
       "path": [
         "Creating Custom Hydras"
@@ -70980,7 +71018,7 @@
       "heading": "Exit Commands (Blue Heads)",
       "level": 3,
       "file": "22-hydra-menus.org",
-      "line": 631,
+      "line": 671,
       "content": "CLOSED: [2026-01-17 Sat 12:17] Close the menu after executing: #+begin_src typescript .command('t', 'Today', 'scimax.journal.today') #+end_src",
       "path": [
         "Creating Custom Hydras",
@@ -71014,7 +71052,7 @@
       "heading": "Persistent Commands (Red Heads)",
       "level": 3,
       "file": "22-hydra-menus.org",
-      "line": 640,
+      "line": 680,
       "content": "CLOSED: [2026-01-17 Sat 12:17] Keep the menu open after executing: #+begin_src typescript .persistentCommand('r', 'Refresh', 'my.refresh.command') #+end_src",
       "path": [
         "Creating Custom Hydras",
@@ -71048,7 +71086,7 @@
       "heading": "Submenu Links",
       "level": 3,
       "file": "22-hydra-menus.org",
-      "line": 649,
+      "line": 689,
       "content": "CLOSED: [2026-01-17 Sat 12:17] Navigate to a child menu: #+begin_src typescript .submenu('j', 'Journal', 'scimax.journal') #+end_src",
       "path": [
         "Creating Custom Hydras",
@@ -71078,7 +71116,7 @@
       "heading": "Manual Menu Definition",
       "level": 2,
       "file": "22-hydra-menus.org",
-      "line": 658,
+      "line": 698,
       "content": "CLOSED: [2026-01-17 Sat 12:17] For more control, you can define menus manually: #+begin_src typescript import { HydraMenuDefinition } from './hydra/types'; const customMenu: HydraMenuDefinition = { id: 'my.custom', title: 'Custom Menu', hint: 'My custom commands', parent: 'scimax.main', groups: [ { title: 'Actions', items: [ { key: 'a', label: 'Action A', description: 'Performs action A',",
       "path": [
         "Creating Custom Hydras"
@@ -71114,7 +71152,7 @@
       "heading": "Advanced Features",
       "level": 2,
       "file": "22-hydra-menus.org",
-      "line": 711,
+      "line": 751,
       "content": "CLOSED: [2026-01-17 Sat 12:17]",
       "path": [
         "Creating Custom Hydras"
@@ -71134,7 +71172,7 @@
       "heading": "Conditional Visibility",
       "level": 3,
       "file": "22-hydra-menus.org",
-      "line": 714,
+      "line": 754,
       "content": "CLOSED: [2026-01-17 Sat 12:17] Show items only when certain conditions are met: #+begin_src typescript { key: 'x', label: 'Advanced Feature', exit: 'exit', action: 'my.advanced.command', when: () => { const config = vscode.workspace.getConfiguration('myext'); return config.get('enableAdvanced', false); } } #+end_src",
       "path": [
         "Creating Custom Hydras",
@@ -71169,7 +71207,7 @@
       "heading": "Toggle Items",
       "level": 3,
       "file": "22-hydra-menus.org",
-      "line": 732,
+      "line": 772,
       "content": "CLOSED: [2026-01-17 Sat 12:17] Display on/off state for toggle commands: #+begin_src typescript { key: 't', label: 'Auto Save', exit: 'stay', action: 'my.toggle.autosave', isToggle: true, getToggleState: async () => { const config = vscode.workspace.getConfiguration('myext'); return config.get('autoSave', false); } } #+end_src Toggle items display $(check) when on and $(circle-outline) when off.",
       "path": [
         "Creating Custom Hydras",
@@ -71204,7 +71242,7 @@
       "heading": "Lifecycle Hooks",
       "level": 3,
       "file": "22-hydra-menus.org",
-      "line": 753,
+      "line": 793,
       "content": "CLOSED: [2026-01-17 Sat 12:17] Execute code when menus are shown or hidden: #+begin_src typescript const menu: HydraMenuDefinition = { id: 'my.menu', title: 'My Menu', groups: [], onShow: async () => { console.log('Menu opened'); await refreshData(); }, onHide: async () => { console.log('Menu closed'); await cleanup(); } }; #+end_src",
       "path": [
         "Creating Custom Hydras",
@@ -71239,7 +71277,7 @@
       "heading": "Registering Multiple Menus",
       "level": 2,
       "file": "22-hydra-menus.org",
-      "line": 774,
+      "line": 814,
       "content": "CLOSED: [2026-01-17 Sat 12:18] Register several menus at once: #+begin_src typescript const menus = [menu1, menu2, menu3]; hydraManager.registerMenus(menus); #+end_src",
       "path": [
         "Creating Custom Hydras"
@@ -71271,7 +71309,7 @@
       "heading": "Unregistering Menus",
       "level": 2,
       "file": "22-hydra-menus.org",
-      "line": 784,
+      "line": 824,
       "content": "CLOSED: [2026-01-17 Sat 12:18] Remove a menu from the registry: #+begin_src typescript hydraManager.unregisterMenu('my.custom.menu'); #+end_src",
       "path": [
         "Creating Custom Hydras"
@@ -71299,7 +71337,7 @@
       "heading": "Practical Examples",
       "level": 1,
       "file": "22-hydra-menus.org",
-      "line": 793,
+      "line": 833,
       "content": "CLOSED: [2026-01-17 Sat 12:18]",
       "path": [],
       "commands": [],
@@ -71317,7 +71355,7 @@
       "heading": "Example 1: Opening Today's Journal",
       "level": 2,
       "file": "22-hydra-menus.org",
-      "line": 796,
+      "line": 836,
       "content": "CLOSED: [2026-01-17 Sat 12:18] The quickest way to open today's journal entry: 1. Press C-c m → opens main menu 2. Press j → opens journal submenu 3. Press t → opens today's entry and closes menu Or, if you remember the keybinding, press C-S-J directly.",
       "path": [
         "Practical Examples"
@@ -71354,7 +71392,7 @@
       "heading": "Example 2: Inserting a Citation",
       "level": 2,
       "file": "22-hydra-menus.org",
-      "line": 807,
+      "line": 847,
       "content": "CLOSED: [2026-01-17 Sat 12:18] To insert a citation in your document: 1. Position cursor where you want the citation 2. Press C-c m → opens main menu 3. Press r → opens references submenu 4. Press c → starts citation insertion 5. Type to search for your reference 6. Select the reference to insert it",
       "path": [
         "Practical Examples"
@@ -71390,7 +71428,7 @@
       "heading": "Example 3: Quick Navigation with Jump",
       "level": 2,
       "file": "22-hydra-menus.org",
-      "line": 819,
+      "line": 859,
       "content": "CLOSED: [2026-01-17 Sat 12:18] To jump to a visible word on screen: 1. Press C-c m → opens main menu 2. Press g → opens jump submenu 3. Press w → starts word jump mode 4. Type first letter of target word 5. Type the hint character shown at target location 6. Cursor jumps to that word",
       "path": [
         "Practical Examples"
@@ -71426,7 +71464,7 @@
       "heading": "Example 4: Searching TODO Items",
       "level": 2,
       "file": "22-hydra-menus.org",
-      "line": 831,
+      "line": 871,
       "content": "CLOSED: [2026-01-17 Sat 12:18] To find all TODO items in your org files: 1. Press C-c m → opens main menu 2. Press s → opens search submenu 3. Press t → searches for TODO items 4. View results in quick pick 5. Select an item to navigate to it",
       "path": [
         "Practical Examples"
@@ -71462,7 +71500,7 @@
       "heading": "Example 5: Navigating Back",
       "level": 2,
       "file": "22-hydra-menus.org",
-      "line": 842,
+      "line": 882,
       "content": "CLOSED: [2026-01-17 Sat 19:50] When in a submenu: 1. Press C-c m → main menu 2. Press d → database menu 3. Select \"Back\" at the top of the menu → returns to main menu 4. Press Escape → closes all menus",
       "path": [
         "Practical Examples"
@@ -71497,7 +71535,7 @@
       "heading": "Differences from Emacs Hydra",
       "level": 1,
       "file": "22-hydra-menus.org",
-      "line": 852,
+      "line": 892,
       "content": "CLOSED: [2026-01-17 Sat 12:19] While inspired by Emacs hydra, the VS Code implementation has some differences due to platform constraints and design choices:",
       "path": [],
       "commands": [],
@@ -71525,7 +71563,7 @@
       "heading": "Similarities",
       "level": 2,
       "file": "22-hydra-menus.org",
-      "line": 857,
+      "line": 897,
       "content": "CLOSED: [2026-01-17 Sat 12:19] - Keyboard-driven navigation with single-key selection - Persistent menus that stay open for repeated actions - Exit vs. stay behavior (blue vs. red heads) - Hierarchical menu organization - Visual indicators and hints",
       "path": [
         "Differences from Emacs Hydra"
@@ -71559,7 +71597,7 @@
       "heading": "Differences",
       "level": 2,
       "file": "22-hydra-menus.org",
-      "line": 866,
+      "line": 906,
       "content": "CLOSED: [2026-01-17 Sat 12:19]",
       "path": [
         "Differences from Emacs Hydra"
@@ -71578,7 +71616,7 @@
       "heading": "Quick Pick vs. Minibuffer",
       "level": 3,
       "file": "22-hydra-menus.org",
-      "line": 869,
+      "line": 909,
       "content": "CLOSED: [2026-01-17 Sat 12:19] VS Code uses the native quick pick interface instead of Emacs's minibuffer. This provides: - Native VS Code look and feel - Fuzzy filtering built-in - Mouse support (if desired) - Icon support - Better accessibility",
       "path": [
         "Differences from Emacs Hydra",
@@ -71613,7 +71651,7 @@
       "heading": "No Dedicated Hydra Mode",
       "level": 3,
       "file": "22-hydra-menus.org",
-      "line": 880,
+      "line": 920,
       "content": "CLOSED: [2026-01-17 Sat 12:20] VS Code doesn't have a dedicated \"hydra mode\" like Emacs. Hydras appear as quick picks that temporarily take focus but don't create a new modal mode.",
       "path": [
         "Differences from Emacs Hydra",
@@ -71648,7 +71686,7 @@
       "heading": "Async Command Execution",
       "level": 3,
       "file": "22-hydra-menus.org",
-      "line": 885,
+      "line": 925,
       "content": "CLOSED: [2026-01-17 Sat 12:20] Commands execute asynchronously and can return Promises, supporting VS Code's async command pattern.",
       "path": [
         "Differences from Emacs Hydra",
@@ -71678,7 +71716,7 @@
       "heading": "Icon-Based Indicators Instead of Colors",
       "level": 3,
       "file": "22-hydra-menus.org",
-      "line": 890,
+      "line": 930,
       "content": "Unlike Emacs hydra which uses colored text (blue for exit, red for stay), VS Code's QuickPick API doesn't support per-item color customization. Instead, we use codicons to indicate behavior: | Behavior   | Icon              | Meaning                            | |------------+-------------------+------------------------------------| | Exit       | $(sign-out)       | Menu closes after command executes | | Stay       | $(sync)           | Menu stays open after command      | | Submenu    | $(chev",
       "path": [
         "Differences from Emacs Hydra",
@@ -71713,7 +71751,7 @@
       "heading": "Menu State Persistence",
       "level": 3,
       "file": "22-hydra-menus.org",
-      "line": 904,
+      "line": 944,
       "content": "CLOSED: [2026-01-17 Sat 12:20] The hydra state is not persisted across VS Code restarts. Each session starts fresh.",
       "path": [
         "Differences from Emacs Hydra",
@@ -71743,7 +71781,7 @@
       "heading": "Configuration Through Settings",
       "level": 3,
       "file": "22-hydra-menus.org",
-      "line": 909,
+      "line": 949,
       "content": "CLOSED: [2026-01-17 Sat 12:20] Configuration uses VS Code's settings system (JSON) rather than Emacs Lisp variables.",
       "path": [
         "Differences from Emacs Hydra",
@@ -71773,7 +71811,7 @@
       "heading": "No Posframe Support",
       "level": 3,
       "file": "22-hydra-menus.org",
-      "line": 914,
+      "line": 954,
       "content": "CLOSED: [2026-01-17 Sat 12:20] Menus don't appear at specific screen positions like Emacs posframe. They always appear in the standard quick pick location (top center).",
       "path": [
         "Differences from Emacs Hydra",
@@ -71808,7 +71846,7 @@
       "heading": "Migration Tips",
       "level": 2,
       "file": "22-hydra-menus.org",
-      "line": 919,
+      "line": 959,
       "content": "CLOSED: [2026-01-17 Sat 12:20] If you're coming from Emacs hydra: 1. *Keybindings*: Map C-c m (or your preferred binding) to scimax.hydra.main 2. *Menu Definition*: Use the fluent builder API for a declarative style similar to Emacs 3. *Exit Behavior*: exit ` blue head, stay ' red head 4. *Submenus*: Use the submenu exit behavior instead of (exit) with another hydra call 5. *Hooks*: Use onShow and onHide instead of :before-exit and :after-exit",
       "path": [
         "Differences from Emacs Hydra"
@@ -71846,7 +71884,7 @@
       "heading": "Tips and Best Practices",
       "level": 1,
       "file": "22-hydra-menus.org",
-      "line": 930,
+      "line": 970,
       "content": "CLOSED: [2026-01-17 Sat 12:20]",
       "path": [],
       "commands": [],
@@ -71865,7 +71903,7 @@
       "heading": "Discoverability",
       "level": 2,
       "file": "22-hydra-menus.org",
-      "line": 933,
+      "line": 973,
       "content": "CLOSED: [2026-01-17 Sat 12:20] - Keep menus organized in logical groups - Use descriptive labels and helpful descriptions - Add icons to make items visually distinct - Use consistent key assignments (e.g., s for search, n for new)",
       "path": [
         "Tips and Best Practices"
@@ -71899,7 +71937,7 @@
       "heading": "Performance",
       "level": 2,
       "file": "22-hydra-menus.org",
-      "line": 941,
+      "line": 981,
       "content": "CLOSED: [2026-01-17 Sat 12:20] - Use conditional visibility (when) to hide irrelevant items - Don't create too many nested submenus (2-3 levels max) - Keep async actions fast to avoid blocking the UI - Use persistent commands (stay) for repeated actions",
       "path": [
         "Tips and Best Practices"
@@ -71933,7 +71971,7 @@
       "heading": "Keyboard Shortcuts",
       "level": 2,
       "file": "22-hydra-menus.org",
-      "line": 949,
+      "line": 989,
       "content": "CLOSED: [2026-01-17 Sat 12:20] - Assign memorable single-letter keys - Use uppercase for destructive or advanced operations - Group related commands under similar keys across menus - Reserve common keys (q for quit, ? for help, b for back)",
       "path": [
         "Tips and Best Practices"
@@ -71967,7 +72005,7 @@
       "heading": "User Experience",
       "level": 2,
       "file": "22-hydra-menus.org",
-      "line": 957,
+      "line": 997,
       "content": "CLOSED: [2026-01-17 Sat 12:20] - Provide clear hints in menu titles - Show toggle state for boolean options - Use submenus to reduce cognitive load - Test both keyboard and mouse interaction - Ensure menus work in all relevant contexts",
       "path": [
         "Tips and Best Practices"
@@ -72001,7 +72039,7 @@
       "heading": "Debugging",
       "level": 2,
       "file": "22-hydra-menus.org",
-      "line": 966,
+      "line": 1006,
       "content": "CLOSED: [2026-01-17 Sat 12:20] To debug custom menus: 1. Open the Developer Console (Help > Toggle Developer Tools) 2. Set breakpoints in menu actions 3. Use console.log in onShow and onHide hooks 4. Check for errors in command execution 5. Verify menu registration with hydraManager.getMenuIds()",
       "path": [
         "Tips and Best Practices"
@@ -72035,7 +72073,7 @@
       "heading": "Troubleshooting",
       "level": 1,
       "file": "22-hydra-menus.org",
-      "line": 977,
+      "line": 1017,
       "content": "CLOSED: [2026-01-17 Sat 12:20]",
       "path": [],
       "commands": [],
@@ -72052,7 +72090,7 @@
       "heading": "Menu Not Appearing",
       "level": 2,
       "file": "22-hydra-menus.org",
-      "line": 980,
+      "line": 1020,
       "content": "CLOSED: [2026-01-17 Sat 12:20] - Verify the menu is registered: Check hydraManager.getMenuIds() - Ensure the menu ID is correct - Check for errors in the Developer Console - Verify keybindings are not conflicting",
       "path": [
         "Troubleshooting"
@@ -72083,7 +72121,7 @@
       "heading": "Commands Not Executing",
       "level": 2,
       "file": "22-hydra-menus.org",
-      "line": 988,
+      "line": 1028,
       "content": "CLOSED: [2026-01-17 Sat 12:20] - Verify the command is registered in VS Code - Check command arguments are correct - Look for errors in the Developer Console - Test the command directly from command palette",
       "path": [
         "Troubleshooting"
@@ -72117,7 +72155,7 @@
       "heading": "Items Not Showing",
       "level": 2,
       "file": "22-hydra-menus.org",
-      "line": 996,
+      "line": 1036,
       "content": "CLOSED: [2026-01-17 Sat 12:20] - Check the when condition if present - Verify group visibility conditions - Ensure items are not filtered by current search - Check that sortByKey setting isn't hiding items",
       "path": [
         "Troubleshooting"
@@ -72151,7 +72189,7 @@
       "heading": "Single-Key Selection Not Working",
       "level": 2,
       "file": "22-hydra-menus.org",
-      "line": 1004,
+      "line": 1044,
       "content": "CLOSED: [2026-01-17 Sat 12:20] - Verify scimax.hydra.singleKeySelection is true - Check for key conflicts with other extensions - Ensure the hydra menu has focus - Try pressing keys slowly (avoid double-press)",
       "path": [
         "Troubleshooting"
@@ -72187,7 +72225,7 @@
       "heading": "Submenus Not Navigating",
       "level": 2,
       "file": "22-hydra-menus.org",
-      "line": 1012,
+      "line": 1052,
       "content": "CLOSED: [2026-01-17 Sat 12:20] - Verify submenu ID exists and is registered - Check exit is set to 'submenu' - Ensure action contains the submenu ID string - Verify parent menu is properly configured",
       "path": [
         "Troubleshooting"
@@ -72221,7 +72259,7 @@
       "heading": "Frequently Asked Questions",
       "level": 1,
       "file": "22-hydra-menus.org",
-      "line": 1020,
+      "line": 1060,
       "content": "CLOSED: [2026-01-17 Sat 12:20]",
       "path": [],
       "commands": [],
@@ -72240,7 +72278,7 @@
       "heading": "Can I create hydras for non-Scimax commands?",
       "level": 2,
       "file": "22-hydra-menus.org",
-      "line": 1023,
+      "line": 1063,
       "content": "CLOSED: [2026-01-17 Sat 12:20] Yes! You can create hydras that execute any VS Code command, including those from other extensions.",
       "path": [
         "Frequently Asked Questions"
@@ -72269,7 +72307,7 @@
       "heading": "How do I add a hydra to the command palette?",
       "level": 2,
       "file": "22-hydra-menus.org",
-      "line": 1028,
+      "line": 1068,
       "content": "CLOSED: [2026-01-17 Sat 12:20] Hydra commands like scimax.hydra.show are automatically available in the command palette. To show a specific menu, register it first, then call: #+begin_src typescript await vscode.commands.executeCommand('scimax.hydra.show', 'your.menu.id'); #+end_src",
       "path": [
         "Frequently Asked Questions"
@@ -72305,7 +72343,7 @@
       "heading": "Can I bind a hydra to a custom keybinding?",
       "level": 2,
       "file": "22-hydra-menus.org",
-      "line": 1037,
+      "line": 1077,
       "content": "CLOSED: [2026-01-17 Sat 12:20] Yes! Add a keybinding in keybindings.json: #+begin_src json { \"key\": \"ctrl+alt+h\", \"command\": \"scimax.hydra.show\", \"args\": \"my.custom.menu\" } #+end_src",
       "path": [
         "Frequently Asked Questions"
@@ -72340,7 +72378,7 @@
       "heading": "How do I share custom hydras with my team?",
       "level": 2,
       "file": "22-hydra-menus.org",
-      "line": 1050,
+      "line": 1090,
       "content": "CLOSED: [2026-01-17 Sat 12:20] Custom hydras defined in extension code are automatically shared. For configuration-based hydras, share your workspace .vscode/settings.json file.",
       "path": [
         "Frequently Asked Questions"
@@ -72370,7 +72408,7 @@
       "heading": "Can hydras work with multiple workspaces?",
       "level": 2,
       "file": "22-hydra-menus.org",
-      "line": 1055,
+      "line": 1095,
       "content": "CLOSED: [2026-01-17 Sat 12:20] Yes! Hydras are global to the VS Code window and work across all workspace folders.",
       "path": [
         "Frequently Asked Questions"
@@ -72399,7 +72437,7 @@
       "heading": "How do I disable hydras?",
       "level": 2,
       "file": "22-hydra-menus.org",
-      "line": 1060,
+      "line": 1100,
       "content": "CLOSED: [2026-01-17 Sat 12:20] Unmap the keybindings in your keybindings.json: #+begin_src json { \"key\": \"ctrl+c m\", \"command\": \"-scimax.hydra.main\" } #+end_src The hydras remain available through the command palette.",
       "path": [
         "Frequently Asked Questions"
@@ -72434,7 +72472,7 @@
       "heading": "Additional Resources",
       "level": 1,
       "file": "22-hydra-menus.org",
-      "line": 1074,
+      "line": 1114,
       "content": "CLOSED: [2026-01-17 Sat 12:20]",
       "path": [],
       "commands": [],
@@ -72452,7 +72490,7 @@
       "heading": "Source Code",
       "level": 2,
       "file": "22-hydra-menus.org",
-      "line": 1077,
+      "line": 1117,
       "content": "CLOSED: [2026-01-17 Sat 12:20] The hydra framework source is located in src/hydra/: - src/hydra/types.ts - Type definitions - src/hydra/hydraManager.ts - Core manager implementation - src/hydra/commands.ts - Command registrations - src/hydra/menus/ - Pre-built menu definitions",
       "path": [
         "Additional Resources"
@@ -72486,7 +72524,7 @@
       "heading": "Related Documentation",
       "level": 2,
       "file": "22-hydra-menus.org",
-      "line": 1087,
+      "line": 1127,
       "content": "CLOSED: [2026-01-17 Sat 12:20] - [[file:24-keybindings.org][Keybindings]] - All Scimax keyboard shortcuts - [[file:26-configuration.org][Configuration]] - Complete settings reference - [[file:14-journal.org][Journal]] - Journal-specific commands and workflows - [[file:19-references.org][References]] - Bibliography management - [[file:18-database-search.org][Database Search]] - Search and query system",
       "path": [
         "Additional Resources"
@@ -72520,7 +72558,7 @@
       "heading": "External References",
       "level": 2,
       "file": "22-hydra-menus.org",
-      "line": 1096,
+      "line": 1136,
       "content": "CLOSED: [2026-01-17 Sat 12:20] - [[https://github.com/abo-abo/hydra][Emacs Hydra Package]] - Original inspiration - [[https://github.com/magit/transient][Emacs Transient Package]] - Alternative approach - [[https://code.visualstudio.com/api/references/vscode-api#QuickPick][VS Code QuickPick API]] - Underlying implementation",
       "path": [
         "Additional Resources"
@@ -72554,7 +72592,7 @@
       "heading": "Conclusion",
       "level": 1,
       "file": "22-hydra-menus.org",
-      "line": 1103,
+      "line": 1143,
       "content": "CLOSED: [2026-01-17 Sat 12:20] Hydra menus provide a powerful and discoverable way to access Scimax features. Whether you're a new user exploring available commands or an experienced user building custom workflows, hydras help you work efficiently without memorizing dozens of keyboard shortcuts. Start with C-c m to open the main menu and explore. Over time, you'll develop muscle memory for frequently-used commands and can invoke them directly or through submenus. Happy hydra-ing!",
       "path": [],
       "commands": [],
@@ -72588,7 +72626,7 @@
       "heading": "Navigation",
       "level": 1,
       "file": "22-hydra-menus.org",
-      "line": 1112,
+      "line": 1152,
       "content": "CLOSED: [2026-01-17 Sat 19:51] - Previous: [[file:21-navigation.org][Navigation]] - Index: [[file:00-index.org][Documentation Index]] - Next: [[file:23-speed-commands.org][Speed Commands]]",
       "path": [],
       "commands": [],
@@ -83028,7 +83066,7 @@
       "level": 1,
       "file": "25-commands.org",
       "line": 1962,
-      "content": "CLOSED: [2026-10-30 Fri 10:54] :PROPERTIES: :CUSTOM_ID: utilities :END: Miscellaneous utility commands. | Command ID                              | Description                     | Default Keybinding | |-----------------------------------------+---------------------------------+--------------------| | [[cmd:scimax.findFile]]                 | Find File                       | C-x C-f            | | [[cmd:scimax.findFileOtherWindow]]      | Find File in New Window         | C-x 5 f, C-x 5 C-f | ",
+      "content": "CLOSED: [2026-10-30 Fri 10:54] :PROPERTIES: :CUSTOM_ID: utilities :END: Miscellaneous utility commands. | Command ID                          | Description                     | Default Keybinding | |-------------------------------------+---------------------------------+--------------------| | [[cmd:scimax.findFile]]                 | Find File                       | C-x C-f            | | [[cmd:scimax.findFileOtherWindow]]      | Find File in New Window         | C-x 5 f, C-x 5 C-f | | [[cmd:",
       "path": [],
       "commands": [
         "scimax.findFile",
@@ -83055,7 +83093,7 @@
         "description",
         "default",
         "keybinding",
-        "----------------------------------------------------------------------------------------------",
+        "------------------------------------------------------------------------------------------",
         "cmd",
         "find",
         "c-x",
@@ -83066,7 +83104,7 @@
       "heading": "Dired Commands",
       "level": 2,
       "file": "25-commands.org",
-      "line": 1990,
+      "line": 1993,
       "content": "Dired (Directory Editor) provides Emacs-style file management. Open with =C-x d= and use these keys in the dired panel: - Navigation: =n/p= (next/prev), =RET= (open), =^= (parent), =g= (refresh) - Marking: =m= (mark), =u= (unmark), =U= (unmark all), =t= (toggle marks) - Operations: =D= (delete), =C= (copy), =R= (rename/move), =+= (create directory) - WDired: =C-x C-q= (enter edit mode), =C-c C-c= (commit), =C-c C-k= (cancel) See [[file:37-dired.org][Dired documentation]] for full details.",
       "path": [
         "Utilities"
@@ -83105,7 +83143,7 @@
       "heading": "scimax.replaceNonAscii",
       "level": 2,
       "file": "25-commands.org",
-      "line": 2001,
+      "line": 2004,
       "content": "Replaces common non-ASCII characters (smart quotes, em-dashes, etc.) with their ASCII equivalents. Useful for preparing documents for systems that don't handle Unicode well.",
       "path": [
         "Utilities"
@@ -83139,7 +83177,7 @@
       "heading": "scimax.showDebugInfo",
       "level": 2,
       "file": "25-commands.org",
-      "line": 2005,
+      "line": 2008,
       "content": "Displays diagnostic information about the scimax extension, including version, enabled features, and configuration state. Useful for troubleshooting.",
       "path": [
         "Utilities"
@@ -83169,7 +83207,7 @@
       "heading": "Index",
       "level": 1,
       "file": "25-commands.org",
-      "line": 2009,
+      "line": 2012,
       "content": "CLOSED: [2026-01-17 Sat 12:51] This document contains [[*Introduction][310+ commands]] organized into [[*Document Structure][27 categories]] with their keybindings and descriptions. For configuration options, see the VS Code settings under scimax.*. For more information about the Scimax VS Code extension, visit the project repository.",
       "path": [],
       "commands": [],
@@ -83201,7 +83239,7 @@
       "heading": "Navigation",
       "level": 1,
       "file": "25-commands.org",
-      "line": 2018,
+      "line": 2021,
       "content": "- Previous: [[file:24-keybindings.org][Keybindings]] - Index: [[file:00-index.org][Documentation Index]] - Next: [[file:26-configuration.org][Configuration]]",
       "path": [],
       "commands": [],
@@ -110273,7 +110311,7 @@
       "heading": "How org maps to slides",
       "level": 2,
       "file": "44-marp.org",
-      "line": 1358,
+      "line": 1359,
       "content": "| Org                                           | Marp                                                           | |-----------------------------------------------+----------------------------------------------------------------| | ~#+TITLE:~, ~#+AUTHOR:~, ~#+DATE:~            | Front matter, and a title slide (class ~lead~, no page number) | | ~#+SUBTITLE:~                                 | An italic line under the title on the title slide              | | Text before the first heading         ",
       "path": [
         "Writing Slides in Org"
@@ -110307,7 +110345,7 @@
       "heading": "Keywords",
       "level": 2,
       "file": "44-marp.org",
-      "line": 1387,
+      "line": 1388,
       "content": "Keywords in the file override the [[*Org export settings][settings]]. | Keyword                                 | Front matter / effect                             | |-----------------------------------------+---------------------------------------------------| | ~#+MARP_THEME: gaia~                    | ~theme: gaia~                                     | | ~#+MARP_HEADING_DIVIDER: 1~             | ~headingDivider: 1~ (and shifts the levels above) | | ~#+MARP_PAGINATE: nil~                  | ~p",
       "path": [
         "Writing Slides in Org"
@@ -110341,7 +110379,7 @@
       "heading": "Slide properties and tags",
       "level": 2,
       "file": "44-marp.org",
-      "line": 1404,
+      "line": 1405,
       "content": "| Heading property or tag | Effect                                         | |-------------------------+------------------------------------------------| | ~:MARP_FIT: t~          | A fitted heading (~# <!-- fit -->~)            | | ~:MARP_CLASS: invert~   | ~<!-- _class: invert -->~ on that slide        | | ~:MARP_<X>: value~      | Any other ~<!-- _x: value -->~ local directive | | ~:hidden:~ tag          | A [[*Hidden slides][hidden slide]] (or ~:MARP_HIDDEN: t~)          |",
       "path": [
         "Writing Slides in Org"
@@ -110375,7 +110413,7 @@
       "heading": "Source blocks",
       "level": 2,
       "file": "44-marp.org",
-      "line": 1413,
+      "line": 1414,
       "content": "~:exports~ works as in org: ~code~ (the default), ~results~, ~both~ or ~none~. Results in a ~#+RESULTS:~ block or ~: output~ lines are exported with ~both~ or ~results~. To make a [[*Live Python cells][live Python cell]], add ~:run t~ (or ~:marp-run t~). Use ~:run auto~ to run it when the slide opens and ~:run hidden~ to hide the code. For full control, ~:marp \"python run auto\"~ (or ~:python \"python run\"~, the =ox-marp= form) sets the fence's info string. #+begin_example ,#+begin_src jupyter-pyt",
       "path": [
         "Writing Slides in Org"
@@ -110409,7 +110447,7 @@
       "heading": "Images",
       "level": 2,
       "file": "44-marp.org",
-      "line": 1431,
+      "line": 1432,
       "content": "A link to an image becomes a Marp image. ~#+ATTR_MARP:~ adds Marp's image options: #+begin_example ,#+ATTR_MARP: :bg right:40% :width 300px [[file:figures/plot.png]] #+end_example gives ~![bg right:40% w:300px](figures/plot.png)~. ~:bg~ alone makes a background image, ~:height~ becomes ~h:~, ~:alt~ sets the alt text and any other word (~sepia~, ~blur~) is kept. Without ~#+ATTR_MARP:~, the width and height of ~#+ATTR_HTML:~ or ~#+ATTR_ORG:~ are used. A ~#+CAPTION:~ becomes an italic line under th",
       "path": [
         "Writing Slides in Org"
@@ -110443,7 +110481,7 @@
       "heading": "Org export settings",
       "level": 2,
       "file": "44-marp.org",
-      "line": 1447,
+      "line": 1448,
       "content": "| Setting                                   | Default   | Effect                                      | |-------------------------------------------+-----------+---------------------------------------------| | ~scimax.export.marp.theme~                | ~default~ | Theme                                       | | ~scimax.export.marp.headingDivider~       | ~2~       | Heading levels that start slides            | | ~scimax.export.marp.paginate~             | ~true~    | Slide numbers             ",
       "path": [
         "Writing Slides in Org"
@@ -110476,7 +110514,7 @@
       "heading": "Exporting Slides",
       "level": 1,
       "file": "44-marp.org",
-      "line": 1463,
+      "line": 1464,
       "content": "Press =C-c C-e= in a Marp deck (or click the export button in the Marp Slides view's title bar) for the Marp export menu. In other Markdown files =C-c C-e= still opens the Markdown (Pandoc) export menu, which is also =m= in this one. Exports are written next to the deck, and the deck is saved first. When an export finishes, a notification offers to open the file or show it in its folder. | Key | Export                                               | Output                 | Needs                ",
       "path": [],
       "commands": [],
@@ -110510,7 +110548,7 @@
       "heading": "Marp CLI",
       "level": 2,
       "file": "44-marp.org",
-      "line": 1490,
+      "line": 1491,
       "content": "All exports except =d= run [[https://github.com/marp-team/marp-cli][Marp CLI]], the tool behind Marp for VS Code's own export. Scimax uses ~scimax.marp.cliPath~ if set, then ~marp~ on the PATH (=npm install -g @marp-team/marp-cli=). Failing both, it offers to run it with ~npx~, which downloads Marp CLI the first time. It asks once and remembers the answer. PDF, PowerPoint and image exports render the slides in Google Chrome, Microsoft Edge or Firefox, so one of them must be installed. Local imag",
       "path": [
         "Exporting Slides"
@@ -110546,7 +110584,7 @@
       "heading": "Which PowerPoint",
       "level": 2,
       "file": "44-marp.org",
-      "line": 1505,
+      "line": 1506,
       "content": "There are three PowerPoint exports: |                        | PowerPoint (=s=) | Editable, Marp (=e=)    | Editable, Pandoc (=d=)                  | |------------------------+------------------+-------------------------+-----------------------------------------| | Looks like the preview | Exactly          | Mostly                  | No: PowerPoint default or your template | | Text editable          | No (pictures)    | Yes                     | Yes                                     | | Presen",
       "path": [
         "Exporting Slides"
@@ -110579,7 +110617,7 @@
       "heading": "Google Slides",
       "level": 2,
       "file": "44-marp.org",
-      "line": 1530,
+      "line": 1531,
       "content": "Google Slides has no import from Marp, but it opens PowerPoint files, and editable ones import best. The =g= export makes Marp's editable PowerPoint when LibreOffice is installed, otherwise the Pandoc one, otherwise (after asking) the picture PowerPoint. The notification links to Google Drive: upload the file (New > File upload), then open it with Google Slides.",
       "path": [
         "Exporting Slides"
@@ -110613,7 +110651,7 @@
       "heading": "Export settings",
       "level": 2,
       "file": "44-marp.org",
-      "line": 1538,
+      "line": 1539,
       "content": "| Setting                          | Default | Effect                                                                | |----------------------------------+---------+-----------------------------------------------------------------------| | ~scimax.marp.cliPath~            | (empty) | Marp CLI executable; empty means ~marp~ on the PATH, else ~npx~       | | ~scimax.marp.browserPath~        | (empty) | Browser for PDF, PowerPoint and images; empty lets Marp find one      | | ~scimax.marp.libreOffi",
       "path": [
         "Exporting Slides"
@@ -110651,7 +110689,7 @@
       "heading": "Configuration",
       "level": 1,
       "file": "44-marp.org",
-      "line": 1548,
+      "line": 1549,
       "content": "| Setting                       | Default   | Effect                                                     | |-------------------------------+-----------+------------------------------------------------------------| | ~scimax.marp.themes~          | ~[]~      | Custom theme CSS files for thumbnails, preview and exports | | ~scimax.marp.enableHtml~      | ~false~   | Allow all raw HTML in slides                               | | ~scimax.marp.mathTypesetting~ | ~mathjax~ | ~mathjax~, ~katex~ or ~off",
       "path": [],
       "commands": [
@@ -110686,7 +110724,7 @@
       "heading": "Marp CLI configuration files",
       "level": 2,
       "file": "44-marp.org",
-      "line": 1566,
+      "line": 1567,
       "content": "A deck set up for Marp CLI often keeps its themes and options in a configuration file beside it rather than in VS Code settings: #+begin_src yaml # .marprc.yml themeSet: ./theme html: true #+end_src Scimax reads the same file, so the thumbnails, the slide preview, the Markdown preview and exports show the deck the way Marp CLI renders it. It uses the nearest ~.marprc~, ~.marprc.json~, ~.marprc.yaml~, ~.marprc.yml~ or ~marp~ key of ~package.json~, looking in the deck's folder and then each folder",
       "path": [
         "Configuration"
@@ -110720,7 +110758,7 @@
       "heading": "Double-click in the Markdown preview",
       "level": 2,
       "file": "44-marp.org",
-      "line": 1595,
+      "line": 1596,
       "content": "Double-click in the Markdown preview follows VS Code's own setting for double-clicking in the Markdown preview. Current VS Code releases turn it off by default, so enable it once in your user settings: #+begin_src json \"markdown.preview.doubleClickToSwitchToEditor\": true #+end_src | Setting                                        | Default | Effect                                      | |------------------------------------------------+---------+---------------------------------------------| | ~m",
       "path": [
         "Configuration"
@@ -110754,7 +110792,7 @@
       "heading": "How It Works",
       "level": 1,
       "file": "44-marp.org",
-      "line": 1614,
+      "line": 1615,
       "content": "",
       "path": [],
       "commands": [],
@@ -110767,7 +110805,7 @@
       "heading": "Slides in the Markdown preview",
       "level": 2,
       "file": "44-marp.org",
-      "line": 1616,
+      "line": 1617,
       "content": "Scimax contributes a markdown-it plugin (~markdown.markdownItPlugins~, ~src/marp/marpPreviewPlugin.ts~). For a file with ~marp: true~ in its front matter it parses and renders with Marp Core instead of plain markdown-it, adds VS Code's ~code-line~ class and ~data-line~ source line to each block (for scroll sync and double-click), and puts the deck's theme CSS in front. The preview script ~media/marp/marpPreviewMode.js~ then turns off VS Code's own Markdown styles for that preview, since they wou",
       "path": [
         "How It Works"
@@ -110801,7 +110839,7 @@
       "heading": "Double-click in the Markdown preview",
       "level": 2,
       "file": "44-marp.org",
-      "line": 1633,
+      "line": 1634,
       "content": "Scimax contributes a preview script (~media/marp/marpPreview.js~) through the ~markdown.previewScripts~ contribution point. Marp already tags each rendered element with its source line (~data-line~). On double-click inside a slide the script: 1. finds the nearest element carrying a line number; 2. adds the number of source line breaks between the start of that element and the caret (and one for the opening fence of a code block); 3. sends the preview's own ~didClick~ message with that line, so V",
       "path": [
         "How It Works"
@@ -110835,7 +110873,7 @@
       "heading": "Related Topics",
       "level": 1,
       "file": "44-marp.org",
-      "line": 1652,
+      "line": 1653,
       "content": "- [[file:30-markdown-compatibility.org][Markdown Compatibility]] - Scimax editing features in Markdown files - [[file:45-myst-preview.org][MyST Markdown Preview]] - Jupyter Book directives and roles in the preview - [[file:41-export-beamer.org][Beamer Export]] - slides from org files via LaTeX Beamer - [[file:26-configuration.org][Configuration Reference]] - [[https://marpit.marp.app/markdown][Marpit Markdown]] - slide syntax reference",
       "path": [],
       "commands": [],

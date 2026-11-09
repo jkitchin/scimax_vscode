@@ -1148,6 +1148,18 @@
         "title": "Scimax: Export to Markdown"
       },
       {
+        "command": "scimax.file.openInDefaultApp",
+        "title": "Scimax: Open File in Default App"
+      },
+      {
+        "command": "scimax.file.rename",
+        "title": "Scimax: Rename or Move Current File"
+      },
+      {
+        "command": "scimax.file.delete",
+        "title": "Scimax: Move Current File to Trash"
+      },
+      {
         "command": "scimax.org.exportMarp",
         "title": "Scimax: Export to Marp Slides"
       },

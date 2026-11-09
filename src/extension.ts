@@ -119,6 +119,7 @@ import { registerManuscriptCommands } from './manuscript';
 import { initializeLogging, extensionLogger, getLoggingService } from './utils/logger';
 import { recordActivationFailure, getActivationFailures } from './utils/activationStatus';
 import { registerDiredCommands, DiredPanel } from './dired';
+import { registerFileCommands } from './files/fileCommands';
 import { registerFindFileCommands } from './findFile';
 import { registerVcCommands } from './vc';
 import { registerLinkGraphCommands } from './linkGraph';
@@ -838,6 +839,7 @@ async function activateScimax(context: vscode.ExtensionContext) {
 
     // Register Dired Commands (C-x d, Emacs-style directory editor)
     activationStep('registerDiredCommands', () => registerDiredCommands(context));
+    activationStep('registerFileCommands', () => registerFileCommands(context));
 
     // Register Find File Commands (C-x C-f, Emacs-style file navigation)
     activationStep('registerFindFileCommands', () => registerFindFileCommands(context));
