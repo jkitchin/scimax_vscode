@@ -9496,7 +9496,7 @@
             "Open the slideshow in a Chrome (or Edge, Chromium, Brave) app window: no tabs or address bar, and the slides fill a window you can size"
           ],
           "default": "tab",
-          "markdownDescription": "Where **Present** opens the slideshow. `app` gives full screen in a window: a browser window with only the slides, which you can resize, move or share in a video call. The browser is `#scimax.marp.appBrowser#`, or the first of Chrome, Edge, Chromium and Brave found."
+          "markdownDescription": "Where **Present** opens the slideshow. `app` gives full screen in a window: a browser window with only the slides, which you can resize, move or share in a video call. The browser is `#scimax.marp.appBrowser#`, or the first of Chrome, Edge, Chromium and Brave found. A deck's `window: app` or `window: tab` front matter overrides this."
         },
         "scimax.marp.appBrowser": {
           "type": "string",

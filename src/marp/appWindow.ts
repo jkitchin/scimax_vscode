@@ -15,6 +15,7 @@
 import { spawn } from 'child_process';
 import * as fs from 'fs';
 import * as path from 'path';
+import { frontMatterValue } from './marpAuthoring';
 
 export interface LaunchCommand {
     command: string;
@@ -104,6 +105,16 @@ export function resolveAppBrowser(configured: string, search: BrowserSearch): st
         return undefined;
     }
     return findAppBrowser(search);
+}
+
+/**
+ * Where Present opens the deck: its `window:` front matter (`app` or `tab`)
+ * if set, else the `scimax.marp.presentWindow` setting.
+ */
+export function presentWindow(markdown: string, setting: string): 'app' | 'tab' {
+    const value = frontMatterValue(markdown.split(/\r?\n/), 'window')?.trim().replace(/^["']|["']$/g, '').toLowerCase();
+    if (value === 'app' || value === 'tab') return value;
+    return setting === 'app' ? 'app' : 'tab';
 }
 
 /** The real system, for `resolveAppBrowser`. */

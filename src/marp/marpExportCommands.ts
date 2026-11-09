@@ -24,7 +24,7 @@ import {
     liveReloadVersionScript, MARP_FORMATS, MarpExportFormat, marpOutputPath, marpToPandocMarkdown, prepareSlideshowHtml,
 } from './marpExport';
 import { parseDeck } from './slideModel';
-import { appWindowCommand, openAppWindow, resolveAppBrowser, systemSearch } from './appWindow';
+import { appWindowCommand, openAppWindow, presentWindow, resolveAppBrowser, systemSearch } from './appWindow';
 import { frontMatterValue } from './marpAuthoring';
 import {
     BundleReport, bundlePresenterDeck, inlineDeck, OfflineCheck, offlineIssues, OfflinePlan,
@@ -863,7 +863,7 @@ async function present(context: vscode.ExtensionContext, args?: PresentArgs, fro
  */
 async function openSlideshow(document: vscode.TextDocument, output: string): Promise<void> {
     const config = vscode.workspace.getConfiguration('scimax.marp', document.uri);
-    if (config.get<string>('presentWindow', 'tab') === 'app') {
+    if (presentWindow(document.getText(), config.get<string>('presentWindow', 'tab')) === 'app') {
         const configured = config.get<string>('appBrowser', '');
         const browser = resolveAppBrowser(configured, systemSearch());
         if (browser) {

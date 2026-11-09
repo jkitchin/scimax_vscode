@@ -236,7 +236,20 @@ share one window in a video call, or to present beside your notes), set
 "scimax.marp.presentWindow": "app"
 #+end_src
 
-Present then opens the slideshow in a Chromium /app window/: no tabs, address
+or, for one deck, add ~window: app~ to its front matter (~window: tab~ turns
+it off for a deck when the setting is ~app~):
+
+#+begin_src markdown
+---
+marp: true
+window: app
+---
+#+end_src
+
+In an org file exported to Marp, ~#+MARP_WINDOW: app~ does the same.
+
+The default is ~tab~: the slideshow opens in a tab of your default browser.
+With ~app~, Present opens it in a Chromium /app window/: no tabs, address
 bar or toolbar, just the slides, in a window you can size and move. Chrome,
 Edge, Chromium or Brave is found in the usual places; set
 ~scimax.marp.appBrowser~ to a path (or on macOS an application name such as

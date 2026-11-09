@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { appWindowCommand, findAppBrowser, resolveAppBrowser, BrowserSearch } from '../appWindow';
+import { appWindowCommand, findAppBrowser, presentWindow, resolveAppBrowser, BrowserSearch } from '../appWindow';
 
 const search = (platform: NodeJS.Platform, files: string[], env: NodeJS.ProcessEnv = {}): BrowserSearch => ({
     platform, env, home: '/Users/me', exists: f => files.includes(f),
@@ -35,5 +35,17 @@ describe('app window browser search', () => {
             .toEqual({ command: '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome', args: ['--app=file:///t/deck.html'] });
         expect(appWindowCommand('/usr/bin/chromium', 'file:///t/deck.html', 'linux'))
             .toEqual({ command: '/usr/bin/chromium', args: ['--app=file:///t/deck.html'] });
+    });
+});
+
+describe('presentWindow', () => {
+    it('uses the deck front matter over the setting', () => {
+        expect(presentWindow('---\nmarp: true\nwindow: app\n---\n# A', 'tab')).toBe('app');
+        expect(presentWindow('---\nwindow: "tab"\n---\n# A', 'app')).toBe('tab');
+    });
+    it('falls back to the setting', () => {
+        expect(presentWindow('---\nmarp: true\n---\n# A', 'app')).toBe('app');
+        expect(presentWindow('# no front matter', 'tab')).toBe('tab');
+        expect(presentWindow('---\nwindow: bogus\n---\n', 'tab')).toBe('tab');
     });
 });
