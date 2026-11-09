@@ -12,7 +12,9 @@ commit it, mark a conflict resolved, or push/pull the branch). The rest of the
 magit-status) and the standard Emacs bindings for diff, log, revert, and blame.
 
 The commands work on the file in the active editor. From a right-click menu
-they work on the file you clicked.
+they work on the file you clicked. In dired, and in the Explorer with several
+files selected, they work on all of them at once (see
+[[*Several Files at Once][Several Files at Once]]).
 
 ** 👀 C-x v v: Next Action
 
@@ -64,7 +66,80 @@ If the commit fails (for example, a pre-commit hook rejects it) the error is
 shown and the buffer stays open so you can try again. An empty message
 commits nothing.
 
-** Keybindings
+** ⚠️ Several Files at Once
+
+Like Emacs VC, the ~C-x v~ commands accept a /fileset/. The files come from,
+in order:
+
+1. Several files (or a folder) selected in the Explorer, then right-click →
+   Version Control
+2. The marked files in dired (~C-x d~), or the file at point when nothing is
+   marked; in dired, ~.~ stands for the whole directory
+3. The marked files in the changed-files list (~C-x v d~, below)
+4. Otherwise, the file in the active editor
+
+A single file goes through the one-file commands described above. A set of
+files, or a directory, is handled like this:
+
+| Command       | On a fileset                                                                      |
+|---------------+-----------------------------------------------------------------------------------|
+| ~C-x v v~     | Next action for the whole set; the changed files must all be in one state         |
+| ~C-x v =~     | One multi-file diff editor: HEAD against the working files                        |
+| ~C-x v l~     | Commits touching any of the files; the picked one opens as a multi-file diff      |
+| ~C-x v u~     | Discard every change in the set, after one confirmation listing the files         |
+| ~C-x v i~     | A checklist of =.gitignore= patterns, one per file (a folder gets a trailing =/=) |
+| Stage/Unstage | Stage the set, or unstage it when everything in it is already staged              |
+
+What ~C-x v v~ does on a fileset (unchanged files in the set are left out):
+
+| Changed files are          | What C-x v v does                                                          |
+|----------------------------+----------------------------------------------------------------------------|
+| All untracked              | Registers them all (=git add=)                                             |
+| All edited (or staged)     | One =*vc-log*= buffer that commits exactly those files (=git commit -- …=) |
+| All conflicted, resolved   | Marks them resolved                                                        |
+| Conflicted, markers remain | Names the files that still have markers; offers the first conflict         |
+| In different states        | Refuses, naming the files in each state                                    |
+| None (all up to date)      | Commits anything already staged, else offers push or pull as for one file  |
+
+A fileset commit leaves other staged files staged. A staged rename is
+committed as one change (the new and old paths together). The files must all
+be in one repository.
+
+Hunk-by-hunk staging is not duplicated here: use the Source Control view
+(~C-x v t~ without edamagit) or edamagit.
+
+** ⚠️ C-x v d: Changed Files (vc-dir)
+
+~C-x v d~ (=scimax.vc.dir=) opens a dired buffer that lists every changed file
+in the repository (of the active file, the dired directory, or the workspace
+folder), with its git status, like Emacs =vc-dir=. The status bar shows the
+branch, its upstream, and how many commits there are to push or pull. Deleted
+files are listed struck through. Untracked directories are listed as one
+entry; ignored files are not listed.
+
+All the dired marking keys work (~m~, ~u~, ~U~, ~t~, ~% m~, ~* e~, ~* ?~,
+~* c~, ~M~), and so do the ~C-x v~ commands. Single keys act on the marked
+files, or the file at point:
+
+| Key   | Action                                                 |
+|-------+--------------------------------------------------------|
+| ~v~   | Next action (same as ~C-x v v~)                        |
+| ~=~   | Diff                                                   |
+| ~l~   | Log                                                    |
+| ~s~   | Stage, or unstage when already staged                  |
+| ~G~   | Ignore                                                 |
+| ~P~   | Push                                                   |
+| ~+~   | Pull                                                   |
+| ~M~   | Mark every file in the same state as the file at point |
+| ~RET~ | Open the file                                          |
+| ~g~   | Refresh                                                |
+| ~^~   | Leave vc-dir: dired at the repository root             |
+| ~q~   | Close                                                  |
+
+A typical round: ~C-x v d~, ~* e~ to mark the edited files, ~=~ to look over
+the changes, ~u~ on any you want to leave out, then ~v~ to commit the rest.
+
+** 👀 Keybindings
 
 | Keybinding | Command                | Emacs equivalent       | Description                                       |
 |------------+------------------------+------------------------+---------------------------------------------------|
@@ -72,7 +147,7 @@ commits nothing.
 | ~C-x v p~  | =scimax.vc.push=       | =vc-git-push= (scimax) | Push the current branch                           |
 | ~C-x v P~  | =scimax.vc.pull=       | =vc-git-pull= (scimax) | Pull the current branch                           |
 | ~C-x v t~  | =scimax.vc.status=     | =magit-status=         | edamagit status if installed, else Source Control |
-| ~C-x v d~  | =scimax.vc.dir=        | =vc-dir=               | Open the Source Control view                      |
+| ~C-x v d~  | =scimax.vc.dir=        | =vc-dir=               | List the repository's changed files in dired      |
 | ~C-x v =~  | =scimax.vc.diff=       | =vc-diff=              | Diff the file against HEAD                        |
 | ~C-x v l~  | =scimax.vc.log=        | =vc-print-log=         | Pick a commit from the file's history and diff it |
 | ~C-x v u~  | =scimax.vc.revert=     | =vc-revert=            | Discard the file's changes (asks first)           |
@@ -170,11 +245,13 @@ conflict blocks offers *Go to First Conflict*.
 same keys and stays open, so you can press ~n~, ~m~, ~t~, … in a row.
 ~Escape~ goes back to the Version Control menu, and again closes it.
 
-** Right-Click Menus
+** 👀 Right-Click Menus
 
-A *Version Control* submenu appears when you right-click a file tab, a file in
-the Explorer, or inside an editor. It has Next Action, Diff, File History,
-Blame, Ignore, Revert, Push, Pull, and Status, all acting on the file you clicked.
+A *Version Control* submenu appears when you right-click a file tab, a file or
+folder in the Explorer, or inside an editor. It has Next Action, Diff, File
+History, Blame, Ignore, Stage / Unstage, Revert, Push, Pull, Status, and VC
+Directory, acting on the file you clicked, or on every selected file when
+several are selected in the Explorer.
 
 ** 👀 Version Control Menu (scimax.vc)
 
@@ -186,7 +263,7 @@ Version Control
 
 File:
   [n] Next Action  - Register, commit, resolve, or sync this file
-  [s] Stage        - Stage the current file
+  [s] Stage        - Stage the file (or the dired marks); unstage if already staged
   [d] Diff         - Diff the file against HEAD
   [l] Log          - History of the current file
   [r] Revert       - Discard changes to the file
@@ -202,9 +279,10 @@ Repository:
   [b] Branch       - Create a branch
   [k] Checkout     - Switch branches
   [v] Status       - Repository status (edamagit or Source Control)
+  [D] Changed files - The repository's changed files in dired (vc-dir)
 #+end_example
 
-** How It Works
+** 👀 How It Works
 
 - State detection, single-file commits, revert, and file history run the git
   CLI directly with argument arrays (no shell).
@@ -212,6 +290,8 @@ Repository:
   in VS Code's diff editor. An added or deleted file is shown as a patch
   instead. When there is nothing to diff it says so: "No changes between HEAD
   and notes.org", or that the file is untracked or ignored.
+- A fileset diff or log opens VS Code's multi-file diff editor
+  (=vscode.changes=); without the Git extension it falls back to one patch.
 - Push, pull, sync, merge editor, and blame are handed to VS Code's
   built-in Git extension, which handles credentials, progress, and the
   Source Control view.
@@ -219,8 +299,8 @@ Repository:
   folder (when =git.openRepositoryInParentFolders= is at its default, it asks
   first), and its commands then report "There are no available repositories".
   Before handing off, scimax finds the file's repository and opens it in the
-  Git extension, so ~C-x v p~, ~C-x v t~ and ~C-x v d~ (the Source Control
-  view and edamagit only show repositories it has opened), the menu's Stage,
+  Git extension, so ~C-x v p~ and ~C-x v t~ (the Source Control view and
+  edamagit only show repositories it has opened), the menu's Stage,
   Commit, Fetch, Branch, and Checkout, and the others work from any folder
   inside a repository.
 - For a magit-like status buffer, install the edamagit extension

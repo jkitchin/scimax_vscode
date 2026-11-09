@@ -154,7 +154,7 @@ Then restart VS Code.
 | C-x v p | =scimax.vc.push=       | Push the current branch                             |
 | C-x v P | =scimax.vc.pull=       | Pull the current branch                             |
 | C-x v t | =scimax.vc.status=     | Status (edamagit if installed, else Source Control) |
-| C-x v d | =scimax.vc.dir=        | Source Control view                                 |
+| C-x v d | =scimax.vc.dir=        | Changed files in dired (vc-dir)                     |
 | C-x v = | =scimax.vc.diff=       | Diff file against HEAD                              |
 | C-x v l | =scimax.vc.log=        | File history                                        |
 | C-x v u | =scimax.vc.revert=     | Discard changes to the file                         |
@@ -163,6 +163,17 @@ Then restart VS Code.
 | C-x v m | =scimax.hydra.vc=      | Version Control menu                                |
 | C-c C-c | =scimax.vc.logFinish=  | In a *vc-log* buffer: commit                        |
 | C-c C-k | =scimax.vc.logCancel=  | In a *vc-log* buffer: cancel                        |
+
+In dired the ~C-x v~ commands act on the marked files (in the Explorer, on the
+selected files). Dired also marks by git state, and the changed-files list
+(~C-x v d~) has single keys:
+
+| Key             | Where         | Action                                            |
+|-----------------+---------------+---------------------------------------------------|
+| * e / * ? / * c | dired, vc-dir | Mark edited / untracked / conflicted files        |
+| M               | dired, vc-dir | Mark files in the same git state as this one      |
+| v = l s G P +   | vc-dir        | Next action, diff, log, stage, ignore, push, pull |
+| ^               | vc-dir        | Back to dired at the repository root              |
 
 Merge conflicts (smerge mode): single keys at the start of a conflict marker
 line, or the same keys after ~C-c ^~ anywhere in a file with conflicts.

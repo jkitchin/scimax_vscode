@@ -29,18 +29,22 @@ Once in the dired panel, use these keys to navigate:
 | ~<~                  | Go to first entry            |
 | ~>~                  | Go to last entry             |
 
-** Marking Files
+** 👀 Marking Files
 
 Mark files for batch operations:
 
-| Key   | Action                            |
-|-------+-----------------------------------|
-| ~m~   | Mark current file and move down   |
-| ~u~   | Unmark current file and move down |
-| ~U~   | Unmark all files                  |
-| ~t~   | Toggle all marks                  |
-| ~d~   | Flag file for deletion            |
-| ~% m~ | Mark files matching regex pattern |
+| Key   | Action                              |
+|-------+-------------------------------------|
+| ~m~   | Mark current file and move down     |
+| ~u~   | Unmark current file and move down   |
+| ~U~   | Unmark all files                    |
+| ~t~   | Toggle all marks                    |
+| ~d~   | Flag file for deletion              |
+| ~% m~ | Mark files matching regex pattern   |
+| ~* e~ | Mark edited files (git)             |
+| ~* ?~ | Mark untracked files (git)          |
+| ~* c~ | Mark files in conflict (git)        |
+| ~M~   | Mark files in this file's git state |
 
 Marked files appear with ~*~ indicator. Flagged files (for deletion) appear with ~D~ indicator.
 
@@ -56,24 +60,57 @@ Operate on marked files (or current file if none marked):
 | ~+~ | Create new directory                                    |
 | ~F~ | Open the current directory in Finder/Explorer           |
 
-** Actions Menu (M-o or right-click)
+** ⚠️ Git Status and Version Control
+
+Inside a git repository, dired shows a git status column: =edited=,
+=edited, staged=, =edited, part staged=, =added, staged=, =removed=,
+=renamed, staged=, =untracked=, =ignored= or =conflict=. Up-to-date files show
+nothing. A directory shows the strongest state of the files below it
+(conflict, then edited, then untracked), so you can see where the changes are.
+Turn the column off with =scimax.dired.showGitStatus=.
+
+The ~C-x v~ commands act on the marked files, or on the file at point when
+nothing is marked:
+
+| Key       | Action                                                                     |
+|-----------+----------------------------------------------------------------------------|
+| ~C-x v v~ | Next action on the whole set (register, commit, resolve), see below        |
+| ~C-x v =~ | One multi-file diff of all their changes against HEAD                      |
+| ~C-x v l~ | Commits touching any of them; the picked commit opens as a multi-file diff |
+| ~C-x v u~ | Discard all their changes, after one confirmation                          |
+| ~C-x v i~ | Add a =.gitignore= pattern for each (directories get a trailing =/=)       |
+| ~C-x v g~ | Blame the first file                                                       |
+
+=C-x v v= on several files works like Emacs =vc-next-action= on a fileset:
+every changed file must be in the same state. Untracked files are registered,
+edited files are committed in one commit (=git commit -- files=, so other
+staged files stay staged), conflicted files are marked resolved. With files
+in different states, it names the files in each state; mark one group with
+~* e~, ~* ?~ or ~* c~ and try again. Up-to-date files in the set are left out.
+
+The listing refreshes after each command and keeps your marks. ~M-o~ also
+offers these commands, plus Stage / Unstage. To see every changed file in the
+repository in one list, use ~C-x v d~ (see [[file:47-version-control.org][Version Control]]).
+
+** 👀 Actions Menu (M-o or right-click)
 
 Press ~M-o~ (Option+O on Mac), or right-click a row, to open a fuzzy picker of
 actions for that file. On ~.~ or ~..~ the menu offers only the directory action.
 
-| Action                                 | Description                               |
-|----------------------------------------+-------------------------------------------|
-| Enter Directory                        | Enter the selected directory              |
-| Open in Editor                         | Open file in VS Code editor               |
-| Open in Finder/Explorer                | Reveal in system file manager             |
-| Copy Path                              | Copy full path to clipboard               |
-| Copy File                              | Copy file to destination                  |
-| Rename/Move                            | Rename or move file                       |
-| Delete                                 | Delete file (with confirmation)           |
-| Mark                                   | Mark file for batch operations            |
-| Unmark                                 | Remove mark from file                     |
-| Flag for Deletion                      | Flag file for deletion                    |
-| Open This Directory in Finder/Explorer | Open the current directory in the OS      |
+| Action                                 | Description                                 |
+|----------------------------------------+---------------------------------------------|
+| Enter Directory                        | Enter the selected directory                |
+| Open in Editor                         | Open file in VS Code editor                 |
+| Open in Finder/Explorer                | Reveal in system file manager               |
+| Copy Path                              | Copy full path to clipboard                 |
+| Copy File                              | Copy file to destination                    |
+| Rename/Move                            | Rename or move file                         |
+| Delete                                 | Delete file (with confirmation)             |
+| Mark                                   | Mark file for batch operations              |
+| Unmark                                 | Remove mark from file                       |
+| Flag for Deletion                      | Flag file for deletion                      |
+| Open This Directory in Finder/Explorer | Open the current directory in the OS        |
+| VC: Next Action, Diff, Log, ...        | Git commands on the marks (in a repository) |
 
 ** WDired Mode (Writable Dired)
 
@@ -99,7 +136,7 @@ In wdired mode:
 | ~.~ | Toggle showing hidden files (dotfiles)         |
 | ~/~ | Set filter pattern (regex)                     |
 
-** Display Format
+** 👀 Display Format
 
 Each line shows:
 #+begin_example
@@ -111,12 +148,14 @@ lrwxrwxrwx    12  2024-01-13 08:00  link -> target
 - First column: file permissions (d=directory, l=symlink, -=file)
 - Second column: file size
 - Third column: modification date/time
-- Fourth column: filename (directories end with /)
+- Fourth column: git status (only inside a git repository)
+- Last column: filename (directories end with /)
 
-** Configuration
+** 👀 Configuration
 
 | Setting                      | Default  | Description                                       |
 |------------------------------+----------+---------------------------------------------------|
+| ~scimax.dired.showGitStatus~ | ~true~   | Show the git status column in a repository        |
 | ~scimax.dired.showHidden~    | ~false~  | Show hidden files by default                      |
 | ~scimax.dired.confirmDelete~ | ~true~   | Show confirmation before deleting                 |
 | ~scimax.dired.defaultSort~   | ~"name"~ | Default sort field (name, size, mtime, extension) |
@@ -135,3 +174,4 @@ Dired includes security protections:
 - [[file:21-navigation.org][Navigation]] - General navigation features
 - [[file:17-projectile.org][Projectile]] - Project management
 - [[file:24-keybindings.org][Keybindings]] - All keyboard shortcuts
+- [[file:47-version-control.org][Version Control]] - C-x v commands, vc-dir (C-x v d)

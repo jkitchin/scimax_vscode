@@ -2310,6 +2310,17 @@ the file (~#+MARP_THEME:~ and so on) override them.
 
 See [[file:44-marp.org::*Writing Slides in Org][Writing Slides in Org]].
 
+* ⚠️ Dired Settings
+
+| Setting                    | Type    | Default | Description                                                              |
+|----------------------------+---------+---------+--------------------------------------------------------------------------|
+| scimax.dired.showGitStatus | boolean | true    | Git status column in a repository, and * e, * ?, * c, M marking by state |
+| scimax.dired.showHidden    | boolean | false   | Show dotfiles                                                            |
+| scimax.dired.confirmDelete | boolean | true    | Confirm before deleting                                                  |
+| scimax.dired.defaultSort   | string  | "name"  | name, size, mtime or extension                                           |
+
+See [[file:37-dired.org::*Git Status and Version Control][Dired: Git Status and Version Control]].
+
 * Common Configurations
 
 This section provides complete `settings.json' examples for different use cases.
@@ -2610,6 +2621,7 @@ curl http://localhost:11434/api/version
 - [[file:07-source-blocks.org][Source Blocks Documentation]]
 - [[file:10-export.org][Export Documentation]]
 - [[file:24-keybindings.org][Keybindings Reference]]
+- [[file:37-dired.org][Dired]]
 
 * Navigation
 

@@ -371,7 +371,7 @@ This section provides a comprehensive index of all documentation topics with lin
 |----------------------------------------------+-------------------------------------|
 | [[file:26-configuration.org][Configuration]] | All settings, customization options |
 
-* Topic Index
+* 👀 Topic Index
 
 Quick reference to find specific features across documentation.
 
@@ -499,6 +499,8 @@ Quick reference to find specific features across documentation.
 | Agenda item hover        | [[file:13-agenda.org][Agenda]]                       | [[file:03-todo-items.org][TODO Items]] - entry preview, open, cycle TODO, ignore file                                   |
 | Agenda view              | [[file:13-agenda.org::*Agenda View][Agenda View]]                  | [[file:03.6-project-management.org][Project Management]] - filter menus, custom agendas, right-click task actions                 |
 | Version control (git)    | [[file:47-version-control.org][Version Control]]              | [[file:24-keybindings.org][Keybindings]] - C-x v v next action, C-x v p push                                             |
+| Several files in git     | [[file:47-version-control.org::*Several Files at Once][Version Control: filesets]]    | [[file:37-dired.org::*Git Status and Version Control][Dired]] - mark files, then C-x v v / = / l / u on all of them                                 |
+| Changed files (vc-dir)   | [[file:47-version-control.org::*C-x v d: Changed Files (vc-dir)][Version Control: vc-dir]]      | [[file:37-dired.org][Dired]] - C-x v d lists every changed file; v commits, = diffs, s stages                      |
 | Commit message buffer    | [[file:47-version-control.org][Version Control]]              | [[file:22-hydra-menus.org][Hydra Menus]] - *vc-log* buffer, C-c C-c to commit                                            |
 | Crucible knowledge base  | [[file:48-crucible.org][Crucible]]                     | [[file:19-references.org][References]] - search, concepts, back-links, derivation history                               |
 | Directory links          | [[file:05-links.org][Links]]                        | [[file:37-dired.org][Dired]] - a link to a folder opens it in dired                                                |

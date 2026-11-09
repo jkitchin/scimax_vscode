@@ -60,6 +60,34 @@ export class DiredPanel {
         return current?.panel.active ? current.manager.getState().currentDirectory : undefined;
     }
 
+    /**
+     * The paths version control acts on when dired is the active tab: the
+     * marked entries, or the entry at point. '..' is never included; '.'
+     * stands for the whole directory.
+     */
+    public static vcFileset(): string[] | undefined {
+        const current = DiredPanel.currentPanel;
+        if (!current?.panel.active) return undefined;
+        return current.manager.getFilesToOperateOn()
+            .filter(entry => entry.name !== '..')
+            .map(entry => entry.path);
+    }
+
+    /** Reload the listing after a version-control change, keeping the marks */
+    public static refreshVc(): void {
+        const current = DiredPanel.currentPanel;
+        if (!current) return;
+        current.manager.loadDirectory().catch(error => {
+            current.sendMessage({ command: 'error', message: error.message });
+        });
+    }
+
+    /** C-x v d: show the changed files of the repository containing `dir` */
+    public static async showVcDir(extensionUri: vscode.Uri, dir: string): Promise<void> {
+        const panel = DiredPanel.createOrShow(extensionUri);
+        await panel.manager.loadVcDir(dir);
+    }
+
     public static createOrShow(extensionUri: vscode.Uri, directory?: string): DiredPanel {
         const column = vscode.ViewColumn.Active;
 
@@ -343,6 +371,18 @@ export class DiredPanel {
                     await this.showActionsMenu();
                     break;
 
+                case 'vc':
+                    await this.runVc(message.action);
+                    break;
+
+                case 'markVc': {
+                    const marked = this.manager.markByVcState(message.which);
+                    this.sendMessage(marked < 0
+                        ? { command: 'info', message: 'This entry has no changes' }
+                        : { command: 'info', message: `Marked ${marked} file${marked === 1 ? '' : 's'}` });
+                    break;
+                }
+
                 case 'quit':
                     this.dispose();
                     break;
@@ -499,6 +539,21 @@ export class DiredPanel {
     /**
      * Show the actions menu (M-o)
      */
+    /**
+     * Run a scimax.vc command on the marked entries (or the entry at point),
+     * passed the way the Explorer passes a multi-selection: (uri, uris).
+     */
+    private async runVc(action: string): Promise<void> {
+        const paths = this.manager.getFilesToOperateOn()
+            .filter(entry => entry.name !== '..')
+            .map(entry => entry.path);
+        const uris = paths.map(p => vscode.Uri.file(p));
+        if (uris.length === 0) {
+            uris.push(vscode.Uri.file(this.manager.getState().vcDir ?? this.manager.getState().currentDirectory));
+        }
+        await vscode.commands.executeCommand(`scimax.vc.${action}`, uris[0], uris);
+    }
+
     private async showActionsMenu(): Promise<void> {
         const state = this.manager.getState();
         const entry = state.entries[state.selectedIndex];
@@ -530,6 +585,16 @@ export class DiredPanel {
             { label: '$(warning) Flag for Deletion', action: 'flag' },
             dirAction,
         ];
+        if (state.vcColumn) {
+            actions.push(
+                { label: '$(git-commit) VC: Next Action (C-x v v)', action: 'vc:nextAction' },
+                { label: '$(diff) VC: Diff (C-x v =)', action: 'vc:diff' },
+                { label: '$(history) VC: Log (C-x v l)', action: 'vc:log' },
+                { label: '$(add) VC: Stage / Unstage', action: 'vc:stage' },
+                { label: '$(discard) VC: Revert (C-x v u)', action: 'vc:revert' },
+                { label: '$(eye-closed) VC: Ignore (C-x v i)', action: 'vc:ignore' },
+            );
+        }
 
         if (entry.isDirectory) {
             actions.unshift({ label: '$(folder) Enter Directory', action: 'enter' });
@@ -540,6 +605,11 @@ export class DiredPanel {
         });
 
         if (!selected) return;
+
+        if (selected.action.startsWith('vc:')) {
+            await this.runVc(selected.action.slice(3));
+            return;
+        }
 
         switch (selected.action) {
             case 'enter':
@@ -592,7 +662,9 @@ export class DiredPanel {
      * Update webview with new state
      */
     private updateWebview(state: DiredState): void {
-        this.panel.title = `Dired: ${path.basename(state.currentDirectory)}`;
+        this.panel.title = state.vcDir
+            ? `VC: ${path.basename(state.vcDir)}`
+            : `Dired: ${path.basename(state.currentDirectory)}`;
         this.sendMessage({
             command: 'update',
             state: serializeState(state)
@@ -755,6 +827,18 @@ export class DiredPanel {
             color: var(--vscode-descriptionForeground, #666);
             width: 100px;
         }
+
+        .vc-col {
+            width: 12em;
+            color: var(--vscode-descriptionForeground, #666);
+        }
+        .vc-col.edited { color: var(--vscode-gitDecoration-modifiedResourceForeground, #e2c08d); }
+        .vc-col.untracked { color: var(--vscode-gitDecoration-untrackedResourceForeground, #73c991); }
+        .vc-col.conflict { color: var(--vscode-gitDecoration-conflictingResourceForeground, #e4676b); font-weight: bold; }
+        .vc-col.ignored { color: var(--vscode-gitDecoration-ignoredResourceForeground, #8c8c8c); }
+        .vc-col.removed { color: var(--vscode-gitDecoration-deletedResourceForeground, #c74e39); }
+        .file-row.selected .vc-col { color: var(--selected-fg); }
+        .file-name.missing { text-decoration: line-through; }
 
         .file-name {
             overflow: hidden;
@@ -924,20 +1008,32 @@ export class DiredPanel {
                 // Permissions column
                 const permsTd = document.createElement('td');
                 permsTd.className = 'perms-col';
-                permsTd.textContent = formatPermissions(entry.mode, entry.isDirectory, entry.isSymlink);
+                permsTd.textContent = entry.missing ? '' : formatPermissions(entry.mode, entry.isDirectory, entry.isSymlink);
                 tr.appendChild(permsTd);
 
                 // Size column
                 const sizeTd = document.createElement('td');
                 sizeTd.className = 'size-col';
-                sizeTd.textContent = entry.isDirectory ? '<DIR>' : formatSize(entry.size);
+                sizeTd.textContent = entry.missing ? '' : entry.isDirectory ? '<DIR>' : formatSize(entry.size);
                 tr.appendChild(sizeTd);
 
                 // Date column
                 const dateTd = document.createElement('td');
                 dateTd.className = 'date-col';
-                dateTd.textContent = formatDate(new Date(entry.mtime));
+                dateTd.textContent = entry.missing ? '' : formatDate(new Date(entry.mtime));
                 tr.appendChild(dateTd);
+
+                // Git status column
+                if (state.vcColumn) {
+                    const vcTd = document.createElement('td');
+                    vcTd.className = 'vc-col';
+                    if (entry.vc) {
+                        vcTd.textContent = entry.vc.label;
+                        vcTd.classList.add(entry.vc.label.startsWith('removed') ? 'removed' : entry.vc.state);
+                        if (entry.vc.code) vcTd.title = 'git status ' + entry.vc.code.replace(/ /g, '·');
+                    }
+                    tr.appendChild(vcTd);
+                }
 
                 // Name column
                 const nameTd = document.createElement('td');
@@ -959,7 +1055,9 @@ export class DiredPanel {
                     });
                     nameTd.appendChild(input);
                 } else {
-                    if (entry.isDirectory) {
+                    if (entry.missing) {
+                        nameTd.classList.add('missing');
+                    } else if (entry.isDirectory) {
                         nameTd.classList.add('directory');
                     } else if (entry.isSymlink) {
                         nameTd.classList.add('symlink');
@@ -1000,13 +1098,16 @@ export class DiredPanel {
             const markedCount = state.entries.filter(e => e.mark === 'marked').length;
             const flaggedCount = state.entries.filter(e => e.mark === 'flagged').length;
 
-            let statusLeft = state.entries.length + ' files';
+            let statusLeft = state.vcDir
+                ? state.entries.length + ' changed file' + (state.entries.length === 1 ? '' : 's') + ' - ' + state.vcInfo
+                : state.entries.length + ' files';
             if (markedCount > 0) statusLeft += ', ' + markedCount + ' marked';
             if (flaggedCount > 0) statusLeft += ', ' + flaggedCount + ' flagged';
             if (state.filterPattern) statusLeft += ' [filter: ' + state.filterPattern + ']';
 
             let statusRight = 'Sort: ' + state.sort.field + ' ' + (state.sort.direction === 'asc' ? '↑' : '↓');
             if (state.showHidden) statusRight += ' | Hidden: ON';
+            if (state.vcDir) statusRight = 'v next action  = diff  l log  s stage  G ignore  M mark state  ^ dired';
             if (state.wdiredMode) statusRight = 'WDIRED MODE - C-c C-c to commit, C-c C-k to cancel';
 
             document.getElementById('status-left').textContent = statusLeft;
@@ -1131,6 +1232,7 @@ export class DiredPanel {
         }
 
         // Keyboard handling
+        let prefix = '';
         document.addEventListener('keydown', (e) => {
             // In wdired mode, most keys should work normally for editing
             if (state?.wdiredMode) {
@@ -1154,8 +1256,60 @@ export class DiredPanel {
                 return;
             }
 
+            // Modifier keys alone never complete or cancel a prefix
+            if (['Shift', 'Control', 'Alt', 'Meta'].includes(e.key)) return;
+
+            // Prefix keys: C-x, C-x v (handled by VS Code keybindings), * and %
+            if (prefix) {
+                const p = prefix;
+                prefix = '';
+                // C-x chords are left to VS Code too (C-x v v etc. are keybindings)
+                if (!p.startsWith('C-x')) e.preventDefault();
+                if (p === 'C-x') {
+                    if (e.ctrlKey && e.key === 'q') vscode.postMessage({ command: 'wdiredEnter' });
+                    else if (!e.ctrlKey && e.key === 'v') prefix = 'C-x v';
+                } else if (p === '%') {
+                    // Don't use prompt() - it's blocked in webviews
+                    if (e.key === 'm') vscode.postMessage({ command: 'promptMarkRegex' });
+                } else if (p === '*') {
+                    const which = { e: 'edited', '?': 'untracked', c: 'conflict' }[e.key];
+                    if (which) vscode.postMessage({ command: 'markVc', which });
+                }
+                // After C-x v the key belongs to the scimax.vc keybinding
+                return;
+            }
+            if (e.ctrlKey && e.key === 'x') { prefix = 'C-x'; return; }
+
+            // M-o (Alt+O) for actions menu
+            if (e.altKey && (e.key === 'o' || e.code === 'KeyO')) {
+                e.preventDefault();
+                vscode.postMessage({ command: 'showActions' });
+                return;
+            }
+            if (e.ctrlKey || e.altKey || e.metaKey) return;
+
+            // vc-dir keys: act on the marked files (or the file at point)
+            if (state?.vcDir) {
+                const vcKeys = { v: 'nextAction', '=': 'diff', l: 'log', s: 'stage', G: 'ignore', P: 'push', '+': 'pull' };
+                if (vcKeys[e.key]) {
+                    e.preventDefault();
+                    vscode.postMessage({ command: 'vc', action: vcKeys[e.key] });
+                    return;
+                }
+            }
+
             // Normal mode keyboard shortcuts
             switch (e.key) {
+                case '*':
+                case '%':
+                    e.preventDefault();
+                    prefix = e.key;
+                    break;
+                case 'M':
+                    // Mark every file in the same git state as this one
+                    e.preventDefault();
+                    vscode.postMessage({ command: 'markVc', which: 'current' });
+                    break;
                 case 'n':
                 case 'ArrowDown':
                 case 'j':
@@ -1251,19 +1405,6 @@ export class DiredPanel {
                     e.preventDefault();
                     promptFilter();
                     break;
-                case '%':
-                    // Wait for 'm' for mark regex
-                    const handler = (e2) => {
-                        if (e2.key === 'm') {
-                            e2.preventDefault();
-                            // Don't use prompt() - it's blocked in webviews
-                            // Send message to extension which will show VS Code's input box
-                            vscode.postMessage({ command: 'promptMarkRegex' });
-                        }
-                        document.removeEventListener('keydown', handler);
-                    };
-                    document.addEventListener('keydown', handler, { once: true });
-                    break;
                 case 's':
                     // Sort by name
                     e.preventDefault();
@@ -1290,25 +1431,6 @@ export class DiredPanel {
                     e.preventDefault();
                     vscode.postMessage({ command: 'navigate', direction: 'end' });
                     break;
-            }
-
-            // M-o (Alt+O) for actions menu
-            if (e.altKey && e.key === 'o') {
-                e.preventDefault();
-                vscode.postMessage({ command: 'showActions' });
-                return;
-            }
-
-            // C-x C-q for wdired mode
-            if (e.ctrlKey && e.key === 'x') {
-                const handler = (e2) => {
-                    if (e2.ctrlKey && e2.key === 'q') {
-                        e2.preventDefault();
-                        vscode.postMessage({ command: 'wdiredEnter' });
-                    }
-                    document.removeEventListener('keydown', handler);
-                };
-                document.addEventListener('keydown', handler, { once: true });
             }
         });
     </script>

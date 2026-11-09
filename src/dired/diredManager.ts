@@ -15,8 +15,10 @@ import {
     DiredState,
     MarkType,
     SortField,
-    SortOptions
+    SortOptions,
+    DiredVcMark
 } from './diredTypes';
+import { classifyStatusCode, directoryVcStatus, getAheadBehind, repoChanges, vcStatusLabel } from '../vc/vcManager';
 
 /**
  * Validate a filename to ensure it doesn't contain path traversal attempts
@@ -133,7 +135,8 @@ export class DiredManager {
             pendingRenames: new Map(),
             sort: { field: defaultSort, direction: 'asc' },
             showHidden,
-            filterPattern: ''
+            filterPattern: '',
+            vcColumn: false
         };
     }
 
@@ -164,6 +167,10 @@ export class DiredManager {
      * Load entries from the current directory
      */
     async loadDirectory(directory?: string): Promise<void> {
+        // Reloading vc-dir lists the repository's changes again
+        if (!directory && this.state.vcDir) {
+            return this.loadVcDir(this.state.vcDir);
+        }
         const dir = directory || this.state.currentDirectory;
 
         try {
@@ -263,19 +270,22 @@ export class DiredManager {
                 }
             }
 
+            // Git status column
+            const vcStatus = await this.directoryVcStatus(normalizedDir);
+            if (vcStatus) {
+                for (const entry of diredEntries) {
+                    const status = vcStatus.get(entry.name);
+                    if (status) entry.vc = status;
+                }
+            }
+
             // Sort entries
             this.sortEntries(diredEntries);
 
-            // Convert to display entries
-            this.state.currentDirectory = normalizedDir;
-            this.state.entries = diredEntries.map((entry, index) => ({
-                ...entry,
-                mark: 'none' as MarkType,
-                index
-            }));
-
-            // Reset selection to first entry
-            this.state.selectedIndex = 0;
+            this.setEntries(normalizedDir, diredEntries, false);
+            this.state.vcColumn = !!vcStatus;
+            this.state.vcDir = undefined;
+            this.state.vcInfo = undefined;
 
             // Clear wdired mode
             this.state.wdiredMode = false;
@@ -285,6 +295,126 @@ export class DiredManager {
         } catch (error: any) {
             throw new Error(`Failed to load directory ${dir}: ${error.message}`);
         }
+    }
+
+    /** Git status of the directory's entries, unless turned off or outside a repository */
+    private async directoryVcStatus(dir: string) {
+        const config = vscode.workspace.getConfiguration('scimax.dired');
+        if (!config.get<boolean>('showGitStatus', true)) return undefined;
+        try {
+            return await directoryVcStatus(dir);
+        } catch {
+            return undefined;
+        }
+    }
+
+    /**
+     * Show new entries. Reloading the same listing keeps the marks and the
+     * selected entry, as revert-buffer does in Emacs dired.
+     */
+    private setEntries(directory: string, entries: DiredEntry[], vcDir: boolean): void {
+        const sameListing = directory === this.state.currentDirectory && vcDir === !!this.state.vcDir;
+        const marks = new Map<string, MarkType>();
+        let selectedPath: string | undefined;
+        if (sameListing) {
+            for (const entry of this.state.entries) {
+                if (entry.mark !== 'none') marks.set(entry.path, entry.mark);
+            }
+            selectedPath = this.state.entries[this.state.selectedIndex]?.path;
+        }
+        this.state.currentDirectory = directory;
+        this.state.entries = entries.map((entry, index) => ({
+            ...entry,
+            mark: marks.get(entry.path) ?? 'none',
+            index
+        }));
+        const selected = selectedPath === undefined ? -1 : this.state.entries.findIndex(e => e.path === selectedPath);
+        this.state.selectedIndex = selected >= 0 ? selected : 0;
+    }
+
+    /**
+     * vc-dir: list the changed files of the repository containing `dir`,
+     * with paths relative to its top level
+     */
+    async loadVcDir(dir: string): Promise<void> {
+        const changes = await repoChanges(dir);
+        if (!changes) {
+            throw new Error(`${dir} is not in a git repository`);
+        }
+        let filterRegex: RegExp | null = null;
+        if (this.state.filterPattern) {
+            filterRegex = escapeRegexForSafeMatching(this.state.filterPattern);
+        }
+        const entries: DiredEntry[] = [];
+        for (const record of changes.records) {
+            const rel = record.rel.replace(/\/$/, '');
+            if (filterRegex && !filterRegex.test(rel)) continue;
+            const fullPath = path.join(changes.displayRoot, ...rel.split('/'));
+            const entry: DiredEntry = {
+                name: record.origRel ? `${rel} ← ${record.origRel}` : rel,
+                path: fullPath,
+                isDirectory: record.rel.endsWith('/'),
+                size: 0,
+                mtime: new Date(0),
+                mode: 0,
+                isSymlink: false,
+                vc: { state: classifyStatusCode(record.code), label: vcStatusLabel(record.code), code: record.code }
+            };
+            try {
+                const stat = await fs.promises.lstat(fullPath);
+                entry.size = stat.size;
+                entry.mtime = stat.mtime;
+                entry.mode = stat.mode;
+                entry.isSymlink = stat.isSymbolicLink();
+            } catch {
+                entry.missing = true;
+            }
+            entries.push(entry);
+        }
+        this.sortEntries(entries);
+
+        let info = `On branch ${changes.branch}`;
+        try {
+            const { upstream, ahead, behind } = await getAheadBehind(changes.root);
+            if (upstream) {
+                info += ` (${upstream}${ahead ? `, ${ahead} to push` : ''}${behind ? `, ${behind} to pull` : ''})`;
+            }
+        } catch {
+            // No upstream information
+        }
+
+        this.setEntries(changes.displayRoot, entries, true);
+        this.state.vcDir = changes.displayRoot;
+        this.state.vcInfo = info;
+        this.state.vcColumn = true;
+        this.state.wdiredMode = false;
+        this.state.pendingRenames.clear();
+        this.notifyStateChange();
+    }
+
+    /**
+     * Mark entries by git status: those in the current entry's state (M in
+     * vc-dir), or all edited, untracked or conflicted entries. Returns how
+     * many were marked, or -1 when the current entry has no changes.
+     */
+    markByVcState(which: DiredVcMark): number {
+        let state: string | undefined = which;
+        if (which === 'current') {
+            state = this.state.entries[this.state.selectedIndex]?.vc?.state;
+            if (!state) return -1;
+        }
+        let count = 0;
+        for (const entry of this.state.entries) {
+            // A directory whose status only sums up its contents (code '') is
+            // left alone: marking it would act on everything below it
+            const summary = entry.isDirectory && !entry.vc?.code;
+            if (entry.vc?.state === state && !summary && entry.name !== '.' && entry.name !== '..') {
+                entry.mark = 'marked';
+                count++;
+            }
+        }
+        this.notifyStateChange();
+        return count;
     }
 
     /**
@@ -337,6 +467,11 @@ export class DiredManager {
      * Navigate to parent directory
      */
     async navigateToParent(): Promise<void> {
+        // ^ in vc-dir goes to the repository in dired
+        if (this.state.vcDir) {
+            await this.loadDirectory(this.state.vcDir);
+            return;
+        }
         const parent = path.dirname(this.state.currentDirectory);
         if (parent !== this.state.currentDirectory) {
             const currentDirName = path.basename(this.state.currentDirectory);
@@ -750,6 +885,8 @@ export class DiredManager {
 
     // WDired mode
     enterWdiredMode(): void {
+        // vc-dir names are paths, which wdired cannot rename
+        if (this.state.vcDir) return;
         this.state.wdiredMode = true;
         this.state.pendingRenames.clear();
         this.notifyStateChange();
@@ -889,16 +1026,7 @@ export class DiredManager {
             this.state.sort.direction = 'asc';
         }
         // Re-sort entries
-        const entries = this.state.entries.map(e => ({
-            name: e.name,
-            path: e.path,
-            isDirectory: e.isDirectory,
-            size: e.size,
-            mtime: e.mtime,
-            mode: e.mode,
-            isSymlink: e.isSymlink,
-            symlinkTarget: e.symlinkTarget
-        }));
+        const entries: DiredEntry[] = this.state.entries.map(({ mark: _mark, index: _index, ...entry }) => entry);
         this.sortEntries(entries);
         this.state.entries = entries.map((entry, index) => ({
             ...entry,

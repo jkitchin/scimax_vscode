@@ -78,7 +78,8 @@ export function runGit(args: string[], cwd: string, timeoutMs = 30000): Promise<
             if (error) {
                 const code = (error as { code?: unknown }).code;
                 const detail = (stderr || error.message).trim();
-                reject(new GitError(`git ${args[0]} failed: ${detail}`, stderr, typeof code === 'number' ? code : null));
+                const name = args.find((arg) => !arg.startsWith('-')) ?? args[0];
+                reject(new GitError(`git ${name} failed: ${detail}`, stderr, typeof code === 'number' ? code : null));
                 return;
             }
             resolve(stdout);
@@ -340,4 +341,377 @@ export function cleanCommitMessage(text: string): string {
     }
     while (collapsed.length > 0 && collapsed[collapsed.length - 1] === '') collapsed.pop();
     return collapsed.join('\n');
+}
+
+// ---------------------------------------------------------------------------
+// Filesets: several files (or directories) at once, as from dired marks, the
+// Explorer's multi-selection, or vc-dir
+// ---------------------------------------------------------------------------
+
+/** One record of `git status --porcelain=v1 -z` (paths relative to the repository root) */
+export interface PorcelainRecord {
+    code: string;
+    rel: string;
+    /** The old path of a rename or copy */
+    origRel?: string;
+}
+
+/** Parse all records of `git status --porcelain=v1 -z` output */
+export function parsePorcelain(output: string): PorcelainRecord[] {
+    const fields = output.split('\0');
+    const records: PorcelainRecord[] = [];
+    for (let i = 0; i < fields.length; i++) {
+        const field = fields[i];
+        if (field.length < 4) continue;
+        const record: PorcelainRecord = { code: field.slice(0, 2), rel: field.slice(3) };
+        // A rename or copy is followed by its source path: "R  new\0old\0"
+        if (/[RC]/.test(record.code)) record.origRel = fields[++i];
+        records.push(record);
+    }
+    return records;
+}
+
+/**
+ * The word vc-dir shows for a status code: edited, added, removed, renamed,
+ * untracked, ignored or conflict, with ", staged" when all of the change is
+ * in the index and ", part staged" when some of it is.
+ */
+export function vcStatusLabel(code: string): string {
+    const state = classifyStatusCode(code);
+    if (state !== 'edited') return state === 'up-to-date' ? '' : state;
+    const [x, y] = code;
+    const kind = x === 'A' || y === 'A' || x === 'C' ? 'added'
+        : x === 'D' || y === 'D' ? 'removed'
+            : x === 'R' ? 'renamed'
+                : 'edited';
+    const staged = x !== ' ';
+    const unstaged = y !== ' ';
+    return staged && unstaged ? `${kind}, part staged` : staged ? `${kind}, staged` : kind;
+}
+
+/** A path's place in its repository */
+export interface RepoLocation {
+    /** Repository top level as git reports it (symlinks resolved) */
+    root: string;
+    /** The same directory, spelled the way the caller's path spells it */
+    displayRoot: string;
+    /** Path relative to the root with '/' separators; '' for the root itself */
+    rel: string;
+}
+
+async function isDirectory(p: string): Promise<boolean> {
+    try {
+        return (await fs.promises.stat(p)).isDirectory();
+    } catch {
+        return false;
+    }
+}
+
+/**
+ * Where `p` sits in its repository, or undefined outside one. Works for
+ * files that no longer exist (a deletion) by starting from the nearest
+ * directory that does. The relative path comes from git's own prefix, so a
+ * path through a symlink (~/Dropbox, /tmp on macOS) still matches git's paths.
+ */
+export async function locateInRepo(p: string): Promise<RepoLocation | undefined> {
+    const target = path.resolve(p);
+    let start = await isDirectory(target) ? target : path.dirname(target);
+    while (!await isDirectory(start)) {
+        const parent = path.dirname(start);
+        if (parent === start) return undefined;
+        start = parent;
+    }
+    let output: string;
+    try {
+        output = await runGit(['rev-parse', '--show-toplevel', '--show-prefix'], start);
+    } catch {
+        return undefined;
+    }
+    const [root, prefix = ''] = output.split('\n');
+    const prefixParts = prefix.split('/').filter(Boolean);
+    const displayRoot = prefixParts.length > 0 ? path.resolve(start, ...prefixParts.map(() => '..')) : start;
+    const below = path.relative(start, target).split(path.sep).filter(Boolean);
+    const rel = [...prefixParts, ...below].join('/');
+    return { root, displayRoot, rel };
+}
+
+/** Pathspecs for repository-relative paths ('' is the whole repository) */
+function pathspecs(rels: string[]): string[] {
+    return rels.map((rel) => rel || '.');
+}
+
+/** git with pathspecs taken literally (a file named '*.txt' or ':x') */
+function runGitLiteral(args: string[], cwd: string): Promise<string> {
+    return runGit(['--literal-pathspecs', ...args], cwd);
+}
+
+export interface FilesetEntry {
+    /** Absolute path, spelled like the caller's paths */
+    path: string;
+    rel: string;
+    code: string;
+    state: VcFileState;
+    origRel?: string;
+}
+
+export interface FilesetStatus {
+    /** Set when every path is in one repository */
+    repoRoot?: string;
+    displayRoot?: string;
+    /** Every repository the paths are in */
+    repos: string[];
+    /** The changed files under the paths, plus each named file (up-to-date or ignored when unchanged) */
+    entries: FilesetEntry[];
+    /** Paths outside any repository */
+    unregistered: string[];
+}
+
+/**
+ * Status of a set of files and directories with one `git status` call. A
+ * directory stands for every file below it, as in Emacs vc on a fileset.
+ */
+export async function getFilesetStatus(paths: string[]): Promise<FilesetStatus> {
+    const located: (RepoLocation & { input: string; isDir: boolean })[] = [];
+    const unregistered: string[] = [];
+    for (const p of paths) {
+        const location = await locateInRepo(p);
+        if (location) located.push({ ...location, input: p, isDir: await isDirectory(p) });
+        else unregistered.push(p);
+    }
+    const repos = [...new Set(located.map((l) => l.root))];
+    if (repos.length !== 1) return { repos, entries: [], unregistered };
+
+    const { root, displayRoot } = located[0];
+    const rels = [...new Set(located.map((l) => l.rel))];
+    const output = await runGitLiteral(
+        ['status', '--porcelain=v1', '-z', '--untracked-files=all', '--', ...pathspecs(rels)], root);
+    const toPath = (rel: string) => path.join(displayRoot, ...rel.split('/'));
+    const records = parsePorcelain(output);
+    // git only pairs a rename up when both paths are in the pathspec, so ask
+    // the whole index which added files are renames
+    if (records.some((r) => r.code[0] === 'A')) {
+        const index = parsePorcelain(await runGit(['status', '--porcelain=v1', '-z', '--untracked-files=no'], root));
+        for (const record of records) {
+            const rename = index.find((r) => r.rel === record.rel && r.origRel);
+            if (record.code[0] === 'A' && rename) {
+                record.code = rename.code;
+                record.origRel = rename.origRel;
+            }
+        }
+    }
+    const entries: FilesetEntry[] = records.map((r) => ({
+        path: toPath(r.rel), rel: r.rel, code: r.code, state: classifyStatusCode(r.code), origRel: r.origRel,
+    }));
+
+    // Named files git did not list are clean or ignored
+    const listed = new Set(entries.map((e) => e.rel));
+    const quiet = located.filter((l) => !l.isDir && !listed.has(l.rel)).map((l) => l.rel);
+    const ignored = new Set<string>();
+    if (quiet.length > 0) {
+        try {
+            const out = await runGit(['-c', 'core.quotePath=false', 'check-ignore', '--', ...quiet], root);
+            out.split('\n').filter(Boolean).forEach((rel) => ignored.add(rel));
+        } catch {
+            // Exit status 1: none of them is ignored
+        }
+    }
+    for (const rel of new Set(quiet)) {
+        const isIgnored = ignored.has(rel);
+        entries.push({ path: toPath(rel), rel, code: isIgnored ? '!!' : '', state: isIgnored ? 'ignored' : 'up-to-date' });
+    }
+    return { repoRoot: root, displayRoot, repos, entries, unregistered };
+}
+
+/** What C-x v v does with a fileset */
+export type FilesetAction =
+    | { kind: 'register'; rels: string[] }
+    | { kind: 'resolve'; rels: string[] }
+    | { kind: 'fix-conflicts'; rels: string[] }
+    | { kind: 'commit'; rels: string[] }
+    | { kind: 'commit-merge' }
+    | { kind: 'ignored'; rels: string[] }
+    | { kind: 'sync' }
+    | { kind: 'mixed'; groups: Partial<Record<VcFileState, string[]>> };
+
+/**
+ * vc-next-action on a fileset: every changed file has to be in the same
+ * state, as in Emacs. Unchanged files in the set are left out.
+ */
+export function decideFilesetAction(
+    entries: FilesetEntry[],
+    context: { withMarkers?: Set<string>; mergeInProgress?: boolean } = {}
+): FilesetAction {
+    const active = entries.filter((e) => e.state !== 'up-to-date');
+    if (active.length === 0) return { kind: 'sync' };
+    const groups: Partial<Record<VcFileState, string[]>> = {};
+    for (const e of active) (groups[e.state] ??= []).push(e.rel);
+    const states = Object.keys(groups) as VcFileState[];
+    if (states.length > 1) return { kind: 'mixed', groups };
+    const rels = active.map((e) => e.rel);
+    switch (states[0]) {
+        case 'untracked': return { kind: 'register', rels };
+        case 'ignored': return { kind: 'ignored', rels };
+        case 'conflict': {
+            const marked = rels.filter((rel) => context.withMarkers?.has(rel));
+            return marked.length > 0 ? { kind: 'fix-conflicts', rels: marked } : { kind: 'resolve', rels };
+        }
+        case 'edited':
+            if (context.mergeInProgress) return { kind: 'commit-merge' };
+            // A rename is committed as the new path plus the removal of the old one
+            return { kind: 'commit', rels: [...new Set(active.flatMap((e) => e.origRel ? [e.rel, e.origRel] : [e.rel]))] };
+        default:
+            return { kind: 'mixed', groups };
+    }
+}
+
+/** git add the paths (new files, changes and deletions) */
+export async function stagePaths(repoRoot: string, rels: string[]): Promise<void> {
+    await runGitLiteral(['add', '--all', '--', ...pathspecs(rels)], repoRoot);
+}
+
+/** Take the paths' changes out of the index, leaving the working files alone */
+export async function unstagePaths(repoRoot: string, rels: string[]): Promise<void> {
+    try {
+        await runGitLiteral(['restore', '--staged', '--', ...pathspecs(rels)], repoRoot);
+    } catch {
+        // Unborn branch: there is no HEAD to restore from
+        await runGitLiteral(['rm', '--cached', '-r', '-q', '--', ...pathspecs(rels)], repoRoot);
+    }
+}
+
+/**
+ * Commit exactly these paths' working-tree content (`git commit -- paths`);
+ * anything else staged stays staged. Returns the short hash.
+ */
+export async function commitPaths(repoRoot: string, message: string, rels: string[]): Promise<string> {
+    await runGitLiteral(['commit', '-m', message, '--', ...pathspecs(rels)], repoRoot);
+    return (await runGit(['rev-parse', '--short', 'HEAD'], repoRoot)).trim();
+}
+
+/**
+ * Discard the changes to tracked files. A newly added file is taken out of
+ * the index and kept on disk (vc-revert unregisters it); a staged rename is
+ * undone.
+ */
+export async function revertPaths(repoRoot: string, entries: FilesetEntry[]): Promise<void> {
+    const unregister: string[] = [];
+    const restore: string[] = [];
+    for (const e of entries) {
+        if (e.code[0] === 'A') {
+            unregister.push(e.rel);
+        } else if (e.code[0] === 'R' && e.origRel) {
+            unregister.push(e.rel);
+            restore.push(e.origRel);
+        } else {
+            restore.push(e.rel);
+        }
+    }
+    if (unregister.length > 0) await runGitLiteral(['rm', '--cached', '-q', '--', ...unregister], repoRoot);
+    if (restore.length > 0) await runGitLiteral(['checkout', 'HEAD', '--', ...restore], repoRoot);
+}
+
+/** Remove paths from the index, keeping them on disk */
+export async function untrackPaths(repoRoot: string, rels: string[]): Promise<void> {
+    await runGitLiteral(['rm', '--cached', '-r', '-q', '--', ...pathspecs(rels)], repoRoot);
+}
+
+/** Commits that touch any of the paths, newest first */
+export async function pathsLog(repoRoot: string, rels: string[], maxCount = 200): Promise<LogEntry[]> {
+    const output = await runGitLiteral(
+        ['log', `--max-count=${maxCount}`, '--date=short', `--format=${LOG_FORMAT}`, '--', ...pathspecs(rels)], repoRoot);
+    return parseLog(output);
+}
+
+/** The files a commit changed among the paths, with their status letter (A, M, D, ...) */
+export async function commitChanges(repoRoot: string, hash: string, rels: string[]): Promise<{ status: string; rel: string }[]> {
+    const output = await runGitLiteral(
+        ['diff-tree', '--no-commit-id', '--name-status', '-r', '-z', '--no-renames', '--root', hash, '--', ...pathspecs(rels)],
+        repoRoot);
+    const fields = output.split('\0').filter(Boolean);
+    const changes: { status: string; rel: string }[] = [];
+    for (let i = 0; i + 1 < fields.length; i += 2) changes.push({ status: fields[i], rel: fields[i + 1] });
+    return changes;
+}
+
+/** `git diff HEAD --stat` for the paths ('' on an unborn branch) */
+export async function diffStatPaths(repoRoot: string, rels: string[]): Promise<string> {
+    try {
+        return (await runGitLiteral(['diff', 'HEAD', '--stat', '--', ...pathspecs(rels)], repoRoot)).trimEnd();
+    } catch {
+        return '';
+    }
+}
+
+/** The paths' changes against HEAD as one patch (against the index on an unborn branch) */
+export async function pathsPatch(repoRoot: string, rels: string[]): Promise<string> {
+    try {
+        return await runGitLiteral(['diff', 'HEAD', '--', ...pathspecs(rels)], repoRoot);
+    } catch {
+        return runGitLiteral(['diff', '--cached', '--', ...pathspecs(rels)], repoRoot);
+    }
+}
+
+/** Status shown for a dired entry */
+export interface VcEntryStatus {
+    state: VcFileState;
+    label: string;
+    code: string;
+}
+
+const STATE_RANK: Partial<Record<VcFileState, number>> = { conflict: 3, edited: 2, untracked: 1 };
+
+/**
+ * Git status of each entry of a directory listing, keyed by name, for the
+ * dired status column. A directory shows the most pressing state below it
+ * (conflict, then edited, then untracked); clean entries are left out.
+ * Undefined when the directory is not in a repository.
+ */
+export async function directoryVcStatus(dir: string): Promise<Map<string, VcEntryStatus> | undefined> {
+    const location = await locateInRepo(dir);
+    if (!location) return undefined;
+    const prefix = location.rel ? location.rel + '/' : '';
+    const output = await runGit(
+        ['status', '--porcelain=v1', '-z', '--untracked-files=normal', '--ignored=traditional', '--', '.'], dir);
+    const result = new Map<string, VcEntryStatus>();
+    for (const record of parsePorcelain(output)) {
+        if (!record.rel.startsWith(prefix)) continue;
+        const rest = record.rel.slice(prefix.length).replace(/\/$/, '');
+        const slash = rest.indexOf('/');
+        const state = classifyStatusCode(record.code);
+        if (slash < 0) {
+            result.set(rest, { state, label: vcStatusLabel(record.code), code: record.code });
+            continue;
+        }
+        // Something below a directory: summarize it (ignored files inside a
+        // tracked directory say nothing about the directory)
+        const name = rest.slice(0, slash);
+        const rank = STATE_RANK[state];
+        if (!rank) continue;
+        const current = result.get(name);
+        if (!current || (STATE_RANK[current.state] ?? 0) < rank) {
+            result.set(name, { state, label: state, code: '' });
+        }
+    }
+    return result;
+}
+
+/** The repository's changed files, for vc-dir */
+export interface RepoChanges {
+    root: string;
+    displayRoot: string;
+    branch: string;
+    records: PorcelainRecord[];
+}
+
+export async function repoChanges(dir: string): Promise<RepoChanges | undefined> {
+    const location = await locateInRepo(dir);
+    if (!location) return undefined;
+    const output = await runGit(['status', '--porcelain=v1', '-z', '--untracked-files=normal'], location.root);
+    let branch: string;
+    try {
+        branch = (await runGit(['symbolic-ref', '--short', '-q', 'HEAD'], location.root)).trim();
+    } catch {
+        branch = 'detached HEAD';
+    }
+    return { root: location.root, displayRoot: location.displayRoot, branch, records: parsePorcelain(output) };
 }

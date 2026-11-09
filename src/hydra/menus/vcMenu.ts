@@ -7,7 +7,7 @@ import { HydraMenuDefinition } from '../types';
 export const vcMenu: HydraMenuDefinition = {
     id: 'scimax.vc',
     title: 'Version Control',
-    hint: 'Git operations for the current file and repository',
+    hint: 'Git operations for the current file (or dired marks) and repository',
     parent: 'scimax.main',
     groups: [
         {
@@ -24,11 +24,10 @@ export const vcMenu: HydraMenuDefinition = {
                 {
                     key: 's',
                     label: 'Stage',
-                    description: 'Stage the current file',
+                    description: 'Stage the file (or the dired marks); unstage if already staged',
                     icon: 'add',
                     exit: 'exit',
-                    action: 'scimax.vc.git',
-                    args: ['git.stage'],
+                    action: 'scimax.vc.stage',
                 },
                 {
                     key: 'd',
@@ -142,6 +141,14 @@ export const vcMenu: HydraMenuDefinition = {
                     icon: 'source-control',
                     exit: 'exit',
                     action: 'scimax.vc.status',
+                },
+                {
+                    key: 'D',
+                    label: 'Changed files',
+                    description: 'The repository\'s changed files in dired (vc-dir)',
+                    icon: 'list-unordered',
+                    exit: 'exit',
+                    action: 'scimax.vc.dir',
                 },
             ],
         },

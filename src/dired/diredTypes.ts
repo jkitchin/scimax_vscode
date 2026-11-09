@@ -3,6 +3,8 @@
  * Type definitions for the dired file manager
  */
 
+import type { VcEntryStatus } from '../vc/vcManager';
+
 /**
  * Represents a file or directory entry in dired
  */
@@ -23,6 +25,10 @@ export interface DiredEntry {
     isSymlink: boolean;
     /** Target path if symlink */
     symlinkTarget?: string;
+    /** Git status, when the directory is in a repository and the entry has changes */
+    vc?: VcEntryStatus;
+    /** Listed by vc-dir but gone from disk (a deletion) */
+    missing?: boolean;
 }
 
 /**
@@ -71,7 +77,19 @@ export interface DiredState {
     showHidden: boolean;
     /** Filter pattern (empty string means no filter) */
     filterPattern: string;
+    /** vc-dir mode: the repository whose changed files are listed */
+    vcDir?: string;
+    /** Branch line shown by vc-dir */
+    vcInfo?: string;
+    /** Whether the listing has a git status column (the directory is in a repository) */
+    vcColumn: boolean;
 }
+
+/** Version-control commands the dired keys run on the marked files */
+export type DiredVcAction = 'nextAction' | 'diff' | 'log' | 'revert' | 'ignore' | 'stage' | 'push' | 'pull';
+
+/** Which entries M and * keys mark by git status */
+export type DiredVcMark = 'current' | 'edited' | 'untracked' | 'conflict';
 
 /**
  * Messages from webview to extension
@@ -108,6 +126,8 @@ export type DiredMessageFromWebview =
     | { command: 'showActions'; index?: number }
     | { command: 'ready' }
     | { command: 'findFile' }
+    | { command: 'vc'; action: DiredVcAction }
+    | { command: 'markVc'; which: DiredVcMark }
     | { command: 'quit' };
 
 /**
@@ -136,6 +156,9 @@ export interface SerializedDiredState {
     sort: SortOptions;
     showHidden: boolean;
     filterPattern: string;
+    vcDir?: string;
+    vcInfo?: string;
+    vcColumn: boolean;
 }
 
 /**
@@ -150,7 +173,10 @@ export function serializeState(state: DiredState): SerializedDiredState {
         pendingRenames: Array.from(state.pendingRenames.entries()),
         sort: state.sort,
         showHidden: state.showHidden,
-        filterPattern: state.filterPattern
+        filterPattern: state.filterPattern,
+        vcDir: state.vcDir,
+        vcInfo: state.vcInfo,
+        vcColumn: state.vcColumn
     };
 }
 

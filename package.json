@@ -4366,7 +4366,11 @@
       },
       {
         "command": "scimax.vc.dir",
-        "title": "Scimax: VC Directory (Source Control view)"
+        "title": "Scimax: VC Directory (changed files in dired)"
+      },
+      {
+        "command": "scimax.vc.stage",
+        "title": "Scimax: VC Stage / Unstage"
       },
       {
         "command": "scimax.hydra.vc",
@@ -7735,6 +7739,11 @@
           "default": [],
           "description": "Arguments passed to scimax.externalTerminal.command. ${dir} is replaced with the target directory; the directory is also used as the process working directory."
         },
+        "scimax.dired.showGitStatus": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show a git status column in dired for directories inside a git repository, and mark files by status with * e (edited), * ? (untracked), * c (conflict) and M (same state as the file at point)"
+        },
         "scimax.dired.showHidden": {
           "type": "boolean",
           "default": false,
@@ -9527,7 +9536,7 @@
         },
         {
           "submenu": "scimax.vc.contextMenu",
-          "when": "resourceScheme == file && !explorerResourceIsFolder",
+          "when": "resourceScheme == file",
           "group": "7_modification@90"
         }
       ],
@@ -10828,11 +10837,16 @@
         },
         {
           "command": "scimax.vc.annotate",
+          "when": "!explorerResourceIsFolder",
           "group": "1_file@4"
         },
         {
           "command": "scimax.vc.ignore",
           "group": "1_file@5"
+        },
+        {
+          "command": "scimax.vc.stage",
+          "group": "1_file@6"
         },
         {
           "command": "scimax.vc.revert",
@@ -10849,6 +10863,10 @@
         {
           "command": "scimax.vc.status",
           "group": "2_repo@3"
+        },
+        {
+          "command": "scimax.vc.dir",
+          "group": "2_repo@4"
         }
       ]
     }

@@ -10,15 +10,24 @@
  */
 
 import * as vscode from 'vscode';
+import * as fs from 'fs';
 import * as path from 'path';
 import { createLogger } from '../utils/logger';
 import { VcLogBuffer } from './vcLogBuffer';
 import { registerSmergeCommands } from './smergeMode';
+import { DiredPanel } from '../dired/diredPanel';
 import {
     addToGitignore,
     commit,
+    commitChanges,
+    commitPaths,
     commitStaged,
+    decideFilesetAction,
     decideNextAction,
+    diffStatPaths,
+    FilesetEntry,
+    FilesetStatus,
+    getFilesetStatus,
     diffPatch,
     diffStat,
     fileLog,
@@ -29,12 +38,20 @@ import {
     ignorePatternFor,
     initRepo,
     isMergeInProgress,
+    locateInRepo,
+    pathsLog,
+    pathsPatch,
     planDiff,
     revertFile,
+    revertPaths,
     runGit,
     stageFile,
     stagedFiles,
+    stagePaths,
+    unstagePaths,
     untrackFile,
+    untrackPaths,
+    VcFileState,
 } from './vcManager';
 
 const log = createLogger('VC');
@@ -66,7 +83,13 @@ async function ensureRepositoryOpen(uri: vscode.Uri): Promise<void> {
     if (uri.scheme !== 'file') return;
     const api = getGitApi();
     if (!api || api.getRepository(uri)) return;
-    const root = await findRepoRoot(path.dirname(uri.fsPath));
+    let dir = path.dirname(uri.fsPath);
+    try {
+        if ((await fs.promises.stat(uri.fsPath)).isDirectory()) dir = uri.fsPath;
+    } catch {
+        // A deleted file: its directory is still the place to look
+    }
+    const root = await findRepoRoot(dir);
     if (!root) return;
     log.debug('Opening repository for git extension', { root });
     if (api.openRepository) {
@@ -154,14 +177,17 @@ async function openCommitBuffer(
                 const hash = await commit(repoRoot, message, file);
                 log.info('Committed', { hash, file: relative });
                 vscode.window.showInformationMessage(`Committed ${relative} (${hash})`);
+                DiredPanel.refreshVc();
             } else if (scope.kind === 'merge') {
                 const hash = await commit(repoRoot, message);
                 log.info('Committed merge', { hash });
                 vscode.window.showInformationMessage(`Committed merge ${hash}`);
+                DiredPanel.refreshVc();
             } else {
                 const hash = await commitStaged(repoRoot, message, scope.includeFile ? file : undefined);
                 log.info('Committed staged changes', { hash });
                 vscode.window.showInformationMessage(`Committed staged changes (${hash})`);
+                DiredPanel.refreshVc();
             }
         },
     });
@@ -458,6 +484,373 @@ async function status(): Promise<void> {
     }
 }
 
+// ---------------------------------------------------------------------------
+// Filesets: several files at once (dired marks, Explorer multi-select, vc-dir)
+// ---------------------------------------------------------------------------
+
+/**
+ * What a C-x v command acts on, in order: an Explorer multi-selection or the
+ * fileset dired passes, a single URI argument, the marked files (or the file
+ * at point) in the focused dired, and finally the active editor's file.
+ */
+function resolveTargets(uri?: unknown, uris?: unknown): vscode.Uri[] | undefined {
+    let targets: vscode.Uri[] = [];
+    if (Array.isArray(uris) && uris.length > 0 && uris.every((u) => u instanceof vscode.Uri)) {
+        targets = uris as vscode.Uri[];
+    } else if (uri instanceof vscode.Uri) {
+        targets = [uri];
+    } else {
+        const dired = DiredPanel.vcFileset();
+        if (dired && dired.length > 0) {
+            targets = dired.map((p) => vscode.Uri.file(p));
+        } else if (vscode.window.activeTextEditor) {
+            targets = [vscode.window.activeTextEditor.document.uri];
+        }
+    }
+    targets = targets.filter((t) => t.scheme === 'file');
+    if (targets.length === 0) {
+        vscode.window.showWarningMessage('Version control needs a file saved on disk');
+        return undefined;
+    }
+    return targets;
+}
+
+/** The one file in `targets`, or undefined for several files or a directory */
+async function singleFile(targets: vscode.Uri[]): Promise<vscode.Uri | undefined> {
+    if (targets.length !== 1) return undefined;
+    try {
+        if ((await fs.promises.stat(targets[0].fsPath)).isDirectory()) return undefined;
+    } catch {
+        // A deleted file is still a file
+    }
+    return targets[0];
+}
+
+const plural = (n: number, word: string) => `${n} ${word}${n === 1 ? '' : 's'}`;
+
+/** Name up to `max` paths, then say how many more */
+function nameList(rels: string[], max = 6): string {
+    const names = rels.map((r) => r || '.');
+    return names.length <= max ? names.join(', ') : `${names.slice(0, max).join(', ')} and ${names.length - max} more`;
+}
+
+/** Fileset status in a single repository, or undefined after telling the user why not */
+async function filesetIn(targets: vscode.Uri[]): Promise<(FilesetStatus & { repoRoot: string; displayRoot: string }) | undefined> {
+    for (const t of targets) await saveIfDirty(t);
+    const status = await getFilesetStatus(targets.map((t) => t.fsPath));
+    if (status.repos.length > 1) {
+        vscode.window.showWarningMessage(
+            `The files are in ${status.repos.length} repositories (${status.repos.join(', ')}). Act on one repository at a time.`);
+        return undefined;
+    }
+    if (!status.repoRoot || !status.displayRoot) {
+        vscode.window.showWarningMessage(`Not in a git repository: ${nameList(status.unregistered.map((p) => path.basename(p)))}`);
+        return undefined;
+    }
+    if (status.unregistered.length > 0) {
+        vscode.window.showWarningMessage(
+            `Not in ${path.basename(status.displayRoot)}: ${nameList(status.unregistered.map((p) => path.basename(p)))}`);
+        return undefined;
+    }
+    return status as FilesetStatus & { repoRoot: string; displayRoot: string };
+}
+
+const STATE_NAMES: Partial<Record<VcFileState, string>> = {
+    edited: 'edited', untracked: 'untracked', conflict: 'in conflict', ignored: 'ignored',
+};
+
+/** C-x v v on several files: every changed file must be in the same state */
+async function nextActionSet(logBuffer: VcLogBuffer, targets: vscode.Uri[]): Promise<void> {
+    const status = await filesetIn(targets);
+    if (!status) return;
+    const root = status.repoRoot;
+    const withMarkers = new Set<string>();
+    for (const e of status.entries.filter((x) => x.state === 'conflict')) {
+        try {
+            if (hasConflictMarkers(await fs.promises.readFile(e.path, 'utf8'))) withMarkers.add(e.rel);
+        } catch {
+            // Deleted on one side: no markers to look for
+        }
+    }
+    const mergeInProgress = status.entries.some((e) => e.state === 'edited') && await isMergeInProgress(root);
+    const action = decideFilesetAction(status.entries, { withMarkers, mergeInProgress });
+    log.debug('Fileset next action', { root, action: action.kind, count: status.entries.length });
+
+    switch (action.kind) {
+        case 'register':
+            await stagePaths(root, action.rels);
+            vscode.window.showInformationMessage(`Registered ${plural(action.rels.length, 'file')} (git add): ${nameList(action.rels)}`);
+            break;
+        case 'resolve':
+            await stagePaths(root, action.rels);
+            vscode.window.showInformationMessage(`Marked ${plural(action.rels.length, 'file')} as resolved: ${nameList(action.rels)}`);
+            break;
+        case 'fix-conflicts': {
+            const choice = await vscode.window.showWarningMessage(
+                `Still have conflict markers: ${nameList(action.rels)}. Resolve them, then run C-x v v again.`,
+                'Go to First Conflict');
+            if (choice) {
+                await vscode.window.showTextDocument(vscode.Uri.file(path.join(status.displayRoot, action.rels[0])));
+                await vscode.commands.executeCommand('scimax.smerge.first');
+            }
+            break;
+        }
+        case 'commit':
+            await openFilesetCommitBuffer(logBuffer, status.displayRoot, action.rels);
+            break;
+        case 'commit-merge': {
+            const first = status.entries.find((e) => e.state === 'edited')!;
+            await openCommitBuffer(logBuffer, first.path, status.displayRoot, { kind: 'merge' });
+            break;
+        }
+        case 'ignored':
+            vscode.window.showInformationMessage(`Ignored by git: ${nameList(action.rels)}`);
+            break;
+        case 'sync': {
+            const staged = await stagedFiles(root);
+            if (staged.length > 0) {
+                await openFilesetCommitBuffer(logBuffer, status.displayRoot, staged, true);
+            } else {
+                await syncBranch(vscode.Uri.file(status.displayRoot), root);
+            }
+            break;
+        }
+        case 'mixed': {
+            const groups = Object.entries(action.groups)
+                .map(([state, rels]) => `${STATE_NAMES[state as VcFileState] ?? state}: ${nameList(rels ?? [], 4)}`);
+            vscode.window.showWarningMessage(
+                `C-x v v needs the files in one state. ${groups.join('; ')}. In dired, * e, * ? and * c mark files by state.`);
+            break;
+        }
+    }
+}
+
+/** The *vc-log* buffer for a fileset commit (`git commit -- paths`) */
+async function openFilesetCommitBuffer(logBuffer: VcLogBuffer, repoRoot: string, rels: string[], staged = false): Promise<void> {
+    const summary = [
+        staged
+            ? `Committing all staged changes (${plural(rels.length, 'file')}):`
+            : `Committing ${plural(rels.length, 'file')}:`,
+        ...rels.map((r) => `  ${r || '.'}`),
+        `Repository: ${repoRoot}`,
+    ];
+    if (!staged) {
+        const stat = await diffStatPaths(repoRoot, rels);
+        if (stat) summary.push('', ...stat.split('\n'));
+    }
+    await logBuffer.open({
+        summary,
+        onCommit: async (message) => {
+            const hash = staged ? await commit(repoRoot, message) : await commitPaths(repoRoot, message, rels);
+            log.info('Committed fileset', { hash, count: rels.length });
+            vscode.window.showInformationMessage(`Committed ${plural(rels.length, 'file')} (${hash})`);
+            DiredPanel.refreshVc();
+        },
+    });
+}
+
+/** Changed files whose diff against HEAD means something (not untracked or ignored) */
+const diffable = (entries: FilesetEntry[]) => entries.filter((e) => e.state === 'edited' || e.state === 'conflict');
+
+/** C-x v = on several files: one multi-file diff editor, HEAD against the working files */
+async function diffSet(targets: vscode.Uri[]): Promise<void> {
+    const status = await filesetIn(targets);
+    if (!status) return;
+    const changed = diffable(status.entries);
+    if (changed.length === 0) {
+        const untracked = status.entries.filter((e) => e.state === 'untracked').length;
+        vscode.window.showInformationMessage(untracked > 0
+            ? `No changes to tracked files (${plural(untracked, 'untracked file')})`
+            : 'No changes against HEAD');
+        return;
+    }
+    const root = vscode.Uri.file(status.displayRoot);
+    await ensureRepositoryOpen(root);
+    const api = getGitApi();
+    if (api?.getRepository(root)) {
+        const resources = changed.map((e) => {
+            const file = vscode.Uri.file(e.path);
+            const original = e.code[0] === 'R' && e.origRel
+                ? vscode.Uri.file(path.join(status.displayRoot, ...e.origRel.split('/'))) : file;
+            const left = e.code[0] === 'A' ? undefined : api.toGitUri(original, 'HEAD');
+            const right = fs.existsSync(e.path) ? file : undefined;
+            return [file, left, right];
+        });
+        await vscode.commands.executeCommand('vscode.changes', `Changes in ${plural(changed.length, 'file')}`, resources);
+        return;
+    }
+    const patch = await pathsPatch(status.repoRoot, changed.flatMap((e) => e.origRel ? [e.rel, e.origRel] : [e.rel]));
+    const doc = await vscode.workspace.openTextDocument({ language: 'diff', content: patch });
+    await vscode.window.showTextDocument(doc, { preview: true });
+}
+
+/** Repository-relative paths of the targets, all in one repository */
+async function locateAll(targets: vscode.Uri[]): Promise<{ root: string; displayRoot: string; rels: string[] } | undefined> {
+    const locations = await Promise.all(targets.map((t) => locateInRepo(t.fsPath)));
+    const roots = new Set(locations.map((l) => l?.root));
+    if (roots.has(undefined)) {
+        vscode.window.showWarningMessage('Not every file is in a git repository');
+        return undefined;
+    }
+    if (roots.size > 1) {
+        vscode.window.showWarningMessage('The files are in more than one repository. Act on one repository at a time.');
+        return undefined;
+    }
+    return { root: locations[0]!.root, displayRoot: locations[0]!.displayRoot, rels: locations.map((l) => l!.rel) };
+}
+
+/** C-x v l on several files: pick a commit touching any of them and show what it changed among them */
+async function logSet(targets: vscode.Uri[]): Promise<void> {
+    const where = await locateAll(targets);
+    if (!where) return;
+    const entries = await pathsLog(where.root, where.rels);
+    if (entries.length === 0) {
+        vscode.window.showInformationMessage(`No commits touch ${nameList(where.rels)}`);
+        return;
+    }
+    const picked = await vscode.window.showQuickPick(
+        entries.map((entry) => ({ label: entry.subject, description: `${entry.shortHash}  ${entry.date}  ${entry.author}`, entry })),
+        { placeHolder: `History of ${nameList(where.rels, 3)}`, matchOnDescription: true });
+    if (!picked) return;
+    const { hash, shortHash, subject } = picked.entry;
+    const changes = await commitChanges(where.root, hash, where.rels);
+
+    const root = vscode.Uri.file(where.displayRoot);
+    await ensureRepositoryOpen(root);
+    const api = getGitApi();
+    if (api?.getRepository(root) && changes.length > 0) {
+        const resources = changes.map((c) => {
+            const file = vscode.Uri.file(path.join(where.displayRoot, ...c.rel.split('/')));
+            return [
+                file,
+                c.status === 'A' ? undefined : api.toGitUri(file, `${hash}^`),
+                c.status === 'D' ? undefined : api.toGitUri(file, hash),
+            ];
+        });
+        await vscode.commands.executeCommand('vscode.changes', `${shortHash} ${subject}`, resources);
+        return;
+    }
+    const patch = await runGit(['--literal-pathspecs', 'show', hash, '--', ...where.rels.map((r) => r || '.')], where.root);
+    const doc = await vscode.workspace.openTextDocument({ language: 'diff', content: patch });
+    await vscode.window.showTextDocument(doc, { preview: true });
+}
+
+/** C-x v u on several files: one confirmation, then discard every change */
+async function revertSet(targets: vscode.Uri[]): Promise<void> {
+    const status = await filesetIn(targets);
+    if (!status) return;
+    const changed = diffable(status.entries);
+    if (changed.length === 0) {
+        vscode.window.showInformationMessage('No changes to tracked files to revert');
+        return;
+    }
+    const rels = changed.map((e) => e.rel);
+    const choice = await vscode.window.showWarningMessage(
+        `Discard all changes to ${plural(changed.length, 'file')}, including staged and unsaved changes?`,
+        { modal: true, detail: rels.slice(0, 20).join('\n') + (rels.length > 20 ? `\n… and ${rels.length - 20} more` : '') },
+        'Discard Changes');
+    if (choice !== 'Discard Changes') return;
+    await revertPaths(status.repoRoot, changed);
+    // Reload editors that still hold the old text
+    const paths = new Set(changed.map((e) => e.path));
+    for (const doc of vscode.workspace.textDocuments) {
+        if (doc.isDirty && doc.uri.scheme === 'file' && paths.has(doc.uri.fsPath)) {
+            await vscode.window.showTextDocument(doc);
+            await vscode.commands.executeCommand('workbench.action.files.revert');
+        }
+    }
+    vscode.window.showInformationMessage(`Reverted ${plural(changed.length, 'file')}`);
+}
+
+/** C-x v i on several files or a directory: add a pattern for each to .gitignore */
+async function ignoreSet(targets: vscode.Uri[]): Promise<void> {
+    const where = await locateAll(targets);
+    if (!where) return;
+    const items: (vscode.QuickPickItem & { rel: string })[] = [];
+    for (const [i, rel] of where.rels.entries()) {
+        if (!rel) continue; // never ignore the repository itself
+        let pattern = ignorePatternFor(where.root, path.join(where.root, ...rel.split('/')));
+        try {
+            if ((await fs.promises.stat(targets[i].fsPath)).isDirectory()) pattern += '/';
+        } catch {
+            // Gone from disk: a plain file pattern
+        }
+        items.push({ label: pattern, picked: true, rel });
+    }
+    if (items.length === 0) {
+        vscode.window.showWarningMessage('Nothing to ignore');
+        return;
+    }
+    const picked = await vscode.window.showQuickPick(items, {
+        canPickMany: true, placeHolder: 'Patterns to add to .gitignore',
+    });
+    if (!picked || picked.length === 0) return;
+    const added: string[] = [];
+    for (const item of picked) {
+        if (await addToGitignore(where.root, item.label)) added.push(item.label);
+    }
+    log.info('Ignored', { patterns: added });
+    // .gitignore has no effect on files git already tracks
+    const rels = picked.map((p) => p.rel);
+    const tracked = (await runGit(['--literal-pathspecs', 'ls-files', '-z', '--', ...rels], where.root))
+        .split('\0').filter(Boolean);
+    const message = added.length > 0
+        ? `Added ${nameList(added)} to .gitignore.` : '.gitignore already lists these patterns.';
+    if (tracked.length === 0) {
+        vscode.window.showInformationMessage(message);
+        return;
+    }
+    const choice = await vscode.window.showInformationMessage(
+        `${message} git still tracks ${plural(tracked.length, 'file')} under them until they are removed from the index.`,
+        'Stop Tracking');
+    if (choice === 'Stop Tracking') {
+        await untrackPaths(where.root, rels);
+        vscode.window.showInformationMessage(`${plural(tracked.length, 'file')} no longer tracked (the files stay on disk)`);
+    }
+}
+
+/**
+ * Stage the files, or unstage them when every change among them is already
+ * staged (the dired/vc-dir `s` key)
+ */
+async function stageSet(targets: vscode.Uri[]): Promise<void> {
+    const status = await filesetIn(targets);
+    if (!status) return;
+    const changed = status.entries.filter((e) => e.state !== 'up-to-date' && e.state !== 'ignored');
+    if (changed.length === 0) {
+        vscode.window.showInformationMessage('No changes to stage');
+        return;
+    }
+    const rels = [...new Set(changed.flatMap((e) => e.origRel ? [e.rel, e.origRel] : [e.rel]))];
+    const allStaged = changed.every((e) => e.code[1] === ' ' && e.code[0] !== ' ' && e.code[0] !== '?');
+    if (allStaged) {
+        await unstagePaths(status.repoRoot, rels);
+        vscode.window.showInformationMessage(`Unstaged ${plural(changed.length, 'file')}`);
+    } else {
+        await stagePaths(status.repoRoot, rels);
+        vscode.window.showInformationMessage(`Staged ${plural(changed.length, 'file')}`);
+    }
+}
+
+/** C-x v d: the repository's changed files in a dired buffer (vc-dir) */
+async function vcDir(extensionUri: vscode.Uri, uri?: unknown): Promise<void> {
+    const start = uri instanceof vscode.Uri && uri.scheme === 'file' ? uri.fsPath
+        : DiredPanel.activeDirectory()
+        ?? (vscode.window.activeTextEditor?.document.uri.scheme === 'file'
+            ? path.dirname(vscode.window.activeTextEditor.document.uri.fsPath) : undefined)
+        ?? vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
+    if (!start) {
+        vscode.window.showWarningMessage('Open a file or folder in a git repository first');
+        return;
+    }
+    const where = await locateInRepo(start);
+    if (!where) {
+        vscode.window.showWarningMessage(`${start} is not in a git repository`);
+        return;
+    }
+    await DiredPanel.showVcDir(extensionUri, where.displayRoot);
+}
+
 /** Run a command body, reporting failures instead of leaving them unhandled */
 function guarded<T extends unknown[]>(name: string, fn: (...args: T) => Promise<void>): (...args: T) => Promise<void> {
     return async (...args: T) => {
@@ -467,33 +860,59 @@ function guarded<T extends unknown[]>(name: string, fn: (...args: T) => Promise<
             log.error(`${name} failed`, error instanceof Error ? error : undefined);
             vscode.window.showErrorMessage(errorMessage(error));
         }
+        // A dired listing shows git status; bring it up to date
+        DiredPanel.refreshVc();
     };
 }
 
 export function registerVcCommands(context: vscode.ExtensionContext): void {
     const logBuffer = new VcLogBuffer();
-    const activeUri = () => vscode.window.activeTextEditor?.document.uri;
+    // The file or directory a repository-wide command (push, pull, the VC menu) acts in
+    const activeUri = () => vscode.window.activeTextEditor?.document.uri
+        ?? (DiredPanel.activeDirectory() ? vscode.Uri.file(DiredPanel.activeDirectory()!) : undefined);
     registerSmergeCommands(context);
+
+    /**
+     * A C-x v command that takes (uri, uris) the way the Explorer and dired
+     * pass a selection: one file goes to `single`, anything else to `set`.
+     */
+    const onTargets = (
+        name: string,
+        single: (uri: vscode.Uri) => Promise<void>,
+        set: (targets: vscode.Uri[]) => Promise<void>,
+    ) => guarded(name, async (uri?: unknown, uris?: unknown) => {
+        const targets = resolveTargets(uri, uris);
+        if (!targets) return;
+        const file = await singleFile(targets);
+        await (file ? single(file) : set(targets));
+    });
 
     context.subscriptions.push(
         logBuffer,
-        vscode.commands.registerCommand('scimax.vc.nextAction',
-            guarded('nextAction', (uri?: vscode.Uri) => nextAction(logBuffer, uri))),
+        vscode.commands.registerCommand('scimax.vc.nextAction', onTargets('nextAction', (uri) => nextAction(logBuffer, uri), (targets) => nextActionSet(logBuffer, targets))),
         vscode.commands.registerCommand('scimax.vc.logFinish', guarded('logFinish', () => logBuffer.finish())),
         vscode.commands.registerCommand('scimax.vc.logCancel', guarded('logCancel', () => logBuffer.cancel())),
         vscode.commands.registerCommand('scimax.vc.push', guarded('push', async (uri?: vscode.Uri) => {
-            await gitCommand('git.push', uri ?? activeUri());
+            await gitCommand('git.push', uri instanceof vscode.Uri ? uri : activeUri());
         })),
         vscode.commands.registerCommand('scimax.vc.pull', guarded('pull', async (uri?: vscode.Uri) => {
-            await gitCommand('git.pull', uri ?? activeUri());
+            await gitCommand('git.pull', uri instanceof vscode.Uri ? uri : activeUri());
         })),
-        vscode.commands.registerCommand('scimax.vc.diff', guarded('diff', async (uri?: vscode.Uri) => {
-            await diff(uri);
+        vscode.commands.registerCommand('scimax.vc.diff', onTargets('diff', diff, diffSet)),
+        vscode.commands.registerCommand('scimax.vc.log', onTargets('log', showFileLog, logSet)),
+        vscode.commands.registerCommand('scimax.vc.revert', onTargets('revert', revert, revertSet)),
+        vscode.commands.registerCommand('scimax.vc.ignore', onTargets('ignore', ignore, ignoreSet)),
+        vscode.commands.registerCommand('scimax.vc.stage', onTargets('stage', (uri) => stageSet([uri]), stageSet)),
+        vscode.commands.registerCommand('scimax.vc.annotate', guarded('annotate', async (uri?: unknown, uris?: unknown) => {
+            const targets = resolveTargets(uri, uris);
+            const file = targets && await singleFile(targets.slice(0, 1));
+            if (!targets) return;
+            if (!file) {
+                vscode.window.showWarningMessage('Blame needs a file, not a directory');
+                return;
+            }
+            await annotate(file);
         })),
-        vscode.commands.registerCommand('scimax.vc.log', guarded('log', showFileLog)),
-        vscode.commands.registerCommand('scimax.vc.revert', guarded('revert', revert)),
-        vscode.commands.registerCommand('scimax.vc.annotate', guarded('annotate', annotate)),
-        vscode.commands.registerCommand('scimax.vc.ignore', guarded('ignore', ignore)),
         // Internal (no palette entry): run a built-in git command on the active
         // file's repository, opening it in the git extension first. The VC
         // menu's Stage, Commit, Fetch, Branch, and Checkout go through this.
@@ -501,9 +920,6 @@ export function registerVcCommands(context: vscode.ExtensionContext): void {
             await gitCommand(command, activeUri());
         })),
         vscode.commands.registerCommand('scimax.vc.status', guarded('status', status)),
-        vscode.commands.registerCommand('scimax.vc.dir', guarded('dir', async () => {
-            await openActiveRepository();
-            await vscode.commands.executeCommand('workbench.view.scm');
-        }))
+        vscode.commands.registerCommand('scimax.vc.dir', guarded('dir', (uri?: unknown) => vcDir(context.extensionUri, uri)))
     );
 }
