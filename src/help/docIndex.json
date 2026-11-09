@@ -1,5 +1,5 @@
 {
-  "buildDate": "2026-11-09T20:02:39.465Z",
+  "buildDate": "2026-11-09T20:15:44.418Z",
   "count": 3797,
   "entries": [
     {
@@ -80630,7 +80630,7 @@
       "level": 1,
       "file": "25-commands.org",
       "line": 1128,
-      "content": "See [[file:47-version-control.org][Version Control]]. | Command ID                      | Description                                      | Default Keybinding    | |---------------------------------+--------------------------------------------------+-----------------------| | [[cmd:scimax.vc.nextAction]]        | VC Next Action (register, commit, resolve, sync) | C-x v v               | | [[cmd:scimax.vc.logFinish]]         | VC Log - Commit                                  | C-c C-c (log buffe",
+      "content": "See [[file:47-version-control.org][Version Control]]. | Command ID                      | Description                                      | Default Keybinding   | |---------------------------------+--------------------------------------------------+----------------------| | [[cmd:scimax.vc.nextAction]]        | VC Next Action (register, commit, resolve, sync) | C-x v v              | | [[cmd:scimax.vc.logFinish]]         | VC Log - Commit                                  | C-c C-c (log buffer) ",
       "path": [],
       "commands": [
         "scimax.vc.nextAction",
@@ -80648,7 +80648,7 @@
         "description",
         "default",
         "keybinding",
-        "----------------------------------------------------------------------------------------------------------",
+        "---------------------------------------------------------------------------------------------------------",
         "cmd",
         "next",
         "action",
@@ -80659,7 +80659,7 @@
         "c-x",
         "log",
         "c-c",
-        "buffe"
+        "buffer"
       ]
     },
     {
