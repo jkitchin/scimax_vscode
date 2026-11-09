@@ -61,9 +61,11 @@ export function registerDiredCommands(context: vscode.ExtensionContext): void {
     context.subscriptions.push(
         vscode.commands.registerCommand('scimax.dired.openCurrent', async () => {
             const editor = vscode.window.activeTextEditor;
-            let directory: string | undefined;
+            let directory: string | undefined = DiredPanel.activeDirectory();
 
-            if (editor) {
+            if (directory) {
+                // Dired is already showing; stay where it is.
+            } else if (editor) {
                 directory = path.dirname(editor.document.uri.fsPath);
             } else {
                 directory = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;

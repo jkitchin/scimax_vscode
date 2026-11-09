@@ -378,7 +378,7 @@ Maintenance:
 2. Press s to perform full-text search
 3. Enter your search query
 
-** Applications Menu (scimax.applications)
+** 👀 Applications Menu (scimax.applications)
 
 Open things outside the editor, mirroring the applications hydra from Emacs
 scimax.
@@ -399,11 +399,17 @@ External Applications:
 =b= runs [[cmd:scimax.openExternalTerminalHere]], which uses the terminal set in
 =scimax.externalTerminal.command= (or =.app= on macOS). =d= runs
 [[cmd:scimax.dired.openCurrent]]; see [[file:37-dired.org][Dired]].
+=f= runs [[cmd:scimax.revealInFileManager]], which shows the current file in
+Finder (or the system file manager); in dired it shows the entry at point, or
+the listed directory on =..=. The Files menu's =o= does the same.
 
-** Files Menu (scimax.files)
+** 👀 Files Menu (scimax.files)
 
 Find, open and manage files, like the file hydra in Emacs scimax. Most
-actions work on the file in the active editor.
+actions work on the file in the active editor. In [[file:37-dired.org][Dired]] they work on the entry
+at point instead: =o=, =c= and =C= on =..= use the listed directory, =d= stays
+in it, and =e=, =R= and =D= ask you to move to a file first. =R= and =D= work
+on folders too, and the listing reloads afterwards.
 
 *Parent*: Main Menu
 *Access*: ~F12 f~ or ~C-c m f~
@@ -439,7 +445,7 @@ file to the trash and closes its tabs. =e= runs
 =.docx= in Word). =t= is the same as =F12 a b= in the
 [[*Applications Menu (scimax.applications)][Applications Menu]].
 
-** 👀 Version Control Menu (scimax.vc)
+** Version Control Menu (scimax.vc)
 
 Git operations for the current file and repository, mirroring the
 =scimax-version-control= hydra from Emacs scimax.
@@ -472,7 +478,7 @@ Repository:
 
 See [[file:47-version-control.org][Version Control]] for what Next Action does in each state.
 
-** ⚠️ Conflicts Menu (scimax.conflicts)
+** Conflicts Menu (scimax.conflicts)
 
 Resolve git conflict blocks in the current file, like the smerge hydra in
 Emacs. The keys are the same as smerge mode's single keys at a marker line and

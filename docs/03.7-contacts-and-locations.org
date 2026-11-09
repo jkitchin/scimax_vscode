@@ -1,7 +1,7 @@
 #+TITLE: Contacts, Locations & Entity Selector
 #+TODO: ⚠️ 👀 | ✅
 
-* ⚠️ Contacts
+* Contacts
 
 Any indexed heading with an =:EMAIL:= property or a =:person:= tag is a
 contact, as in scimax-contacts for Emacs:
@@ -37,7 +37,7 @@ Contacts come from the database, so run *Scimax: Sync Files* (or open the
 folder as a workspace) first. The more general [[*Entity Selector (Contacts, Locations, …)][Entity Selector]] below
 works on any tag or property.
 
-** ⚠️ Email client
+** Email client
 
 All email Scimax composes goes through one setting, =scimax.mail.client=:
 
@@ -85,7 +85,7 @@ one to act on it. An "entity" is just a heading identified by a *tag* (or a
   :END:
 #+end_src
 
-** 👀 Picking and acting
+** Picking and acting
 
 Run [[cmd:scimax.org.pickEntity]] (*Scimax: Pick Entity*):
 
@@ -144,7 +144,7 @@ Each entry's fields:
 Built-in Contacts/Locations are always available; your entries are merged in
 (and override a built-in with the same name).
 
-** 👀 Related Topics
+** Related Topics
 
 - [[file:10-export.org::*Email a Heading][Email a Heading]] — send a heading as an email, with the same mail settings
 - [[file:03.6-project-management.org][Project Management]] — assignees reuse the same =:person:= headings

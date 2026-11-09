@@ -1,6 +1,7 @@
 ---
 marp: true
 presenter: true
+window: app
 theme: scimax
 paginate: true
 title: Multimedia in Scimax Marp slides

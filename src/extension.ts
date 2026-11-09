@@ -283,6 +283,28 @@ async function activateScimax(context: vscode.ExtensionContext) {
         })
     );
 
+    // Reveal in Finder / File Manager - like revealFileInOS, but in dired it
+    // reveals the entry at point (dired is a webview, so revealFileInOS alone
+    // has no file to show there).
+    context.subscriptions.push(
+        vscode.commands.registerCommand('scimax.revealInFileManager', async (uri?: vscode.Uri) => {
+            if (!uri) {
+                const diredPath = DiredPanel.activePath();
+                if (diredPath) uri = vscode.Uri.file(diredPath);
+            }
+            if (!uri) {
+                const doc = vscode.window.activeTextEditor?.document.uri;
+                if (doc?.scheme === 'file') uri = doc;
+            }
+            if (uri) {
+                await vscode.commands.executeCommand('revealFileInOS', uri);
+            } else {
+                // No file here: let VS Code use the Explorer selection.
+                await vscode.commands.executeCommand('revealFileInOS');
+            }
+        })
+    );
+
     // Open External Terminal Here - opens the OS terminal app (iTerm, Terminal.app,
     // gnome-terminal, Windows Terminal, ...) in the file's directory.
     context.subscriptions.push(

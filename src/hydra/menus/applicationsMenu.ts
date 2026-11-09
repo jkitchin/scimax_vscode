@@ -43,7 +43,7 @@ export const applicationsMenu: HydraMenuDefinition = {
                     description: 'Reveal current file in system file manager',
                     icon: 'folder-opened',
                     exit: 'exit',
-                    action: 'revealFileInOS',
+                    action: 'scimax.revealInFileManager',
                 },
             ],
         },

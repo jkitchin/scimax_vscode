@@ -101,7 +101,7 @@ print(2 + 2)
 #+RESULTS:
 : 4
 
-** ⚠️ Escaping Lines That Look Like Org
+** Escaping Lines That Look Like Org
 Inside a block, a line starting with =*= would read as a heading, and one
 starting with =#+= as a keyword (=#+END_SRC= would even end the block). Org
 escapes such lines with a comma:

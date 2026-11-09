@@ -1176,7 +1176,7 @@ Open =EMAIL_LINK= with =Ctrl+Click= or =C-c C-o= to check the email later. A com
 
 After the compose window opens, a notification offers *Mark Done*. Click it once you have sent the email: the heading gets the file's first done state (=DONE= unless =#+TODO:= says otherwise) and a =CLOSED= timestamp. Set =scimax.emailHeading.markDone= to =always= to mark it done right away, or =never= to leave the TODO state alone.
 
-*** 👀 Mail client
+*** Mail client
 
 By default the compose window opens in Gmail in your browser. Set =scimax.mail.client= to =mailto= to use the system mail client instead. If you are signed in to several Google accounts, set =scimax.mail.gmailAccount= to the address to send from. These settings apply to all email Scimax composes (see [[file:03.7-contacts-and-locations.org][Contacts]]). The older =scimax.emailHeading.client= and =.gmailAccount= names still work.
 

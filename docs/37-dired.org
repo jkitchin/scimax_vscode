@@ -29,7 +29,7 @@ Once in the dired panel, use these keys to navigate:
 | ~<~                  | Go to first entry            |
 | ~>~                  | Go to last entry             |
 
-** 👀 Marking Files
+** Marking Files
 
 Mark files for batch operations:
 
@@ -60,7 +60,7 @@ Operate on marked files (or current file if none marked):
 | ~+~ | Create new directory                                    |
 | ~F~ | Open the current directory in Finder/Explorer           |
 
-** ⚠️ Git Status and Version Control
+** Git Status and Version Control
 
 Inside a git repository, dired shows a git status column: =edited=,
 =edited, staged=, =edited, part staged=, =added, staged=, =removed=,
@@ -92,7 +92,7 @@ The listing refreshes after each command and keeps your marks. ~M-o~ also
 offers these commands, plus Stage / Unstage. To see every changed file in the
 repository in one list, use ~C-x v d~ (see [[file:47-version-control.org][Version Control]]).
 
-** 👀 Actions Menu (M-o or right-click)
+** Actions Menu (M-o or right-click)
 
 Press ~M-o~ (Option+O on Mac), or right-click a row, to open a fuzzy picker of
 actions for that file. On ~.~ or ~..~ the menu offers only the directory action.
@@ -136,7 +136,7 @@ In wdired mode:
 | ~.~ | Toggle showing hidden files (dotfiles)         |
 | ~/~ | Set filter pattern (regex)                     |
 
-** 👀 Display Format
+** Display Format
 
 Each line shows:
 #+begin_example
@@ -151,7 +151,7 @@ lrwxrwxrwx    12  2024-01-13 08:00  link -> target
 - Fourth column: git status (only inside a git repository)
 - Last column: filename (directories end with /)
 
-** 👀 Configuration
+** Configuration
 
 | Setting                      | Default  | Description                                       |
 |------------------------------+----------+---------------------------------------------------|

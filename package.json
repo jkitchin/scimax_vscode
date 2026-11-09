@@ -1160,6 +1160,14 @@
         "title": "Scimax: Move Current File to Trash"
       },
       {
+        "command": "scimax.file.copyPath",
+        "title": "Scimax: Copy Path of Current File"
+      },
+      {
+        "command": "scimax.file.copyRelativePath",
+        "title": "Scimax: Copy Relative Path of Current File"
+      },
+      {
         "command": "scimax.org.exportMarp",
         "title": "Scimax: Export to Marp Slides"
       },
@@ -2095,6 +2103,11 @@
         "command": "scimax.openExternalTerminalHere",
         "title": "Scimax: Open External Terminal Here",
         "icon": "$(terminal-bash)"
+      },
+      {
+        "command": "scimax.revealInFileManager",
+        "title": "Scimax: Reveal in Finder / File Manager",
+        "icon": "$(folder-opened)"
       },
       {
         "command": "scimax.openInNewWindow",
@@ -5441,7 +5454,7 @@
         "command": "scimax.mark.cancel",
         "key": "escape escape",
         "mac": "escape escape",
-        "when": "editorTextFocus && editorHasSelection && !scimax.jumpActive && !scimax.rectangleMarkMode"
+        "when": "editorTextFocus && editorHasSelection && !scimax.jumpActive && !scimax.rectangleMarkMode && !inlineSuggestionVisible && !inlineEditIsVisible && !suggestWidgetVisible"
       },
       {
         "command": "scimax.mark.push",
@@ -5872,19 +5885,19 @@
         "command": "scimax.ob.insertBlockAbove",
         "key": "escape a",
         "mac": "escape a",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/ && !scimax.jumpActive && !scimax.rectangleMarkMode"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/ && !scimax.jumpActive && !scimax.rectangleMarkMode && !inlineSuggestionVisible && !inlineEditIsVisible && !suggestWidgetVisible"
       },
       {
         "command": "scimax.ob.insertBlockBelow",
         "key": "escape b",
         "mac": "escape b",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/ && !scimax.jumpActive && !scimax.rectangleMarkMode"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/ && !scimax.jumpActive && !scimax.rectangleMarkMode && !inlineSuggestionVisible && !inlineEditIsVisible && !suggestWidgetVisible"
       },
       {
         "command": "scimax.ob.splitBlock",
         "key": "escape -",
         "mac": "escape -",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/ && scimax.inSourceBlock && !scimax.jumpActive && !scimax.rectangleMarkMode"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/ && scimax.inSourceBlock && !scimax.jumpActive && !scimax.rectangleMarkMode && !inlineSuggestionVisible && !inlineEditIsVisible && !suggestWidgetVisible"
       },
       {
         "command": "scimax.ob.executeAndNext",

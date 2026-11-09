@@ -56,7 +56,7 @@ export const fileMenu: HydraMenuDefinition = {
                     description: 'Show the current file in the system file manager',
                     icon: 'folder-opened',
                     exit: 'exit',
-                    action: 'revealFileInOS',
+                    action: 'scimax.revealInFileManager',
                 },
                 {
                     key: 't',
@@ -85,7 +85,7 @@ export const fileMenu: HydraMenuDefinition = {
                     description: 'Copy the full path of the current file',
                     icon: 'copy',
                     exit: 'exit',
-                    action: 'copyFilePath',
+                    action: 'scimax.file.copyPath',
                 },
                 {
                     key: 'C',
@@ -93,7 +93,7 @@ export const fileMenu: HydraMenuDefinition = {
                     description: 'Copy the path relative to the workspace',
                     icon: 'copy',
                     exit: 'exit',
-                    action: 'copyRelativeFilePath',
+                    action: 'scimax.file.copyRelativePath',
                 },
                 {
                     key: 'i',

@@ -16,7 +16,7 @@ they work on the file you clicked. In dired, and in the Explorer with several
 files selected, they work on all of them at once (see
 [[*Several Files at Once][Several Files at Once]]).
 
-** 👀 C-x v v: Next Action
+** C-x v v: Next Action
 
 | File state                  | What C-x v v does                                                          |
 |-----------------------------+----------------------------------------------------------------------------|
@@ -66,7 +66,7 @@ If the commit fails (for example, a pre-commit hook rejects it) the error is
 shown and the buffer stays open so you can try again. An empty message
 commits nothing.
 
-** ⚠️ Several Files at Once
+** Several Files at Once
 
 Like Emacs VC, the ~C-x v~ commands accept a /fileset/. The files come from,
 in order:
@@ -108,7 +108,7 @@ be in one repository.
 Hunk-by-hunk staging is not duplicated here: use the Source Control view
 (~C-x v t~ without edamagit) or edamagit.
 
-** ⚠️ C-x v d: Changed Files (vc-dir)
+** C-x v d: Changed Files (vc-dir)
 
 ~C-x v d~ (=scimax.vc.dir=) opens a dired buffer that lists every changed file
 in the repository (of the active file, the dired directory, or the workspace
@@ -139,7 +139,7 @@ files, or the file at point:
 A typical round: ~C-x v d~, ~* e~ to mark the edited files, ~=~ to look over
 the changes, ~u~ on any you want to leave out, then ~v~ to commit the rest.
 
-** 👀 Keybindings
+** Keybindings
 
 | Keybinding | Command                | Emacs equivalent       | Description                                       |
 |------------+------------------------+------------------------+---------------------------------------------------|
@@ -172,7 +172,7 @@ unstaged. If it is already committed, scimax offers *Stop Tracking*, which runs
 =git rm --cached= so the file leaves the repository (in your next commit) but
 stays on disk.
 
-** ⚠️ Resolving Merge Conflicts (smerge mode)
+** Resolving Merge Conflicts (smerge mode)
 
 After a merge or pull with conflicts, git leaves conflict blocks in the file:
 
@@ -245,7 +245,7 @@ conflict blocks offers *Go to First Conflict*.
 same keys and stays open, so you can press ~n~, ~m~, ~t~, … in a row.
 ~Escape~ goes back to the Version Control menu, and again closes it.
 
-** 👀 Right-Click Menus
+** Right-Click Menus
 
 A *Version Control* submenu appears when you right-click a file tab, a file or
 folder in the Explorer, or inside an editor. It has Next Action, Diff, File
@@ -253,7 +253,7 @@ History, Blame, Ignore, Stage / Unstage, Revert, Push, Pull, Status, and VC
 Directory, acting on the file you clicked, or on every selected file when
 several are selected in the Explorer.
 
-** 👀 Version Control Menu (scimax.vc)
+** Version Control Menu (scimax.vc)
 
 Open with ~C-x v m~, or press ~v~ in the main menu (~C-c m~). It mirrors the
 =scimax-version-control= hydra from Emacs scimax.
@@ -282,7 +282,7 @@ Repository:
   [D] Changed files - The repository's changed files in dired (vc-dir)
 #+end_example
 
-** 👀 How It Works
+** How It Works
 
 - State detection, single-file commits, revert, and file history run the git
   CLI directly with argument arrays (no shell).

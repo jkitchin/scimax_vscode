@@ -11,7 +11,7 @@ This document provides a comprehensive reference for all keybindings in Scimax V
 
 *Note for Mac Users:* On macOS, most keybindings use Ctrl (not Cmd) to match Emacs conventions, except where explicitly noted with alternative Mac bindings.
 
-* 👀 Global Commands
+* Global Commands
 
 | Key     | Action                              |
 |---------+-------------------------------------|
@@ -147,7 +147,7 @@ defaults write -g ApplePressAndHoldEnabled -bool false
 
 Then restart VS Code.
 
-* 👀 Version Control (C-x v)
+* Version Control (C-x v)
 
 | Key     | Command                | Action                                              |
 |---------+------------------------+-----------------------------------------------------|
@@ -307,7 +307,7 @@ extension's *Run Cell*, and =C-<return>=, =s-<return>= and =S-<return>= are left
 Quarto's own run commands. =Cmd+Shift+V= (=Ctrl+Shift+V=) in a =.qmd= file opens
 Quarto's preview (~quarto.preview~), the same as =Cmd+Shift+K=. See [[file:30-markdown-compatibility.org::*Quarto Documents][Quarto Documents]].
 
-** Navigation & Manipulation
+** 👀 Navigation & Manipulation
 
 | Key           | Action                          |
 |---------------+---------------------------------|
@@ -324,6 +324,10 @@ Quarto's preview (~quarto.preview~), the same as =Cmd+Shift+K=. See [[file:30-ma
 | Esc -         | Split block (in src)            |
 | S-<return>    | Execute and move to next block  |
 | M-S-<return>  | Execute and insert new block    |
+
+While an inline or next-edit suggestion (Copilot and similar) or the completion
+list is showing, =Esc= is not a prefix: it dismisses the suggestion, and the
+=Esc a=, =Esc b=, =Esc -= and =Esc Esc= sequences wait until it is gone.
 
 ** Advanced Babel Operations
 

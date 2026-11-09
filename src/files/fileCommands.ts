@@ -1,19 +1,38 @@
 /**
- * Commands on the current file: open it in its default app, rename it, and
- * move it to the trash. Used by the File menu (F12 f).
+ * Commands on the current file: open it in its default app, copy its path,
+ * rename it, and move it to the trash. Used by the File menu (F12 f). When
+ * dired is the active tab they act on the entry at point.
  */
 
 import * as vscode from 'vscode';
 import * as path from 'path';
+import { DiredPanel } from '../dired/diredPanel';
 
-/** The file in the active editor, or undefined (with a warning). */
+/**
+ * The entry at point in dired (when dired is the active tab), else the file
+ * in the active editor, or undefined (with a warning).
+ */
 function currentFile(action: string): vscode.Uri | undefined {
+    const dired = DiredPanel.activeEntry();
+    if (dired) return vscode.Uri.file(dired.path);
+    if (DiredPanel.activeDirectory()) {
+        vscode.window.showWarningMessage(`Move to a file in dired to ${action} it`);
+        return undefined;
+    }
     const uri = vscode.window.activeTextEditor?.document.uri;
     if (!uri || uri.scheme !== 'file') {
         vscode.window.showWarningMessage(`No file to ${action}`);
         return undefined;
     }
     return uri;
+}
+
+/** Copy the path of the dired entry at point (or listed directory), or the current file. */
+async function copyPath(relative: boolean): Promise<void> {
+    const diredPath = DiredPanel.activePath();
+    const uri = diredPath ? vscode.Uri.file(diredPath) : vscode.window.activeTextEditor?.document.uri;
+    // The built-in commands take the file as an argument; with none they use the active tab.
+    await vscode.commands.executeCommand(relative ? 'copyRelativeFilePath' : 'copyFilePath', uri);
 }
 
 /**
@@ -75,7 +94,9 @@ async function renameCurrentFile(): Promise<void> {
     edit.renameFile(uri, target, { overwrite: false });
     if (!(await vscode.workspace.applyEdit(edit))) {
         vscode.window.showErrorMessage(`Could not rename ${oldName}`);
+        return;
     }
+    DiredPanel.refreshVc();
 }
 
 /** Move the current file to the trash, after asking, and close its editor. */
@@ -90,12 +111,18 @@ async function deleteCurrentFile(): Promise<void> {
     );
     if (choice !== 'Move to Trash') return;
 
-    const document = vscode.window.activeTextEditor?.document;
+    const document = vscode.workspace.textDocuments.find(doc => doc.uri.toString() === uri.toString());
     if (document?.isDirty) {
         await document.save();
     }
+    let recursive = false;
     try {
-        await vscode.workspace.fs.delete(uri, { useTrash: true });
+        recursive = (await vscode.workspace.fs.stat(uri)).type === vscode.FileType.Directory;
+    } catch {
+        // Gone already; delete reports it.
+    }
+    try {
+        await vscode.workspace.fs.delete(uri, { useTrash: true, recursive });
     } catch (err) {
         vscode.window.showErrorMessage(`Could not delete ${name}: ${(err as Error).message}`);
         return;
@@ -107,6 +134,7 @@ async function deleteCurrentFile(): Promise<void> {
     if (tabs.length) {
         await vscode.window.tabGroups.close(tabs);
     }
+    DiredPanel.refreshVc();
     vscode.window.showInformationMessage(`Moved ${name} to the trash`);
 }
 
@@ -114,6 +142,8 @@ export function registerFileCommands(context: vscode.ExtensionContext): void {
     context.subscriptions.push(
         vscode.commands.registerCommand('scimax.file.openInDefaultApp', openInDefaultApp),
         vscode.commands.registerCommand('scimax.file.rename', renameCurrentFile),
-        vscode.commands.registerCommand('scimax.file.delete', deleteCurrentFile)
+        vscode.commands.registerCommand('scimax.file.delete', deleteCurrentFile),
+        vscode.commands.registerCommand('scimax.file.copyPath', () => copyPath(false)),
+        vscode.commands.registerCommand('scimax.file.copyRelativePath', () => copyPath(true))
     );
 }

@@ -61,6 +61,28 @@ export class DiredPanel {
     }
 
     /**
+     * The path at point when the dired panel is the active tab: the entry
+     * under the cursor, or the listed directory itself on '..' or '.'.
+     */
+    public static activePath(): string | undefined {
+        return DiredPanel.activeEntry()?.path ?? DiredPanel.activeDirectory();
+    }
+
+    /**
+     * The entry under the cursor when the dired panel is the active tab, or
+     * undefined on '..' and '.' (commands that rename or delete use this, so
+     * they never act on the listed directory itself).
+     */
+    public static activeEntry(): { path: string; isDirectory: boolean } | undefined {
+        const current = DiredPanel.currentPanel;
+        if (!current?.panel.active) return undefined;
+        const state = current.manager.getState();
+        const entry = state.entries[state.selectedIndex];
+        if (!entry || entry.name === '..' || entry.name === '.') return undefined;
+        return { path: entry.path, isDirectory: entry.isDirectory };
+    }
+
+    /**
      * The paths version control acts on when dired is the active tab: the
      * marked entries, or the entry at point. '..' is never included; '.'
      * stands for the whole directory.

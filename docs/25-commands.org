@@ -199,7 +199,7 @@ Task tables, a project view with a Gantt chart, a dependency graph, and a people
 | [[cmd:scimax.org.newPerson]]                 | New Person                               | -                  |
 | [[cmd:scimax.org.assignTask]]                | Assign Task to Person                    | -                  |
 
-** 👀 Contacts & Entities
+** Contacts & Entities
 
 Fuzzy-pick a tagged/propertied heading (contact, location, reagent, …) and act
 on it. See [[file:03.7-contacts-and-locations.org][Contacts, Locations & Entity Selector]].
@@ -1126,12 +1126,12 @@ CLOSED: [2026-01-17 Sat 12:47]
 | [[cmd:scimax.editmarks.prev]]      | Previous Edit Mark      | C-c e [            |
 | [[cmd:scimax.editmarks.summary]]   | Show Edit Marks Summary | C-c e s            |
 
-* 👀 Version Control
+* Version Control
 
 See [[file:47-version-control.org][Version Control]].
 
-| Command ID                      | Description                                      | Default Keybinding   |
-|---------------------------------+--------------------------------------------------+----------------------|
+| Command ID                          | Description                                      | Default Keybinding   |
+|-------------------------------------+--------------------------------------------------+----------------------|
 | [[cmd:scimax.vc.nextAction]]        | VC Next Action (register, commit, resolve, sync) | C-x v v              |
 | [[cmd:scimax.vc.logFinish]]         | VC Log - Commit                                  | C-c C-c (log buffer) |
 | [[cmd:scimax.vc.logCancel]]         | VC Log - Cancel                                  | C-c C-k (log buffer) |
@@ -1992,9 +1992,12 @@ Miscellaneous utility commands.
 | [[cmd:scimax.killLine]]                 | Kill Line (copy to clipboard)   | C-k                |
 | [[cmd:scimax.openTerminalHere]]         | Open Integrated Terminal in Dir | -                  |
 | [[cmd:scimax.openExternalTerminalHere]] | Open External Terminal in Dir   | -                  |
+| [[cmd:scimax.revealInFileManager]]      | Reveal in Finder / File Manager | F12 a f, F12 f o   |
 | [[cmd:scimax.file.openInDefaultApp]]    | Open File in Default App        | F12 f e            |
 | [[cmd:scimax.file.rename]]              | Rename or Move Current File     | F12 f R            |
 | [[cmd:scimax.file.delete]]              | Move Current File to Trash      | F12 f D            |
+| [[cmd:scimax.file.copyPath]]            | Copy Path of Current File       | F12 f c            |
+| [[cmd:scimax.file.copyRelativePath]]    | Copy Relative Path of File      | F12 f C            |
 | [[cmd:scimax.openInNewWindow]]          | Open File/Folder in New Window  | -                  |
 | [[cmd:scimax.dired.open]]               | Open Dired (Directory Editor)   | C-x d              |
 | [[cmd:scimax.dired.openOtherWindow]]    | Open Dired in New Window        | C-x 5 d            |

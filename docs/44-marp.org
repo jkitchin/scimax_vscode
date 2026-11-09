@@ -227,7 +227,7 @@ The page checks for a new build once a second by loading a small
 ~<name>.html.version.js~ file written next to it, so it needs no server. Turn it
 off with ~scimax.marp.liveReload~.
 
-** ⚠️ Present in an app window
+** Present in an app window
 
 To fill a window with the slides without taking over the whole screen (to
 share one window in a video call, or to present beside your notes), set
@@ -1367,7 +1367,7 @@ closed or checked again.
 - The browser files live in ~media/marpPresent/~ of the extension; the Output
   panel (/Scimax Marp Export/) lists what was inlined and any missing files.
 
-* 👀 Video, Sound and Web Pages
+* Video, Sound and Web Pages
 
 A slide can hold anything a web page can: a movie, sound, a YouTube video, a
 live Google Doc, a whiteboard, a simulation. Write the HTML in the Markdown.
