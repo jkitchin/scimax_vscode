@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **Comma escapes in blocks were exported** ([#88](https://github.com/jkitchin/scimax_vscode/issues/88)) - Org writes `,* text` and `,#+text` inside src, example and export blocks so the lines don't read as a heading or keyword, and the comma is not part of the contents. Every export backend kept it. Export, running a block and tangling now drop one escaping comma, as Emacs does (`,,*` stands for `,*`); the file keeps it, and Markdown code blocks run as written. Results written into src, example and export blocks (`:wrap src org`, `:wrap example`, `:results html`/`latex`) now get the comma added to lines starting with `*` or `#+`, so output cannot end the block. `:wrap src python` now closes with `#+END_SRC`.
 - **`C-x v =` showed no diff** - It handed the file to the Git extension's `git.openChange`, which does nothing when that extension does not list the file as changed: a clean file, or a repository it has only just opened and not yet scanned. Nothing was shown, not even a message. `C-x v =` now saves the file and opens HEAD and the working file in the diff editor itself (a patch for added or deleted files), and says when there are no changes or the file is untracked or ignored.
 
 ## [0.14.0] - 2026-11-07

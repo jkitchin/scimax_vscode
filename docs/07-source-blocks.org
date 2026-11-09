@@ -101,6 +101,34 @@ print(2 + 2)
 #+RESULTS:
 : 4
 
+** ⚠️ Escaping Lines That Look Like Org
+Inside a block, a line starting with =*= would read as a heading, and one
+starting with =#+= as a keyword (=#+END_SRC= would even end the block). Org
+escapes such lines with a comma:
+
+#+BEGIN_SRC org
+,* A heading inside an org block
+,#+TITLE: a keyword inside it
+#+END_SRC
+
+The comma is not part of the contents. As in Emacs, scimax removes it when it
+exports src, example and export blocks, runs a block and tangles one, so the
+block above exports as =* A heading…= and =#+TITLE: …=. Only one comma is
+removed, so =,,* x= stands for =,* x=. A comma anywhere else, such as =,foo=
+or =x ,* y=, is kept.
+
+The file itself keeps the commas: editing commands such as merging blocks
+work on the text as written.
+
+Going the other way, when a result goes into a src, example or export block
+(=:wrap src org=, =:wrap example=, =:results html= or =:results latex=), scimax
+adds the comma to output lines that start with =*= or =#+=, so the output
+cannot end the block or turn into a heading.
+
+Markdown files have no comma escapes, and their code blocks run as written.
+
+See also: [[file:10-export.org][Export]], [[*:wrap - Wrap Results in Block][:wrap]], [[*:tangle - Extract Code to Files][:tangle]].
+
 
 * ✅ Executing Code
 CLOSED: [2026-01-17 Sat 12:52]

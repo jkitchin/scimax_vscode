@@ -17,6 +17,7 @@ import {
     type HeaderArguments,
 } from '../parser/orgBabel';
 import type { SrcBlockElement } from '../parser/orgElementTypes';
+import { unescapeOrgCode } from '../parser/orgEscape';
 import { findInlineSrcAtPosition, findInlineBabelCallAtPosition, parseCallLine, executeCall, type TangleBlock, type InlineBabelCall, type CallSpec, buildNamedBlocksMap } from '../parser/orgBabelAdvanced';
 import * as fs from 'fs';
 import { OrgParser } from '../parser/orgParser';
@@ -987,7 +988,8 @@ function buildNamedBlockMap(document: vscode.TextDocument): Map<string, TangleBl
             for (let i = block.codeStartLine; i < block.endLine; i++) {
                 codeLines.push(document.lineAt(i).text);
             }
-            const code = codeLines.join('\n');
+            const raw = codeLines.join('\n');
+            const code = isMarkdownLike(document.languageId) ? raw : unescapeOrgCode(raw);
 
             // Parse headers from parameters
             const headers = parseHeaderArguments(block.parameters);
@@ -1180,7 +1182,9 @@ async function executeBlock(
     };
 
     // Handle :file header for Python matplotlib
-    let codeToExecute = block.code;
+    // The block's text minus org's ,* / ,#+ escapes; block.code stays raw for editing
+    // Markdown has no comma escapes
+    let codeToExecute = isMarkdownLike(editor.document.languageId) ? block.code : unescapeOrgCode(block.code);
     let outputFilePath: string | undefined;
 
     if (headers.file && ['python', 'python3', 'py'].includes(language.toLowerCase())) {
@@ -1201,7 +1205,7 @@ async function executeBlock(
 
         // Add matplotlib savefig code at the end
         // This handles the common case of plotting with matplotlib
-        codeToExecute = `${block.code}
+        codeToExecute = `${codeToExecute}
 # Auto-added by scimax for :file header
 import matplotlib.pyplot as plt
 if plt.get_fignums():

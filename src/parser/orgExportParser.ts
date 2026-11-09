@@ -4,6 +4,7 @@
  * Optimized for export operations (HTML, LaTeX, Markdown, PDF)
  */
 
+import { unescapeOrgCode } from './orgEscape';
 import type {
     OrgDocumentNode,
     HeadlineElement,
@@ -1393,7 +1394,7 @@ function parseSrcBlock(state: FastParserState): SrcBlockElement | null {
         postBlank: 0,
         properties: {
             language,
-            value: codeLines.join('\n'),
+            value: unescapeOrgCode(codeLines.join('\n')),
             parameters,
             headers: {},
             lineNumber: 0,
@@ -1423,7 +1424,7 @@ function parseSimpleBlock(state: FastParserState, type: 'example-block' | 'quote
             range: { start: 0, end: 0 },
             postBlank: 0,
             properties: {
-                value: contentLines.join('\n'),
+                value: unescapeOrgCode(contentLines.join('\n')),
             },
         } as ExampleBlockElement;
     } else if (type === 'verse-block') {
@@ -1531,7 +1532,7 @@ function parseExportBlock(state: FastParserState): OrgElement | null {
         postBlank: 0,
         properties: {
             backend,
-            value: contentLines.join('\n'),
+            value: unescapeOrgCode(contentLines.join('\n')),
         },
     } as ExportBlockElement;
 }

@@ -4,6 +4,7 @@
  */
 
 import type { SrcBlockElement, AffiliatedKeywords } from './orgElementTypes';
+import { escapeOrgCode } from './orgEscape';
 
 // =============================================================================
 // Types and Interfaces
@@ -1522,8 +1523,13 @@ export function formatResult(
     if (output) {
         // :wrap takes precedence - wrap output in #+BEGIN_<WRAPPER>...#+END_<WRAPPER>
         if (format.wrap) {
-            const wrapperName = format.wrap.toUpperCase();
-            resultText = `${resultsHeader}\n#+BEGIN_${wrapperName}\n${output}\n#+END_${wrapperName}`;
+            // ":wrap src python" opens with BEGIN_SRC python and closes with END_SRC
+            const [wrapperType, ...wrapperArgs] = format.wrap.trim().split(/\s+/);
+            const wrapperName = wrapperType.toUpperCase();
+            const opening = [wrapperName, ...wrapperArgs].join(' ');
+            // Verbatim blocks need ,* and ,#+ escapes so the output cannot end the block
+            const body = ['SRC', 'EXAMPLE', 'EXPORT'].includes(wrapperName) ? escapeOrgCode(output) : output;
+            resultText = `${resultsHeader}\n#+BEGIN_${opening}\n${body}\n#+END_${wrapperName}`;
         } else {
             switch (type) {
                 case 'table':
@@ -1533,10 +1539,10 @@ export function formatResult(
                     resultText = formatAsList(output, resultsHeader);
                     break;
                 case 'html':
-                    resultText = `${resultsHeader}\n#+BEGIN_EXPORT html\n${output}\n#+END_EXPORT`;
+                    resultText = `${resultsHeader}\n#+BEGIN_EXPORT html\n${escapeOrgCode(output)}\n#+END_EXPORT`;
                     break;
                 case 'latex':
-                    resultText = `${resultsHeader}\n#+BEGIN_EXPORT latex\n${output}\n#+END_EXPORT`;
+                    resultText = `${resultsHeader}\n#+BEGIN_EXPORT latex\n${escapeOrgCode(output)}\n#+END_EXPORT`;
                     break;
                 case 'org':
                     resultText = `${resultsHeader}\n${output}`;

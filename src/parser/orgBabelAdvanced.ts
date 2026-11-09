@@ -17,6 +17,7 @@ import {
     executorRegistry,
 } from '../parser/orgBabel';
 import type { SrcBlockElement } from '../parser/orgElementTypes';
+import { unescapeOrgCode } from '../parser/orgEscape';
 
 // =============================================================================
 // Types
@@ -225,7 +226,8 @@ export function extractSourceBlocks(text: string): TangleBlock[] {
         // Check for #+END_SRC
         if (inBlock && line.match(/^#\+END_SRC/i)) {
             const headers = parseHeaderArguments(blockHeaders);
-            const code = blockCode.join('\n');
+            // Tangled and run code drops org's ,* / ,#+ escapes
+            const code = unescapeOrgCode(blockCode.join('\n'));
 
             blocks.push({
                 name: currentName,
