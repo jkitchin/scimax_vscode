@@ -146,7 +146,7 @@ defaults write -g ApplePressAndHoldEnabled -bool false
 
 Then restart VS Code.
 
-* Version Control (C-x v)
+* 👀 Version Control (C-x v)
 
 | Key     | Command                | Action                                              |
 |---------+------------------------+-----------------------------------------------------|
@@ -163,6 +163,24 @@ Then restart VS Code.
 | C-x v m | =scimax.hydra.vc=      | Version Control menu                                |
 | C-c C-c | =scimax.vc.logFinish=  | In a *vc-log* buffer: commit                        |
 | C-c C-k | =scimax.vc.logCancel=  | In a *vc-log* buffer: cancel                        |
+
+Merge conflicts (smerge mode): single keys at the start of a conflict marker
+line, or the same keys after ~C-c ^~ anywhere in a file with conflicts.
+
+| Key             | Command                       | Action                       |
+|-----------------+-------------------------------+------------------------------|
+| n / C-c ^ n     | =scimax.smerge.next=          | Next conflict                |
+| p / C-c ^ p     | =scimax.smerge.previous=      | Previous conflict            |
+| m / C-c ^ m     | =scimax.smerge.keepMine=      | Keep mine                    |
+| t / C-c ^ t     | =scimax.smerge.keepTheirs=    | Keep theirs                  |
+| b / C-c ^ b     | =scimax.smerge.keepBoth=      | Keep both                    |
+| B / C-c ^ B     | =scimax.smerge.keepBase=      | Keep the base (diff3)        |
+| M / C-c ^ M     | =scimax.smerge.keepAllMine=   | Keep mine in all conflicts   |
+| T / C-c ^ T     | =scimax.smerge.keepAllTheirs= | Keep theirs in all conflicts |
+| RET / C-c ^ RET | =scimax.smerge.keepCurrent=   | Keep the side at the cursor  |
+| = / C-c ^ =     | =scimax.smerge.compare=       | Compare mine and theirs      |
+| e / C-c ^ e     | =scimax.smerge.mergeEditor=   | 3-way merge editor           |
+| ? / C-c ^ ?     | =scimax.smerge.menu=          | Conflicts menu               |
 
 See [[file:47-version-control.org][Version Control]].
 
@@ -304,7 +322,7 @@ Quarto's preview (~quarto.preview~), the same as =Cmd+Shift+K=. See [[file:30-ma
 | C-c C-v i | Execute inline code         |
 | C-c C-v q | Queue block for execution   |
 
-* 👀 Export
+* Export
 
 | Key         | Action                            |
 |-------------+-----------------------------------|
@@ -445,7 +463,7 @@ viewport. Moving the cursor resets the cycle to center.
 | C-c p a   | Add project                     |
 | C-c p S-f | Find file in all known projects |
 
-** 👀 Database and Agenda
+** Database and Agenda
 
 | Key       | Action                              |
 |-----------+-------------------------------------|

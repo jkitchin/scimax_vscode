@@ -9,10 +9,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **smerge mode for merge conflicts** - In a file that git lists as conflicted, single keys at the start of a marker line (`<<<<<<<`, `=======`, `>>>>>>>`) resolve them, like Emacs smerge-mode: `n`/`p` next/previous conflict, `m`/`t`/`b` keep mine/theirs/both (then go to the next one), `B` keep the base (diff3), `M`/`T` keep mine/theirs everywhere, `RET` keep the side of the marker, `=` compare the sides, `e` the 3-way merge editor and `?` the Conflicts menu. The same keys work after `C-c ^` anywhere in the file. The status bar shows `smerge 2/5`. When the last conflict is gone, scimax offers to mark the file resolved (`git add`). The Conflicts menu is `C-x v m m`, and `C-x v v` on a conflicted file offers *Go to First Conflict*. New `scimax.smerge.*` commands.
 - **Files menu (`F12 f`)** - A new hydra for files, like the file hydra in Emacs scimax: find file (`f`), find in workspace (`w`), recent files (`r`), Dired here (`d`), reveal in Finder (`o`), external terminal here (`t`), open in the default app (`e`), copy the path (`c`/`C`), insert a file (`i`), rename or move the file (`R`) and move it to the trash (`D`). New commands `scimax.file.openInDefaultApp`, `scimax.file.rename` and `scimax.file.delete`.
 - **Export org to Marp slides** - `C-c C-e m s` exports an org file to a Marp deck (`m S` also opens it, `m p` also presents it). Headings become slides, step-by-step sections and list items, with `#+MARP_*` keywords, `:MARP_*:` slide properties, `#+ATTR_MARP:` image options, speaker notes, hidden slides, countdowns, live Python cells and citations. New `scimax.export.marp.*` settings. Thanks to uliw, who suggested this and contributed the ox-marp specification and examples in [#77](https://github.com/jkitchin/scimax_vscode/issues/77).
 - **`E` speed key emails a heading** - At the start of an org headline, `E` runs `Scimax: Email Heading`.
 - **Email Heading records a Gmail link and can mark the heading done** - After `Scimax: Email Heading` opens the compose window, the heading gets a `SENT_ON` timestamp and, for Gmail, an `EMAIL_LINK` property: a Gmail search for the heading's ID that opens the sent email and its replies later. A *Mark Done* button then sets the heading to the file's first done state with a `CLOSED` timestamp. New settings `scimax.emailHeading.recordSent` (default on) and `scimax.emailHeading.markDone` (`ask`, `always` or `never`; default `ask`).
+
+### Fixed
+
+- **`C-x v =` showed no diff** - It handed the file to the Git extension's `git.openChange`, which does nothing when that extension does not list the file as changed: a clean file, or a repository it has only just opened and not yet scanned. Nothing was shown, not even a message. `C-x v =` now saves the file and opens HEAD and the working file in the diff editor itself (a patch for added or deleted files), and says when there are no changes or the file is untracked or ignored.
 
 ## [0.14.0] - 2026-11-07
 

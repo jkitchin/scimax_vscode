@@ -112,8 +112,7 @@ CLOSED: [2026-01-16 Fri 07:42]
 
 Scimax comes with eight pre-built hydra menus covering all major features:
 
-** 👀 Main Menu (scimax.main)
-CLOSED: [2026-10-22 Thu 09:54]
+** Main Menu (scimax.main)
 
 The main entry point for all Scimax features.
 
@@ -334,8 +333,7 @@ Jump to Line:
 3. Type the first letter of target word
 4. Type the hint character shown at that location
 
-** 👀 Database Menu (scimax.database)
-CLOSED: [2026-01-17 Sat 12:15]
+** Database Menu (scimax.database)
 
 Org database operations including search and indexing.
 
@@ -380,7 +378,7 @@ Maintenance:
 2. Press s to perform full-text search
 3. Enter your search query
 
-** ⚠️ Applications Menu (scimax.applications)
+** Applications Menu (scimax.applications)
 
 Open things outside the editor, mirroring the applications hydra from Emacs
 scimax.
@@ -402,7 +400,7 @@ External Applications:
 =scimax.externalTerminal.command= (or =.app= on macOS). =d= runs
 [[cmd:scimax.dired.openCurrent]]; see [[file:37-dired.org][Dired]].
 
-** ⚠️ Files Menu (scimax.files)
+** Files Menu (scimax.files)
 
 Find, open and manage files, like the file hydra in Emacs scimax. Most
 actions work on the file in the active editor.
@@ -441,7 +439,7 @@ file to the trash and closes its tabs. =e= runs
 =.docx= in Word). =t= is the same as =F12 a b= in the
 [[*Applications Menu (scimax.applications)][Applications Menu]].
 
-** Version Control Menu (scimax.vc)
+** 👀 Version Control Menu (scimax.vc)
 
 Git operations for the current file and repository, mirroring the
 =scimax-version-control= hydra from Emacs scimax.
@@ -459,6 +457,7 @@ File:
   [l] Log          - History of the current file
   [r] Revert       - Discard changes to the file
   [g] Blame        - Toggle line-by-line blame
+  [m] Merge conflicts - Resolve conflict blocks in this file (smerge)
   [i] Ignore       - Add the file to .gitignore
 
 Repository:
@@ -472,6 +471,29 @@ Repository:
 #+end_example
 
 See [[file:47-version-control.org][Version Control]] for what Next Action does in each state.
+
+** ⚠️ Conflicts Menu (scimax.conflicts)
+
+Resolve git conflict blocks in the current file, like the smerge hydra in
+Emacs. The keys are the same as smerge mode's single keys at a marker line and
+the ~C-c ^~ prefix. Every item except the merge editor keeps the menu open.
+
+*Parent*: Version Control Menu
+*Access*: ~C-x v m m~, ~?~ at a conflict marker line, or click =smerge 2/5= in the status bar
+
+#+begin_example
+Merge Conflicts
+
+Move:
+  [n] Next conflict      [p] Previous conflict
+Keep:
+  [m] Mine     [t] Theirs     [b] Both     [B] Base
+  [M] All mine            [T] All theirs
+Look:
+  [=] Compare             [e] Merge editor
+#+end_example
+
+See [[file:47-version-control.org::*Resolving Merge Conflicts (smerge mode)][Resolving Merge Conflicts]].
 
 * ✅ Commands and Keybindings
 CLOSED: [2026-01-17 Sat 12:15]

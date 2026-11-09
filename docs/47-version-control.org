@@ -14,7 +14,7 @@ magit-status) and the standard Emacs bindings for diff, log, revert, and blame.
 The commands work on the file in the active editor. From a right-click menu
 they work on the file you clicked.
 
-** C-x v v: Next Action
+** 👀 C-x v v: Next Action
 
 | File state                  | What C-x v v does                                                          |
 |-----------------------------+----------------------------------------------------------------------------|
@@ -23,7 +23,7 @@ they work on the file you clicked.
 | Modified, added, or staged  | Opens a =*vc-log*= buffer for the commit message, then commits *this file* |
 | Modified, others staged     | Opens a log buffer that commits *all staged changes plus this file*        |
 | Up to date, others staged   | Opens a log buffer that commits all staged changes                         |
-| Conflicted, markers remain  | Warns you and offers to open the merge editor                              |
+| Conflicted, markers remain  | Warns you; offers the first conflict (smerge mode) or the merge editor     |
 | Conflicted, markers gone    | Marks the file resolved (=git add=)                                        |
 | Edited during a merge       | Opens a log buffer to conclude the merge (commits everything staged)       |
 | Ignored by =.gitignore=     | Tells you the file is ignored                                              |
@@ -97,13 +97,86 @@ unstaged. If it is already committed, scimax offers *Stop Tracking*, which runs
 =git rm --cached= so the file leaves the repository (in your next commit) but
 stays on disk.
 
+** ⚠️ Resolving Merge Conflicts (smerge mode)
+
+After a merge or pull with conflicts, git leaves conflict blocks in the file:
+
+#+begin_example
+<<<<<<< HEAD
+The rate constant is 0.12 1/s.
+=======
+The rate constant is 0.15 1/s.
+>>>>>>> feature
+#+end_example
+
+The part above ~=======~ is *mine* (the branch you are on). The part below is
+*theirs* (the branch being merged in). With =merge.conflictStyle= set to
+=diff3= or =zdiff3=, a ~|||||||~ section also holds the *base*: the common
+ancestor of both sides.
+
+Like Emacs =smerge-mode=, smerge mode turns on in a file that has conflict
+blocks and that git lists as conflicted (unmerged), after a merge, pull,
+rebase, cherry-pick or =git stash pop=. A file that only shows a conflict as
+an example, like this one, is left alone. The status bar shows =smerge 2/5=
+(the conflict you are at, out of the total); click it for the Conflicts menu.
+It turns off when the last block is gone. The commands also work from the
+Command Palette or the Conflicts menu in any file with conflict blocks.
+
+*** Single keys at a marker line
+
+With the cursor at the start of a marker line (~<<<<<<<~, ~|||||||~,
+~=======~ or ~>>>>>>>~), single keys act on that conflict, like speed
+commands at a heading. Everywhere else keys type as usual, so you can still
+edit a conflict by hand.
+
+| Key   | Command                       | Action                                                          |
+|-------+-------------------------------+-----------------------------------------------------------------|
+| ~n~   | =scimax.smerge.next=          | Go to the next conflict                                         |
+| ~p~   | =scimax.smerge.previous=      | Go to the previous conflict                                     |
+| ~m~   | =scimax.smerge.keepMine=      | Keep mine                                                       |
+| ~t~   | =scimax.smerge.keepTheirs=    | Keep theirs                                                     |
+| ~b~   | =scimax.smerge.keepBoth=      | Keep both, mine first                                           |
+| ~B~   | =scimax.smerge.keepBase=      | Keep the base (diff3 conflicts only)                            |
+| ~M~   | =scimax.smerge.keepAllMine=   | Keep mine in every conflict in the file                         |
+| ~T~   | =scimax.smerge.keepAllTheirs= | Keep theirs in every conflict in the file                       |
+| ~RET~ | =scimax.smerge.keepCurrent=   | Keep the side of this marker (~<<<<<<<~ mine, ~>>>>>>>~ theirs) |
+| ~=~   | =scimax.smerge.compare=       | Diff mine against theirs in the diff editor                     |
+| ~e~   | =scimax.smerge.mergeEditor=   | Open the file in VS Code's 3-way merge editor                   |
+| ~?~   | =scimax.smerge.menu=          | Open the Conflicts menu                                         |
+
+After ~m~, ~t~, ~b~, ~B~ or ~RET~ the cursor moves to the next conflict's
+~<<<<<<<~ line, so a file is resolved with a run of keys such as ~m t t b~.
+Messages name each side with the label on its marker, e.g. "Kept theirs
+(feature)". During a rebase git swaps the sides: mine (=HEAD=) is the branch
+you are rebasing onto, and theirs is your commit being replayed.
+
+*** C-c ^ from anywhere in the file
+
+The same final keys work after ~C-c ^~ anywhere in a file with conflicts, as
+in Emacs (~C-c ^ n~, ~C-c ^ m~, ~C-c ^ RET~, and so on). There, ~C-c ^ RET~
+keeps the side the cursor is in. In org tables ~C-c ^~ sorts by column; in a
+file with conflicts it is the smerge prefix instead.
+
+*** When the last conflict is resolved
+
+When no conflict blocks are left and git still lists the file as conflicted,
+scimax offers *Mark Resolved*: it saves the file and runs =git add=. Then
+~C-x v v~ commits to finish the merge. ~C-x v v~ on a file that still has
+conflict blocks offers *Go to First Conflict*.
+
+*** Conflicts menu (scimax.conflicts)
+
+~C-x v m m~ (or ~?~ at a marker line) opens the Conflicts menu. It has the
+same keys and stays open, so you can press ~n~, ~m~, ~t~, … in a row.
+~Escape~ goes back to the Version Control menu, and again closes it.
+
 ** Right-Click Menus
 
 A *Version Control* submenu appears when you right-click a file tab, a file in
 the Explorer, or inside an editor. It has Next Action, Diff, File History,
 Blame, Ignore, Revert, Push, Pull, and Status, all acting on the file you clicked.
 
-** Version Control Menu (scimax.vc)
+** 👀 Version Control Menu (scimax.vc)
 
 Open with ~C-x v m~, or press ~v~ in the main menu (~C-c m~). It mirrors the
 =scimax-version-control= hydra from Emacs scimax.
@@ -118,6 +191,7 @@ File:
   [l] Log          - History of the current file
   [r] Revert       - Discard changes to the file
   [g] Blame        - Toggle line-by-line blame
+  [m] Merge conflicts - Resolve conflict blocks in this file (smerge)
   [i] Ignore       - Add the file to .gitignore
 
 Repository:
@@ -134,7 +208,11 @@ Repository:
 
 - State detection, single-file commits, revert, and file history run the git
   CLI directly with argument arrays (no shell).
-- Push, pull, sync, diff, merge editor, and blame are handed to VS Code's
+- ~C-x v =~ saves the file, then opens HEAD and the working file side by side
+  in VS Code's diff editor. An added or deleted file is shown as a patch
+  instead. When there is nothing to diff it says so: "No changes between HEAD
+  and notes.org", or that the file is untracked or ignored.
+- Push, pull, sync, merge editor, and blame are handed to VS Code's
   built-in Git extension, which handles credentials, progress, and the
   Source Control view.
 - The Git extension does not open a repository that sits above your workspace

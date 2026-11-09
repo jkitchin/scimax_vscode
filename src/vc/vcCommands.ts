@@ -13,11 +13,13 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 import { createLogger } from '../utils/logger';
 import { VcLogBuffer } from './vcLogBuffer';
+import { registerSmergeCommands } from './smergeMode';
 import {
     addToGitignore,
     commit,
     commitStaged,
     decideNextAction,
+    diffPatch,
     diffStat,
     fileLog,
     findRepoRoot,
@@ -27,6 +29,7 @@ import {
     ignorePatternFor,
     initRepo,
     isMergeInProgress,
+    planDiff,
     revertFile,
     runGit,
     stageFile,
@@ -234,10 +237,15 @@ async function nextAction(logBuffer: VcLogBuffer, uri?: vscode.Uri): Promise<voi
         case 'fix-conflicts': {
             const choice = await vscode.window.showWarningMessage(
                 `${name} still has conflict markers. Resolve them, then run C-x v v again.`,
+                'Go to First Conflict',
                 'Open Merge Editor'
             );
             if (choice === 'Open Merge Editor') {
                 await gitCommand('git.openMergeEditor', target);
+            } else if (choice === 'Go to First Conflict') {
+                // smerge mode: single keys at the marker line resolve it
+                await vscode.window.showTextDocument(target);
+                await vscode.commands.executeCommand('scimax.smerge.first');
             }
             break;
         }
@@ -296,6 +304,45 @@ async function showFileLog(uri?: vscode.Uri): Promise<void> {
     }
     // Without the git extension, show the commit as a patch
     const patch = await runGit(['show', hash, '--', path.basename(file)], path.dirname(file));
+    const doc = await vscode.workspace.openTextDocument({ language: 'diff', content: patch });
+    await vscode.window.showTextDocument(doc, { preview: true });
+}
+
+/**
+ * C-x v =: diff the file against HEAD (vc-diff). The diff is opened here
+ * rather than with git.openChange, which silently does nothing when the git
+ * extension does not list the file as changed (a clean file, or a repository
+ * it has just opened and not yet scanned).
+ */
+async function diff(uri?: vscode.Uri): Promise<void> {
+    const target = targetFile(uri);
+    if (!target) return;
+    await saveIfDirty(target);
+    const file = target.fsPath;
+    const name = path.basename(file);
+    const plan = planDiff(await getFileStatus(file), name);
+    if (plan.kind === 'message') {
+        vscode.window.showInformationMessage(plan.text);
+        return;
+    }
+    if (plan.kind === 'sideBySide') {
+        await ensureRepositoryOpen(target);
+        const api = getGitApi();
+        if (api?.getRepository(target)) {
+            await vscode.commands.executeCommand(
+                'vscode.diff',
+                api.toGitUri(target, 'HEAD'),
+                target,
+                `${name} (HEAD ↔ working file)`
+            );
+            return;
+        }
+    }
+    const patch = await diffPatch(file);
+    if (!patch.trim()) {
+        vscode.window.showInformationMessage(`No changes between HEAD and ${name}`);
+        return;
+    }
     const doc = await vscode.workspace.openTextDocument({ language: 'diff', content: patch });
     await vscode.window.showTextDocument(doc, { preview: true });
 }
@@ -426,6 +473,7 @@ function guarded<T extends unknown[]>(name: string, fn: (...args: T) => Promise<
 export function registerVcCommands(context: vscode.ExtensionContext): void {
     const logBuffer = new VcLogBuffer();
     const activeUri = () => vscode.window.activeTextEditor?.document.uri;
+    registerSmergeCommands(context);
 
     context.subscriptions.push(
         logBuffer,
@@ -440,8 +488,7 @@ export function registerVcCommands(context: vscode.ExtensionContext): void {
             await gitCommand('git.pull', uri ?? activeUri());
         })),
         vscode.commands.registerCommand('scimax.vc.diff', guarded('diff', async (uri?: vscode.Uri) => {
-            const target = targetFile(uri);
-            if (target) await gitCommand('git.openChange', target);
+            await diff(uri);
         })),
         vscode.commands.registerCommand('scimax.vc.log', guarded('log', showFileLog)),
         vscode.commands.registerCommand('scimax.vc.revert', guarded('revert', revert)),

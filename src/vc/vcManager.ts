@@ -290,6 +290,40 @@ export async function diffStat(filePath: string): Promise<string> {
     }
 }
 
+/** What C-x v = does for a file: open a diff, or explain why there is none */
+export type VcDiffPlan =
+    | { kind: 'message'; text: string }
+    | { kind: 'sideBySide' }   // HEAD on the left, the working file on the right
+    | { kind: 'patch' };       // no HEAD version (added) or no working file (deleted)
+
+export function planDiff(status: VcFileStatus, name: string): VcDiffPlan {
+    switch (status.state) {
+        case 'unregistered':
+            return { kind: 'message', text: `${name} is not in a git repository` };
+        case 'untracked':
+            return { kind: 'message', text: `${name} is not tracked by git (C-x v v adds it)` };
+        case 'ignored':
+            return { kind: 'message', text: `${name} is ignored by git` };
+        case 'up-to-date':
+            return { kind: 'message', text: `No changes between HEAD and ${name}` };
+        default:
+            return status.code.includes('A') || status.code.includes('D')
+                ? { kind: 'patch' }
+                : { kind: 'sideBySide' };
+    }
+}
+
+/** The file's changes against HEAD as a patch (against the index on an unborn branch) */
+export async function diffPatch(filePath: string): Promise<string> {
+    const dir = path.dirname(filePath);
+    const name = path.basename(filePath);
+    try {
+        return await runGit(['diff', 'HEAD', '--', name], dir);
+    } catch {
+        return runGit(['diff', '--cached', '--', name], dir);
+    }
+}
+
 /**
  * Turn the log buffer's text into a commit message: drop comment lines,
  * trim trailing whitespace, and collapse runs of blank lines.

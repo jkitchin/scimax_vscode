@@ -412,8 +412,7 @@ in =latex-profiles.json= or settings. See [[file:10-export.org::*Build Profiles]
 | [[cmd:scimax.latex.showBuildProfile]]         | Show Active Build Profile       | -                  |
 | [[cmd:scimax.latex.createBuildProfilesFile]]  | Create Build Profiles File      | -                  |
 
-** 👀 Other Export Formats
-CLOSED: [2026-01-17 Sat 12:27]
+** Other Export Formats
 
 | Command ID                       | Description                       | Default Keybinding |
 |----------------------------------+-----------------------------------+--------------------|
@@ -605,7 +604,7 @@ Copy document content to clipboard in various formats for pasting into other app
 | [[cmd:scimax.org.clipboardLatex]]      | Copy as LaTeX                      | -                  |
 | [[cmd:scimax.org.clipboardMarkdown]]   | Copy as Markdown                   | -                  |
 
-** 👀 Email Heading
+** Email Heading
 
 Compose an email from the heading at point, record a Gmail link to it, and optionally mark the heading done. See [[file:10-export.org::*Email a Heading][Email a Heading]].
 
@@ -771,8 +770,8 @@ CLOSED: [2026-10-22 Thu 09:56]
 * ✅ Database and Search
 CLOSED: [2026-01-17 Sat 12:45]
 
-** 👀 Basic Database Operations
-CLOSED: [2026-01-17 Sat 12:45]
+** ✅ Basic Database Operations
+CLOSED: [2026-11-09 Mon 08:15]
 
 | Command ID                   | Description                     | Default Keybinding |
 |------------------------------+---------------------------------+--------------------|
@@ -1126,24 +1125,36 @@ CLOSED: [2026-01-17 Sat 12:47]
 | [[cmd:scimax.editmarks.prev]]      | Previous Edit Mark      | C-c e [            |
 | [[cmd:scimax.editmarks.summary]]   | Show Edit Marks Summary | C-c e s            |
 
-* Version Control
+* 👀 Version Control
 
 See [[file:47-version-control.org][Version Control]].
 
-| Command ID                   | Description                                      | Default Keybinding   |
-|------------------------------+--------------------------------------------------+----------------------|
-| [[cmd:scimax.vc.nextAction]] | VC Next Action (register, commit, resolve, sync) | C-x v v              |
-| [[cmd:scimax.vc.logFinish]]  | VC Log - Commit                                  | C-c C-c (log buffer) |
-| [[cmd:scimax.vc.logCancel]]  | VC Log - Cancel                                  | C-c C-k (log buffer) |
-| [[cmd:scimax.vc.push]]       | VC Push                                          | C-x v p              |
-| [[cmd:scimax.vc.pull]]       | VC Pull                                          | C-x v P              |
-| [[cmd:scimax.vc.status]]     | VC Status (edamagit or Source Control)           | C-x v t              |
-| [[cmd:scimax.vc.dir]]        | VC Directory (Source Control view)               | C-x v d              |
-| [[cmd:scimax.vc.diff]]       | VC Diff File Against HEAD                        | C-x v =              |
-| [[cmd:scimax.vc.log]]        | VC File History                                  | C-x v l              |
-| [[cmd:scimax.vc.revert]]     | VC Revert File                                   | C-x v u              |
-| [[cmd:scimax.vc.annotate]]   | VC Annotate (toggle blame)                       | C-x v g              |
-| [[cmd:scimax.vc.ignore]]     | VC Ignore File (add to .gitignore)               | C-x v i              |
+| Command ID                      | Description                                      | Default Keybinding    |
+|---------------------------------+--------------------------------------------------+-----------------------|
+| [[cmd:scimax.vc.nextAction]]        | VC Next Action (register, commit, resolve, sync) | C-x v v               |
+| [[cmd:scimax.vc.logFinish]]         | VC Log - Commit                                  | C-c C-c (log buffer)  |
+| [[cmd:scimax.vc.logCancel]]         | VC Log - Cancel                                  | C-c C-k (log buffer)  |
+| [[cmd:scimax.vc.push]]              | VC Push                                          | C-x v p               |
+| [[cmd:scimax.vc.pull]]              | VC Pull                                          | C-x v P               |
+| [[cmd:scimax.vc.status]]            | VC Status (edamagit or Source Control)           | C-x v t               |
+| [[cmd:scimax.vc.dir]]               | VC Directory (Source Control view)               | C-x v d               |
+| [[cmd:scimax.vc.diff]]              | VC Diff File Against HEAD                        | C-x v =               |
+| [[cmd:scimax.vc.log]]               | VC File History                                  | C-x v l               |
+| [[cmd:scimax.vc.revert]]            | VC Revert File                                   | C-x v u               |
+| [[cmd:scimax.vc.annotate]]          | VC Annotate (toggle blame)                       | C-x v g               |
+| [[cmd:scimax.vc.ignore]]            | VC Ignore File (add to .gitignore)               | C-x v i               |
+| [[cmd:scimax.smerge.next]]          | Smerge Next Conflict                             | n, C-c ^ n            |
+| [[cmd:scimax.smerge.previous]]      | Smerge Previous Conflict                         | p, C-c ^ p            |
+| [[cmd:scimax.smerge.keepMine]]      | Smerge Keep Mine                                 | m, C-c ^ m            |
+| [[cmd:scimax.smerge.keepTheirs]]    | Smerge Keep Theirs                               | t, C-c ^ t            |
+| [[cmd:scimax.smerge.keepBoth]]      | Smerge Keep Both                                 | b, C-c ^ b            |
+| [[cmd:scimax.smerge.keepBase]]      | Smerge Keep Base                                 | B, C-c ^ B            |
+| [[cmd:scimax.smerge.keepCurrent]]   | Smerge Keep the Side at Point                    | RET, C-c ^ RET        |
+| [[cmd:scimax.smerge.keepAllMine]]   | Smerge Keep Mine in All Conflicts                | M, C-c ^ M            |
+| [[cmd:scimax.smerge.keepAllTheirs]] | Smerge Keep Theirs in All Conflicts              | T, C-c ^ T            |
+| [[cmd:scimax.smerge.compare]]       | Smerge Compare Mine and Theirs                   | =, C-c ^ =            |
+| [[cmd:scimax.smerge.mergeEditor]]   | Smerge Open the Merge Editor                     | e, C-c ^ e            |
+| [[cmd:scimax.smerge.menu]]          | Smerge Conflicts Menu                            | ?, C-c ^ ?, C-x v m m |
 
 * Hydra
 
@@ -1384,8 +1395,8 @@ CLOSED: [2026-01-21 Wed 11:34]
 | [[cmd:scimax.latex.insertTable]]    | Insert Table    | -                  |
 | [[cmd:scimax.latex.insertEquation]] | Insert Equation | -                  |
 
-** 👀 Utilities
-CLOSED: [2026-01-21 Wed 11:34]
+** ✅ Utilities
+CLOSED: [2026-11-09 Mon 08:15]
 
 | Command ID                                     | Description                  | Default Keybinding |
 |------------------------------------------------+------------------------------+--------------------|

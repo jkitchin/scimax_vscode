@@ -63,6 +63,14 @@ export const vcMenu: HydraMenuDefinition = {
                     action: 'scimax.vc.annotate',
                 },
                 {
+                    key: 'm',
+                    label: 'Merge conflicts',
+                    description: 'Resolve conflict blocks in this file (smerge)',
+                    icon: 'git-merge',
+                    exit: 'submenu',
+                    action: 'scimax.conflicts',
+                },
+                {
                     key: 'i',
                     label: 'Ignore',
                     description: 'Add the file to .gitignore',
@@ -134,6 +142,54 @@ export const vcMenu: HydraMenuDefinition = {
                     icon: 'source-control',
                     exit: 'exit',
                     action: 'scimax.vc.status',
+                },
+            ],
+        },
+    ],
+};
+
+const stay = (key: string, label: string, description: string, icon: string, action: string) =>
+    ({ key, label, description, icon, exit: 'stay' as const, action });
+
+/**
+ * Conflicts Menu - resolve git conflict blocks (smerge-mode). The keys match
+ * smerge mode's single keys at a marker line and the C-c ^ prefix.
+ */
+export const conflictsMenu: HydraMenuDefinition = {
+    id: 'scimax.conflicts',
+    title: 'Merge Conflicts',
+    hint: 'Keep mine, theirs or both for each conflict block',
+    parent: 'scimax.vc',
+    groups: [
+        {
+            title: 'Move',
+            items: [
+                stay('n', 'Next conflict', 'Go to the next conflict block', 'arrow-down', 'scimax.smerge.next'),
+                stay('p', 'Previous conflict', 'Go to the previous conflict block', 'arrow-up', 'scimax.smerge.previous'),
+            ],
+        },
+        {
+            title: 'Keep',
+            items: [
+                stay('m', 'Mine', 'Keep my side (above =======), then go to the next conflict', 'arrow-left', 'scimax.smerge.keepMine'),
+                stay('t', 'Theirs', 'Keep their side (below =======), then go to the next conflict', 'arrow-right', 'scimax.smerge.keepTheirs'),
+                stay('b', 'Both', 'Keep both sides, mine first', 'arrow-both', 'scimax.smerge.keepBoth'),
+                stay('B', 'Base', 'Keep the common ancestor (diff3 conflicts)', 'history', 'scimax.smerge.keepBase'),
+                stay('M', 'All mine', 'Keep my side of every conflict in the file', 'check-all', 'scimax.smerge.keepAllMine'),
+                stay('T', 'All theirs', 'Keep their side of every conflict in the file', 'check-all', 'scimax.smerge.keepAllTheirs'),
+            ],
+        },
+        {
+            title: 'Look',
+            items: [
+                stay('=', 'Compare', 'Diff mine against theirs for this conflict', 'diff', 'scimax.smerge.compare'),
+                {
+                    key: 'e',
+                    label: 'Merge editor',
+                    description: 'Open the file in the 3-way merge editor',
+                    icon: 'git-merge',
+                    exit: 'exit',
+                    action: 'scimax.smerge.mergeEditor',
                 },
             ],
         },

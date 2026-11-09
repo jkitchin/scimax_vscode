@@ -14,6 +14,7 @@ import {
     commit,
     commitStaged,
     decideNextAction,
+    diffPatch,
     fileLog,
     getAheadBehind,
     getFileStatus,
@@ -22,6 +23,7 @@ import {
     isMergeInProgress,
     parseLog,
     parsePorcelainCode,
+    planDiff,
     revertFile,
     runGit,
     stageFile,
@@ -309,5 +311,44 @@ describe('against a git repository', { timeout: GIT_TIMEOUT_MS }, () => {
         expect(changed.sort()).toEqual(['a.txt', 'c.txt', 'sub/new.txt']);
         expect(await stagedFiles(repo)).toEqual([]);
         expect((await getFileStatus(path.join(repo, 'b.txt'))).state).toBe('edited');
+    });
+});
+
+describe('C-x v = diff plan', () => {
+    let repo: string;
+    beforeEach(async () => { repo = await makeRepo(); });
+    afterEach(() => { fs.rmSync(repo, { recursive: true, force: true }); });
+
+    it('explains files that have no diff', () => {
+        expect(planDiff({ state: 'up-to-date', code: '' }, 'a.org')).toEqual(
+            { kind: 'message', text: 'No changes between HEAD and a.org' });
+        expect(planDiff({ state: 'untracked', code: '??' }, 'a.org').kind).toBe('message');
+        expect(planDiff({ state: 'ignored', code: '!!' }, 'a.org').kind).toBe('message');
+        expect(planDiff({ state: 'unregistered', code: '' }, 'a.org').kind).toBe('message');
+    });
+
+    it('diffs modified files side by side, added and deleted ones as a patch', () => {
+        expect(planDiff({ state: 'edited', code: ' M' }, 'a.org').kind).toBe('sideBySide');
+        expect(planDiff({ state: 'edited', code: 'MM' }, 'a.org').kind).toBe('sideBySide');
+        expect(planDiff({ state: 'edited', code: 'A ' }, 'a.org').kind).toBe('patch');
+        expect(planDiff({ state: 'edited', code: ' D' }, 'a.org').kind).toBe('patch');
+    });
+
+    it('follows a file from clean to changed in a real repository', async () => {
+        const file = write(repo, 'a.org', '* A\nold line\n');
+        await stageFile(file);
+        // Unborn branch: the patch comes from the index
+        expect(planDiff(await getFileStatus(file), 'a.org').kind).toBe('patch');
+        expect(await diffPatch(file)).toContain('+old line');
+
+        await commit(repo, 'Add a', file);
+        expect(planDiff(await getFileStatus(file), 'a.org').kind).toBe('message');
+        expect(await diffPatch(file)).toBe('');
+
+        fs.writeFileSync(file, '* A\nnew line\n');
+        expect(planDiff(await getFileStatus(file), 'a.org').kind).toBe('sideBySide');
+        const patch = await diffPatch(file);
+        expect(patch).toContain('-old line');
+        expect(patch).toContain('+new line');
     });
 });

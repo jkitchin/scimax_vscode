@@ -4295,6 +4295,54 @@
         "icon": "$(diff)"
       },
       {
+        "command": "scimax.smerge.next",
+        "title": "Scimax: Smerge Next Conflict"
+      },
+      {
+        "command": "scimax.smerge.previous",
+        "title": "Scimax: Smerge Previous Conflict"
+      },
+      {
+        "command": "scimax.smerge.keepMine",
+        "title": "Scimax: Smerge Keep Mine"
+      },
+      {
+        "command": "scimax.smerge.keepTheirs",
+        "title": "Scimax: Smerge Keep Theirs"
+      },
+      {
+        "command": "scimax.smerge.keepBoth",
+        "title": "Scimax: Smerge Keep Both"
+      },
+      {
+        "command": "scimax.smerge.keepBase",
+        "title": "Scimax: Smerge Keep Base"
+      },
+      {
+        "command": "scimax.smerge.keepCurrent",
+        "title": "Scimax: Smerge Keep the Side at Point"
+      },
+      {
+        "command": "scimax.smerge.keepAllMine",
+        "title": "Scimax: Smerge Keep Mine in All Conflicts"
+      },
+      {
+        "command": "scimax.smerge.keepAllTheirs",
+        "title": "Scimax: Smerge Keep Theirs in All Conflicts"
+      },
+      {
+        "command": "scimax.smerge.compare",
+        "title": "Scimax: Smerge Compare Mine and Theirs"
+      },
+      {
+        "command": "scimax.smerge.mergeEditor",
+        "title": "Scimax: Smerge Open the Merge Editor"
+      },
+      {
+        "command": "scimax.smerge.menu",
+        "title": "Scimax: Smerge Conflicts Menu"
+      },
+      {
         "command": "scimax.vc.log",
         "title": "Scimax: VC File History",
         "icon": "$(history)"
@@ -5866,7 +5914,7 @@
         "command": "scimax.table.sortByColumn",
         "key": "ctrl+c shift+6",
         "mac": "ctrl+c shift+6",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/ && scimax.inTable && !terminalFocus"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/ && scimax.inTable && !terminalFocus && !scimax.smergeActive"
       },
       {
         "command": "scimax.speed.nextSibling",
@@ -7052,6 +7100,138 @@
         "key": "ctrl+x v =",
         "mac": "ctrl+x v =",
         "when": "!terminalFocus"
+      },
+      {
+        "command": "scimax.smerge.next",
+        "key": "n",
+        "when": "editorTextFocus && scimax.atConflictMarker && !editorReadonly && !suggestWidgetVisible && !inlineSuggestionVisible && !scimax.jumpActive"
+      },
+      {
+        "command": "scimax.smerge.previous",
+        "key": "p",
+        "when": "editorTextFocus && scimax.atConflictMarker && !editorReadonly && !suggestWidgetVisible && !inlineSuggestionVisible && !scimax.jumpActive"
+      },
+      {
+        "command": "scimax.smerge.keepMine",
+        "key": "m",
+        "when": "editorTextFocus && scimax.atConflictMarker && !editorReadonly && !suggestWidgetVisible && !inlineSuggestionVisible && !scimax.jumpActive"
+      },
+      {
+        "command": "scimax.smerge.keepTheirs",
+        "key": "t",
+        "when": "editorTextFocus && scimax.atConflictMarker && !editorReadonly && !suggestWidgetVisible && !inlineSuggestionVisible && !scimax.jumpActive"
+      },
+      {
+        "command": "scimax.smerge.keepBoth",
+        "key": "b",
+        "when": "editorTextFocus && scimax.atConflictMarker && !editorReadonly && !suggestWidgetVisible && !inlineSuggestionVisible && !scimax.jumpActive"
+      },
+      {
+        "command": "scimax.smerge.keepBase",
+        "key": "shift+b",
+        "when": "editorTextFocus && scimax.atConflictMarker && !editorReadonly && !suggestWidgetVisible && !inlineSuggestionVisible && !scimax.jumpActive"
+      },
+      {
+        "command": "scimax.smerge.keepAllMine",
+        "key": "shift+m",
+        "when": "editorTextFocus && scimax.atConflictMarker && !editorReadonly && !suggestWidgetVisible && !inlineSuggestionVisible && !scimax.jumpActive"
+      },
+      {
+        "command": "scimax.smerge.keepAllTheirs",
+        "key": "shift+t",
+        "when": "editorTextFocus && scimax.atConflictMarker && !editorReadonly && !suggestWidgetVisible && !inlineSuggestionVisible && !scimax.jumpActive"
+      },
+      {
+        "command": "scimax.smerge.keepCurrent",
+        "key": "enter",
+        "when": "editorTextFocus && scimax.atConflictMarker && !editorReadonly && !suggestWidgetVisible && !inlineSuggestionVisible && !scimax.jumpActive"
+      },
+      {
+        "command": "scimax.smerge.compare",
+        "key": "=",
+        "when": "editorTextFocus && scimax.atConflictMarker && !editorReadonly && !suggestWidgetVisible && !inlineSuggestionVisible && !scimax.jumpActive"
+      },
+      {
+        "command": "scimax.smerge.mergeEditor",
+        "key": "e",
+        "when": "editorTextFocus && scimax.atConflictMarker && !editorReadonly && !suggestWidgetVisible && !inlineSuggestionVisible && !scimax.jumpActive"
+      },
+      {
+        "command": "scimax.smerge.menu",
+        "key": "shift+/",
+        "when": "editorTextFocus && scimax.atConflictMarker && !editorReadonly && !suggestWidgetVisible && !inlineSuggestionVisible && !scimax.jumpActive"
+      },
+      {
+        "command": "scimax.smerge.next",
+        "key": "ctrl+c shift+6 n",
+        "mac": "ctrl+c shift+6 n",
+        "when": "editorTextFocus && scimax.smergeActive && !terminalFocus"
+      },
+      {
+        "command": "scimax.smerge.previous",
+        "key": "ctrl+c shift+6 p",
+        "mac": "ctrl+c shift+6 p",
+        "when": "editorTextFocus && scimax.smergeActive && !terminalFocus"
+      },
+      {
+        "command": "scimax.smerge.keepMine",
+        "key": "ctrl+c shift+6 m",
+        "mac": "ctrl+c shift+6 m",
+        "when": "editorTextFocus && scimax.smergeActive && !terminalFocus"
+      },
+      {
+        "command": "scimax.smerge.keepTheirs",
+        "key": "ctrl+c shift+6 t",
+        "mac": "ctrl+c shift+6 t",
+        "when": "editorTextFocus && scimax.smergeActive && !terminalFocus"
+      },
+      {
+        "command": "scimax.smerge.keepBoth",
+        "key": "ctrl+c shift+6 b",
+        "mac": "ctrl+c shift+6 b",
+        "when": "editorTextFocus && scimax.smergeActive && !terminalFocus"
+      },
+      {
+        "command": "scimax.smerge.keepBase",
+        "key": "ctrl+c shift+6 shift+b",
+        "mac": "ctrl+c shift+6 shift+b",
+        "when": "editorTextFocus && scimax.smergeActive && !terminalFocus"
+      },
+      {
+        "command": "scimax.smerge.keepAllMine",
+        "key": "ctrl+c shift+6 shift+m",
+        "mac": "ctrl+c shift+6 shift+m",
+        "when": "editorTextFocus && scimax.smergeActive && !terminalFocus"
+      },
+      {
+        "command": "scimax.smerge.keepAllTheirs",
+        "key": "ctrl+c shift+6 shift+t",
+        "mac": "ctrl+c shift+6 shift+t",
+        "when": "editorTextFocus && scimax.smergeActive && !terminalFocus"
+      },
+      {
+        "command": "scimax.smerge.keepCurrent",
+        "key": "ctrl+c shift+6 enter",
+        "mac": "ctrl+c shift+6 enter",
+        "when": "editorTextFocus && scimax.smergeActive && !terminalFocus"
+      },
+      {
+        "command": "scimax.smerge.compare",
+        "key": "ctrl+c shift+6 =",
+        "mac": "ctrl+c shift+6 =",
+        "when": "editorTextFocus && scimax.smergeActive && !terminalFocus"
+      },
+      {
+        "command": "scimax.smerge.mergeEditor",
+        "key": "ctrl+c shift+6 e",
+        "mac": "ctrl+c shift+6 e",
+        "when": "editorTextFocus && scimax.smergeActive && !terminalFocus"
+      },
+      {
+        "command": "scimax.smerge.menu",
+        "key": "ctrl+c shift+6 shift+/",
+        "mac": "ctrl+c shift+6 shift+/",
+        "when": "editorTextFocus && scimax.smergeActive && !terminalFocus"
       },
       {
         "command": "scimax.vc.log",
