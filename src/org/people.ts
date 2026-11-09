@@ -29,6 +29,7 @@ import { slugify, ASSIGNEE_PROPERTY } from '../parser/projectTasks';
 import { getHeadingLevel } from './speedCommands/context';
 import { setPropertyValue } from './speedCommands/metadata';
 import { acceptedItems } from './quickPickMatch';
+import { mailtoCommandUri } from './mail';
 
 export const PERSON_TAG = 'person';
 
@@ -197,7 +198,7 @@ class AssigneeHoverProvider implements vscode.HoverProvider {
             return new vscode.Hover(md, wordRange);
         }
         md.appendMarkdown(`**${person.name}**\n\n`);
-        if (person.email) md.appendMarkdown(`✉️ [${person.email}](mailto:${person.email})\n\n`);
+        if (person.email) md.appendMarkdown(`✉️ [${person.email}](${mailtoCommandUri(`mailto:${person.email}`).toString()})\n\n`);
         if (person.role) md.appendMarkdown(`Role: ${person.role}\n\n`);
         return new vscode.Hover(md, wordRange);
     }
@@ -294,12 +295,17 @@ function currentAssignees(document: vscode.TextDocument, headingLine: number): S
  * box. Undefined means cancelled.
  */
 function pickAssignees<T extends vscode.QuickPickItem & { picked?: boolean }>(items: T[]): Promise<T[] | undefined> {
+    return pickMany(items, 'Assign to… (fuzzy-match handle, name, role, or email; Enter takes the highlighted person too)');
+}
+
+/** A multi-select picker where Enter also takes the highlighted item (see pickAssignees). */
+export function pickMany<T extends vscode.QuickPickItem & { picked?: boolean }>(items: T[], placeholder: string): Promise<T[] | undefined> {
     return new Promise(resolve => {
         const qp = vscode.window.createQuickPick<T>();
         qp.canSelectMany = true;
         qp.matchOnDescription = true;
         qp.matchOnDetail = true;
-        qp.placeholder = 'Assign to… (fuzzy-match handle, name, role, or email; Enter takes the highlighted person too)';
+        qp.placeholder = placeholder;
         qp.items = items;
         const initial = items.filter(i => i.picked);
         qp.selectedItems = initial;

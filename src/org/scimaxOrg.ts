@@ -4,6 +4,7 @@
  */
 
 import * as vscode from 'vscode';
+import { openMailto } from './mail';
 import { pushKill, killRange } from '../killRing/commands';
 import { setContextKey, trackEditorContext } from '../utils/contextKeys';
 import * as path from 'path';
@@ -3390,7 +3391,9 @@ export async function openLinkAtPoint(): Promise<void> {
     }
 
     // Handle different link types
-    if (url.startsWith('http://') || url.startsWith('https://')) {
+    if (/^mailto:/i.test(url)) {
+        await openMailto(url);
+    } else if (url.startsWith('http://') || url.startsWith('https://')) {
         vscode.env.openExternal(vscode.Uri.parse(url));
     } else if (url.startsWith('nb:')) {
         // Notebook link - delegate to notebook module command
@@ -3476,8 +3479,12 @@ export async function openLinkAtPoint(): Promise<void> {
  * relative/absolute path with an optional `#anchor`.
  */
 async function openMarkdownLink(target: string, document: vscode.TextDocument): Promise<void> {
+    if (/^mailto:/i.test(target)) {
+        await openMailto(target);
+        return;
+    }
     if (/^[a-z][a-z0-9+.-]*:/i.test(target) && !/^file:/i.test(target)) {
-        // http(s), mailto, and other URL schemes
+        // http(s) and other URL schemes
         await vscode.env.openExternal(vscode.Uri.parse(target));
         return;
     }

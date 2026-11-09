@@ -14,6 +14,7 @@ import * as vscode from 'vscode';
 import { getDatabase } from '../database/lazyDb';
 import { HeadingRecord, getPropCaseInsensitive } from '../database/scimaxDbCore';
 import { ensureHeadingId } from './dependencyCommands';
+import { openMailto } from './mail';
 
 /** A configured (or ad-hoc) entity type: how to select and act on headings. */
 export interface EntityType {
@@ -178,7 +179,7 @@ function buildActions(
     if (email) {
         actions.push({
             label: '$(mail) Email', detail: email,
-            run: async () => { await vscode.env.openExternal(vscode.Uri.parse(mailtoUrl(email))); },
+            run: async () => { await openMailto(mailtoUrl(email)); },
         });
     }
     const address = getPropCaseInsensitive(props, type.address || 'ADDRESS');

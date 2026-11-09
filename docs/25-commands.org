@@ -199,15 +199,16 @@ Task tables, a project view with a Gantt chart, a dependency graph, and a people
 | [[cmd:scimax.org.newPerson]]                 | New Person                               | -                  |
 | [[cmd:scimax.org.assignTask]]                | Assign Task to Person                    | -                  |
 
-** ✅ Contacts & Entities
-CLOSED: [2026-07-02 Thu 08:03]
+** 👀 Contacts & Entities
 
 Fuzzy-pick a tagged/propertied heading (contact, location, reagent, …) and act
 on it. See [[file:03.7-contacts-and-locations.org][Contacts, Locations & Entity Selector]].
 
-| Command ID                       | Description                          | Default Keybinding |
-|----------------------------------+--------------------------------------+--------------------|
-| [[cmd:scimax.org.pickEntity]]    | Pick Entity (Contact/Location/…)     | -                  |
+| Command ID                | Description                          | Default Keybinding |
+|---------------------------+--------------------------------------+--------------------|
+| [[cmd:scimax.org.pickEntity]] | Pick Entity (Contact/Location/…)     | -                  |
+| [[cmd:scimax.contacts]]       | Contacts: insert, email, note, go to | C-c S-c            |
+| [[cmd:scimax.mail.compose]]   | Compose Email (Gmail or mail client) | -                  |
 
 ** ✅ Checkboxes
 CLOSED: [2026-01-17 Sat 12:24]

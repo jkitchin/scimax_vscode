@@ -1,6 +1,67 @@
 #+TITLE: Contacts, Locations & Entity Selector
 #+TODO: ⚠️ 👀 | ✅
 
+* ⚠️ Contacts
+
+Any indexed heading with an =:EMAIL:= property or a =:person:= tag is a
+contact, as in scimax-contacts for Emacs:
+
+#+begin_src org
+,* Ana Ramirez                                   :person:
+  :PROPERTIES:
+  :EMAIL: ana@example.edu
+  :PHONE: 555-0100
+  :ADDRESS: 123 Science Dr, Pittsburgh PA
+  :END:
+#+end_src
+
+Run [[cmd:scimax.contacts]] (*Scimax: Contacts*, =C-c S-c=, or =c= in the main
+menu =C-c m=) and fuzzy-pick a contact. Check several with Space to act on all
+of them at once. Then choose an action:
+
+| Action                    | What it does                                                                                        |
+|---------------------------+-----------------------------------------------------------------------------------------------------|
+| Insert email              | Inserts the address(es) at the cursor, comma-separated                                              |
+| Insert Name <email>       | Inserts =Ana Ramirez <ana@example.edu>=, ready for a To: line                                       |
+| Email                     | Opens a compose window to all picked contacts (see [[*Email client][Email client]])                                    |
+| Insert link               | =[[id:…][Name]]= in org (adds an =:ID:=), =[Name](mailto:…)= in Markdown                                      |
+| Copy email / Name <email> | The same text, on the clipboard                                                                     |
+| Go to contact             | Opens the contact's heading (one contact)                                                           |
+| Add a note                | Adds =- [2026-11-09 Mon 14:05] = at the end of the entry and puts the cursor after it (one contact) |
+| Insert / Copy property…   | Pick any property (phone, address, …) and insert or copy its value (one contact)                    |
+| Open in Maps              | Opens =:ADDRESS:= in Google Maps (one contact)                                                      |
+
+*New contact…* at the bottom of the list runs *Scimax: New Person*.
+
+Contacts come from the database, so run *Scimax: Sync Files* (or open the
+folder as a workspace) first. The more general [[*Entity Selector (Contacts, Locations, …)][Entity Selector]] below
+works on any tag or property.
+
+** ⚠️ Email client
+
+All email Scimax composes goes through one setting, =scimax.mail.client=:
+
+- =gmail= (the default) opens a Gmail compose window in the browser.
+- =mailto= hands a =mailto:= link to the system mail client, such as Apple Mail.
+
+If you are signed in to several Google accounts, set =scimax.mail.gmailAccount=
+to the address (or account index) to send from.
+
+This applies to Contacts, to =mailto:= links in org and Markdown files
+(Ctrl+click, =C-c C-o=, and the preview), to the email link in person hovers,
+to the *Email* action of Pick Entity, and to [[file:10-export.org::*Email a Heading][Email a Heading]].
+[[cmd:scimax.mail.compose]] (*Scimax: Compose Email*) opens a blank compose window.
+
+A =mailto:= link ctrl+clicked in VS Code's own Markdown preview still goes to
+the system mail client. VS Code handles those clicks itself.
+
+#+begin_src json
+{
+  "scimax.mail.client": "gmail",
+  "scimax.mail.gmailAccount": "me@example.com"
+}
+#+end_src
+
 * ✅ Entity Selector (Contacts, Locations, …)
 CLOSED: [2026-07-02 Thu 08:08]
 
@@ -24,8 +85,7 @@ one to act on it. An "entity" is just a heading identified by a *tag* (or a
   :END:
 #+end_src
 
-** ✅ Picking and acting
-CLOSED: [2026-07-02 Thu 08:08]
+** 👀 Picking and acting
 
 Run [[cmd:scimax.org.pickEntity]] (*Scimax: Pick Entity*):
 
@@ -38,7 +98,8 @@ Run [[cmd:scimax.org.pickEntity]] (*Scimax: Pick Entity*):
    - *Copy link* — the same link to the clipboard.
    - *Insert field… / Copy field…* — pick any of the heading's properties
      (email, address, phone, CAS, …) and insert/copy its value.
-   - *Email* — opens =mailto:= (when the entity has an email property).
+   - *Email* — opens a compose window in the configured [[*Email client][email client]]
+     (when the entity has an email property).
    - *Open in Maps* — opens the address in Google Maps (when it has an address).
    - *Open link* — opens a URL property in the browser (when configured).
    - *Go to heading* — jump to it.
@@ -69,23 +130,23 @@ LOCATION…) just work.
 
 Each entry's fields:
 
-| Field       | Meaning                                                            |
-|-------------+-------------------------------------------------------------------|
-| =name=      | Label shown in the type picker (required).                        |
-| =tag=       | Select headings carrying this tag.                                |
-| =property=  | Select headings that have this property…                          |
-| =value=     | …optionally equal to this value.                                  |
-| =display=   | Property whose value is shown on the picker line.                 |
-| =email=     | Property holding an email → *Email* (mailto) action (default EMAIL). |
-| =address=   | Property holding an address → *Open in Maps* (default ADDRESS).   |
-| =url=       | Property holding a URL → *Open link* action.                      |
+| Field      | Meaning                                                              |
+|------------+----------------------------------------------------------------------|
+| =name=     | Label shown in the type picker (required).                           |
+| =tag=      | Select headings carrying this tag.                                   |
+| =property= | Select headings that have this property…                             |
+| =value=    | …optionally equal to this value.                                     |
+| =display=  | Property whose value is shown on the picker line.                    |
+| =email=    | Property holding an email → *Email* (mailto) action (default EMAIL). |
+| =address=  | Property holding an address → *Open in Maps* (default ADDRESS).      |
+| =url=      | Property holding a URL → *Open link* action.                         |
 
 Built-in Contacts/Locations are always available; your entries are merged in
 (and override a built-in with the same name).
 
-** ✅ Related Topics
-CLOSED: [2026-07-02 Thu 08:08]
+** 👀 Related Topics
 
+- [[file:10-export.org::*Email a Heading][Email a Heading]] — send a heading as an email, with the same mail settings
 - [[file:03.6-project-management.org][Project Management]] — assignees reuse the same =:person:= headings
 - [[file:03-todo-items.org][TODO Items]] — tags and properties on headings
 - [[file:42-granular-addressing.org][Granular Addressing]] — the =id:= links this inserts

@@ -24,6 +24,7 @@ import {
     liveReloadVersionScript, MARP_FORMATS, MarpExportFormat, marpOutputPath, marpToPandocMarkdown, prepareSlideshowHtml,
 } from './marpExport';
 import { parseDeck } from './slideModel';
+import { appWindowCommand, openAppWindow, resolveAppBrowser, systemSearch } from './appWindow';
 import { frontMatterValue } from './marpAuthoring';
 import {
     BundleReport, bundlePresenterDeck, inlineDeck, OfflineCheck, offlineIssues, OfflinePlan,
@@ -848,11 +849,37 @@ async function present(context: vscode.ExtensionContext, args?: PresentArgs, fro
     if (liveReload) {
         liveShows.set(document.uri.fsPath, { output, presenter: vscode.workspace.isTrusted, showId, building: false, again: false });
     }
-    await vscode.env.openExternal(vscode.Uri.file(output));
+    await openSlideshow(document, output);
     const reloadHint = liveReload ? '; saving the deck updates it' : '';
     vscode.window.setStatusBarMessage(presenter
         ? `Slideshow opened: F full screen, P presenter view, a annotate, l laser, n note, s save with ink${reloadHint}`
         : `Slideshow opened in the browser: F for full screen, P for presenter view${reloadHint}`, 6000);
+}
+
+/**
+ * Open the built slideshow: in the default browser, or with
+ * `scimax.marp.presentWindow` = "app" in a Chromium app window (no tabs or
+ * address bar), falling back to the default browser if none is found.
+ */
+async function openSlideshow(document: vscode.TextDocument, output: string): Promise<void> {
+    const config = vscode.workspace.getConfiguration('scimax.marp', document.uri);
+    if (config.get<string>('presentWindow', 'tab') === 'app') {
+        const configured = config.get<string>('appBrowser', '');
+        const browser = resolveAppBrowser(configured, systemSearch());
+        if (browser) {
+            try {
+                await openAppWindow(appWindowCommand(browser, pathToFileURL(output).href, process.platform));
+                return;
+            } catch (err) {
+                vscode.window.showWarningMessage(`Could not open ${browser} (${err instanceof Error ? err.message : String(err)}); opening the slideshow in the default browser.`);
+            }
+        } else {
+            vscode.window.showWarningMessage(configured.trim()
+                ? `scimax.marp.appBrowser: ${configured} was not found; opening the slideshow in the default browser.`
+                : 'No Chrome, Edge, Chromium or Brave found for an app window (set scimax.marp.appBrowser); opening the slideshow in the default browser.');
+        }
+    }
+    await vscode.env.openExternal(vscode.Uri.file(output));
 }
 
 export function registerMarpExportCommands(context: vscode.ExtensionContext): void {

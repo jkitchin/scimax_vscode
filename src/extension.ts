@@ -93,6 +93,8 @@ import { registerProjectCommands } from './org/projectCommands';
 import { registerTaskGraph } from './org/taskGraphProvider';
 import { registerProjectView } from './org/projectView';
 import { registerEntitySelector } from './org/entitySelector';
+import { registerContactCommands } from './org/contacts';
+import { registerMailCommands } from './org/mail';
 // Jupyter commands imported dynamically to handle zeromq errors gracefully
 // import { registerJupyterCommands } from './jupyter/commands';
 import { ProjectileManager, Project } from './projectile/projectileManager';
@@ -897,6 +899,8 @@ async function activateScimax(context: vscode.ExtensionContext) {
     // Entity selector: fuzzy-pick a tagged/propertied heading (contacts,
     // locations, reagents…) and act on it (insert link/field, mailto, maps).
     activationStep('registerEntitySelector', () => registerEntitySelector(context));
+    activationStep('registerContactCommands', () => registerContactCommands(context));
+    activationStep('registerMailCommands', () => registerMailCommands(context));
 
     // Track cursor position to set context for keybinding differentiation
     // This enables different keybindings when cursor is in a table vs on a heading

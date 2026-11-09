@@ -11,7 +11,7 @@ This document provides a comprehensive reference for all keybindings in Scimax V
 
 *Note for Mac Users:* On macOS, most keybindings use Ctrl (not Cmd) to match Emacs conventions, except where explicitly noted with alternative Mac bindings.
 
-* Global Commands
+* 👀 Global Commands
 
 | Key     | Action                              |
 |---------+-------------------------------------|
@@ -31,6 +31,7 @@ This document provides a comprehensive reference for all keybindings in Scimax V
 | M-]     | Next journal entry (in journal)     |
 | C-c S-/ | Context-sensitive help              |
 | C-c S-g | Show link graph for current file    |
+| C-c S-c | Contacts: insert, email, add note   |
 
 * Journal
 

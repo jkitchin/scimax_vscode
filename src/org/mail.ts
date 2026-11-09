@@ -1,0 +1,125 @@
+/**
+ * Composing email: one place that decides where a new email opens.
+ *
+ * Contacts, mailto: links (org, Markdown, the preview, hovers), Pick Entity and
+ * Email Heading all compose through here. `scimax.mail.client` picks Gmail in
+ * the browser (the default) or the system mail client via a mailto: link;
+ * `scimax.mail.gmailAccount` picks the Google account when you are signed in
+ * to several.
+ */
+import * as vscode from 'vscode';
+import { buildGmailUrl, buildMailtoUrl, MailFields, MAX_COMPOSE_URL_LENGTH } from './emailHeading';
+
+export type MailClient = 'gmail' | 'mailto';
+
+export interface MailSettings {
+    client: MailClient;
+    /** Gmail account (address or index) passed as authuser; undefined for the default. */
+    account?: string;
+}
+
+const EMPTY: MailFields = { to: '', cc: '', bcc: '', subject: '', body: '' };
+
+/**
+ * The mail settings. `scimax.mail.*` wins; a value set only under the older
+ * `scimax.emailHeading.client` / `gmailAccount` is still honored.
+ */
+export function mailSettings(): MailSettings {
+    const explicit = <T>(fullKey: string): T | undefined => {
+        const dot = fullKey.lastIndexOf('.');
+        const info = vscode.workspace.getConfiguration(fullKey.slice(0, dot)).inspect<T>(fullKey.slice(dot + 1));
+        return info?.workspaceFolderValue ?? info?.workspaceValue ?? info?.globalValue;
+    };
+    const client = explicit<string>('scimax.mail.client')
+        ?? explicit<string>('scimax.emailHeading.client')
+        ?? 'gmail';
+    const account = (explicit<string>('scimax.mail.gmailAccount')
+        ?? explicit<string>('scimax.emailHeading.gmailAccount')
+        ?? '').trim();
+    return { client: client === 'mailto' ? 'mailto' : 'gmail', account: account || undefined };
+}
+
+/** The compose URL for `fields` with the given settings. */
+export function composeUrl(fields: Partial<MailFields>, settings: MailSettings): string {
+    const email = { ...EMPTY, ...fields };
+    return settings.client === 'mailto' ? buildMailtoUrl(email) : buildGmailUrl(email, settings.account);
+}
+
+/**
+ * Parse a mailto: URL (RFC 6068) into mail fields. Unknown headers are
+ * ignored; repeated addresses are joined with ", ".
+ */
+export function parseMailto(url: string): MailFields {
+    const fields: MailFields = { ...EMPTY };
+    const rest = url.replace(/^mailto:/i, '');
+    const q = rest.indexOf('?');
+    const decode = (s: string) => {
+        try { return decodeURIComponent(s.replace(/\+/g, '%20')); } catch { return s; }
+    };
+    const join = (a: string, b: string) => [a, b].filter(Boolean).join(', ');
+    fields.to = decode(q >= 0 ? rest.slice(0, q) : rest).split(',').map(s => s.trim()).filter(Boolean).join(', ');
+    if (q >= 0) {
+        for (const pair of rest.slice(q + 1).split('&')) {
+            const eq = pair.indexOf('=');
+            if (eq < 0) continue;
+            const key = pair.slice(0, eq).toLowerCase();
+            const value = decode(pair.slice(eq + 1));
+            if (key === 'to') fields.to = join(fields.to, value);
+            else if (key === 'cc') fields.cc = join(fields.cc, value);
+            else if (key === 'bcc') fields.bcc = join(fields.bcc, value);
+            else if (key === 'subject') fields.subject = value;
+            else if (key === 'body') fields.body = value.replace(/\r\n/g, '\n');
+        }
+    }
+    return fields;
+}
+
+/**
+ * Open a compose window for `fields` in the configured client. A body too
+ * long for a URL goes on the clipboard instead. Returns false if nothing
+ * opened.
+ */
+export async function composeEmail(fields: Partial<MailFields>): Promise<boolean> {
+    const settings = mailSettings();
+    let url = composeUrl(fields, settings);
+    let bodyOnClipboard = false;
+    if (url.length > MAX_COMPOSE_URL_LENGTH && fields.body) {
+        await vscode.env.clipboard.writeText(fields.body);
+        url = composeUrl({ ...fields, body: '' }, settings);
+        bodyOnClipboard = true;
+    }
+    // A string, not a Uri: VS Code would decode and re-encode a Uri's query,
+    // turning `&` in a subject into a separator (see emailHeading.ts).
+    const opened = await vscode.env.openExternal(url as unknown as vscode.Uri);
+    if (!opened) {
+        vscode.window.showErrorMessage('Could not open the email compose window');
+        return false;
+    }
+    if (bodyOnClipboard) {
+        vscode.window.showInformationMessage('The body is too long for a compose link; it was copied to the clipboard.');
+    }
+    return true;
+}
+
+/** Open a mailto: URL in the configured client. */
+export function openMailto(url: string): Promise<boolean> {
+    return composeEmail(parseMailto(url));
+}
+
+/** A command: URI that composes to `url` (a mailto: URL), for links and hovers. */
+export function mailtoCommandUri(url: string): vscode.Uri {
+    return vscode.Uri.parse(`command:scimax.mail.compose?${encodeURIComponent(JSON.stringify([url]))}`);
+}
+
+export function registerMailCommands(context: vscode.ExtensionContext): void {
+    context.subscriptions.push(
+        // Arguments: a mailto: URL, or mail fields. With none, asks for an address.
+        vscode.commands.registerCommand('scimax.mail.compose', async (arg?: string | Partial<MailFields>) => {
+            if (typeof arg === 'string') return openMailto(arg.startsWith('mailto:') ? arg : `mailto:${arg}`);
+            if (arg && typeof arg === 'object') return composeEmail(arg);
+            const to = await vscode.window.showInputBox({ prompt: 'To', placeHolder: 'name@example.com' });
+            if (to === undefined) return false;
+            return composeEmail({ to });
+        })
+    );
+}

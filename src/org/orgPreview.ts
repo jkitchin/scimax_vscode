@@ -7,6 +7,7 @@
  */
 
 import * as vscode from 'vscode';
+import { openMailto } from './mail';
 import * as path from 'path';
 import * as fs from 'fs';
 import * as crypto from 'crypto';
@@ -453,7 +454,11 @@ export class OrgPreviewManager implements vscode.WebviewPanelSerializer, vscode.
     }
 
     private async openLink(entry: PreviewEntry, href: string): Promise<void> {
-        if (/^(https?|mailto):/i.test(href)) {
+        if (/^mailto:/i.test(href)) {
+            await openMailto(href);
+            return;
+        }
+        if (/^https?:/i.test(href)) {
             await vscode.env.openExternal(vscode.Uri.parse(href));
             return;
         }

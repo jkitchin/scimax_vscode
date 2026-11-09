@@ -53,7 +53,7 @@ Open with **Present**. Most slides here are live web pages, so they need a netwo
 - `#t=95` starts at 1:35
 - `#t=95,120` stops at 2:00
 - `muted` for a demo you talk over
-- `autoplay muted loop` to play by itself (it starts when the deck opens, not when the slide shows)
+- `autoplay muted loop` to play by itself while the slide is shown
 
 </div>
 </div>
@@ -84,7 +84,7 @@ A clip from a real movie works too (ffmpeg -ss 30 -t 12 -i in.mp4 -an clip.mp4),
 
 <iframe src="https://www.youtube-nocookie.com/embed/DbXM1DxccQM?rel=0" title="scimax 5.0 - org-mode meets VS Code" style="display:block;width:768px;height:432px;margin:0 auto;border:0;border-radius:8px" allow="autoplay; encrypted-media; fullscreen; picture-in-picture" allowfullscreen loading="lazy"></iframe>
 
-From *Share → Embed*, or `youtube-nocookie.com/embed/<id>`. Add `?start=90` to start at 1:30.
+From *Share → Embed*, or `youtube-nocookie.com/embed/<id>`. Add `?start=90` to start at 1:30. Opened from a file, the slide shows a play button that opens the video on YouTube.
 
 <!-- A YouTube "live" or "watch" URL does not play in a frame: use the /embed/ form. youtube-nocookie.com does not set tracking cookies until the video plays. After clicking into the player, click the slide outside it to get the arrow keys back. -->
 
@@ -178,7 +178,8 @@ Ubiquitin, PDB 1UBQ. Drag to rotate, scroll to zoom. Change `pdb=` to show anoth
 | | Present / HTML | `deck.html` (s) | PDF, PPTX |
 |---|---|---|---|
 | Movie and sound files | ✓ | ✓ inside the file | poster or blank |
-| YouTube, Docs, web pages | ✓ online | ✓ online | blank box |
+| YouTube | opens on YouTube | opens on YouTube | blank box |
+| Docs, web pages | ✓ online | ✓ online | blank box |
 | Inline SVG, GIF | ✓ | ✓ | first frame |
 
 - **s** in the slideshow saves one `deck.html` with the movies inside it, so it plays offline. Each movie is in it once, however often it is used: this deck comes to about 8 MB

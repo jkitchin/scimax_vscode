@@ -2691,6 +2691,14 @@
         "title": "Scimax: New Person"
       },
       {
+        "command": "scimax.contacts",
+        "title": "Scimax: Contacts"
+      },
+      {
+        "command": "scimax.mail.compose",
+        "title": "Scimax: Compose Email"
+      },
+      {
         "command": "scimax.org.assignTask",
         "title": "Scimax: Assign Task to Person"
       },
@@ -4378,6 +4386,12 @@
       }
     ],
     "keybindings": [
+      {
+        "command": "scimax.contacts",
+        "key": "ctrl+c shift+c",
+        "mac": "ctrl+c shift+c",
+        "when": "editorTextFocus"
+      },
       {
         "command": "workbench.action.showCommands",
         "key": "alt+x",
@@ -7592,7 +7606,7 @@
           "default": true,
           "description": "Show total clocked time as inline decorations on headlines"
         },
-        "scimax.emailHeading.client": {
+        "scimax.mail.client": {
           "type": "string",
           "enum": [
             "gmail",
@@ -7600,15 +7614,31 @@
           ],
           "enumDescriptions": [
             "Open a Gmail compose window in the browser",
-            "Open the system mail client with a mailto: link"
+            "Open the system mail client (for example Apple Mail) with a mailto: link"
           ],
           "default": "gmail",
-          "description": "Where Scimax: Email Heading composes the email."
+          "description": "Where Scimax composes email: Contacts, mailto: links in org and Markdown files, hovers, Pick Entity and Email Heading."
+        },
+        "scimax.mail.gmailAccount": {
+          "type": "string",
+          "default": "",
+          "description": "Gmail account to compose from when signed in to several (an email address or account index, passed as authuser). Empty uses the default account."
+        },
+        "scimax.emailHeading.client": {
+          "type": "string",
+          "enum": [
+            "gmail",
+            "mailto"
+          ],
+          "default": "gmail",
+          "description": "Where Scimax: Email Heading composes the email.",
+          "deprecationMessage": "Use scimax.mail.client, which applies to all email Scimax composes. This setting is still honored when scimax.mail.client is not set."
         },
         "scimax.emailHeading.gmailAccount": {
           "type": "string",
           "default": "",
-          "description": "Gmail account to compose from when signed in to several (an email address or account index, passed as authuser). Empty uses the default account."
+          "description": "Gmail account to compose from.",
+          "deprecationMessage": "Use scimax.mail.gmailAccount. This setting is still honored when scimax.mail.gmailAccount is not set."
         },
         "scimax.emailHeading.includeId": {
           "type": "boolean",
@@ -9454,6 +9484,24 @@
           "type": "boolean",
           "default": true,
           "markdownDescription": "While a slideshow from **Present** is open in the browser, saving the deck rebuilds it and the browser reloads at the slide you are editing. Ink drawn with the presenter tools is kept."
+        },
+        "scimax.marp.presentWindow": {
+          "type": "string",
+          "enum": [
+            "tab",
+            "app"
+          ],
+          "enumDescriptions": [
+            "Open the slideshow in a tab of the default browser",
+            "Open the slideshow in a Chrome (or Edge, Chromium, Brave) app window: no tabs or address bar, and the slides fill a window you can size"
+          ],
+          "default": "tab",
+          "markdownDescription": "Where **Present** opens the slideshow. `app` gives full screen in a window: a browser window with only the slides, which you can resize, move or share in a video call. The browser is `#scimax.marp.appBrowser#`, or the first of Chrome, Edge, Chromium and Brave found."
+        },
+        "scimax.marp.appBrowser": {
+          "type": "string",
+          "default": "",
+          "markdownDescription": "The browser for `#scimax.marp.presentWindow#` = `app`: a path to the executable (or to the `.app` on macOS), or on macOS an application name such as `Microsoft Edge`. It must be Chromium-based (it is started with `--app=`). Empty finds Chrome, Edge, Chromium or Brave."
         }
       }
     },

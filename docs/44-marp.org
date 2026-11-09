@@ -227,6 +227,23 @@ The page checks for a new build once a second by loading a small
 ~<name>.html.version.js~ file written next to it, so it needs no server. Turn it
 off with ~scimax.marp.liveReload~.
 
+** ⚠️ Present in an app window
+
+To fill a window with the slides without taking over the whole screen (to
+share one window in a video call, or to present beside your notes), set
+
+#+begin_src json
+"scimax.marp.presentWindow": "app"
+#+end_src
+
+Present then opens the slideshow in a Chromium /app window/: no tabs, address
+bar or toolbar, just the slides, in a window you can size and move. Chrome,
+Edge, Chromium or Brave is found in the usual places; set
+~scimax.marp.appBrowser~ to a path (or on macOS an application name such as
+~Microsoft Edge~) to choose one. If no browser is found, Present opens the
+slideshow in your default browser as before. Live reload, ink and the
+presenter tools work the same in an app window.
+
 ** Presenting from an org file
 
 A ~marp:~ link in an org file launches the slideshow when clicked (or with
@@ -1337,7 +1354,7 @@ closed or checked again.
 - The browser files live in ~media/marpPresent/~ of the extension; the Output
   panel (/Scimax Marp Export/) lists what was inlined and any missing files.
 
-* ⚠️ Video, Sound and Web Pages
+* 👀 Video, Sound and Web Pages
 
 A slide can hold anything a web page can: a movie, sound, a YouTube video, a
 live Google Doc, a whiteboard, a simulation. Write the HTML in the Markdown.
@@ -1360,6 +1377,16 @@ each of these.
   ~#t=95,120~ also stops at 2:00.
 - YouTube needs the ~/embed/VIDEO_ID~ form; a ~watch~ or ~live~ link does not
   play in a frame.
+- YouTube does not play inside a deck opened from a file (Present, ~deck.html~):
+  it wants to know the web page it is embedded in, and a file has none, so it
+  shows "Error 153". In a presenter deck (~presenter: true~) the frame shows the
+  video's thumbnail and a play button instead, which opens the video on YouTube
+  in a new window at the ~start=~ time.
+- Moving to another slide pauses the movies, sound and YouTube or Vimeo players
+  on the slide you leave (presenter decks).
+- A movie or sound with ~autoplay~ (=autoplay muted loop= for a background
+  movie) plays while its slide is shown, from where it was paused, not from
+  when the deck opens (presenter decks).
 - For a Google Doc, Sheet or Slides file, replace ~/edit...~ in the URL with
   ~/preview~, and share it as "anyone with the link can view".
 - Sites such as Excalidraw, Desmos, PhET, 3Dmol.js and OpenStreetMap can be
@@ -1601,13 +1628,15 @@ upload the file (New > File upload), then open it with Google Slides.
 
 * Configuration
 
-| Setting                       | Default   | Effect                                                     |
-|-------------------------------+-----------+------------------------------------------------------------|
-| ~scimax.marp.themes~          | ~[]~      | Custom theme CSS files for thumbnails, preview and exports |
-| ~scimax.marp.enableHtml~      | ~false~   | Allow all raw HTML in slides                               |
-| ~scimax.marp.mathTypesetting~ | ~mathjax~ | ~mathjax~, ~katex~ or ~off~                                |
-| ~scimax.marp.liveReload~      | ~true~    | Reload an open slideshow when the deck is saved            |
-| ~scimax.marp.presenter~       | ~false~   | Presenter tools for decks with no ~presenter:~ line        |
+| Setting                       | Default   | Effect                                                              |
+|-------------------------------+-----------+---------------------------------------------------------------------|
+| ~scimax.marp.themes~          | ~[]~      | Custom theme CSS files for thumbnails, preview and exports          |
+| ~scimax.marp.enableHtml~      | ~false~   | Allow all raw HTML in slides                                        |
+| ~scimax.marp.mathTypesetting~ | ~mathjax~ | ~mathjax~, ~katex~ or ~off~                                         |
+| ~scimax.marp.liveReload~      | ~true~    | Reload an open slideshow when the deck is saved                     |
+| ~scimax.marp.presenter~       | ~false~   | Presenter tools for decks with no ~presenter:~ line                 |
+| ~scimax.marp.presentWindow~   | ~tab~     | ~app~: Present in a Chromium app window (no tabs or toolbar)        |
+| ~scimax.marp.appBrowser~      | (empty)   | Browser for the app window (empty: Chrome, Edge, Chromium or Brave) |
 
 Each falls back to Marp for VS Code's ~markdown.marp.themes~,
 ~markdown.marp.html~ or ~markdown.marp.mathTypesetting~ when it is not set

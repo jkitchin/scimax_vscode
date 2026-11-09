@@ -8,6 +8,7 @@ import { findBareRefs, REF_LINK_PATH_RE } from '../references/refLinks';
 import { marpLinkArgs } from '../marp/marpExport';
 import * as os from 'os';
 import { expandTilde } from '../utils/pathResolver';
+import { mailtoCommandUri } from './mail';
 
 /**
  * Path of a citation written as an org link, e.g. `cite:&key` in [[cite:&key]].
@@ -258,6 +259,11 @@ export class OrgLinkProvider implements vscode.DocumentLinkProvider {
      */
     private resolveTarget(target: string, document: vscode.TextDocument): vscode.Uri | undefined {
         const docDir = path.dirname(document.uri.fsPath);
+
+        // Email links compose in the configured client (scimax.mail.client)
+        if (/^mailto:/i.test(target)) {
+            return mailtoCommandUri(target);
+        }
 
         // HTTP/HTTPS links
         if (target.startsWith('http://') || target.startsWith('https://')) {

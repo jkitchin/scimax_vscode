@@ -457,6 +457,7 @@ Quick reference to find specific features across documentation.
 | Marp export              | [[file:44-marp.org][Marp Slides]]                  | PDF, PowerPoint, Google Slides via Marp CLI or Pandoc                                       |
 | Marp link (marp:)        | [[file:05-links.org][Links]]                        | [[file:44-marp.org][Marp Slides]] - click to present; hover for a first-slide preview                             |
 | Marp menu                | [[file:44-marp.org][Marp Slides]]                  | Right-click in a deck: layouts, images, directives, themes                                  |
+| Marp app window          | [[file:44-marp.org::*Present in an app window][Marp Slides]]                  | Present in a window with no tabs or toolbar (~scimax.marp.presentWindow~)                   |
 | Marp live reload         | [[file:44-marp.org][Marp Slides]]                  | Saving the deck reloads the open slideshow at the slide you are editing                     |
 | Marp offline check       | [[file:44-marp.org][Marp Slides]]                  | Problems panel list of what needs an internet connection when presenting                    |
 | Marp offline Python      | [[file:44-marp.org][Marp Slides]]                  | Python cells that run with no internet connection (~presenter: offline~)                    |
@@ -526,6 +527,8 @@ Quick reference to find specific features across documentation.
 | People / assignees       | [[file:03.6-project-management.org][Project Management]]           | [[file:03-todo-items.org][TODO Items]]                                                                                  |
 | Contacts / locations     | [[file:03.7-contacts-and-locations.org][Contacts & Entities]]          | [[file:03.6-project-management.org][Project Management]], [[file:18-database-search.org][Database & Search]]                                                       |
 | Entity selector          | [[file:03.7-contacts-and-locations.org][Contacts & Entities]]          | [[file:18-database-search.org][Database & Search]]                                                                           |
+| Contacts (C-c S-c)       | [[file:03.7-contacts-and-locations.org][Contacts & Entities]]          | [[file:03.6-project-management.org][Project Management]], [[file:10-export.org][Export (Email a Heading)]]                                                |
+| Email client (Gmail)     | [[file:03.7-contacts-and-locations.org][Contacts & Entities]]          | [[file:26-configuration.org][Configuration]], [[file:10-export.org][Export (Email a Heading)]]                                                     |
 | Snippets (ti, <py)       | [[file:35-templates.org][Document Templates]]           | [[file:26-configuration.org][Configuration]] - Tab expands prefixes                                                        |
 | Templates                | [[file:35-templates.org][Document Templates]]           | [[file:15-capture.org][Capture]], [[file:14-journal.org][Journal]], [[file:26-configuration.org][Configuration]]                                                             |
 | Terminal navigation      | [[file:30-cli.org][Command Line Interface]]       | Open CLI-output file paths from the integrated terminal                                     |

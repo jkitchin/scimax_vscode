@@ -15,6 +15,16 @@ import * as vscode from 'vscode';
 import { randomUUID } from 'crypto';
 import { getTodoStatesFromText, extractHeadingTitle, getTodoWorkflowForDocument } from './todoStates';
 import { ensureHeadingId, findDrawer } from './dependencyCommands';
+import { composeUrl, mailSettings } from './mail';
+
+/** The address and content fields of an email to compose. */
+export interface MailFields {
+    to: string;
+    cc: string;
+    bcc: string;
+    subject: string;
+    body: string;
+}
 
 export interface HeadingEmail {
     /** Line of the headline in the source text (0-based). */
@@ -204,7 +214,7 @@ export function appendIdFooter(body: string, id: string): string {
  * Gmail web compose URL. `account` (an address or account index) selects
  * which signed-in Google account composes the message.
  */
-export function buildGmailUrl(email: HeadingEmail, account?: string): string {
+export function buildGmailUrl(email: MailFields, account?: string): string {
     const params: string[] = ['view=cm', 'fs=1'];
     const add = (key: string, value: string) => {
         if (value) params.push(`${key}=${encodeURIComponent(value)}`);
@@ -256,7 +266,7 @@ export function withTodoKeyword(line: string, todoStates: Set<string>, doneState
 }
 
 /** RFC 6068 mailto: URL for the system mail client. */
-export function buildMailtoUrl(email: HeadingEmail): string {
+export function buildMailtoUrl(email: MailFields): string {
     const params: string[] = [];
     const add = (key: string, value: string) => {
         if (value) params.push(`${key}=${encodeURIComponent(value)}`);
@@ -365,11 +375,9 @@ export async function emailHeading(): Promise<void> {
             vscode.window.showWarningMessage('Could not add an ID to the heading; sending without one.');
         }
     }
-    const client = config.get<string>('client', 'gmail');
-    const account = config.get<string>('gmailAccount', '').trim() || undefined;
-
-    const build = (e: HeadingEmail) =>
-        client === 'mailto' ? buildMailtoUrl(e) : buildGmailUrl(e, account);
+    const settings = mailSettings();
+    const { client, account } = settings;
+    const build = (e: HeadingEmail) => composeUrl(e, settings);
 
     let url = build(email);
     let bodyOnClipboard = false;
