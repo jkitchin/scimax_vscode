@@ -500,6 +500,8 @@
   const SELF_EMPTY = TAG("text/plain", "self") + "</script>";
   // an offline deck's Pyodide files are not in the copy (they would double its size): take them from this page
   const PYODIDE_EMPTY = TAG("application/json", "pyodide") + "</script>";
+  // nor are its movies and sound, kept once each in <script id="marp-media">: take them from this page too
+  const MEDIA_EMPTY = TAG("application/json", "media") + "</script>";
   const selfCopy = () => { const el = document.getElementById("marp-self"); return el && el.textContent.trim(); };
   const b64decode = b64 => new TextDecoder().decode(Uint8Array.from(atob(b64), ch => ch.charCodeAt(0)));
   const b64encode = str => b64bytes(new TextEncoder().encode(str));
@@ -521,6 +523,8 @@
     if (!page.includes(INK_EMPTY) || !page.includes(SELF_EMPTY)) { say("Could not save: the embedded copy of the deck is damaged. Press m or S instead."); return; }
     const el = document.getElementById("marp-pyodide");
     let pyodide = el ? el.textContent : "", pipNote = "";
+    const mediaEl = document.getElementById("marp-media");
+    const media = mediaEl ? mediaEl.textContent : "";
     if (offline && !pyodide.trim() && window.__PYCELLS_PYODIDE__) {
       let got;
       try { got = await offlinePython(window.__PYCELLS_PYODIDE__); }
@@ -532,7 +536,8 @@
     const inkJson = JSON.stringify({ ink, notes, edits: edits() }).replace(/</g, "\\u003c");
     const text = page.replace(INK_EMPTY, () => INK_EMPTY.replace("{}", inkJson))
                      .replace(SELF_EMPTY, () => SELF_EMPTY.replace("</script>", b64 + "</script>"))
-                     .replace(PYODIDE_EMPTY, () => PYODIDE_EMPTY.replace("</script>", pyodide + "</script>"));
+                     .replace(PYODIDE_EMPTY, () => PYODIDE_EMPTY.replace("</script>", pyodide + "</script>"))
+                     .replace(MEDIA_EMPTY, () => MEDIA_EMPTY.replace("</script>", media + "</script>"));
     const base = DECK.replace(/-(annotated|offline)$/, "");
     const name = base + (offline || /-offline$/.test(DECK) ? "-offline.html" : "-annotated.html");
     await writeFile(text, name, "Web page", "text/html", ".html",

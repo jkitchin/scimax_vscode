@@ -41,6 +41,43 @@ const BESPOKE_SCRIPT = /<script>(?=\/\*!! License: [^\n]*marp-cli)/;
 const INK_EMPTY = '<script type="application/json" id="marp-ink-data">{}</script>';
 const SELF_EMPTY = '<script type="text/plain" id="marp-self"></script>';
 const PYODIDE_EMPTY = '<script type="application/json" id="marp-pyodide"></script>';
+const MEDIA_EMPTY = '<script type="application/json" id="marp-media"></script>';
+const MEDIA_MARK = 'marp-present: media store';
+/**
+ * Plays movies and sound kept once in <script id="marp-media">: each element
+ * with data-marp-media="m1#t=95" gets a blob: URL for m1 (plus the fragment).
+ * Elements added later (edited or added slides) are fixed up too.
+ */
+const MEDIA_LOADER = `<script>/* ${MEDIA_MARK} */(function () {
+  var el = document.getElementById("marp-media");
+  var store = el && el.textContent.trim() ? JSON.parse(el.textContent) : {}, urls = {};
+  function url(id) {
+    var m = store[id];
+    if (!urls[id] && m) {
+      var bin = atob(m.data), bytes = new Uint8Array(bin.length);
+      for (var i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+      urls[id] = URL.createObjectURL(new Blob([bytes], { type: m.type }));
+    }
+    return urls[id];
+  }
+  function fix(root) {
+    var list = [].slice.call(root.querySelectorAll ? root.querySelectorAll("[data-marp-media]") : []);
+    if (root.hasAttribute && root.hasAttribute("data-marp-media")) list.push(root);
+    list.forEach(function (e) {
+      var v = e.getAttribute("data-marp-media"), h = v.indexOf("#");
+      var u = url(h < 0 ? v : v.slice(0, h));
+      if (!u) return;
+      u += h < 0 ? "" : v.slice(h);
+      if (e.getAttribute("src") === u) return;
+      e.setAttribute("src", u);
+      if (e.tagName === "SOURCE" && e.parentNode && e.parentNode.load) e.parentNode.load();
+    });
+  }
+  fix(document);
+  new MutationObserver(function (records) {
+    records.forEach(function (r) { r.addedNodes.forEach(function (n) { if (n.nodeType === 1) fix(n); }); });
+  }).observe(document.documentElement, { childList: true, subtree: true });
+})();</script>`;
 const MAX_IFRAME_DEPTH = 3;
 
 const MIME_TYPES: Record<string, string> = {
@@ -148,6 +185,9 @@ class Inliner {
     readonly report: BundleReport = { counts: {}, external: [], missing: [] };
     private readonly external = new Set<string>();
     private readonly fonts = new Map<string, string>();
+    /** Movies and sound, kept once each: file -> id in the media store */
+    readonly mediaIds = new Map<string, string>();
+    readonly media: Record<string, { type: string; data: string }> = {};
 
     constructor(private readonly options: InlineOptions) {}
 
@@ -189,6 +229,19 @@ class Inliner {
         const mime = MIME_TYPES[path.extname(file).toLowerCase()] ?? 'application/octet-stream';
         this.note('images/media');
         return `data:${mime};base64,${fs.readFileSync(file).toString('base64')}`;
+    }
+
+    /** The media store id for a movie or sound file, added to the store the first time. */
+    private mediaId(file: string): string {
+        let id = this.mediaIds.get(file);
+        if (!id) {
+            id = `m${this.mediaIds.size + 1}`;
+            this.mediaIds.set(file, id);
+            const type = MIME_TYPES[path.extname(file).toLowerCase()];
+            this.media[id] = { type, data: fs.readFileSync(file).toString('base64') };
+            this.note('images/media');
+        }
+        return id;
     }
 
     private async fontUri(url: string): Promise<string | undefined> {
@@ -270,7 +323,18 @@ class Inliner {
                 return whole;
             }
             const file = this.resolve(base, unescapeHtml(rawRef));
-            return file ? `${attr}=${quote}${this.dataUri(file)}${quote}` : whole;
+            // Keep a media fragment such as movie.mp4#t=95 (start at 1:35)
+            const hash = rawRef.indexOf('#');
+            const fragment = hash === -1 ? '' : rawRef.slice(hash);
+            if (!file) {
+                return whole;
+            }
+            // A movie or sound file is stored once however often it is used (see MEDIA_LOADER),
+            // (not inside an inlined iframe page, which has no loader)
+            if (depth === 0 && attr === 'src' && /^(video|audio)\//.test(MIME_TYPES[path.extname(file).toLowerCase()] ?? '')) {
+                return `data-marp-media=${quote}${this.mediaId(file)}${fragment}${quote}`;
+            }
+            return `${attr}=${quote}${this.dataUri(file)}${fragment}${quote}`;
         });
         return this.inlineCss(part, base);
     }
@@ -304,7 +368,14 @@ export async function inlineDeck(
     options: InlineOptions = {}
 ): Promise<{ html: string; report: BundleReport }> {
     const inliner = new Inliner(options);
-    const out = await inliner.inline(html, baseDir);
+    let out = await inliner.inline(html, baseDir);
+    if (inliner.mediaIds.size > 0) {
+        // Base64 and MIME types never contain '<', so the JSON cannot close the script
+        const store = MEDIA_EMPTY.replace('></script>', `>${JSON.stringify(inliner.media)}</script>`);
+        const at = out.lastIndexOf('</body>');
+        const tail = store + MEDIA_LOADER;
+        out = at < 0 ? out + tail : out.slice(0, at) + tail + out.slice(at);
+    }
     return { html: out, report: inliner.finish() };
 }
 
@@ -420,7 +491,11 @@ export async function bundlePresenterDeck(html: string, options: BundleOptions):
         inlined.report.counts['python cells'] = 1;
     }
 
-    const b64 = Buffer.from(text, 'utf8').toString('base64');
+    // The copy of the page leaves out the movies and sound (they would double its
+    // size): saving it (presenter.js) takes them from the page doing the saving
+    const mediaStore = /<script type="application\/json" id="marp-media">[^<]*<\/script>/;
+    const self = text.replace(mediaStore, () => MEDIA_EMPTY);
+    const b64 = Buffer.from(self, 'utf8').toString('base64');
     let result = text.replace(SELF_EMPTY, () => SELF_EMPTY.replace('></script>', `>${b64}</script>`));
     if (pyodide) {
         const files: Record<string, string> = {};

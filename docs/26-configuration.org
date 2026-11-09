@@ -86,7 +86,8 @@ This email is used for services that offer better access to identified users. Cu
 
 You can also configure this via the command =scimax.ref.configureOpenAlex= which provides a quick pick menu for setting both your email and optional API key.
 
-*** 👀 scimax.emailHeading.client / .gmailAccount / .includeId / .recordSent / .markDone
+*** ✅ scimax.emailHeading.client / .gmailAccount / .includeId / .recordSent / .markDone
+CLOSED: [2026-11-09 Mon 08:15]
 
 Settings for =Scimax: Email Heading= (=scimax.org.emailHeading=). See [[file:10-export.org::*Email a Heading][Email a Heading]].
 
@@ -2288,7 +2289,7 @@ set, Marp for VS Code's matching ~markdown.marp.*~ setting is used
 See [[file:44-marp.org::*Exporting Slides][Exporting Slides]]. The exports also follow ~scimax.marp.themes~ and
 ~scimax.marp.enableHtml~ (above).
 
-* ⚠️ Org to Marp Export Settings
+* Org to Marp Export Settings
 
 Settings for exporting an org file to a Marp deck (=C-c C-e m s=). Keywords in
 the file (~#+MARP_THEME:~ and so on) override them.

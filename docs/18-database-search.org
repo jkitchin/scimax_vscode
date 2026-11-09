@@ -206,13 +206,13 @@ way to tidy up after narrowing =scimax.db.include=.
 =scimax db prune= on the command line removes indexed files that match an
 exclude pattern.
 
-* ⚠️ Search View
+* Search View
 
 =C-c d v= ([[cmd:scimax.search.view]], =Scimax: Search View=) opens a search
 page beside your files, in the manner of the agenda view. Results update as you
 type, from the database, grouped by file with the lines that match.
 
-** ⚠️ The Query and the Modes
+** The Query and the Modes
 
 Type in the query field at the top. Three checkboxes choose how to search; any
 mix may be on, and a file found by several shows a badge for each:
@@ -232,7 +232,7 @@ by reciprocal-rank fusion over the modes that found them.
 The query and filters are remembered for the next time the view opens. With
 text selected on one line, =C-c d v= starts with that text as the query.
 
-** ⚠️ Filters
+** Filters
 
 | Filter     | How it works                                                   |
 |------------+----------------------------------------------------------------|
@@ -254,7 +254,7 @@ view lists the headings that pass them, so requiring =Any open= with an empty
 query lists your open tasks. =Clear filters= resets them all, and
 =Database…= opens the Database View.
 
-** ⚠️ Results
+** Results
 
 The =Sort= menu at the bottom orders the files:
 
@@ -1179,13 +1179,13 @@ Search scope: all
 Search scope: directory (my-project)
 #+END_SRC
 
-* ⚠️ Database View
+* Database View
 
 =C-c d i= ([[cmd:scimax.db.view]], =Scimax: Database View=) opens a page about
 the database. The Database panel in the sidebar has buttons for it and for the
 Search View.
 
-** ⚠️ Overview
+** Overview
 
 Cards show the number of files (org and Markdown), headings, source blocks,
 chunks, the size of the database file, when a file was last indexed, whether
@@ -1194,20 +1194,20 @@ scope and the schema version. The path of the database file is below them,
 with =Reveal= to show it in the Finder or Explorer. The numbers update while a
 sync or the embedding queue runs; =Refresh= reads them again.
 
-** ⚠️ Actions
+** Actions
 
 Buttons run the database commands: sync, remove files outside the indexed
 folders, cancel sync, rebuild, optimize, verify, back up, restore and clear
 (rebuild and clear ask first), and open the Search View, the file browser,
 the search scope picker and the embedding setup.
 
-** ⚠️ Folders and Recent Files
+** Folders and Recent Files
 
 =Folders with the most files= lists the 15 folders with the most indexed
 files. =Exclude= adds a folder to =scimax.db.exclude= and offers to remove its
 files from the index now. =Recently changed files= opens a file on click.
 
-** ⚠️ Settings
+** Settings
 
 Every =scimax.db.*= and =scimax.search.*= setting is listed by section (what
 gets indexed, embeddings, syncing, limits, search), with its description and a
@@ -1547,9 +1547,9 @@ Ollama embedding model name.
 }
 #+END_SRC
 
-* 👀 Command Reference
+* Command Reference
 
-** 👀 All Database Commands (C-c d ?)
+** All Database Commands (C-c d ?)
 
 =C-c d ?= ([[cmd:scimax.db.help]]) lists every database command. The ones
 bound under =C-c d= show their key, and typing it runs the command at once, so
@@ -1587,7 +1587,7 @@ bound under =C-c d= show their key, and typing it runs the command at once, so
 | scimax.db.searchBlocks       | Search code blocks              |
 | scimax.db.searchHashtags     | Search by hashtag               |
 
-** 👀 View Commands
+** View Commands
 
 | Command               | Description             |
 |-----------------------+-------------------------|
@@ -2044,7 +2044,7 @@ Simplified parser:
 - Cell indices tracked for navigation
 - Hashtags from markdown cells
 
-* 👀 Related Topics
+* Related Topics
 
 - [[file:13-agenda.org][Agenda]] - The agenda view, which the Search View is modelled on
 - [[file:01-getting-started.org][Getting Started]] - Initial setup and first steps

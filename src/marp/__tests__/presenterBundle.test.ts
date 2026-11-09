@@ -32,6 +32,8 @@ beforeAll(() => {
     fs.writeFileSync(path.join(dir, 'style.css'), '.x { background: url(img/bg.png); }');
     fs.writeFileSync(path.join(dir, 'app.js'), 'console.log("</script>");');
     fs.writeFileSync(path.join(dir, 'widget', 'w.png'), PNG);
+    fs.writeFileSync(path.join(dir, 'img', 'movie.mp4'), Buffer.from('movie bytes'));
+    fs.writeFileSync(path.join(dir, 'img', 'clip.m4a'), Buffer.from('sound bytes'));
     fs.writeFileSync(path.join(dir, 'widget', 'page.html'), '<html><body><img src="w.png"></body></html>');
 
     // Small stand-ins for the vendored scripts, with the same first-line marks.
@@ -101,9 +103,40 @@ describe('inlineDeck', () => {
         expect(out).toContain('<iframe class="w" srcdoc="&lt;html&gt;&lt;body&gt;&lt;img src=&quot;data:image/png;base64,');
         expect(out).toContain('<script>console.log("<\\/script>");</script>');
         expect(report.counts.iframes).toBe(1);
+        expect((await inlineDeck(page('<video src="img/a%20b.png#t=95,120"></video>'), dir)).html)
+            .toMatch(/<video src="data:image\/png;base64,[^"#]+#t=95,120"><\/video>/);
         expect(report.counts.stylesheets).toBe(1);
         expect(report.counts.scripts).toBe(1);
         expect(report.missing).toEqual([]);
+    });
+
+    it('stores each movie and sound file once, however often it is used', async () => {
+        const html = page(
+            '<video src="img/movie.mp4" poster="img/bg.png"></video><video src="img/movie.mp4#t=95,120" muted></video>'
+            + '<audio controls src="img/clip.m4a"></audio><p>end</p>'
+        );
+        const { html: out, report } = await inlineDeck(html, dir);
+        expect(out).toContain('<video data-marp-media="m1" poster="data:image/png;base64,');
+        expect(out).toContain('<video data-marp-media="m1#t=95,120" muted>');
+        expect(out).toContain('<audio controls data-marp-media="m2">');
+        const store = JSON.parse(/<script type="application\/json" id="marp-media">([^<]*)<\/script>/.exec(out)![1]);
+        expect(store).toEqual({
+            m1: { type: 'video/mp4', data: Buffer.from('movie bytes').toString('base64') },
+            m2: { type: 'audio/mp4', data: Buffer.from('sound bytes').toString('base64') },
+        });
+        expect(out.split(store.m1.data).length).toBe(2);
+        // The store and its loader go at the end of the body
+        expect(out).toMatch(/<p>end<\/p><script type="application\/json" id="marp-media">[^<]*<\/script><script>\/\* marp-present: media store \*\/[\s\S]*<\/script><\/body>/);
+        expect(report.counts['images/media']).toBe(3);
+        // A page without movies gets no store
+        expect((await inlineDeck(page('<img src="img/bg.png">'), dir)).html).not.toContain('marp-media');
+    });
+
+    it('keeps movies inline in an inlined iframe page, which has no loader', async () => {
+        fs.writeFileSync(path.join(dir, 'widget', 'movie.html'), '<video src="../img/movie.mp4"></video>');
+        const { html: out } = await inlineDeck(page('<iframe src="widget/movie.html"></iframe>'), dir);
+        expect(out).toContain('&lt;video src=&quot;data:video/mp4;base64,');
+        expect(out).not.toContain('marp-media');
     });
 
     it('leaves remote and data URLs alone and lists remote ones', async () => {
@@ -250,6 +283,18 @@ describe('bundlePresenterDeck', () => {
         expect(copy).toBe(html.replace(self![1], ''));
         expect(copy).toContain('window.P = 1');
         expect(copy).toContain('data:image/png;base64,');
+    });
+
+    it('leaves the movies out of its copy of itself', async () => {
+        const { html } = await bundlePresenterDeck(page('<video src="img/movie.mp4"></video>'), { baseDir: dir, assets });
+        const data = Buffer.from('movie bytes').toString('base64');
+        expect(html).toContain(`"data":"${data}"`);
+        const copy = Buffer.from(/id="marp-self">([^<]+)</.exec(html)![1], 'base64').toString('utf8');
+        expect(copy).toContain('<script type="application/json" id="marp-media"></script>');
+        expect(copy).toContain('<video data-marp-media="m1">');
+        expect(copy).not.toContain(data);
+        // The presenter tools come after the loader, so the movies have their URLs first
+        expect(html.indexOf('marp-present: media store')).toBeLessThan(html.indexOf('window.P = 1'));
     });
 
     it('keeps non-ASCII text intact in the copy', async () => {

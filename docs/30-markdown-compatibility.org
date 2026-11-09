@@ -578,17 +578,18 @@ The default keywords are =TODO NEXT WAIT WAITING HOLD SOMEDAY IN-PROGRESS=
 Put the declaration somewhere other than the first line when the first line
 is a heading.
 
-** Commands
+** 👀 Commands
 
-| Key        | Speed key | Action                                          |
-|------------+-----------+-------------------------------------------------|
-| =C-c C-t=  | =t=       | Cycle the heading's TODO keyword                |
-| =C-c ,=    | =,=       | Set the priority                                |
-| =C-c C-s=  | =s=       | Schedule the heading the cursor is under        |
-| =C-c C-d=  | =d=       | Set a deadline on the heading the cursor is under |
-| =C-c C-c=  |           | Toggle a checkbox; recount a =[n/m]= cookie     |
-| =C-c a < a= |          | Agenda view for the current file                |
-| =C-c a < t= |          | TODO list for the current file                  |
+| Key                      | Speed key | Action                                            |
+|--------------------------+-----------+---------------------------------------------------|
+| =C-c C-t=                | =t=       | Cycle the heading's TODO keyword                  |
+| =S-<right>= / =S-<left>= |           | Next / previous TODO keyword                      |
+| =C-c ,=                  | =,=       | Set the priority                                  |
+| =C-c C-s=                | =s=       | Schedule the heading the cursor is under          |
+| =C-c C-d=                | =d=       | Set a deadline on the heading the cursor is under |
+| =C-c C-c=                |           | Toggle a checkbox; recount a =[n/m]= cookie       |
+| =C-c a < a=              |           | Agenda view for the current file                  |
+| =C-c a < t=              |           | TODO list for the current file                    |
 
 =C-c C-s= and =C-c C-d= work anywhere in a heading's section, as in org:
 they open the calendar date picker, write the SCHEDULED / DEADLINE line under
@@ -596,6 +597,13 @@ the heading, and add =TODO= to a heading without a keyword, so the task shows
 in the agenda. Above the first heading they insert =@scheduled(...)= /
 =@due(...)= at the cursor, as before. Cycling a =[TODO]= heading writes the
 keyword bare (=TODO=).
+
+=C-c C-t=, =t= and =S-<right>= / =S-<left>= work as in org. A done keyword
+adds a =CLOSED: [...]= timestamp to the planning line (or a new line under
+the heading), and leaving it removes it. On a task with a repeater
+(=SCHEDULED: <2026-11-03 Tue +1w>=) the date moves on and the heading goes
+back to =TODO= instead. The planning line must come right after the heading,
+with no blank line in between.
 
 ** Checkbox Statistics
 

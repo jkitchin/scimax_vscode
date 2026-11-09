@@ -5,7 +5,7 @@
 #+OPTIONS: toc:t num:t
 #+TODO: ⚠️ 👀 | ✅
 
-* 👀 Overview
+* Overview
 
 Scimax supports [[https://marp.app/][Marp]] slide decks on its own: a Markdown file whose front
 matter has ~marp: true~. It renders the slides with its own copy of Marp Core,
@@ -1337,7 +1337,60 @@ closed or checked again.
 - The browser files live in ~media/marpPresent/~ of the extension; the Output
   panel (/Scimax Marp Export/) lists what was inlined and any missing files.
 
-* ⚠️ Writing Slides in Org
+* ⚠️ Video, Sound and Web Pages
+
+A slide can hold anything a web page can: a movie, sound, a YouTube video, a
+live Google Doc, a whiteboard, a simulation. Write the HTML in the Markdown.
+Marp allows HTML in a deck with ~presenter: true~ (in a trusted workspace);
+for other decks turn on ~scimax.marp.enableHtml~.
+~examples/marp-present/multimedia.md~ in the Scimax repository has a slide for
+each of these.
+
+#+begin_src markdown
+<video src="media/talk.mp4" poster="media/talk.jpg" controls></video>
+<video src="media/talk.mp4#t=95,120" muted controls></video>
+<audio src="media/clip.m4a" controls></audio>
+<iframe src="https://www.youtube-nocookie.com/embed/VIDEO_ID?start=90"
+        width="768" height="432" allowfullscreen></iframe>
+<iframe src="https://docs.google.com/document/d/DOC_ID/preview"
+        style="width:100%;height:470px"></iframe>
+#+end_src
+
+- Movie and sound paths are relative to the deck. ~#t=95~ starts at 1:35 and
+  ~#t=95,120~ also stops at 2:00.
+- YouTube needs the ~/embed/VIDEO_ID~ form; a ~watch~ or ~live~ link does not
+  play in a frame.
+- For a Google Doc, Sheet or Slides file, replace ~/edit...~ in the URL with
+  ~/preview~, and share it as "anyone with the link can view".
+- Sites such as Excalidraw, Desmos, PhET, 3Dmol.js and OpenStreetMap can be
+  framed. A site that refuses (it sends ~X-Frame-Options~) shows an empty box,
+  so link to it instead.
+- Pages that draw on a canvas (Excalidraw, Desmos, PhET, 3Dmol.js, maps) look
+  blurred or jagged in a plain iframe: the slide is laid out at 1280 x 720 and
+  scaled up to the screen, so the page draws small and the browser stretches
+  it. Draw the frame at 1.5 times the size and scale it back down; on a
+  1920 x 1080 screen it is then drawn at the screen's own resolution (the
+  page's buttons look two thirds as big on the slide). In the deck's front matter:
+  #+begin_src yaml
+style: |
+  .sharp { position: relative; overflow: hidden; }
+  .sharp > iframe { position: absolute; top: 0; left: 0; width: 150%; height: 150%;
+                    border: 0; transform: scale(0.6667); transform-origin: 0 0; }
+  #+end_src
+  and on the slide =<div class="sharp" style="height:470px"><iframe src="..."></iframe></div>=.
+- After clicking into a frame, click the slide outside it to get the arrow keys
+  back.
+- =s= in the slideshow and the =h= export put the movies and sound in
+  ~deck.html~, so it plays offline. Each file is in it once, however many
+  slides use it, and the page plays them from there when it opens. They are
+  base64, a third larger than the files, so shrink long movies first: a
+  screen recording shrinks a lot at 15 frames a second (=ffmpeg -i in.mp4 -vf
+  scale=1280:-2,fps=15 -crf 30 -tune stillimage out.mp4=). Web pages stay
+  online.
+- PDF and PowerPoint exports show a movie's poster and an empty box for a web
+  page. Put the link under it for a handout.
+
+* Writing Slides in Org
 
 You can write a talk as an org file and export it to a Marp deck. In the org
 file, =C-c C-e m s= writes ~talk.md~ next to ~talk.org~. =C-c C-e m S= also
@@ -1356,7 +1409,7 @@ uliw suggested this feature and contributed its specification and examples in
 Scimax adds its own slide features: notes, hidden slides, countdowns, live
 Python cells, citations and background images.
 
-** ⚠️ How org maps to slides
+** How org maps to slides
 
 | Org                                           | Marp                                                           |
 |-----------------------------------------------+----------------------------------------------------------------|
@@ -1385,7 +1438,7 @@ Fragment sections (~***~ headings) are raw HTML. A deck with ~presenter: true~
 (the default) always allows HTML. For other decks, turn on
 ~scimax.marp.enableHtml~, or the section shows all at once.
 
-** ⚠️ Keywords
+** Keywords
 
 Keywords in the file override the [[*Org export settings][settings]].
 
@@ -1402,7 +1455,7 @@ Keywords in the file override the [[*Org export settings][settings]].
 | ~#+OPTIONS: marp-fragments:nil~         | Plain ~-~ and ~1.~ lists, no fragment sections    |
 | ~#+PROPERTY: header-args :exports both~ | Default header arguments for source blocks        |
 
-** ⚠️ Slide properties and tags
+** Slide properties and tags
 
 | Heading property or tag | Effect                                         |
 |-------------------------+------------------------------------------------|
@@ -1411,7 +1464,7 @@ Keywords in the file override the [[*Org export settings][settings]].
 | ~:MARP_<X>: value~      | Any other ~<!-- _x: value -->~ local directive |
 | ~:hidden:~ tag          | A [[*Hidden slides][hidden slide]] (or ~:MARP_HIDDEN: t~)          |
 
-** ⚠️ Source blocks
+** Source blocks
 
 ~:exports~ works as in org: ~code~ (the default), ~results~, ~both~ or ~none~.
 Results in a ~#+RESULTS:~ block or ~: output~ lines are exported with ~both~ or
@@ -1429,7 +1482,7 @@ print(int(x) ** 2)
 ,#+end_src
 #+end_example
 
-** ⚠️ Images
+** Images
 
 A link to an image becomes a Marp image. ~#+ATTR_MARP:~ adds Marp's image
 options:
@@ -1445,7 +1498,7 @@ other word (~sepia~, ~blur~) is kept. Without ~#+ATTR_MARP:~, the width and
 height of ~#+ATTR_HTML:~ or ~#+ATTR_ORG:~ are used. A ~#+CAPTION:~ becomes an
 italic line under the image.
 
-** ⚠️ Org export settings
+** Org export settings
 
 | Setting                                   | Default   | Effect                                      |
 |-------------------------------------------+-----------+---------------------------------------------|

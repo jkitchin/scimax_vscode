@@ -30,6 +30,7 @@ vi.mock('vscode', () => {
 });
 
 import { cycleTodoState } from '../scimaxOrg';
+import { shiftTimestampRight, shiftTimestampLeft } from '../timestampProvider';
 
 function makeEditor(text: string, languageId: string, line = 0) {
     let lines = text.split('\n');
@@ -105,5 +106,45 @@ describe('cycleTodoState on markdown headings', () => {
         state.editor = e.editor;
         await cycleTodoState();
         expect(e.text().split('\n')[1]).toBe('# comment');
+    });
+});
+
+describe('a repeating markdown task', () => {
+    beforeEach(() => { state.editor = undefined; });
+
+    for (const [name, cycle] of [['C-c C-t', cycleTodoState], ['Shift+Right', shiftTimestampRight]] as const) {
+        it(`moves the date on and stays TODO (${name})`, async () => {
+            const e = makeEditor('## TODO Water plants\nSCHEDULED: <2026-11-03 Tue +1w>\n\nbody', 'markdown');
+            state.editor = e.editor;
+            await cycle();
+            const lines = e.text().split('\n');
+            expect(lines[0]).toBe('## TODO Water plants');
+            expect(lines).toContain('SCHEDULED: <2026-11-10 Tue +1w>');
+            expect(e.text()).not.toMatch(/^CLOSED:/m);
+        });
+    }
+});
+
+describe('Shift+Right / Shift+Left on markdown headings', () => {
+    beforeEach(() => { state.editor = undefined; });
+
+    it('adds a CLOSED line when done and removes it when not', async () => {
+        const e = makeEditor('## TODO Write paper\nDEADLINE: <2026-01-09 Fri>', 'markdown');
+        state.editor = e.editor;
+        await shiftTimestampRight();
+        const lines = e.text().split('\n');
+        expect(lines[0]).toBe('## DONE Write paper');
+        expect(lines[1]).toMatch(new RegExp(`CLOSED: \\[${today} `));
+        expect(lines[1]).toContain('DEADLINE: <2026-01-09 Fri>');
+        await shiftTimestampLeft();
+        expect(e.text()).toBe('## TODO Write paper\nDEADLINE: <2026-01-09 Fri>');
+    });
+
+    it('reads [TODO] and honors #+TODO: keywords', async () => {
+        const e = makeEditor('<!-- #+TODO: TODO REVIEW | SHIPPED -->\n# [REVIEW] x', 'markdown', 1);
+        state.editor = e.editor;
+        await shiftTimestampRight();
+        expect(e.text().split('\n')[1]).toBe('# SHIPPED x');
+        expect(e.text().split('\n')[2]).toMatch(/^CLOSED: \[/);
     });
 });

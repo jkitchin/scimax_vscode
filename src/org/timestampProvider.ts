@@ -22,6 +22,7 @@ import {
     formatDuration,
 } from '../parser/orgClocking';
 import { parseOrg } from '../parser/orgParserUnified';
+import { isMarkdownNonProseLine } from '../shared/markdownDocument';
 import { getTimestampComponent } from './timestampComponent';
 import { noteDeadlineShiftStart, registerDeadlineShiftTracking } from './shiftDependents';
 import { resolveLoggingConfig, combineEditsForRepeatLogging } from './progressLogging';
@@ -31,9 +32,12 @@ import { resolveLoggingConfig, combineEditsForRepeatLogging } from './progressLo
  * @param line The line text to check
  * @param validTodoStates Optional set of valid TODO states for the document
  */
-function getOrgHeadingInfo(line: string, validTodoStates?: Set<string>): { level: number; todoState: string; rest: string } | null {
-    // First check if it's a heading at all
-    const headingMatch = line.match(/^(\*+)\s+(.*)$/);
+function getOrgHeadingInfo(line: string, validTodoStates?: Set<string>, markdown = false): { level: number; todoState: string; rest: string } | null {
+    // First check if it's a heading at all. A markdown keyword may be written
+    // `[TODO]`; it is read (and rewritten) in the bare form.
+    const headingMatch = markdown
+        ? line.replace(/^(#{1,6}\s+)\[([A-Z][A-Z0-9_-]*)\](?=\s|$)/, '$1$2').match(/^(#{1,6})\s+(.*)$/)
+        : line.match(/^(\*+)\s+(.*)$/);
     if (!headingMatch) return null;
 
     const stars = headingMatch[1];
@@ -74,20 +78,6 @@ function getOrgHeadingInfo(line: string, validTodoStates?: Set<string>): { level
         level: stars.length,
         todoState: '',
         rest: afterStars
-    };
-}
-
-/**
- * Check if line is a markdown heading and return match info
- */
-function getMarkdownHeadingInfo(line: string): { level: number; todoState: string; rest: string } | null {
-    // Match: hashes, optional TODO/DONE, rest of heading
-    const match = line.match(/^(#{1,6})\s+(?:(TODO|DONE)\s+)?(.*)$/);
-    if (!match) return null;
-    return {
-        level: match[1].length,
-        todoState: match[2] || '',
-        rest: match[3]
     };
 }
 
@@ -255,29 +245,26 @@ async function cycleTodoState(forward: boolean): Promise<boolean> {
     const line = document.lineAt(position.line);
     const lineText = line.text;
     const isOrg = document.languageId === 'org';
+    // A `#` line in markdown code, front matter or a comment is not a heading
+    if (!isOrg && isMarkdownNonProseLine(document, position.line)) return false;
 
-    // Get document-specific TODO workflow for org files
-    const workflow = isOrg ? getTodoWorkflowForDocument(document) : null;
-    const validStates = workflow ? new Set(workflow.allStates) : undefined;
-    const doneStates = workflow ? new Set(workflow.doneStates) : new Set(['DONE']);
+    // Markdown headings (`## TODO x`) use the same workflow, #+TODO: keywords,
+    // repeaters, CLOSED line and dependency checks as org ones.
+    const workflow = getTodoWorkflowForDocument(document);
+    const validStates = new Set(workflow.allStates);
+    const doneStates = new Set(workflow.doneStates);
 
-    const headingInfo = isOrg
-        ? getOrgHeadingInfo(lineText, validStates)
-        : getMarkdownHeadingInfo(lineText);
+    const headingInfo = getOrgHeadingInfo(lineText, validStates, !isOrg);
 
     if (!headingInfo) return false;
 
     // Track previous done state for CLOSED timestamp handling
     const wasDone = headingInfo.todoState ? doneStates.has(headingInfo.todoState) : false;
 
-    // Use document-aware TODO cycling for org files
-    let newState = isOrg
-        ? (forward
-            ? getNextTodoState(headingInfo.todoState || undefined, document)
-            : getPreviousTodoState(headingInfo.todoState || undefined, document))
-        : (forward
-            ? (headingInfo.todoState === '' ? 'TODO' : headingInfo.todoState === 'TODO' ? 'DONE' : '')
-            : (headingInfo.todoState === '' ? 'DONE' : headingInfo.todoState === 'DONE' ? 'TODO' : ''));
+    // Document-aware cycling (#+TODO: keywords)
+    let newState = forward
+        ? getNextTodoState(headingInfo.todoState || undefined, document)
+        : getPreviousTodoState(headingInfo.todoState || undefined, document);
 
     const prefix = isOrg
         ? '*'.repeat(headingInfo.level)
@@ -288,13 +275,13 @@ async function cycleTodoState(forward: boolean): Promise<boolean> {
     // org-depend blocking: refuse to complete a task whose dependencies (or an
     // earlier ORDERED sibling) are unfinished. Same guard as scimax.org.cycleTodo
     // so shift-left/right can't sneak a task past its dependencies.
-    if (isOrg && await guardCompletion(document, position.line, doneStates, wasDone, isDoneState)) {
+    if (await guardCompletion(document, position.line, doneStates, wasDone, isDoneState)) {
         return true; // handled: change refused
     }
 
     // Check for repeating task when transitioning to a done state
     let repeaterInfo: ReturnType<typeof findRepeaterTimestamp> = null;
-    if (isOrg && isDoneState) {
+    if (isDoneState) {
         repeaterInfo = findRepeaterTimestamp(document, position.line);
     }
 
@@ -380,22 +367,17 @@ async function cycleTodoState(forward: boolean): Promise<boolean> {
             editBuilder.replace(line.range, newLine);
         });
 
-        // Handle CLOSED timestamp (org-mode only)
-        if (isOrg) {
-            const isNowDone = newState ? doneStates.has(newState) : false;
-            await updateClosedTimestamp(editor, position.line, wasDone, isNowDone);
-        }
+        // Handle CLOSED timestamp
+        await updateClosedTimestamp(editor, position.line, wasDone, isDoneState);
     }
 
-    // Update statistics cookies in parent headings (org-mode only)
-    if (isOrg) {
-        await updateStatisticsCookies(editor, position.line, headingInfo.level);
-    }
+    // Update statistics cookies in parent headings
+    await updateStatisticsCookies(editor, position.line, headingInfo.level);
 
     // Fire dependency triggers when this completion unblocks other tasks
     // (skip repeaters, which reset to an active state rather than completing).
     // Fire-and-forget so the DB-backed reverse lookup never delays cycling.
-    if (isOrg && isDoneState && !wasDone && !repeaterInfo) {
+    if (isDoneState && !wasDone && !repeaterInfo) {
         void runDependencyTriggers(document, position.line);
     }
 
@@ -889,7 +871,7 @@ async function addRepeater(): Promise<void> {
 /**
  * Shift timestamp left (previous day), cycle TODO backward, or move table column left
  */
-async function shiftTimestampLeft(): Promise<void> {
+export async function shiftTimestampLeft(): Promise<void> {
     const editor = vscode.window.activeTextEditor;
     if (!editor) return;
 
@@ -932,7 +914,7 @@ async function shiftTimestampLeft(): Promise<void> {
 /**
  * Shift timestamp right (next day), cycle TODO forward, or move table column right
  */
-async function shiftTimestampRight(): Promise<void> {
+export async function shiftTimestampRight(): Promise<void> {
     const editor = vscode.window.activeTextEditor;
     if (!editor) return;
 

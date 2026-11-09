@@ -1,6 +1,6 @@
 {
-  "buildDate": "2026-11-09T15:33:53.938Z",
-  "count": 3792,
+  "buildDate": "2026-11-09T19:30:15.935Z",
+  "count": 3793,
   "entries": [
     {
       "heading": "Scimax VS Code",
@@ -1225,7 +1225,7 @@
       "level": 1,
       "file": "00-index.org",
       "line": 374,
-      "content": "Quick reference to find specific features across documentation. | Topic                   | Primary Documentation        | Related Documentation                                                                       | |-------------------------+------------------------------+---------------------------------------------------------------------------------------------| | Agent skills            | [[file:30-cli.org::*Skill][CLI: Skill]]                   | [[file:25-commands.org::*AI Agent Skills][",
+      "content": "Quick reference to find specific features across documentation. | Topic                    | Primary Documentation        | Related Documentation                                                                       | |--------------------------+------------------------------+---------------------------------------------------------------------------------------------| | Agent skills             | [[file:30-cli.org::*Skill][CLI: Skill]]                   | [[file:25-commands.org::*AI Agent Skill",
       "path": [],
       "commands": [],
       "keybindings": [],
@@ -1241,7 +1241,7 @@
         "documentation",
         "primary",
         "related",
-        "----------------------------------------------------------------------------------------------------------------------------------------------------",
+        "-----------------------------------------------------------------------------------------------------------------------------------------------------",
         "agent",
         "skills",
         "file30-cliorgskill",
@@ -1254,7 +1254,7 @@
       "heading": "Quick Start by Use Case",
       "level": 1,
       "file": "00-index.org",
-      "line": 537,
+      "line": 538,
       "content": "",
       "path": [],
       "commands": [],
@@ -1269,7 +1269,7 @@
       "heading": "I want to...",
       "level": 2,
       "file": "00-index.org",
-      "line": 539,
+      "line": 540,
       "content": "",
       "path": [
         "Quick Start by Use Case"
@@ -1284,7 +1284,7 @@
       "heading": "Take notes and organize information",
       "level": 3,
       "file": "00-index.org",
-      "line": 541,
+      "line": 542,
       "content": "- Start with [[file:01-getting-started.org][Getting Started]] - Learn [[file:01.5-basic-syntax.org][Basic Syntax]] for formatting text - Learn [[file:02-document-structure.org][Document Structure]] for headings and organization - Use [[file:15-capture.org][Capture]] for quick note-taking - Search with [[file:18-database-search.org][Database and Search]]",
       "path": [
         "Quick Start by Use Case",
@@ -1319,7 +1319,7 @@
       "heading": "Manage tasks and projects",
       "level": 3,
       "file": "00-index.org",
-      "line": 548,
+      "line": 549,
       "content": "- Set up tasks with [[file:03-todo-items.org][TODO Items]] - Add dates with [[file:06-timestamps.org][Timestamps]] - View agenda with [[file:13-agenda.org][Agenda]] - Organize projects with [[file:17-projectile.org][Projectile]] or [[file:16-notebook.org][Notebook]]",
       "path": [
         "Quick Start by Use Case",
@@ -1353,7 +1353,7 @@
       "heading": "Write scientific documents",
       "level": 3,
       "file": "00-index.org",
-      "line": 554,
+      "line": 555,
       "content": "- Execute code with [[file:07-source-blocks.org][Source Code Blocks]] - Preview math with [[file:11-latex-preview.org][LaTeX Preview]] - Manage citations with [[file:19-references.org][References]] - Export with [[file:10-export.org][Export]]",
       "path": [
         "Quick Start by Use Case",
@@ -1386,7 +1386,7 @@
       "heading": "Keep a journal",
       "level": 3,
       "file": "00-index.org",
-      "line": 560,
+      "line": 561,
       "content": "- Set up with [[file:14-journal.org][Journal]] - Use templates from [[file:15-capture.org][Capture]] - Navigate entries with [[file:21-navigation.org][Navigation]]",
       "path": [
         "Quick Start by Use Case",
@@ -1412,7 +1412,7 @@
       "heading": "Navigate efficiently",
       "level": 3,
       "file": "00-index.org",
-      "line": 565,
+      "line": 566,
       "content": "- Learn [[file:21-navigation.org][Navigation]] techniques - Master [[file:23-speed-commands.org][Speed Commands]] - Use [[file:22-hydra-menus.org][Hydra Menus]] for discovery - Reference [[file:24-keybindings.org][Keybindings]]",
       "path": [
         "Quick Start by Use Case",
@@ -1444,7 +1444,7 @@
       "heading": "Programmatically modify org files",
       "level": 3,
       "file": "00-index.org",
-      "line": 571,
+      "line": 572,
       "content": "CLOSED: [2026-01-16 Fri 20:04] - Use the [[file:27-org-api.org][Org API]] in TypeScript source blocks - Bulk update TODO states, properties, and tags - Extract and transform table data - Automate repetitive org file operations",
       "path": [
         "Quick Start by Use Case",
@@ -1479,7 +1479,7 @@
       "heading": "Configure the extension",
       "level": 3,
       "file": "00-index.org",
-      "line": 578,
+      "line": 579,
       "content": "CLOSED: [2026-01-16 Fri 20:04] - See all options in [[file:26-configuration.org][Configuration]] - Set up keybindings with [[file:24-keybindings.org][Keybindings]] - Customize menus with [[file:22-hydra-menus.org][Hydra Menus]]",
       "path": [
         "Quick Start by Use Case",
@@ -1510,7 +1510,7 @@
       "heading": "Navigation",
       "level": 1,
       "file": "00-index.org",
-      "line": 584,
+      "line": 585,
       "content": "- Index: [[file:00-index.org][Documentation Index]] - Next: [[file:01-getting-started.org][Getting Started]]",
       "path": [],
       "commands": [],
@@ -96611,7 +96611,7 @@
       "level": 2,
       "file": "30-markdown-compatibility.org",
       "line": 581,
-      "content": "| Key        | Speed key | Action                                          | |------------+-----------+-------------------------------------------------| | =C-c C-t=  | =t=       | Cycle the heading's TODO keyword                | | =C-c ,=    | =,=       | Set the priority                                | | =C-c C-s=  | =s=       | Schedule the heading the cursor is under        | | =C-c C-d=  | =d=       | Set a deadline on the heading the cursor is under | | =C-c C-c=  |           | Toggle a ",
+      "content": "| Key                      | Speed key | Action                                            | |--------------------------+-----------+---------------------------------------------------| | =C-c C-t=                | =t=       | Cycle the heading's TODO keyword                  | | =S-<right>= / =S-<left>= |           | Next / previous TODO keyword                      | | =C-c ,=                  | =,=       | Set the priority                                  | | =C-c C-s=                | =s=   ",
       "path": [
         "Tasks, Planning and Hashtags in Markdown"
       ],
@@ -96619,38 +96619,34 @@
       "keybindings": [
         "C-c C-t",
         "C-c",
-        "C-c C-s",
-        "C-c C-d",
-        "C-c C-c"
+        "C-c C-s"
       ],
       "keywords": [
         "commands",
         "key",
         "speed",
         "action",
-        "------------------------------------------------------------------------",
+        "----------------------------------------------------------------------------------------",
         "c-c",
         "c-t",
         "cycle",
         "heading",
         "todo",
         "keyword",
+        "s-right",
+        "s-left",
+        "next",
+        "previous",
         "set",
         "priority",
-        "c-s",
-        "schedule",
-        "cursor",
-        "under",
-        "c-d",
-        "deadline",
-        "toggle"
+        "c-s"
       ]
     },
     {
       "heading": "Checkbox Statistics",
       "level": 2,
       "file": "30-markdown-compatibility.org",
-      "line": 600,
+      "line": 608,
       "content": "A =[n/m]= or =[n%]= cookie on a heading counts the checkboxes in its section; on a list item, its direct child checkboxes. Toggling a checkbox (=C-c C-c= or a click) updates the cookies above it, and =C-c C-c= on a line with a cookie recounts it. As in org, a heading's cookie also counts its direct subheadings with TODO keywords when you change one with =C-c C-t=. #+BEGIN_SRC markdown ## Checkboxes [2/3] - [x] task 1 - [x] task 2 - [ ] task 3 #+END_SRC",
       "path": [
         "Tasks, Planning and Hashtags in Markdown"
@@ -96687,7 +96683,7 @@
       "heading": "Agenda",
       "level": 2,
       "file": "30-markdown-compatibility.org",
-      "line": 615,
+      "line": 623,
       "content": "Indexed Markdown files take part in the database agenda and TODO lists (=C-c a=), with priority, tags and planning dates. The first database sync after updating re-indexes Markdown files. The agenda view for the current file (=C-c a < a=) works on a Markdown file; agendas limited to a project read only its org files.",
       "path": [
         "Tasks, Planning and Hashtags in Markdown"
@@ -96723,7 +96719,7 @@
       "heading": "Hashtags",
       "level": 2,
       "file": "30-markdown-compatibility.org",
-      "line": 623,
+      "line": 631,
       "content": "=#tags= in Markdown are drawn in blue, hover and click like in org (see [[file:18-database-search.org::*Hashtags in the Editor][Hashtags in the Editor]]), and are indexed. A heading's own =#= marks are not hashtags, but =#tags= in its title are.",
       "path": [
         "Tasks, Planning and Hashtags in Markdown"
@@ -96753,7 +96749,7 @@
       "heading": "Features Not Available in Markdown",
       "level": 1,
       "file": "30-markdown-compatibility.org",
-      "line": 630,
+      "line": 638,
       "content": "These org-mode features have no Markdown form and stay org-only. Their commands either do nothing in Markdown files or work only in org files.",
       "path": [],
       "commands": [],
@@ -96777,7 +96773,7 @@
       "heading": "Time and Metadata",
       "level": 2,
       "file": "30-markdown-compatibility.org",
-      "line": 635,
+      "line": 643,
       "content": "| Feature    | Reason                                        | |------------+-----------------------------------------------| | Clocking   | Org syntax: =CLOCK: [timestamp]--[timestamp]= | | Properties | Org syntax: =:PROPERTIES:= drawer             | | LOGBOOK    | Org syntax: =:LOGBOOK:= drawer                | The speed keys =I= (clock in), =e= (effort) and =P= (set property) insert org drawers even in Markdown files, where nothing reads them back. Avoid them in Markdown.",
       "path": [
         "Features Not Available in Markdown"
@@ -96811,7 +96807,7 @@
       "heading": "Special Elements",
       "level": 2,
       "file": "30-markdown-compatibility.org",
-      "line": 647,
+      "line": 655,
       "content": "| Feature             | Reason                                  | |---------------------+-----------------------------------------| | Inline tasks        | Org syntax: 15+ stars                   | | Dynamic blocks      | Org syntax: =#+BEGIN:=                  | | Special blocks      | Org syntax: =#+BEGIN_QUOTE=, etc.       | | Table formulas      | Org syntax: =#+TBLFM:=                  | | Tangle, noweb       | Need org header arguments               | | LaTeX preview       | Inline preview",
       "path": [
         "Features Not Available in Markdown"
@@ -96845,7 +96841,7 @@
       "heading": "Tips for Markdown Users",
       "level": 1,
       "file": "30-markdown-compatibility.org",
-      "line": 661,
+      "line": 669,
       "content": "",
       "path": [],
       "commands": [],
@@ -96860,7 +96856,7 @@
       "heading": "Maximizing Compatibility",
       "level": 2,
       "file": "30-markdown-compatibility.org",
-      "line": 663,
+      "line": 671,
       "content": "To get the most out of Scimax VS Code with Markdown: 1. *Use speed commands* - Position cursor at column 0 of headings for rapid single-key operations 2. *Use fenced code blocks* - The extension supports =```language= blocks for execution and manipulation 3. *Use the outline view* - Provides visual navigation similar to org's sparse tree features 4. *Use jump commands* - =C-c C-j= for headings, =C-c C-v g= for code blocks 5. *Use =# TODO= headings with SCHEDULED / DEADLINE lines* - they show up ",
       "path": [
         "Tips for Markdown Users"
@@ -96897,7 +96893,7 @@
       "heading": "When to Use Org-Mode Instead",
       "level": 2,
       "file": "30-markdown-compatibility.org",
-      "line": 681,
+      "line": 689,
       "content": "Consider using org-mode files when you need: - Time tracking with clocking - Inherited properties and tags - Per-block header arguments, tangling and noweb - Table formulas - Advanced export features Org files can be exported to Markdown when sharing with others who don't use org-mode.",
       "path": [
         "Tips for Markdown Users"
@@ -96931,7 +96927,7 @@
       "heading": "Related Topics",
       "level": 1,
       "file": "30-markdown-compatibility.org",
-      "line": 694,
+      "line": 702,
       "content": "- [[file:45-myst-preview.org][MyST Markdown Preview]] - Jupyter Book directives and roles in the preview - [[file:44-marp.org][Marp Slides]] - jump from a Marp slide preview to its source - [[file:11-latex-preview.org][LaTeX Preview]] - the renderer behind the equation hover - [[file:25-commands.org][Commands]] - Markdown File Export commands (Pandoc) - [[file:02-document-structure.org][Document Structure]] - Full org-mode structure documentation - [[file:23-speed-commands.org][Speed Commands]] ",
       "path": [],
       "commands": [],
@@ -96963,7 +96959,7 @@
       "heading": "Navigation",
       "level": 1,
       "file": "30-markdown-compatibility.org",
-      "line": 713,
+      "line": 721,
       "content": "CLOSED: [2026-01-19 Mon 09:44] - Previous: [[file:29-unsupported-features.org][Unsupported Features]] - Index: [[file:00-index.org][Documentation Index]] - Next: [[file:31-publishing.org][Publishing]]",
       "path": [],
       "commands": [],
@@ -110339,10 +110335,44 @@
       ]
     },
     {
-      "heading": "Writing Slides in Org",
+      "heading": "Video, Sound and Web Pages",
       "level": 1,
       "file": "44-marp.org",
       "line": 1340,
+      "content": "A slide can hold anything a web page can: a movie, sound, a YouTube video, a live Google Doc, a whiteboard, a simulation. Write the HTML in the Markdown. Marp allows HTML in a deck with ~presenter: true~ (in a trusted workspace); for other decks turn on ~scimax.marp.enableHtml~. ~examples/marp-present/multimedia.md~ in the Scimax repository has a slide for each of these. #+begin_src markdown <video src=\"media/talk.mp4\" poster=\"media/talk.jpg\" controls></video> <video src=\"media/talk.mp4#t=95,120",
+      "path": [],
+      "commands": [
+        "scimax.marp.enableHtml"
+      ],
+      "keybindings": [],
+      "keywords": [
+        "video",
+        "sound",
+        "web",
+        "pages",
+        "slide",
+        "hold",
+        "anything",
+        "page",
+        "movie",
+        "youtube",
+        "live",
+        "google",
+        "doc",
+        "whiteboard",
+        "simulation",
+        "write",
+        "html",
+        "markdown",
+        "marp",
+        "allows"
+      ]
+    },
+    {
+      "heading": "Writing Slides in Org",
+      "level": 1,
+      "file": "44-marp.org",
+      "line": 1393,
       "content": "You can write a talk as an org file and export it to a Marp deck. In the org file, =C-c C-e m s= writes ~talk.md~ next to ~talk.org~. =C-c C-e m S= also opens the ~.md~ file, and =C-c C-e m p= starts the slideshow. Each export replaces the ~.md~ file, so edit the org file, not the deck. | Command                          | Keys        | Effect                           | |----------------------------------+-------------+----------------------------------| | [[cmd:scimax.org.exportMarp]]        |",
       "path": [],
       "commands": [
@@ -110378,7 +110408,7 @@
       "heading": "How org maps to slides",
       "level": 2,
       "file": "44-marp.org",
-      "line": 1359,
+      "line": 1412,
       "content": "| Org                                           | Marp                                                           | |-----------------------------------------------+----------------------------------------------------------------| | ~#+TITLE:~, ~#+AUTHOR:~, ~#+DATE:~            | Front matter, and a title slide (class ~lead~, no page number) | | ~#+SUBTITLE:~                                 | An italic line under the title on the title slide              | | Text before the first heading         ",
       "path": [
         "Writing Slides in Org"
@@ -110412,7 +110442,7 @@
       "heading": "Keywords",
       "level": 2,
       "file": "44-marp.org",
-      "line": 1388,
+      "line": 1441,
       "content": "Keywords in the file override the [[*Org export settings][settings]]. | Keyword                                 | Front matter / effect                             | |-----------------------------------------+---------------------------------------------------| | ~#+MARP_THEME: gaia~                    | ~theme: gaia~                                     | | ~#+MARP_HEADING_DIVIDER: 1~             | ~headingDivider: 1~ (and shifts the levels above) | | ~#+MARP_PAGINATE: nil~                  | ~p",
       "path": [
         "Writing Slides in Org"
@@ -110446,7 +110476,7 @@
       "heading": "Slide properties and tags",
       "level": 2,
       "file": "44-marp.org",
-      "line": 1405,
+      "line": 1458,
       "content": "| Heading property or tag | Effect                                         | |-------------------------+------------------------------------------------| | ~:MARP_FIT: t~          | A fitted heading (~# <!-- fit -->~)            | | ~:MARP_CLASS: invert~   | ~<!-- _class: invert -->~ on that slide        | | ~:MARP_<X>: value~      | Any other ~<!-- _x: value -->~ local directive | | ~:hidden:~ tag          | A [[*Hidden slides][hidden slide]] (or ~:MARP_HIDDEN: t~)          |",
       "path": [
         "Writing Slides in Org"
@@ -110480,7 +110510,7 @@
       "heading": "Source blocks",
       "level": 2,
       "file": "44-marp.org",
-      "line": 1414,
+      "line": 1467,
       "content": "~:exports~ works as in org: ~code~ (the default), ~results~, ~both~ or ~none~. Results in a ~#+RESULTS:~ block or ~: output~ lines are exported with ~both~ or ~results~. To make a [[*Live Python cells][live Python cell]], add ~:run t~ (or ~:marp-run t~). Use ~:run auto~ to run it when the slide opens and ~:run hidden~ to hide the code. For full control, ~:marp \"python run auto\"~ (or ~:python \"python run\"~, the =ox-marp= form) sets the fence's info string. #+begin_example ,#+begin_src jupyter-pyt",
       "path": [
         "Writing Slides in Org"
@@ -110514,7 +110544,7 @@
       "heading": "Images",
       "level": 2,
       "file": "44-marp.org",
-      "line": 1432,
+      "line": 1485,
       "content": "A link to an image becomes a Marp image. ~#+ATTR_MARP:~ adds Marp's image options: #+begin_example ,#+ATTR_MARP: :bg right:40% :width 300px [[file:figures/plot.png]] #+end_example gives ~![bg right:40% w:300px](figures/plot.png)~. ~:bg~ alone makes a background image, ~:height~ becomes ~h:~, ~:alt~ sets the alt text and any other word (~sepia~, ~blur~) is kept. Without ~#+ATTR_MARP:~, the width and height of ~#+ATTR_HTML:~ or ~#+ATTR_ORG:~ are used. A ~#+CAPTION:~ becomes an italic line under th",
       "path": [
         "Writing Slides in Org"
@@ -110548,7 +110578,7 @@
       "heading": "Org export settings",
       "level": 2,
       "file": "44-marp.org",
-      "line": 1448,
+      "line": 1501,
       "content": "| Setting                                   | Default   | Effect                                      | |-------------------------------------------+-----------+---------------------------------------------| | ~scimax.export.marp.theme~                | ~default~ | Theme                                       | | ~scimax.export.marp.headingDivider~       | ~2~       | Heading levels that start slides            | | ~scimax.export.marp.paginate~             | ~true~    | Slide numbers             ",
       "path": [
         "Writing Slides in Org"
@@ -110581,7 +110611,7 @@
       "heading": "Exporting Slides",
       "level": 1,
       "file": "44-marp.org",
-      "line": 1464,
+      "line": 1517,
       "content": "Press =C-c C-e= in a Marp deck (or click the export button in the Marp Slides view's title bar) for the Marp export menu. In other Markdown files =C-c C-e= still opens the Markdown (Pandoc) export menu, which is also =m= in this one. Exports are written next to the deck, and the deck is saved first. When an export finishes, a notification offers to open the file or show it in its folder. | Key | Export                                               | Output                 | Needs                ",
       "path": [],
       "commands": [],
@@ -110615,7 +110645,7 @@
       "heading": "Marp CLI",
       "level": 2,
       "file": "44-marp.org",
-      "line": 1491,
+      "line": 1544,
       "content": "All exports except =d= run [[https://github.com/marp-team/marp-cli][Marp CLI]], the tool behind Marp for VS Code's own export. Scimax uses ~scimax.marp.cliPath~ if set, then ~marp~ on the PATH (=npm install -g @marp-team/marp-cli=). Failing both, it offers to run it with ~npx~, which downloads Marp CLI the first time. It asks once and remembers the answer. PDF, PowerPoint and image exports render the slides in Google Chrome, Microsoft Edge or Firefox, so one of them must be installed. Local imag",
       "path": [
         "Exporting Slides"
@@ -110651,7 +110681,7 @@
       "heading": "Which PowerPoint",
       "level": 2,
       "file": "44-marp.org",
-      "line": 1506,
+      "line": 1559,
       "content": "There are three PowerPoint exports: |                        | PowerPoint (=s=) | Editable, Marp (=e=)    | Editable, Pandoc (=d=)                  | |------------------------+------------------+-------------------------+-----------------------------------------| | Looks like the preview | Exactly          | Mostly                  | No: PowerPoint default or your template | | Text editable          | No (pictures)    | Yes                     | Yes                                     | | Presen",
       "path": [
         "Exporting Slides"
@@ -110684,7 +110714,7 @@
       "heading": "Google Slides",
       "level": 2,
       "file": "44-marp.org",
-      "line": 1531,
+      "line": 1584,
       "content": "Google Slides has no import from Marp, but it opens PowerPoint files, and editable ones import best. The =g= export makes Marp's editable PowerPoint when LibreOffice is installed, otherwise the Pandoc one, otherwise (after asking) the picture PowerPoint. The notification links to Google Drive: upload the file (New > File upload), then open it with Google Slides.",
       "path": [
         "Exporting Slides"
@@ -110718,7 +110748,7 @@
       "heading": "Export settings",
       "level": 2,
       "file": "44-marp.org",
-      "line": 1539,
+      "line": 1592,
       "content": "| Setting                          | Default | Effect                                                                | |----------------------------------+---------+-----------------------------------------------------------------------| | ~scimax.marp.cliPath~            | (empty) | Marp CLI executable; empty means ~marp~ on the PATH, else ~npx~       | | ~scimax.marp.browserPath~        | (empty) | Browser for PDF, PowerPoint and images; empty lets Marp find one      | | ~scimax.marp.libreOffi",
       "path": [
         "Exporting Slides"
@@ -110756,7 +110786,7 @@
       "heading": "Configuration",
       "level": 1,
       "file": "44-marp.org",
-      "line": 1549,
+      "line": 1602,
       "content": "| Setting                       | Default   | Effect                                                     | |-------------------------------+-----------+------------------------------------------------------------| | ~scimax.marp.themes~          | ~[]~      | Custom theme CSS files for thumbnails, preview and exports | | ~scimax.marp.enableHtml~      | ~false~   | Allow all raw HTML in slides                               | | ~scimax.marp.mathTypesetting~ | ~mathjax~ | ~mathjax~, ~katex~ or ~off",
       "path": [],
       "commands": [
@@ -110791,7 +110821,7 @@
       "heading": "Marp CLI configuration files",
       "level": 2,
       "file": "44-marp.org",
-      "line": 1567,
+      "line": 1620,
       "content": "A deck set up for Marp CLI often keeps its themes and options in a configuration file beside it rather than in VS Code settings: #+begin_src yaml # .marprc.yml themeSet: ./theme html: true #+end_src Scimax reads the same file, so the thumbnails, the slide preview, the Markdown preview and exports show the deck the way Marp CLI renders it. It uses the nearest ~.marprc~, ~.marprc.json~, ~.marprc.yaml~, ~.marprc.yml~ or ~marp~ key of ~package.json~, looking in the deck's folder and then each folder",
       "path": [
         "Configuration"
@@ -110825,7 +110855,7 @@
       "heading": "Double-click in the Markdown preview",
       "level": 2,
       "file": "44-marp.org",
-      "line": 1596,
+      "line": 1649,
       "content": "Double-click in the Markdown preview follows VS Code's own setting for double-clicking in the Markdown preview. Current VS Code releases turn it off by default, so enable it once in your user settings: #+begin_src json \"markdown.preview.doubleClickToSwitchToEditor\": true #+end_src | Setting                                        | Default | Effect                                      | |------------------------------------------------+---------+---------------------------------------------| | ~m",
       "path": [
         "Configuration"
@@ -110859,7 +110889,7 @@
       "heading": "How It Works",
       "level": 1,
       "file": "44-marp.org",
-      "line": 1615,
+      "line": 1668,
       "content": "",
       "path": [],
       "commands": [],
@@ -110872,7 +110902,7 @@
       "heading": "Slides in the Markdown preview",
       "level": 2,
       "file": "44-marp.org",
-      "line": 1617,
+      "line": 1670,
       "content": "Scimax contributes a markdown-it plugin (~markdown.markdownItPlugins~, ~src/marp/marpPreviewPlugin.ts~). For a file with ~marp: true~ in its front matter it parses and renders with Marp Core instead of plain markdown-it, adds VS Code's ~code-line~ class and ~data-line~ source line to each block (for scroll sync and double-click), and puts the deck's theme CSS in front. The preview script ~media/marp/marpPreviewMode.js~ then turns off VS Code's own Markdown styles for that preview, since they wou",
       "path": [
         "How It Works"
@@ -110906,7 +110936,7 @@
       "heading": "Double-click in the Markdown preview",
       "level": 2,
       "file": "44-marp.org",
-      "line": 1634,
+      "line": 1687,
       "content": "Scimax contributes a preview script (~media/marp/marpPreview.js~) through the ~markdown.previewScripts~ contribution point. Marp already tags each rendered element with its source line (~data-line~). On double-click inside a slide the script: 1. finds the nearest element carrying a line number; 2. adds the number of source line breaks between the start of that element and the caret (and one for the opening fence of a code block); 3. sends the preview's own ~didClick~ message with that line, so V",
       "path": [
         "How It Works"
@@ -110940,7 +110970,7 @@
       "heading": "Related Topics",
       "level": 1,
       "file": "44-marp.org",
-      "line": 1653,
+      "line": 1706,
       "content": "- [[file:30-markdown-compatibility.org][Markdown Compatibility]] - Scimax editing features in Markdown files - [[file:45-myst-preview.org][MyST Markdown Preview]] - Jupyter Book directives and roles in the preview - [[file:41-export-beamer.org][Beamer Export]] - slides from org files via LaTeX Beamer - [[file:26-configuration.org][Configuration Reference]] - [[https://marpit.marp.app/markdown][Marpit Markdown]] - slide syntax reference",
       "path": [],
       "commands": [],
