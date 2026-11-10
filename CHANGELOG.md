@@ -24,6 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Present from an org file (`C-c C-e m p`) starts at the slide under the cursor instead of slide 1, and presents the new export even when the `.md` deck is open in an editor: it waits for the editor to reload, and refuses rather than saving unsaved edits over the export.
 - Org → Marp: a bare link to a movie or sound file now becomes a `<video>` or `<audio>` player, and a bare YouTube link becomes an embedded player that keeps its `t=` start time. Before, these exported as plain links. A `[[marp:other.md::5][Talk]]` link now links to the other deck instead of dropping its target.
 - The people list (Assign Task, assignee filters, `:ASSIGNEE:` completion) no longer includes subheadings that only inherit `:person:` from a parent, such as notes filed under a person.
 - Email addresses: a quoted name with a comma (`"Ramirez, Ana" <ana@x.org>`) is no longer split into two addresses. This applies to Email Heading's To/Cc/Bcc, to the mailto URL it builds, and to mailto links opened through the mail client. `[[mailto:…][Name]]` and `[[id:…][Name]]` links in `:TO:`/`:CC:`/`:BCC:` now become `Name <address>` instead of being sent literally. Id links use the linked heading's `:EMAIL:`.

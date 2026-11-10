@@ -702,16 +702,36 @@ interface PresentArgs {
     file?: string;
     /** 1-based slide to start at. */
     slide?: number;
+    /** The file was just written (Org → Marp): use what is on disk, never save over it. */
+    fresh?: boolean;
 }
 
-/** The deck at `file`, saved if it has unsaved changes. */
-async function deckAt(file: string): Promise<vscode.TextDocument | undefined> {
+/**
+ * The deck at `file`, saved if it has unsaved changes. With `fresh` (the
+ * file was just exported) an open copy is brought up to date with the disk
+ * instead: VS Code reloads a clean buffer a moment after the file changes, so
+ * wait for that, and never save unsaved edits over the new export.
+ */
+async function deckAt(file: string, fresh = false): Promise<vscode.TextDocument | undefined> {
     let document: vscode.TextDocument;
     try {
         document = await vscode.workspace.openTextDocument(vscode.Uri.file(file));
     } catch {
         vscode.window.showErrorMessage(`Cannot open the slide deck ${file}.`);
         return undefined;
+    }
+    if (fresh) {
+        if (document.isDirty) {
+            vscode.window.showWarningMessage(`${path.basename(file)} is open with unsaved changes; revert it (File: Revert File) to present the new export.`);
+            return undefined;
+        }
+        const disk = await fs.promises.readFile(file, 'utf-8').catch(() => undefined);
+        for (let waited = 0; disk !== undefined && document.getText() !== disk && waited < 3000; waited += 100) {
+            await new Promise(resolve => setTimeout(resolve, 100));
+        }
+        if (disk !== undefined && document.getText() !== disk) {
+            vscode.window.showWarningMessage(`${path.basename(file)} has not reloaded from disk; the slideshow may show the previous export.`);
+        }
     }
     if (!isMarpText(document.getText())) {
         vscode.window.showWarningMessage(`${path.basename(file)} is not a Marp deck (no marp: true in its front matter).`);
@@ -845,7 +865,7 @@ async function rebuildLiveShow(context: vscode.ExtensionContext, document: vscod
  * the deck updates the open slideshow.
  */
 async function present(context: vscode.ExtensionContext, args?: PresentArgs, fromCursor = false): Promise<void> {
-    const document = args?.file ? await deckAt(args.file) : await activeDeck();
+    const document = args?.file ? await deckAt(args.file, args.fresh === true) : await activeDeck();
     if (!document) {
         return;
     }

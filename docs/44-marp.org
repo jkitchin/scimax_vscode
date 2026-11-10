@@ -1433,12 +1433,19 @@ style: |
 - PDF and PowerPoint exports show a movie's poster and an empty box for a web
   page. Put the link under it for a handout.
 
-* Writing Slides in Org
+* 👀 Writing Slides in Org
 
 You can write a talk as an org file and export it to a Marp deck. In the org
 file, =C-c C-e m s= writes ~talk.md~ next to ~talk.org~. =C-c C-e m S= also
 opens the ~.md~ file, and =C-c C-e m p= starts the slideshow. Each export
 replaces the ~.md~ file, so edit the org file, not the deck.
+
+=C-c C-e m p= starts at the slide the cursor is on: the heading above the
+cursor, or the slide after a ~-----~ break, counting the title slide and
+leaving out ~:noexport:~ subtrees, as in the deck. If the ~.md~ file is open in
+an editor, the slideshow waits for it to reload the new export. If that editor
+has unsaved changes, the slideshow does not start and nothing is saved over
+the export; revert the file (/File: Revert File/) and present again.
 
 | Command                          | Keys        | Effect                           |
 |----------------------------------+-------------+----------------------------------|
