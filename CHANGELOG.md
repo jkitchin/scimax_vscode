@@ -24,6 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- VC filesets on Windows: the repository root from git (`C:/x`) is now spelled with backslashes like the file paths around it, so vc-dir and fileset status match their repository.
 - Marp decks: `bibliography:` is completed and explained on hover like the other front matter directives. Org → Marp export settings (`scimax.export.marp.*`), `scimax.marp.cliPath` and the mail client settings are read for the file at hand, so folder settings in a multi-root workspace apply.
 - Dired `f` (find file) shows a newly created file in the listing with point on it, creates missing folders for a name like `notes/today.org`, and reports an error instead of failing silently.
 - Renaming, moving or deleting files or folders in dired, with F12 f, or in the Explorer no longer leaves stale entries in the database and the Search view: old paths (and every file under a folder) are dropped, moved files are re-indexed at their new paths, and the Search view refreshes.

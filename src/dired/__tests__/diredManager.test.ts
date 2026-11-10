@@ -616,9 +616,11 @@ describe('DiredManager', () => {
             expect(state.pendingRenames.size).toBe(1);
             expect(state.entries.some(e => e.name === 'late.txt')).toBe(false);
             manager.exitWdiredMode();
-            await new Promise(resolve => setTimeout(resolve, 50));
-            state = manager.getState();
-            expect(state.entries.some(e => e.name === 'late.txt')).toBe(true);
+            // the deferred reload runs in the background; slow file systems need longer than a tick
+            await vi.waitFor(() => {
+                state = manager.getState();
+                expect(state.entries.some(e => e.name === 'late.txt')).toBe(true);
+            }, { timeout: 5000, interval: 20 });
         });
 
         it('renameEntry moves into a subfolder relative to the entry and selects it', async () => {

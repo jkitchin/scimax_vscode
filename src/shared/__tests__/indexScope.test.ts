@@ -76,8 +76,8 @@ describe('indexScope', () => {
 describe('rootsNeedingWatchers', () => {
     it('keeps roots outside the workspace folders, without nested ones', () => {
         const roots = ['/ws/notes', '/journal', '/journal/2026', '/papers/', '/ws', '/other/todo.org', '/journal'];
-        expect(rootsNeedingWatchers(roots, ['/ws'])).toEqual(['/journal', '/other/todo.org', '/papers']);
-        expect(rootsNeedingWatchers(['/a'], [])).toEqual(['/a']);
+        expect(rootsNeedingWatchers(roots, ['/ws'])).toEqual(['/journal', '/other/todo.org', '/papers'].map(p => path.resolve(p)));
+        expect(rootsNeedingWatchers(['/a'], [])).toEqual([path.resolve('/a')]);
         expect(rootsNeedingWatchers(['/ws/x'], ['/ws'])).toEqual([]);
     });
 });

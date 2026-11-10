@@ -13,6 +13,7 @@ describe('noweb on evaluation', () => {
         }
     });
 
+    // sh blocks: Windows CI has no POSIX shell for them
     const doc = [
         '#+NAME: greet',
         '#+BEGIN_SRC sh',
@@ -31,14 +32,14 @@ describe('noweb on evaluation', () => {
         '#+END_SRC',
     ].join('\n');
 
-    it('#+CALL: runs the expanded body when the block has :noweb yes', async () => {
+    it.skipIf(process.platform === 'win32')('#+CALL: runs the expanded body when the block has :noweb yes', async () => {
         const blocks = buildNamedBlocksMap(doc);
         const result = await executeCall(parseCallLine('#+CALL: main()')!, blocks, {}, doc);
         expect(result.success).toBe(true);
         expect(result.stdout?.trim()).toBe('hello\nworld');
     });
 
-    it('leaves references alone without :noweb', async () => {
+    it.skipIf(process.platform === 'win32')('leaves references alone without :noweb', async () => {
         const blocks = buildNamedBlocksMap(doc);
         const result = await executeCall(parseCallLine('#+CALL: plain()')!, blocks, {}, doc);
         expect(result.stdout?.trim()).toBe('<<greet>>');
