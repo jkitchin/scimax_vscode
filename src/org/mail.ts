@@ -128,7 +128,7 @@ export interface MarkdownMailtoLink {
  */
 export function findMarkdownMailtoLinks(text: string): MarkdownMailtoLink[] {
     const links: MarkdownMailtoLink[] = [];
-    const re = /mailto:[^\s<>()\[\]"'`]+/gi;
+    const re = /mailto:[^\s<>()[\]"'`]+/gi;
     let m: RegExpExecArray | null;
     while ((m = re.exec(text)) !== null) {
         // Trailing sentence punctuation is not part of a bare link
