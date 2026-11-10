@@ -112,6 +112,8 @@ function escapeRegexForSafeMatching(pattern: string): RegExp | null {
 export class DiredManager {
     private state: DiredState;
     private onStateChangeCallbacks: ((state: DiredState) => void)[] = [];
+    /** A reload was asked for while wdired was editing names (see refresh) */
+    private reloadAfterWdired = false;
 
     constructor(initialDirectory?: string) {
         const startDir = initialDirectory ||
@@ -288,6 +290,7 @@ export class DiredManager {
             this.state.vcInfo = undefined;
 
             // Clear wdired mode
+            this.reloadAfterWdired = false;
             this.state.wdiredMode = false;
             this.state.pendingRenames.clear();
 
@@ -896,6 +899,23 @@ export class DiredManager {
         this.state.wdiredMode = false;
         this.state.pendingRenames.clear();
         this.notifyStateChange();
+        if (this.reloadAfterWdired) {
+            this.reloadAfterWdired = false;
+            this.loadDirectory().catch(() => { /* the next g shows any error */ });
+        }
+    }
+
+    /**
+     * Reload the listing after a change made elsewhere (a C-x v command, a
+     * rename from the File menu). While wdired is editing names, reloading
+     * would throw the edits away, so the reload waits until wdired ends.
+     */
+    refresh(): Promise<void> {
+        if (this.state.wdiredMode) {
+            this.reloadAfterWdired = true;
+            return Promise.resolve();
+        }
+        return this.loadDirectory();
     }
 
     /**
@@ -1025,15 +1045,47 @@ export class DiredManager {
             this.state.sort.field = field;
             this.state.sort.direction = 'asc';
         }
-        // Re-sort entries
+        // Re-sort entries, keeping the marks and the entry at point
+        const marks = new Map(this.state.entries.map(entry => [entry.path, entry.mark] as const));
+        const selectedPath = this.state.entries[this.state.selectedIndex]?.path;
         const entries: DiredEntry[] = this.state.entries.map(({ mark: _mark, index: _index, ...entry }) => entry);
         this.sortEntries(entries);
         this.state.entries = entries.map((entry, index) => ({
             ...entry,
-            mark: 'none' as MarkType,
+            mark: marks.get(entry.path) ?? 'none',
             index
         }));
+        const selected = this.state.entries.findIndex(entry => entry.path === selectedPath);
+        if (selected >= 0) this.state.selectedIndex = selected;
         this.notifyStateChange();
+    }
+
+    /** Put point on the entry for `filePath`, if it is listed. */
+    selectPath(filePath: string): boolean {
+        const index = this.state.entries.findIndex(entry => entry.path === filePath);
+        if (index < 0) return false;
+        this.state.selectedIndex = index;
+        this.notifyStateChange();
+        return true;
+    }
+
+    /**
+     * Rename (or move) one entry. `newName` is relative to the entry's own
+     * folder (in vc-dir that is not the listed directory), so `archive/a.org`
+     * or `../a.org` also move it; missing folders are created. Returns the
+     * new path; throws if the name is empty or the target exists.
+     */
+    async renameEntry(entryPath: string, newName: string): Promise<string> {
+        const name = newName.trim();
+        if (!name || name === '.' || name === '..') throw new Error(`Not a valid name: "${newName}"`);
+        const target = path.resolve(path.dirname(entryPath), name);
+        if (target === entryPath) return entryPath;
+        if (fs.existsSync(target)) throw new Error(`${name} already exists`);
+        await fs.promises.mkdir(path.dirname(target), { recursive: true });
+        await fs.promises.rename(entryPath, target);
+        await this.loadDirectory();
+        this.selectPath(target);
+        return target;
     }
 
     toggleHidden(): void {

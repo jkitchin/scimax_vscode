@@ -99,7 +99,7 @@ export class DiredPanel {
     public static refreshVc(): void {
         const current = DiredPanel.currentPanel;
         if (!current) return;
-        current.manager.loadDirectory().catch(error => {
+        current.manager.refresh().catch(error => {
             current.sendMessage({ command: 'error', message: error.message });
         });
     }
@@ -514,24 +514,23 @@ export class DiredPanel {
 
         // Single file - allow rename in place
         if (files.length === 1) {
+            // The name relative to the entry's folder (vc-dir lists paths
+            // from the repository root, so use the file's own name there).
+            const baseName = path.basename(files[0].path);
+            const dot = baseName.lastIndexOf('.');
             const newName = await vscode.window.showInputBox({
-                prompt: 'New name',
-                value: files[0].name,
-                valueSelection: [0, files[0].name.lastIndexOf('.') > 0
-                    ? files[0].name.lastIndexOf('.')
-                    : files[0].name.length]
+                prompt: `Rename ${baseName} (relative to its folder; a/b or ../b also moves it)`,
+                value: baseName,
+                valueSelection: [0, dot > 0 ? dot : baseName.length]
             });
 
-            if (!newName || newName === files[0].name) return;
+            if (!newName || newName.trim() === baseName) return;
 
-            const destination = path.dirname(files[0].path);
-            this.manager.addPendingRename(files[0].name, newName);
-            const result = await this.manager.commitWdiredRenames();
-
-            if (result.errors.length > 0) {
-                vscode.window.showErrorMessage(`Rename error: ${result.errors.join(', ')}`);
-            } else {
-                vscode.window.showInformationMessage(`Renamed to ${newName}`);
+            try {
+                await this.manager.renameEntry(files[0].path, newName);
+                vscode.window.showInformationMessage(`Renamed to ${newName.trim()}`);
+            } catch (error) {
+                vscode.window.showErrorMessage(`Rename error: ${error instanceof Error ? error.message : String(error)}`);
             }
             return;
         }

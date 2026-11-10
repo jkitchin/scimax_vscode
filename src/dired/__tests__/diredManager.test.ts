@@ -554,6 +554,49 @@ describe('DiredManager', () => {
         });
     });
 
+    describe('adjacent fixes', () => {
+        it('sorting keeps marks and the entry at point', async () => {
+            await manager.loadDirectory();
+            manager.markByRegex('file');
+            const marked = manager.getMarkedEntries().map(e => e.path).sort();
+            expect(marked.length).toBe(2);
+            manager.selectPath(path.join(testDir, 'file2.txt'));
+            manager.setSort('size');
+            manager.setSort('size');
+            expect(manager.getMarkedEntries().map(e => e.path).sort()).toEqual(marked);
+            const state = manager.getState();
+            expect(state.entries[state.selectedIndex].path).toBe(path.join(testDir, 'file2.txt'));
+        });
+
+        it('refresh waits while wdired is editing names', async () => {
+            await manager.loadDirectory();
+            manager.enterWdiredMode();
+            manager.addPendingRename('file1.txt', 'renamed.txt');
+            await fs.promises.writeFile(path.join(testDir, 'late.txt'), 'x');
+            await manager.refresh();
+            let state = manager.getState();
+            expect(state.wdiredMode).toBe(true);
+            expect(state.pendingRenames.size).toBe(1);
+            expect(state.entries.some(e => e.name === 'late.txt')).toBe(false);
+            manager.exitWdiredMode();
+            await new Promise(resolve => setTimeout(resolve, 50));
+            state = manager.getState();
+            expect(state.entries.some(e => e.name === 'late.txt')).toBe(true);
+        });
+
+        it('renameEntry moves into a subfolder relative to the entry and selects it', async () => {
+            await manager.loadDirectory();
+            const target = await manager.renameEntry(path.join(testDir, 'file1.txt'), 'archive/one.txt');
+            expect(target).toBe(path.join(testDir, 'archive', 'one.txt'));
+            expect(fs.existsSync(target)).toBe(true);
+            expect(fs.existsSync(path.join(testDir, 'file1.txt'))).toBe(false);
+            const nested = await manager.renameEntry(path.join(testDir, 'subdir', 'nested.txt'), 'n2.txt');
+            expect(nested).toBe(path.join(testDir, 'subdir', 'n2.txt'));
+            await expect(manager.renameEntry(path.join(testDir, 'file2.txt'), 'subdir')).rejects.toThrow(/already exists/);
+            await expect(manager.renameEntry(path.join(testDir, 'file2.txt'), '  ')).rejects.toThrow(/valid/);
+        });
+    });
+
     describe('sorting', () => {
         it('should sort entries by different fields', async () => {
             await manager.loadDirectory();
