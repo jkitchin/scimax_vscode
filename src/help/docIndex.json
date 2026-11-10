@@ -1,5 +1,5 @@
 {
-  "buildDate": "2026-11-10T12:48:27.664Z",
+  "buildDate": "2026-11-10T13:04:08.310Z",
   "count": 3802,
   "entries": [
     {
@@ -111700,7 +111700,7 @@
       "level": 2,
       "file": "47-version-control.org",
       "line": 19,
-      "content": "| File state                  | What C-x v v does                                                          | |-----------------------------+----------------------------------------------------------------------------| | Not in a git repository     | Offers to create a repository (in the workspace folder) and register it    | | Untracked                   | Registers the file (=git add=)                                             | | Modified, added, or staged  | Opens a =*vc-log*= buffer for th",
+      "content": "| File state                  | What C-x v v does                                                                                | |-----------------------------+--------------------------------------------------------------------------------------------------| | Not in a git repository     | Offers to create a repository (in the workspace folder) and register it                          | | Untracked                   | Registers the file (=git add=)                                             ",
       "path": [
         "Version Control (C-x v)"
       ],
@@ -111713,7 +111713,7 @@
         "next",
         "action",
         "state",
-        "---------------------------------------------------------------------------------------------------------",
+        "-------------------------------------------------------------------------------------------------------------------------------",
         "git",
         "repository",
         "offers",
@@ -111723,19 +111723,14 @@
         "register",
         "untracked",
         "registers",
-        "add",
-        "modified",
-        "added",
-        "staged",
-        "opens",
-        "vc-log"
+        "add"
       ]
     },
     {
       "heading": "The *vc-log* Buffer",
       "level": 2,
       "file": "47-version-control.org",
-      "line": 54,
+      "line": 60,
       "content": "When a commit is next, ~C-x v v~ opens a new =git-commit= buffer. Write the message on the first lines; the =#= lines below show the file, the repository, and a diffstat, and are left out of the message. | Key       | Command               | Action                                     | |-----------+-----------------------+--------------------------------------------| | ~C-c C-c~ | =scimax.vc.logFinish= | Commit with the buffer text as the message | | ~C-c C-k~ | =scimax.vc.logCancel= | Close the",
       "path": [
         "Version Control (C-x v)"
@@ -111776,7 +111771,7 @@
       "heading": "Several Files at Once",
       "level": 2,
       "file": "47-version-control.org",
-      "line": 69,
+      "line": 75,
       "content": "Like Emacs VC, the ~C-x v~ commands accept a /fileset/. The files come from, in order: 1. Several files (or a folder) selected in the Explorer, then right-click → Version Control 2. The marked files in dired (~C-x d~), or the file at point when nothing is marked; in dired, ~.~ stands for the whole directory 3. The marked files in the changed-files list (~C-x v d~, below) 4. Otherwise, the file in the active editor A single file goes through the one-file commands described above. A set of files, ",
       "path": [
         "Version Control (C-x v)"
@@ -111812,7 +111807,7 @@
       "heading": "C-x v d: Changed Files (vc-dir)",
       "level": 2,
       "file": "47-version-control.org",
-      "line": 111,
+      "line": 117,
       "content": "~C-x v d~ (=scimax.vc.dir=) opens a dired buffer that lists every changed file in the repository (of the active file, the dired directory, or the workspace folder), with its git status, like Emacs =vc-dir=. The status bar shows the branch, its upstream, and how many commits there are to push or pull. Deleted files are listed struck through. Untracked directories are listed as one entry; ignored files are not listed. All the dired marking keys work (~m~, ~u~, ~U~, ~t~, ~% m~, ~* e~, ~* ?~, ~* c~,",
       "path": [
         "Version Control (C-x v)"
@@ -111850,7 +111845,7 @@
       "heading": "Keybindings",
       "level": 2,
       "file": "47-version-control.org",
-      "line": 142,
+      "line": 148,
       "content": "| Keybinding | Command                | Emacs equivalent       | Description                                       | |------------+------------------------+------------------------+---------------------------------------------------| | ~C-x v v~  | =scimax.vc.nextAction= | =vc-next-action=       | Do the next logical VC step on the file           | | ~C-x v p~  | =scimax.vc.push=       | =vc-git-push= (scimax) | Push the current branch                           | | ~C-x v P~  | =scimax.vc.pull= ",
       "path": [
         "Version Control (C-x v)"
@@ -111887,7 +111882,7 @@
       "heading": "C-x v i: Ignore a File",
       "level": 2,
       "file": "47-version-control.org",
-      "line": 162,
+      "line": 168,
       "content": "~C-x v i~ (=scimax.vc.ignore=) adds the current file to the =.gitignore= at the repository root. It prompts with the file's path relative to the root, anchored with a leading =/= (for example =/meeting-notes/deck.pptx=); edit it into a broader pattern such as =*.pptx= before pressing Enter. The pattern is not added twice. =.gitignore= only affects untracked files. If the file is staged as new, it is unstaged. If it is already committed, scimax offers *Stop Tracking*, which runs =git rm --cached=",
       "path": [
         "Version Control (C-x v)"
@@ -111925,7 +111920,7 @@
       "heading": "Resolving Merge Conflicts (smerge mode)",
       "level": 2,
       "file": "47-version-control.org",
-      "line": 175,
+      "line": 181,
       "content": "After a merge or pull with conflicts, git leaves conflict blocks in the file: #+begin_example <<<<<<< HEAD The rate constant is 0.12 1/s. ======= The rate constant is 0.15 1/s. >>>>>>> feature #+end_example The part above ~=======~ is *mine* (the branch you are on). The part below is *theirs* (the branch being merged in). With =merge.conflictStyle= set to =diff3= or =zdiff3=, a ~|||||||~ section also holds the *base*: the common ancestor of both sides. Like Emacs =smerge-mode=, smerge mode turns",
       "path": [
         "Version Control (C-x v)"
@@ -111959,7 +111954,7 @@
       "heading": "Single keys at a marker line",
       "level": 3,
       "file": "47-version-control.org",
-      "line": 200,
+      "line": 206,
       "content": "With the cursor at the start of a marker line (~<<<<<<<~, ~|||||||~, ~=======~ or ~>>>>>>>~), single keys act on that conflict, like speed commands at a heading. Everywhere else keys type as usual, so you can still edit a conflict by hand. | Key   | Command                       | Action                                                          | |-------+-------------------------------+-----------------------------------------------------------------| | ~n~   | =scimax.smerge.next=          | Go",
       "path": [
         "Version Control (C-x v)",
@@ -111996,7 +111991,7 @@
       "heading": "C-c ^ from anywhere in the file",
       "level": 3,
       "file": "47-version-control.org",
-      "line": 228,
+      "line": 234,
       "content": "The same final keys work after ~C-c ^~ anywhere in a file with conflicts, as in Emacs (~C-c ^ n~, ~C-c ^ m~, ~C-c ^ RET~, and so on). There, ~C-c ^ RET~ keeps the side the cursor is in. In org tables ~C-c ^~ sorts by column; in a file with conflicts it is the smerge prefix instead.",
       "path": [
         "Version Control (C-x v)",
@@ -112033,7 +112028,7 @@
       "heading": "When the last conflict is resolved",
       "level": 3,
       "file": "47-version-control.org",
-      "line": 235,
+      "line": 241,
       "content": "When no conflict blocks are left and git still lists the file as conflicted, scimax offers *Mark Resolved*: it saves the file and runs =git add=. Then ~C-x v v~ commits to finish the merge. ~C-x v v~ on a file that still has conflict blocks offers *Go to First Conflict*.",
       "path": [
         "Version Control (C-x v)",
@@ -112070,7 +112065,7 @@
       "heading": "Conflicts menu (scimax.conflicts)",
       "level": 3,
       "file": "47-version-control.org",
-      "line": 242,
+      "line": 248,
       "content": "~C-x v m m~ (or ~?~ at a marker line) opens the Conflicts menu. It has the same keys and stays open, so you can press ~n~, ~m~, ~t~, … in a row. ~Escape~ goes back to the Version Control menu, and again closes it.",
       "path": [
         "Version Control (C-x v)",
@@ -112107,7 +112102,7 @@
       "heading": "Right-Click Menus",
       "level": 2,
       "file": "47-version-control.org",
-      "line": 248,
+      "line": 254,
       "content": "A *Version Control* submenu appears when you right-click a file tab, a file or folder in the Explorer, or inside an editor. It has Next Action, Diff, File History, Blame, Ignore, Stage / Unstage, Revert, Push, Pull, Status, and VC Directory, acting on the file you clicked, or on every selected file when several are selected in the Explorer.",
       "path": [
         "Version Control (C-x v)"
@@ -112141,7 +112136,7 @@
       "heading": "Version Control Menu (scimax.vc)",
       "level": 2,
       "file": "47-version-control.org",
-      "line": 256,
+      "line": 262,
       "content": "Open with ~C-x v m~, or press ~v~ in the main menu (~C-c m~). It mirrors the =scimax-version-control= hydra from Emacs scimax. #+begin_example Version Control File: [n] Next Action  - Register, commit, resolve, or sync this file [s] Stage        - Stage the file (or the dired marks); unstage if already staged [d] Diff         - Diff the file against HEAD [l] Log          - History of the current file [r] Revert       - Discard changes to the file [g] Blame        - Toggle line-by-line blame [m] ",
       "path": [
         "Version Control (C-x v)"
@@ -112180,7 +112175,7 @@
       "heading": "How It Works",
       "level": 2,
       "file": "47-version-control.org",
-      "line": 285,
+      "line": 291,
       "content": "- State detection, single-file commits, revert, and file history run the git CLI directly with argument arrays (no shell). - ~C-x v =~ saves the file, then opens HEAD and the working file side by side in VS Code's diff editor. An added or deleted file is shown as a patch instead. When there is nothing to diff it says so: \"No changes between HEAD and notes.org\", or that the file is untracked or ignored. - A fileset diff or log opens VS Code's multi-file diff editor (=vscode.changes=); without the",
       "path": [
         "Version Control (C-x v)"
@@ -112216,7 +112211,7 @@
       "heading": "Related Topics",
       "level": 2,
       "file": "47-version-control.org",
-      "line": 311,
+      "line": 317,
       "content": "- [[file:22-hydra-menus.org][Hydra Menus]] - The Version Control menu and others - [[file:24-keybindings.org][Keybindings]] - All keyboard shortcuts - [[file:25-commands.org][Commands]] - All commands - [[file:37-dired.org][Dired]] - Emacs-style directory editor (C-x d) - [[file:17-projectile.org][Projectile]] - Project management",
       "path": [
         "Version Control (C-x v)"
@@ -116415,7 +116410,7 @@
       "heading": "Current Review Status",
       "level": 1,
       "file": "review-agenda.org",
-      "line": 50,
+      "line": 53,
       "content": ":PROPERTIES: :VISIBILITY: folded :END: The results from running the above block will appear here after execution. Items link directly to the source file and line number for quick navigation.",
       "path": [],
       "commands": [],
@@ -116447,7 +116442,7 @@
       "heading": "Workflow",
       "level": 2,
       "file": "review-agenda.org",
-      "line": 58,
+      "line": 61,
       "content": "1. Run the source block above with `C-c C-c' 2. Click on any item link to jump to that heading 3. Review the content 4. Change the heading's TODO state from ⚠️ to ✅ when satisfied 5. Re-run the block to update the agenda",
       "path": [
         "Current Review Status"
@@ -116483,7 +116478,7 @@
       "heading": "Legend",
       "level": 2,
       "file": "review-agenda.org",
-      "line": 66,
+      "line": 69,
       "content": "| State | Meaning                       | |-------+-------------------------------| | ⚠️    | New heading, needs review     | | 👀    | Changed heading, needs review | | ✅    | Reviewed and approved         |",
       "path": [
         "Current Review Status"
@@ -116508,7 +116503,7 @@
       "heading": "Add Review Markers to Unmarked Headings",
       "level": 1,
       "file": "review-agenda.org",
-      "line": 76,
+      "line": 79,
       "content": "Run this block to add ⚠️ to all headings that do not have a TODO state. #+begin_src python :results output import os, re TODO_STATES = [\"⚠️\", \"👀\", \"✅\", \"TODO\", \"DONE\", \"NEXT\", \"WAITING\", \"CANCELLED\"] def has_todo(line): m = re.match(r\"^\\*+\\s+(.*)$\", line) if not m: return True first = m.group(1).split()[0] if m.group(1).split() else \"\" return first in TODO_STATES total = 0 for fname in sorted(os.listdir(\".\")): if not fname.endswith(\".org\") or fname == \"review-agenda.org\": continue with open(fna",
       "path": [],
       "commands": [],
@@ -116540,7 +116535,7 @@
       "heading": "Add Review Markers (TypeScript API)",
       "level": 1,
       "file": "review-agenda.org",
-      "line": 111,
+      "line": 114,
       "content": "Uses the scimax org modification API to add ⚠️ markers to unmarked headings. #+begin_src typescript :results output import { org } from './src/parser/orgModify'; import * as fs from 'fs'; const TODO_STATES = ['⚠️', '👀', '✅', 'TODO', 'DONE', 'NEXT', 'WAITING', 'CANCELLED']; let total = 0; for (const fname of fs.readdirSync('.').filter(f => f.endsWith('.org') && f !== 'review-agenda.org')) { const doc = org.parseFile(fname); let changes: string[] = []; org.mapHeadlines(doc, h => { if (!h.properti",
       "path": [],
       "commands": [],

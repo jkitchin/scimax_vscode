@@ -198,10 +198,12 @@ async function syncBranch(uri: vscode.Uri, repoRoot: string): Promise<void> {
     const name = path.basename(uri.fsPath);
     const { upstream, ahead, behind } = await getAheadBehind(repoRoot);
     if (!upstream) {
+        // VS Code's Publish Branch: push to a remote and track it, or, with
+        // no remote yet, create a GitHub repository (private or public)
         const choice = await vscode.window.showInformationMessage(
-            `${name} is up to date. The branch has no upstream.`, 'Push'
+            `${name} is up to date. The branch is not published yet.`, 'Publish'
         );
-        if (choice === 'Push') await gitCommand('git.push', uri);
+        if (choice === 'Publish') await gitCommand('git.publish', uri);
         return;
     }
     if (ahead > 0 && behind > 0) {

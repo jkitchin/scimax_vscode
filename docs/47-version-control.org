@@ -18,21 +18,22 @@ files selected, they work on all of them at once (see
 
 ** C-x v v: Next Action
 
-| File state                  | What C-x v v does                                                          |
-|-----------------------------+----------------------------------------------------------------------------|
-| Not in a git repository     | Offers to create a repository (in the workspace folder) and register it    |
-| Untracked                   | Registers the file (=git add=)                                             |
-| Modified, added, or staged  | Opens a =*vc-log*= buffer for the commit message, then commits *this file* |
-| Modified, others staged     | Opens a log buffer that commits *all staged changes plus this file*        |
-| Up to date, others staged   | Opens a log buffer that commits all staged changes                         |
-| Conflicted, markers remain  | Warns you; offers the first conflict (smerge mode) or the merge editor     |
-| Conflicted, markers gone    | Marks the file resolved (=git add=)                                        |
-| Edited during a merge       | Opens a log buffer to conclude the merge (commits everything staged)       |
-| Ignored by =.gitignore=     | Tells you the file is ignored                                              |
-| Up to date, branch ahead    | Offers to push                                                             |
-| Up to date, branch behind   | Offers to pull                                                             |
-| Up to date, branch diverged | Offers to sync (pull then push)                                            |
-| Up to date, in sync         | Reports that the file is up to date                                        |
+| File state                  | What C-x v v does                                                                                |
+|-----------------------------+--------------------------------------------------------------------------------------------------|
+| Not in a git repository     | Offers to create a repository (in the workspace folder) and register it                          |
+| Untracked                   | Registers the file (=git add=)                                                                   |
+| Modified, added, or staged  | Opens a =*vc-log*= buffer for the commit message, then commits *this file*                       |
+| Modified, others staged     | Opens a log buffer that commits *all staged changes plus this file*                              |
+| Up to date, others staged   | Opens a log buffer that commits all staged changes                                               |
+| Conflicted, markers remain  | Warns you; offers the first conflict (smerge mode) or the merge editor                           |
+| Conflicted, markers gone    | Marks the file resolved (=git add=)                                                              |
+| Edited during a merge       | Opens a log buffer to conclude the merge (commits everything staged)                             |
+| Ignored by =.gitignore=     | Tells you the file is ignored                                                                    |
+| Up to date, not published   | Offers to publish the branch (a new GitHub repository, private or public, if there is no remote) |
+| Up to date, branch ahead    | Offers to push                                                                                   |
+| Up to date, branch behind   | Offers to pull                                                                                   |
+| Up to date, branch diverged | Offers to sync (pull then push)                                                                  |
+| Up to date, in sync         | Reports that the file is up to date                                                              |
 
 Unsaved changes are saved before the file's state is checked.
 
@@ -47,6 +48,11 @@ buffer lists every file that will be committed. Edited files you did not stage
 are left out.
 Git does not allow single-file commits while a merge is in progress, so in
 that case the log buffer commits all staged changes to conclude the merge.
+
+A branch that is not on a remote yet is /published/ with VS Code's Publish
+Branch: it pushes to a remote and tracks it. With no remote at all, the GitHub
+extension offers to create a repository and asks whether it is private or
+public.
 
 Ahead/behind counts come from the last fetch. Run Fetch from the menu
 (=C-x v m f=) to refresh them.
@@ -282,7 +288,7 @@ Repository:
   [D] Changed files - The repository's changed files in dired (vc-dir)
 #+end_example
 
-** 👀 How It Works
+** How It Works
 
 - State detection, single-file commits, revert, and file history run the git
   CLI directly with argument arrays (no shell).

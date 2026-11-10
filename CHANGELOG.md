@@ -26,6 +26,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Speed commands no longer fire on `* lines` inside an org `#+begin_…`/`#+end_…` block, so you can type the `,` that escapes them.
+- `C-x v v` on an up-to-date file whose branch is not on a remote offers *Publish* (VS Code's Publish Branch: set the upstream, or create a private or public GitHub repository when there is no remote) instead of a push that has nowhere to go.
 - VC filesets on Windows: the repository root from git (`C:/x`) is now spelled with backslashes like the file paths around it, so vc-dir and fileset status match their repository.
 - Marp decks: `bibliography:` is completed and explained on hover like the other front matter directives. Org → Marp export settings (`scimax.export.marp.*`), `scimax.marp.cliPath` and the mail client settings are read for the file at hand, so folder settings in a multi-root workspace apply.
 - Dired `f` (find file) shows a newly created file in the listing with point on it, creates missing folders for a name like `notes/today.org`, and reports an error instead of failing silently.
