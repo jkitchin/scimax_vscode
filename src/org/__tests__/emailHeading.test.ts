@@ -100,7 +100,7 @@ describe('normalizeAddresses', () => {
     });
 
     it('builds a mailto URL without splitting quoted names', () => {
-        const url = buildMailtoUrl({ headingLine: 0, subject: '', body: '', to: '"Doe, Jo" <jo@z.org>, b@x.org', cc: '', bcc: '' });
+        const url = buildMailtoUrl({ subject: '', body: '', to: '"Doe, Jo" <jo@z.org>, b@x.org', cc: '', bcc: '' });
         expect(url.startsWith(`mailto:${encodeURIComponent('"Doe, Jo" <jo@z.org>')},b%40x.org`)).toBe(true);
     });
 });

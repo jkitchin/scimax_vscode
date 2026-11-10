@@ -350,7 +350,7 @@ arrows = "depends on"), colored by status:
 It is seeded from the active file's tasks and expands over the dependency edges
 to show the connected component. Click a node to jump to that task.
 
-** People and assignments
+** 👀 People and assignments
 
 A *person* is any heading tagged =:person:=, with contact properties:
 
@@ -363,6 +363,9 @@ A *person* is any heading tagged =:person:=, with contact properties:
   :ROLE: PI
   :END:
 #+end_src
+
+The tag must be on the person's own heading. Subheadings that only inherit
+=:person:= (meeting notes under a person, say) are not people.
 
 - **Assign**: [[cmd:scimax.org.assignTask]] (*Scimax: Assign Task to Person*) lists
   the indexed =:person:= headings, fuzzy-matches on handle/name/role/email as you

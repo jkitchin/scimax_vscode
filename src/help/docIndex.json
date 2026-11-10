@@ -1,5 +1,5 @@
 {
-  "buildDate": "2026-11-10T04:09:00.455Z",
+  "buildDate": "2026-11-10T04:10:38.460Z",
   "count": 3801,
   "entries": [
     {
@@ -9432,7 +9432,7 @@
       "level": 2,
       "file": "03.6-project-management.org",
       "line": 353,
-      "content": "A *person* is any heading tagged =:person:=, with contact properties: #+begin_src org ,* John Kitchin                              :person: :PROPERTIES: :ID: person-jrk :EMAIL: jkitchin@andrew.cmu.edu :NICK: jrk :ROLE: PI :END: #+end_src - **Assign**: [[cmd:scimax.org.assignTask]] (*Scimax: Assign Task to Person*) lists the indexed =:person:= headings, fuzzy-matches on handle/name/role/email as you type, and sets the current task's =:ASSIGNEE:= property to the picked handle(s). Run it from anywh",
+      "content": "A *person* is any heading tagged =:person:=, with contact properties: #+begin_src org ,* John Kitchin                              :person: :PROPERTIES: :ID: person-jrk :EMAIL: jkitchin@andrew.cmu.edu :NICK: jrk :ROLE: PI :END: #+end_src The tag must be on the person's own heading. Subheadings that only inherit =:person:= (meeting notes under a person, say) are not people. - **Assign**: [[cmd:scimax.org.assignTask]] (*Scimax: Assign Task to Person*) lists the indexed =:person:= headings, fuzzy-m",
       "path": [
         "Project Management"
       ],
@@ -9467,7 +9467,7 @@
       "heading": "Configuration",
       "level": 2,
       "file": "03.6-project-management.org",
-      "line": 387,
+      "line": 390,
       "content": "CLOSED: [2026-10-22 Thu 09:46] | Setting                            | Default | Description                                                  | |------------------------------------+---------+--------------------------------------------------------------| | =scimax.org.peopleFile=            | (empty) | Where \"New Person\" appends; empty ⇒ people.org               | | =scimax.project.progressWeighting= | =auto=  | Progress rollup: =auto=, =count= or =effort=                 | | =scimax.project.def",
       "path": [
         "Project Management"
@@ -9504,7 +9504,7 @@
       "heading": "Notes and limitations",
       "level": 2,
       "file": "03.6-project-management.org",
-      "line": 400,
+      "line": 403,
       "content": "CLOSED: [2026-10-03 Sat 08:59] - Without =:scope=, the task table is computed from a *single file* (or a subtree via =:id=). Use =:scope project= to cover the whole project. - \"Blocked\" and the chart's ordering resolve dependencies within the scope: a dependency on a task outside the project is not counted. The dependency graph and completion blocking ([[file:03.5-task-dependencies.org][Task Dependencies]]) still see every indexed file. - A project is read from disk each time the view or block r",
       "path": [
         "Project Management"
@@ -9538,7 +9538,7 @@
       "heading": "Related Topics",
       "level": 2,
       "file": "03.6-project-management.org",
-      "line": 414,
+      "line": 417,
       "content": "CLOSED: [2026-10-24 Sat 20:49] - [[file:03.5-task-dependencies.org][Task Dependencies]]: the dependency layer this builds on - [[file:13-agenda.org][Agenda]]: the project agenda and the assignee filter (=@=) - [[file:13-agenda.org::*Agenda View][Agenda View]]: the agenda in a panel, with the same task menu as the chart - [[file:30-cli.org][CLI]] — =scimax task next/who/path= answers the same questions from the terminal - [[file:03-todo-items.org][TODO Items]] — TODO states, priorities, effort, t",
       "path": [
         "Project Management"
