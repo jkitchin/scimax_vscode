@@ -78,6 +78,8 @@ describe('mail', () => {
             to: 'a@x.org, b@y.org', cc: 'c@z.org', bcc: '', subject: 'Hi there', body: 'line1\nline2',
         });
         expect(parseMailto('MAILTO:a@x.org').to).toBe('a@x.org');
+        // "+" is literal in mailto (RFC 6068), as in plus addressing
+        expect(parseMailto('mailto:me+tag@x.org?subject=1+1%20%3D%202')).toMatchObject({ to: 'me+tag@x.org', subject: '1+1 = 2' });
     });
 
     it('builds a Gmail compose URL, with the account when set', () => {

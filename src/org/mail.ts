@@ -53,8 +53,9 @@ export function parseMailto(url: string): MailFields {
     const fields: MailFields = { ...EMPTY };
     const rest = url.replace(/^mailto:/i, '');
     const q = rest.indexOf('?');
+    // RFC 6068: "+" is a literal plus (me+tag@x.org), not a space; spaces are %20
     const decode = (s: string) => {
-        try { return decodeURIComponent(s.replace(/\+/g, '%20')); } catch { return s; }
+        try { return decodeURIComponent(s); } catch { return s; }
     };
     const join = (a: string, b: string) => [a, b].filter(Boolean).join(', ');
     fields.to = decode(q >= 0 ? rest.slice(0, q) : rest).split(',').map(s => s.trim()).filter(Boolean).join(', ');
