@@ -19,6 +19,7 @@ import {
     getDirectoriesToScan,
     getVSCodeSettingsPath,
     parseJsonc,
+    setJsoncValue,
     shouldExclude
 } from '../settings';
 
@@ -643,12 +644,13 @@ async function removeFile(config: CliConfig, args: ParsedArgs): Promise<void> {
  */
 function addToSettingsExclude(pattern: string): string[] {
     const settingsPath = getVSCodeSettingsPath();
+    let content = '';
     let rawSettings: Record<string, unknown> = {};
 
     if (fs.existsSync(settingsPath)) {
-        const content = fs.readFileSync(settingsPath, 'utf-8');
+        content = fs.readFileSync(settingsPath, 'utf-8');
         try {
-            rawSettings = parseJsonc(content);
+            rawSettings = content.trim() ? parseJsonc(content) : {};
         } catch {
             throw new Error(`Could not parse ${settingsPath}. Edit scimax.db.exclude manually.`);
         }
@@ -660,9 +662,10 @@ function addToSettingsExclude(pattern: string): string[] {
 
     if (!exclude.includes(pattern)) {
         exclude.push(pattern);
-        rawSettings['scimax.db.exclude'] = exclude;
+        // Edit only this setting's text so comments in settings.json survive
+        const updated = setJsoncValue(content, 'scimax.db.exclude', exclude);
         fs.mkdirSync(path.dirname(settingsPath), { recursive: true });
-        fs.writeFileSync(settingsPath, JSON.stringify(rawSettings, null, 2));
+        fs.writeFileSync(settingsPath, updated);
     }
 
     return exclude;

@@ -7,7 +7,7 @@ import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
 
-import { findNotebooksJson, findOrgFiles, getDirectoriesToScan, getNotebookProjectPaths, parseJsonc, shouldExclude } from '../settings';
+import { findNotebooksJson, findOrgFiles, getDirectoriesToScan, getNotebookProjectPaths, parseJsonc, setJsoncValue, shouldExclude } from '../settings';
 import type { ScimaxSettings } from '../settings';
 
 describe('findNotebooksJson', () => {
@@ -225,5 +225,36 @@ describe('findOrgFiles honors scimax.db.fileExtensions', () => {
         expect(names(findOrgFiles(tmpDir, [], { fileExtensions: ['org'] }))).toEqual(['a.org']);
         expect(names(findOrgFiles(tmpDir, [], { fileExtensions: ['org', 'md', 'markdown'] })))
             .toEqual(['a.org', 'b.md', 'c.markdown']);
+    });
+});
+
+describe('setJsoncValue', () => {
+    const text = `{
+    // my editor
+    "editor.fontSize": 14, /* big */
+    "scimax.db.exclude": [
+        "**/node_modules/**" // deps
+    ],
+    "files.glob": "a/*b*/c"
+}
+`;
+    it('replaces an existing value and keeps comments elsewhere', () => {
+        const out = setJsoncValue(text, 'scimax.db.exclude', ['**/node_modules/**', '/x/**']);
+        expect(out).toContain('// my editor');
+        expect(out).toContain('/* big */');
+        expect(out).toContain('"scimax.db.exclude": ["**/node_modules/**","/x/**"],');
+        expect(parseJsonc(out)['scimax.db.exclude']).toEqual(['**/node_modules/**', '/x/**']);
+        expect(parseJsonc(out)['files.glob']).toBe('a/*b*/c');
+    });
+    it('adds a missing key at the end', () => {
+        const out = setJsoncValue(text, 'scimax.new', [1]);
+        expect(out).toContain('"files.glob": "a/*b*/c",\n    "scimax.new": [1]\n}');
+        expect(parseJsonc(out)['scimax.new']).toEqual([1]);
+    });
+    it('handles trailing commas, empty objects and empty files', () => {
+        expect(parseJsonc(setJsoncValue('{\n  "a": 1,\n}', 'b', 2))).toEqual({ a: 1, b: 2 });
+        expect(parseJsonc(setJsoncValue('{}', 'b', 2))).toEqual({ b: 2 });
+        expect(parseJsonc(setJsoncValue('{ // c\n}', 'b', 2))).toEqual({ b: 2 });
+        expect(parseJsonc(setJsoncValue('', 'b', 2))).toEqual({ b: 2 });
     });
 });

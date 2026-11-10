@@ -795,7 +795,7 @@ Database cleared.
 Run "scimax db sync" to repopulate.
 #+end_example
 
-*** ✅ Remove and Ignore Files
+*** 👀 Remove and Ignore Files
 CLOSED: [2026-10-02 Fri 07:34]
 
 Remove files from the database by path or glob. Relative paths are resolved
@@ -815,7 +815,8 @@ scimax db ignore "~/Dropbox/archive/**"
 =remove= only deletes database entries, so a later sync adds the files back if
 they are under a scan root. =ignore= also appends the pattern (or the absolute
 path) to =scimax.db.exclude= in your VS Code =settings.json=, so sync skips it
-from then on. Both accept =--json=.
+from then on. Only that setting's text changes; comments and the rest of the
+file are kept. Both accept =--json=.
 
 *** Prune Excluded Files
 
