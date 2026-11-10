@@ -3364,7 +3364,24 @@ export async function deleteFileLinkAtPoint(): Promise<void> {
 /**
  * Open link at point
  */
-export async function openLinkAtPoint(): Promise<void> {
+/**
+ * Make the editor group beside the current one active (creating it to the
+ * right when there is only one), so the next file opens there.
+ */
+async function focusOtherEditorGroup(): Promise<void> {
+    if (vscode.window.tabGroups.all.length < 2) {
+        await vscode.commands.executeCommand('workbench.action.newGroupRight');
+    } else {
+        await vscode.commands.executeCommand('workbench.action.focusNextGroup');
+    }
+}
+
+/** C-u C-c C-o: open the link at point in the other editor group */
+export async function openLinkAtPointOtherWindow(): Promise<void> {
+    return openLinkAtPoint({ otherWindow: true });
+}
+
+export async function openLinkAtPoint(options: { otherWindow?: boolean } = {}): Promise<void> {
     const editor = vscode.window.activeTextEditor;
     if (!editor) return;
 
@@ -3372,6 +3389,10 @@ export async function openLinkAtPoint(): Promise<void> {
     const position = editor.selection.active;
 
     const linkInfo = getLinkAtPoint(document, position);
+    // Web, mail and slideshow links open outside the editor: no group to make
+    if (linkInfo && options.otherWindow === true && !/^(https?|mailto|doi|marp):/i.test(linkInfo.url)) {
+        await focusOtherEditorGroup();
+    }
     if (!linkInfo) {
         // A #hashtag opens the list of its occurrences in every file.
         const hashtag = hashtagAtCursor();
@@ -4519,8 +4540,26 @@ export function registerScimaxOrgCommands(context: vscode.ExtensionContext): voi
     context.subscriptions.push(
         vscode.commands.registerCommand('scimax.org.storeLink', storeLink),
         vscode.commands.registerCommand('scimax.org.insertLink', insertLink),
-        vscode.commands.registerCommand('scimax.org.openLink', openLinkAtPoint),
+        vscode.commands.registerCommand('scimax.org.openLink', () => openLinkAtPoint()),
+        vscode.commands.registerCommand('scimax.org.openLinkOtherWindow', openLinkAtPointOtherWindow),
         vscode.commands.registerCommand('scimax.org.deleteFileLink', deleteFileLinkAtPoint)
+    );
+
+    // scimax.onLink: the cursor is on a link (right-click moves the cursor
+    // first), for the editor menu's "Open Link in Other Window"
+    let onLink = false;
+    const updateOnLink = (editor: vscode.TextEditor | undefined) => {
+        const now = !!editor
+            && /^(org|markdown|quarto)$/.test(editor.document.languageId)
+            && getLinkAtPoint(editor.document, editor.selection.active) !== null;
+        if (now !== onLink) {
+            onLink = now;
+            vscode.commands.executeCommand('setContext', 'scimax.onLink', now);
+        }
+    };
+    context.subscriptions.push(
+        vscode.window.onDidChangeTextEditorSelection(e => updateOnLink(e.textEditor)),
+        vscode.window.onDidChangeActiveTextEditor(updateOnLink)
     );
 
     // List commands

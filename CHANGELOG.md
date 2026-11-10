@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Open a link in the other window (`C-u C-c C-o`)** - `scimax.org.openLinkOtherWindow` opens the link at point in the editor group beside the current one (making one to the right if needed), like Emacs `find-file-other-window`, so an outline or demo script stays in view. Right-click a link in org or Markdown for *Open Link at Point* and *Open Link at Point in Other Window*.
 - **Present Marp slides in an app window** - With `window: app` in a deck's front matter, or `scimax.marp.presentWindow` set to `app` (the default is `tab`), Present opens the slideshow in a Chrome, Edge, Chromium or Brave app window: no tabs, address bar or toolbar, so the slides fill a window you can size, move and share. `scimax.marp.appBrowser` picks the browser; with none found, Present opens your default browser as before.
 - **Contacts (`C-c S-c`)** - `Scimax: Contacts` (`scimax.contacts`, also `c` in the main menu) fuzzy-picks from every indexed heading with an `:EMAIL:` property or a `:person:` tag, like scimax-contacts in Emacs. Check several contacts to act on them together: insert their addresses or `Name <address>`, email them, insert `id:` links (Markdown: `mailto:` links) or copy any of these. For one contact you can also go to its heading, add a dated note at the end of its entry, insert or copy any property, or open its address in Google Maps. *New contact…* runs `Scimax: New Person`.
 - **One setting for where email opens** - New settings `scimax.mail.client` (`gmail`, the default, or `mailto` for the system mail client) and `scimax.mail.gmailAccount`. They apply to Contacts, `mailto:` links in org and Markdown files, the person hover, Pick Entity's *Email* and Email Heading. New command `Scimax: Compose Email` (`scimax.mail.compose`). `scimax.emailHeading.client` and `.gmailAccount` are deprecated but still read when the new settings are not set.
@@ -24,6 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Speed commands no longer fire on `* lines` inside an org `#+begin_…`/`#+end_…` block, so you can type the `,` that escapes them.
 - VC filesets on Windows: the repository root from git (`C:/x`) is now spelled with backslashes like the file paths around it, so vc-dir and fileset status match their repository.
 - Marp decks: `bibliography:` is completed and explained on hover like the other front matter directives. Org → Marp export settings (`scimax.export.marp.*`), `scimax.marp.cliPath` and the mail client settings are read for the file at hand, so folder settings in a multi-root workspace apply.
 - Dired `f` (find file) shows a newly created file in the listing with point on it, creates missing folders for a name like `notes/today.org`, and reports an error instead of failing silently.
