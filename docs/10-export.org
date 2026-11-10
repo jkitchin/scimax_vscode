@@ -1131,14 +1131,16 @@ If rich clipboard tools aren't available, falls back to plain text clipboard wit
 | Cc          | The =CC= property (or =MAIL_CC=)                                   |
 | Bcc         | The =BCC= property (or =MAIL_BCC=)                                 |
 
-A =SUBJECT= (or =MAIL_SUBJECT=) property replaces the headline as the subject. The planning line (=SCHEDULED=, =DEADLINE=, =CLOSED=) and the properties drawer are left out of the body. Separate several addresses with commas or semicolons.
+A =SUBJECT= (or =MAIL_SUBJECT=) property replaces the headline as the subject. The planning line (=SCHEDULED=, =DEADLINE=, =CLOSED=) and the properties drawer are left out of the body. Separate several addresses with commas or semicolons. A comma inside a quoted name (="Ramirez, Ana" <ana@x.org>=) does not split it.
+
+An address can also be an org link. =[[mailto:ana@x.org][Ana]]= is sent as =Ana <ana@x.org>=. An =[[id:…][Ana]]= link (as Contacts' *Insert link* writes) is sent with the =:EMAIL:= of the linked heading, looked up in the database. If that heading has no =:EMAIL:=, a warning names the id and the link is left as written.
 
 Org links in the body become plain text. A web link keeps its address (=[[https://x.org][X]]= becomes =X (https://x.org)=). Other links (=file:=, =id:=, internal) become their description, or the file name, so no local path goes in the email. A =*= line inside a =#+BEGIN_...= block is content, not a subheading.
 
 #+BEGIN_SRC org
 ,* TODO Draft for the review meeting
 :PROPERTIES:
-:TO: alice@example.com, Bob Smith <bob@example.com>
+:TO: alice@example.com, Bob Smith <bob@example.com>, [[id:7c1e…][Ana Ramirez]]
 :CC: carol@example.com
 :END:
 Here is the draft we discussed.

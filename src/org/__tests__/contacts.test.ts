@@ -86,6 +86,7 @@ describe('mail', () => {
             to: 'a@x.org, b@y.org', cc: 'c@z.org', bcc: '', subject: 'Hi there', body: 'line1\nline2',
         });
         expect(parseMailto('MAILTO:a@x.org').to).toBe('a@x.org');
+        expect(parseMailto('mailto:%22Doe%2C%20Jo%22%20%3Cjo%40z.org%3E,b@y.org').to).toBe('"Doe, Jo" <jo@z.org>, b@y.org');
         // "+" is literal in mailto (RFC 6068), as in plus addressing
         expect(parseMailto('mailto:me+tag@x.org?subject=1+1%20%3D%202')).toMatchObject({ to: 'me+tag@x.org', subject: '1+1 = 2' });
     });

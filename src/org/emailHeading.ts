@@ -16,6 +16,7 @@ import { randomUUID } from 'crypto';
 import { getTodoStatesFromText, extractHeadingTitle, getTodoWorkflowForDocument } from './todoStates';
 import { ensureHeadingId, findDrawer } from './dependencyCommands';
 import { composeUrl, mailSettings } from './mail';
+import { addressListIds, resolveAddress, splitAddresses } from './addressList';
 
 /** The address and content fields of an email to compose. */
 export interface MailFields {
@@ -128,16 +129,13 @@ export function plainBodyLinks(text: string): string {
 
 /**
  * Normalize an address property to a comma-separated list. Only commas and
- * semicolons separate addresses, since names like "Jane Doe <jane@x.org>"
- * contain spaces.
+ * semicolons separate addresses (names like "Jane Doe <jane@x.org>" contain
+ * spaces), and not inside a quoted name or an org link. `[[mailto:…][Name]]`
+ * links become `Name <address>`; `[[id:…][Name]]` links do too when
+ * `idAddresses` knows the heading's address.
  */
-export function normalizeAddresses(value: string | undefined): string {
-    if (!value) return '';
-    return value
-        .split(/[,;]/)
-        .map(s => s.trim())
-        .filter(s => s.length > 0)
-        .join(', ');
+export function normalizeAddresses(value: string | undefined, idAddresses?: Map<string, string>): string {
+    return splitAddresses(value).map(e => resolveAddress(e, idAddresses)).join(', ');
 }
 
 /**
@@ -148,7 +146,7 @@ export function normalizeAddresses(value: string | undefined): string {
  * planning line (SCHEDULED/DEADLINE/CLOSED) and its properties drawer.
  * Subheadings are kept as-is; org links become plain text (plainBodyLinks).
  */
-export function buildHeadingEmail(text: string, cursorLine: number): HeadingEmail | null {
+export function buildHeadingEmail(text: string, cursorLine: number, idAddresses?: Map<string, string>): HeadingEmail | null {
     const lines = text.split(/\r?\n/);
     const heading = findHeadingAt(lines, cursorLine);
     if (!heading) return null;
@@ -194,9 +192,9 @@ export function buildHeadingEmail(text: string, cursorLine: number): HeadingEmai
         id: id || undefined,
         subject,
         body: plainBodyLinks(bodyLines.join('\n')),
-        to: normalizeAddresses(prop('TO', 'MAIL_TO')),
-        cc: normalizeAddresses(prop('CC', 'MAIL_CC')),
-        bcc: normalizeAddresses(prop('BCC', 'MAIL_BCC')),
+        to: normalizeAddresses(prop('TO', 'MAIL_TO'), idAddresses),
+        cc: normalizeAddresses(prop('CC', 'MAIL_CC'), idAddresses),
+        bcc: normalizeAddresses(prop('BCC', 'MAIL_BCC'), idAddresses),
     };
 }
 
@@ -276,11 +274,7 @@ export function buildMailtoUrl(email: MailFields): string {
     add('subject', email.subject);
     // mailto bodies use CRLF line breaks
     add('body', email.body.replace(/\r?\n/g, '\r\n'));
-    const to = email.to
-        .split(',')
-        .map(s => encodeURIComponent(s.trim()))
-        .filter(Boolean)
-        .join(',');
+    const to = splitAddresses(email.to).map(encodeURIComponent).join(',');
     return `mailto:${to}${params.length ? '?' + params.join('&') : ''}`;
 }
 
@@ -347,6 +341,29 @@ async function markHeadingDone(document: vscode.TextDocument, headingLine: numbe
     await updateClosedTimestamp(editor, headingLine, wasDone, true);
 }
 
+/** The first :EMAIL: address of each heading id, from the database. */
+async function lookupIdAddresses(ids: string[]): Promise<Map<string, string>> {
+    const found = new Map<string, string>();
+    try {
+        const { getDatabase } = await import('../database/lazyDb');
+        const { firstAddress } = await import('./contacts');
+        const db = await getDatabase();
+        if (!db) return found;
+        for (const id of ids) {
+            const row = await db.getHeadingById(id);
+            if (!row) continue;
+            let props: Record<string, string> = {};
+            try { props = JSON.parse(row.properties || '{}'); } catch { /* not JSON */ }
+            const key = Object.keys(props).find(k => k.toUpperCase() === 'EMAIL');
+            const address = key ? firstAddress(props[key]) : '';
+            if (address) found.set(id, address);
+        }
+    } catch {
+        // No database: id links stay as written and are reported as missing
+    }
+    return found;
+}
+
 /**
  * Command: email the heading at point.
  */
@@ -363,10 +380,20 @@ export async function emailHeading(): Promise<void> {
         vscode.window.showWarningMessage('Email Heading works on org headings; this is not an org file.');
         return;
     }
-    const email = buildHeadingEmail(document.getText(), editor.selection.active.line);
+    let email = buildHeadingEmail(document.getText(), editor.selection.active.line);
     if (!email) {
         vscode.window.showWarningMessage('Cursor is not in a heading');
         return;
+    }
+    // [[id:…][Name]] in TO/CC/BCC: use the :EMAIL: of the linked heading
+    const ids = addressListIds([email.to, email.cc, email.bcc].join(', '));
+    if (ids.length) {
+        const idAddresses = await lookupIdAddresses(ids);
+        email = buildHeadingEmail(document.getText(), editor.selection.active.line, idAddresses) ?? email;
+        const missing = ids.filter(id => !idAddresses.has(id));
+        if (missing.length) {
+            vscode.window.showWarningMessage(`No :EMAIL: found for id link(s): ${missing.join(', ')}`);
+        }
     }
 
     const config = vscode.workspace.getConfiguration('scimax.emailHeading');

@@ -13,6 +13,7 @@
  * it, or insert/copy any of its properties.
  */
 import * as vscode from 'vscode';
+import { displayAddress } from './addressList';
 import { getDatabase } from '../database/lazyDb';
 import { HeadingRecord, getPropCaseInsensitive } from '../database/scimaxDbCore';
 import { ensureHeadingId } from './dependencyCommands';
@@ -52,8 +53,7 @@ export function firstAddress(email: string | undefined): string {
 export function nameAddress(name: string, email: string | undefined): string {
     const address = firstAddress(email);
     if (!address) return name;
-    const display = /[,;:<>()[\]@"\\.]/.test(name) ? `"${name.replace(/["\\]/g, '\\$&')}"` : name;
-    return `${display} <${address}>`;
+    return displayAddress(name, address);
 }
 
 /** Build contacts from heading rows, keeping one per heading. */

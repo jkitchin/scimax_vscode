@@ -24,6 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Email addresses: a quoted name with a comma (`"Ramirez, Ana" <ana@x.org>`) is no longer split into two addresses. This applies to Email Heading's To/Cc/Bcc, to the mailto URL it builds, and to mailto links opened through the mail client. `[[mailto:…][Name]]` and `[[id:…][Name]]` links in `:TO:`/`:CC:`/`:BCC:` now become `Name <address>` instead of being sent literally. Id links use the linked heading's `:EMAIL:`.
 - *Email Heading* now declines outside org files; in Markdown it used to treat a `* item` bullet as a heading. *Contacts → Insert link* into an org file no longer tries to add an `:ID:` to a contact kept in a Markdown file. It inserts a `mailto:` link, or else a `file:` link. The docs now say that Markdown contacts have no email address.
 - `:noweb yes` (and `eval`, `no-export`, `strip-export`, `strip-tangle`) now expands `<<name>>` references when a block runs with C-c C-c or through `#+CALL:`. Before, only tangling expanded them, so the shell or interpreter got the literal `<<name>>`. With `:cache yes`, the cache key now covers the expanded code.
 - Shift+Up/Down priority cycling now finds the TODO keyword from the document's own workflow (`#+TODO:`, `scimax.todoStates`), so `* WIP [#A] x` keeps the cookie after `WIP`. It also works on Markdown `#` headings. In org files, Shift+Up/Down on a `# comment` line are no longer swallowed as if the line were a heading.

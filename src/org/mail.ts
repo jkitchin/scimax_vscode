@@ -8,6 +8,7 @@
  * to several.
  */
 import * as vscode from 'vscode';
+import { splitAddresses } from './addressList';
 import { buildGmailUrl, buildMailtoUrl, MailFields, MAX_COMPOSE_URL_LENGTH } from './emailHeading';
 
 export type MailClient = 'gmail' | 'mailto';
@@ -58,7 +59,7 @@ export function parseMailto(url: string): MailFields {
         try { return decodeURIComponent(s); } catch { return s; }
     };
     const join = (a: string, b: string) => [a, b].filter(Boolean).join(', ');
-    fields.to = decode(q >= 0 ? rest.slice(0, q) : rest).split(',').map(s => s.trim()).filter(Boolean).join(', ');
+    fields.to = splitAddresses(decode(q >= 0 ? rest.slice(0, q) : rest)).join(', ');
     if (q >= 0) {
         for (const pair of rest.slice(q + 1).split('&')) {
             const eq = pair.indexOf('=');
