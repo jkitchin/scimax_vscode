@@ -2840,6 +2840,10 @@
         "title": "Scimax: Open Link at Point"
       },
       {
+        "command": "scimax.org.openLinkOtherWindow",
+        "title": "Scimax: Open Link at Point in Other Window"
+      },
+      {
         "command": "scimax.org.openExcalidraw",
         "title": "Scimax: Open Excalidraw Drawing"
       },
@@ -5819,6 +5823,12 @@
         "command": "scimax.org.openLink",
         "key": "ctrl+c ctrl+o",
         "mac": "ctrl+c ctrl+o",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/ && !terminalFocus"
+      },
+      {
+        "command": "scimax.org.openLinkOtherWindow",
+        "key": "ctrl+u ctrl+c ctrl+o",
+        "mac": "ctrl+u ctrl+c ctrl+o",
         "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/ && !terminalFocus"
       },
       {
@@ -9616,6 +9626,16 @@
           "command": "scimax.marp.help",
           "when": "editorLangId == markdown && !scimax.marp.isMarpDocument",
           "group": "0_scimaxMarp@2"
+        },
+        {
+          "command": "scimax.org.openLink",
+          "when": "editorLangId =~ /org|markdown|quarto/ && scimax.onLink",
+          "group": "navigation@0"
+        },
+        {
+          "command": "scimax.org.openLinkOtherWindow",
+          "when": "editorLangId =~ /org|markdown|quarto/ && scimax.onLink",
+          "group": "navigation@0"
         },
         {
           "command": "scimax.org.executeBlock",

@@ -141,12 +141,21 @@ URL does not start italics.
 * ✅ Following Links
 CLOSED: [2026-01-14 Wed 20:51]
 
-** ✅ Open Link
-CLOSED: [2026-01-14 Wed 20:52]
+** Open Link
 
-| Key     | Command                                  |
-|---------+------------------------------------------|
-| C-c C-o | Open link at point (scimax.org.openLink) |
+| Key         | Command                                                      |
+|-------------+--------------------------------------------------------------|
+| C-c C-o     | Open link at point (scimax.org.openLink)                     |
+| C-u C-c C-o | Open it in the other window (scimax.org.openLinkOtherWindow) |
+
+~C-u C-c C-o~ opens the link in the editor group beside this one, making a
+group to the right if there is only one, like Emacs =find-file-other-window=.
+Use it to keep an outline or a script in view while you work in the files it
+links to. Right-click a link for the same choice: /Open Link at Point/ or
+/Open Link at Point in Other Window/ (the menu shows them only on a link).
+
+A mouse click cannot be modified this way: VS Code does not pass the
+modifier keys of a click to the link, and a click cancels a pending ~C-u~.
 
 Click on a link or use this command to:
 - Open URLs in your default browser

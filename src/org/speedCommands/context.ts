@@ -20,6 +20,29 @@ import { isMarkdownLike } from '../../shared/markdownLike';
 import { findMarkdownFencedBlocks, matchCodeFenceOpen } from '../../shared/markdownFences';
 import { markdownHeadingLevel } from '../../shared/markdownDocument';
 
+/** Same limit as the parser's block line limit */
+const MAX_BLOCK_LINES = 50000;
+
+/**
+ * Whether org line `lineNum` lies between a `#+begin_NAME` line and its
+ * `#+end_NAME` line (src, example, export, quote, …). An unclosed
+ * `#+begin_` is not a block, as in org.
+ */
+export function orgLineInBlock(getLine: (i: number) => string, lineCount: number, lineNum: number): boolean {
+    for (let i = lineNum - 1; i >= 0 && lineNum - i <= MAX_BLOCK_LINES; i--) {
+        const text = getLine(i);
+        if (/^\s*#\+end_\S/i.test(text)) return false;
+        const begin = text.match(/^\s*#\+begin_(\S+)/i);
+        if (!begin) continue;
+        const end = new RegExp(`^\\s*#\\+end_${begin[1].replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\s*$`, 'i');
+        for (let j = lineNum + 1; j < lineCount && j - i <= MAX_BLOCK_LINES; j++) {
+            if (end.test(getLine(j))) return true;
+        }
+        return false;
+    }
+    return false;
+}
+
 /**
  * Check if cursor is at the start of a heading (column 0)
  */
@@ -30,7 +53,10 @@ export function isAtHeadingStart(document: vscode.TextDocument, position: vscode
     const line = document.lineAt(position.line).text;
 
     if (document.languageId === 'org') {
-        return /^\*+\s/.test(line);
+        // Not a `* line` inside a #+begin_src (or other) block: there it is
+        // block text waiting for its `,` escape, and `,` is itself a speed key
+        return /^\*+\s/.test(line)
+            && !orgLineInBlock(i => document.lineAt(i).text, document.lineCount, position.line);
     } else if (isMarkdownLike(document.languageId)) {
         // Not a `# comment` inside a code block, front matter or HTML comment
         return markdownHeadingLevel(document, position.line) > 0;

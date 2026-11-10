@@ -307,7 +307,7 @@ extension's *Run Cell*, and =C-<return>=, =s-<return>= and =S-<return>= are left
 Quarto's own run commands. =Cmd+Shift+V= (=Ctrl+Shift+V=) in a =.qmd= file opens
 Quarto's preview (~quarto.preview~), the same as =Cmd+Shift+K=. See [[file:30-markdown-compatibility.org::*Quarto Documents][Quarto Documents]].
 
-** 👀 Navigation & Manipulation
+** Navigation & Manipulation
 
 | Key           | Action                          |
 |---------------+---------------------------------|
@@ -380,6 +380,7 @@ Like the Markdown preview, but for org files. See [[file:46-org-preview.org][Org
 |-------------+----------------------------------------|
 | C-c C-l     | Insert link, or edit the link at point |
 | C-c C-o     | Open link, or the hashtag at point     |
+| C-u C-c C-o | Open the link in the other window      |
 | C-c #       | Insert a hashtag, with completion      |
 | Tab         | After =#= or =#ta=: complete hashtags  |
 | <return>    | Open link (when on link)               |
