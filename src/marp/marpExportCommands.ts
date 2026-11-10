@@ -27,7 +27,7 @@ import { parseDeck } from './slideModel';
 import { appWindowCommand, openAppWindow, presentWindow, resolveAppBrowser, systemSearch } from './appWindow';
 import { frontMatterValue } from './marpAuthoring';
 import {
-    BundleReport, bundlePresenterDeck, inlineDeck, OfflineCheck, offlineIssues, OfflinePlan,
+    addMediaScript, BundleReport, bundlePresenterDeck, inlineDeck, OfflineCheck, offlineIssues, OfflinePlan,
     parseTimer, presenterAssets, presenterOffline,
 } from './presenterBundle';
 import { fetchFontCached, offlinePythonFiles as fetchOfflinePython } from './presenterDownloads';
@@ -322,6 +322,21 @@ interface PresenterBuild {
 }
 
 /**
+ * Add the slide media script to a deck without the presenter tools, so its
+ * movies and players stop on leaving their slide (presenter decks get it with
+ * the tools). A failure is logged, not shown: the deck still works.
+ */
+async function addSlideMedia(context: vscode.ExtensionContext, htmlPath: string): Promise<void> {
+    try {
+        const html = await fs.promises.readFile(htmlPath, 'utf8');
+        const assets = presenterAssets(context.asAbsolutePath(path.join('media', 'marpPresent')));
+        await fs.promises.writeFile(htmlPath, addMediaScript(html, assets.media), 'utf8');
+    } catch (error) {
+        log().appendLine(`Could not add the slide media script: ${error instanceof Error ? error.message : String(error)}`);
+    }
+}
+
+/**
  * Turn the Marp HTML at `htmlPath` into a self-contained deck with the
  * presenter tools (pen, laser, notes, save with ink, live Python cells).
  * Returns undefined (after reporting why) if it failed. `quiet` leaves out
@@ -565,6 +580,9 @@ async function exportWithMarp(context: vscode.ExtensionContext, format: MarpExpo
     if (!(await convertWithMarp(context, document, format, outputPath, `Exporting ${shownName}`, presenter))) {
         return;
     }
+    if (format === 'html' && !presenter) {
+        await addSlideMedia(context, outputPath);
+    }
     if (format === 'html' && presenter) {
         const build = await addPresenterTools(context, document, outputPath);
         if (!build) {
@@ -762,6 +780,9 @@ async function buildSlideshow(
         const title = options.quiet ? `Updating slideshow of ${path.basename(document.fileName)}` : `Preparing slideshow of ${path.basename(document.fileName)}`;
         if (!(await convertWithMarp(context, document, 'html', scratch, title, presenter, options.quiet))) {
             return false;
+        }
+        if (!presenter) {
+            await addSlideMedia(context, scratch);
         }
         if (presenter) {
             const build = await addPresenterTools(context, document, scratch, options.quiet);

@@ -36,6 +36,7 @@ const SLIDES_MARK = 'marp-present: slide structure';
 const CAPTIONS_MARK = 'marp-present: live captions';
 const AUDIO_MARK = 'marp-present: microphone';
 const RECORDER_MARK = 'marp-present: record the talk';
+const SLIDE_MEDIA_MARK = 'marp-present: slide media';
 /** The start of Marp CLI's slideshow (bespoke) script, which takes the slides as they are when it runs. */
 const BESPOKE_SCRIPT = /<script>(?=\/\*!! License: [^\n]*marp-cli)/;
 const INK_EMPTY = '<script type="application/json" id="marp-ink-data">{}</script>';
@@ -99,6 +100,8 @@ export interface PresenterAssets {
     timer: string;
     /** Blank screen, zoom, go to a slide, exercise countdowns. */
     show: string;
+    /** Movies, sound and embedded players: pause on leaving a slide, autoplay on its slide (every deck gets it). */
+    media: string;
     /** Editing the slides' text and layout in the slideshow. */
     edit: string;
     /** Slides added and hidden in the slideshow; runs before Marp's own script. */
@@ -398,6 +401,21 @@ export function addSlidesScript(html: string, assets: PresenterAssets): string {
 }
 
 /**
+ * Add the slide media script (media.js: movies, sound and YouTube/Vimeo
+ * players pause on leaving their slide, and `autoplay` plays only on its
+ * slide) to any Marp HTML deck, before the last </body>. Presenter decks get
+ * it from addPresenterScripts; a page that has it already is left alone.
+ */
+export function addMediaScript(html: string, mediaScript: string): string {
+    if (html.includes(SLIDE_MEDIA_MARK)) {
+        return html;
+    }
+    const script = `<script>${scriptSafe(fs.readFileSync(mediaScript, 'utf8'))}</script>`;
+    const at = html.lastIndexOf('</body>');
+    return at < 0 ? html + script : html.slice(0, at) + script + html.slice(at);
+}
+
+/**
  * Add the presenter tools (and the Python cell runner, if the deck has run
  * cells) before the last </body>. Scripts already in the page are not added again.
  * The talk timer is always added: without `window.__MARP_TIMER__` it shows
@@ -416,6 +434,9 @@ export function addPresenterScripts(html: string, assets: PresenterAssets): stri
     }
     if (!html.includes(SHOW_MARK)) {
         files.push(assets.show);
+    }
+    if (!html.includes(SLIDE_MEDIA_MARK)) {
+        files.push(assets.media);
     }
     if (!html.includes(TIMER_MARK)) {
         files.push(assets.timer);
@@ -518,6 +539,7 @@ export function presenterAssets(mediaDir: string): PresenterAssets {
         codemirror: path.join(mediaDir, 'vendor', 'codemirror.js'),
         timer: path.join(mediaDir, 'timer.js'),
         show: path.join(mediaDir, 'showtools.js'),
+        media: path.join(mediaDir, 'media.js'),
         edit: path.join(mediaDir, 'editor.js'),
         slides: path.join(mediaDir, 'slides.js'),
         audio: path.join(mediaDir, 'audio.js'),

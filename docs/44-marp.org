@@ -1367,7 +1367,7 @@ closed or checked again.
 - The browser files live in ~media/marpPresent/~ of the extension; the Output
   panel (/Scimax Marp Export/) lists what was inlined and any missing files.
 
-* Video, Sound and Web Pages
+* 👀 Video, Sound and Web Pages
 
 A slide can hold anything a web page can: a movie, sound, a YouTube video, a
 live Google Doc, a whiteboard, a simulation. Write the HTML in the Markdown.
@@ -1392,14 +1392,17 @@ each of these.
   play in a frame.
 - YouTube does not play inside a deck opened from a file (Present, ~deck.html~):
   it wants to know the web page it is embedded in, and a file has none, so it
-  shows "Error 153". In a presenter deck (~presenter: true~) the frame shows the
+  shows "Error 153". There the frame shows the
   video's thumbnail and a play button instead, which opens the video on YouTube
   in a new window at the ~start=~ time.
 - Moving to another slide pauses the movies, sound and YouTube or Vimeo players
-  on the slide you leave (presenter decks).
+  on the slide you leave.
 - A movie or sound with ~autoplay~ (=autoplay muted loop= for a background
   movie) plays while its slide is shown, from where it was paused, not from
-  when the deck opens (presenter decks).
+  when the deck opens. In Marp's presenter view it plays muted (the audience
+  window has the sound), and the next-slide preview never plays it.
+- These work in every deck (Present, Export HTML, ~scimax marp build~), with or
+  without the presenter tools.
 - For a Google Doc, Sheet or Slides file, replace ~/edit...~ in the URL with
   ~/preview~, and share it as "anyone with the link can view".
 - Sites such as Excalidraw, Desmos, PhET, 3Dmol.js and OpenStreetMap can be

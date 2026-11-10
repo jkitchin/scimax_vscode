@@ -14,7 +14,7 @@ import * as path from 'path';
 import { buildMarpArgs, marpErrorText } from '../../marp/marpExport';
 import { frontMatterValue } from '../../marp/marpAuthoring';
 import {
-    BundleReport, bundlePresenterDeck, offlineIssues, OfflinePlan, parseTimer,
+    addMediaScript, BundleReport, bundlePresenterDeck, offlineIssues, OfflinePlan, parseTimer,
     presenterAssets, presenterOffline, presenterRequested,
 } from '../../marp/presenterBundle';
 import { fetchFontCached, offlinePythonFiles } from '../../marp/presenterDownloads';
@@ -201,6 +201,9 @@ export async function marpCommand(_config: CliConfig, args: ParsedArgs): Promise
             });
             fs.writeFileSync(scratch, bundled.html, 'utf8');
             report = bundled.report;
+        } else {
+            // Movies and players stop on leaving their slide in every deck
+            fs.writeFileSync(scratch, addMediaScript(fs.readFileSync(scratch, 'utf8'), presenterAssets(MEDIA_DIR).media), 'utf8');
         }
         fs.renameSync(scratch, output);
     } finally {

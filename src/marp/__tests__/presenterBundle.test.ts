@@ -10,7 +10,7 @@ import * as os from 'os';
 import * as path from 'path';
 import { createRequire } from 'module';
 import {
-    addPresenterScripts, bundlePresenterDeck, hasRunCells, inlineDeck, isLocalRef,
+    addMediaScript, addPresenterScripts, bundlePresenterDeck, hasRunCells, inlineDeck, isLocalRef,
     parseTimer, planOfflinePython, PresenterAssets, presenterAssets, presenterOffline, presenterRequested,
     offlineIssues, pyodideBaseUrl, PyodideLock, pythonImports, runCellAt, runCellCode, runCells, scriptSafe,
 } from '../presenterBundle';
@@ -46,6 +46,7 @@ beforeAll(() => {
         codemirror: path.join(fake, 'codemirror.js'),
         timer: path.join(fake, 'timer.js'),
         show: path.join(fake, 'showtools.js'),
+        media: path.join(fake, 'media.js'),
         edit: path.join(fake, 'editor.js'),
         slides: path.join(fake, 'slides.js'),
         audio: path.join(fake, 'audio.js'),
@@ -55,6 +56,7 @@ beforeAll(() => {
     fs.writeFileSync(assets.edit, '/* marp-present: slide editing */ window.E = 1;');
     fs.writeFileSync(assets.slides, '/* marp-present: slide structure */ window.S = 1;');
     fs.writeFileSync(assets.show, '/* marp-present: show tools for Marp HTML decks */ window.W = 1;');
+    fs.writeFileSync(assets.media, '/* marp-present: slide media */ window.MD = 1;');
     fs.writeFileSync(assets.timer, '/* marp-present: talk timer */ window.T = 1;');
     fs.writeFileSync(assets.audio, '/* marp-present: microphone */ window.M = 1;');
     fs.writeFileSync(assets.captions, '/* marp-present: live captions */ window.V = 1;');
@@ -195,6 +197,21 @@ describe('addPresenterScripts', () => {
     it('does not add the scripts twice', () => {
         const once = addPresenterScripts(page('<pre data-run=""></pre>'), assets);
         expect(addPresenterScripts(once, assets)).toBe(once);
+    });
+
+    it('includes the slide media script, which plain decks get on their own', () => {
+        expect(addPresenterScripts(page('<p>x</p>'), assets)).toContain('window.MD = 1');
+        const plain = addMediaScript(page('<p>x</p>'), assets.media);
+        expect(plain).toContain('window.MD = 1');
+        expect(plain).not.toContain('window.W = 1');
+        expect(plain.indexOf('window.MD')).toBeLessThan(plain.indexOf('</body>'));
+        expect(addMediaScript(plain, assets.media)).toBe(plain);
+    });
+
+    it('ships media.js with the slide media mark, and showtools.js without the media code', () => {
+        const dir = path.join(__dirname, '..', '..', '..', 'media', 'marpPresent');
+        expect(fs.readFileSync(path.join(dir, 'media.js'), 'utf8')).toContain('marp-present: slide media');
+        expect(fs.readFileSync(path.join(dir, 'showtools.js'), 'utf8')).not.toContain('function stopMedia');
     });
 });
 
