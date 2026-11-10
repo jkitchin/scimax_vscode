@@ -19,6 +19,7 @@ import * as crypto from 'crypto';
 import * as path from 'path';
 import * as fs from 'fs';
 import { getDatabase } from '../database/lazyDb';
+import { onPathsChanged } from '../shared/pathChanges';
 import type { ScimaxDb } from '../database/scimaxDb';
 import type { HeadingRecord } from '../database/scimaxDbCore';
 import { readSourceLines } from '../org/agendaDocumentProvider';
@@ -108,6 +109,12 @@ export class SearchWebview implements vscode.Disposable {
         this.disposables.push(vscode.workspace.onDidSaveTextDocument(doc => {
             if (/\.(org|md|markdown|qmd)$/i.test(doc.fileName)) this.scheduleRerun();
         }));
+        // A rename or delete (dired, F12 f, the Explorer) leaves results pointing at old paths.
+        this.disposables.push(
+            onPathsChanged(() => this.scheduleRerun()),
+            vscode.workspace.onDidRenameFiles(() => this.scheduleRerun()),
+            vscode.workspace.onDidDeleteFiles(() => this.scheduleRerun()),
+        );
     }
 
     /** Open the view, or bring it forward; `query` replaces the query. */

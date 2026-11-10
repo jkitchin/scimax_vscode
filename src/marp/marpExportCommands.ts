@@ -27,7 +27,7 @@ import { parseDeck } from './slideModel';
 import { appWindowCommand, openAppWindow, presentWindow, resolveAppBrowser, systemSearch } from './appWindow';
 import { frontMatterValue } from './marpAuthoring';
 import {
-    BundleReport, bundlePresenterDeck, inlineDeck, OfflineCheck, offlineIssues, OfflinePlan,
+    addMediaScript, BundleReport, bundlePresenterDeck, inlineDeck, OfflineCheck, offlineIssues, OfflinePlan,
     parseTimer, presenterAssets, presenterOffline,
 } from './presenterBundle';
 import { fetchFontCached, offlinePythonFiles as fetchOfflinePython } from './presenterDownloads';
@@ -135,8 +135,8 @@ async function exportForGoogleSlides(context: vscode.ExtensionContext): Promise<
     }
 }
 
-async function resolveMarpCli(context: vscode.ExtensionContext): Promise<Command | undefined> {
-    const configured = vscode.workspace.getConfiguration('scimax.marp').get<string>('cliPath', '').trim();
+async function resolveMarpCli(context: vscode.ExtensionContext, resource?: vscode.Uri): Promise<Command | undefined> {
+    const configured = vscode.workspace.getConfiguration('scimax.marp', resource).get<string>('cliPath', '').trim();
     if (configured) {
         return { command: configured, prefix: [] };
     }
@@ -322,6 +322,21 @@ interface PresenterBuild {
 }
 
 /**
+ * Add the slide media script to a deck without the presenter tools, so its
+ * movies and players stop on leaving their slide (presenter decks get it with
+ * the tools). A failure is logged, not shown: the deck still works.
+ */
+async function addSlideMedia(context: vscode.ExtensionContext, htmlPath: string): Promise<void> {
+    try {
+        const html = await fs.promises.readFile(htmlPath, 'utf8');
+        const assets = presenterAssets(context.asAbsolutePath(path.join('media', 'marpPresent')));
+        await fs.promises.writeFile(htmlPath, addMediaScript(html, assets.media), 'utf8');
+    } catch (error) {
+        log().appendLine(`Could not add the slide media script: ${error instanceof Error ? error.message : String(error)}`);
+    }
+}
+
+/**
  * Turn the Marp HTML at `htmlPath` into a self-contained deck with the
  * presenter tools (pen, laser, notes, save with ink, live Python cells).
  * Returns undefined (after reporting why) if it failed. `quiet` leaves out
@@ -489,7 +504,7 @@ async function convertWithMarp(
     presenter = false,
     quiet = false
 ): Promise<boolean> {
-    const cli = await resolveMarpCli(context);
+    const cli = await resolveMarpCli(context, document.uri);
     if (!cli) {
         return false;
     }
@@ -564,6 +579,9 @@ async function exportWithMarp(context: vscode.ExtensionContext, format: MarpExpo
     const presenter = presenterEnabled(document);
     if (!(await convertWithMarp(context, document, format, outputPath, `Exporting ${shownName}`, presenter))) {
         return;
+    }
+    if (format === 'html' && !presenter) {
+        await addSlideMedia(context, outputPath);
     }
     if (format === 'html' && presenter) {
         const build = await addPresenterTools(context, document, outputPath);
@@ -684,16 +702,36 @@ interface PresentArgs {
     file?: string;
     /** 1-based slide to start at. */
     slide?: number;
+    /** The file was just written (Org → Marp): use what is on disk, never save over it. */
+    fresh?: boolean;
 }
 
-/** The deck at `file`, saved if it has unsaved changes. */
-async function deckAt(file: string): Promise<vscode.TextDocument | undefined> {
+/**
+ * The deck at `file`, saved if it has unsaved changes. With `fresh` (the
+ * file was just exported) an open copy is brought up to date with the disk
+ * instead: VS Code reloads a clean buffer a moment after the file changes, so
+ * wait for that, and never save unsaved edits over the new export.
+ */
+async function deckAt(file: string, fresh = false): Promise<vscode.TextDocument | undefined> {
     let document: vscode.TextDocument;
     try {
         document = await vscode.workspace.openTextDocument(vscode.Uri.file(file));
     } catch {
         vscode.window.showErrorMessage(`Cannot open the slide deck ${file}.`);
         return undefined;
+    }
+    if (fresh) {
+        if (document.isDirty) {
+            vscode.window.showWarningMessage(`${path.basename(file)} is open with unsaved changes; revert it (File: Revert File) to present the new export.`);
+            return undefined;
+        }
+        const disk = await fs.promises.readFile(file, 'utf-8').catch(() => undefined);
+        for (let waited = 0; disk !== undefined && document.getText() !== disk && waited < 3000; waited += 100) {
+            await new Promise(resolve => setTimeout(resolve, 100));
+        }
+        if (disk !== undefined && document.getText() !== disk) {
+            vscode.window.showWarningMessage(`${path.basename(file)} has not reloaded from disk; the slideshow may show the previous export.`);
+        }
     }
     if (!isMarpText(document.getText())) {
         vscode.window.showWarningMessage(`${path.basename(file)} is not a Marp deck (no marp: true in its front matter).`);
@@ -763,6 +801,9 @@ async function buildSlideshow(
         if (!(await convertWithMarp(context, document, 'html', scratch, title, presenter, options.quiet))) {
             return false;
         }
+        if (!presenter) {
+            await addSlideMedia(context, scratch);
+        }
         if (presenter) {
             const build = await addPresenterTools(context, document, scratch, options.quiet);
             if (!build) {
@@ -824,7 +865,7 @@ async function rebuildLiveShow(context: vscode.ExtensionContext, document: vscod
  * the deck updates the open slideshow.
  */
 async function present(context: vscode.ExtensionContext, args?: PresentArgs, fromCursor = false): Promise<void> {
-    const document = args?.file ? await deckAt(args.file) : await activeDeck();
+    const document = args?.file ? await deckAt(args.file, args.fresh === true) : await activeDeck();
     if (!document) {
         return;
     }

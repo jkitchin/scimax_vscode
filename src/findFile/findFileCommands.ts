@@ -8,6 +8,32 @@ import * as path from 'path';
 import * as os from 'os';
 import { FindFilePanel } from './findFilePanel';
 import { OriginalPosition } from './findFileTypes';
+import { DiredPanel } from '../dired/diredPanel';
+
+/**
+ * Where C-x C-f starts: the directory a focused dired panel shows, else the
+ * active file's folder, else the first workspace folder, else home.
+ */
+export function findFileStartDir(
+    diredDir: string | undefined,
+    editorUri: { scheme: string; fsPath: string } | undefined,
+    workspaceDir: string | undefined,
+    home: string,
+): string {
+    if (diredDir) return diredDir;
+    if (editorUri && editorUri.scheme === 'file') return path.dirname(editorUri.fsPath);
+    return workspaceDir ?? home;
+}
+
+/** findFileStartDir for the current window. */
+function currentStartDir(): string {
+    return findFileStartDir(
+        DiredPanel.activeDirectory(),
+        vscode.window.activeTextEditor?.document.uri,
+        vscode.workspace.workspaceFolders?.[0]?.uri.fsPath,
+        os.homedir(),
+    );
+}
 
 /**
  * Register find-file commands
@@ -27,15 +53,8 @@ export function registerFindFileCommands(context: vscode.ExtensionContext): void
                 };
             }
 
-            // Determine starting directory
-            let startDir: string;
-            if (editor && editor.document.uri.scheme === 'file') {
-                startDir = path.dirname(editor.document.uri.fsPath);
-            } else if (vscode.workspace.workspaceFolders && vscode.workspace.workspaceFolders.length > 0) {
-                startDir = vscode.workspace.workspaceFolders[0].uri.fsPath;
-            } else {
-                startDir = os.homedir();
-            }
+            // Determine starting directory (a focused dired panel's directory first)
+            const startDir = currentStartDir();
 
             FindFilePanel.createOrShow(context.extensionUri, startDir, originalPosition);
         })
@@ -48,14 +67,7 @@ export function registerFindFileCommands(context: vscode.ExtensionContext): void
             const originalPosition: OriginalPosition | null = editor
                 ? { uri: editor.document.uri, position: editor.selection.active }
                 : null;
-            let startDir: string;
-            if (editor && editor.document.uri.scheme === 'file') {
-                startDir = path.dirname(editor.document.uri.fsPath);
-            } else if (vscode.workspace.workspaceFolders && vscode.workspace.workspaceFolders.length > 0) {
-                startDir = vscode.workspace.workspaceFolders[0].uri.fsPath;
-            } else {
-                startDir = os.homedir();
-            }
+            const startDir = currentStartDir();
             FindFilePanel.createOrShow(context.extensionUri, startDir, originalPosition, true);
         })
     );

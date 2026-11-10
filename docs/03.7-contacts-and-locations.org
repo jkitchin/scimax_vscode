@@ -1,7 +1,7 @@
 #+TITLE: Contacts, Locations & Entity Selector
 #+TODO: ⚠️ 👀 | ✅
 
-* Contacts
+* 👀 Contacts
 
 Any indexed heading with an =:EMAIL:= property or a =:person:= tag is a
 contact, as in scimax-contacts for Emacs:
@@ -24,7 +24,7 @@ of them at once. Then choose an action:
 | Insert email              | Inserts the address(es) at the cursor, comma-separated                                              |
 | Insert Name <email>       | Inserts =Ana Ramirez <ana@example.edu>=, ready for a To: line                                       |
 | Email                     | Opens a compose window to all picked contacts (see [[*Email client][Email client]])                                    |
-| Insert link               | =[[id:…][Name]]= in org (adds an =:ID:=), =[Name](mailto:…)= in Markdown                                      |
+| Insert link               | =[[id:…][Name]]= in org (adds an =:ID:=), =[Name](mailto:…)= in Markdown (see below for Markdown contacts)    |
 | Copy email / Name <email> | The same text, on the clipboard                                                                     |
 | Go to contact             | Opens the contact's heading (one contact)                                                           |
 | Add a note                | Adds =- [2026-11-09 Mon 14:05] = at the end of the entry and puts the cursor after it (one contact) |
@@ -37,7 +37,13 @@ Contacts come from the database, so run *Scimax: Sync Files* (or open the
 folder as a workspace) first. The more general [[*Entity Selector (Contacts, Locations, …)][Entity Selector]] below
 works on any tag or property.
 
-** Email client
+A Markdown heading tagged =person= is a contact too, but Markdown has no
+property drawers, so it never has an email address. Email actions skip it.
+Insert link into an org file gives a =[[file:…::Name][Name]]= link to it,
+since an =:ID:= can not be added to a Markdown file. Keep contacts that need
+addresses in org files.
+
+** 👀 Email client
 
 All email Scimax composes goes through one setting, =scimax.mail.client=:
 
@@ -52,8 +58,10 @@ This applies to Contacts, to =mailto:= links in org and Markdown files
 to the *Email* action of Pick Entity, and to [[file:10-export.org::*Email a Heading][Email a Heading]].
 [[cmd:scimax.mail.compose]] (*Scimax: Compose Email*) opens a blank compose window.
 
-A =mailto:= link ctrl+clicked in VS Code's own Markdown preview still goes to
-the system mail client. VS Code handles those clicks itself.
+In Markdown, both =[Name](mailto:…)= links and bare =mailto:= URLs are
+clickable in the editor. In VS Code's Markdown preview, with =gmail= a
+=mailto:= link is rewritten to its Gmail compose URL, so it opens in the
+browser; with =mailto= it goes to the system mail client as before.
 
 #+begin_src json
 {

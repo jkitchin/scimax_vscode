@@ -2,17 +2,22 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 const configValues: Record<string, Record<string, unknown>> = {};
 vi.mock('vscode', () => ({
+    window: {},
     workspace: {
-        getConfiguration: (section: string) => ({
-            inspect: (key: string) => ({ globalValue: configValues[section]?.[key] }),
+        getConfiguration: (section: string, resource?: { fsPath: string }) => ({
+            inspect: (key: string) => (resource?.fsPath === '/proj/a.org' && section === 'scimax.mail' && key === 'client'
+                ? { workspaceFolderValue: 'mailto' }
+                : { globalValue: configValues[section]?.[key] }),
         }),
     },
 }));
 vi.mock('../../database/lazyDb', () => ({ getDatabase: vi.fn() }));
 vi.mock('../dependencyCommands', () => ({ ensureHeadingId: vi.fn() }));
 
-import { firstAddress, nameAddress, noteInsertLine, noteLine, stripTags, toContacts } from '../contacts';
-import { composeUrl, mailSettings, parseMailto } from '../mail';
+import { firstAddress, nameAddress, nonOrgContactLink, noteInsertLine, noteLine, stripTags, toContacts } from '../contacts';
+import { composeUrl, findMarkdownMailtoLinks, mailSettings, mailtoPreviewPlugin, parseMailto } from '../mail';
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const MarkdownIt = require('markdown-it');
 import type { HeadingRecord } from '../../database/scimaxDbCore';
 
 function row(title: string, props: Record<string, string>, tags: string[] = [], line = 1, file = '/n/people.org'): HeadingRecord {
@@ -65,6 +70,12 @@ describe('contacts helpers', () => {
         expect(noteInsertLine(md, 0, true)).toBe(4);
     });
 
+    it('links Markdown contacts by mailto or file, never by an org ID', () => {
+        expect(nonOrgContactLink({ name: 'Ana', email: 'ana@x.org, b@y.org', filePath: '/n/people.md' })).toBe('[[mailto:ana@x.org][Ana]]');
+        expect(nonOrgContactLink({ name: 'Bo', filePath: '/n/people.md' })).toBe('[[file:/n/people.md::Bo][Bo]]');
+        expect(nonOrgContactLink({ name: 'Cy', filePath: '/n/People.ORG' })).toBeUndefined();
+    });
+
     it('starts a note with an inactive timestamp', () => {
         expect(noteLine(new Date(2026, 10, 9, 14, 5))).toBe('- [2026-11-09 Mon 14:05] ');
     });
@@ -78,6 +89,9 @@ describe('mail', () => {
             to: 'a@x.org, b@y.org', cc: 'c@z.org', bcc: '', subject: 'Hi there', body: 'line1\nline2',
         });
         expect(parseMailto('MAILTO:a@x.org').to).toBe('a@x.org');
+        expect(parseMailto('mailto:%22Doe%2C%20Jo%22%20%3Cjo%40z.org%3E,b@y.org').to).toBe('"Doe, Jo" <jo@z.org>, b@y.org');
+        // "+" is literal in mailto (RFC 6068), as in plus addressing
+        expect(parseMailto('mailto:me+tag@x.org?subject=1+1%20%3D%202')).toMatchObject({ to: 'me+tag@x.org', subject: '1+1 = 2' });
     });
 
     it('builds a Gmail compose URL, with the account when set', () => {
@@ -98,5 +112,28 @@ describe('mail', () => {
         expect(mailSettings()).toEqual({ client: 'mailto', account: '1' });
         configValues['scimax.mail'] = { client: 'gmail' };
         expect(mailSettings()).toEqual({ client: 'gmail', account: '1' });
+    });
+
+    it('reads the folder settings of the file it is given', () => {
+        expect(mailSettings({ fsPath: '/proj/a.org' } as never).client).toBe('mailto');
+        expect(mailSettings({ fsPath: '/other/b.org' } as never).client).toBe('gmail');
+    });
+});
+
+describe('Markdown mailto links', () => {
+    it('finds the URL of inline, autolink and bare mailto links', () => {
+        const text = 'Mail [Ana](mailto:ana@x.org?subject=Hi), <mailto:bo@y.org> or mailto:cy@z.org.';
+        const links = findMarkdownMailtoLinks(text);
+        expect(links.map(l => l.url)).toEqual(['mailto:ana@x.org?subject=Hi', 'mailto:bo@y.org', 'mailto:cy@z.org']);
+        expect(text.slice(links[0].start, links[0].end)).toBe('mailto:ana@x.org?subject=Hi');
+    });
+
+    it('rewrites mailto links in the preview to Gmail compose, only with the Gmail client', () => {
+        const gmail = new MarkdownIt().use(mailtoPreviewPlugin, () => ({ client: 'gmail' as const }));
+        const html = gmail.render('[Ana](mailto:ana@x.org?subject=Hi)');
+        expect(html).toContain('href="https://mail.google.com/mail/?');
+        expect(html).toContain('to=ana%40x.org');
+        const system = new MarkdownIt().use(mailtoPreviewPlugin, () => ({ client: 'mailto' as const }));
+        expect(system.render('[Ana](mailto:ana@x.org)')).toContain('href="mailto:ana@x.org"');
     });
 });

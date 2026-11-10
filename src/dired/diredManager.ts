@@ -9,6 +9,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as vscode from 'vscode';
+import { notifyPathsChanged, type PathMove } from '../shared/pathChanges';
 import {
     DiredEntry,
     DiredDisplayEntry,
@@ -112,6 +113,8 @@ function escapeRegexForSafeMatching(pattern: string): RegExp | null {
 export class DiredManager {
     private state: DiredState;
     private onStateChangeCallbacks: ((state: DiredState) => void)[] = [];
+    /** A reload was asked for while wdired was editing names (see refresh) */
+    private reloadAfterWdired = false;
 
     constructor(initialDirectory?: string) {
         const startDir = initialDirectory ||
@@ -288,6 +291,7 @@ export class DiredManager {
             this.state.vcInfo = undefined;
 
             // Clear wdired mode
+            this.reloadAfterWdired = false;
             this.state.wdiredMode = false;
             this.state.pendingRenames.clear();
 
@@ -640,24 +644,33 @@ export class DiredManager {
      * SECURITY: Files are verified to exist before deletion.
      * Paths come from our directory listing, not user input.
      */
-    async deleteFiles(useTrash: boolean = true): Promise<{ deleted: string[]; errors: string[] }> {
+    /**
+     * What D deletes: the flagged entries, else the marked ones, else the
+     * entry at point. Never '.' or '..'.
+     */
+    getDeleteTargets(): DiredDisplayEntry[] {
         let toDelete = this.getFlaggedEntries();
         if (toDelete.length === 0) {
             toDelete = this.getMarkedEntries();
         }
         if (toDelete.length === 0) {
-            // Delete current
             const current = this.state.entries[this.state.selectedIndex];
             if (current) {
                 toDelete = [current];
             }
         }
+        return toDelete.filter(entry => entry.name !== '.' && entry.name !== '..');
+    }
+
+    async deleteFiles(useTrash: boolean = true): Promise<{ deleted: string[]; deletedPaths: string[]; errors: string[] }> {
+        const toDelete = this.getDeleteTargets();
 
         if (toDelete.length === 0) {
-            return { deleted: [], errors: [] };
+            return { deleted: [], deletedPaths: [], errors: [] };
         }
 
         const deleted: string[] = [];
+        const deletedPaths: string[] = [];
         const errors: string[] = [];
 
         for (const entry of toDelete) {
@@ -689,15 +702,18 @@ export class DiredManager {
                     }
                 }
                 deleted.push(entry.name);
+                deletedPaths.push(entry.path);
             } catch (error: any) {
                 errors.push(`${entry.name}: ${error.message}`);
             }
         }
 
+        notifyPathsChanged({ deleted: deletedPaths });
+
         // Refresh the directory
         await this.loadDirectory();
 
-        return { deleted, errors };
+        return { deleted, deletedPaths, errors };
     }
 
     /**
@@ -806,6 +822,7 @@ export class DiredManager {
 
         const renamed: string[] = [];
         const errors: string[] = [];
+        const moves: PathMove[] = [];
 
         for (const entry of toRename) {
             try {
@@ -835,10 +852,13 @@ export class DiredManager {
                     { overwrite: false }
                 );
                 renamed.push(entry.name);
+                moves.push({ from: entry.path, to: destPath });
             } catch (error: any) {
                 errors.push(`${entry.name}: ${error.message}`);
             }
         }
+
+        notifyPathsChanged({ moved: moves });
 
         // Refresh the directory
         await this.loadDirectory();
@@ -896,6 +916,23 @@ export class DiredManager {
         this.state.wdiredMode = false;
         this.state.pendingRenames.clear();
         this.notifyStateChange();
+        if (this.reloadAfterWdired) {
+            this.reloadAfterWdired = false;
+            this.loadDirectory().catch(() => { /* the next g shows any error */ });
+        }
+    }
+
+    /**
+     * Reload the listing after a change made elsewhere (a C-x v command, a
+     * rename from the File menu). While wdired is editing names, reloading
+     * would throw the edits away, so the reload waits until wdired ends.
+     */
+    refresh(): Promise<void> {
+        if (this.state.wdiredMode) {
+            this.reloadAfterWdired = true;
+            return Promise.resolve();
+        }
+        return this.loadDirectory();
     }
 
     /**
@@ -964,6 +1001,7 @@ export class DiredManager {
 
         const renamed: string[] = [];
         const errors: string[] = [];
+        const moves: PathMove[] = [];
 
         // Process renames
         for (const [originalName, newName] of this.state.pendingRenames) {
@@ -1005,10 +1043,13 @@ export class DiredManager {
                     { overwrite: false }
                 );
                 renamed.push(`${originalName} → ${newName}`);
+                moves.push({ from: originalPath, to: newPath });
             } catch (error: any) {
                 errors.push(`${originalName} → ${newName}: ${error.message}`);
             }
         }
+
+        notifyPathsChanged({ moved: moves });
 
         // Refresh and exit wdired mode
         await this.loadDirectory();
@@ -1025,15 +1066,77 @@ export class DiredManager {
             this.state.sort.field = field;
             this.state.sort.direction = 'asc';
         }
-        // Re-sort entries
+        // Re-sort entries, keeping the marks and the entry at point
+        const marks = new Map(this.state.entries.map(entry => [entry.path, entry.mark] as const));
+        const selectedPath = this.state.entries[this.state.selectedIndex]?.path;
         const entries: DiredEntry[] = this.state.entries.map(({ mark: _mark, index: _index, ...entry }) => entry);
         this.sortEntries(entries);
         this.state.entries = entries.map((entry, index) => ({
             ...entry,
-            mark: 'none' as MarkType,
+            mark: marks.get(entry.path) ?? 'none',
             index
         }));
+        const selected = this.state.entries.findIndex(entry => entry.path === selectedPath);
+        if (selected >= 0) this.state.selectedIndex = selected;
         this.notifyStateChange();
+    }
+
+    /** Put point on the entry for `filePath`, if it is listed. */
+    selectPath(filePath: string): boolean {
+        const index = this.state.entries.findIndex(entry => entry.path === filePath);
+        if (index < 0) return false;
+        this.state.selectedIndex = index;
+        this.notifyStateChange();
+        return true;
+    }
+
+    /**
+     * Find a file by name (relative to the listed directory; `notes/a.org`
+     * works too), creating it, and any missing folders, if it does not exist.
+     * A new file shows up in the listing with point on it (on the folder it was
+     * created in, for a subpath); in wdired mode the listing is left alone so
+     * pending renames survive. Returns the path and whether it was created.
+     */
+    async findOrCreateFile(name: string): Promise<{ path: string; created: boolean }> {
+        const trimmed = name.trim();
+        if (!trimmed) throw new Error('No file name');
+        const dir = this.state.currentDirectory;
+        const target = path.resolve(dir, trimmed);
+        let created = false;
+        if (!fs.existsSync(target)) {
+            await fs.promises.mkdir(path.dirname(target), { recursive: true });
+            await fs.promises.writeFile(target, '', { flag: 'wx' });
+            created = true;
+        }
+        if (created && !this.state.wdiredMode) {
+            await this.loadDirectory();
+            const rel = path.relative(dir, target);
+            const listed = rel && !rel.startsWith('..') && !path.isAbsolute(rel)
+                ? path.join(dir, rel.split(path.sep)[0])
+                : undefined;
+            if (listed) this.selectPath(listed);
+        }
+        return { path: target, created };
+    }
+
+    /**
+     * Rename (or move) one entry. `newName` is relative to the entry's own
+     * folder (in vc-dir that is not the listed directory), so `archive/a.org`
+     * or `../a.org` also move it; missing folders are created. Returns the
+     * new path; throws if the name is empty or the target exists.
+     */
+    async renameEntry(entryPath: string, newName: string): Promise<string> {
+        const name = newName.trim();
+        if (!name || name === '.' || name === '..') throw new Error(`Not a valid name: "${newName}"`);
+        const target = path.resolve(path.dirname(entryPath), name);
+        if (target === entryPath) return entryPath;
+        if (fs.existsSync(target)) throw new Error(`${name} already exists`);
+        await fs.promises.mkdir(path.dirname(target), { recursive: true });
+        await fs.promises.rename(entryPath, target);
+        notifyPathsChanged({ moved: [{ from: entryPath, to: target }] });
+        await this.loadDirectory();
+        this.selectPath(target);
+        return target;
     }
 
     toggleHidden(): void {

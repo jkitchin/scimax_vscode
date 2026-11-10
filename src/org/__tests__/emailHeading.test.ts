@@ -92,6 +92,17 @@ describe('normalizeAddresses', () => {
         expect(normalizeAddresses(undefined)).toBe('');
         expect(normalizeAddresses(' , ')).toBe('');
     });
+
+    it('resolves org links and keeps quoted commas', () => {
+        const ids = new Map([['42', 'bo@y.org']]);
+        expect(normalizeAddresses('[[mailto:ana@x.org][Ana]]; [[id:42][Bo]], "Doe, Jo" <jo@z.org>', ids))
+            .toBe('Ana <ana@x.org>, Bo <bo@y.org>, "Doe, Jo" <jo@z.org>');
+    });
+
+    it('builds a mailto URL without splitting quoted names', () => {
+        const url = buildMailtoUrl({ subject: '', body: '', to: '"Doe, Jo" <jo@z.org>, b@x.org', cc: '', bcc: '' });
+        expect(url.startsWith(`mailto:${encodeURIComponent('"Doe, Jo" <jo@z.org>')},b%40x.org`)).toBe(true);
+    });
 });
 
 describe('appendIdFooter', () => {

@@ -183,3 +183,10 @@ describe('live reload', () => {
         expect(prepareSlideshowHtml('<head></head>', 'file:///t/')).not.toContain('__marpLiveReload');
     });
 });
+
+describe('Scimax front matter keys', () => {
+    it('knows bibliography: as a global directive', () => {
+        expect(findDirective('bibliography')?.scope).toBe('global');
+        expect(findDirective('_bibliography')).toBeUndefined();
+    });
+});

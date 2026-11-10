@@ -297,10 +297,95 @@ export function parseJsonc(text: string): Record<string, unknown> {
 }
 
 /**
+ * Set a top-level key of a JSONC object, editing only that value's text so
+ * comments, order and formatting elsewhere are kept. A missing key is added
+ * at the end of the object. Throws if the text is not a JSONC object.
+ */
+export function setJsoncValue(text: string, key: string, value: unknown): string {
+    if (text.trim() === '') return `{\n    ${JSON.stringify(key)}: ${JSON.stringify(value)}\n}\n`;
+    parseJsonc(text); // validates
+    const n = text.length;
+    // Skip whitespace and comments from i
+    const skip = (i: number): number => {
+        for (;;) {
+            while (i < n && /\s/.test(text[i])) i++;
+            if (text[i] === '/' && text[i + 1] === '/') {
+                while (i < n && text[i] !== '\n') i++;
+            } else if (text[i] === '/' && text[i + 1] === '*') {
+                const end = text.indexOf('*/', i + 2);
+                i = end < 0 ? n : end + 2;
+            } else {
+                return i;
+            }
+        }
+    };
+    const stringEnd = (i: number): number => {
+        let j = i + 1;
+        while (j < n && text[j] !== '"') j += text[j] === '\\' ? 2 : 1;
+        return j + 1;
+    };
+    // End (exclusive) of the value starting at i
+    const valueEnd = (i: number): number => {
+        if (text[i] === '"') return stringEnd(i);
+        if (text[i] !== '{' && text[i] !== '[') {
+            let j = i;
+            while (j < n && !/[\s,}\]/]/.test(text[j])) j++;
+            return j;
+        }
+        let depth = 0;
+        let j = i;
+        while (j < n) {
+            j = skip(j);
+            const c = text[j];
+            if (c === '"') { j = stringEnd(j); continue; }
+            if (c === '{' || c === '[') depth++;
+            else if (c === '}' || c === ']') { depth--; if (depth === 0) return j + 1; }
+            j++;
+        }
+        return n;
+    };
+    const indentOf = (i: number): string => {
+        const lineStart = text.lastIndexOf('\n', i - 1) + 1;
+        return /^[ \t]*/.exec(text.slice(lineStart))![0];
+    };
+    let i = skip(0) + 1; // past the opening {
+    let lastValueEnd = -1;
+    let lastKeyStart = -1;
+    for (;;) {
+        i = skip(i);
+        if (text[i] === '}' || i >= n) break;
+        if (text[i] === ',') { i++; continue; }
+        const keyStart = i;
+        const keyEnd = stringEnd(i);
+        const name = JSON.parse(text.slice(keyStart, keyEnd)) as string;
+        const vStart = skip(skip(keyEnd) + 1); // past the colon
+        const vEnd = valueEnd(vStart);
+        if (name === key) {
+            return text.slice(0, vStart) + JSON.stringify(value) + text.slice(vEnd);
+        }
+        lastKeyStart = keyStart;
+        lastValueEnd = vEnd;
+        i = vEnd;
+    }
+    const entry = `${JSON.stringify(key)}: ${JSON.stringify(value)}`;
+    if (lastValueEnd < 0) {
+        const open = skip(0);
+        return text.slice(0, open + 1) + `\n    ${entry}` + text.slice(open + 1);
+    }
+    const indent = indentOf(lastKeyStart);
+    // Keep a trailing comma if the file already uses one
+    const after = skip(lastValueEnd);
+    if (text[after] === ',') {
+        return text.slice(0, after + 1) + `\n${indent}${entry},` + text.slice(after + 1);
+    }
+    return text.slice(0, lastValueEnd) + `,\n${indent}${entry}` + text.slice(lastValueEnd);
+}
+
+/**
  * Read and parse VS Code settings.json
  * Handles JSONC (comments) and control characters in string values
  */
-function readVSCodeSettings(): Record<string, unknown> {
+export function readVSCodeSettings(): Record<string, unknown> {
     try {
         const settingsPath = getVSCodeSettingsPath();
         if (!fs.existsSync(settingsPath)) {

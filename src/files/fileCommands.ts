@@ -7,6 +7,8 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
 import { DiredPanel } from '../dired/diredPanel';
+import { closeTabsUnder, saveDirtyDocsUnder } from './openDocs';
+import { notifyPathsChanged } from '../shared/pathChanges';
 
 /**
  * The entry at point in dired (when dired is the active tab), else the file
@@ -63,6 +65,8 @@ async function openInDefaultApp(): Promise<void> {
  * follows the file.
  */
 async function renameCurrentFile(): Promise<void> {
+    // In dired, dired's own R: the marked entries (moved to a folder) or the entry at point, which keeps point
+    if (await DiredPanel.runFileAction('rename')) return;
     const uri = currentFile('rename');
     if (!uri) return;
     const dir = path.dirname(uri.fsPath);
@@ -101,6 +105,8 @@ async function renameCurrentFile(): Promise<void> {
 
 /** Move the current file to the trash, after asking, and close its editor. */
 async function deleteCurrentFile(): Promise<void> {
+    // In dired, dired's own D: the flagged or marked entries, or the entry at point
+    if (await DiredPanel.runFileAction('delete')) return;
     const uri = currentFile('delete');
     if (!uri) return;
     const name = path.basename(uri.fsPath);
@@ -111,10 +117,8 @@ async function deleteCurrentFile(): Promise<void> {
     );
     if (choice !== 'Move to Trash') return;
 
-    const document = vscode.workspace.textDocuments.find(doc => doc.uri.toString() === uri.toString());
-    if (document?.isDirty) {
-        await document.save();
-    }
+    // Unsaved edits in the file, or in files inside the folder, go to the trash with it
+    if (!await saveDirtyDocsUnder([uri.fsPath])) return;
     let recursive = false;
     try {
         recursive = (await vscode.workspace.fs.stat(uri)).type === vscode.FileType.Directory;
@@ -127,13 +131,9 @@ async function deleteCurrentFile(): Promise<void> {
         vscode.window.showErrorMessage(`Could not delete ${name}: ${(err as Error).message}`);
         return;
     }
-    // Close every tab showing the file.
-    const tabs = vscode.window.tabGroups.all
-        .flatMap(group => group.tabs)
-        .filter(tab => tab.input instanceof vscode.TabInputText && tab.input.uri.toString() === uri.toString());
-    if (tabs.length) {
-        await vscode.window.tabGroups.close(tabs);
-    }
+    notifyPathsChanged({ deleted: [uri.fsPath] });
+    // Close every tab showing the file, or a file inside the folder.
+    await closeTabsUnder([uri.fsPath]);
     DiredPanel.refreshVc();
     vscode.window.showInformationMessage(`Moved ${name} to the trash`);
 }

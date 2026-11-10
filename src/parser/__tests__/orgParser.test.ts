@@ -277,14 +277,14 @@ describe('Inline Objects Parser', () => {
         });
 
         it('should parse code', () => {
-            const result = parseObjects('Use =code= here');
+            const result = parseObjects('Use ~code~ here');
             expect(result).toHaveLength(3);
             expect(result[1].type).toBe('code');
             expect((result[1] as CodeObject).properties.value).toBe('code');
         });
 
         it('should parse verbatim', () => {
-            const result = parseObjects('Use ~verbatim~ here');
+            const result = parseObjects('Use =verbatim= here');
             expect(result).toHaveLength(3);
             expect(result[1].type).toBe('verbatim');
             expect((result[1] as VerbatimObject).properties.value).toBe('verbatim');
@@ -636,7 +636,7 @@ describe('Inline Objects Parser', () => {
 
     describe('Complex Combinations', () => {
         it('should parse multiple objects in sequence', () => {
-            const result = parseObjects('See *bold* and /italic/ and =code=');
+            const result = parseObjects('See *bold* and /italic/ and ~code~');
             const types = result.map(r => r.type);
             expect(types).toContain('bold');
             expect(types).toContain('italic');

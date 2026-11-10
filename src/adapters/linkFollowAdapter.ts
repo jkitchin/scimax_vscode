@@ -16,6 +16,7 @@
 
 import * as vscode from 'vscode';
 import type { LinkContext, ProjectInfo } from '../parser/orgLinkTypes';
+import { openMailto } from '../org/mail';
 
 // =============================================================================
 // Link Follow Handler Interface
@@ -267,14 +268,16 @@ export const doiFollowHandler: LinkFollowHandler = {
 
 /**
  * Mailto link follow handler
- * Opens email client
+ * Composes in the configured mail client (Gmail by default)
  */
 export const mailtoFollowHandler: LinkFollowHandler = {
     type: 'mailto',
 
     async follow(path: string, context: LinkContext): Promise<void> {
+        // Compose in the configured client (scimax.mail.client), like every
+        // other mailto: link, rather than always the system mail app.
         const email = path.replace(/^mailto:/, '');
-        await vscode.env.openExternal(vscode.Uri.parse(`mailto:${email}`));
+        await openMailto(`mailto:${email}`);
     },
 };
 

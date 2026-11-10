@@ -259,13 +259,14 @@ describe('manifest consistency: registered settings are used', () => {
             for (let i = 1; i < parts.length; i++) {
                 const section = parts.slice(0, i).join('.');
                 const prop = parts.slice(i).join('.');
-                const secLit = `getConfiguration('${section}')`;
-                const secLit2 = `getConfiguration("${section}")`;
+                // With or without a resource argument: getConfiguration('s') or getConfiguration('s', uri)
+                const esc = section.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                const secLit = new RegExp(`getConfiguration\\(\\s*(?:'${esc}'|"${esc}")\\s*[,)]`);
                 const propLit = `'${prop}'`;
                 const propLit2 = `"${prop}"`;
                 for (const src of fileContents.values()) {
                     if (
-                        (src.includes(secLit) || src.includes(secLit2)) &&
+                        secLit.test(src) &&
                         (src.includes(propLit) || src.includes(propLit2))
                     ) {
                         return true;

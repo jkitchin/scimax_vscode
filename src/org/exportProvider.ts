@@ -11,6 +11,7 @@ import { parseOrgFast } from '../parser/orgExportParser';
 import { exportToHtml, HtmlExportOptions } from '../parser/orgExportHtml';
 import { exportToMarkdown } from '../parser/orgExportMarkdown';
 import { exportToMarp, MarpExportOptions } from '../parser/orgExportMarp';
+import { orgSlideNumber } from '../marp/orgSlideAt';
 import { exportToLatex, LatexExportOptions } from '../parser/orgExportLatex';
 import { exportToBeamer, BeamerExportOptions } from '../parser/orgExportBeamer';
 import { exportToDocx, DocxExportOptions } from '../parser/orgExportDocx';
@@ -1039,8 +1040,9 @@ async function exportMarkdown(content: string, _options: Partial<ExportOptions>)
 }
 
 /** The scimax.export.marp settings the user has set (keywords in the file win). */
-function marpExportSettings(): Partial<MarpExportOptions> {
-    const config = vscode.workspace.getConfiguration('scimax.export.marp');
+function marpExportSettings(resource?: vscode.Uri): Partial<MarpExportOptions> {
+    // Scoped to the org file, so folder settings apply in a multi-root workspace.
+    const config = vscode.workspace.getConfiguration('scimax.export.marp', resource);
     const options: Partial<MarpExportOptions> = {};
     const keys: Array<keyof MarpExportOptions> = [
         'theme', 'headingDivider', 'paginate', 'math', 'presenter', 'titleSlide',
@@ -1058,8 +1060,8 @@ function marpExportSettings(): Partial<MarpExportOptions> {
 /**
  * Export to a Marp slide deck (Markdown)
  */
-function exportMarp(content: string): string {
-    return exportToMarp(content, marpExportSettings());
+function exportMarp(content: string, resource?: vscode.Uri): string {
+    return exportToMarp(content, marpExportSettings(resource));
 }
 
 /**
@@ -1079,14 +1081,17 @@ async function quickExportMarp(then?: 'open' | 'present'): Promise<void> {
     const outputPath = path.join(inputDir, getExportFileName(metadata.exportFileName, inputName, 'md'));
     try {
         await deleteExistingOutput(outputPath);
-        await fs.promises.writeFile(outputPath, exportMarp(content), 'utf-8');
+        await fs.promises.writeFile(outputPath, exportMarp(content, editor.document.uri), 'utf-8');
     } catch (error) {
         const message = error instanceof Error ? error.message : String(error);
         vscode.window.showErrorMessage(`Marp export failed: ${message}`);
         return;
     }
     if (then === 'present') {
-        await vscode.commands.executeCommand('scimax.marp.present', { file: outputPath });
+        // Start at the slide the cursor is on, as Present does in a deck.
+        const slide = orgSlideNumber(editor.document.getText(), editor.selection.active.line,
+            org => exportMarp(preprocessContent(org, inputDir), editor.document.uri));
+        await vscode.commands.executeCommand('scimax.marp.present', { file: outputPath, slide, fresh: true });
     } else if (then === 'open') {
         const doc = await vscode.workspace.openTextDocument(outputPath);
         await vscode.window.showTextDocument(doc);
@@ -1235,7 +1240,7 @@ async function showExportDispatcher(): Promise<void> {
                         break;
 
                     case 'marp':
-                        result = exportMarp(content);
+                        result = exportMarp(content, editor.document.uri);
                         await fs.promises.writeFile(outputPath, result, 'utf-8');
                         break;
 

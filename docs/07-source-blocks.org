@@ -1221,7 +1221,7 @@ If your org file is project.org, this tangles to project.py.
 ** ✅ Advanced Tangling
 CLOSED: [2026-01-17 Sat 13:07]
 
-*** ✅ No-Web Style References
+*** 👀 No-Web Style References
 CLOSED: [2026-01-17 Sat 13:07]
 
 Use :noweb to reference other named blocks:
@@ -1250,6 +1250,20 @@ def main():
 
 When tangled, <<imports>> and <<helpers>> are replaced with the code from
 those named blocks.
+
+Running the block (=C-c C-c=, or =#+CALL:= on a named block) expands the
+references too, so the code that runs is the code that gets tangled. This
+follows org's =:noweb= values:
+
+| =:noweb=                                            | Expanded when run | Expanded when tangled |
+|-----------------------------------------------------+-------------------+-----------------------|
+| =yes=                                               | yes               | yes                   |
+| =eval=, =no-export=, =strip-export=, =strip-tangle= | yes               | no                    |
+| =tangle=                                            | no                | yes                   |
+| =no= (default)                                      | no                | no                    |
+
+With =:cache yes=, the cache key covers the expanded code. Editing a block
+that a reference pulls in therefore runs the block again.
 
 *** ✅ Shebang Lines
 CLOSED: [2026-01-17 Sat 13:07]

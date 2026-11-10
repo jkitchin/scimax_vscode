@@ -408,8 +408,9 @@ the listed directory on =..=. The Files menu's =o= does the same.
 Find, open and manage files, like the file hydra in Emacs scimax. Most
 actions work on the file in the active editor. In [[file:37-dired.org][Dired]] they work on the entry
 at point instead: =o=, =c= and =C= on =..= use the listed directory, =d= stays
-in it, and =e=, =R= and =D= ask you to move to a file first. =R= and =D= work
-on folders too, and the listing reloads afterwards.
+in it, and =e= asks you to move to a file first. =R= and =D= run dired's own
+~R~ and ~D~: they act on the marked (or flagged) entries, or on the entry at
+point, work on folders too, and keep point on a renamed entry.
 
 *Parent*: Main Menu
 *Access*: ~F12 f~ or ~C-c m f~
@@ -439,8 +440,10 @@ This file:
 =R= runs [[cmd:scimax.file.rename]]. The new name is relative to the file's
 folder, so =archive/notes.org= or =../notes.org= moves the file; missing
 folders are created and the editor follows the file. =D= runs
-[[cmd:scimax.file.delete]]: it asks first, saves unsaved changes, moves the
-file to the trash and closes its tabs. =e= runs
+[[cmd:scimax.file.delete]]: it asks first, moves the file to the trash and
+closes its tabs. For a folder it closes the tabs of every file inside it. If
+any of those files have unsaved changes, it asks to save them first (so the
+trash keeps them), or cancels. =e= runs
 [[cmd:scimax.file.openInDefaultApp]] (a PDF opens in your PDF viewer, a
 =.docx= in Word). =t= is the same as =F12 a b= in the
 [[*Applications Menu (scimax.applications)][Applications Menu]].

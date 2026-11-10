@@ -24,7 +24,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as os from 'os';
 import { getDatabase } from '../database/lazyDb';
-import { getPropCaseInsensitive } from '../database/scimaxDbCore';
+import { getPropCaseInsensitive, type HeadingRecord } from '../database/scimaxDbCore';
 import { slugify, ASSIGNEE_PROPERTY } from '../parser/projectTasks';
 import { getHeadingLevel } from './speedCommands/context';
 import { setPropertyValue } from './speedCommands/metadata';
@@ -61,16 +61,22 @@ export function invalidatePeopleCache(): void {
     peopleCache = null;
 }
 
-/** Query all indexed :person: headings and map them to Person records (cached). */
-export async function getPeople(): Promise<Person[]> {
-    if (peopleCache && Date.now() - peopleCacheAt < PEOPLE_CACHE_TTL_MS) {
-        return peopleCache;
-    }
-    const db = await getDatabase();
-    if (!db) return [];
-    const rows = await db.searchHeadings('', { tag: PERSON_TAG, limit: 2000 });
+/** Whether the heading itself carries the person tag (not just a parent). */
+export function hasOwnPersonTag(tags: string | null | undefined): boolean {
+    let list: unknown = [];
+    try { list = JSON.parse(tags || '[]'); } catch { return false; }
+    return Array.isArray(list) && list.some(t => typeof t === 'string' && t.toLowerCase() === PERSON_TAG);
+}
+
+/**
+ * Map :person: heading rows to Person records. The tag query also matches
+ * headings that only inherit :person: (notes under a person, say), so rows
+ * whose own tags lack it are dropped.
+ */
+export function toPeople(rows: HeadingRecord[]): Person[] {
     const people: Person[] = [];
     for (const h of rows) {
+        if (!hasOwnPersonTag(h.tags)) continue;
         let props: Record<string, string> = {};
         try { props = JSON.parse(h.properties || '{}'); } catch { props = {}; }
         const name = h.title.replace(/\s+:[\w@#%:]+:\s*$/, '').trim();
@@ -85,6 +91,18 @@ export async function getPeople(): Promise<Person[]> {
             lineNumber: h.line_number,
         });
     }
+    return people;
+}
+
+/** Query all indexed :person: headings and map them to Person records (cached). */
+export async function getPeople(): Promise<Person[]> {
+    if (peopleCache && Date.now() - peopleCacheAt < PEOPLE_CACHE_TTL_MS) {
+        return peopleCache;
+    }
+    const db = await getDatabase();
+    if (!db) return [];
+    const rows = await db.searchHeadings('', { tag: PERSON_TAG, limit: 2000 });
+    const people = toPeople(rows);
     peopleCache = people;
     peopleCacheAt = Date.now();
     return people;

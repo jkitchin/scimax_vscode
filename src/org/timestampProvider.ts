@@ -26,111 +26,14 @@ import { isMarkdownNonProseLine } from '../shared/markdownDocument';
 import { getTimestampComponent } from './timestampComponent';
 import { noteDeadlineShiftStart, registerDeadlineShiftTracking } from './shiftDependents';
 import { resolveLoggingConfig, combineEditsForRepeatLogging } from './progressLogging';
+import { getOrgHeadingInfo, priorityCycleEdit } from './priorityCookie';
 
 /**
- * Check if line is an org heading and return match info
- * @param line The line text to check
- * @param validTodoStates Optional set of valid TODO states for the document
+ * Check if the line is a heading: stars in org (a `# comment` or `#+KEYWORD`
+ * line is not one), `#` in Markdown.
  */
-function getOrgHeadingInfo(line: string, validTodoStates?: Set<string>, markdown = false): { level: number; todoState: string; rest: string } | null {
-    // First check if it's a heading at all. A markdown keyword may be written
-    // `[TODO]`; it is read (and rewritten) in the bare form.
-    const headingMatch = markdown
-        ? line.replace(/^(#{1,6}\s+)\[([A-Z][A-Z0-9_-]*)\](?=\s|$)/, '$1$2').match(/^(#{1,6})\s+(.*)$/)
-        : line.match(/^(\*+)\s+(.*)$/);
-    if (!headingMatch) return null;
-
-    const stars = headingMatch[1];
-    const afterStars = headingMatch[2];
-
-    // If we have valid states, check for any of them
-    if (validTodoStates && validTodoStates.size > 0) {
-        // Build regex pattern from valid states (escape special regex chars)
-        const escapedStates = Array.from(validTodoStates)
-            .filter(s => s.length > 0)
-            .map(s => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
-
-        if (escapedStates.length > 0) {
-            const statesPattern = new RegExp(`^(${escapedStates.join('|')})\\s+(.*)$`);
-            const stateMatch = afterStars.match(statesPattern);
-            if (stateMatch) {
-                return {
-                    level: stars.length,
-                    todoState: stateMatch[1],
-                    rest: stateMatch[2]
-                };
-            }
-        }
-    }
-
-    // Fallback: check for common TODO/DONE states
-    const defaultMatch = afterStars.match(/^(TODO|DONE|NEXT|WAIT|WAITING|HOLD|SOMEDAY|CANCELLED|CANCELED|IN-PROGRESS)\s+(.*)$/);
-    if (defaultMatch) {
-        return {
-            level: stars.length,
-            todoState: defaultMatch[1],
-            rest: defaultMatch[2]
-        };
-    }
-
-    // No TODO state found
-    return {
-        level: stars.length,
-        todoState: '',
-        rest: afterStars
-    };
-}
-
-/**
- * Priority states for cycling (A is highest, C is lowest, empty means no priority)
- */
-const PRIORITY_STATES = ['', 'A', 'B', 'C'];
-
-/**
- * Check if line has an org priority and return match info
- * Matches [#A], [#B], [#C] etc.
- */
-function getOrgPriorityInfo(line: string): { priority: string; start: number; end: number } | null {
-    const match = line.match(/\[#([A-Z])\]/);
-    if (!match || match.index === undefined) return null;
-    return {
-        priority: match[1],
-        start: match.index,
-        end: match.index + match[0].length
-    };
-}
-
-/**
- * Check if cursor is on a heading line (starts with * or #)
- */
-function isOnHeadingLine(line: string): boolean {
-    return /^(\*+|#{1,6})\s/.test(line);
-}
-
-/**
- * Cycle priority up (increase priority): C → B → A → (none) → C
- * In org-mode, A is highest priority, C is lowest
- */
-function cyclePriorityUp(current: string): string {
-    // Order for increasing priority: '' -> A -> B -> C -> ''
-    // Wait, that's decreasing. Let me think again:
-    // Up = increase = higher priority = A is higher than B is higher than C
-    // So: C -> B -> A -> '' -> C
-    const upOrder = ['C', 'B', 'A', ''];
-    const idx = upOrder.indexOf(current);
-    if (idx === -1) return 'A'; // Unknown, start with A (highest)
-    return upOrder[(idx + 1) % upOrder.length];
-}
-
-/**
- * Cycle priority down (decrease priority): A → B → C → (none) → A
- */
-function cyclePriorityDown(current: string): string {
-    // Order for decreasing priority: A -> B -> C -> '' -> A
-    const downOrder = ['A', 'B', 'C', ''];
-    const idx = downOrder.indexOf(current);
-    if (idx === -1) return 'C'; // Unknown, start with C (lowest)
-    return downOrder[(idx + 1) % downOrder.length];
+function isOnHeadingLine(line: string, languageId: string): boolean {
+    return languageId === 'org' ? /^\*+\s/.test(line) : /^#{1,6}\s/.test(line);
 }
 
 /**
@@ -143,54 +46,16 @@ async function cyclePriorityOnHeading(
 ): Promise<boolean> {
     const document = editor.document;
     const position = editor.selection.active;
+    const markdown = document.languageId !== 'org';
+    // A `#` line in Markdown code, front matter or a comment is not a heading
+    if (markdown && isMarkdownNonProseLine(document, position.line)) return false;
     const line = document.lineAt(position.line).text;
-
-    // Only work on heading lines
-    if (!isOnHeadingLine(line)) return false;
-
-    const priorityInfo = getOrgPriorityInfo(line);
-    const currentPriority = priorityInfo ? priorityInfo.priority : '';
-    const newPriority = direction === 'up'
-        ? cyclePriorityUp(currentPriority)
-        : cyclePriorityDown(currentPriority);
-
-    if (priorityInfo) {
-        // Replace existing priority
-        if (newPriority === '') {
-            // Remove priority completely (including space after it if present)
-            await editor.edit(editBuilder => {
-                const range = new vscode.Range(
-                    position.line, priorityInfo.start,
-                    position.line, priorityInfo.end + (line[priorityInfo.end] === ' ' ? 1 : 0)
-                );
-                editBuilder.replace(range, '');
-            });
-        } else {
-            // Change priority letter
-            await editor.edit(editBuilder => {
-                const range = new vscode.Range(
-                    position.line, priorityInfo.start,
-                    position.line, priorityInfo.end
-                );
-                editBuilder.replace(range, `[#${newPriority}]`);
-            });
-        }
-    } else {
-        // Add new priority after TODO keyword or after stars
-        // Pattern: * TODO title -> * TODO [#A] title
-        // Pattern: * title -> * [#A] title
-        const headingMatch = line.match(/^(\*+)\s+(TODO|DONE|NEXT|WAITING|HOLD|SOMEDAY|CANCELLED|CANCELED)?\s*/);
-        if (headingMatch) {
-            const insertPos = headingMatch[0].length;
-            await editor.edit(editBuilder => {
-                editBuilder.insert(
-                    new vscode.Position(position.line, insertPos),
-                    `[#${newPriority}] `
-                );
-            });
-        }
-    }
-
+    const states = new Set(getTodoWorkflowForDocument(document).allStates);
+    const edit = priorityCycleEdit(line, markdown, states, direction);
+    if (!edit) return false;
+    await editor.edit(editBuilder => {
+        editBuilder.replace(new vscode.Range(position.line, edit.start, position.line, edit.end), edit.text);
+    });
     return true;
 }
 
@@ -637,7 +502,7 @@ async function shiftTimestampUp(): Promise<void> {
 
     // Check if on a heading line - cycle priority
     const line = document.lineAt(position.line).text;
-    if (isOnHeadingLine(line)) {
+    if (isOnHeadingLine(line, document.languageId)) {
         const cycled = await cyclePriorityOnHeading(editor, 'up');
         if (cycled) return;
     }
@@ -693,7 +558,7 @@ async function shiftTimestampDown(): Promise<void> {
 
     // Check if on a heading line - cycle priority
     const line = document.lineAt(position.line).text;
-    if (isOnHeadingLine(line)) {
+    if (isOnHeadingLine(line, document.languageId)) {
         const cycled = await cyclePriorityOnHeading(editor, 'down');
         if (cycled) return;
     }

@@ -8,6 +8,7 @@
  * to several.
  */
 import * as vscode from 'vscode';
+import { splitAddresses } from './addressList';
 import { buildGmailUrl, buildMailtoUrl, MailFields, MAX_COMPOSE_URL_LENGTH } from './emailHeading';
 
 export type MailClient = 'gmail' | 'mailto';
@@ -24,10 +25,11 @@ const EMPTY: MailFields = { to: '', cc: '', bcc: '', subject: '', body: '' };
  * The mail settings. `scimax.mail.*` wins; a value set only under the older
  * `scimax.emailHeading.client` / `gmailAccount` is still honored.
  */
-export function mailSettings(): MailSettings {
+export function mailSettings(resource: vscode.Uri | undefined = vscode.window.activeTextEditor?.document.uri): MailSettings {
+    // Scoped to the file (the active editor's by default), so folder settings count.
     const explicit = <T>(fullKey: string): T | undefined => {
         const dot = fullKey.lastIndexOf('.');
-        const info = vscode.workspace.getConfiguration(fullKey.slice(0, dot)).inspect<T>(fullKey.slice(dot + 1));
+        const info = vscode.workspace.getConfiguration(fullKey.slice(0, dot), resource).inspect<T>(fullKey.slice(dot + 1));
         return info?.workspaceFolderValue ?? info?.workspaceValue ?? info?.globalValue;
     };
     const client = explicit<string>('scimax.mail.client')
@@ -53,11 +55,12 @@ export function parseMailto(url: string): MailFields {
     const fields: MailFields = { ...EMPTY };
     const rest = url.replace(/^mailto:/i, '');
     const q = rest.indexOf('?');
+    // RFC 6068: "+" is a literal plus (me+tag@x.org), not a space; spaces are %20
     const decode = (s: string) => {
-        try { return decodeURIComponent(s.replace(/\+/g, '%20')); } catch { return s; }
+        try { return decodeURIComponent(s); } catch { return s; }
     };
     const join = (a: string, b: string) => [a, b].filter(Boolean).join(', ');
-    fields.to = decode(q >= 0 ? rest.slice(0, q) : rest).split(',').map(s => s.trim()).filter(Boolean).join(', ');
+    fields.to = splitAddresses(decode(q >= 0 ? rest.slice(0, q) : rest)).join(', ');
     if (q >= 0) {
         for (const pair of rest.slice(q + 1).split('&')) {
             const eq = pair.indexOf('=');
@@ -109,6 +112,67 @@ export function openMailto(url: string): Promise<boolean> {
 /** A command: URI that composes to `url` (a mailto: URL), for links and hovers. */
 export function mailtoCommandUri(url: string): vscode.Uri {
     return vscode.Uri.parse(`command:scimax.mail.compose?${encodeURIComponent(JSON.stringify([url]))}`);
+}
+
+/** A mailto: link in Markdown text: `[x](mailto:...)`, `<mailto:...>` or a bare `mailto:...`. */
+export interface MarkdownMailtoLink {
+    start: number;
+    end: number;
+    url: string;
+}
+
+/**
+ * The mailto: links in Markdown text, with the offsets of their URL. Code
+ * spans and fenced code are not skipped (a mailto: in code is rare and the
+ * link is harmless).
+ */
+export function findMarkdownMailtoLinks(text: string): MarkdownMailtoLink[] {
+    const links: MarkdownMailtoLink[] = [];
+    const re = /mailto:[^\s<>()\[\]"'`]+/gi;
+    let m: RegExpExecArray | null;
+    while ((m = re.exec(text)) !== null) {
+        // Trailing sentence punctuation is not part of a bare link
+        const url = m[0].replace(/[.,;:!?]+$/, '');
+        links.push({ start: m.index, end: m.index + url.length, url });
+    }
+    return links;
+}
+
+/**
+ * mailto: links in Markdown compose in the configured client (Gmail by
+ * default) instead of going straight to the system mail app.
+ */
+export class MarkdownMailtoLinkProvider implements vscode.DocumentLinkProvider {
+    provideDocumentLinks(document: vscode.TextDocument): vscode.DocumentLink[] {
+        return findMarkdownMailtoLinks(document.getText()).map(link => {
+            const range = new vscode.Range(document.positionAt(link.start), document.positionAt(link.end));
+            const docLink = new vscode.DocumentLink(range, mailtoCommandUri(link.url));
+            docLink.tooltip = 'Compose email';
+            return docLink;
+        });
+    }
+}
+
+/**
+ * markdown-it plugin for the Markdown preview: with Gmail as the client, a
+ * mailto: link opens a Gmail compose window (the preview cannot run
+ * commands, so the link itself is rewritten).
+ */
+export function mailtoPreviewPlugin(md: any, getSettings: () => MailSettings = mailSettings): void {
+    md.core.ruler.push('scimax_mailto', (state: any) => {
+        const settings = getSettings();
+        if (settings.client !== 'gmail') return;
+        const visit = (tokens: any[]) => {
+            for (const token of tokens) {
+                if (token.type === 'link_open') {
+                    const href: string = token.attrGet('href') ?? '';
+                    if (/^mailto:/i.test(href)) token.attrSet('href', composeUrl(parseMailto(href), settings));
+                }
+                if (token.children) visit(token.children);
+            }
+        };
+        visit(state.tokens);
+    });
 }
 
 export function registerMailCommands(context: vscode.ExtensionContext): void {

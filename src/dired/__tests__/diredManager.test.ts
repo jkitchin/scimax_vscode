@@ -335,6 +335,43 @@ describe('DiredManager', () => {
             expect(result.errors.length).toBeGreaterThan(0);
             expect(result.errors[0]).toContain('no longer exists');
         });
+
+        it('reports the deleted paths, for closing their editors', async () => {
+            await manager.loadDirectory();
+            const state = manager.getState();
+            const fileIndex = state.entries.findIndex((e) => !e.isDirectory);
+            const entry = state.entries[fileIndex];
+            manager.selectIndex(fileIndex);
+            manager.markCurrent();
+            const result = await manager.deleteFiles(false);
+            expect(result.deletedPaths).toEqual([entry.path]);
+        });
+    });
+
+    describe('getDeleteTargets', () => {
+        it('prefers flagged entries, then marked, then the entry at point, never . or ..', async () => {
+            await manager.loadDirectory();
+            const state = manager.getState();
+            const files = state.entries.map((e, i) => ({ e, i })).filter(({ e }) => !e.isDirectory && e.name !== '.' && e.name !== '..');
+            expect(files.length).toBeGreaterThanOrEqual(2);
+
+            manager.selectIndex(files[0].i);
+            expect(manager.getDeleteTargets().map(e => e.path)).toEqual([files[0].e.path]);
+
+            manager.markCurrent();
+            expect(manager.getDeleteTargets().map(e => e.path)).toEqual([files[0].e.path]);
+
+            manager.selectIndex(files[1].i);
+            manager.flagCurrent();
+            expect(manager.getDeleteTargets().map(e => e.path)).toEqual([files[1].e.path]);
+
+            const dotdot = state.entries.findIndex(e => e.name === '..');
+            if (dotdot >= 0) {
+                manager.unmarkAll();
+                manager.selectIndex(dotdot);
+                expect(manager.getDeleteTargets()).toEqual([]);
+            }
+        });
     });
 
     describe('copyFiles', () => {
@@ -551,6 +588,79 @@ describe('DiredManager', () => {
             // With selection at a position but nothing marked
             const filesToOperate = manager.getFilesToOperateOn();
             expect(filesToOperate.length).toBe(1); // Current file
+        });
+    });
+
+    describe('adjacent fixes', () => {
+        it('sorting keeps marks and the entry at point', async () => {
+            await manager.loadDirectory();
+            manager.markByRegex('file');
+            const marked = manager.getMarkedEntries().map(e => e.path).sort();
+            expect(marked.length).toBe(2);
+            manager.selectPath(path.join(testDir, 'file2.txt'));
+            manager.setSort('size');
+            manager.setSort('size');
+            expect(manager.getMarkedEntries().map(e => e.path).sort()).toEqual(marked);
+            const state = manager.getState();
+            expect(state.entries[state.selectedIndex].path).toBe(path.join(testDir, 'file2.txt'));
+        });
+
+        it('refresh waits while wdired is editing names', async () => {
+            await manager.loadDirectory();
+            manager.enterWdiredMode();
+            manager.addPendingRename('file1.txt', 'renamed.txt');
+            await fs.promises.writeFile(path.join(testDir, 'late.txt'), 'x');
+            await manager.refresh();
+            let state = manager.getState();
+            expect(state.wdiredMode).toBe(true);
+            expect(state.pendingRenames.size).toBe(1);
+            expect(state.entries.some(e => e.name === 'late.txt')).toBe(false);
+            manager.exitWdiredMode();
+            // the deferred reload runs in the background; slow file systems need longer than a tick
+            await vi.waitFor(() => {
+                state = manager.getState();
+                expect(state.entries.some(e => e.name === 'late.txt')).toBe(true);
+            }, { timeout: 5000, interval: 20 });
+        });
+
+        it('renameEntry moves into a subfolder relative to the entry and selects it', async () => {
+            await manager.loadDirectory();
+            const target = await manager.renameEntry(path.join(testDir, 'file1.txt'), 'archive/one.txt');
+            expect(target).toBe(path.join(testDir, 'archive', 'one.txt'));
+            expect(fs.existsSync(target)).toBe(true);
+            expect(fs.existsSync(path.join(testDir, 'file1.txt'))).toBe(false);
+            const nested = await manager.renameEntry(path.join(testDir, 'subdir', 'nested.txt'), 'n2.txt');
+            expect(nested).toBe(path.join(testDir, 'subdir', 'n2.txt'));
+            await expect(manager.renameEntry(path.join(testDir, 'file2.txt'), 'subdir')).rejects.toThrow(/already exists/);
+            await expect(manager.renameEntry(path.join(testDir, 'file2.txt'), '  ')).rejects.toThrow(/valid/);
+        });
+
+        it('findOrCreateFile creates the file, lists it and puts point on it', async () => {
+            await manager.loadDirectory();
+            const made = await manager.findOrCreateFile('new.org');
+            expect(made).toEqual({ path: path.join(testDir, 'new.org'), created: true });
+            let state = manager.getState();
+            expect(state.entries[state.selectedIndex].name).toBe('new.org');
+            // a subpath creates the folder; point goes to the folder in the listing
+            const deep = await manager.findOrCreateFile('notes/today.org');
+            expect(fs.existsSync(deep.path)).toBe(true);
+            state = manager.getState();
+            expect(state.entries[state.selectedIndex].name).toBe('notes');
+            // an existing file is found, not truncated
+            expect(await manager.findOrCreateFile('file1.txt')).toEqual({ path: path.join(testDir, 'file1.txt'), created: false });
+            expect(fs.readFileSync(path.join(testDir, 'file1.txt'), 'utf-8')).toBe('content1');
+            await expect(manager.findOrCreateFile(' ')).rejects.toThrow(/No file name/);
+        });
+
+        it('findOrCreateFile leaves the listing alone in wdired mode', async () => {
+            await manager.loadDirectory();
+            manager.enterWdiredMode();
+            manager.addPendingRename('file2.txt', 'two.txt');
+            await manager.findOrCreateFile('made.txt');
+            const state = manager.getState();
+            expect(state.wdiredMode).toBe(true);
+            expect(state.pendingRenames.size).toBe(1);
+            expect(fs.existsSync(path.join(testDir, 'made.txt'))).toBe(true);
         });
     });
 

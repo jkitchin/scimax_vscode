@@ -86,8 +86,7 @@ CLOSED: [2026-01-17 Sat 11:46]
 - Vector embeddings (if embedding service configured)
 - Line ranges for each chunk
 
-** ✅ File Watching
-CLOSED: [2026-01-18 Sun 11:43]
+** 👀 File Watching
 
 The database automatically watches for file changes:
 
@@ -95,6 +94,16 @@ The database automatically watches for file changes:
 - Modified files are re-indexed (debounced with 500ms delay)
 - Deleted files are removed from the index
 - Changes are queued and processed sequentially
+
+The watch covers the workspace folders and every indexed root outside them
+(the journal, folders and files in =scimax.db.include=, project folders), for
+the file types in =scimax.db.fileExtensions=. Changing those settings or the
+workspace folders updates the watch without a reload.
+
+Renaming, moving or deleting files and folders in dired, with the F12 f file
+menu or in the Explorer updates the index right away: the old paths leave the
+database (a folder takes all its files with it), moved files are indexed at
+their new paths, and an open Search view runs its search again.
 
 ** ✅ Ignore Patterns
 CLOSED: [2026-10-22 Thu 09:53]

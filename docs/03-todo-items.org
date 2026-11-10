@@ -88,18 +88,26 @@ Add a priority cookie after the TODO keyword:
 | [#B]     | Medium priority - do soon       |
 | [#C]     | Low priority - do when possible |
 
-** ✅ Priority Commands
+** 👀 Priority Commands
 
-| Key/Command                | Action                    |
-|----------------------------+---------------------------|
-| Speed key 1               | Set priority A            |
-| Speed key 2               | Set priority B            |
-| Speed key 3               | Set priority C            |
-| Speed key 0               | Remove priority           |
-| Speed key ,               | Increase priority (C→B→A) |
+| Key/Command | Action                         |
+|-------------+--------------------------------|
+| Speed key 1 | Set priority A                 |
+| Speed key 2 | Set priority B                 |
+| Speed key 3 | Set priority C                 |
+| Speed key 0 | Remove priority                |
+| Speed key , | Increase priority (C→B→A)      |
+| Shift+Up    | Increase priority (C→B→A→none) |
+| Shift+Down  | Decrease priority (A→B→C→none) |
 
 You can also set priority through the command palette:
 scimax.org.setPriority
+
+Shift+Up/Down on a heading put the cookie after the TODO keyword, whichever
+keyword it is: custom ones from =#+TODO:= or =scimax.todoStates= work too.
+They work on Markdown =#= headings as well. In org files, a =# comment= or
+=#+KEYWORD:= line is not a heading, so Shift+Up/Down there do their normal
+job.
 
 * ✅ Progress Indicators
 

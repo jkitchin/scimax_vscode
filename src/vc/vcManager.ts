@@ -90,7 +90,8 @@ export function runGit(args: string[], cwd: string, timeoutMs = 30000): Promise<
 /** Top-level directory of the repository containing `dir`, or undefined */
 export async function findRepoRoot(dir: string): Promise<string | undefined> {
     try {
-        return (await runGit(['rev-parse', '--show-toplevel'], dir)).trim();
+        // git prints C:/x on Windows; spell it the way path.join does
+        return path.resolve((await runGit(['rev-parse', '--show-toplevel'], dir)).trim());
     } catch {
         return undefined;
     }
@@ -427,7 +428,8 @@ export async function locateInRepo(p: string): Promise<RepoLocation | undefined>
     } catch {
         return undefined;
     }
-    const [root, prefix = ''] = output.split('\n');
+    const [gitRoot, prefix = ''] = output.split(/\r?\n/);
+    const root = path.resolve(gitRoot.trim());
     const prefixParts = prefix.split('/').filter(Boolean);
     const displayRoot = prefixParts.length > 0 ? path.resolve(start, ...prefixParts.map(() => '..')) : start;
     const below = path.relative(start, target).split(path.sep).filter(Boolean);

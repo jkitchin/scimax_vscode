@@ -348,3 +348,27 @@ describe('Marp export helpers', () => {
         expect(yamlScalar(true)).toBe('true');
     });
 });
+
+describe('Org → Marp media links', () => {
+    it('plays bare movie, sound and YouTube links on the slide', () => {
+        const md = exportToMarp(org(
+            '* Media',
+            '[[file:media/talk.mp4]]',
+            '',
+            '[[./media/clip.m4a]]',
+            '',
+            '[[https://www.youtube.com/watch?v=dQw4w9WgXcQ&t=1m30s]]',
+            '',
+            '[[https://youtu.be/dQw4w9WgXcQ][the video]]',
+        ));
+        expect(md).toContain('<video src="media/talk.mp4" controls></video>');
+        expect(md).toContain('<audio src="./media/clip.m4a" controls></audio>');
+        expect(md).toContain('<iframe src="https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ?start=90" width="768" height="432" allowfullscreen></iframe>');
+        expect(md).toContain('[the video](https://youtu.be/dQw4w9WgXcQ)');
+    });
+
+    it('keeps the deck a marp: link points to', () => {
+        const md = exportToMarp(org('* S', 'See [[marp:talks/group.md::5][the group deck]].'));
+        expect(md).toContain('[the group deck](talks/group.md)');
+    });
+});

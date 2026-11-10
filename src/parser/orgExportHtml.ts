@@ -80,6 +80,7 @@ import {
     shouldRenderAsLiteral,
 } from './orgExport';
 import { stripNoteFootnotes } from './orgNotes';
+import { parseObjects } from './orgObjects';
 
 import { CitationProcessor, CSLStyleName } from '../references/citationProcessor';
 import { parseCitationsFromLine, getNormalizedStyle } from '../references/citationParser';
@@ -572,7 +573,31 @@ export class HtmlExportBackend implements ExportBackend {
 
     private exportParagraph(paragraph: ParagraphElement, state: ExportState): string {
         const content = exportObjects(paragraph.children, this, state);
-        return `<p>${content}</p>\n`;
+        const affiliated = paragraph.affiliated;
+        const caption = this.captionHtml(affiliated, state);
+        const id = affiliated?.name ? ` id="${escapeString(affiliated.name, 'html')}"` : '';
+        // A paragraph that is just an image is a figure: keep its #+CAPTION and #+NAME
+        if ((caption || id) && this.isImageOnly(paragraph)) {
+            const figcaption = caption ? `\n<figcaption>${caption}</figcaption>` : '';
+            return `<figure${id}>\n${content}${figcaption}\n</figure>\n`;
+        }
+        return `<p${id}>${content}</p>\n`;
+    }
+
+    /** The #+CAPTION as HTML, with its markup, links and citations rendered. */
+    private captionHtml(affiliated: AffiliatedKeywords | undefined, state: ExportState): string {
+        if (!affiliated?.caption) return '';
+        const caption = Array.isArray(affiliated.caption) ? affiliated.caption[1] : affiliated.caption;
+        return exportObjects(parseObjects(caption), this, state);
+    }
+
+    /** True when the paragraph holds one image link and nothing else but blanks. */
+    private isImageOnly(paragraph: ParagraphElement): boolean {
+        const parts = paragraph.children.filter(c =>
+            !(c.type === 'plain-text' && !(c as PlainTextObject).properties.value.trim()));
+        if (parts.length !== 1 || parts[0].type !== 'link') return false;
+        const link = parts[0] as LinkObject;
+        return !link.children?.length && /\.(png|jpg|jpeg|gif|svg|webp)$/i.test(link.properties.path);
     }
 
     private exportSrcBlock(block: SrcBlockElement, state: ExportState): string {
@@ -609,10 +634,7 @@ export class HtmlExportBackend implements ExportBackend {
 
         // Add caption if present
         if (block.affiliated?.caption) {
-            const caption = Array.isArray(block.affiliated.caption)
-                ? block.affiliated.caption[1]
-                : block.affiliated.caption;
-            wrapper += `<div class="org-src-caption">${escapeString(caption, 'html')}</div>\n`;
+            wrapper += `<div class="org-src-caption">${this.captionHtml(block.affiliated, state)}</div>\n`;
         }
 
         // Add name anchor if present
@@ -693,10 +715,7 @@ export class HtmlExportBackend implements ExportBackend {
 
         // Add caption if present
         if (table.affiliated?.caption) {
-            const caption = Array.isArray(table.affiliated.caption)
-                ? table.affiliated.caption[1]
-                : table.affiliated.caption;
-            html += `<caption>${escapeString(caption, 'html')}</caption>\n`;
+            html += `<caption>${this.captionHtml(table.affiliated, state)}</caption>\n`;
         }
 
         // Track if we're in header (before first rule)

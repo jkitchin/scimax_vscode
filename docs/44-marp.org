@@ -277,7 +277,7 @@ editor, or *Present* the slideshow (from slide /N/ for a ~::N~ link). The
 picture uses the deck's theme and inlines local images; remote images and web
 fonts are not loaded, so those may look different from the slideshow.
 
-* Directives
+* 👀 Directives
 
 Marp directives set a deck's theme, pagination, headers and so on. Global
 directives go in the front matter. Local directives go in the front matter
@@ -299,6 +299,7 @@ shows what a directive does when you hover over it.
 | ~transition~                                                                  | Local  | The HTML slideshow transitions (~fade~, ~push~, ...)                                                                         |
 | ~header~, ~footer~, ~color~, ~background*~                                    | Local  | (free text; ~background*~ positions, repeats and sizes are offered)                                                          |
 | ~style~, ~lang~, ~title~, ~author~, ~description~, ~keywords~, ~url~, ~image~ | Global | (free text)                                                                                                                  |
+| ~bibliography~                                                                | Global | (BibTeX file or list of files, relative to the deck)                                                                         |
 
 * Slide Thumbnails
 
@@ -1367,7 +1368,7 @@ closed or checked again.
 - The browser files live in ~media/marpPresent/~ of the extension; the Output
   panel (/Scimax Marp Export/) lists what was inlined and any missing files.
 
-* Video, Sound and Web Pages
+* 👀 Video, Sound and Web Pages
 
 A slide can hold anything a web page can: a movie, sound, a YouTube video, a
 live Google Doc, a whiteboard, a simulation. Write the HTML in the Markdown.
@@ -1392,14 +1393,17 @@ each of these.
   play in a frame.
 - YouTube does not play inside a deck opened from a file (Present, ~deck.html~):
   it wants to know the web page it is embedded in, and a file has none, so it
-  shows "Error 153". In a presenter deck (~presenter: true~) the frame shows the
+  shows "Error 153". There the frame shows the
   video's thumbnail and a play button instead, which opens the video on YouTube
   in a new window at the ~start=~ time.
 - Moving to another slide pauses the movies, sound and YouTube or Vimeo players
-  on the slide you leave (presenter decks).
+  on the slide you leave.
 - A movie or sound with ~autoplay~ (=autoplay muted loop= for a background
   movie) plays while its slide is shown, from where it was paused, not from
-  when the deck opens (presenter decks).
+  when the deck opens. In Marp's presenter view it plays muted (the audience
+  window has the sound), and the next-slide preview never plays it.
+- These work in every deck (Present, Export HTML, ~scimax marp build~), with or
+  without the presenter tools.
 - For a Google Doc, Sheet or Slides file, replace ~/edit...~ in the URL with
   ~/preview~, and share it as "anyone with the link can view".
 - Sites such as Excalidraw, Desmos, PhET, 3Dmol.js and OpenStreetMap can be
@@ -1430,12 +1434,19 @@ style: |
 - PDF and PowerPoint exports show a movie's poster and an empty box for a web
   page. Put the link under it for a handout.
 
-* Writing Slides in Org
+* 👀 Writing Slides in Org
 
 You can write a talk as an org file and export it to a Marp deck. In the org
 file, =C-c C-e m s= writes ~talk.md~ next to ~talk.org~. =C-c C-e m S= also
 opens the ~.md~ file, and =C-c C-e m p= starts the slideshow. Each export
 replaces the ~.md~ file, so edit the org file, not the deck.
+
+=C-c C-e m p= starts at the slide the cursor is on: the heading above the
+cursor, or the slide after a ~-----~ break, counting the title slide and
+leaving out ~:noexport:~ subtrees, as in the deck. If the ~.md~ file is open in
+an editor, the slideshow waits for it to reload the new export. If that editor
+has unsaved changes, the slideshow does not start and nothing is saved over
+the export; revert the file (/File: Revert File/) and present again.
 
 | Command                          | Keys        | Effect                           |
 |----------------------------------+-------------+----------------------------------|
@@ -1449,7 +1460,7 @@ uliw suggested this feature and contributed its specification and examples in
 Scimax adds its own slide features: notes, hidden slides, countdowns, live
 Python cells, citations and background images.
 
-** How org maps to slides
+** 👀 How org maps to slides
 
 | Org                                           | Marp                                                           |
 |-----------------------------------------------+----------------------------------------------------------------|
@@ -1472,6 +1483,9 @@ Python cells, citations and background images.
 | ~\(x\)~, ~\[x\]~, ~$$x$$~, LaTeX environments | ~$x$~ and ~$$~ blocks                                          |
 | ~[[cite:&key]]~, ~[cite:@key]~                    | Pandoc citations (~[@key]~), numbered per slide                |
 | ~#+BIBLIOGRAPHY:~, ~bibliography:~ links      | ~bibliography:~ in the front matter                            |
+| ~[[file:talk.mp4]]~, ~[[file:clip.m4a]]~              | ~<video controls>~, ~<audio controls>~ (see [[*Movies, sound and YouTube][below]])             |
+| A bare YouTube link                           | An embedded player (~youtube-nocookie.com/embed~)              |
+| ~[[marp:other.md::5][Talk]]~                                        | ~[Talk](other.md)~, a link to the other deck                   |
 | ~:noexport:~ tag, ~COMMENT~ headings          | Left out (and any tag in ~#+EXCLUDE_TAGS:~)                    |
 
 Fragment sections (~***~ headings) are raw HTML. A deck with ~presenter: true~
@@ -1537,6 +1551,31 @@ background image, ~:height~ becomes ~h:~, ~:alt~ sets the alt text and any
 other word (~sepia~, ~blur~) is kept. Without ~#+ATTR_MARP:~, the width and
 height of ~#+ATTR_HTML:~ or ~#+ATTR_ORG:~ are used. A ~#+CAPTION:~ becomes an
 italic line under the image.
+
+** ⚠️ Movies, sound and YouTube
+
+A link with no description to a movie (~.mp4~, ~.webm~, ~.mov~, ~.m4v~,
+~.ogv~) or a sound (~.mp3~, ~.m4a~, ~.wav~, ~.ogg~, ~.flac~, …) plays on the
+slide. So does a YouTube watch, ~youtu.be~, shorts, live or embed link. Its
+~t=~ time (~90~, ~1m30s~) becomes the player's ~start=~:
+
+#+begin_example
+[[file:media/talk.mp4#t=95,120]]
+[[https://www.youtube.com/watch?v=VIDEO_ID&t=1m30s]]
+#+end_example
+
+gives
+
+#+begin_src markdown
+<video src="media/talk.mp4#t=95,120" controls></video>
+<iframe src="https://www.youtube-nocookie.com/embed/VIDEO_ID?start=90"
+        width="768" height="432" allowfullscreen></iframe>
+#+end_src
+
+With a description (~[[https://youtu.be/VIDEO_ID][the demo]]~) the link stays
+a link. The players are HTML, so as with fragment sections a deck without
+~presenter: true~ needs ~scimax.marp.enableHtml~. [[*Video, Sound and Web Pages][Video, Sound and Web Pages]] covers how
+they play.
 
 ** Org export settings
 

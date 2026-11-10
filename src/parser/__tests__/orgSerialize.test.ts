@@ -1863,7 +1863,7 @@ describe('orgSerialize', () => {
             };
 
             const result = serializeObject(obj);
-            expect(result).toBe('=code=');
+            expect(result).toBe('~code~');
         });
 
         it('serializes verbatim', () => {
@@ -1875,7 +1875,7 @@ describe('orgSerialize', () => {
             };
 
             const result = serializeObject(obj);
-            expect(result).toBe('~verbatim~');
+            expect(result).toBe('=verbatim=');
         });
 
         it('serializes nested markup', () => {

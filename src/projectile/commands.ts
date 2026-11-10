@@ -3,6 +3,7 @@ import * as path from 'path';
 import * as fs from 'fs';
 import { ProjectileManager, Project } from './projectileManager';
 import { walkDirectory } from '../shared';
+import { DiredPanel } from '../dired/diredPanel';
 import { showFuzzyQuickPick, FuzzyQuickPickItem } from '../utils/fuzzyQuickPick';
 
 // Type for project quick pick items with buttons
@@ -218,8 +219,13 @@ function formatRelativeTime(timestamp: number): string {
  * has a .git or .projectile, or is a known project. Undefined if none.
  */
 export function findProjectRootFor(filePath: string, knownProjects: string[]): string | undefined {
+    return findProjectRootForDir(path.dirname(path.resolve(filePath)), knownProjects);
+}
+
+/** The project a directory belongs to: the directory itself or the nearest one above it (see findProjectRootFor). */
+export function findProjectRootForDir(directory: string, knownProjects: string[]): string | undefined {
     const known = new Set(knownProjects.map(p => path.resolve(p)));
-    for (let dir = path.dirname(path.resolve(filePath)); ; dir = path.dirname(dir)) {
+    for (let dir = path.resolve(directory); ; dir = path.dirname(dir)) {
         if (known.has(dir) || fs.existsSync(path.join(dir, '.git')) || fs.existsSync(path.join(dir, '.projectile'))) {
             return dir;
         }
@@ -231,18 +237,39 @@ export function findProjectRootFor(filePath: string, knownProjects: string[]): s
 const PENDING_OPEN_FILE = 'scimax.pendingOpenFile';
 
 /**
- * Switch the window to the project of the file in the active editor (C-c p .),
- * and reopen the file there at the same line. If the window already has that
- * project, reveal the file in the Explorer instead.
+ * What C-c p . switches for: the entry at point (or the listed directory) of
+ * a focused dired panel, else the active editor's file. `dired` is the
+ * directory to reopen in dired after the switch.
+ */
+export function fileProjectTarget(
+    dired: { path: string; directory: string } | undefined,
+    editor: { scheme: string; fsPath: string; line: number } | undefined,
+): { file: string; line: number; dired?: string } | undefined {
+    if (dired) return { file: dired.path, line: 0, dired: dired.directory };
+    if (editor && editor.scheme === 'file') return { file: editor.fsPath, line: editor.line };
+    return undefined;
+}
+
+/**
+ * Switch the window to the project of the file in the active editor, or of
+ * the dired entry at point (C-c p .), and reopen the file (or the dired
+ * listing) there. If the window already has that project, reveal the file in
+ * the Explorer instead.
  */
 async function switchToFileProject(manager: ProjectileManager): Promise<void> {
     const editor = vscode.window.activeTextEditor;
-    if (!editor || editor.document.uri.scheme !== 'file') {
+    const diredDir = DiredPanel.activeDirectory();
+    const target = fileProjectTarget(
+        diredDir ? { path: DiredPanel.activePath() ?? diredDir, directory: diredDir } : undefined,
+        editor ? { scheme: editor.document.uri.scheme, fsPath: editor.document.uri.fsPath, line: editor.selection.active.line } : undefined);
+    if (!target) {
         vscode.window.showInformationMessage('Switch to file\'s project: the current editor is not a file.');
         return;
     }
-    const filePath = editor.document.uri.fsPath;
-    const root = findProjectRootFor(filePath, manager.getProjects().map(p => p.path));
+    const filePath = target.file;
+    // From dired, the project is the listed directory's (as in Emacs, where default-directory decides)
+    const known = manager.getProjects().map(p => p.path);
+    const root = target.dired ? findProjectRootForDir(target.dired, known) : findProjectRootFor(filePath, known);
     if (!root) {
         vscode.window.showInformationMessage(
             `${path.basename(filePath)} is not in a project (no .git or .projectile above it).`);
@@ -251,7 +278,7 @@ async function switchToFileProject(manager: ProjectileManager): Promise<void> {
 
     const folders = vscode.workspace.workspaceFolders || [];
     if (folders.some(f => path.resolve(f.uri.fsPath) === root)) {
-        await vscode.commands.executeCommand('revealInExplorer', editor.document.uri);
+        await vscode.commands.executeCommand('revealInExplorer', vscode.Uri.file(filePath));
         vscode.window.showInformationMessage(`Already in project ${path.basename(root)}.`);
         return;
     }
@@ -259,7 +286,7 @@ async function switchToFileProject(manager: ProjectileManager): Promise<void> {
     if (!manager.getProject(root)) await manager.addProject(root);
     await manager.touchProject(root);
     await manager.getContext().globalState.update(PENDING_OPEN_FILE, {
-        root, file: filePath, line: editor.selection.active.line,
+        root, file: filePath, line: target.line, dired: target.dired,
     });
     await vscode.commands.executeCommand('vscode.openFolder', vscode.Uri.file(root), { forceNewWindow: false });
 }
@@ -269,11 +296,16 @@ async function switchToFileProject(manager: ProjectileManager): Promise<void> {
  * the reloaded window.
  */
 export async function checkPendingOpenFile(context: vscode.ExtensionContext): Promise<void> {
-    const pending = context.globalState.get<{ root: string; file: string; line: number }>(PENDING_OPEN_FILE);
+    const pending = context.globalState.get<{ root: string; file: string; line: number; dired?: string }>(PENDING_OPEN_FILE);
     if (!pending) return;
     await context.globalState.update(PENDING_OPEN_FILE, undefined);
     const folders = vscode.workspace.workspaceFolders || [];
     if (!folders.some(f => path.resolve(f.uri.fsPath) === pending.root)) return;
+    if (pending.dired) {
+        // Switched from dired: show the same listing in the new window.
+        DiredPanel.createOrShow(context.extensionUri, pending.dired);
+        return;
+    }
     try {
         const uri = vscode.Uri.file(pending.file);
         const position = new vscode.Position(pending.line, 0);

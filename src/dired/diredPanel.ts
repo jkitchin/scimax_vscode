@@ -6,6 +6,7 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
 import { DiredManager } from './diredManager';
+import { closeTabsUnder, saveDirtyDocsUnder } from '../files/openDocs';
 import {
     DiredState,
     DiredMessageFromWebview,
@@ -95,11 +96,27 @@ export class DiredPanel {
             .map(entry => entry.path);
     }
 
+    /**
+     * Run dired's own R or D (on the marked entries, or the entry at point)
+     * when dired is the active tab, for F12 f R / D. False if dired is not
+     * active.
+     */
+    public static async runFileAction(action: 'rename' | 'delete'): Promise<boolean> {
+        const current = DiredPanel.currentPanel;
+        if (!current?.panel.active) return false;
+        if (action === 'rename') {
+            await current.handleRename();
+        } else {
+            await current.handleDelete();
+        }
+        return true;
+    }
+
     /** Reload the listing after a version-control change, keeping the marks */
     public static refreshVc(): void {
         const current = DiredPanel.currentPanel;
         if (!current) return;
-        current.manager.loadDirectory().catch(error => {
+        current.manager.refresh().catch(error => {
             current.sendMessage({ command: 'error', message: error.message });
         });
     }
@@ -335,15 +352,12 @@ export class DiredPanel {
                         placeHolder: 'Enter file name'
                     });
                     if (fileName) {
-                        const currentDir = this.manager.getState().currentDirectory;
-                        const filePath = vscode.Uri.joinPath(vscode.Uri.file(currentDir), fileName);
                         try {
-                            await vscode.workspace.fs.stat(filePath);
-                        } catch {
-                            // File doesn't exist - create it
-                            await vscode.workspace.fs.writeFile(filePath, new Uint8Array());
+                            const found = await this.manager.findOrCreateFile(fileName);
+                            await vscode.commands.executeCommand('vscode.open', vscode.Uri.file(found.path));
+                        } catch (error) {
+                            vscode.window.showErrorMessage(`Cannot create ${fileName}: ${(error as Error).message}`);
                         }
-                        await vscode.commands.executeCommand('vscode.open', filePath);
                     }
                     break;
 
@@ -418,7 +432,7 @@ export class DiredPanel {
      * Handle delete operation with confirmation
      */
     private async handleDelete(): Promise<void> {
-        const files = this.manager.getFilesToOperateOn();
+        const files = this.manager.getDeleteTargets();
         if (files.length === 0) return;
 
         const config = vscode.workspace.getConfiguration('scimax.dired');
@@ -454,9 +468,11 @@ export class DiredPanel {
             );
 
             if (!choice) return;
+            if (!await saveDirtyDocsUnder(files.map(f => f.path))) return;
 
             const useTrash = choice === 'Move to Trash';
             const result = await this.manager.deleteFiles(useTrash);
+            await closeTabsUnder(result.deletedPaths);
 
             if (result.errors.length > 0) {
                 vscode.window.showErrorMessage(`Delete errors: ${result.errors.join(', ')}`);
@@ -467,7 +483,9 @@ export class DiredPanel {
                 );
             }
         } else {
+            if (!await saveDirtyDocsUnder(files.map(f => f.path))) return;
             const result = await this.manager.deleteFiles(true);
+            await closeTabsUnder(result.deletedPaths);
             if (result.deleted.length > 0) {
                 this.sendMessage({
                     command: 'info',
@@ -514,24 +532,23 @@ export class DiredPanel {
 
         // Single file - allow rename in place
         if (files.length === 1) {
+            // The name relative to the entry's folder (vc-dir lists paths
+            // from the repository root, so use the file's own name there).
+            const baseName = path.basename(files[0].path);
+            const dot = baseName.lastIndexOf('.');
             const newName = await vscode.window.showInputBox({
-                prompt: 'New name',
-                value: files[0].name,
-                valueSelection: [0, files[0].name.lastIndexOf('.') > 0
-                    ? files[0].name.lastIndexOf('.')
-                    : files[0].name.length]
+                prompt: `Rename ${baseName} (relative to its folder; a/b or ../b also moves it)`,
+                value: baseName,
+                valueSelection: [0, dot > 0 ? dot : baseName.length]
             });
 
-            if (!newName || newName === files[0].name) return;
+            if (!newName || newName.trim() === baseName) return;
 
-            const destination = path.dirname(files[0].path);
-            this.manager.addPendingRename(files[0].name, newName);
-            const result = await this.manager.commitWdiredRenames();
-
-            if (result.errors.length > 0) {
-                vscode.window.showErrorMessage(`Rename error: ${result.errors.join(', ')}`);
-            } else {
-                vscode.window.showInformationMessage(`Renamed to ${newName}`);
+            try {
+                await this.manager.renameEntry(files[0].path, newName);
+                vscode.window.showInformationMessage(`Renamed to ${newName.trim()}`);
+            } catch (error) {
+                vscode.window.showErrorMessage(`Rename error: ${error instanceof Error ? error.message : String(error)}`);
             }
             return;
         }

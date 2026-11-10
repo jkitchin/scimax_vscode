@@ -48,7 +48,7 @@ Mark files for batch operations:
 
 Marked files appear with ~*~ indicator. Flagged files (for deletion) appear with ~D~ indicator.
 
-** File Operations
+** 👀 File Operations
 
 Operate on marked files (or current file if none marked):
 
@@ -58,7 +58,22 @@ Operate on marked files (or current file if none marked):
 | ~C~ | Copy marked files (prompts for destination)             |
 | ~R~ | Rename/move marked files (prompts for destination)      |
 | ~+~ | Create new directory                                    |
+| ~f~ | Find a file by name, creating it if it does not exist   |
 | ~F~ | Open the current directory in Finder/Explorer           |
+
+~f~ opens the named file, creating it (and missing folders, for a name like
+=notes/today.org=) when it does not exist. A new file appears in the listing
+with point on it, except in wdired mode, where the listing waits for the
+pending renames.
+
+~D~ asks to save open files with unsaved changes inside what it deletes, then
+closes their editor tabs. ~F12 f R~ and ~F12 f D~ in dired are the same as ~R~
+and ~D~.
+
+With one file, ~R~ asks for a new name relative to the file's folder, so
+=archive/notes.org= or =../notes.org= also moves it (missing folders are
+created) and point follows the file. In vc-dir the name is the file's own
+name, not its path from the repository root.
 
 ** Git Status and Version Control
 
@@ -112,7 +127,7 @@ actions for that file. On ~.~ or ~..~ the menu offers only the directory action.
 | Open This Directory in Finder/Explorer | Open the current directory in the OS        |
 | VC: Next Action, Diff, Log, ...        | Git commands on the marks (in a repository) |
 
-** WDired Mode (Writable Dired)
+** 👀 WDired Mode (Writable Dired)
 
 WDired mode allows you to rename files by editing their names directly, like editing text:
 
@@ -128,13 +143,18 @@ In wdired mode:
 3. Press ~C-c C-c~ to apply all renames at once
 4. Press ~C-c C-k~ to discard changes
 
-** Sorting and Filtering
+A ~C-x v~ command or a File menu rename while you are editing names does not
+reload the listing (that would lose your edits); it reloads when wdired ends.
+
+** 👀 Sorting and Filtering
 
 | Key | Action                                         |
 |-----+------------------------------------------------|
 | ~s~ | Cycle sort field (name, size, date, extension) |
 | ~.~ | Toggle showing hidden files (dotfiles)         |
 | ~/~ | Set filter pattern (regex)                     |
+
+Sorting keeps the marks and the entry at point.
 
 ** Display Format
 

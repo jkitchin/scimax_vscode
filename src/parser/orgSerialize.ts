@@ -573,9 +573,9 @@ export function serializeObject(obj: OrgObject): string {
         case 'strike-through':
             return '+' + serializeObjects((obj as StrikeThroughObject).children) + '+';
         case 'code':
-            return '=' + (obj as CodeObject).properties.value + '=';
+            return '~' + (obj as CodeObject).properties.value + '~';
         case 'verbatim':
-            return '~' + (obj as VerbatimObject).properties.value + '~';
+            return '=' + (obj as VerbatimObject).properties.value + '=';
         case 'link':
             return serializeLink(obj as LinkObject);
         case 'timestamp':
