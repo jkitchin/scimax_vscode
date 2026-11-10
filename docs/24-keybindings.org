@@ -147,23 +147,25 @@ defaults write -g ApplePressAndHoldEnabled -bool false
 
 Then restart VS Code.
 
-* Version Control (C-x v)
+* 👀 Version Control (C-x v)
 
-| Key     | Command                | Action                                              |
-|---------+------------------------+-----------------------------------------------------|
-| C-x v v | =scimax.vc.nextAction= | Next logical step: register, commit, resolve, sync  |
-| C-x v p | =scimax.vc.push=       | Push the current branch                             |
-| C-x v P | =scimax.vc.pull=       | Pull the current branch                             |
-| C-x v t | =scimax.vc.status=     | Status (edamagit if installed, else Source Control) |
-| C-x v d | =scimax.vc.dir=        | Changed files in dired (vc-dir)                     |
-| C-x v = | =scimax.vc.diff=       | Diff file against HEAD                              |
-| C-x v l | =scimax.vc.log=        | File history                                        |
-| C-x v u | =scimax.vc.revert=     | Discard changes to the file                         |
-| C-x v g | =scimax.vc.annotate=   | Toggle blame                                        |
-| C-x v i | =scimax.vc.ignore=     | Add the file to .gitignore                          |
-| C-x v m | =scimax.hydra.vc=      | Version Control menu                                |
-| C-c C-c | =scimax.vc.logFinish=  | In a *vc-log* buffer: commit                        |
-| C-c C-k | =scimax.vc.logCancel=  | In a *vc-log* buffer: cancel                        |
+| Key     | Command                 | Action                                              |
+|---------+-------------------------+-----------------------------------------------------|
+| C-x v v | =scimax.vc.nextAction=  | Next logical step: register, commit, resolve, sync  |
+| C-x v p | =scimax.vc.push=        | Push the current branch                             |
+| C-x v P | =scimax.vc.pull=        | Pull the current branch                             |
+| C-x v t | =scimax.vc.status=      | Status (edamagit if installed, else Source Control) |
+| C-x v d | =scimax.vc.dir=         | Changed files in dired (vc-dir)                     |
+| C-x v = | =scimax.vc.diff=        | Diff file against HEAD                              |
+| C-x v l | =scimax.vc.log=         | File history                                        |
+| q       | =scimax.vc.logViewQuit= | Close the view C-x v l opened                       |
+| C-x v u | =scimax.vc.revert=      | Discard changes to the file                         |
+| C-x v g | =scimax.vc.annotate=    | Toggle blame                                        |
+| C-x v i | =scimax.vc.ignore=      | Add the file to .gitignore                          |
+| C-x v m | =scimax.hydra.vc=       | Version Control menu                                |
+| C-x v ? | =scimax.hydra.vc=       | Version Control menu (pick a key)                   |
+| C-c C-c | =scimax.vc.logFinish=   | In a *vc-log* buffer: commit                        |
+| C-c C-k | =scimax.vc.logCancel=   | In a *vc-log* buffer: cancel                        |
 
 In dired the ~C-x v~ commands act on the marked files (in the Explorer, on the
 selected files). Dired also marks by git state, and the changed-files list

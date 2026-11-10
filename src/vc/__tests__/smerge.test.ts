@@ -128,7 +128,8 @@ describe('smerge keys', () => {
 
     it('binds each menu key as a single key at a marker and after C-c ^', () => {
         const toKey = (k: string) => k === '=' ? '=' : k === k.toUpperCase() && k !== k.toLowerCase() ? `shift+${k.toLowerCase()}` : k;
-        for (const item of conflictsMenu.groups.flatMap(g => g.items)) {
+        // Finish (mark resolved) is for after the last marker line is gone
+        for (const item of conflictsMenu.groups.filter(g => g.title !== 'Finish').flatMap(g => g.items)) {
             const command = String(item.action);
             expect(declared.has(command), command).toBe(true);
             const speed = bindings.find(b => b.command === command && b.when?.includes('scimax.atConflictMarker'));
@@ -136,6 +137,14 @@ describe('smerge keys', () => {
             expect(speed?.key, command).toBe(toKey(item.key));
             expect(prefixed?.key, command).toBe(`ctrl+c shift+6 ${toKey(item.key)}`);
         }
+    });
+
+    it('offers Mark resolved as r in the Conflicts menu', () => {
+        const items = conflictsMenu.groups.flatMap(g => g.items);
+        const finish = items.find(i => i.action === 'scimax.smerge.markResolved');
+        expect(finish?.key).toBe('r');
+        expect(declared.has('scimax.smerge.markResolved')).toBe(true);
+        expect(new Set(items.map(i => i.key)).size).toBe(items.length);
     });
 
     it('is m in the Version Control menu, and table sort yields to it', () => {

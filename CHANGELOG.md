@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **`C-x v ?` opens the Version Control menu** - Like `C-x v m`: forgot a `C-x v` key? Press `?` and pick it from the menu.
+- **`q` closes the history view** - The diff, multi-file diff, or patch that `C-x v l` opens closes with `q`, as in Emacs's log view (`scimax.vc.logViewQuit`). Elsewhere `q` types normally.
 - **Open a link in the other window (`C-u C-c C-o`)** - `scimax.org.openLinkOtherWindow` opens the link at point in the editor group beside the current one (making one to the right if needed), like Emacs `find-file-other-window`, so an outline or demo script stays in view. Right-click a link in org or Markdown for *Open Link at Point* and *Open Link at Point in Other Window*.
 - **Present Marp slides in an app window** - With `window: app` in a deck's front matter, or `scimax.marp.presentWindow` set to `app` (the default is `tab`), Present opens the slideshow in a Chrome, Edge, Chromium or Brave app window: no tabs, address bar or toolbar, so the slides fill a window you can size, move and share. `scimax.marp.appBrowser` picks the browser; with none found, Present opens your default browser as before.
 - **Contacts (`C-c S-c`)** - `Scimax: Contacts` (`scimax.contacts`, also `c` in the main menu) fuzzy-picks from every indexed heading with an `:EMAIL:` property or a `:person:` tag, like scimax-contacts in Emacs. Check several contacts to act on them together: insert their addresses or `Name <address>`, email them, insert `id:` links (Markdown: `mailto:` links) or copy any of these. For one contact you can also go to its heading, add a dated note at the end of its entry, insert or copy any property, or open its address in Google Maps. *New contact…* runs `Scimax: New Person`.
@@ -25,6 +27,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- `C-x v v` on an unchanged file during a merge (for example, one whose resolution kept your version) now opens the log buffer to conclude the merge, instead of offering to sync the diverged branch.
+- Merge conflicts resolved by hand can be marked resolved: saving a conflicted file with no markers left offers *Mark Resolved*, and until it is marked the status bar shows a *Mark Resolved* button (also `r` in the Conflicts menu, or `C-x v v`). New command `scimax.smerge.markResolved`.
+- `C-x v l`: picking the commit that added the file no longer fails (it shows the whole file as added), and commits from before a rename show the file under its old name.
+- The `*vc-log*` buffer no longer shows VS Code's git *Commit* button, which asked to save the buffer as a file; its own check mark and X in the editor title commit and cancel like `C-c C-c` and `C-c C-k`.
 - Speed commands no longer fire on `* lines` inside an org `#+begin_…`/`#+end_…` block, so you can type the `,` that escapes them.
 - `C-x v v` on an up-to-date file whose branch is not on a remote offers *Publish* (VS Code's Publish Branch: set the upstream, or create a private or public GitHub repository when there is no remote) instead of a push that has nowhere to go.
 - VC filesets on Windows: the repository root from git (`C:/x`) is now spelled with backslashes like the file paths around it, so vc-dir and fileset status match their repository.

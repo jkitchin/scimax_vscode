@@ -1,9 +1,10 @@
 /**
  * VC Log Buffer - an Emacs *vc-log* style buffer for writing commit messages
  *
- * The buffer is an untitled git-commit document. C-c C-c (scimax.vc.logFinish)
+ * The buffer is an untitled scimax-vc-log document, colored as git-commit.
+ * C-c C-c (scimax.vc.logFinish, or the check mark in the editor title)
  * commits with the buffer text as the message and C-c C-k
- * (scimax.vc.logCancel) closes it without committing.
+ * (scimax.vc.logCancel, or the X) closes it without committing.
  */
 
 import * as vscode from 'vscode';
@@ -42,13 +43,10 @@ export class VcLogBuffer implements vscode.Disposable {
 
     async open(request: VcLogRequest): Promise<void> {
         const content = VcLogBuffer.template(request.summary);
-        let doc: vscode.TextDocument;
-        try {
-            doc = await vscode.workspace.openTextDocument({ language: 'git-commit', content });
-        } catch {
-            // git-commit is contributed by the built-in git extension
-            doc = await vscode.workspace.openTextDocument({ language: 'plaintext', content });
-        }
+        // Our own language, colored by the git-commit grammar. As git-commit
+        // itself, VS Code's git extension would add its Commit button, which
+        // saves the file first (it is meant for git's COMMIT_EDITMSG).
+        const doc = await vscode.workspace.openTextDocument({ language: 'scimax-vc-log', content });
         this.pending.set(doc.uri.toString(), request);
         const editor = await vscode.window.showTextDocument(doc, { preview: false });
         editor.selection = new vscode.Selection(0, 0, 0, 0);

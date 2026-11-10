@@ -14,7 +14,8 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { createLogger } from '../utils/logger';
 import { VcLogBuffer } from './vcLogBuffer';
-import { registerSmergeCommands } from './smergeMode';
+import { registerLogView, trackLogDocument, trackLogTitle } from './vcLogView';
+import { noteResolved, registerSmergeCommands } from './smergeMode';
 import { DiredPanel } from '../dired/diredPanel';
 import {
     addToGitignore,
@@ -43,6 +44,7 @@ import {
     pathsPatch,
     planDiff,
     revertFile,
+    revisionPaths,
     revertPaths,
     runGit,
     stageFile,
@@ -239,7 +241,7 @@ async function nextAction(logBuffer: VcLogBuffer, uri?: vscode.Uri): Promise<voi
         const doc = await vscode.workspace.openTextDocument(target);
         conflictMarkers = hasConflictMarkers(doc.getText());
     }
-    const mergeInProgress = status.state === 'edited' && !!status.repoRoot
+    const mergeInProgress = (status.state === 'edited' || status.state === 'up-to-date') && !!status.repoRoot
         && await isMergeInProgress(status.repoRoot);
     const action = decideNextAction(status.state, { conflictMarkers, mergeInProgress });
     log.debug('Next action', { file, state: status.state, code: status.code, action });
@@ -260,6 +262,7 @@ async function nextAction(logBuffer: VcLogBuffer, uri?: vscode.Uri): Promise<voi
             break;
         case 'resolve':
             await stageFile(file);
+            noteResolved(target);
             vscode.window.showInformationMessage(`Marked ${name} as resolved`);
             break;
         case 'fix-conflicts': {
@@ -298,6 +301,9 @@ async function nextAction(logBuffer: VcLogBuffer, uri?: vscode.Uri): Promise<voi
     }
 }
 
+/** An empty document: the missing side of a diff for a file a commit added or deleted */
+const EMPTY_SCHEME = 'scimax-vc-empty';
+
 /** C-x v l: pick a commit from the file's history and show its change */
 async function showFileLog(uri?: vscode.Uri): Promise<void> {
     const target = targetFile(uri);
@@ -322,18 +328,23 @@ async function showFileLog(uri?: vscode.Uri): Promise<void> {
     await ensureRepositoryOpen(target);
     const api = getGitApi();
     if (api?.getRepository(target)) {
-        await vscode.commands.executeCommand(
-            'vscode.diff',
-            api.toGitUri(target, `${hash}^`),
-            api.toGitUri(target, hash),
-            `${path.basename(file)} (${shortHash})`
-        );
+        // The commit that added the file has nothing before it; a commit from
+        // before a rename has the file under its old name
+        const { root, before, after } = await revisionPaths(file, hash);
+        const at = (rel: string | undefined, ref: string) => rel
+            ? api.toGitUri(vscode.Uri.file(path.join(root, ...rel.split('/'))), ref)
+            : vscode.Uri.from({ scheme: EMPTY_SCHEME, path: `/${ref}/${path.basename(file)}` });
+        const what = !before ? ', added' : !after ? ', deleted' : '';
+        const title = `${path.basename(after ?? before ?? file)} (${shortHash}${what})`;
+        trackLogTitle(title);
+        await vscode.commands.executeCommand('vscode.diff', at(before, `${hash}^`), at(after, hash), title);
         return;
     }
     // Without the git extension, show the commit as a patch
     const patch = await runGit(['show', hash, '--', path.basename(file)], path.dirname(file));
     const doc = await vscode.workspace.openTextDocument({ language: 'diff', content: patch });
     await vscode.window.showTextDocument(doc, { preview: true });
+    trackLogDocument(doc.uri);
 }
 
 /**
@@ -575,7 +586,8 @@ async function nextActionSet(logBuffer: VcLogBuffer, targets: vscode.Uri[]): Pro
             // Deleted on one side: no markers to look for
         }
     }
-    const mergeInProgress = status.entries.some((e) => e.state === 'edited') && await isMergeInProgress(root);
+    const active = status.entries.filter((e) => e.state !== 'up-to-date');
+    const mergeInProgress = active.every((e) => e.state === 'edited') && await isMergeInProgress(root);
     const action = decideFilesetAction(status.entries, { withMarkers, mergeInProgress });
     log.debug('Fileset next action', { root, action: action.kind, count: status.entries.length });
 
@@ -586,6 +598,7 @@ async function nextActionSet(logBuffer: VcLogBuffer, targets: vscode.Uri[]): Pro
             break;
         case 'resolve':
             await stagePaths(root, action.rels);
+            for (const rel of action.rels) noteResolved(vscode.Uri.file(path.join(root, ...rel.split('/'))));
             vscode.window.showInformationMessage(`Marked ${plural(action.rels.length, 'file')} as resolved: ${nameList(action.rels)}`);
             break;
         case 'fix-conflicts': {
@@ -602,7 +615,7 @@ async function nextActionSet(logBuffer: VcLogBuffer, targets: vscode.Uri[]): Pro
             await openFilesetCommitBuffer(logBuffer, status.displayRoot, action.rels);
             break;
         case 'commit-merge': {
-            const first = status.entries.find((e) => e.state === 'edited')!;
+            const first = status.entries.find((e) => e.state === 'edited') ?? status.entries[0];
             await openCommitBuffer(logBuffer, first.path, status.displayRoot, { kind: 'merge' });
             break;
         }
@@ -730,12 +743,14 @@ async function logSet(targets: vscode.Uri[]): Promise<void> {
                 c.status === 'D' ? undefined : api.toGitUri(file, hash),
             ];
         });
+        trackLogTitle(`${shortHash} ${subject}`);
         await vscode.commands.executeCommand('vscode.changes', `${shortHash} ${subject}`, resources);
         return;
     }
     const patch = await runGit(['--literal-pathspecs', 'show', hash, '--', ...where.rels.map((r) => r || '.')], where.root);
     const doc = await vscode.workspace.openTextDocument({ language: 'diff', content: patch });
     await vscode.window.showTextDocument(doc, { preview: true });
+    trackLogDocument(doc.uri);
 }
 
 /** C-x v u on several files: one confirmation, then discard every change */
@@ -874,6 +889,7 @@ export function registerVcCommands(context: vscode.ExtensionContext): void {
     const activeUri = () => vscode.window.activeTextEditor?.document.uri
         ?? (DiredPanel.activeDirectory() ? vscode.Uri.file(DiredPanel.activeDirectory()!) : undefined);
     registerSmergeCommands(context);
+    registerLogView(context);
 
     /**
      * A C-x v command that takes (uri, uris) the way the Explorer and dired
@@ -892,6 +908,7 @@ export function registerVcCommands(context: vscode.ExtensionContext): void {
 
     context.subscriptions.push(
         logBuffer,
+        vscode.workspace.registerTextDocumentContentProvider(EMPTY_SCHEME, { provideTextDocumentContent: () => '' }),
         vscode.commands.registerCommand('scimax.vc.nextAction', onTargets('nextAction', (uri) => nextAction(logBuffer, uri), (targets) => nextActionSet(logBuffer, targets))),
         vscode.commands.registerCommand('scimax.vc.logFinish', guarded('logFinish', () => logBuffer.finish())),
         vscode.commands.registerCommand('scimax.vc.logCancel', guarded('logCancel', () => logBuffer.cancel())),

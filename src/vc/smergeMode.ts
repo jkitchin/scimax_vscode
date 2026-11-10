@@ -89,6 +89,14 @@ class SmergeMode implements vscode.Disposable {
      * focused or saved.
      */
     private readonly gitConflicted = new Map<string, boolean | 'pending'>();
+    /**
+     * Files git listed as conflicted while they had conflict blocks. Once the
+     * blocks are gone (by smerge keys or by hand) the status bar offers Mark
+     * Resolved until git agrees the file is resolved.
+     */
+    private readonly seenConflicted = new Set<string>();
+    /** Files with a Mark Resolved question on screen */
+    private readonly asking = new Set<string>();
 
     constructor() {
         this.statusItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 100);
@@ -100,8 +108,13 @@ class SmergeMode implements vscode.Disposable {
                 this.refresh();
             }),
             vscode.workspace.onDidSaveTextDocument((d) => {
-                this.gitConflicted.delete(d.uri.toString());
+                const key = d.uri.toString();
+                this.gitConflicted.delete(key);
                 if (d === vscode.window.activeTextEditor?.document) this.refresh();
+                // Resolved by hand: ask when the file is saved without markers
+                if (this.seenConflicted.has(key) && conflictsOf(d).length === 0 && !this.asking.has(key)) {
+                    this.allResolved(d).catch((error) => log.debug('smerge: resolve check failed', { error: String(error) }));
+                }
             }),
             vscode.window.onDidChangeTextEditorSelection((e) => {
                 if (e.textEditor === vscode.window.activeTextEditor) this.refresh();
@@ -112,6 +125,7 @@ class SmergeMode implements vscode.Disposable {
             vscode.workspace.onDidCloseTextDocument((d) => {
                 cache.delete(d.uri.toString());
                 this.gitConflicted.delete(d.uri.toString());
+                this.seenConflicted.delete(d.uri.toString());
             }),
             vscode.workspace.registerTextDocumentContentProvider(COMPARE_SCHEME, {
                 provideTextDocumentContent: (uri) => this.compareContents.get(uri.toString()) ?? '',
@@ -140,10 +154,19 @@ class SmergeMode implements vscode.Disposable {
             this.atMarker = atMarker;
             vscode.commands.executeCommand('setContext', 'scimax.atConflictMarker', atMarker);
         }
+        const resolvedByHand = !active && !!editor && conflicts.length === 0
+            && this.seenConflicted.has(editor.document.uri.toString()) && this.isGitConflicted(editor.document);
         if (active) {
+            this.statusItem.command = 'scimax.smerge.menu';
             this.statusItem.text = `$(git-merge) smerge ${conflictIndex(conflicts, line)}/${conflicts.length}`;
             this.statusItem.tooltip = 'Merge conflicts in this file. At a marker line: n/p move, '
                 + 'm/t/b keep mine/theirs/both, RET keeps this side, ? for all keys. Click for the Conflicts menu.';
+            this.statusItem.show();
+        } else if (resolvedByHand) {
+            this.statusItem.command = 'scimax.smerge.markResolved';
+            this.statusItem.text = '$(check) Mark Resolved';
+            this.statusItem.tooltip = 'No conflict markers left, but git still lists this file as conflicted. '
+                + 'Click to save it and mark it resolved (git add); C-x v v does the same.';
             this.statusItem.show();
         } else {
             this.statusItem.hide();
@@ -162,6 +185,8 @@ class SmergeMode implements vscode.Disposable {
                 .then((conflicted) => {
                     if (this.gitConflicted.get(key) !== 'pending') return;
                     this.gitConflicted.set(key, conflicted);
+                    if (!conflicted) this.seenConflicted.delete(key);
+                    else if (conflictsOf(document).length > 0) this.seenConflicted.add(key);
                     if (conflicted) this.refresh();
                 });
             return false;
@@ -289,33 +314,80 @@ class SmergeMode implements vscode.Disposable {
             flash('No conflicts left');
             return;
         }
-        const file = document.uri.fsPath;
-        const name = path.basename(file);
-        let state: string;
+        const key = document.uri.toString();
+        const name = path.basename(document.uri.fsPath);
+        if (!await this.stillConflicted(document)) {
+            flash('No conflicts left');
+            return;
+        }
+        this.asking.add(key);
+        let choice: string | undefined;
         try {
-            state = (await getFileStatus(file)).state;
+            choice = await vscode.window.showInformationMessage(
+                `No conflicts left in ${name}. Save it and mark it resolved (git add)?`, 'Mark Resolved');
+        } finally {
+            this.asking.delete(key);
+        }
+        if (choice === 'Mark Resolved') await this.markResolved(document);
+    }
+
+    /** Whether git still lists the file as conflicted (unmerged) */
+    private async stillConflicted(document: vscode.TextDocument): Promise<boolean> {
+        try {
+            return (await getFileStatus(document.uri.fsPath)).state === 'conflict';
         } catch (error) {
-            log.debug('smerge: no git status', { file, error: String(error) });
-            flash('No conflicts left');
+            log.debug('smerge: no git status', { file: document.uri.fsPath, error: String(error) });
+            return false;
+        }
+    }
+
+    /** Save the file and git add it, ending its conflict */
+    async markResolved(document?: vscode.TextDocument): Promise<void> {
+        document ??= vscode.window.activeTextEditor?.document;
+        if (!document || document.uri.scheme !== 'file') {
+            flash('Not a file on disk');
             return;
         }
-        if (state !== 'conflict') {
-            flash('No conflicts left');
+        const name = path.basename(document.uri.fsPath);
+        if (conflictsOf(document).length > 0) {
+            vscode.window.showWarningMessage(`${name} still has conflict markers. Resolve them first (n/p to move, m/t/b to keep a side).`);
             return;
         }
-        const choice = await vscode.window.showInformationMessage(
-            `No conflicts left in ${name}. Save it and mark it resolved (git add)?`, 'Mark Resolved');
-        if (choice !== 'Mark Resolved') return;
-        if (document.isDirty) await document.save();
-        await stageFile(file);
-        this.gitConflicted.set(document.uri.toString(), false);
-        this.refresh();
+        if (!await this.stillConflicted(document)) {
+            this.noteResolved(document.uri);
+            flash(`${name} is not in conflict`);
+            return;
+        }
+        this.asking.add(document.uri.toString());
+        try {
+            if (document.isDirty) await document.save();
+        } finally {
+            this.asking.delete(document.uri.toString());
+        }
+        await stageFile(document.uri.fsPath);
+        this.noteResolved(document.uri);
         vscode.window.showInformationMessage(`${name} is resolved. C-x v v commits to finish the merge.`);
     }
+
+    /** The file was marked resolved (here or by C-x v v) */
+    noteResolved(uri: vscode.Uri): void {
+        const key = uri.toString();
+        this.gitConflicted.set(key, false);
+        this.seenConflicted.delete(key);
+        this.refresh();
+    }
+}
+
+let current: SmergeMode | undefined;
+
+/** Tell smerge mode a file was marked resolved elsewhere (C-x v v) */
+export function noteResolved(uri: vscode.Uri): void {
+    current?.noteResolved(uri);
 }
 
 export function registerSmergeCommands(context: vscode.ExtensionContext): void {
     const mode = new SmergeMode();
+    current = mode;
     const guard = (name: string, fn: () => unknown) => async () => {
         try {
             await fn();
@@ -337,6 +409,7 @@ export function registerSmergeCommands(context: vscode.ExtensionContext): void {
         vscode.commands.registerCommand('scimax.smerge.keepCurrent', guard('scimax.smerge.keepCurrent', () => mode.keepCurrent())),
         vscode.commands.registerCommand('scimax.smerge.keepAllMine', guard('scimax.smerge.keepAllMine', () => mode.keepAll('mine'))),
         vscode.commands.registerCommand('scimax.smerge.keepAllTheirs', guard('scimax.smerge.keepAllTheirs', () => mode.keepAll('theirs'))),
+        vscode.commands.registerCommand('scimax.smerge.markResolved', guard('scimax.smerge.markResolved', () => mode.markResolved())),
         vscode.commands.registerCommand('scimax.smerge.compare', guard('scimax.smerge.compare', () => mode.compare())),
         vscode.commands.registerCommand('scimax.smerge.mergeEditor', guard('scimax.smerge.mergeEditor', () => vscode.commands.executeCommand('scimax.vc.git', 'git.openMergeEditor'))),
         vscode.commands.registerCommand('scimax.smerge.menu', guard('scimax.smerge.menu', () => vscode.commands.executeCommand('scimax.hydra.show', 'scimax.conflicts')))

@@ -25,6 +25,7 @@ import {
     parsePorcelainCode,
     planDiff,
     revertFile,
+    revisionPaths,
     runGit,
     stageFile,
     stagedFiles,
@@ -89,6 +90,8 @@ describe('pure helpers', () => {
         expect(decideNextAction('edited')).toBe('commit');
         expect(decideNextAction('edited', { mergeInProgress: true })).toBe('commit-merge');
         expect(decideNextAction('up-to-date')).toBe('sync');
+        // a merge whose resolution left this file as it was in HEAD
+        expect(decideNextAction('up-to-date', { mergeInProgress: true })).toBe('commit-merge');
     });
 
     it('detects conflict markers only at line starts', () => {
@@ -350,5 +353,35 @@ describe('C-x v = diff plan', () => {
         const patch = await diffPatch(file);
         expect(patch).toContain('-old line');
         expect(patch).toContain('+new line');
+    });
+});
+
+describe('revisionPaths (C-x v l)', () => {
+    let repo: string;
+    beforeEach(async () => { repo = await makeRepo(); });
+    afterEach(() => fs.rmSync(repo, { recursive: true, force: true }));
+
+    const head = async () => (await git(repo, 'rev-parse', 'HEAD')).trim();
+
+    it('has no before for the commit that added the file, old names before a rename', async () => {
+        write(repo, 'docs/a.org', 'one\n');
+        await git(repo, 'add', '.');
+        await git(repo, 'commit', '-q', '-m', 'add');
+        const added = await head();
+        write(repo, 'docs/a.org', 'one\ntwo\n');
+        await git(repo, 'commit', '-q', '-am', 'edit');
+        const edited = await head();
+        await git(repo, 'mv', 'docs/a.org', 'docs/b.org');
+        await git(repo, 'commit', '-q', '-m', 'rename');
+        const renamed = await head();
+        write(repo, 'docs/b.org', 'one\ntwo\nthree\n');
+        await git(repo, 'commit', '-q', '-am', 'edit again');
+        const latest = await head();
+
+        const file = path.join(repo, 'docs', 'b.org');
+        expect(await revisionPaths(file, latest)).toEqual({ root: repo, before: 'docs/b.org', after: 'docs/b.org' });
+        expect(await revisionPaths(file, renamed)).toEqual({ root: repo, before: 'docs/a.org', after: 'docs/b.org' });
+        expect(await revisionPaths(file, edited)).toEqual({ root: repo, before: 'docs/a.org', after: 'docs/a.org' });
+        expect(await revisionPaths(file, added)).toEqual({ root: repo, after: 'docs/a.org' });
     });
 });

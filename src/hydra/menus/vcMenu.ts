@@ -200,5 +200,18 @@ export const conflictsMenu: HydraMenuDefinition = {
                 },
             ],
         },
+        {
+            title: 'Finish',
+            items: [
+                {
+                    key: 'r',
+                    label: 'Mark resolved',
+                    description: 'No markers left: save the file and git add it (C-x v v does the same)',
+                    icon: 'check',
+                    exit: 'exit',
+                    action: 'scimax.smerge.markResolved',
+                },
+            ],
+        },
     ],
 };

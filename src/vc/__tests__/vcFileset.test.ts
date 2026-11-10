@@ -86,6 +86,7 @@ describe('pure fileset helpers', () => {
         expect(decideFilesetAction([entry('a', 'UU', 'conflict'), entry('b', 'UU', 'conflict')], { withMarkers: new Set(['b']) }))
             .toEqual({ kind: 'fix-conflicts', rels: ['b'] });
         expect(decideFilesetAction([entry('a', '', 'up-to-date')])).toEqual({ kind: 'sync' });
+        expect(decideFilesetAction([entry('a', '', 'up-to-date')], { mergeInProgress: true })).toEqual({ kind: 'commit-merge' });
         expect(decideFilesetAction([entry('a', ' M', 'edited'), entry('b', '??', 'untracked')]))
             .toEqual({ kind: 'mixed', groups: { edited: ['a'], untracked: ['b'] } });
     });

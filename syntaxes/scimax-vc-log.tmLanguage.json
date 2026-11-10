@@ -1,0 +1,7 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "VC Log",
+  "scopeName": "text.scimax-vc-log",
+  "comment": "The *vc-log* commit buffer: colored like a git commit message, but its own language so VS Code's git Commit button (which saves the file) does not appear",
+  "patterns": [{ "include": "text.git-commit" }]
+}

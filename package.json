@@ -65,6 +65,13 @@
           ".org"
         ],
         "configuration": "./language-configuration.json"
+      },
+      {
+        "id": "scimax-vc-log",
+        "aliases": [
+          "VC Log"
+        ],
+        "configuration": "./syntaxes/vc-log.language-configuration.json"
       }
     ],
     "grammars": [
@@ -104,6 +111,11 @@
           "text.tex",
           "source.latex"
         ]
+      },
+      {
+        "language": "scimax-vc-log",
+        "scopeName": "text.scimax-vc-log",
+        "path": "./syntaxes/scimax-vc-log.tmLanguage.json"
       }
     ],
     "themes": [
@@ -4298,11 +4310,13 @@
       },
       {
         "command": "scimax.vc.logFinish",
-        "title": "Scimax: VC Log - Commit (finish log buffer)"
+        "title": "Scimax: VC Log - Commit (finish log buffer)",
+        "icon": "$(check)"
       },
       {
         "command": "scimax.vc.logCancel",
-        "title": "Scimax: VC Log - Cancel"
+        "title": "Scimax: VC Log - Cancel",
+        "icon": "$(close)"
       },
       {
         "command": "scimax.vc.push",
@@ -4360,6 +4374,11 @@
         "title": "Scimax: Smerge Compare Mine and Theirs"
       },
       {
+        "command": "scimax.smerge.markResolved",
+        "title": "Scimax: Smerge Mark File Resolved (git add)",
+        "icon": "$(check)"
+      },
+      {
         "command": "scimax.smerge.mergeEditor",
         "title": "Scimax: Smerge Open the Merge Editor"
       },
@@ -4371,6 +4390,10 @@
         "command": "scimax.vc.log",
         "title": "Scimax: VC File History",
         "icon": "$(history)"
+      },
+      {
+        "command": "scimax.vc.logViewQuit",
+        "title": "Scimax: VC Close History View"
       },
       {
         "command": "scimax.vc.revert",
@@ -7281,6 +7304,12 @@
         "when": "!terminalFocus"
       },
       {
+        "command": "scimax.vc.logViewQuit",
+        "key": "q",
+        "mac": "q",
+        "when": "scimax.vcLogViewActive && editorTextFocus && !scimax.jumpActive"
+      },
+      {
         "command": "scimax.vc.revert",
         "key": "ctrl+x v u",
         "mac": "ctrl+x v u",
@@ -7302,6 +7331,12 @@
         "command": "scimax.hydra.vc",
         "key": "ctrl+x v m",
         "mac": "ctrl+x v m",
+        "when": "!terminalFocus"
+      },
+      {
+        "command": "scimax.hydra.vc",
+        "key": "ctrl+x v shift+/",
+        "mac": "ctrl+x v shift+/",
         "when": "!terminalFocus"
       },
       {
@@ -10003,6 +10038,16 @@
           "command": "scimax.marp.refreshSlides",
           "when": "activeWebviewPanelId == 'scimax.marp.slideSorter'",
           "group": "navigation@2"
+        },
+        {
+          "command": "scimax.vc.logFinish",
+          "when": "scimax.vcLogActive",
+          "group": "navigation@1"
+        },
+        {
+          "command": "scimax.vc.logCancel",
+          "when": "scimax.vcLogActive",
+          "group": "navigation@2"
         }
       ],
       "commandPalette": [
@@ -10469,6 +10514,10 @@
         {
           "command": "scimax.vc.logCancel",
           "when": "scimax.vcLogActive"
+        },
+        {
+          "command": "scimax.vc.logViewQuit",
+          "when": "scimax.vcLogViewActive"
         }
       ],
       "view/title": [

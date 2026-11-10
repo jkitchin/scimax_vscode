@@ -162,7 +162,9 @@ export function decideNextAction(
         // git refuses partial commits during a merge, so the merge has to be
         // finished as a whole
         case 'edited': return context.mergeInProgress ? 'commit-merge' : 'commit';
-        case 'up-to-date': return 'sync';
+        // A clean file during a merge (say its resolution matched HEAD):
+        // the next step is still the merge commit, not a push or pull
+        case 'up-to-date': return context.mergeInProgress ? 'commit-merge' : 'sync';
     }
 }
 
@@ -280,6 +282,66 @@ export async function fileLog(filePath: string, maxCount = 200): Promise<LogEntr
         path.dirname(filePath)
     );
     return parseLog(output);
+}
+
+/**
+ * Where a file lived in one commit of its history and in that commit's
+ * parent, as paths relative to the repository root. `before` is undefined
+ * when the commit added the file (its first commit), `after` when the commit
+ * deleted it. History follows renames, so the paths can differ from today's.
+ */
+export interface RevisionPaths {
+    before?: string;
+    after?: string;
+}
+
+/**
+ * Parse `git log --follow --name-status --format=%x1e%H` into the paths of
+ * each commit. Merge commits list no files; they get the path of the next
+ * newer commit (or `current`).
+ */
+export function parseRevisionPaths(output: string, current: string): Map<string, RevisionPaths> {
+    const result = new Map<string, RevisionPaths>();
+    let latest = current;
+    for (const record of output.split('\x1e')) {
+        const lines = record.split(/\r?\n/).filter((l) => l.trim());
+        const hash = lines.shift()?.trim();
+        if (!hash) continue;
+        const status = lines.map((l) => l.split('\t')).find((f) => f.length >= 2);
+        if (!status) {
+            result.set(hash, { before: latest, after: latest });
+            continue;
+        }
+        const code = status[0][0];
+        if (code === 'A') {
+            result.set(hash, { after: status[1] });
+            latest = status[1];
+        } else if (code === 'D') {
+            result.set(hash, { before: status[1] });
+            latest = status[1];
+        } else if ((code === 'R' || code === 'C') && status.length >= 3) {
+            result.set(hash, { before: status[1], after: status[2] });
+            latest = status[1];
+        } else {
+            result.set(hash, { before: status[1], after: status[1] });
+            latest = status[1];
+        }
+    }
+    return result;
+}
+
+/** The file's paths before and after `hash` (see RevisionPaths) */
+export async function revisionPaths(filePath: string, hash: string): Promise<RevisionPaths & { root: string }> {
+    const dir = path.dirname(filePath);
+    const root = await findRepoRoot(dir);
+    if (!root) throw new Error(`${path.basename(filePath)} is not in a git repository`);
+    const current = path.relative(root, path.resolve(filePath)).split(path.sep).join('/');
+    const output = await runGit(
+        ['-c', 'core.quotePath=false', 'log', '--follow', '--name-status', '--format=%x1e%H', '--', path.basename(filePath)],
+        dir
+    );
+    const paths = parseRevisionPaths(output, current).get(hash) ?? { before: current, after: current };
+    return { root, ...paths };
 }
 
 /** One-line summary of what a commit of this file would include */
@@ -544,7 +606,7 @@ export function decideFilesetAction(
     context: { withMarkers?: Set<string>; mergeInProgress?: boolean } = {}
 ): FilesetAction {
     const active = entries.filter((e) => e.state !== 'up-to-date');
-    if (active.length === 0) return { kind: 'sync' };
+    if (active.length === 0) return context.mergeInProgress ? { kind: 'commit-merge' } : { kind: 'sync' };
     const groups: Partial<Record<VcFileState, string[]>> = {};
     for (const e of active) (groups[e.state] ??= []).push(e.rel);
     const states = Object.keys(groups) as VcFileState[];

@@ -16,7 +16,7 @@ they work on the file you clicked. In dired, and in the Explorer with several
 files selected, they work on all of them at once (see
 [[*Several Files at Once][Several Files at Once]]).
 
-** C-x v v: Next Action
+** 👀 C-x v v: Next Action
 
 | File state                  | What C-x v v does                                                                                |
 |-----------------------------+--------------------------------------------------------------------------------------------------|
@@ -27,7 +27,7 @@ files selected, they work on all of them at once (see
 | Up to date, others staged   | Opens a log buffer that commits all staged changes                                               |
 | Conflicted, markers remain  | Warns you; offers the first conflict (smerge mode) or the merge editor                           |
 | Conflicted, markers gone    | Marks the file resolved (=git add=)                                                              |
-| Edited during a merge       | Opens a log buffer to conclude the merge (commits everything staged)                             |
+| Edited or clean in a merge  | Opens a log buffer to conclude the merge (commits everything staged)                             |
 | Ignored by =.gitignore=     | Tells you the file is ignored                                                                    |
 | Up to date, not published   | Offers to publish the branch (a new GitHub repository, private or public, if there is no remote) |
 | Up to date, branch ahead    | Offers to push                                                                                   |
@@ -48,6 +48,9 @@ buffer lists every file that will be committed. Edited files you did not stage
 are left out.
 Git does not allow single-file commits while a merge is in progress, so in
 that case the log buffer commits all staged changes to conclude the merge.
+This holds for any file in the repository, including one that is unchanged
+(for example, a file whose resolution kept your version): until the merge is
+committed, ~C-x v v~ offers the merge commit, not a push, pull or sync.
 
 A branch that is not on a remote yet is /published/ with VS Code's Publish
 Branch: it pushes to a remote and tracks it. With no remote at all, the GitHub
@@ -57,16 +60,19 @@ public.
 Ahead/behind counts come from the last fetch. Run Fetch from the menu
 (=C-x v m f=) to refresh them.
 
-** The *vc-log* Buffer
+** 👀 The *vc-log* Buffer
 
-When a commit is next, ~C-x v v~ opens a new =git-commit= buffer. Write the
-message on the first lines; the =#= lines below show the file, the repository,
-and a diffstat, and are left out of the message.
+When a commit is next, ~C-x v v~ opens a new /VC Log/ buffer (colored like a
+git commit message). Write the message on the first lines; the =#= lines below
+show the file, the repository, and a diffstat, and are left out of the message.
 
 | Key       | Command               | Action                                     |
 |-----------+-----------------------+--------------------------------------------|
 | ~C-c C-c~ | =scimax.vc.logFinish= | Commit with the buffer text as the message |
 | ~C-c C-k~ | =scimax.vc.logCancel= | Close the buffer without committing        |
+
+The check mark and X in the editor title bar do the same as ~C-c C-c~ and
+~C-c C-k~.
 
 If the commit fails (for example, a pre-commit hook rejects it) the error is
 shown and the buffer stays open so you can try again. An empty message
@@ -98,14 +104,14 @@ files, or a directory, is handled like this:
 
 What ~C-x v v~ does on a fileset (unchanged files in the set are left out):
 
-| Changed files are          | What C-x v v does                                                          |
-|----------------------------+----------------------------------------------------------------------------|
-| All untracked              | Registers them all (=git add=)                                             |
-| All edited (or staged)     | One =*vc-log*= buffer that commits exactly those files (=git commit -- …=) |
-| All conflicted, resolved   | Marks them resolved                                                        |
-| Conflicted, markers remain | Names the files that still have markers; offers the first conflict         |
-| In different states        | Refuses, naming the files in each state                                    |
-| None (all up to date)      | Commits anything already staged, else offers push or pull as for one file  |
+| Changed files are          | What C-x v v does                                                                                             |
+|----------------------------+---------------------------------------------------------------------------------------------------------------|
+| All untracked              | Registers them all (=git add=)                                                                                |
+| All edited (or staged)     | One =*vc-log*= buffer that commits exactly those files (=git commit -- …=)                                    |
+| All conflicted, resolved   | Marks them resolved                                                                                           |
+| Conflicted, markers remain | Names the files that still have markers; offers the first conflict                                            |
+| In different states        | Refuses, naming the files in each state                                                                       |
+| None (all up to date)      | Concludes a merge in progress, else commits anything already staged, else offers push or pull as for one file |
 
 A fileset commit leaves other staged files staged. A staged rename is
 committed as one change (the new and old paths together). The files must all
@@ -145,25 +151,30 @@ files, or the file at point:
 A typical round: ~C-x v d~, ~* e~ to mark the edited files, ~=~ to look over
 the changes, ~u~ on any you want to leave out, then ~v~ to commit the rest.
 
-** Keybindings
+** 👀 Keybindings
 
-| Keybinding | Command                | Emacs equivalent       | Description                                       |
-|------------+------------------------+------------------------+---------------------------------------------------|
-| ~C-x v v~  | =scimax.vc.nextAction= | =vc-next-action=       | Do the next logical VC step on the file           |
-| ~C-x v p~  | =scimax.vc.push=       | =vc-git-push= (scimax) | Push the current branch                           |
-| ~C-x v P~  | =scimax.vc.pull=       | =vc-git-pull= (scimax) | Pull the current branch                           |
-| ~C-x v t~  | =scimax.vc.status=     | =magit-status=         | edamagit status if installed, else Source Control |
-| ~C-x v d~  | =scimax.vc.dir=        | =vc-dir=               | List the repository's changed files in dired      |
-| ~C-x v =~  | =scimax.vc.diff=       | =vc-diff=              | Diff the file against HEAD                        |
-| ~C-x v l~  | =scimax.vc.log=        | =vc-print-log=         | Pick a commit from the file's history and diff it |
-| ~C-x v u~  | =scimax.vc.revert=     | =vc-revert=            | Discard the file's changes (asks first)           |
-| ~C-x v g~  | =scimax.vc.annotate=   | =vc-annotate=          | Toggle line-by-line blame                         |
-| ~C-x v i~  | =scimax.vc.ignore=     | =vc-ignore=            | Add the file to =.gitignore=                      |
-| ~C-x v m~  | =scimax.hydra.vc=      | scimax VC hydra        | Open the Version Control menu                     |
+| Keybinding | Command                 | Emacs equivalent       | Description                                       |
+|------------+-------------------------+------------------------+---------------------------------------------------|
+| ~C-x v v~  | =scimax.vc.nextAction=  | =vc-next-action=       | Do the next logical VC step on the file           |
+| ~C-x v p~  | =scimax.vc.push=        | =vc-git-push= (scimax) | Push the current branch                           |
+| ~C-x v P~  | =scimax.vc.pull=        | =vc-git-pull= (scimax) | Pull the current branch                           |
+| ~C-x v t~  | =scimax.vc.status=      | =magit-status=         | edamagit status if installed, else Source Control |
+| ~C-x v d~  | =scimax.vc.dir=         | =vc-dir=               | List the repository's changed files in dired      |
+| ~C-x v =~  | =scimax.vc.diff=        | =vc-diff=              | Diff the file against HEAD                        |
+| ~C-x v l~  | =scimax.vc.log=         | =vc-print-log=         | Pick a commit from the file's history and diff it |
+| ~q~        | =scimax.vc.logViewQuit= | =quit-window=          | Close the diff or patch that ~C-x v l~ opened     |
+| ~C-x v u~  | =scimax.vc.revert=      | =vc-revert=            | Discard the file's changes (asks first)           |
+| ~C-x v g~  | =scimax.vc.annotate=    | =vc-annotate=          | Toggle line-by-line blame                         |
+| ~C-x v i~  | =scimax.vc.ignore=      | =vc-ignore=            | Add the file to =.gitignore=                      |
+| ~C-x v m~  | =scimax.hydra.vc=       | scimax VC hydra        | Open the Version Control menu                     |
+| ~C-x v ?~  | =scimax.hydra.vc=       | scimax VC hydra        | The same menu, to look up a key and run it        |
 
 ~C-x v P~ is =Ctrl+X V Shift+P=. In Emacs, =vc-ignore= is on ~C-x v G~ and
 ~C-x v i~ is =vc-register=; scimax uses ~C-x v i~ for ignore because ~C-x v v~
 already registers untracked files.
+
+The diff, multi-file diff, or patch that ~C-x v l~ opens is read-only; ~q~
+closes it, as in Emacs's log view. Elsewhere ~q~ types normally.
 
 ** C-x v i: Ignore a File
 
@@ -238,12 +249,18 @@ in Emacs (~C-c ^ n~, ~C-c ^ m~, ~C-c ^ RET~, and so on). There, ~C-c ^ RET~
 keeps the side the cursor is in. In org tables ~C-c ^~ sorts by column; in a
 file with conflicts it is the smerge prefix instead.
 
-*** When the last conflict is resolved
+*** 👀 When the last conflict is resolved
 
 When no conflict blocks are left and git still lists the file as conflicted,
 scimax offers *Mark Resolved*: it saves the file and runs =git add=. Then
 ~C-x v v~ commits to finish the merge. ~C-x v v~ on a file that still has
 conflict blocks offers *Go to First Conflict*.
+
+The offer comes right after the key that removes the last block, or when you
+save the file if you resolved it by hand. Until the file is marked, the status
+bar shows *✓ Mark Resolved*; click it, press ~r~ in the Conflicts menu, or
+run ~C-x v v~ (=scimax.smerge.markResolved= from the Command Palette does the
+same).
 
 *** Conflicts menu (scimax.conflicts)
 
@@ -259,9 +276,9 @@ History, Blame, Ignore, Stage / Unstage, Revert, Push, Pull, Status, and VC
 Directory, acting on the file you clicked, or on every selected file when
 several are selected in the Explorer.
 
-** Version Control Menu (scimax.vc)
+** 👀 Version Control Menu (scimax.vc)
 
-Open with ~C-x v m~, or press ~v~ in the main menu (~C-c m~). It mirrors the
+Open with ~C-x v m~ or ~C-x v ?~, or press ~v~ in the main menu (~C-c m~). It mirrors the
 =scimax-version-control= hydra from Emacs scimax.
 
 #+begin_example
