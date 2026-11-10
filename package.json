@@ -7837,6 +7837,11 @@
           "default": false,
           "description": "Show hidden files (dotfiles) in dired by default"
         },
+        "scimax.dired.autoRefresh": {
+          "type": "boolean",
+          "default": true,
+          "description": "Reload the dired listing when it becomes the active tab again or VS Code regains focus (like Emacs's dired-auto-revert-buffer). Marks and the cursor position are kept."
+        },
         "scimax.dired.confirmDelete": {
           "type": "boolean",
           "default": true,

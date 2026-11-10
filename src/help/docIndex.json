@@ -1,5 +1,5 @@
 {
-  "buildDate": "2026-11-10T15:33:50.184Z",
+  "buildDate": "2026-11-10T15:44:21.868Z",
   "count": 3802,
   "entries": [
     {
@@ -89371,7 +89371,7 @@
       "heading": "Common Configurations",
       "level": 1,
       "file": "26-configuration.org",
-      "line": 2339,
+      "line": 2340,
       "content": "This section provides complete `settings.json' examples for different use cases.",
       "path": [],
       "commands": [],
@@ -89392,7 +89392,7 @@
       "heading": "Academic Writing Setup",
       "level": 2,
       "file": "26-configuration.org",
-      "line": 2343,
+      "line": 2344,
       "content": "Perfect for researchers, graduate students, and academic writers: #+begin_src json { // Journal for daily research log \"scimax.journal.directory\": \"~/research/journal\", \"scimax.journal.format\": \"org\", \"scimax.journal.autoTimestamp\": true, // References and bibliography \"scimax.ref.bibliographyFiles\": [ \"~/research/bibliography/main.bib\", \"~/research/bibliography/conferences.bib\" ], \"scimax.ref.pdfDirectory\": \"~/research/papers\", \"scimax.ref.notesDirectory\": \"~/research/notes\", \"scimax.ref.defaul",
       "path": [
         "Common Configurations"
@@ -89434,7 +89434,7 @@
       "heading": "Software Development Setup",
       "level": 2,
       "file": "26-configuration.org",
-      "line": 2410,
+      "line": 2411,
       "content": "Optimized for software developers and programmers: #+begin_src json { // Journal for development log \"scimax.journal.directory\": \"~/devlog\", \"scimax.journal.format\": \"markdown\", \"scimax.journal.template\": \"daily-standup\", // Code execution \"scimax.literate.pythonPath\": \"~/.pyenv/shims/python\", \"scimax.literate.jupyterPath\": \"~/.pyenv/shims/jupyter\", // Database - index project documentation \"scimax.db.include\": [ \"~/projects\", \"~/docs\" ], \"scimax.db.exclude\": [ \"**/node_modules/**\",",
       "path": [
         "Common Configurations"
@@ -89476,7 +89476,7 @@
       "heading": "Personal Notes & PKM Setup",
       "level": 2,
       "file": "26-configuration.org",
-      "line": 2480,
+      "line": 2481,
       "content": "For personal knowledge management and note-taking: #+begin_src json { // Journal \"scimax.journal.directory\": \"~/notes/journal\", \"scimax.journal.format\": \"org\", \"scimax.journal.weekStartsOn\": \"monday\", \"scimax.journal.autoTimestamp\": true, // Database with semantic search \"scimax.db.include\": [ \"~/notes\", \"~/books\", \"~/articles\" ], \"scimax.db.exclude\": [ \"**/archive/**\", \"**/temp/**\" ], \"scimax.db.autoIndex\": true, \"scimax.db.embeddingProvider\": \"ollama\", \"scimax.db.ollamaModel\": \"nomic-embed-tex",
       "path": [
         "Common Configurations"
@@ -89520,7 +89520,7 @@
       "heading": "Minimal Configuration",
       "level": 2,
       "file": "26-configuration.org",
-      "line": 2569,
+      "line": 2570,
       "content": "Bare-bones setup with just the essentials: #+begin_src json { \"scimax.journal.directory\": \"~/journal\", \"scimax.db.autoIndex\": false, \"scimax.agenda.include\": [\"~/notes\"] } #+end_src",
       "path": [
         "Common Configurations"
@@ -89549,7 +89549,7 @@
       "heading": "Troubleshooting",
       "level": 1,
       "file": "26-configuration.org",
-      "line": 2581,
+      "line": 2582,
       "content": "",
       "path": [],
       "commands": [],
@@ -89562,7 +89562,7 @@
       "heading": "Database Performance",
       "level": 2,
       "file": "26-configuration.org",
-      "line": 2583,
+      "line": 2584,
       "content": "If database indexing is slow or uses too much memory: #+begin_src json { \"scimax.db.autoIndex\": false, \"scimax.db.exclude\": [ \"**/node_modules/**\", \"**/.git/**\", \"**/dist/**\", \"**/build/**\", \"**/*.min.js\", \"**/archive/**\" ] } #+end_src Then manually trigger indexing with `C-S-P' → \"Scimax: Sync Files\"",
       "path": [
         "Troubleshooting"
@@ -89601,7 +89601,7 @@
       "heading": "Jupyter Kernels Not Found",
       "level": 2,
       "file": "26-configuration.org",
-      "line": 2603,
+      "line": 2604,
       "content": "Ensure Jupyter is in your PATH or specify the full path: #+begin_src json { \"scimax.literate.jupyterPath\": \"/usr/local/bin/jupyter\" } #+end_src Check available kernels with `C-S-P' → \"Scimax: Show Available Jupyter Kernels\"",
       "path": [
         "Troubleshooting"
@@ -89635,7 +89635,7 @@
       "heading": "LaTeX Preview Not Working",
       "level": 2,
       "file": "26-configuration.org",
-      "line": 2615,
+      "line": 2616,
       "content": "Ensure you have a LaTeX distribution installed (TeX Live, MiKTeX, etc.), then: #+begin_src json { \"scimax.latexPreview.enabled\": true, \"scimax.latexPreview.cacheEnabled\": false } #+end_src",
       "path": [
         "Troubleshooting"
@@ -89667,7 +89667,7 @@
       "heading": "Semantic Search Not Working",
       "level": 2,
       "file": "26-configuration.org",
-      "line": 2626,
+      "line": 2627,
       "content": "Ensure the Ollama server is running and the embedding model is pulled: #+begin_src bash curl http://localhost:11434/api/version #+end_src",
       "path": [
         "Troubleshooting"
@@ -89696,7 +89696,7 @@
       "heading": "Related Documentation",
       "level": 1,
       "file": "26-configuration.org",
-      "line": 2633,
+      "line": 2634,
       "content": "- [[file:01-getting-started.org][Getting Started Guide]] - [[file:07-source-blocks.org][Source Blocks Documentation]] - [[file:10-export.org][Export Documentation]] - [[file:24-keybindings.org][Keybindings Reference]] - [[file:37-dired.org][Dired]]",
       "path": [],
       "commands": [],
@@ -89724,7 +89724,7 @@
       "heading": "Navigation",
       "level": 1,
       "file": "26-configuration.org",
-      "line": 2641,
+      "line": 2642,
       "content": "- Previous: [[file:25-commands.org][Commands]] - Index: [[file:00-index.org][Documentation Index]] - Next: [[file:27-org-api.org][Org API]]",
       "path": [],
       "commands": [],
@@ -105714,7 +105714,7 @@
       "heading": "Marking Files",
       "level": 2,
       "file": "37-dired.org",
-      "line": 32,
+      "line": 37,
       "content": "Mark files for batch operations: | Key   | Action                              | |-------+-------------------------------------| | ~m~   | Mark current file and move down     | | ~u~   | Unmark current file and move down   | | ~U~   | Unmark all files                    | | ~t~   | Toggle all marks                    | | ~d~   | Flag file for deletion              | | ~% m~ | Mark files matching regex pattern   | | ~* e~ | Mark edited files (git)             | | ~* ?~ | Mark untracked files (git",
       "path": [
         "Dired - Directory Editor"
@@ -105748,7 +105748,7 @@
       "heading": "File Operations",
       "level": 2,
       "file": "37-dired.org",
-      "line": 51,
+      "line": 56,
       "content": "Operate on marked files (or current file if none marked): | Key | Action                                                  | |-----+---------------------------------------------------------| | ~D~ | Delete marked/flagged files (moves to trash by default) | | ~C~ | Copy marked files (prompts for destination)             | | ~R~ | Rename/move marked files (prompts for destination)      | | ~+~ | Create new directory                                    | | ~f~ | Find a file by name, creating it if it",
       "path": [
         "Dired - Directory Editor"
@@ -105782,7 +105782,7 @@
       "heading": "Git Status and Version Control",
       "level": 2,
       "file": "37-dired.org",
-      "line": 78,
+      "line": 83,
       "content": "Inside a git repository, dired shows a git status column: =edited=, =edited, staged=, =edited, part staged=, =added, staged=, =removed=, =renamed, staged=, =untracked=, =ignored= or =conflict=. Up-to-date files show nothing. A directory shows the strongest state of the files below it (conflict, then edited, then untracked), so you can see where the changes are. Turn the column off with =scimax.dired.showGitStatus=. The ~C-x v~ commands act on the marked files, or on the file at point when nothin",
       "path": [
         "Dired - Directory Editor"
@@ -105820,7 +105820,7 @@
       "heading": "Actions Menu (M-o or right-click)",
       "level": 2,
       "file": "37-dired.org",
-      "line": 110,
+      "line": 115,
       "content": "Press ~M-o~ (Option+O on Mac), or right-click a row, to open a fuzzy picker of actions for that file. On ~.~ or ~..~ the menu offers only the directory action. | Action                                 | Description                                 | |----------------------------------------+---------------------------------------------| | Enter Directory                        | Enter the selected directory                | | Open in Editor                         | Open file in VS Code editor   ",
       "path": [
         "Dired - Directory Editor"
@@ -105856,7 +105856,7 @@
       "heading": "WDired Mode (Writable Dired)",
       "level": 2,
       "file": "37-dired.org",
-      "line": 130,
+      "line": 135,
       "content": "WDired mode allows you to rename files by editing their names directly, like editing text: | Key       | Action                                    | |-----------+-------------------------------------------| | ~C-x C-q~ | Enter wdired mode (names become editable) | | ~C-c C-c~ | Commit renames                            | | ~C-c C-k~ | Cancel and exit wdired mode               | In wdired mode: 1. Edit filenames directly in the listing 2. Changes are highlighted 3. Press ~C-c C-c~ to apply all re",
       "path": [
         "Dired - Directory Editor"
@@ -105894,7 +105894,7 @@
       "heading": "Sorting and Filtering",
       "level": 2,
       "file": "37-dired.org",
-      "line": 149,
+      "line": 154,
       "content": "| Key | Action                                         | |-----+------------------------------------------------| | ~s~ | Cycle sort field (name, size, date, extension) | | ~.~ | Toggle showing hidden files (dotfiles)         | | ~/~ | Set filter pattern (regex)                     | Sorting keeps the marks and the entry at point.",
       "path": [
         "Dired - Directory Editor"
@@ -105928,7 +105928,7 @@
       "heading": "Display Format",
       "level": 2,
       "file": "37-dired.org",
-      "line": 159,
+      "line": 164,
       "content": "Each line shows: #+begin_example drwxr-xr-x  4096  2024-01-15 10:30  Documents/ -rw-r--r--  1234  2024-01-14 09:15  file.txt lrwxrwxrwx    12  2024-01-13 08:00  link -> target #+end_example - First column: file permissions (d=directory, l=symlink, -=file) - Second column: file size - Third column: modification date/time - Fourth column: git status (only inside a git repository) - Last column: filename (directories end with /)",
       "path": [
         "Dired - Directory Editor"
@@ -105962,16 +105962,16 @@
       "heading": "Configuration",
       "level": 2,
       "file": "37-dired.org",
-      "line": 174,
-      "content": "| Setting                      | Default  | Description                                       | |------------------------------+----------+---------------------------------------------------| | ~scimax.dired.showGitStatus~ | ~true~   | Show the git status column in a repository        | | ~scimax.dired.showHidden~    | ~false~  | Show hidden files by default                      | | ~scimax.dired.confirmDelete~ | ~true~   | Show confirmation before deleting                 | | ~scimax.dired.defa",
+      "line": 179,
+      "content": "| Setting                      | Default  | Description                                       | |------------------------------+----------+---------------------------------------------------| | ~scimax.dired.showGitStatus~ | ~true~   | Show the git status column in a repository        | | ~scimax.dired.showHidden~    | ~false~  | Show hidden files by default                      | | ~scimax.dired.autoRefresh~   | ~true~   | Reload when dired gets the focus back             | | ~scimax.dired.conf",
       "path": [
         "Dired - Directory Editor"
       ],
       "commands": [
         "scimax.dired.showGitStatus",
         "scimax.dired.showHidden",
-        "scimax.dired.confirmDelete",
-        "scimax.dired.defa"
+        "scimax.dired.autoRefresh",
+        "scimax.dired.conf"
       ],
       "keybindings": [],
       "keywords": [
@@ -105988,16 +105988,18 @@
         "repository",
         "false",
         "hidden",
-        "confirmation",
-        "before",
-        "deleting"
+        "reload",
+        "dired",
+        "gets",
+        "focus",
+        "back"
       ]
     },
     {
       "heading": "Security",
       "level": 2,
       "file": "37-dired.org",
-      "line": 183,
+      "line": 189,
       "content": "Dired includes security protections: - Path traversal prevention (no ~..~ in filenames) - Filename validation (no path separators in names) - Delete operations use system trash by default - Regex patterns are validated to prevent ReDoS attacks",
       "path": [
         "Dired - Directory Editor"
@@ -106031,7 +106033,7 @@
       "heading": "Related Topics",
       "level": 2,
       "file": "37-dired.org",
-      "line": 191,
+      "line": 197,
       "content": "- [[file:38-find-file.org][Find File]] - Quick file navigation (C-x C-f) - [[file:21-navigation.org][Navigation]] - General navigation features - [[file:17-projectile.org][Projectile]] - Project management - [[file:24-keybindings.org][Keybindings]] - All keyboard shortcuts - [[file:47-version-control.org][Version Control]] - C-x v commands, vc-dir (C-x v d)",
       "path": [
         "Dired - Directory Editor"

@@ -48,6 +48,19 @@ export class DiredPanel {
         // Subscribe to state changes
         this.manager.onStateChange(state => this.updateWebview(state));
 
+        // Reload when dired becomes the active tab again, or VS Code gets the
+        // focus back with dired active, so files made or changed elsewhere (a
+        // terminal, Finder, git) show up (Emacs's dired-auto-revert-buffer)
+        let wasActive = panel.active;
+        this.panel.onDidChangeViewState(event => {
+            const active = event.webviewPanel.active;
+            if (active && !wasActive) this.autoRefresh();
+            wasActive = active;
+        }, null, this.disposables);
+        vscode.window.onDidChangeWindowState(state => {
+            if (state.focused && this.panel.active) this.autoRefresh();
+        }, null, this.disposables);
+
         // Initial render
         this.panel.webview.html = this.getHtmlContent();
     }
@@ -118,6 +131,14 @@ export class DiredPanel {
         if (!current) return;
         current.manager.refresh().catch(error => {
             current.sendMessage({ command: 'error', message: error.message });
+        });
+    }
+
+    /** Reload on focus, unless scimax.dired.autoRefresh is off */
+    private autoRefresh(): void {
+        if (!vscode.workspace.getConfiguration('scimax.dired').get<boolean>('autoRefresh', true)) return;
+        this.manager.refresh().catch(error => {
+            this.sendMessage({ command: 'error', message: error.message });
         });
     }
 

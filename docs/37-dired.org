@@ -29,6 +29,11 @@ Once in the dired panel, use these keys to navigate:
 | ~<~                  | Go to first entry            |
 | ~>~                  | Go to last entry             |
 
+Dired also reloads by itself when its tab becomes active again, or when VS
+Code gets the focus back with dired active, so files made or changed in a
+terminal, Finder or git show up without ~g~. Marks and the cursor position
+are kept. Set ~scimax.dired.autoRefresh~ to ~false~ to turn this off.
+
 ** Marking Files
 
 Mark files for batch operations:
@@ -177,6 +182,7 @@ lrwxrwxrwx    12  2024-01-13 08:00  link -> target
 |------------------------------+----------+---------------------------------------------------|
 | ~scimax.dired.showGitStatus~ | ~true~   | Show the git status column in a repository        |
 | ~scimax.dired.showHidden~    | ~false~  | Show hidden files by default                      |
+| ~scimax.dired.autoRefresh~   | ~true~   | Reload when dired gets the focus back             |
 | ~scimax.dired.confirmDelete~ | ~true~   | Show confirmation before deleting                 |
 | ~scimax.dired.defaultSort~   | ~"name"~ | Default sort field (name, size, mtime, extension) |
 

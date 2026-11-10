@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Dired refreshes when it gets the focus** - Switching back to the dired tab, or back to VS Code with dired active, reloads the listing (keeping marks and the cursor), so files changed in a terminal, Finder or git show up without `g`. Turn off with `scimax.dired.autoRefresh`.
 - **`C-x v ?` opens the Version Control menu** - Like `C-x v m`: forgot a `C-x v` key? Press `?` and pick it from the menu.
 - **`q` closes the history view** - The diff, multi-file diff, or patch that `C-x v l` opens closes with `q`, as in Emacs's log view (`scimax.vc.logViewQuit`). Elsewhere `q` types normally.
 - **Open a link in the other window (`C-u C-c C-o`)** - `scimax.org.openLinkOtherWindow` opens the link at point in the editor group beside the current one (making one to the right if needed), like Emacs `find-file-other-window`, so an outline or demo script stays in view. Right-click a link in org or Markdown for *Open Link at Point* and *Open Link at Point in Other Window*.

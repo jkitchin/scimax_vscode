@@ -2331,6 +2331,7 @@ See [[file:44-marp.org::*Writing Slides in Org][Writing Slides in Org]].
 |----------------------------+---------+---------+--------------------------------------------------------------------------|
 | scimax.dired.showGitStatus | boolean | true    | Git status column in a repository, and * e, * ?, * c, M marking by state |
 | scimax.dired.showHidden    | boolean | false   | Show dotfiles                                                            |
+| scimax.dired.autoRefresh   | boolean | true    | Reload the listing when dired gets the focus back                        |
 | scimax.dired.confirmDelete | boolean | true    | Confirm before deleting                                                  |
 | scimax.dired.defaultSort   | string  | "name"  | name, size, mtime or extension                                           |
 
