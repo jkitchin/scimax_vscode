@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.15.1] - 2026-11-10
+
+### Fixed
+
+- **The database failed to start on Windows and macOS when installed from the Marketplace (#91)** - The published package was built on Linux, so it had only libsql's Linux binary, and the database failed with `Cannot find module '@libsql/win32-x64-msvc'` (or `darwin-arm64`, `darwin-x64`). The package now includes libsql's binaries for Windows x64, macOS (Apple silicon and Intel) and Linux (x64, arm64, arm), and the build fails if any is missing (`scripts/libsql-binaries.js`).
+- **A database that cannot start no longer retries on every use** - Every feature that touched the database tried to start it again and logged another error, so the error count climbed into the hundreds. A missing or unloadable native module now gives one warning and turns the database features off; other start-up failures are retried at most every 30 seconds.
+
 ## [0.15.0] - 2026-11-10
 
 ### Added

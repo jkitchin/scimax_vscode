@@ -93,8 +93,14 @@ pages listed in `docs/_toc.yml` are published *or* indexed for the chat.
 
 ### 4. Build smoke test
 
-- [ ] `make` (or `npm run compile && npx vsce package`) succeeds with no
+- [ ] `make` (or `npm run compile && npm run package`) succeeds with no
       TypeScript errors and no unexpected `vsce` warnings.
+- [ ] The package step ends with "has libsql binaries for all N platforms".
+      `npm run package` adds libsql's native binary for every platform before
+      `vsce package` (`node scripts/libsql-binaries.js fetch`) and checks the
+      VSIX afterwards. A bare `npx vsce package` only includes the binary for
+      the machine it runs on, so the database fails on every other platform
+      (issue #91). The publish workflow runs the same fetch and check.
 - [ ] Install the generated VSIX in a clean VS Code window and confirm the
       feature you released actually works end-to-end — type-check and test
       suites verify code correctness, not feature correctness.

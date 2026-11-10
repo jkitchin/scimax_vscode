@@ -65,6 +65,8 @@ vitest.config.mjs.map
 # Compiled build scripts
 scripts/*.js
 scripts/*.js.map
+# Hand-written, not compiled; the package step and CI run it
+!scripts/libsql-binaries.js
 scripts/*.d.ts
 scripts/*.d.ts.map
 

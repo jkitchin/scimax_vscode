@@ -20,6 +20,22 @@ let dbInitPromise: Promise<ScimaxDb> | null = null;
 let extensionContext: vscode.ExtensionContext | null = null;
 let staleCheckCancellation: { cancelled: boolean } | null = null;
 let staleCheckStatusBar: vscode.StatusBarItem | null = null;
+/** Set when the database can never start here (its native module is missing) */
+let unavailable: Error | null = null;
+/** After another kind of failure, no new attempt before this time (ms) */
+let retryAfter = 0;
+const RETRY_DELAY_MS = 30_000;
+
+/**
+ * True for errors that retrying cannot fix: libsql's native binary is missing
+ * for this platform or cannot be loaded (issue #91).
+ */
+export function isPermanentInitError(error: unknown): boolean {
+    const err = error as { code?: string; message?: string } | undefined;
+    if (err?.code === 'MODULE_NOT_FOUND' || err?.code === 'ERR_DLOPEN_FAILED') return true;
+    const message = err?.message ?? String(error);
+    return /Cannot find module|not a valid Win32 application|dlopen|wrong ELF class|invalid ELF header/i.test(message);
+}
 
 /**
  * Set the extension context for database initialization
@@ -53,6 +69,12 @@ export async function getDatabase(): Promise<ScimaxDb | null> {
         return dbInitPromise;
     }
 
+    // Failed before: never again if it cannot work here, and not again
+    // straight away otherwise (every caller would retry and log the error)
+    if (unavailable || Date.now() < retryAfter) {
+        return null;
+    }
+
     // No context set
     if (!extensionContext) {
         log.warn('Cannot initialize - extension context not set');
@@ -66,8 +88,19 @@ export async function getDatabase(): Promise<ScimaxDb | null> {
         scimaxDb = await dbInitPromise;
         return scimaxDb;
     } catch (error) {
-        log.error('Initialization failed', error as Error);
         dbInitPromise = null;
+        if (isPermanentInitError(error)) {
+            unavailable = error instanceof Error ? error : new Error(String(error));
+            log.error('Database unavailable on this system; database features are off', unavailable);
+            void vscode.window.showWarningMessage(
+                'Scimax: the search database cannot start on this system '
+                + `(${process.platform}-${process.arch}): ${unavailable.message.split('\n')[0]}. `
+                + 'Editing works; database search, agenda indexing and related features are off.'
+            );
+        } else {
+            retryAfter = Date.now() + RETRY_DELAY_MS;
+            log.error('Initialization failed; will retry when next needed (after 30 s)', error as Error);
+        }
         return null;
     }
 }
@@ -420,5 +453,7 @@ export async function closeDatabase(): Promise<void> {
 export function resetDatabaseState(): void {
     scimaxDb = null;
     dbInitPromise = null;
+    unavailable = null;
+    retryAfter = 0;
     extensionContext = null;
 }

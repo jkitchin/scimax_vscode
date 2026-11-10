@@ -35,8 +35,8 @@ jobs:
       - name: Run tests
         run: npm test
 
-      - name: Package extension
-        run: npx vsce package
+      - name: Package extension (with libsql binaries for every platform)
+        run: npm run package
 
       - name: Install VS Code
         run: |

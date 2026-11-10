@@ -46,8 +46,16 @@ jobs:
       - name: Run tests
         run: npm test
 
+      # npm ci installs libsql's binary for this runner (Linux) only; add the
+      # others so the one VSIX works on Windows and macOS too (issue #91)
+      - name: Add libsql binaries for every platform
+        run: node scripts/libsql-binaries.js fetch
+
       - name: Package extension
         run: npx vsce package -o scimax-vscode-${{ steps.version.outputs.version }}.vsix
+
+      - name: Check the VSIX has every libsql binary
+        run: node scripts/libsql-binaries.js check scimax-vscode-${{ steps.version.outputs.version }}.vsix
 
       - name: Publish to VS Code Marketplace
         env:

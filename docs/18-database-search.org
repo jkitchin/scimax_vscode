@@ -1737,6 +1737,30 @@ See [[file:17-projectile.org][Projectile]] for project management commands.
 
 * Troubleshooting
 
+** ⚠️ The Database Cannot Start on This System
+
+*** Problem
+A warning says the search database cannot start, with a message such as
+=Cannot find module '@libsql/win32-x64-msvc'=.
+
+*** Cause
+The database uses libsql, which needs a native binary for your operating
+system and processor. Before 0.15.1 the Marketplace package had only the Linux
+binary, so the database failed on Windows and macOS (issue #91). Since 0.15.1
+the package includes binaries for Windows x64, macOS (Apple silicon and Intel)
+and Linux (x64, arm64 and arm). libsql has no build for Windows on ARM.
+
+*** What happens
+Scimax tries once, shows one warning, and turns the database features off
+(database search, agenda and heading indexing, and features built on them).
+Editing, export and source blocks keep working. Other start-up failures, such
+as a locked database file, are retried when the database is next needed, at
+most every 30 seconds.
+
+*** Fix
+Update to 0.15.1 or later and reload the window. If the warning remains, open
+an issue with the platform shown in the warning.
+
 ** Semantic Search Not Working
 
 *** Problem
