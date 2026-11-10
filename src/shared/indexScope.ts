@@ -58,3 +58,14 @@ export function settingsPath(filePath: string, home: string = os.homedir()): str
 export function samePath(entry: string, filePath: string): boolean {
     return !entry.includes('*') && path.resolve(expand(entry)) === path.resolve(filePath);
 }
+
+/**
+ * The indexed roots a workspace watcher does not see: those outside every
+ * workspace folder, without the ones inside another listed root. A VS Code
+ * watcher on a plain glob only reports changes inside the workspace folders,
+ * so each of these needs a watcher of its own.
+ */
+export function rootsNeedingWatchers(roots: readonly string[], workspaceFolders: readonly string[]): string[] {
+    const outside = [...new Set(roots.map(r => path.resolve(r)))].filter(r => !underRoots(r, workspaceFolders));
+    return outside.filter(r => !outside.some(other => other !== r && underRoots(r, [other]))).sort();
+}

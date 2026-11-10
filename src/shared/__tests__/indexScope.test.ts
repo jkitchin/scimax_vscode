@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
-import { forcedFiles, underRoots, settingsPath, samePath } from '../indexScope';
+import { forcedFiles, underRoots, settingsPath, samePath, rootsNeedingWatchers } from '../indexScope';
 import { isExcludedPath } from '../ignorePatterns';
 import { ScimaxDbCore } from '../../database/scimaxDbCore';
 
@@ -70,5 +70,14 @@ describe('indexScope', () => {
         } finally {
             await db.close();
         }
+    });
+});
+
+describe('rootsNeedingWatchers', () => {
+    it('keeps roots outside the workspace folders, without nested ones', () => {
+        const roots = ['/ws/notes', '/journal', '/journal/2026', '/papers/', '/ws', '/other/todo.org', '/journal'];
+        expect(rootsNeedingWatchers(roots, ['/ws'])).toEqual(['/journal', '/other/todo.org', '/papers']);
+        expect(rootsNeedingWatchers(['/a'], [])).toEqual(['/a']);
+        expect(rootsNeedingWatchers(['/ws/x'], ['/ws'])).toEqual([]);
     });
 });

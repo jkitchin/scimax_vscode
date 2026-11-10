@@ -39,7 +39,7 @@ import { ScimaxDbCore, ScimaxDbCoreOptions } from './scimaxDbCore';
 import { withBaselineExcludes } from '../shared/ignorePatterns';
 import { isTooBroadForProject } from '../shared/projectRoots';
 import { indexableFilesGlob } from '../shared/indexableFiles';
-import { forcedFiles, underRoots } from '../shared/indexScope';
+import { forcedFiles, rootsNeedingWatchers, underRoots } from '../shared/indexScope';
 /**
  * ScimaxDb - VS Code wrapper around ScimaxDbCore.
  *
@@ -54,7 +54,8 @@ import { forcedFiles, underRoots } from '../shared/indexScope';
  */
 export class ScimaxDb extends ScimaxDbCore {
     private context: vscode.ExtensionContext;
-    private fileWatcher: vscode.FileSystemWatcher | undefined;
+    private fileWatchers: vscode.FileSystemWatcher[] = [];
+    private watcherKey = '';
     private indexQueue: Set<string> = new Set();
     private isIndexing: boolean = false;
     private indexingScheduled: boolean = false;
@@ -176,6 +177,39 @@ export class ScimaxDb extends ScimaxDbCore {
         this.roots = this.collectIndexDirectories();
         this.setIgnorePatterns(this.loadIgnorePatterns());
         this.setForcedFiles(forcedFiles(vscode.workspace.getConfiguration('scimax.db').get<string[]>('include')));
+        if (this.watching) this.rebuildWatchers();
+    }
+
+    private watching = false;
+
+    /**
+     * One watcher for the workspace folders and one per indexed root outside
+     * them (journal, scimax.db.include folders, projects), for the file types
+     * in scimax.db.fileExtensions. Rebuilt when either changes.
+     */
+    private rebuildWatchers(): void {
+        const glob = indexableFilesGlob(vscode.workspace.getConfiguration('scimax.db').get<string[]>('fileExtensions'));
+        const folders = (vscode.workspace.workspaceFolders ?? []).map(f => f.uri.fsPath);
+        const extra = rootsNeedingWatchers(this.roots, folders);
+        const key = JSON.stringify([glob, extra]);
+        if (key === this.watcherKey) return;
+        this.watcherKey = key;
+        for (const w of this.fileWatchers) w.dispose();
+        const patterns: vscode.GlobPattern[] = [glob];
+        for (const root of extra) {
+            let isFile = false;
+            try { isFile = fs.statSync(root).isFile(); } catch { continue; /* not on this machine */ }
+            patterns.push(isFile
+                ? new vscode.RelativePattern(vscode.Uri.file(path.dirname(root)), path.basename(root))
+                : new vscode.RelativePattern(vscode.Uri.file(root), glob));
+        }
+        this.fileWatchers = patterns.map(pattern => {
+            const w = vscode.workspace.createFileSystemWatcher(pattern, false, false, false);
+            w.onDidCreate(uri => this.onDiskChange(uri.fsPath));
+            w.onDidChange(uri => this.onDiskChange(uri.fsPath));
+            w.onDidDelete(uri => this.removeFile(uri.fsPath));
+            return w;
+        });
     }
 
     /**
@@ -203,14 +237,9 @@ export class ScimaxDb extends ScimaxDbCore {
             }
         }));
         this.context.subscriptions.push(vscode.workspace.onDidChangeWorkspaceFolders(() => this.refreshScope()));
-        this.fileWatcher = vscode.workspace.createFileSystemWatcher(
-            indexableFilesGlob(vscode.workspace.getConfiguration('scimax.db').get<string[]>('fileExtensions')),
-            false, false, false
-        );
-        this.fileWatcher.onDidCreate(uri => this.onDiskChange(uri.fsPath));
-        this.fileWatcher.onDidChange(uri => this.onDiskChange(uri.fsPath));
-        this.fileWatcher.onDidDelete(uri => this.removeFile(uri.fsPath));
-        this.context.subscriptions.push(this.fileWatcher);
+        this.watching = true;
+        this.rebuildWatchers();
+        this.context.subscriptions.push({ dispose: () => { for (const w of this.fileWatchers) w.dispose(); this.fileWatchers = []; } });
 
         // Saving a file indexes it wherever it is (unless it is excluded)
         const saveHandler = vscode.workspace.onDidSaveTextDocument(doc => {
