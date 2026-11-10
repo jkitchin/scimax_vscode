@@ -114,8 +114,8 @@ const EMPHASIS_MARKERS: Record<string, { type: ObjectType; close: string }> = {
     '/': { type: 'italic', close: '/' },
     '_': { type: 'underline', close: '_' },
     '+': { type: 'strike-through', close: '+' },
-    '=': { type: 'code', close: '=' },
-    '~': { type: 'verbatim', close: '~' },
+    '=': { type: 'verbatim', close: '=' },
+    '~': { type: 'code', close: '~' },
 };
 
 /**
