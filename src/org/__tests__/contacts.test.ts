@@ -11,7 +11,7 @@ vi.mock('vscode', () => ({
 vi.mock('../../database/lazyDb', () => ({ getDatabase: vi.fn() }));
 vi.mock('../dependencyCommands', () => ({ ensureHeadingId: vi.fn() }));
 
-import { firstAddress, nameAddress, noteInsertLine, noteLine, stripTags, toContacts } from '../contacts';
+import { firstAddress, nameAddress, nonOrgContactLink, noteInsertLine, noteLine, stripTags, toContacts } from '../contacts';
 import { composeUrl, findMarkdownMailtoLinks, mailSettings, mailtoPreviewPlugin, parseMailto } from '../mail';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const MarkdownIt = require('markdown-it');
@@ -65,6 +65,12 @@ describe('contacts helpers', () => {
     it('ignores # lines inside Markdown code fences', () => {
         const md = ['## Ana', '```sh', '# comment', '```', '', '## Bo'];
         expect(noteInsertLine(md, 0, true)).toBe(4);
+    });
+
+    it('links Markdown contacts by mailto or file, never by an org ID', () => {
+        expect(nonOrgContactLink({ name: 'Ana', email: 'ana@x.org, b@y.org', filePath: '/n/people.md' })).toBe('[[mailto:ana@x.org][Ana]]');
+        expect(nonOrgContactLink({ name: 'Bo', filePath: '/n/people.md' })).toBe('[[file:/n/people.md::Bo][Bo]]');
+        expect(nonOrgContactLink({ name: 'Cy', filePath: '/n/People.ORG' })).toBeUndefined();
     });
 
     it('starts a note with an inactive timestamp', () => {

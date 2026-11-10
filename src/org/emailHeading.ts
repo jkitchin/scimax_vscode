@@ -358,6 +358,11 @@ export async function emailHeading(): Promise<void> {
     }
 
     const document = editor.document;
+    // Headings here are org stars; in Markdown a `* item` is a bullet
+    if (document.languageId !== 'org' && !document.fileName.endsWith('.org')) {
+        vscode.window.showWarningMessage('Email Heading works on org headings; this is not an org file.');
+        return;
+    }
     const email = buildHeadingEmail(document.getText(), editor.selection.active.line);
     if (!email) {
         vscode.window.showWarningMessage('Cursor is not in a heading');

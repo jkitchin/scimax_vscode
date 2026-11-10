@@ -1,5 +1,5 @@
 {
-  "buildDate": "2026-11-10T04:01:54.082Z",
+  "buildDate": "2026-11-10T04:05:03.129Z",
   "count": 3801,
   "entries": [
     {
@@ -9608,7 +9608,7 @@
       "heading": "Email client",
       "level": 2,
       "file": "03.7-contacts-and-locations.org",
-      "line": 40,
+      "line": 46,
       "content": "All email Scimax composes goes through one setting, =scimax.mail.client=: - =gmail= (the default) opens a Gmail compose window in the browser. - =mailto= hands a =mailto:= link to the system mail client, such as Apple Mail. If you are signed in to several Google accounts, set =scimax.mail.gmailAccount= to the address (or account index) to send from. This applies to Contacts, to =mailto:= links in org and Markdown files (Ctrl+click, =C-c C-o=, and the preview), to the email link in person hovers,",
       "path": [
         "Contacts"
@@ -9648,7 +9648,7 @@
       "heading": "Entity Selector (Contacts, Locations, …)",
       "level": 1,
       "file": "03.7-contacts-and-locations.org",
-      "line": 67,
+      "line": 73,
       "content": "CLOSED: [2026-07-02 Thu 08:08] Use org headings as a lightweight database of people, places, and things — a contact manager, a locations list, a reagent/resource catalog — and fuzzy-pick one to act on it. An \"entity\" is just a heading identified by a *tag* (or a *property*), with details in its property drawer: #+begin_src org ,* Ana Ramirez                                   :person: :PROPERTIES: :ID: person-ana :EMAIL: ana@example.edu :NICK: ana :END: ,* Lab B                                   ",
       "path": [],
       "commands": [],
@@ -9680,7 +9680,7 @@
       "heading": "Picking and acting",
       "level": 2,
       "file": "03.7-contacts-and-locations.org",
-      "line": 90,
+      "line": 96,
       "content": "Run [[cmd:scimax.org.pickEntity]] (*Scimax: Pick Entity*): 1. Choose an entity type — the configured types plus ad-hoc *By tag…* / *By property…* (so you can select on any tag/property with no setup). 2. Fuzzy-pick a heading (matches on title, the shown field, and file:line). 3. Choose an action: - *Insert link* — inserts =[[id:…][Title]]= at the cursor (assigns an =:ID:= to the target if it lacks one). - *Copy link* — the same link to the clipboard. - *Insert field… / Copy field…* — pick any of",
       "path": [
         "Entity Selector (Contacts, Locations, …)"
@@ -9716,7 +9716,7 @@
       "heading": "Defining your own entity type",
       "level": 2,
       "file": "03.7-contacts-and-locations.org",
-      "line": 115,
+      "line": 121,
       "content": "CLOSED: [2026-07-02 Thu 08:08] Entity types are pure configuration — add a new kind (Reagents, Resources, Equipment, Samples…) with no code by appending to =scimax.org.entities= in =settings.json=: #+begin_src json \"scimax.org.entities\": [ { \"name\": \"Reagents\",  \"tag\": \"reagent\",  \"display\": \"CAS\", \"url\": \"SUPPLIER_URL\" }, { \"name\": \"Resources\", \"tag\": \"resource\", \"display\": \"KIND\", \"url\": \"URL\" } ] #+end_src Then any =:reagent:= heading is selectable. The *Insert/Copy field* chooser lists *all*",
       "path": [
         "Entity Selector (Contacts, Locations, …)"
@@ -9752,7 +9752,7 @@
       "heading": "Related Topics",
       "level": 2,
       "file": "03.7-contacts-and-locations.org",
-      "line": 149,
+      "line": 155,
       "content": "- [[file:10-export.org::*Email a Heading][Email a Heading]] — send a heading as an email, with the same mail settings - [[file:03.6-project-management.org][Project Management]] — assignees reuse the same =:person:= headings - [[file:03-todo-items.org][TODO Items]] — tags and properties on headings - [[file:42-granular-addressing.org][Granular Addressing]] — the =id:= links this inserts - [[file:18-database-search.org][Database & Search]] — the index these selectors query (also =scimax.db.searchB",
       "path": [
         "Entity Selector (Contacts, Locations, …)"
@@ -29320,7 +29320,7 @@
       "level": 2,
       "file": "10-export.org",
       "line": 1122,
-      "content": "=scimax.org.emailHeading= (=Scimax: Email Heading=) opens an email compose window for the heading at point, like the =email-heading= command in Emacs scimax. Put the cursor anywhere in a heading (the headline or its body) and run the command, or press =E= at the start of the headline (a speed command): | Email field | Comes from                                                         | |-------------+--------------------------------------------------------------------| | Subject     | The headli",
+      "content": "=scimax.org.emailHeading= (=Scimax: Email Heading=) opens an email compose window for the heading at point, like the =email-heading= command in Emacs scimax. Put the cursor anywhere in a heading (the headline or its body) and run the command, or press =E= at the start of the headline (a speed command). It works in org files only. In Markdown a =* item= line is a bullet, not a heading, so the command declines there: | Email field | Comes from                                                       ",
       "path": [
         "Export Keybindings"
       ],

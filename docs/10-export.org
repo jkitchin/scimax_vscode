@@ -1119,9 +1119,9 @@ If rich clipboard tools aren't available, falls back to plain text clipboard wit
 * Export Keybindings
 
 
-** Email a Heading
+** 👀 Email a Heading
 
-=scimax.org.emailHeading= (=Scimax: Email Heading=) opens an email compose window for the heading at point, like the =email-heading= command in Emacs scimax. Put the cursor anywhere in a heading (the headline or its body) and run the command, or press =E= at the start of the headline (a speed command):
+=scimax.org.emailHeading= (=Scimax: Email Heading=) opens an email compose window for the heading at point, like the =email-heading= command in Emacs scimax. Put the cursor anywhere in a heading (the headline or its body) and run the command, or press =E= at the start of the headline (a speed command). It works in org files only. In Markdown a =* item= line is a bullet, not a heading, so the command declines there:
 
 | Email field | Comes from                                                         |
 |-------------+--------------------------------------------------------------------|

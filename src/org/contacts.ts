@@ -162,12 +162,25 @@ async function addNote(c: Contact): Promise<void> {
     editor.revealRange(new vscode.Range(cursor, cursor), vscode.TextEditorRevealType.InCenterIfOutsideViewport);
 }
 
+/**
+ * The org link for a contact kept in a non-org (Markdown) file, which can
+ * not hold an :ID: property: a mailto link when there is an address, else a
+ * file link to the heading. Undefined for contacts in org files.
+ */
+export function nonOrgContactLink(c: Pick<Contact, 'name' | 'email' | 'filePath'>): string | undefined {
+    if (c.filePath.toLowerCase().endsWith('.org')) return undefined;
+    const address = firstAddress(c.email);
+    return address ? `[[mailto:${address}][${c.name}]]` : `[[file:${c.filePath}::${c.name}][${c.name}]]`;
+}
+
 /** An `[[id:…][Name]]` link (org) or `[Name](mailto:…)` (Markdown) to the contact. */
 async function linkFor(c: Contact, markdown: boolean): Promise<string> {
     if (markdown) {
         const address = firstAddress(c.email);
         return address ? `[${c.name}](mailto:${address})` : c.name;
     }
+    const plain = nonOrgContactLink(c);
+    if (plain !== undefined) return plain;
     let id = getPropCaseInsensitive(c.props, 'ID')?.replace(/^id:/i, '');
     if (!id) {
         const doc = await vscode.workspace.openTextDocument(vscode.Uri.file(c.filePath));
