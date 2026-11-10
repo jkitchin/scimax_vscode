@@ -37,7 +37,7 @@ Contacts come from the database, so run *Scimax: Sync Files* (or open the
 folder as a workspace) first. The more general [[*Entity Selector (Contacts, Locations, …)][Entity Selector]] below
 works on any tag or property.
 
-** Email client
+** 👀 Email client
 
 All email Scimax composes goes through one setting, =scimax.mail.client=:
 
@@ -52,8 +52,10 @@ This applies to Contacts, to =mailto:= links in org and Markdown files
 to the *Email* action of Pick Entity, and to [[file:10-export.org::*Email a Heading][Email a Heading]].
 [[cmd:scimax.mail.compose]] (*Scimax: Compose Email*) opens a blank compose window.
 
-A =mailto:= link ctrl+clicked in VS Code's own Markdown preview still goes to
-the system mail client. VS Code handles those clicks itself.
+In Markdown, both =[Name](mailto:…)= links and bare =mailto:= URLs are
+clickable in the editor. In VS Code's Markdown preview, with =gmail= a
+=mailto:= link is rewritten to its Gmail compose URL, so it opens in the
+browser; with =mailto= it goes to the system mail client as before.
 
 #+begin_src json
 {

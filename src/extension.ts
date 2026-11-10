@@ -94,7 +94,7 @@ import { registerTaskGraph } from './org/taskGraphProvider';
 import { registerProjectView } from './org/projectView';
 import { registerEntitySelector } from './org/entitySelector';
 import { registerContactCommands } from './org/contacts';
-import { registerMailCommands } from './org/mail';
+import { MarkdownMailtoLinkProvider, mailtoPreviewPlugin, registerMailCommands } from './org/mail';
 // Jupyter commands imported dynamically to handle zeromq errors gracefully
 // import { registerJupyterCommands } from './jupyter/commands';
 import { ProjectileManager, Project } from './projectile/projectileManager';
@@ -614,6 +614,14 @@ async function activateScimax(context: vscode.ExtensionContext) {
         vscode.languages.registerDocumentLinkProvider(
             { language: 'org', scheme: 'file' },
             new OrgLinkProvider()
+        )
+    );
+
+    // mailto: links in Markdown compose in the configured mail client
+    context.subscriptions.push(
+        vscode.languages.registerDocumentLinkProvider(
+            [{ language: 'markdown', scheme: 'file' }, { language: 'quarto', scheme: 'file' }],
+            new MarkdownMailtoLinkProvider()
         )
     );
 
@@ -1328,6 +1336,7 @@ async function activateScimax(context: vscode.ExtensionContext) {
             };
             return md
                 .use(mystPreviewPlugin, myst)
+                .use(mailtoPreviewPlugin)
                 // Marp decks render as slides, without the Marp for VS Code
                 // extension; citations and MyST roles render in them too.
                 .use(marpPreviewPlugin, {

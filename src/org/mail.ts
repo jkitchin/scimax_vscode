@@ -112,6 +112,67 @@ export function mailtoCommandUri(url: string): vscode.Uri {
     return vscode.Uri.parse(`command:scimax.mail.compose?${encodeURIComponent(JSON.stringify([url]))}`);
 }
 
+/** A mailto: link in Markdown text: `[x](mailto:...)`, `<mailto:...>` or a bare `mailto:...`. */
+export interface MarkdownMailtoLink {
+    start: number;
+    end: number;
+    url: string;
+}
+
+/**
+ * The mailto: links in Markdown text, with the offsets of their URL. Code
+ * spans and fenced code are not skipped (a mailto: in code is rare and the
+ * link is harmless).
+ */
+export function findMarkdownMailtoLinks(text: string): MarkdownMailtoLink[] {
+    const links: MarkdownMailtoLink[] = [];
+    const re = /mailto:[^\s<>()\[\]"'`]+/gi;
+    let m: RegExpExecArray | null;
+    while ((m = re.exec(text)) !== null) {
+        // Trailing sentence punctuation is not part of a bare link
+        const url = m[0].replace(/[.,;:!?]+$/, '');
+        links.push({ start: m.index, end: m.index + url.length, url });
+    }
+    return links;
+}
+
+/**
+ * mailto: links in Markdown compose in the configured client (Gmail by
+ * default) instead of going straight to the system mail app.
+ */
+export class MarkdownMailtoLinkProvider implements vscode.DocumentLinkProvider {
+    provideDocumentLinks(document: vscode.TextDocument): vscode.DocumentLink[] {
+        return findMarkdownMailtoLinks(document.getText()).map(link => {
+            const range = new vscode.Range(document.positionAt(link.start), document.positionAt(link.end));
+            const docLink = new vscode.DocumentLink(range, mailtoCommandUri(link.url));
+            docLink.tooltip = 'Compose email';
+            return docLink;
+        });
+    }
+}
+
+/**
+ * markdown-it plugin for the Markdown preview: with Gmail as the client, a
+ * mailto: link opens a Gmail compose window (the preview cannot run
+ * commands, so the link itself is rewritten).
+ */
+export function mailtoPreviewPlugin(md: any, getSettings: () => MailSettings = mailSettings): void {
+    md.core.ruler.push('scimax_mailto', (state: any) => {
+        const settings = getSettings();
+        if (settings.client !== 'gmail') return;
+        const visit = (tokens: any[]) => {
+            for (const token of tokens) {
+                if (token.type === 'link_open') {
+                    const href: string = token.attrGet('href') ?? '';
+                    if (/^mailto:/i.test(href)) token.attrSet('href', composeUrl(parseMailto(href), settings));
+                }
+                if (token.children) visit(token.children);
+            }
+        };
+        visit(state.tokens);
+    });
+}
+
 export function registerMailCommands(context: vscode.ExtensionContext): void {
     context.subscriptions.push(
         // Arguments: a mailto: URL, or mail fields. With none, asks for an address.

@@ -12,7 +12,9 @@ vi.mock('../../database/lazyDb', () => ({ getDatabase: vi.fn() }));
 vi.mock('../dependencyCommands', () => ({ ensureHeadingId: vi.fn() }));
 
 import { firstAddress, nameAddress, noteInsertLine, noteLine, stripTags, toContacts } from '../contacts';
-import { composeUrl, mailSettings, parseMailto } from '../mail';
+import { composeUrl, findMarkdownMailtoLinks, mailSettings, mailtoPreviewPlugin, parseMailto } from '../mail';
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const MarkdownIt = require('markdown-it');
 import type { HeadingRecord } from '../../database/scimaxDbCore';
 
 function row(title: string, props: Record<string, string>, tags: string[] = [], line = 1, file = '/n/people.org'): HeadingRecord {
@@ -100,5 +102,23 @@ describe('mail', () => {
         expect(mailSettings()).toEqual({ client: 'mailto', account: '1' });
         configValues['scimax.mail'] = { client: 'gmail' };
         expect(mailSettings()).toEqual({ client: 'gmail', account: '1' });
+    });
+});
+
+describe('Markdown mailto links', () => {
+    it('finds the URL of inline, autolink and bare mailto links', () => {
+        const text = 'Mail [Ana](mailto:ana@x.org?subject=Hi), <mailto:bo@y.org> or mailto:cy@z.org.';
+        const links = findMarkdownMailtoLinks(text);
+        expect(links.map(l => l.url)).toEqual(['mailto:ana@x.org?subject=Hi', 'mailto:bo@y.org', 'mailto:cy@z.org']);
+        expect(text.slice(links[0].start, links[0].end)).toBe('mailto:ana@x.org?subject=Hi');
+    });
+
+    it('rewrites mailto links in the preview to Gmail compose, only with the Gmail client', () => {
+        const gmail = new MarkdownIt().use(mailtoPreviewPlugin, () => ({ client: 'gmail' as const }));
+        const html = gmail.render('[Ana](mailto:ana@x.org?subject=Hi)');
+        expect(html).toContain('href="https://mail.google.com/mail/?');
+        expect(html).toContain('to=ana%40x.org');
+        const system = new MarkdownIt().use(mailtoPreviewPlugin, () => ({ client: 'mailto' as const }));
+        expect(system.render('[Ana](mailto:ana@x.org)')).toContain('href="mailto:ana@x.org"');
     });
 });
