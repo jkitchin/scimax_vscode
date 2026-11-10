@@ -198,36 +198,15 @@ export function extractSourceBlocks(text: string): TangleBlock[] {
     for (let i = 0; i < lines.length; i++) {
         const line = lines[i];
 
-        // Check for #+NAME:
-        const nameMatch = line.match(/^#\+NAME:\s*(.+)$/i);
-        if (nameMatch) {
-            currentName = nameMatch[1].trim();
-            continue;
-        }
-
-        // Check for other affiliated keywords
-        const affiliatedMatch = line.match(/^#\+(\w+):\s*(.+)$/i);
-        if (affiliatedMatch && !line.match(/^#\+BEGIN_/i)) {
-            currentAffiliated[affiliatedMatch[1].toUpperCase()] = affiliatedMatch[2];
-            continue;
-        }
-
-        // Check for #+BEGIN_SRC
-        const beginMatch = line.match(/^#\+BEGIN_SRC\s+(\S+)(.*)$/i);
-        if (beginMatch) {
-            inBlock = true;
-            blockStart = i + 1;
-            blockLanguage = beginMatch[1];
-            blockHeaders = beginMatch[2] || '';
-            blockCode = [];
-            continue;
-        }
-
-        // Check for #+END_SRC
-        if (inBlock && line.match(/^#\+END_SRC/i)) {
+        // Inside a block only #+END_SRC matters: #+key: lines are code
+        if (inBlock) {
+            if (!/^\s*#\+END_SRC\b/i.test(line)) {
+                blockCode.push(line);
+                continue;
+            }
             const headers = parseHeaderArguments(blockHeaders);
-            // Tangled and run code drops org's ,* / ,#+ escapes
-            const code = unescapeOrgCode(blockCode.join('\n'));
+            // Tangled and run code drops the block's indentation and org's ,* / ,#+ escapes
+            const code = unescapeOrgCode(dedent(blockCode).join('\n'));
 
             blocks.push({
                 name: currentName,
@@ -247,19 +226,50 @@ export function extractSourceBlocks(text: string): TangleBlock[] {
             continue;
         }
 
-        // Collect code inside block
-        if (inBlock) {
-            blockCode.push(line);
-        } else {
-            // Reset affiliated keywords if we hit a non-keyword, non-blank line
-            if (line.trim() && !line.startsWith('#')) {
-                currentName = undefined;
-                currentAffiliated = {};
-            }
+        // Check for #+BEGIN_SRC (blocks may be indented, e.g. in a list)
+        const beginMatch = line.match(/^\s*#\+BEGIN_SRC\s+(\S+)(.*)$/i);
+        if (beginMatch) {
+            inBlock = true;
+            blockStart = i + 1;
+            blockLanguage = beginMatch[1];
+            blockHeaders = beginMatch[2] || '';
+            blockCode = [];
+            continue;
+        }
+
+        // Check for #+NAME:
+        const nameMatch = line.match(/^\s*#\+NAME:\s*(.+)$/i);
+        if (nameMatch) {
+            currentName = nameMatch[1].trim();
+            continue;
+        }
+
+        // Check for other affiliated keywords
+        const affiliatedMatch = line.match(/^\s*#\+(\w+):\s*(.+)$/i);
+        if (affiliatedMatch) {
+            currentAffiliated[affiliatedMatch[1].toUpperCase()] = affiliatedMatch[2];
+            continue;
+        }
+
+        // Reset affiliated keywords if we hit a non-keyword, non-blank line
+        if (line.trim() && !line.trimStart().startsWith('#')) {
+            currentName = undefined;
+            currentAffiliated = {};
         }
     }
 
     return blocks;
+}
+
+/** Remove the indentation every non-blank line shares (org's block indentation). */
+function dedent(lines: string[]): string[] {
+    let min = Infinity;
+    for (const l of lines) {
+        if (!l.trim()) continue;
+        min = Math.min(min, /^[ \t]*/.exec(l)![0].length);
+    }
+    if (!isFinite(min) || min === 0) return lines;
+    return lines.map(l => l.slice(Math.min(min, /^[ \t]*/.exec(l)![0].length)));
 }
 
 /**
