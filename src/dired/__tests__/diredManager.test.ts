@@ -335,6 +335,43 @@ describe('DiredManager', () => {
             expect(result.errors.length).toBeGreaterThan(0);
             expect(result.errors[0]).toContain('no longer exists');
         });
+
+        it('reports the deleted paths, for closing their editors', async () => {
+            await manager.loadDirectory();
+            const state = manager.getState();
+            const fileIndex = state.entries.findIndex((e) => !e.isDirectory);
+            const entry = state.entries[fileIndex];
+            manager.selectIndex(fileIndex);
+            manager.markCurrent();
+            const result = await manager.deleteFiles(false);
+            expect(result.deletedPaths).toEqual([entry.path]);
+        });
+    });
+
+    describe('getDeleteTargets', () => {
+        it('prefers flagged entries, then marked, then the entry at point, never . or ..', async () => {
+            await manager.loadDirectory();
+            const state = manager.getState();
+            const files = state.entries.map((e, i) => ({ e, i })).filter(({ e }) => !e.isDirectory && e.name !== '.' && e.name !== '..');
+            expect(files.length).toBeGreaterThanOrEqual(2);
+
+            manager.selectIndex(files[0].i);
+            expect(manager.getDeleteTargets().map(e => e.path)).toEqual([files[0].e.path]);
+
+            manager.markCurrent();
+            expect(manager.getDeleteTargets().map(e => e.path)).toEqual([files[0].e.path]);
+
+            manager.selectIndex(files[1].i);
+            manager.flagCurrent();
+            expect(manager.getDeleteTargets().map(e => e.path)).toEqual([files[1].e.path]);
+
+            const dotdot = state.entries.findIndex(e => e.name === '..');
+            if (dotdot >= 0) {
+                manager.unmarkAll();
+                manager.selectIndex(dotdot);
+                expect(manager.getDeleteTargets()).toEqual([]);
+            }
+        });
     });
 
     describe('copyFiles', () => {

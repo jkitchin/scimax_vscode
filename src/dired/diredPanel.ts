@@ -6,6 +6,7 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
 import { DiredManager } from './diredManager';
+import { closeTabsUnder, saveDirtyDocsUnder } from '../files/openDocs';
 import {
     DiredState,
     DiredMessageFromWebview,
@@ -93,6 +94,22 @@ export class DiredPanel {
         return current.manager.getFilesToOperateOn()
             .filter(entry => entry.name !== '..')
             .map(entry => entry.path);
+    }
+
+    /**
+     * Run dired's own R or D (on the marked entries, or the entry at point)
+     * when dired is the active tab, for F12 f R / D. False if dired is not
+     * active.
+     */
+    public static async runFileAction(action: 'rename' | 'delete'): Promise<boolean> {
+        const current = DiredPanel.currentPanel;
+        if (!current?.panel.active) return false;
+        if (action === 'rename') {
+            await current.handleRename();
+        } else {
+            await current.handleDelete();
+        }
+        return true;
     }
 
     /** Reload the listing after a version-control change, keeping the marks */
@@ -418,7 +435,7 @@ export class DiredPanel {
      * Handle delete operation with confirmation
      */
     private async handleDelete(): Promise<void> {
-        const files = this.manager.getFilesToOperateOn();
+        const files = this.manager.getDeleteTargets();
         if (files.length === 0) return;
 
         const config = vscode.workspace.getConfiguration('scimax.dired');
@@ -454,9 +471,11 @@ export class DiredPanel {
             );
 
             if (!choice) return;
+            if (!await saveDirtyDocsUnder(files.map(f => f.path))) return;
 
             const useTrash = choice === 'Move to Trash';
             const result = await this.manager.deleteFiles(useTrash);
+            await closeTabsUnder(result.deletedPaths);
 
             if (result.errors.length > 0) {
                 vscode.window.showErrorMessage(`Delete errors: ${result.errors.join(', ')}`);
@@ -467,7 +486,9 @@ export class DiredPanel {
                 );
             }
         } else {
+            if (!await saveDirtyDocsUnder(files.map(f => f.path))) return;
             const result = await this.manager.deleteFiles(true);
+            await closeTabsUnder(result.deletedPaths);
             if (result.deleted.length > 0) {
                 this.sendMessage({
                     command: 'info',

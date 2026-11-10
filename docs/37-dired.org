@@ -60,6 +60,10 @@ Operate on marked files (or current file if none marked):
 | ~+~ | Create new directory                                    |
 | ~F~ | Open the current directory in Finder/Explorer           |
 
+~D~ asks to save open files with unsaved changes inside what it deletes, then
+closes their editor tabs. ~F12 f R~ and ~F12 f D~ in dired are the same as ~R~
+and ~D~.
+
 With one file, ~R~ asks for a new name relative to the file's folder, so
 =archive/notes.org= or =../notes.org= also moves it (missing folders are
 created) and point follows the file. In vc-dir the name is the file's own

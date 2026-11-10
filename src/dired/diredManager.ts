@@ -643,24 +643,33 @@ export class DiredManager {
      * SECURITY: Files are verified to exist before deletion.
      * Paths come from our directory listing, not user input.
      */
-    async deleteFiles(useTrash: boolean = true): Promise<{ deleted: string[]; errors: string[] }> {
+    /**
+     * What D deletes: the flagged entries, else the marked ones, else the
+     * entry at point. Never '.' or '..'.
+     */
+    getDeleteTargets(): DiredDisplayEntry[] {
         let toDelete = this.getFlaggedEntries();
         if (toDelete.length === 0) {
             toDelete = this.getMarkedEntries();
         }
         if (toDelete.length === 0) {
-            // Delete current
             const current = this.state.entries[this.state.selectedIndex];
             if (current) {
                 toDelete = [current];
             }
         }
+        return toDelete.filter(entry => entry.name !== '.' && entry.name !== '..');
+    }
+
+    async deleteFiles(useTrash: boolean = true): Promise<{ deleted: string[]; deletedPaths: string[]; errors: string[] }> {
+        const toDelete = this.getDeleteTargets();
 
         if (toDelete.length === 0) {
-            return { deleted: [], errors: [] };
+            return { deleted: [], deletedPaths: [], errors: [] };
         }
 
         const deleted: string[] = [];
+        const deletedPaths: string[] = [];
         const errors: string[] = [];
 
         for (const entry of toDelete) {
@@ -692,6 +701,7 @@ export class DiredManager {
                     }
                 }
                 deleted.push(entry.name);
+                deletedPaths.push(entry.path);
             } catch (error: any) {
                 errors.push(`${entry.name}: ${error.message}`);
             }
@@ -700,7 +710,7 @@ export class DiredManager {
         // Refresh the directory
         await this.loadDirectory();
 
-        return { deleted, errors };
+        return { deleted, deletedPaths, errors };
     }
 
     /**
