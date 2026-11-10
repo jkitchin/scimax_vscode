@@ -16,7 +16,7 @@ they work on the file you clicked. In dired, and in the Explorer with several
 files selected, they work on all of them at once (see
 [[*Several Files at Once][Several Files at Once]]).
 
-** 👀 C-x v v: Next Action
+** C-x v v: Next Action
 
 | File state                  | What C-x v v does                                                                                |
 |-----------------------------+--------------------------------------------------------------------------------------------------|
@@ -60,7 +60,7 @@ public.
 Ahead/behind counts come from the last fetch. Run Fetch from the menu
 (=C-x v m f=) to refresh them.
 
-** 👀 The *vc-log* Buffer
+** The *vc-log* Buffer
 
 When a commit is next, ~C-x v v~ opens a new /VC Log/ buffer (colored like a
 git commit message). Write the message on the first lines; the =#= lines below
@@ -151,7 +151,7 @@ files, or the file at point:
 A typical round: ~C-x v d~, ~* e~ to mark the edited files, ~=~ to look over
 the changes, ~u~ on any you want to leave out, then ~v~ to commit the rest.
 
-** 👀 Keybindings
+** Keybindings
 
 | Keybinding | Command                 | Emacs equivalent       | Description                                       |
 |------------+-------------------------+------------------------+---------------------------------------------------|
@@ -249,7 +249,7 @@ in Emacs (~C-c ^ n~, ~C-c ^ m~, ~C-c ^ RET~, and so on). There, ~C-c ^ RET~
 keeps the side the cursor is in. In org tables ~C-c ^~ sorts by column; in a
 file with conflicts it is the smerge prefix instead.
 
-*** 👀 When the last conflict is resolved
+*** When the last conflict is resolved
 
 When no conflict blocks are left and git still lists the file as conflicted,
 scimax offers *Mark Resolved*: it saves the file and runs =git add=. Then
@@ -276,7 +276,7 @@ History, Blame, Ignore, Stage / Unstage, Revert, Push, Pull, Status, and VC
 Directory, acting on the file you clicked, or on every selected file when
 several are selected in the Explorer.
 
-** 👀 Version Control Menu (scimax.vc)
+** Version Control Menu (scimax.vc)
 
 Open with ~C-x v m~ or ~C-x v ?~, or press ~v~ in the main menu (~C-c m~). It mirrors the
 =scimax-version-control= hydra from Emacs scimax.

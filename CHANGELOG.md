@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.15.0] - 2026-11-10
+
 ### Added
 
 - **`C-x v ?` opens the Version Control menu** - Like `C-x v m`: forgot a `C-x v` key? Press `?` and pick it from the menu.
