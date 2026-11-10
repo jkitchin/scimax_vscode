@@ -24,6 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **HTML export dropped image captions and showed raw markup in other captions** - An image with `#+CAPTION` or `#+NAME` exported as a bare `<img>`, losing both; it is now a `<figure>` with that `id` and a `<figcaption>`. Table and source block captions printed their markup literally (`=x.csv=`, `*bold*`, links, citations); they are now rendered.
 - **Tangling and `#+CALL` missed indented blocks and lost `#+` lines** - The block reader behind tangling, noweb and `#+CALL` only saw `#+BEGIN_SRC` at the start of a line, so blocks inside a list were not tangled or callable, and it took a `#+TITLE:` or `#+NAME:` line inside a block for a keyword and left it out of the code. Indented blocks are now found (with their indentation removed, as org does), and inside a block only `#+END_SRC` ends it.
 - **`=verbatim=` and `~code~` were swapped in titles, captions and table cells** - The inline-object parser behind headings, `#+TITLE`/`#+AUTHOR`, captions and table cells read `=x=` as code and `~x~` as verbatim (org has them the other way round), so a LaTeX or Beamer title with `=x_y=` got `\verb`, which breaks inside `\title`, and AST round-trips wrote the markers swapped. Both now follow org.
 - **`scimax db ignore` removed the comments from settings.json** - It rewrote the whole file from parsed JSON, dropping every `//` and `/* */` comment and reformatting it. It now changes only the text of `scimax.db.exclude` (adding it at the end when missing).
