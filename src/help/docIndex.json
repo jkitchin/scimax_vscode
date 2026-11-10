@@ -1,5 +1,5 @@
 {
-  "buildDate": "2026-11-10T03:39:21.711Z",
+  "buildDate": "2026-11-10T03:45:12.865Z",
   "count": 3801,
   "entries": [
     {
@@ -94220,7 +94220,7 @@
       "heading": "Citations",
       "level": 2,
       "file": "30-cli.org",
-      "line": 376,
+      "line": 386,
       "content": "Citation-related operations. =extract=, =check=, and =list= accept =--json= (or =--format json=) for structured output.",
       "path": [
         "Commands"
@@ -94246,7 +94246,7 @@
       "heading": "Extract Citations",
       "level": 3,
       "file": "30-cli.org",
-      "line": 381,
+      "line": 391,
       "content": "List all citation keys used in a document: #+begin_src bash scimax cite extract paper.org # JSON output scimax cite extract paper.org --format json #+end_src Output: #+begin_example Found 12 citation(s) with 8 unique key(s): doe-2020 jones-2021 smith-2019 ... #+end_example",
       "path": [
         "Commands",
@@ -94281,7 +94281,7 @@
       "heading": "Check Citations",
       "level": 3,
       "file": "30-cli.org",
-      "line": 402,
+      "line": 412,
       "content": "Validate citations against a bibliography file: #+begin_src bash scimax cite check paper.org --bib references.bib #+end_src Output: #+begin_example Citation Check: paper.org Citations found: 12 Bibliography entries: 15 MISSING (2 cited but not in .bib): - nonexistent-2020 - typo-key UNUSED (5 in .bib but not cited): - old-reference-2010 - unused-entry ... #+end_example This is useful in CI pipelines to catch citation errors before publishing.",
       "path": [
         "Commands",
@@ -94316,7 +94316,7 @@
       "heading": "Convert Citation Syntax",
       "level": 3,
       "file": "30-cli.org",
-      "line": 429,
+      "line": 439,
       "content": "Convert between org-ref v2, v3, and org-cite syntax: #+begin_src bash # Convert v2 to v3 scimax cite convert paper.org --from v2 --to v3 # Convert to org-cite scimax cite convert paper.org --from v3 --to org-cite # Modify file in place scimax cite convert paper.org --from v2 --to v3 --inplace # Output to new file scimax cite convert paper.org --from v2 --to v3 --output paper-v3.org #+end_src",
       "path": [
         "Commands",
@@ -94351,7 +94351,7 @@
       "heading": "List Bibliography",
       "level": 3,
       "file": "30-cli.org",
-      "line": 447,
+      "line": 457,
       "content": "List entries in a BibTeX file: #+begin_src bash scimax cite list references.bib # JSON output scimax cite list references.bib --format json #+end_src",
       "path": [
         "Commands",
@@ -94379,7 +94379,7 @@
       "heading": "Journal",
       "level": 2,
       "file": "30-cli.org",
-      "line": 458,
+      "line": 468,
       "content": "Open or create journal entries from the terminal. #+begin_src bash # Open today's journal (creates if needed) scimax journal # Open a specific date scimax journal tomorrow scimax journal yesterday scimax journal friday scimax journal --date \"next monday\" scimax journal --date 2026-03-15 scimax journal --date +2d scimax journal --date -1w # JSON output (for scripting) scimax journal --json # Look up a past entry without opening VS Code or creating it scimax journal --date -1d --no-create --no-ope",
       "path": [
         "Commands"
@@ -94413,7 +94413,7 @@
       "heading": "Project",
       "level": 2,
       "file": "30-cli.org",
-      "line": 494,
+      "line": 504,
       "content": "Fuzzy-select and open a known project in VS Code. #+begin_src bash # Interactive fuzzy selection (uses fzf if available) scimax project # Pre-filter with a query scimax project scimax # List all known projects scimax project --list # Add a new project (creates directory if needed, opens in VS Code) scimax project --add ~/projects/new-project # JSON output scimax project --json # Remove projects whose directories no longer exist scimax project --cleanup # Remove one project by path scimax project",
       "path": [
         "Commands"
@@ -94447,7 +94447,7 @@
       "heading": "Tasks",
       "level": 2,
       "file": "30-cli.org",
-      "line": 528,
+      "line": 538,
       "content": "Project management over org task graphs. Answers \"what should I work on next\", who is overloaded, what is blocked, and what the long pole is. Note that =scimax task= and =scimax project= are unrelated despite the similar-sounding names: =scimax project= opens VS Code workspaces, while =scimax task= reads task metadata inside org files. #+begin_src bash # What to work on now, ranked and explained scimax task next # Open tasks, filtered scimax task list --ready scimax task list --blocked scimax ta",
       "path": [
         "Commands"
@@ -94481,7 +94481,7 @@
       "heading": "Task Model",
       "level": 3,
       "file": "30-cli.org",
-      "line": 563,
+      "line": 573,
       "content": "A task is a heading carrying an =:ID:= property. The relevant properties are: | Property    | Meaning                              | Example              | |-------------+--------------------------------------+----------------------| | =:ID:=      | Task identifier (required)           | =synth=              | | =:ASSIGNEE:=| Who owns it                          | =liam=               | | =:EFFORT:=  | Estimated work, =Nd= or =Nh=         | =5d=                 | | =:DEPENDS:= | Explicit blocker",
       "path": [
         "Commands",
@@ -94516,7 +94516,7 @@
       "heading": "File Selection",
       "level": 3,
       "file": "30-cli.org",
-      "line": 579,
+      "line": 589,
       "content": "File selection is global by default. The database spans every indexed file, so =scimax task next= gives the same answer from any directory: it picks the file with the most task metadata anywhere. | Flag            | Effect                                            | |-----------------+---------------------------------------------------| | (none)          | The file with the most tasks, anywhere            | | =--local=       | Only files under the current directory            | | =--file <path>",
       "path": [
         "Commands",
@@ -94551,7 +94551,7 @@
       "heading": "Options",
       "level": 3,
       "file": "30-cli.org",
-      "line": 593,
+      "line": 603,
       "content": "| Option          | Description                              | |-----------------+------------------------------------------| | =--file <path>= | Project file to operate on               | | =--local=       | Confine discovery to the current directory | | =--json=        | Structured output                        | | =--force=       | Allow =done= on a blocked task           |",
       "path": [
         "Commands",
@@ -94586,7 +94586,7 @@
       "heading": "Limitations",
       "level": 3,
       "file": "30-cli.org",
-      "line": 602,
+      "line": 612,
       "content": "- =done= does not write a =CLOSED:= timestamp, and does not regenerate =project-table= dynamic blocks; refresh those in the editor. - =:ORDERED:= sequences direct children only, not deeper descendants. - Task ids resolve within one file, so cross-file =:DEPENDS:= is not followed. - Effort totals count only =Nd= and =Nh=; anything else is reported as unestimated.",
       "path": [
         "Commands",
@@ -94621,7 +94621,7 @@
       "heading": "Database",
       "level": 2,
       "file": "30-cli.org",
-      "line": 611,
+      "line": 621,
       "content": "Database maintenance operations.",
       "path": [
         "Commands"
@@ -94638,7 +94638,7 @@
       "heading": "Statistics",
       "level": 3,
       "file": "30-cli.org",
-      "line": 615,
+      "line": 625,
       "content": "Show database statistics: #+begin_src bash scimax db stats #+end_src Output: #+begin_example === Database Statistics === Database: /home/user/.config/Code/User/globalStorage/jkitchin.scimax-vscode/scimax-db.sqlite Root: /home/user/project Files indexed: 42 Headings: 1234 Source blocks: 317 Has embeddings: No Org files: 40 Markdown files: 2 #+end_example Add =--json= for structured output.",
       "path": [
         "Commands",
@@ -94673,7 +94673,7 @@
       "heading": "Optimize",
       "level": 3,
       "file": "30-cli.org",
-      "line": 640,
+      "line": 650,
       "content": "Remove entries for missing files and VACUUM: #+begin_src bash scimax db optimize #+end_src Close VS Code first: VACUUM needs the database to itself. It rewrites the file, so it needs free disk space about the size of the database. The output reports the size before and after: #+begin_example Database optimized: 47.0 GB -> 1.9 GB #+end_example The same as *Scimax: Optimize Database* in VS Code. See [[file:18-database-search.org][Database Search]].",
       "path": [
         "Commands",
@@ -94708,7 +94708,7 @@
       "heading": "Check Integrity",
       "level": 3,
       "file": "30-cli.org",
-      "line": 659,
+      "line": 669,
       "content": "Check for missing or stale files: #+begin_src bash scimax db check #+end_src Output: #+begin_example Checking database integrity... MISSING: old-file.org MISSING: deleted-folder/notes.org Total files in database: 42 Missing files: 2 Open VS Code to rebuild the index. #+end_example When nothing is missing, the last line is =Database looks good.= Running =scimax db sync= also removes the missing entries.",
       "path": [
         "Commands",
@@ -94743,7 +94743,7 @@
       "heading": "Sync",
       "level": 3,
       "file": "30-cli.org",
-      "line": 683,
+      "line": 693,
       "content": "Bring the database into agreement with the configured scan roots and the filesystem in one pass: pick up new files, refresh changed files (mtime-based), refresh in-scope files that are stale, and prune entries for files that no longer exist. Scan roots are unioned from: 1. =scimax.db.include= (VS Code settings) 2. =scimax.journal.directory= 3. =scimax.agenda.include= 4. NotebookManager projects (every project you have opened in VS Code, persisted in =notebooks.json=) Files in the database that d",
       "path": [
         "Commands",
@@ -94782,7 +94782,7 @@
       "heading": "Embeddings During Sync",
       "level": 4,
       "file": "30-cli.org",
-      "line": 736,
+      "line": 746,
       "content": "CLOSED: [2026-10-02 Fri 07:34] Sync uses =scimax.db.embeddingProvider=, =scimax.db.ollamaUrl=, and =scimax.db.ollamaModel= from your VS Code =settings.json=. When the provider is =ollama=, sync: 1. Tests the connection by embedding a short string and checking the vector has the size expected for the model. If the test fails, sync prints =FAILED (embeddings will be skipped)= and indexes without embeddings. 2. Queues embeddings for every file it indexes. 3. After the summary, also queues every ind",
       "path": [
         "Commands",
@@ -94822,7 +94822,7 @@
       "heading": "Clear",
       "level": 3,
       "file": "30-cli.org",
-      "line": 773,
+      "line": 783,
       "content": "CLOSED: [2026-07-11 Sat 09:08] Wipe the database. Use this before a full re-sync, after a schema change, or when troubleshooting suspected corruption. Requires confirmation. #+begin_src bash # Interactive confirmation scimax db clear # Skip the prompt scimax db clear --yes # Typical reset workflow scimax db clear --yes && scimax db sync #+end_src Output: #+begin_example Database: ~/Library/Application Support/Code/User/globalStorage/jkitchin.scimax-vscode/scimax-db.sqlite This will delete 1853 f",
       "path": [
         "Commands",
@@ -94857,7 +94857,7 @@
       "heading": "Remove and Ignore Files",
       "level": 3,
       "file": "30-cli.org",
-      "line": 798,
+      "line": 808,
       "content": "CLOSED: [2026-10-02 Fri 07:34] Remove files from the database by path or glob. Relative paths are resolved against the current directory. #+begin_src bash # Remove one file scimax db remove notes/scratch.org # Remove everything matching a glob scimax db remove \"~/Dropbox/archive/**\" # Remove from the database AND add to scimax.db.exclude in settings.json scimax db ignore \"~/Dropbox/archive/**\" #+end_src =remove= only deletes database entries, so a later sync adds the files back if they are under",
       "path": [
         "Commands",
@@ -94894,7 +94894,7 @@
       "heading": "Prune Excluded Files",
       "level": 3,
       "file": "30-cli.org",
-      "line": 821,
+      "line": 831,
       "content": "Remove database entries that the current exclude rules would reject. =scimax db sync= deliberately keeps an entry whose file still exists on disk, even when that file is outside the configured scan roots — otherwise files added by other means would vanish on every sync. The consequence is that tightening =scimax.db.exclude=, or upgrading to a version that adds a new built-in exclusion, leaves the old rows in place. =prune= is what clears them. #+begin_src bash # See what would go, grouped by the",
       "path": [
         "Commands",
@@ -94931,7 +94931,7 @@
       "heading": "Scan Directory",
       "level": 3,
       "file": "30-cli.org",
-      "line": 861,
+      "line": 871,
       "content": "CLOSED: [2026-01-22 Thu 20:57] Scan a specific directory and add its files to the database. This is a simplified command that takes the directory as a direct argument, making it ideal for cron jobs and scripts. #+begin_src bash # Scan a specific directory scimax db scan /path/to/org-files # Scan multiple directories (run sequentially) scimax db scan ~/work/org-files scimax db scan ~/personal/notes #+end_src Output: #+begin_example Scanning directory: /path/to/org-files Database path: /home/user/",
       "path": [
         "Commands",
@@ -94966,7 +94966,7 @@
       "heading": "Scheduling Automatic Syncs",
       "level": 4,
       "file": "30-cli.org",
-      "line": 890,
+      "line": 900,
       "content": "Prefer =db sync= over =db scan= for scheduled runs: it covers every configured scan root at once, refreshes changed files, and prunes entries whose files are gone. =db scan= only adds one directory.",
       "path": [
         "Commands",
@@ -95002,7 +95002,7 @@
       "heading": "macOS (launchd)",
       "level": 5,
       "file": "30-cli.org",
-      "line": 896,
+      "line": 906,
       "content": "On a laptop, use =launchd= rather than =cron=. If the machine is asleep at the scheduled time, launchd runs the job at the next wake; cron simply misses it. A wrapper script keeps the log timestamped, bounded, and free of overlapping runs. Save it as =~/.local/bin/scimax-db-sync.sh= and =chmod +x= it: #+begin_src bash #!/bin/bash set -uo pipefail # launchd starts jobs with a bare environment, so spell out the PATH. export PATH=\"/opt/homebrew/bin:/usr/bin:/bin:/usr/sbin:/sbin\" LOG_DIR=\"$HOME/Libr",
       "path": [
         "Commands",
@@ -95039,7 +95039,7 @@
       "heading": "Linux (cron)",
       "level": 5,
       "file": "30-cli.org",
-      "line": 996,
+      "line": 1006,
       "content": "#+begin_src bash crontab -e # 6am and 5pm daily 0 6,17 * * * /usr/local/bin/scimax db sync >> ~/.local/state/scimax/db-sync.log 2>&1 #+end_src Use an absolute path to the binary: cron's =PATH= is minimal and will not find a =scimax= installed via =npm link=.",
       "path": [
         "Commands",
@@ -95076,7 +95076,7 @@
       "heading": "Command Comparison",
       "level": 4,
       "file": "30-cli.org",
-      "line": 1008,
+      "line": 1018,
       "content": "| Command                | Use Case                                                  | |------------------------+-----------------------------------------------------------| | =scimax db sync=       | Daily driver: discover, refresh, and prune in one pass    | | =scimax db clear=      | Wipe the database (followed by =sync= for a full rebuild) | | =scimax db scan <dir>= | Ad-hoc scan of a single directory                         | | =scimax db check=      | Read-only integrity report (no changes",
       "path": [
         "Commands",
@@ -95112,7 +95112,7 @@
       "heading": "Publish",
       "level": 2,
       "file": "30-cli.org",
-      "line": 1029,
+      "line": 1039,
       "content": "CLOSED: [2026-10-02 Fri 07:34] Publish org projects to HTML, using the same configuration as the editor's publishing commands (=_config.yml= or =.org-publish.json= in the current directory). See [[file:31-publishing.org][Publishing]] for the configuration format. #+begin_src bash # Publish all projects scimax publish # Publish one project scimax publish docs # Republish every file, even if up to date scimax publish docs --force # Show what would be published without writing files scimax publish ",
       "path": [
         "Commands"
@@ -95146,7 +95146,7 @@
       "heading": "Initializing a Configuration",
       "level": 3,
       "file": "30-cli.org",
-      "line": 1063,
+      "line": 1073,
       "content": "=--init= writes a starter configuration to the current directory. It refuses to overwrite an existing =_config.yml= or =.org-publish.json= unless =--force= is given. #+begin_src bash # .org-publish.json with defaults scimax publish --init # _config.yml instead scimax publish --init --yaml # Custom names and directories scimax publish --init --name docs --base ./docs --output ./_build/html #+end_src | Option           | Default         | Description                                | |-------------",
       "path": [
         "Commands",
@@ -95181,7 +95181,7 @@
       "heading": "Skill",
       "level": 2,
       "file": "30-cli.org",
-      "line": 1092,
+      "line": 1102,
       "content": "Scimax ships four agent skills that let an AI coding agent use the CLI and answer questions about your notes, agenda, projects, org syntax and slides: | Skill                    | What it covers                                                   | |--------------------------+------------------------------------------------------------------| | =scimax=                 | Search, agenda, TODOs, journal, export, citations, database      | | =scimax-org=             | Org-mode syntax, links, source b",
       "path": [
         "Commands"
@@ -95215,7 +95215,7 @@
       "heading": "Installing",
       "level": 3,
       "file": "30-cli.org",
-      "line": 1108,
+      "line": 1118,
       "content": "Any of these gives the same result: #+begin_src bash scimax skill install                          # bundled with the extension, no Python needed uvx knowhow add jkitchin/scimax_vscode -g -y  # from GitHub with knowhow npx skills add jkitchin/scimax_vscode -g -y   # from GitHub with npx skills #+end_src In VS Code, run *Scimax: Install AI Agent Skills* ([[cmd:scimax.skills.install]]) and choose all projects or this workspace. Each skill is copied to =~/.agents/skills/<name>=, which VS Code, Code",
       "path": [
         "Commands",
@@ -95252,7 +95252,7 @@
       "heading": "Commands",
       "level": 3,
       "file": "30-cli.org",
-      "line": 1126,
+      "line": 1136,
       "content": "#+begin_src bash scimax skill install [name...]    # Install skills (default: all four) scimax skill update [name...]     # Reinstall the bundled version scimax skill uninstall [name...]  # Remove skills installed from scimax scimax skill list                 # Bundled skills and whether they are installed scimax skill show [name]          # Print a bundled SKILL.md (default: scimax) scimax skill path                 # Print the installation directory #+end_src | Option      | Description       ",
       "path": [
         "Commands",
@@ -95287,7 +95287,7 @@
       "heading": "Learnings",
       "level": 3,
       "file": "30-cli.org",
-      "line": 1146,
+      "line": 1156,
       "content": "When you correct the agent, it appends the correction to =~/.config/scimax/learnings.md= (=$XDG_CONFIG_HOME/scimax/learnings.md= if set), and all four skills read that file before answering. It lives outside the skill folders, so updates and uninstalls never touch it. Before 0.14 the skill was a single folder at =~/.claude/skills/scimax= with its own =learnings.md=. The first =scimax skill install= or =update= moves those entries to the new file and replaces the old folder.",
       "path": [
         "Commands",
@@ -95322,7 +95322,7 @@
       "heading": "Scripting Examples",
       "level": 1,
       "file": "30-cli.org",
-      "line": 1157,
+      "line": 1167,
       "content": "",
       "path": [],
       "commands": [],
@@ -95336,7 +95336,7 @@
       "heading": "Export All Org Files to HTML",
       "level": 2,
       "file": "30-cli.org",
-      "line": 1159,
+      "line": 1169,
       "content": "#+begin_src bash #!/bin/bash for f in docs/*.org; do scimax export \"$f\" --format html --output \"build/$(basename \"$f\" .org).html\" done #+end_src",
       "path": [
         "Scripting Examples"
@@ -95364,7 +95364,7 @@
       "heading": "Check Citations in CI",
       "level": 2,
       "file": "30-cli.org",
-      "line": 1168,
+      "line": 1178,
       "content": "#+begin_src yaml # .github/workflows/check-citations.yml name: Check Citations on: [push, pull_request] jobs: check: runs-on: ubuntu-latest steps: - uses: actions/checkout@v3 - uses: actions/setup-node@v3 with: node-version: '18' - run: npm ci - run: npm run compile - run: node out/cli/index.js cite check paper.org --bib refs.bib #+end_src",
       "path": [
         "Scripting Examples"
@@ -95398,7 +95398,7 @@
       "heading": "Daily Agenda Email",
       "level": 2,
       "file": "30-cli.org",
-      "line": 1187,
+      "line": 1197,
       "content": "#+begin_src bash #!/bin/bash # Send daily agenda via email scimax agenda today | mail -s \"Today's Agenda\" user@example.com #+end_src",
       "path": [
         "Scripting Examples"
@@ -95425,7 +95425,7 @@
       "heading": "Find Files with Specific Tags",
       "level": 2,
       "file": "30-cli.org",
-      "line": 1195,
+      "line": 1205,
       "content": "#+begin_src bash # Using search (if tag is in heading) scimax search \":research:\" --limit 50 #+end_src",
       "path": [
         "Scripting Examples"
@@ -95451,7 +95451,7 @@
       "heading": "Limitations",
       "level": 1,
       "file": "30-cli.org",
-      "line": 1202,
+      "line": 1212,
       "content": "The CLI has some limitations compared to the VS Code extension: 1. *Semantic Search*: Requires embeddings, which need an Ollama embedding provider configured in your VS Code settings (see [[*Embeddings During Sync][Embeddings During Sync]]). 2. *Live Updates*: The CLI reads a snapshot of the database. Changes made to org files won't be reflected until you run =scimax db sync= or VS Code re-indexes them. 3. *Interactive Features*: No support for interactive features like completion or live previe",
       "path": [],
       "commands": [],
@@ -95483,7 +95483,7 @@
       "heading": "Related Topics",
       "level": 1,
       "file": "30-cli.org",
-      "line": 1212,
+      "line": 1222,
       "content": "- [[file:18-database-search.org][Database & Search]] - How the database indexing works - [[file:31-publishing.org][Publishing]] - Publishing projects and the book theme - [[file:10-export.org][Export]] - Export options and configuration - [[file:19-references.org][References & Citations]] - Citation syntax and bibliography management - [[file:13-agenda.org][Agenda]] - Agenda views in VS Code - [[file:03.5-task-dependencies.org][Task Dependencies]] - =:DEPENDS:= and =:ORDERED:= in the editor - [[",
       "path": [],
       "commands": [],

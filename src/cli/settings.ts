@@ -385,7 +385,7 @@ export function setJsoncValue(text: string, key: string, value: unknown): string
  * Read and parse VS Code settings.json
  * Handles JSONC (comments) and control characters in string values
  */
-function readVSCodeSettings(): Record<string, unknown> {
+export function readVSCodeSettings(): Record<string, unknown> {
     try {
         const settingsPath = getVSCodeSettingsPath();
         if (!fs.existsSync(settingsPath)) {

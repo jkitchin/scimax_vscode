@@ -328,7 +328,7 @@ on: =[[url][desc]]= counts as =desc=. Pass =--raw-links= to measure links as
 written, which is how Emacs =org-table-align= lines them up. Tables inside
 blocks (=#+begin_src= ... =#+end_src=, Markdown code fences) are not touched.
 
-** Marp Slides
+** 👀 Marp Slides
 
 Build a Marp deck into one self-contained HTML file with the presenter tools
 (pen, laser, spotlight, sticky notes, talk timer, saving with ink, live Python
@@ -367,6 +367,16 @@ talk timer. Marp runs from the deck's folder, so relative paths and a
 ~.marprc~ apply. Local images, iframes, scripts, stylesheets and KaTeX fonts
 are inlined; the build lists files it could not find and anything still loaded
 from the web.
+
+Citations (=[@key]= with the deck's =bibliography:=) render in every build,
+including ~--plain~ and ~--pdf~, as in the extension's exports.
+
+The build reads your VS Code settings (user =settings.json=, then the nearest
+=.vscode/settings.json= above the deck): =scimax.marp.themes= (or
+=markdown.marp.themes=), =scimax.marp.browserPath=, and for ~--open~
+=scimax.marp.presentWindow= and =scimax.marp.appBrowser=. With ~window: app~ in
+the front matter, or =presentWindow= set to =app=, ~--open~ opens the deck in a
+Chromium app window like Present does, falling back to the default browser.
 
 KaTeX fonts and offline Python files are downloaded once and cached in the
 extension's global storage, which the extension's own exports share.
