@@ -92,6 +92,8 @@ export const DEFAULT_MARP_EXPORT_OPTIONS: MarpExportOptions = {
 const PASSTHROUGH_BACKENDS = new Set(['marp', 'md', 'markdown', 'html']);
 
 const IMAGE_EXTENSIONS = /\.(png|jpe?g|gif|svg|webp|avif|bmp)$/i;
+const VIDEO_EXTENSIONS = /\.(mp4|m4v|webm|mov|ogv)$/i;
+const AUDIO_EXTENSIONS = /\.(mp3|m4a|aac|wav|ogg|oga|flac|opus)$/i;
 
 /** Front matter keys handled by name rather than copied. */
 const SPECIAL_KEYWORDS = new Set(['MARP_THEME', 'MARP_HEADING_DIVIDER', 'MARP_PAGINATE', 'MARP_MATH', 'MARP_PRESENTER', 'MARP_FRONT_MATTER']);
@@ -598,6 +600,54 @@ function isImageParagraph(el: Node): boolean {
     return kids.length > 0 && kids.every((o: Node) => o.type === 'link' && isImageLink(o));
 }
 
+function htmlAttr(value: string): string {
+    return value.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
+}
+
+/** Seconds in a YouTube `t=` / `start=` value: `90`, `90s`, `1m30s`, `1h2m3s`. */
+function youtubeSeconds(value: string | null): number | undefined {
+    if (!value) return undefined;
+    if (/^\d+$/.test(value)) return Number(value);
+    const m = value.match(/^(?:(\d+)h)?(?:(\d+)m)?(?:(\d+)s)?$/);
+    if (!m || !(m[1] || m[2] || m[3])) return undefined;
+    return Number(m[1] ?? 0) * 3600 + Number(m[2] ?? 0) * 60 + Number(m[3] ?? 0);
+}
+
+/**
+ * The privacy-enhanced embed URL for a YouTube watch, short, live, embed or
+ * youtu.be link, keeping its start time; undefined for other URLs.
+ */
+export function youtubeEmbedUrl(url: string): string | undefined {
+    let u: URL;
+    try { u = new URL(url); } catch { return undefined; }
+    const host = u.hostname.replace(/^(www|m)\./, '');
+    let id: string | null | undefined;
+    if (host === 'youtu.be') id = u.pathname.slice(1).split('/')[0];
+    else if (host === 'youtube.com' || host === 'youtube-nocookie.com') {
+        const parts = u.pathname.split('/').filter(Boolean);
+        if (parts[0] === 'watch') id = u.searchParams.get('v');
+        else if (['embed', 'shorts', 'live', 'v'].includes(parts[0])) id = parts[1];
+    }
+    if (!id || !/^[\w-]{6,}$/.test(id)) return undefined;
+    const start = youtubeSeconds(u.searchParams.get('start') ?? u.searchParams.get('t'));
+    return `https://www.youtube-nocookie.com/embed/${id}${start ? `?start=${start}` : ''}`;
+}
+
+/** `<video>`, `<audio>` or a YouTube `<iframe>` for a bare link, else undefined. */
+export function mediaEmbed(type: string, path: string): string | undefined {
+    const web = type === 'http' || type === 'https';
+    const url = web && !/^https?:/i.test(path) ? `${type}:${path}` : path;
+    if (web) {
+        const embed = youtubeEmbedUrl(url);
+        if (embed) return `<iframe src="${htmlAttr(embed)}" width="768" height="432" allowfullscreen></iframe>`;
+    }
+    if (!web && type !== 'file' && type !== 'attachment') return undefined;
+    const bare = path.replace(/[?#].*$/, '');
+    if (VIDEO_EXTENSIONS.test(bare)) return `<video src="${htmlAttr(url)}" controls></video>`;
+    if (AUDIO_EXTENSIONS.test(bare)) return `<audio src="${htmlAttr(url)}" controls></audio>`;
+    return undefined;
+}
+
 function isImageLink(o: Node): boolean {
     const type = String(o.properties?.linkType || '').toLowerCase();
     return (type === 'file' || type === 'http' || type === 'https' || type === 'attachment')
@@ -885,8 +935,11 @@ function markdownUrl(url: string): string {
 
 function inlineLink(o: Node, ctx: Context): string {
     const p = o.properties || {};
-    const type = String(p.linkType || '').toLowerCase();
-    const path = String(p.path || '');
+    let type = String(p.linkType || '').toLowerCase();
+    let path = String(p.path || '');
+    // The export parser leaves link types it does not know (marp:) as fuzzy
+    const scheme = type === 'fuzzy' ? path.match(/^(marp):(.*)$/i) : null;
+    if (scheme) { type = scheme[1].toLowerCase(); path = scheme[2]; }
     const desc = o.children?.length ? inline(o.children, ctx) : '';
 
     if (CITATION_LINK_TYPES.has(type)) return pandocCitationLink(type, path);
@@ -900,8 +953,19 @@ function inlineLink(o: Node, ctx: Context): string {
         return `![${(ctx.imageOptions ?? []).join(' ')}](${markdownUrl(url)})`;
     }
 
+    // A bare link to a movie, sound or YouTube video plays on the slide (an
+    // image link shows the image); with a description it stays a link.
+    if (!desc) {
+        const media = mediaEmbed(type, path);
+        if (media) return media;
+    }
+
     let url: string | undefined;
     switch (type) {
+        case 'marp':
+            // Another deck: link to the .md file, without the ::N slide number
+            url = path.replace(/::.*$/, '');
+            break;
         case 'http':
         case 'https':
         case 'ftp':

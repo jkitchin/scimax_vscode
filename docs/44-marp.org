@@ -1452,7 +1452,7 @@ uliw suggested this feature and contributed its specification and examples in
 Scimax adds its own slide features: notes, hidden slides, countdowns, live
 Python cells, citations and background images.
 
-** How org maps to slides
+** 👀 How org maps to slides
 
 | Org                                           | Marp                                                           |
 |-----------------------------------------------+----------------------------------------------------------------|
@@ -1475,6 +1475,9 @@ Python cells, citations and background images.
 | ~\(x\)~, ~\[x\]~, ~$$x$$~, LaTeX environments | ~$x$~ and ~$$~ blocks                                          |
 | ~[[cite:&key]]~, ~[cite:@key]~                    | Pandoc citations (~[@key]~), numbered per slide                |
 | ~#+BIBLIOGRAPHY:~, ~bibliography:~ links      | ~bibliography:~ in the front matter                            |
+| ~[[file:talk.mp4]]~, ~[[file:clip.m4a]]~              | ~<video controls>~, ~<audio controls>~ (see [[*Movies, sound and YouTube][below]])             |
+| A bare YouTube link                           | An embedded player (~youtube-nocookie.com/embed~)              |
+| ~[[marp:other.md::5][Talk]]~                                        | ~[Talk](other.md)~, a link to the other deck                   |
 | ~:noexport:~ tag, ~COMMENT~ headings          | Left out (and any tag in ~#+EXCLUDE_TAGS:~)                    |
 
 Fragment sections (~***~ headings) are raw HTML. A deck with ~presenter: true~
@@ -1540,6 +1543,31 @@ background image, ~:height~ becomes ~h:~, ~:alt~ sets the alt text and any
 other word (~sepia~, ~blur~) is kept. Without ~#+ATTR_MARP:~, the width and
 height of ~#+ATTR_HTML:~ or ~#+ATTR_ORG:~ are used. A ~#+CAPTION:~ becomes an
 italic line under the image.
+
+** ⚠️ Movies, sound and YouTube
+
+A link with no description to a movie (~.mp4~, ~.webm~, ~.mov~, ~.m4v~,
+~.ogv~) or a sound (~.mp3~, ~.m4a~, ~.wav~, ~.ogg~, ~.flac~, …) plays on the
+slide. So does a YouTube watch, ~youtu.be~, shorts, live or embed link. Its
+~t=~ time (~90~, ~1m30s~) becomes the player's ~start=~:
+
+#+begin_example
+[[file:media/talk.mp4#t=95,120]]
+[[https://www.youtube.com/watch?v=VIDEO_ID&t=1m30s]]
+#+end_example
+
+gives
+
+#+begin_src markdown
+<video src="media/talk.mp4#t=95,120" controls></video>
+<iframe src="https://www.youtube-nocookie.com/embed/VIDEO_ID?start=90"
+        width="768" height="432" allowfullscreen></iframe>
+#+end_src
+
+With a description (~[[https://youtu.be/VIDEO_ID][the demo]]~) the link stays
+a link. The players are HTML, so as with fragment sections a deck without
+~presenter: true~ needs ~scimax.marp.enableHtml~. [[*Video, Sound and Web Pages][Video, Sound and Web Pages]] covers how
+they play.
 
 ** Org export settings
 
