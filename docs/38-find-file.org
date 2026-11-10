@@ -6,7 +6,7 @@
 
 Find File provides Emacs-style file navigation in VS Code. It displays a filterable directory listing in a webview panel where you can quickly navigate directories, open files, and perform actions like inserting file paths or org-links.
 
-** Opening Find File
+** 👀 Opening Find File
 
 | Keybinding | Command                      | Description                                         |
 |------------+------------------------------+-----------------------------------------------------|
@@ -14,6 +14,8 @@ Find File provides Emacs-style file navigation in VS Code. It displays a filtera
 | ~C-x 5 f~  | =scimax.findFileOtherWindow= | Same, but Enter opens the file in a new window      |
 |            | =scimax.findFileHome=        | Open find-file in home directory                    |
 |            | =scimax.findFileWorkspace=   | Open find-file in workspace root                    |
+
+From a dired buffer, ~C-x C-f~ and ~C-x 5 f~ start in the directory dired shows.
 
 ** Navigation
 

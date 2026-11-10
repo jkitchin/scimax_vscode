@@ -466,9 +466,10 @@ async function annotate(uri?: vscode.Uri): Promise<void> {
     vscode.window.showWarningMessage('No blame command available; enable the built-in Git extension');
 }
 
-/** Open the active file's repository in the git extension, if there is one */
+/** Open the repository of the focused dired listing or the active file in the git extension, if there is one */
 async function openActiveRepository(): Promise<void> {
-    const uri = vscode.window.activeTextEditor?.document.uri;
+    const diredDir = DiredPanel.activeDirectory();
+    const uri = diredDir ? vscode.Uri.file(diredDir) : vscode.window.activeTextEditor?.document.uri;
     if (uri) await ensureRepositoryOpen(uri);
 }
 

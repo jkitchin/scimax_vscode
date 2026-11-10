@@ -301,7 +301,7 @@ Example workflow:
 5. Click to navigate to each match
 #+end_example
 
-** Switching to the Current File's Project
+** 👀 Switching to the Current File's Project
 
 When you open a file that belongs to another project (from the agenda, a link
 or a search), the window still has the original project, so the Explorer and
@@ -319,6 +319,9 @@ is new. The window reloads with that folder, VS Code restores that project's
 open editors, and the file reopens at the same line, revealed in the Explorer.
 If the window already has the project, the file is just revealed. VS Code asks
 about unsaved changes before it switches. To go back, switch with =C-c p p=.
+
+In a dired buffer, =C-c p .= uses the directory dired shows: the window
+switches to that directory's project and opens the same dired listing there.
 
 ** ✅ Opening Project Root
 CLOSED: [2026-01-16 Fri 21:12]

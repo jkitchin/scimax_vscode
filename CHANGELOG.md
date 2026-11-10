@@ -24,6 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **`C-x C-f`, `C-x 5 f`, `C-c p .` and `C-x v t` ignored a focused dired buffer** - Find file started in the workspace root, `C-c p .` said the editor was not a file, and `C-x v t` did not open the listed directory's repository. They now use the directory dired shows; `C-c p .` switches to its project and reopens the same dired listing.
 - **`scimax marp build` differed from the extension's exports** - `--plain` and `--pdf` builds had no citations (only presenter decks used a Scimax engine, and not the citation one), `--open` ignored a deck's `window: app` and `scimax.marp.presentWindow`, and `scimax.marp.themes`, `browserPath` and `appBrowser` were not read. The CLI now uses the same engine for every format and reads these settings from the user and workspace settings files.
 - **mailto links followed through the link registry skipped `scimax.mail.client`** - The registered `mailto` follow handler (used by link following that goes through the adapter registry) opened the system mail app directly. It now composes in the configured client, like the other mailto paths.
 - **mailto links in Markdown ignored `scimax.mail.client`** - Ctrl+click on a `mailto:` link in a Markdown or Quarto file, and a click in the Markdown preview, went to the system mail app even with the default Gmail client. Markdown `mailto:` links (and bare `mailto:` URLs) now compose through the configured client in the editor, and with Gmail the preview links open the Gmail compose window.

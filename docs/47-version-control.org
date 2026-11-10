@@ -282,7 +282,7 @@ Repository:
   [D] Changed files - The repository's changed files in dired (vc-dir)
 #+end_example
 
-** How It Works
+** 👀 How It Works
 
 - State detection, single-file commits, revert, and file history run the git
   CLI directly with argument arrays (no shell).
@@ -305,6 +305,8 @@ Repository:
   inside a repository.
 - For a magit-like status buffer, install the edamagit extension
   (=kahole.magit=); ~C-x v t~ uses it automatically.
+- In a dired buffer, ~C-x v t~ uses the repository of the directory dired
+  shows, as the other ~C-x v~ commands do.
 
 ** Related Topics
 
