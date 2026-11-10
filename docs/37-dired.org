@@ -48,7 +48,7 @@ Mark files for batch operations:
 
 Marked files appear with ~*~ indicator. Flagged files (for deletion) appear with ~D~ indicator.
 
-** 👀 File Operations
+** File Operations
 
 Operate on marked files (or current file if none marked):
 
@@ -127,7 +127,7 @@ actions for that file. On ~.~ or ~..~ the menu offers only the directory action.
 | Open This Directory in Finder/Explorer | Open the current directory in the OS        |
 | VC: Next Action, Diff, Log, ...        | Git commands on the marks (in a repository) |
 
-** 👀 WDired Mode (Writable Dired)
+** WDired Mode (Writable Dired)
 
 WDired mode allows you to rename files by editing their names directly, like editing text:
 
@@ -146,7 +146,7 @@ In wdired mode:
 A ~C-x v~ command or a File menu rename while you are editing names does not
 reload the listing (that would lose your edits); it reloads when wdired ends.
 
-** 👀 Sorting and Filtering
+** Sorting and Filtering
 
 | Key | Action                                         |
 |-----+------------------------------------------------|

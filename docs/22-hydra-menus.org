@@ -378,7 +378,7 @@ Maintenance:
 2. Press s to perform full-text search
 3. Enter your search query
 
-** 👀 Applications Menu (scimax.applications)
+** Applications Menu (scimax.applications)
 
 Open things outside the editor, mirroring the applications hydra from Emacs
 scimax.
@@ -403,7 +403,7 @@ External Applications:
 Finder (or the system file manager); in dired it shows the entry at point, or
 the listed directory on =..=. The Files menu's =o= does the same.
 
-** 👀 Files Menu (scimax.files)
+** Files Menu (scimax.files)
 
 Find, open and manage files, like the file hydra in Emacs scimax. Most
 actions work on the file in the active editor. In [[file:37-dired.org][Dired]] they work on the entry

@@ -328,7 +328,7 @@ on: =[[url][desc]]= counts as =desc=. Pass =--raw-links= to measure links as
 written, which is how Emacs =org-table-align= lines them up. Tables inside
 blocks (=#+begin_src= ... =#+end_src=, Markdown code fences) are not touched.
 
-** 👀 Marp Slides
+** Marp Slides
 
 Build a Marp deck into one self-contained HTML file with the presenter tools
 (pen, laser, spotlight, sticky notes, talk timer, saving with ink, live Python
@@ -805,8 +805,7 @@ Database cleared.
 Run "scimax db sync" to repopulate.
 #+end_example
 
-*** 👀 Remove and Ignore Files
-CLOSED: [2026-10-02 Fri 07:34]
+*** Remove and Ignore Files
 
 Remove files from the database by path or glob. Relative paths are resolved
 against the current directory.

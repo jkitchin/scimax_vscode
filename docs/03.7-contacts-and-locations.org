@@ -1,7 +1,7 @@
 #+TITLE: Contacts, Locations & Entity Selector
 #+TODO: ⚠️ 👀 | ✅
 
-* 👀 Contacts
+* Contacts
 
 Any indexed heading with an =:EMAIL:= property or a =:person:= tag is a
 contact, as in scimax-contacts for Emacs:
@@ -43,7 +43,7 @@ Insert link into an org file gives a =[[file:…::Name][Name]]= link to it,
 since an =:ID:= can not be added to a Markdown file. Keep contacts that need
 addresses in org files.
 
-** 👀 Email client
+** Email client
 
 All email Scimax composes goes through one setting, =scimax.mail.client=:
 
