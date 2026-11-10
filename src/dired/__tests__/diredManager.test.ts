@@ -632,6 +632,34 @@ describe('DiredManager', () => {
             await expect(manager.renameEntry(path.join(testDir, 'file2.txt'), 'subdir')).rejects.toThrow(/already exists/);
             await expect(manager.renameEntry(path.join(testDir, 'file2.txt'), '  ')).rejects.toThrow(/valid/);
         });
+
+        it('findOrCreateFile creates the file, lists it and puts point on it', async () => {
+            await manager.loadDirectory();
+            const made = await manager.findOrCreateFile('new.org');
+            expect(made).toEqual({ path: path.join(testDir, 'new.org'), created: true });
+            let state = manager.getState();
+            expect(state.entries[state.selectedIndex].name).toBe('new.org');
+            // a subpath creates the folder; point goes to the folder in the listing
+            const deep = await manager.findOrCreateFile('notes/today.org');
+            expect(fs.existsSync(deep.path)).toBe(true);
+            state = manager.getState();
+            expect(state.entries[state.selectedIndex].name).toBe('notes');
+            // an existing file is found, not truncated
+            expect(await manager.findOrCreateFile('file1.txt')).toEqual({ path: path.join(testDir, 'file1.txt'), created: false });
+            expect(fs.readFileSync(path.join(testDir, 'file1.txt'), 'utf-8')).toBe('content1');
+            await expect(manager.findOrCreateFile(' ')).rejects.toThrow(/No file name/);
+        });
+
+        it('findOrCreateFile leaves the listing alone in wdired mode', async () => {
+            await manager.loadDirectory();
+            manager.enterWdiredMode();
+            manager.addPendingRename('file2.txt', 'two.txt');
+            await manager.findOrCreateFile('made.txt');
+            const state = manager.getState();
+            expect(state.wdiredMode).toBe(true);
+            expect(state.pendingRenames.size).toBe(1);
+            expect(fs.existsSync(path.join(testDir, 'made.txt'))).toBe(true);
+        });
     });
 
     describe('sorting', () => {

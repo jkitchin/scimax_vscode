@@ -58,7 +58,13 @@ Operate on marked files (or current file if none marked):
 | ~C~ | Copy marked files (prompts for destination)             |
 | ~R~ | Rename/move marked files (prompts for destination)      |
 | ~+~ | Create new directory                                    |
+| ~f~ | Find a file by name, creating it if it does not exist   |
 | ~F~ | Open the current directory in Finder/Explorer           |
+
+~f~ opens the named file, creating it (and missing folders, for a name like
+=notes/today.org=) when it does not exist. A new file appears in the listing
+with point on it, except in wdired mode, where the listing waits for the
+pending renames.
 
 ~D~ asks to save open files with unsaved changes inside what it deletes, then
 closes their editor tabs. ~F12 f R~ and ~F12 f D~ in dired are the same as ~R~

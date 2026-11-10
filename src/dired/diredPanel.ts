@@ -352,15 +352,12 @@ export class DiredPanel {
                         placeHolder: 'Enter file name'
                     });
                     if (fileName) {
-                        const currentDir = this.manager.getState().currentDirectory;
-                        const filePath = vscode.Uri.joinPath(vscode.Uri.file(currentDir), fileName);
                         try {
-                            await vscode.workspace.fs.stat(filePath);
-                        } catch {
-                            // File doesn't exist - create it
-                            await vscode.workspace.fs.writeFile(filePath, new Uint8Array());
+                            const found = await this.manager.findOrCreateFile(fileName);
+                            await vscode.commands.executeCommand('vscode.open', vscode.Uri.file(found.path));
+                        } catch (error) {
+                            vscode.window.showErrorMessage(`Cannot create ${fileName}: ${(error as Error).message}`);
                         }
-                        await vscode.commands.executeCommand('vscode.open', filePath);
                     }
                     break;
 

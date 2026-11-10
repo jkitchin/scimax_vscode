@@ -1,5 +1,5 @@
 {
-  "buildDate": "2026-11-10T04:27:17.148Z",
+  "buildDate": "2026-11-10T04:31:32.683Z",
   "count": 3802,
   "entries": [
     {
@@ -105749,7 +105749,7 @@
       "level": 2,
       "file": "37-dired.org",
       "line": 51,
-      "content": "Operate on marked files (or current file if none marked): | Key | Action                                                  | |-----+---------------------------------------------------------| | ~D~ | Delete marked/flagged files (moves to trash by default) | | ~C~ | Copy marked files (prompts for destination)             | | ~R~ | Rename/move marked files (prompts for destination)      | | ~+~ | Create new directory                                    | | ~F~ | Open the current directory in Finder/E",
+      "content": "Operate on marked files (or current file if none marked): | Key | Action                                                  | |-----+---------------------------------------------------------| | ~D~ | Delete marked/flagged files (moves to trash by default) | | ~C~ | Copy marked files (prompts for destination)             | | ~R~ | Rename/move marked files (prompts for destination)      | | ~+~ | Create new directory                                    | | ~f~ | Find a file by name, creating it if it",
       "path": [
         "Dired - Directory Editor"
       ],
@@ -105782,7 +105782,7 @@
       "heading": "Git Status and Version Control",
       "level": 2,
       "file": "37-dired.org",
-      "line": 72,
+      "line": 78,
       "content": "Inside a git repository, dired shows a git status column: =edited=, =edited, staged=, =edited, part staged=, =added, staged=, =removed=, =renamed, staged=, =untracked=, =ignored= or =conflict=. Up-to-date files show nothing. A directory shows the strongest state of the files below it (conflict, then edited, then untracked), so you can see where the changes are. Turn the column off with =scimax.dired.showGitStatus=. The ~C-x v~ commands act on the marked files, or on the file at point when nothin",
       "path": [
         "Dired - Directory Editor"
@@ -105820,7 +105820,7 @@
       "heading": "Actions Menu (M-o or right-click)",
       "level": 2,
       "file": "37-dired.org",
-      "line": 104,
+      "line": 110,
       "content": "Press ~M-o~ (Option+O on Mac), or right-click a row, to open a fuzzy picker of actions for that file. On ~.~ or ~..~ the menu offers only the directory action. | Action                                 | Description                                 | |----------------------------------------+---------------------------------------------| | Enter Directory                        | Enter the selected directory                | | Open in Editor                         | Open file in VS Code editor   ",
       "path": [
         "Dired - Directory Editor"
@@ -105856,7 +105856,7 @@
       "heading": "WDired Mode (Writable Dired)",
       "level": 2,
       "file": "37-dired.org",
-      "line": 124,
+      "line": 130,
       "content": "WDired mode allows you to rename files by editing their names directly, like editing text: | Key       | Action                                    | |-----------+-------------------------------------------| | ~C-x C-q~ | Enter wdired mode (names become editable) | | ~C-c C-c~ | Commit renames                            | | ~C-c C-k~ | Cancel and exit wdired mode               | In wdired mode: 1. Edit filenames directly in the listing 2. Changes are highlighted 3. Press ~C-c C-c~ to apply all re",
       "path": [
         "Dired - Directory Editor"
@@ -105894,7 +105894,7 @@
       "heading": "Sorting and Filtering",
       "level": 2,
       "file": "37-dired.org",
-      "line": 143,
+      "line": 149,
       "content": "| Key | Action                                         | |-----+------------------------------------------------| | ~s~ | Cycle sort field (name, size, date, extension) | | ~.~ | Toggle showing hidden files (dotfiles)         | | ~/~ | Set filter pattern (regex)                     | Sorting keeps the marks and the entry at point.",
       "path": [
         "Dired - Directory Editor"
@@ -105928,7 +105928,7 @@
       "heading": "Display Format",
       "level": 2,
       "file": "37-dired.org",
-      "line": 153,
+      "line": 159,
       "content": "Each line shows: #+begin_example drwxr-xr-x  4096  2024-01-15 10:30  Documents/ -rw-r--r--  1234  2024-01-14 09:15  file.txt lrwxrwxrwx    12  2024-01-13 08:00  link -> target #+end_example - First column: file permissions (d=directory, l=symlink, -=file) - Second column: file size - Third column: modification date/time - Fourth column: git status (only inside a git repository) - Last column: filename (directories end with /)",
       "path": [
         "Dired - Directory Editor"
@@ -105962,7 +105962,7 @@
       "heading": "Configuration",
       "level": 2,
       "file": "37-dired.org",
-      "line": 168,
+      "line": 174,
       "content": "| Setting                      | Default  | Description                                       | |------------------------------+----------+---------------------------------------------------| | ~scimax.dired.showGitStatus~ | ~true~   | Show the git status column in a repository        | | ~scimax.dired.showHidden~    | ~false~  | Show hidden files by default                      | | ~scimax.dired.confirmDelete~ | ~true~   | Show confirmation before deleting                 | | ~scimax.dired.defa",
       "path": [
         "Dired - Directory Editor"
@@ -105997,7 +105997,7 @@
       "heading": "Security",
       "level": 2,
       "file": "37-dired.org",
-      "line": 177,
+      "line": 183,
       "content": "Dired includes security protections: - Path traversal prevention (no ~..~ in filenames) - Filename validation (no path separators in names) - Delete operations use system trash by default - Regex patterns are validated to prevent ReDoS attacks",
       "path": [
         "Dired - Directory Editor"
@@ -106031,7 +106031,7 @@
       "heading": "Related Topics",
       "level": 2,
       "file": "37-dired.org",
-      "line": 185,
+      "line": 191,
       "content": "- [[file:38-find-file.org][Find File]] - Quick file navigation (C-x C-f) - [[file:21-navigation.org][Navigation]] - General navigation features - [[file:17-projectile.org][Projectile]] - Project management - [[file:24-keybindings.org][Keybindings]] - All keyboard shortcuts - [[file:47-version-control.org][Version Control]] - C-x v commands, vc-dir (C-x v d)",
       "path": [
         "Dired - Directory Editor"

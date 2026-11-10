@@ -1091,6 +1091,35 @@ export class DiredManager {
     }
 
     /**
+     * Find a file by name (relative to the listed directory; `notes/a.org`
+     * works too), creating it, and any missing folders, if it does not exist.
+     * A new file shows up in the listing with point on it (on the folder it was
+     * created in, for a subpath); in wdired mode the listing is left alone so
+     * pending renames survive. Returns the path and whether it was created.
+     */
+    async findOrCreateFile(name: string): Promise<{ path: string; created: boolean }> {
+        const trimmed = name.trim();
+        if (!trimmed) throw new Error('No file name');
+        const dir = this.state.currentDirectory;
+        const target = path.resolve(dir, trimmed);
+        let created = false;
+        if (!fs.existsSync(target)) {
+            await fs.promises.mkdir(path.dirname(target), { recursive: true });
+            await fs.promises.writeFile(target, '', { flag: 'wx' });
+            created = true;
+        }
+        if (created && !this.state.wdiredMode) {
+            await this.loadDirectory();
+            const rel = path.relative(dir, target);
+            const listed = rel && !rel.startsWith('..') && !path.isAbsolute(rel)
+                ? path.join(dir, rel.split(path.sep)[0])
+                : undefined;
+            if (listed) this.selectPath(listed);
+        }
+        return { path: target, created };
+    }
+
+    /**
      * Rename (or move) one entry. `newName` is relative to the entry's own
      * folder (in vc-dir that is not the listed directory), so `archive/a.org`
      * or `../a.org` also move it; missing folders are created. Returns the

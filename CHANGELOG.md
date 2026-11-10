@@ -24,6 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Dired `f` (find file) shows a newly created file in the listing with point on it, creates missing folders for a name like `notes/today.org`, and reports an error instead of failing silently.
 - Renaming, moving or deleting files or folders in dired, with F12 f, or in the Explorer no longer leaves stale entries in the database and the Search view: old paths (and every file under a folder) are dropped, moved files are re-indexed at their new paths, and the Search view refreshes.
 - The database notices files created, changed or deleted on disk in indexed folders outside the workspace (journal, `scimax.db.include`, projects), and starts watching new file types when `scimax.db.fileExtensions` changes, without a reload.
 - Present from an org file (`C-c C-e m p`) starts at the slide under the cursor instead of slide 1, and presents the new export even when the `.md` deck is open in an editor: it waits for the editor to reload, and refuses rather than saving unsaved edits over the export.
