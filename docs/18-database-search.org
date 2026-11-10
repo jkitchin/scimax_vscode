@@ -100,6 +100,11 @@ The watch covers the workspace folders and every indexed root outside them
 the file types in =scimax.db.fileExtensions=. Changing those settings or the
 workspace folders updates the watch without a reload.
 
+Renaming, moving or deleting files and folders in dired, with the F12 f file
+menu or in the Explorer updates the index right away: the old paths leave the
+database (a folder takes all its files with it), moved files are indexed at
+their new paths, and an open Search view runs its search again.
+
 ** ✅ Ignore Patterns
 CLOSED: [2026-10-22 Thu 09:53]
 

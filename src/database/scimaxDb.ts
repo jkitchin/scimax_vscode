@@ -40,6 +40,7 @@ import { withBaselineExcludes } from '../shared/ignorePatterns';
 import { isTooBroadForProject } from '../shared/projectRoots';
 import { indexableFilesGlob } from '../shared/indexableFiles';
 import { forcedFiles, rootsNeedingWatchers, underRoots } from '../shared/indexScope';
+import { indexUpdatesFor, onPathsChanged, type PathChanges } from '../shared/pathChanges';
 /**
  * ScimaxDb - VS Code wrapper around ScimaxDbCore.
  *
@@ -71,6 +72,10 @@ export class ScimaxDb extends ScimaxDbCore {
     // Fires after clear() empties every table. Subscribers (e.g. agenda
     // TreeView) use this to drop stale views; without it the agenda keeps
     // showing the pre-clear snapshot until something else triggers a refresh.
+    // Fires after files are dropped from the index because they were moved or deleted
+    private _onDidChangePaths = new vscode.EventEmitter<void>();
+    readonly onDidChangePaths = this._onDidChangePaths.event;
+
     private _onDidClear = new vscode.EventEmitter<void>();
     readonly onDidClear = this._onDidClear.event;
 
@@ -207,7 +212,7 @@ export class ScimaxDb extends ScimaxDbCore {
             const w = vscode.workspace.createFileSystemWatcher(pattern, false, false, false);
             w.onDidCreate(uri => this.onDiskChange(uri.fsPath));
             w.onDidChange(uri => this.onDiskChange(uri.fsPath));
-            w.onDidDelete(uri => this.removeFile(uri.fsPath));
+            w.onDidDelete(uri => { void this.applyPathChanges({ moved: [], deleted: [uri.fsPath] }); });
             return w;
         });
     }
@@ -239,6 +244,17 @@ export class ScimaxDb extends ScimaxDbCore {
         this.context.subscriptions.push(vscode.workspace.onDidChangeWorkspaceFolders(() => this.refreshScope()));
         this.watching = true;
         this.rebuildWatchers();
+        // Renames and deletes: the Explorer and workspace edits raise these,
+        // dired and F12 f announce theirs; a folder takes its files with it.
+        this.context.subscriptions.push(
+            onPathsChanged(changes => { void this.applyPathChanges(changes); }),
+            vscode.workspace.onDidRenameFiles(e => {
+                void this.applyPathChanges({ moved: e.files.map(f => ({ from: f.oldUri.fsPath, to: f.newUri.fsPath })), deleted: [] });
+            }),
+            vscode.workspace.onDidDeleteFiles(e => {
+                void this.applyPathChanges({ moved: [], deleted: e.files.map(f => f.fsPath) });
+            }),
+        );
         this.context.subscriptions.push({ dispose: () => { for (const w of this.fileWatchers) w.dispose(); this.fileWatchers = []; } });
 
         // Saving a file indexes it wherever it is (unless it is excluded)
@@ -250,6 +266,28 @@ export class ScimaxDb extends ScimaxDbCore {
         });
         this.context.subscriptions.push(saveHandler);
 
+    }
+
+    /**
+     * Drop the indexed files at or under moved and deleted paths, and index
+     * them at their new places (and moved files that now belong in the index).
+     */
+    private async applyPathChanges(changes: PathChanges): Promise<void> {
+        try {
+            if (!this.getClient()) return;
+            const indexed = (await this.getFiles()).map(f => f.path);
+            const { remove, index } = indexUpdatesFor(indexed, changes,
+                p => underRoots(p, this.roots) && this.isIndexable(p));
+            if (remove.length) {
+                await this.removeFiles(remove);
+                this._onDidChangePaths.fire();
+            }
+            for (const p of index) {
+                if (fs.existsSync(p) && fs.statSync(p).isFile()) this.queueIndex(p);
+            }
+        } catch (error) {
+            log.error('Failed to update the index after a rename or delete', error as Error);
+        }
     }
 
     private queueIndex(filePath: string): void {
@@ -766,6 +804,7 @@ export class ScimaxDb extends ScimaxDbCore {
         this.hideEmbeddingStatusBar();
         this._onDidIndexFile.dispose();
         this._onDidClear.dispose();
+        this._onDidChangePaths.dispose();
         this._onDidRebuild.dispose();
         this._onDidChangeEmbeddings.dispose();
         await super.close();

@@ -9,6 +9,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as vscode from 'vscode';
+import { notifyPathsChanged, type PathMove } from '../shared/pathChanges';
 import {
     DiredEntry,
     DiredDisplayEntry,
@@ -707,6 +708,8 @@ export class DiredManager {
             }
         }
 
+        notifyPathsChanged({ deleted: deletedPaths });
+
         // Refresh the directory
         await this.loadDirectory();
 
@@ -819,6 +822,7 @@ export class DiredManager {
 
         const renamed: string[] = [];
         const errors: string[] = [];
+        const moves: PathMove[] = [];
 
         for (const entry of toRename) {
             try {
@@ -848,10 +852,13 @@ export class DiredManager {
                     { overwrite: false }
                 );
                 renamed.push(entry.name);
+                moves.push({ from: entry.path, to: destPath });
             } catch (error: any) {
                 errors.push(`${entry.name}: ${error.message}`);
             }
         }
+
+        notifyPathsChanged({ moved: moves });
 
         // Refresh the directory
         await this.loadDirectory();
@@ -994,6 +1001,7 @@ export class DiredManager {
 
         const renamed: string[] = [];
         const errors: string[] = [];
+        const moves: PathMove[] = [];
 
         // Process renames
         for (const [originalName, newName] of this.state.pendingRenames) {
@@ -1035,10 +1043,13 @@ export class DiredManager {
                     { overwrite: false }
                 );
                 renamed.push(`${originalName} → ${newName}`);
+                moves.push({ from: originalPath, to: newPath });
             } catch (error: any) {
                 errors.push(`${originalName} → ${newName}: ${error.message}`);
             }
         }
+
+        notifyPathsChanged({ moved: moves });
 
         // Refresh and exit wdired mode
         await this.loadDirectory();
@@ -1093,6 +1104,7 @@ export class DiredManager {
         if (fs.existsSync(target)) throw new Error(`${name} already exists`);
         await fs.promises.mkdir(path.dirname(target), { recursive: true });
         await fs.promises.rename(entryPath, target);
+        notifyPathsChanged({ moved: [{ from: entryPath, to: target }] });
         await this.loadDirectory();
         this.selectPath(target);
         return target;

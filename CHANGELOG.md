@@ -24,6 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Renaming, moving or deleting files or folders in dired, with F12 f, or in the Explorer no longer leaves stale entries in the database and the Search view: old paths (and every file under a folder) are dropped, moved files are re-indexed at their new paths, and the Search view refreshes.
 - The database notices files created, changed or deleted on disk in indexed folders outside the workspace (journal, `scimax.db.include`, projects), and starts watching new file types when `scimax.db.fileExtensions` changes, without a reload.
 - Present from an org file (`C-c C-e m p`) starts at the slide under the cursor instead of slide 1, and presents the new export even when the `.md` deck is open in an editor: it waits for the editor to reload, and refuses rather than saving unsaved edits over the export.
 - Org → Marp: a bare link to a movie or sound file now becomes a `<video>` or `<audio>` player, and a bare YouTube link becomes an embedded player that keeps its `t=` start time. Before, these exported as plain links. A `[[marp:other.md::5][Talk]]` link now links to the other deck instead of dropping its target.

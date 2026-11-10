@@ -8,6 +8,7 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 import { DiredPanel } from '../dired/diredPanel';
 import { closeTabsUnder, saveDirtyDocsUnder } from './openDocs';
+import { notifyPathsChanged } from '../shared/pathChanges';
 
 /**
  * The entry at point in dired (when dired is the active tab), else the file
@@ -130,6 +131,7 @@ async function deleteCurrentFile(): Promise<void> {
         vscode.window.showErrorMessage(`Could not delete ${name}: ${(err as Error).message}`);
         return;
     }
+    notifyPathsChanged({ deleted: [uri.fsPath] });
     // Close every tab showing the file, or a file inside the folder.
     await closeTabsUnder([uri.fsPath]);
     DiredPanel.refreshVc();
