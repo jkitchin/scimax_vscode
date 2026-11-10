@@ -176,6 +176,16 @@ export function expandNowebReferences(
     });
 }
 
+/**
+ * Whether a :noweb value expands references when the block is evaluated
+ * (C-c C-c or #+CALL:). As in org: yes, eval, no-export, strip-export and
+ * strip-tangle do; no and tangle do not.
+ */
+export function nowebExpandsOnEval(noweb: unknown): boolean {
+    return typeof noweb === 'string'
+        && ['yes', 'eval', 'no-export', 'strip-export', 'strip-tangle'].includes(noweb.trim().toLowerCase());
+}
+
 // =============================================================================
 // Source Block Extraction
 // =============================================================================
@@ -1177,7 +1187,7 @@ export async function executeCall(
         type: 'src-block',
         properties: {
             language: block.language,
-            value: block.code,
+            value: nowebExpandsOnEval(mergedHeaders.noweb) ? expandNowebReferences(block.code, blocks) : block.code,
             parameters: '',
             headers: stringHeaders,
             lineNumber: block.lineNumber,

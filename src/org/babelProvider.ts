@@ -18,7 +18,7 @@ import {
 } from '../parser/orgBabel';
 import type { SrcBlockElement } from '../parser/orgElementTypes';
 import { unescapeOrgCode } from '../parser/orgEscape';
-import { findInlineSrcAtPosition, findInlineBabelCallAtPosition, parseCallLine, executeCall, type TangleBlock, type InlineBabelCall, type CallSpec, buildNamedBlocksMap } from '../parser/orgBabelAdvanced';
+import { findInlineSrcAtPosition, findInlineBabelCallAtPosition, parseCallLine, executeCall, type TangleBlock, type InlineBabelCall, type CallSpec, buildNamedBlocksMap, expandNowebReferences, nowebExpandsOnEval } from '../parser/orgBabelAdvanced';
 import * as fs from 'fs';
 import { OrgParser } from '../parser/orgParser';
 import { normalizeLineEndings } from '../utils/escapeUtils';
@@ -1185,6 +1185,12 @@ async function executeBlock(
     // The block's text minus org's ,* / ,#+ escapes; block.code stays raw for editing
     // Markdown has no comma escapes
     let codeToExecute = isMarkdownLike(editor.document.languageId) ? block.code : unescapeOrgCode(block.code);
+    // :cache must notice edits to the blocks a noweb reference pulls in
+    let cacheSource = block.code;
+    if (nowebExpandsOnEval(headers.noweb)) {
+        codeToExecute = expandNowebReferences(codeToExecute, buildNamedBlockMap(editor.document));
+        cacheSource = codeToExecute;
+    }
     let outputFilePath: string | undefined;
 
     if (headers.file && ['python', 'python3', 'py'].includes(language.toLowerCase())) {
@@ -1244,7 +1250,7 @@ if plt.get_fignums():
     const cacheEnabled = headers.cache === 'yes';
     let codeHash: string | undefined;
     if (cacheEnabled) {
-        codeHash = computeCodeHash(block.code);
+        codeHash = computeCodeHash(cacheSource);
         if (block.cachedHash && block.cachedHash === codeHash) {
             // Cache hit - code hasn't changed
             channel.appendLine(`\n${'='.repeat(60)}`);
