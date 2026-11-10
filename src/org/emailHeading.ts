@@ -407,7 +407,7 @@ export async function emailHeading(): Promise<void> {
             vscode.window.showWarningMessage('Could not add an ID to the heading; sending without one.');
         }
     }
-    const settings = mailSettings();
+    const settings = mailSettings(document.uri);
     const { client, account } = settings;
     const build = (e: HeadingEmail) => composeUrl(e, settings);
 

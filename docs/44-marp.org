@@ -277,7 +277,7 @@ editor, or *Present* the slideshow (from slide /N/ for a ~::N~ link). The
 picture uses the deck's theme and inlines local images; remote images and web
 fonts are not loaded, so those may look different from the slideshow.
 
-* Directives
+* 👀 Directives
 
 Marp directives set a deck's theme, pagination, headers and so on. Global
 directives go in the front matter. Local directives go in the front matter
@@ -299,6 +299,7 @@ shows what a directive does when you hover over it.
 | ~transition~                                                                  | Local  | The HTML slideshow transitions (~fade~, ~push~, ...)                                                                         |
 | ~header~, ~footer~, ~color~, ~background*~                                    | Local  | (free text; ~background*~ positions, repeats and sizes are offered)                                                          |
 | ~style~, ~lang~, ~title~, ~author~, ~description~, ~keywords~, ~url~, ~image~ | Global | (free text)                                                                                                                  |
+| ~bibliography~                                                                | Global | (BibTeX file or list of files, relative to the deck)                                                                         |
 
 * Slide Thumbnails
 

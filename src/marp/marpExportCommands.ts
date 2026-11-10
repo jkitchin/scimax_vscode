@@ -135,8 +135,8 @@ async function exportForGoogleSlides(context: vscode.ExtensionContext): Promise<
     }
 }
 
-async function resolveMarpCli(context: vscode.ExtensionContext): Promise<Command | undefined> {
-    const configured = vscode.workspace.getConfiguration('scimax.marp').get<string>('cliPath', '').trim();
+async function resolveMarpCli(context: vscode.ExtensionContext, resource?: vscode.Uri): Promise<Command | undefined> {
+    const configured = vscode.workspace.getConfiguration('scimax.marp', resource).get<string>('cliPath', '').trim();
     if (configured) {
         return { command: configured, prefix: [] };
     }
@@ -504,7 +504,7 @@ async function convertWithMarp(
     presenter = false,
     quiet = false
 ): Promise<boolean> {
-    const cli = await resolveMarpCli(context);
+    const cli = await resolveMarpCli(context, document.uri);
     if (!cli) {
         return false;
     }

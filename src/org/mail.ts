@@ -25,10 +25,11 @@ const EMPTY: MailFields = { to: '', cc: '', bcc: '', subject: '', body: '' };
  * The mail settings. `scimax.mail.*` wins; a value set only under the older
  * `scimax.emailHeading.client` / `gmailAccount` is still honored.
  */
-export function mailSettings(): MailSettings {
+export function mailSettings(resource: vscode.Uri | undefined = vscode.window.activeTextEditor?.document.uri): MailSettings {
+    // Scoped to the file (the active editor's by default), so folder settings count.
     const explicit = <T>(fullKey: string): T | undefined => {
         const dot = fullKey.lastIndexOf('.');
-        const info = vscode.workspace.getConfiguration(fullKey.slice(0, dot)).inspect<T>(fullKey.slice(dot + 1));
+        const info = vscode.workspace.getConfiguration(fullKey.slice(0, dot), resource).inspect<T>(fullKey.slice(dot + 1));
         return info?.workspaceFolderValue ?? info?.workspaceValue ?? info?.globalValue;
     };
     const client = explicit<string>('scimax.mail.client')

@@ -2,9 +2,12 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 const configValues: Record<string, Record<string, unknown>> = {};
 vi.mock('vscode', () => ({
+    window: {},
     workspace: {
-        getConfiguration: (section: string) => ({
-            inspect: (key: string) => ({ globalValue: configValues[section]?.[key] }),
+        getConfiguration: (section: string, resource?: { fsPath: string }) => ({
+            inspect: (key: string) => (resource?.fsPath === '/proj/a.org' && section === 'scimax.mail' && key === 'client'
+                ? { workspaceFolderValue: 'mailto' }
+                : { globalValue: configValues[section]?.[key] }),
         }),
     },
 }));
@@ -109,6 +112,11 @@ describe('mail', () => {
         expect(mailSettings()).toEqual({ client: 'mailto', account: '1' });
         configValues['scimax.mail'] = { client: 'gmail' };
         expect(mailSettings()).toEqual({ client: 'gmail', account: '1' });
+    });
+
+    it('reads the folder settings of the file it is given', () => {
+        expect(mailSettings({ fsPath: '/proj/a.org' } as never).client).toBe('mailto');
+        expect(mailSettings({ fsPath: '/other/b.org' } as never).client).toBe('gmail');
     });
 });
 
