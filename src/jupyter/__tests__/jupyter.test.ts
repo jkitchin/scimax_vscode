@@ -201,7 +201,7 @@ describe('Jupyter Message Protocol', () => {
     it('creates proper message headers', () => {
         // Test header creation logic
         // eslint-disable-next-line @typescript-eslint/no-var-requires
-        const { v4: uuidv4 } = require('uuid');
+        const { randomUUID: uuidv4 } = require('crypto');
 
         const msgType = 'execute_request';
         const sessionId = uuidv4();

@@ -179,7 +179,6 @@ Each manager is passed to its command registration function and tree providers.
 
 - `@libsql/client` - SQLite with vector search (from Turso)
 - `zeromq` - Native Jupyter kernel communication
-- `uuid` - Unique ID generation for Jupyter messages
 - `date-fns` - Date manipulation for journal
 - `minimatch` - Glob pattern matching for ignore patterns
 

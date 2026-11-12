@@ -2,7 +2,7 @@
   "name": "scimax-vscode",
   "displayName": "Scimax for VS Code",
   "description": "Scientific computing environment inspired by Emacs Scimax - journal, literate programming, org-mode enhancements",
-  "version": "0.15.1",
+  "version": "0.15.2",
   "publisher": "jkitchin",
   "license": "MIT",
   "repository": {
@@ -11023,7 +11023,6 @@
     "@electron/rebuild": "^4.0.2",
     "@types/js-yaml": "^4.0.9",
     "@types/node": "^20.19.30",
-    "@types/uuid": "^10.0.0",
     "@types/vscode": "^1.85.0",
     "@typescript-eslint/eslint-plugin": "^6.13.0",
     "@typescript-eslint/parser": "^6.13.0",
@@ -11051,7 +11050,6 @@
     "jszip": "^3.10.1",
     "minimatch": "^9.0.0",
     "tesseract.js": "^7.0.0",
-    "uuid": "^9.0.0",
     "zeromq": "^6.0.0-beta.19"
   },
   "overrides": {

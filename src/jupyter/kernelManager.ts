@@ -8,7 +8,6 @@ import * as path from 'path';
 import * as os from 'os';
 import * as crypto from 'crypto';
 import { spawn, ChildProcess } from 'child_process';
-import { v4 as uuidv4 } from 'uuid';
 import { EventEmitter } from 'events';
 import { KernelConnection, KernelConnectionEvents } from './kernelConnection';
 import { findKernelSpec, findKernelForLanguage, discoverKernelSpecsViaJupyter } from './kernelSpec';
@@ -187,7 +186,7 @@ export class KernelManager extends EventEmitter {
         }
 
         // Generate kernel ID and connection info
-        const kernelId = uuidv4();
+        const kernelId = crypto.randomUUID();
         const connection = this.generateConnectionInfo();
         const connectionFile = this.writeConnectionFile(kernelId, connection);
 

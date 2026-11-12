@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.15.2] - 2026-11-12
+
+### Security
+
+- **Updated dependencies with known vulnerabilities (#93)** - `npm audit fix` updates `handlebars` (custom export templates), `ws` (database client), `markdown-it`, `@xmldom/xmldom` and `source-map-js` (slides and math), and many build and test tools. The packaged extension now has no critical or high findings. Three remain: `minimatch` 9 (moderate; the fix needs Node 20, newer than VS Code 1.85 runs, and the patterns come from your own settings) and `katex` via `@marp-team/marp-core` 4 (low; the fix needs marp-core 5).
+- **Dropped the `uuid` package** - Jupyter message and kernel IDs now use Node's built-in `crypto.randomUUID()`.
+
 ## [0.15.1] - 2026-11-10
 
 ### Fixed

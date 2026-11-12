@@ -4,7 +4,6 @@
  */
 
 import * as crypto from 'crypto';
-import { v4 as uuidv4 } from 'uuid';
 import type {
     ConnectionInfo,
     JupyterMessage,
@@ -89,7 +88,7 @@ const DELIMITER_BYTES = Buffer.from(DELIMITER);
  */
 function createHeader(msgType: string, sessionId: string): MessageHeader {
     return {
-        msg_id: uuidv4(),
+        msg_id: crypto.randomUUID(),
         session: sessionId,
         username: 'vscode',
         date: new Date().toISOString(),
@@ -248,7 +247,7 @@ export class KernelConnection {
 
     constructor(connection: ConnectionInfo, events: KernelConnectionEvents = {}) {
         this.connection = connection;
-        this.sessionId = uuidv4();
+        this.sessionId = crypto.randomUUID();
         this.events = events;
     }
 
