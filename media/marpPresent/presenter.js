@@ -1630,7 +1630,15 @@
   menuCss.textContent = `
 .mp-menu { position: fixed; z-index: 100003; min-width: 250px; padding: 5px; border-radius: 10px; background: rgba(255,255,255,.97);
   box-shadow: 0 8px 30px rgba(0,0,0,.28), 0 0 0 1px rgba(0,0,0,.07); font: 14px/1.2 -apple-system, "Helvetica Neue", Helvetica, Arial, sans-serif;
-  color: #1f2937; user-select: none; backdrop-filter: blur(8px); }
+  color: #1f2937; user-select: none; backdrop-filter: blur(8px);
+  max-height: calc(100vh - 8px); max-width: calc(100vw - 8px); overflow-y: auto; overscroll-behavior: contain; box-sizing: border-box; }
+@media (max-height: 760px) {
+  .mp-menu { font-size: 13px; padding: 3px; }
+  .mp-menu .it { padding: 3px 10px; }
+  .mp-menu .sep { margin: 2px 8px; }
+  .mp-menu .sw { padding: 2px 10px 3px 32px; }
+  .mp-menu .note { padding: 2px 10px 3px 32px; }
+}
 .mp-menu .it { display: flex; align-items: center; gap: 8px; padding: 6px 10px; border-radius: 6px; cursor: default; }
 .mp-menu .it:hover:not(.off) { background: #2563eb; color: white; }
 .mp-menu .it:hover:not(.off) .k { color: rgba(255,255,255,.8); }
@@ -1734,6 +1742,7 @@
       menu.appendChild(row);
     }
     menu.style.display = "block";
+    menu.scrollTop = 0;
     const w = menu.offsetWidth, h = menu.offsetHeight;
     menu.style.left = Math.max(4, Math.min(x, innerWidth - w - 4)) + "px";
     menu.style.top = Math.max(4, Math.min(y, innerHeight - h - 4)) + "px";
@@ -1760,7 +1769,9 @@
   }
   addEventListener("contextmenu", e => onContextMenu(e, e.clientX, e.clientY), true);
   addEventListener("pointerdown", e => { if (menuOpen() && !menu.contains(e.target)) closeMenu(); }, true);
-  addEventListener("wheel", closeMenu, { passive: true });
+  // A menu taller than the window scrolls: wheeling inside it scrolls it, it does not close it or turn the slide
+  menu.addEventListener("wheel", e => e.stopPropagation(), { passive: true });
+  addEventListener("wheel", e => { if (!menu.contains(e.target)) closeMenu(); }, { passive: true });
   addEventListener("blur", closeMenu);
   addEventListener("resize", closeMenu);
 
