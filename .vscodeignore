@@ -120,6 +120,7 @@ node_modules/**
 !node_modules/minimatch/**
 !node_modules/brace-expansion/**
 !node_modules/balanced-match/**
+!node_modules/@isaacs/nonrecursive-glob-match/**
 !node_modules/uuid/**
 !node_modules/zeromq/**
 !node_modules/cmake-ts/**

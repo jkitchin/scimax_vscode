@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.15.4] - 2026-11-14
+
+### Fixed
+
+- **Extension failed to activate in 0.15.3** - the VSIX left out `@isaacs/nonrecursive-glob-match`, a new dependency of `minimatch` 11, so loading stopped with "Cannot find module" and every Scimax command reported "command not found". The package is now included.
+
 ## [0.15.3] - 2026-11-14
 
 ### Security
