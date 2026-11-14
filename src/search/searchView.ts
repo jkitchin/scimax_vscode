@@ -15,6 +15,7 @@
  */
 
 import * as vscode from 'vscode';
+import { setPanelThemeIcon } from '../utils/webviewIcon';
 import * as crypto from 'crypto';
 import * as path from 'path';
 import * as fs from 'fs';
@@ -130,7 +131,7 @@ export class SearchWebview implements vscode.Disposable {
             retainContextWhenHidden: true,
             localResourceRoots: [vscode.Uri.joinPath(this.extensionUri, 'media', 'searchView')],
         });
-        this.panel.iconPath = new vscode.ThemeIcon('search');
+        setPanelThemeIcon(this.panel, 'search');
         this.panel.webview.html = this.html(this.panel.webview);
         this.panel.webview.onDidReceiveMessage((m: FromWebview) => this.onMessage(m), undefined, this.disposables);
         this.panel.onDidDispose(() => { this.panel = undefined; }, undefined, this.disposables);

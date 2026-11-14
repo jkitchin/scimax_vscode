@@ -18,6 +18,7 @@
  */
 
 import * as vscode from 'vscode';
+import { setPanelThemeIcon } from '../utils/webviewIcon';
 import * as crypto from 'crypto';
 import * as path from 'path';
 // Per-function imports: the package index loads all of date-fns.
@@ -148,7 +149,7 @@ class AgendaWebview implements vscode.Disposable {
             retainContextWhenHidden: true,
             localResourceRoots: [vscode.Uri.joinPath(this.extensionUri, 'media', 'agendaView')],
         });
-        this.panel.iconPath = new vscode.ThemeIcon('calendar');
+        setPanelThemeIcon(this.panel, 'calendar');
         this.panel.webview.html = this.html(this.panel.webview);
         this.panel.webview.onDidReceiveMessage((m: FromWebview) => this.onMessage(m), undefined, this.disposables);
         this.panel.onDidDispose(() => { this.panel = undefined; }, undefined, this.disposables);

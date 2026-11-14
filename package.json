@@ -2,7 +2,7 @@
   "name": "scimax-vscode",
   "displayName": "Scimax for VS Code",
   "description": "Scientific computing environment inspired by Emacs Scimax - journal, literate programming, org-mode enhancements",
-  "version": "0.15.2",
+  "version": "0.15.3",
   "publisher": "jkitchin",
   "license": "MIT",
   "repository": {
@@ -10,7 +10,7 @@
     "url": "https://github.com/jkitchin/scimax_vscode"
   },
   "engines": {
-    "vscode": "^1.85.0"
+    "vscode": "^1.90.0"
   },
   "categories": [
     "Other",
@@ -11009,7 +11009,7 @@
   "scripts": {
     "vscode:prepublish": "npm run compile",
     "compile": "npm run build-doc-index && tsc -p ./ && npm run bundle && npm run copy-assets",
-    "bundle": "esbuild src/extension.ts --bundle --platform=node --format=cjs --target=node18 --packages=external --external:vscode --outfile=out/extension.js --log-level=warning",
+    "bundle": "esbuild src/extension.ts --bundle --platform=node --format=cjs --target=node20 --packages=external --external:vscode --outfile=out/extension.js --log-level=warning",
     "build-doc-index": "npx ts-node scripts/build-doc-index.ts",
     "copy-assets": "shx cp src/help/docIndex.json out/help/ && shx mkdir -p out/publishing/themes/bookTheme/assets && shx cp -r src/publishing/themes/bookTheme/assets/* out/publishing/themes/bookTheme/assets/",
     "watch": "tsc -watch -p ./",
@@ -11023,7 +11023,7 @@
     "@electron/rebuild": "^4.0.2",
     "@types/js-yaml": "^4.0.9",
     "@types/node": "^20.19.30",
-    "@types/vscode": "^1.85.0",
+    "@types/vscode": "~1.90.0",
     "@typescript-eslint/eslint-plugin": "^6.13.0",
     "@typescript-eslint/parser": "^6.13.0",
     "@vscode/vsce": "^2.22.0",
@@ -11048,13 +11048,16 @@
     "htmlparser2": "^10.1.0",
     "js-yaml": "^4.3.2",
     "jszip": "^3.10.1",
-    "minimatch": "^9.0.0",
+    "minimatch": "^11.0.8",
     "tesseract.js": "^7.0.0",
     "zeromq": "^6.0.0-beta.19"
   },
   "overrides": {
     "libsql": {
       "detect-libc": "^2.1.2"
+    },
+    "@marp-team/marp-core": {
+      "katex": "^0.18.2"
     }
   }
 }

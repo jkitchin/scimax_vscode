@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.15.3] - 2026-11-14
+
+### Security
+
+- **No remaining audit findings in the packaged extension (#93)** - `minimatch` moves to 11.0.8 for a denial-of-service advisory (GHSA-g3hv-75wg-m249), and an npm override moves `katex` under `@marp-team/marp-core` 4 to 0.18 for a prototype-pollution advisory (GHSA-238p-pmpm-9mq7). `npm audit --omit=dev` now reports 0 vulnerabilities. The marp-core 5 update is tracked in #94.
+
+### Changed
+
+- **Requires VS Code 1.90 or later** (was 1.85) - minimatch 11 needs Node 20, and 1.90 is the first VS Code release that runs it. The CLI also needs Node 20 or later.
+
+### Fixed
+
+- **Webview tab icons on VS Code before 1.108** - the database, agenda, project and search views set a codicon tab icon, an API added in VS Code 1.108. They now set it only on 1.108 and later, and keep the default icon on older versions.
+
 ## [0.15.2] - 2026-11-12
 
 ### Security

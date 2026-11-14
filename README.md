@@ -37,7 +37,7 @@ Then install the generated `.vsix` file.
 
 ### Dependencies
 
-- VS Code 1.85.0 or later
+- VS Code 1.90.0 or later
 - Node.js 22+ (for development)
 
 ### AI Agent Skills

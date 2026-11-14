@@ -16,6 +16,7 @@
  */
 
 import * as vscode from 'vscode';
+import { setPanelThemeIcon } from '../utils/webviewIcon';
 import * as crypto from 'crypto';
 import * as path from 'path';
 import * as fs from 'fs';
@@ -139,7 +140,7 @@ class ProjectView implements vscode.Disposable {
                 retainContextWhenHidden: true,
                 localResourceRoots: [vscode.Uri.joinPath(this.extensionUri, 'media', 'projectView')],
             });
-            this.panel.iconPath = new vscode.ThemeIcon('project');
+            setPanelThemeIcon(this.panel, 'project');
             this.panel.webview.html = this.html(this.panel.webview);
             this.panel.webview.onDidReceiveMessage((m: FromWebview) => this.onMessage(m), undefined, this.disposables);
             this.panel.onDidDispose(() => { this.panel = undefined; }, undefined, this.disposables);

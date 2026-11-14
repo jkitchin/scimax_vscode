@@ -12,6 +12,7 @@
  */
 
 import * as vscode from 'vscode';
+import { setPanelThemeIcon } from '../utils/webviewIcon';
 import * as crypto from 'crypto';
 import * as path from 'path';
 import { getDatabase } from './lazyDb';
@@ -94,7 +95,7 @@ export class DatabaseWebview implements vscode.Disposable {
             retainContextWhenHidden: true,
             localResourceRoots: [vscode.Uri.joinPath(this.extensionUri, 'media', 'databaseView')],
         });
-        this.panel.iconPath = new vscode.ThemeIcon('database');
+        setPanelThemeIcon(this.panel, 'database');
         this.panel.webview.html = this.html(this.panel.webview);
         this.panel.webview.onDidReceiveMessage((m: FromWebview) => this.onMessage(m), undefined, this.panelDisposables);
         this.panel.onDidDispose(() => {

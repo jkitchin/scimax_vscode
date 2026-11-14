@@ -1,5 +1,5 @@
 {
-  "buildDate": "2026-11-10T18:27:18.020Z",
+  "buildDate": "2026-11-14T13:18:00.104Z",
   "count": 3807,
   "entries": [
     {
@@ -1575,7 +1575,7 @@
       "level": 2,
       "file": "01-getting-started.org",
       "line": 16,
-      "content": "Scimax VS Code requires Visual Studio Code version *1.85 or later*.",
+      "content": "Scimax VS Code requires Visual Studio Code version *1.90 or later*. (1.90 is the first release that runs Node 20, which current dependencies require.)",
       "path": [
         "System Requirements"
       ],
@@ -1588,8 +1588,15 @@
         "requires",
         "visual",
         "studio",
-        "185",
-        "later"
+        "190",
+        "later",
+        "first",
+        "release",
+        "runs",
+        "node",
+        "current",
+        "dependencies",
+        "require"
       ]
     },
     {

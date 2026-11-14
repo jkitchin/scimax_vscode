@@ -18,7 +18,7 @@ npm run test      # Vitest tests
 
 ## Architecture
 
-This is a VS Code extension providing scientific computing features inspired by Emacs Scimax. Written in TypeScript, targeting VS Code 1.85+.
+This is a VS Code extension providing scientific computing features inspired by Emacs Scimax. Written in TypeScript, targeting VS Code 1.90+.
 
 ### Module Structure
 
