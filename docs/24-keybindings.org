@@ -602,19 +602,20 @@ Emacs-style mark and region commands.
 | C-x C-x           | Exchange point and mark    |
 | C-c M             | Show mark ring             |
 
-* Kill Ring (Emacs-style)
+* 👀 Kill Ring (Emacs-style)
 
 Kills and copies go onto a kill ring as well as the system clipboard, so you can
 yank older kills, not just the last one. See [[file:25-commands.org::#kill-ring][Kill Ring commands]] for details.
 
-| Key | Action                                                       |
-|-----+--------------------------------------------------------------|
-| C-y | Yank the current kill                                        |
-| M-y | After C-y: replace it with the next older kill (repeatable)  |
-| M-y | Otherwise: pick a kill from the ring to insert               |
-| C-w | Kill region                                                  |
-| M-w | Copy region to the kill ring                                 |
-| C-k | Kill to end of line (repeated C-k joins into one kill)       |
+| Key                | Action                                                             |
+|--------------------+--------------------------------------------------------------------|
+| C-y                | Yank the current kill                                              |
+| M-y                | After C-y: replace it with the next older kill (repeatable)        |
+| M-y                | Otherwise: pick a kill from the ring to insert                     |
+| C-w                | Kill region                                                        |
+| M-w                | Copy region to the kill ring                                       |
+| C-k                | Kill to end of line (repeated C-k joins into one kill)             |
+| Backspace / Delete | On a just auto-copied mouse selection: delete it and undo the copy |
 
 ** Related Topics
 

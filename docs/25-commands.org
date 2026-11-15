@@ -1837,7 +1837,7 @@ environment, killing or copying a BibTeX entry, the jump kill-line and
 copy-line actions, and rectangle kill and copy. Rectangle yank (=C-x r y=)
 still inserts the last killed rectangle as a rectangle.
 
-** Auto-Copy (Copy on Select)
+** 👀 Auto-Copy (Copy on Select)
 :PROPERTIES:
 :CUSTOM_ID: auto-copy
 :END:
@@ -1854,12 +1854,20 @@ left alone, so selecting with the keyboard and pasting over the selection still
 works. If you highlight with the mouse and then press =Cmd+V=, you paste the
 highlighted text back over itself; use =M-y= to pick the older entry instead.
 
+Selecting text with the mouse in order to delete it does not clobber the
+clipboard. If you highlight text and then press =Backspace= or =Delete=, or type
+over it, the auto-copy is undone: the entry is dropped from the kill ring and
+the clipboard you had before comes back. Cutting the selection (=Cmd+X=, =C-w=)
+keeps it, as does clicking or moving the cursor elsewhere first. Turn this off
+with =scimax.autoCopy.undoOnDelete=.
+
 It is on by default. Turn it off with =scimax.autoCopy.enabled= set to =false=,
 or flip it with the command below.
 
-| Command ID                 | Description                          | Default Keybinding |
-|----------------------------+--------------------------------------+--------------------|
-| [[cmd:scimax.autoCopy.toggle]] | Toggle Auto-Copy of Mouse Selections | -                  |
+| Command ID                          | Description                                    | Default Keybinding                     |
+|-------------------------------------+------------------------------------------------+----------------------------------------|
+| [[cmd:scimax.autoCopy.toggle]]          | Toggle Auto-Copy of Mouse Selections           | -                                      |
+| [[cmd:scimax.autoCopy.deleteSelection]] | Delete Auto-Copied Selection and Undo the Copy | Backspace, Delete (after an auto-copy) |
 
 ** Related Topics
 
