@@ -4,6 +4,7 @@
  */
 
 import { DEFAULT_TODO_STATES } from '../org/todoStates';
+import { parseTodoKeywordToken } from '../shared/todoKeywords';
 import { normalizeLineEndings } from '../utils/escapeUtils';
 import { extractHashtagTags } from './hashtags';
 
@@ -65,11 +66,11 @@ function parseTodoKeywordLine(line: string): string[] | null {
         return null;
     }
 
-    // Remove the | separator and parse all states
+    // Drop | separators and STATE(k) fast-key / logging suffixes
     const allStates = statesString
-        .replace('|', ' ')
         .split(/\s+/)
-        .filter(s => s.length > 0);
+        .filter(s => s.length > 0 && s !== '|')
+        .map(s => parseTodoKeywordToken(s).state);
 
     return allStates.length > 0 ? allStates : null;
 }

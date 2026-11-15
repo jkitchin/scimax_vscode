@@ -18,14 +18,42 @@ export interface TodoWorkflow {
     activeStates: string[];
     /** Done (complete) states */
     doneStates: string[];
+    /**
+     * Each #+TODO line as its own sequence (active then done states), in file
+     * order. Cycling stays within the sequence of the current keyword, as in
+     * org-mode. Absent on hand-built workflows: treat allStates as one sequence.
+     */
+    sequences?: string[][];
+    /**
+     * Fast-selection keys declared as STATE(k) (org-todo fast access),
+     * mapping state -> key. Empty when the file declares none.
+     */
+    fastKeys?: Record<string, string>;
 }
 
 /** Default TODO workflow when no custom states are defined */
 export const DEFAULT_TODO_WORKFLOW: TodoWorkflow = {
     allStates: ['TODO', 'DONE'],
     activeStates: ['TODO'],
-    doneStates: ['DONE']
+    doneStates: ['DONE'],
+    sequences: [['TODO', 'DONE']],
+    fastKeys: {}
 };
+
+/**
+ * Split a keyword token into its state name and optional fast-selection key.
+ *   TODO(t)    -> { state: 'TODO', key: 't' }
+ *   WAIT(w@/!) -> { state: 'WAIT', key: 'w' }   (logging spec ignored)
+ *   DONE(!)    -> { state: 'DONE' }              (logging only, no key)
+ *   DONE       -> { state: 'DONE' }
+ */
+export function parseTodoKeywordToken(token: string): { state: string; key?: string } {
+    const m = token.match(/^(.+?)\(([^()]*)\)$/);
+    if (!m) return { state: token };
+    const spec = m[2];
+    const key = spec.length > 0 && !'@!/'.includes(spec[0]) ? spec[0] : undefined;
+    return key ? { state: m[1], key } : { state: m[1] };
+}
 
 /** Extended default states recognized by the parser */
 export const DEFAULT_TODO_STATES = [
@@ -89,10 +117,22 @@ export function parseTodoKeywordLine(line: string): TodoWorkflow | null {
         return null;
     }
 
+    const fastKeys: Record<string, string> = {};
+    const strip = (tokens: string[]) => tokens.map(t => {
+        const { state, key } = parseTodoKeywordToken(t);
+        if (key) fastKeys[state] = key;
+        return state;
+    });
+    activeStates = strip(activeStates);
+    doneStates = strip(doneStates);
+    const allStates = [...activeStates, ...doneStates];
+
     return {
-        allStates: [...activeStates, ...doneStates],
+        allStates,
         activeStates,
-        doneStates
+        doneStates,
+        sequences: [allStates],
+        fastKeys
     };
 }
 
@@ -104,6 +144,8 @@ export function parseTodoKeywords(content: string): TodoWorkflow | null {
     const lines = content.split('\n');
     const combinedActive: string[] = [];
     const combinedDone: string[] = [];
+    const sequences: string[][] = [];
+    const fastKeys: Record<string, string> = {};
 
     for (const line of lines) {
         // Stop parsing after first heading (keywords must be at top of file)
@@ -115,6 +157,10 @@ export function parseTodoKeywords(content: string): TodoWorkflow | null {
         if (workflow) {
             combinedActive.push(...workflow.activeStates);
             combinedDone.push(...workflow.doneStates);
+            sequences.push(...(workflow.sequences ?? [workflow.allStates]));
+            for (const [state, key] of Object.entries(workflow.fastKeys ?? {})) {
+                if (!(state in fastKeys)) fastKeys[state] = key;
+            }
         }
     }
 
@@ -129,6 +175,40 @@ export function parseTodoKeywords(content: string): TodoWorkflow | null {
     return {
         allStates: [...uniqueActive, ...uniqueDone],
         activeStates: uniqueActive,
-        doneStates: uniqueDone
+        doneStates: uniqueDone,
+        sequences,
+        fastKeys
     };
+}
+
+/**
+ * Next state when cycling forward, org-style: within the sequence that holds
+ * the current keyword, and from its last state back to no keyword. With no
+ * keyword, start the first sequence.
+ */
+export function nextTodoStateInWorkflow(currentState: string | undefined, workflow: TodoWorkflow): string {
+    const sequences = workflow.sequences?.length ? workflow.sequences : [workflow.allStates];
+    if (!currentState) return sequences[0]?.[0] ?? '';
+    const seq = sequences.find(s => s.includes(currentState));
+    if (!seq) return sequences[0]?.[0] ?? '';
+    const i = seq.indexOf(currentState);
+    return i + 1 < seq.length ? seq[i + 1] : '';
+}
+
+/** Previous state when cycling backward; mirror of nextTodoStateInWorkflow. */
+export function previousTodoStateInWorkflow(currentState: string | undefined, workflow: TodoWorkflow): string {
+    const sequences = workflow.sequences?.length ? workflow.sequences : [workflow.allStates];
+    if (!currentState) {
+        const first = sequences[0] ?? [];
+        return first[first.length - 1] ?? '';
+    }
+    const seq = sequences.find(s => s.includes(currentState));
+    if (!seq) return '';
+    const i = seq.indexOf(currentState);
+    return i > 0 ? seq[i - 1] : '';
+}
+
+/** True when the workflow declares at least one STATE(k) fast key. */
+export function hasFastTodoKeys(workflow: TodoWorkflow): boolean {
+    return Object.keys(workflow.fastKeys ?? {}).length > 0;
 }

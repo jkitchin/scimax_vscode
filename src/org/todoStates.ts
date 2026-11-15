@@ -12,7 +12,9 @@ import {
     DEFAULT_TODO_WORKFLOW,
     DEFAULT_TODO_STATES,
     parseTodoKeywordLine,
-    parseTodoKeywords
+    parseTodoKeywords,
+    nextTodoStateInWorkflow,
+    previousTodoStateInWorkflow
 } from '../shared/todoKeywords';
 
 export type { TodoWorkflow };
@@ -107,28 +109,17 @@ export function isActiveState(state: string, document: vscode.TextDocument): boo
 
 /**
  * Get the next state in the TODO cycle for a document
- * Cycles: (no state) -> first active -> ... -> first done -> ... -> (no state)
+ * Cycles within the current keyword's #+TODO sequence:
+ * (no state) -> first state of first sequence; last state of a sequence -> (no state)
  */
 export function getNextTodoState(currentState: string | undefined, document: vscode.TextDocument): string {
-    const workflow = getTodoWorkflowForDocument(document);
-    const allStates = ['', ...workflow.allStates]; // Include empty state for cycling
-
-    const currentIndex = allStates.indexOf(currentState || '');
-    const nextIndex = (currentIndex + 1) % allStates.length;
-
-    return allStates[nextIndex];
+    return nextTodoStateInWorkflow(currentState, getTodoWorkflowForDocument(document));
 }
 
 /**
  * Get the previous state in the TODO cycle for a document
- * Cycles backward: (no state) -> last done -> ... -> first active -> (no state)
+ * Cycles backward within the current keyword's #+TODO sequence
  */
 export function getPreviousTodoState(currentState: string | undefined, document: vscode.TextDocument): string {
-    const workflow = getTodoWorkflowForDocument(document);
-    const allStates = ['', ...workflow.allStates]; // Include empty state for cycling
-
-    const currentIndex = allStates.indexOf(currentState || '');
-    const prevIndex = (currentIndex - 1 + allStates.length) % allStates.length;
-
-    return allStates[prevIndex];
+    return previousTodoStateInWorkflow(currentState, getTodoWorkflowForDocument(document));
 }

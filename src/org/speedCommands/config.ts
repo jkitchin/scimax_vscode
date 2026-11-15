@@ -54,7 +54,8 @@ export const SPEED_COMMAND_DEFINITIONS: SpeedCommandDefinition[] = [
     { key: '^', command: 'scimax.org.sortEntries', description: 'Sort entries', category: 'structure' },
 
     // TODO/State
-    { key: 't', command: 'scimax.org.cycleTodo', description: 'Cycle TODO state', category: 'todo' },
+    { key: 't', command: 'scimax.org.todo', description: 'Set TODO state (fast keys if declared, else cycle)', category: 'todo' },
+    { key: 'T', command: 'scimax.org.setTodoState', description: 'Pick TODO state', category: 'todo' },
     { key: ',', command: 'scimax.org.shiftTimestampUp', description: 'Cycle priority up', category: 'todo' },
     { key: '1', command: 'scimax.speed.priorityA', description: 'Set priority [#A]', category: 'todo' },
     { key: '2', command: 'scimax.speed.priorityB', description: 'Set priority [#B]', category: 'todo' },

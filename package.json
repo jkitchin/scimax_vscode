@@ -2798,6 +2798,14 @@
         "title": "Scimax: Cycle TODO State"
       },
       {
+        "command": "scimax.org.setTodoState",
+        "title": "Scimax: Set TODO State (Fast Selection)"
+      },
+      {
+        "command": "scimax.org.todo",
+        "title": "Scimax: TODO (Fast Selection or Cycle)"
+      },
+      {
         "command": "scimax.org.showTodos",
         "title": "Scimax: Show TODOs in File"
       },
@@ -6111,8 +6119,13 @@
         "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/ && scimax.atHeadingStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {
-        "command": "scimax.org.cycleTodo",
+        "command": "scimax.org.todo",
         "key": "t",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/ && scimax.atHeadingStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
+      },
+      {
+        "command": "scimax.org.setTodoState",
+        "key": "shift+t",
         "when": "editorTextFocus && editorLangId =~ /org|markdown|quarto/ && scimax.atHeadingStart && scimax.speedCommandsEnabled && !scimax.jumpActive"
       },
       {

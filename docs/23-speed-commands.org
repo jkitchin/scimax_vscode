@@ -233,7 +233,8 @@ Manage task states and priorities.
 
 | Key | Command           | Description                                  |
 |-----+-------------------+----------------------------------------------|
-| t   | Cycle TODO state  | Cycle through: (none) → TODO → DONE → (none) |
+| t   | TODO state        | With =STATE(k)= keys in =#+TODO=: press a key to set it (SPC = none). Otherwise cycle (none) → TODO → DONE → (none) |
+| T   | Pick TODO state   | Picker of all states, with fast keys if declared |
 | ,   | Cycle priority up | Increase priority: C → B → A                 |
 | 1   | Priority [#A]     | Set priority to A (highest)                  |
 | 2   | Priority [#B]     | Set priority to B (medium)                   |
@@ -537,7 +538,8 @@ Complete alphabetical reference of all speed commands.
 | R   | Structure  | Demote subtree          |
 | s   | Planning   | Add/edit SCHEDULED      |
 | S   | Special    | Widen (show all)        |
-| t   | TODO       | Cycle TODO state        |
+| t   | TODO       | Fast-select or cycle TODO state |
+| T   | TODO       | Pick TODO state         |
 | <tab> | Visibility | Cycle fold at point     |
 | u   | Navigation | Parent heading          |
 | U   | Structure  | Move subtree up         |

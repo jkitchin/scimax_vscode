@@ -1868,6 +1868,16 @@ function findRepeaterForHeading(
  * Uses file-specific TODO states from #+TODO: keywords if defined
  */
 export async function cycleTodoState(): Promise<void> {
+    await changeTodoState();
+}
+
+/**
+ * Change the TODO state of the heading at point. With no target, advance to
+ * the next state in the cycle; with a target ('' = remove the keyword), jump
+ * straight to it. Both paths share CLOSED, repeater, logging, statistics and
+ * dependency handling.
+ */
+export async function changeTodoState(targetState?: string): Promise<void> {
     const editor = vscode.window.activeTextEditor;
     if (!editor) return;
 
@@ -1908,7 +1918,8 @@ export async function cycleTodoState(): Promise<void> {
         }
         // Heading without any TODO state
         const [, stars, rest] = simpleMatch;
-        const nextState = getNextTodoState(undefined, document);
+        const nextState = targetState !== undefined ? targetState : getNextTodoState(undefined, document);
+        if (!nextState) return;
 
         const newLine = nextState
             ? `${stars} ${nextState} ${rest}`
@@ -1927,7 +1938,8 @@ export async function cycleTodoState(): Promise<void> {
     }
 
     const [, stars, currentState, rest] = headingMatch;
-    let nextState = getNextTodoState(currentState, document);
+    let nextState = targetState !== undefined ? targetState : getNextTodoState(currentState, document);
+    if (targetState !== undefined && (currentState || '') === targetState) return;
 
     // Determine done state transitions
     const wasDone = currentState ? doneStates.has(currentState) : false;
