@@ -2368,6 +2368,10 @@
         "title": "Scimax: Toggle Auto-Copy of Mouse Selections"
       },
       {
+        "command": "scimax.autoCopy.deleteSelection",
+        "title": "Scimax: Delete Auto-Copied Selection and Undo the Copy"
+      },
+      {
         "command": "scimax.editmarks.insertion",
         "title": "Scimax: Mark Insertion"
       },
@@ -5438,6 +5442,18 @@
         "when": "scimax.jumpActive && editorTextFocus"
       },
       {
+        "command": "scimax.autoCopy.deleteSelection",
+        "key": "backspace",
+        "args": "left",
+        "when": "scimax.autoCopy.justCopied && editorTextFocus && editorHasSelection && !editorReadonly && !scimax.jumpActive"
+      },
+      {
+        "command": "scimax.autoCopy.deleteSelection",
+        "key": "delete",
+        "args": "right",
+        "when": "scimax.autoCopy.justCopied && editorTextFocus && editorHasSelection && !editorReadonly && !scimax.jumpActive"
+      },
+      {
         "command": "scimax.jump.gotoWord",
         "key": "ctrl+c j w",
         "mac": "ctrl+c j w",
@@ -7796,6 +7812,11 @@
           "type": "boolean",
           "default": true,
           "description": "Show a brief notification with the text that auto-copy put on the clipboard."
+        },
+        "scimax.autoCopy.undoOnDelete": {
+          "type": "boolean",
+          "default": true,
+          "description": "When a mouse selection that was just auto-copied is deleted (Backspace/Delete) or typed over, undo the copy: drop it from the kill ring and restore the previous clipboard. Cutting it (Cmd+X, C-w) keeps the copy."
         },
         "scimax.logLevel": {
           "type": "string",

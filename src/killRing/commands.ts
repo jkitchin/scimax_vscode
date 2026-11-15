@@ -60,6 +60,22 @@ export async function pushKill(text: string): Promise<void> {
 }
 
 /**
+ * Take back a pushKill: drop `text` from the head of the ring and put
+ * `clipboard` (what the clipboard held before) back on the system clipboard.
+ * Does nothing, and returns false, if something else has been killed or
+ * copied since, so a newer copy is never thrown away.
+ */
+export async function retractKill(text: string, clipboard: string): Promise<boolean> {
+    if (ring.head() !== text) return false;
+    if ((await vscode.env.clipboard.readText()) !== text) return false;
+    ring.remove(0);
+    lastKill = undefined;
+    lastClipboardWrite = clipboard;
+    await vscode.env.clipboard.writeText(clipboard);
+    return true;
+}
+
+/**
  * Delete a range and put its text on the kill ring. Consecutive kills at the
  * same spot with no edit in between join into one entry: forward kills
  * append, backward kills prepend (so C-k C-k C-k yanks back as one piece).
