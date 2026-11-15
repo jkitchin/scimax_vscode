@@ -66,6 +66,7 @@ import { registerOrgPreview } from './org/orgPreview';
 import { registerCustomExportCommands } from './export/commands';
 import { registerBuildProfileCommands } from './latex/buildProfileService';
 import { registerScimaxOrgCommands } from './org/scimaxOrg';
+import { registerTodoFastSelect } from './org/todoFastSelect';
 import { registerMacLinkCommands } from './org/macLinks';
 import { registerScreenshotCommands } from './org/screenshotProvider';
 import { registerScimaxObCommands } from './org/scimaxOb';
@@ -844,6 +845,7 @@ async function activateScimax(context: vscode.ExtensionContext) {
 
     // Register Scimax-org commands (text markup, DWIM return, navigation)
     activationStep('registerScimaxOrgCommands', () => registerScimaxOrgCommands(context));
+    activationStep('registerTodoFastSelect', () => registerTodoFastSelect(context));
 
     // Register macOS Finder/Chrome link commands
     activationStep('registerMacLinkCommands', () => registerMacLinkCommands(context));

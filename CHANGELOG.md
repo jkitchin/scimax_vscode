@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **Fast TODO state selection** - `#+TODO: INVITED(i) AGREED(a) | DECLINED(d)` keys now work as in org-mode. When a file declares keys, the `t` speed key opens a picker that takes a single keystroke (SPC removes the keyword). `T` and `Scimax: Set TODO State` always open the picker. The command also accepts a state name for keybindings.
+
+### Fixed
+
+- **`STATE(k)` suffixes were read as part of the keyword** - `TODO(t)` became the literal keyword `TODO(t)`, so headings like `* TODO task` were not recognised. Keys and logging specs (`(w@/!)`) are now stripped.
+- **TODO cycling stays within a keyword's own sequence** - with several `#+TODO` lines, cycling ran through every state of every line. Now it follows the current keyword's line and returns to no keyword after the last state, as in org-mode.
+
 ## [0.15.4] - 2026-11-14
 
 ### Fixed

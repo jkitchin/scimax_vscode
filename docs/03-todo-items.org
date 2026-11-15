@@ -299,6 +299,28 @@ These keywords are all equivalent:
 | #+SEQ_TODO:  | Sequential workflow (same as TODO) |
 | #+TYP_TODO:  | Type-based workflow                |
 
+** Fast State Selection
+
+Give a keyword a single-key shortcut by writing the key in parentheses,
+as in org-mode. Anything after the key (=@=, =!=, =/=) is a logging spec
+and is ignored for selection.
+
+#+BEGIN_SRC org
+,#+TODO: INVITED(i) AGREED(a) | REVIEWED(r) DECLINED(d) NORESPONSE(n)
+,#+TODO: TODO(t) INREVIEW(v) DECIDE(e) | ACCEPTED(A) REJECTED(R)
+#+END_SRC
+
+When a file declares keys, the =t= speed key opens a picker. Press one key
+to set that state, or =SPC= to remove the keyword. Typing anything else
+filters the list. Files without keys keep plain cycling on =t=. =T= always
+opens the picker, and so does =scimax.org.setTodoState=, which also takes a
+state name as an argument for custom keybindings.
+
+Each =#+TODO= line is its own sequence. Cycling (=C-c C-t=,
+=S-right=/=S-left=) stays within the sequence of the current keyword, and
+returns to no keyword after its last state. From no keyword, cycling
+starts the first sequence.
+
 ** ✅ Example Workflows
 
 *** ✅ Code Review Workflow
@@ -782,7 +804,8 @@ CLOSED: [2026-01-15 Thu 14:42]
 
 | Key     | Action             |
 |---------+--------------------|
-| t       | Cycle TODO state   |
+| t       | Fast-select TODO state if keys declared, else cycle |
+| T       | Pick TODO state    |
 | 1/2/3   | Set priority A/B/C |
 | 0       | Clear priority     |
 | ,       | Increase priority  |
@@ -799,6 +822,8 @@ CLOSED: [2026-01-15 Thu 14:42]
 | Command                   | Description             |
 |---------------------------+-------------------------|
 | scimax.org.cycleTodo      | Cycle TODO state        |
+| scimax.org.setTodoState   | Pick TODO state (fast keys) |
+| scimax.org.todo           | Fast selection if keys declared, else cycle |
 | scimax.org.toggleCheckbox | Toggle checkbox         |
 | scimax.org.insertCheckbox | Insert checkbox         |
 | scimax.org.schedule       | Add SCHEDULED timestamp |

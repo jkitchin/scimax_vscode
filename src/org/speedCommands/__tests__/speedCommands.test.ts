@@ -260,9 +260,14 @@ describe('speed command key mappings', () => {
     });
 
     describe('TODO keys', () => {
-        it('t cycles TODO state', () => {
+        it('t sets TODO state (fast selection or cycle)', () => {
             const cmd = getSpeedCommand('t');
-            expect(cmd?.command).toBe('scimax.org.cycleTodo');
+            expect(cmd?.command).toBe('scimax.org.todo');
+        });
+
+        it('T opens the TODO state picker', () => {
+            const cmd = getSpeedCommand('T');
+            expect(cmd?.command).toBe('scimax.org.setTodoState');
         });
 
         it('1 sets priority A', () => {
