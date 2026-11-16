@@ -991,10 +991,17 @@ async function handleHeadingReturn(
     const currentLine = document.lineAt(position.line);
     const lineText = currentLine.text;
 
-    // Cursor at BOL: let the default newline fire so the user just gets a
-    // blank line inserted above the heading.
+    // Cursor at BOL: insert a blank line above the heading, moving it down.
+    // Insert the newline directly rather than falling back to `type '\n'`,
+    // which applies auto-indent and would push the heading off column 0.
     if (position.character === 0) {
-        return false;
+        await editor.edit(editBuilder => {
+            editBuilder.insert(position, '\n');
+        });
+        const newPos = new vscode.Position(position.line + 1, 0);
+        editor.selection = new vscode.Selection(newPos, newPos);
+        editor.revealRange(new vscode.Range(newPos, newPos));
+        return true;
     }
 
     // Extract the heading title (after stars and space, before tags)
