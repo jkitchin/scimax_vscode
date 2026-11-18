@@ -25,6 +25,7 @@
 
 import * as fs from 'fs';
 import * as path from 'path';
+import * as yaml from 'js-yaml';
 
 /** Marks the vendored scripts carry in their first line, so a page is never given them twice. */
 const PRESENTER_MARK = 'marp-present: presenter tools';
@@ -42,6 +43,8 @@ const BESPOKE_SCRIPT = /<script>(?=\/\*!! License: [^\n]*marp-cli)/;
 const INK_EMPTY = '<script type="application/json" id="marp-ink-data">{}</script>';
 const SELF_EMPTY = '<script type="text/plain" id="marp-self"></script>';
 const PYODIDE_EMPTY = '<script type="application/json" id="marp-pyodide"></script>';
+/** The data files the Python cells read (path as written -> base64), put in Python's file system. */
+const PYFILES_ID = 'marp-pyfiles';
 const MEDIA_EMPTY = '<script type="application/json" id="marp-media"></script>';
 const MEDIA_MARK = 'marp-present: media store';
 /**
@@ -502,6 +505,15 @@ export async function bundlePresenterDeck(html: string, options: BundleOptions):
     const pyodide = options.pyodide && hasRunCells(text) ? options.pyodide : undefined;
     // In <head>, so it is in the page before pycells.js (at the end of <body>) runs
     head += INK_EMPTY + SELF_EMPTY + (pyodide ? PYODIDE_EMPTY : '');
+    if (options.markdown !== undefined && hasRunCells(text)) {
+        const data = pythonDataFiles(options.markdown, options.baseDir);
+        const names = Object.keys(data.files);
+        if (names.length > 0) {
+            head += `<script type="application/json" id="${PYFILES_ID}">${encodePythonFiles(data.files)}</script>`;
+            inlined.report.counts['python data files'] = names.length;
+        }
+        inlined.report.missing.push(...data.skipped);
+    }
     text = text.replace('</head>', () => head + '</head>');
     text = addPresenterScripts(text, options.assets);
     inlined.report.counts.presenter = 1;
@@ -583,6 +595,101 @@ export function parseTimer(value: string | undefined): number | undefined {
 
 /** Pyodide's own files, always embedded. */
 export const PYODIDE_CORE_FILES = ['pyodide.mjs', 'pyodide.asm.mjs', 'pyodide.asm.wasm', 'python_stdlib.zip', 'pyodide-lock.json'];
+
+/** Largest file the Python cells get a copy of (it is embedded in the deck as base64). */
+export const PYTHON_DATA_FILE_LIMIT = 25 * 1024 * 1024;
+
+/**
+ * The files the ```python run cells read, to put in Python's file system
+ * (Pyodide's, in the browser, which cannot see the disk): every string
+ * literal in a cell that names a file relative to the deck
+ * (`pd.read_csv("data.csv")`, `open('data/x.txt')`), and the files and folders
+ * listed in the front matter's `python-files:` (one path or a list), for
+ * names the code builds. Keys are the paths as the cell would open them,
+ * relative to Python's working folder. Absolute paths are left out, so a
+ * deck never carries a file from elsewhere on the disk by accident.
+ * `skipped` names files too large to embed, and listed files not found.
+ */
+export function pythonDataFiles(markdown: string, baseDir: string): { files: Record<string, Buffer>; skipped: string[] } {
+    const files: Record<string, Buffer> = {};
+    const skipped: string[] = [];
+    const add = (name: string, file: string): void => {
+        const size = fs.statSync(file).size;
+        if (size > PYTHON_DATA_FILE_LIMIT) {
+            skipped.push(`${name} (${(size / 1048576).toFixed(0)} MB: too large to put in the deck for Python)`);
+        } else {
+            files[name] = fs.readFileSync(file);
+        }
+    };
+    const relative = (name: string): boolean => !!name && !path.isAbsolute(name) && !/^[a-z][\w+.-]*:/i.test(name) && !name.startsWith('~');
+    const statOf = (file: string): fs.Stats | undefined => {
+        try {
+            return fs.statSync(file);
+        } catch {
+            return undefined;
+        }
+    };
+
+    for (const cell of runCells(markdown)) {
+        const literal = /(['"])((?:(?!\1)[^\\\n])+)\1/g;
+        let m: RegExpExecArray | null;
+        while ((m = literal.exec(cell.code)) !== null) {
+            const name = m[2].trim();
+            if (relative(name) && !(name in files) && statOf(path.resolve(baseDir, name))?.isFile()) {
+                add(name, path.resolve(baseDir, name));
+            }
+        }
+    }
+
+    const listed: string[] = [];
+    const front = /^---\r?\n([\s\S]*?)\r?\n(?:---|\.\.\.)\s*(?:\r?\n|$)/.exec(markdown);
+    if (front) {
+        let value: unknown;
+        try {
+            value = (yaml.load(front[1]) as Record<string, unknown> | undefined)?.['python-files'];
+        } catch {
+            value = undefined;
+        }
+        if (typeof value === 'string') {
+            listed.push(...value.split(',').map(s => s.trim()).filter(Boolean));
+        } else if (Array.isArray(value)) {
+            listed.push(...value.filter((v): v is string => typeof v === 'string'));
+        }
+    }
+    const walk = (name: string, file: string): void => {
+        const stat = statOf(file);
+        if (stat?.isDirectory()) {
+            for (const entry of fs.readdirSync(file)) {
+                if (!entry.startsWith('.')) {
+                    walk(`${name.replace(/\/+$/, '')}/${entry}`, path.join(file, entry));
+                }
+            }
+        } else if (stat?.isFile()) {
+            if (!(name in files)) {
+                add(name, file);
+            }
+        } else {
+            skipped.push(`${name} (python-files, relative to ${baseDir})`);
+        }
+    };
+    for (const name of listed) {
+        if (relative(name)) {
+            walk(name, path.resolve(baseDir, name));
+        } else {
+            skipped.push(`${name} (python-files takes paths relative to the deck)`);
+        }
+    }
+    return { files, skipped };
+}
+
+/** Data files as the JSON pycells.js reads (path -> base64), safe inside a <script>. */
+export function encodePythonFiles(files: Record<string, Buffer>): string {
+    const encoded: Record<string, string> = {};
+    for (const [name, data] of Object.entries(files)) {
+        encoded[name] = data.toString('base64');
+    }
+    return JSON.stringify(encoded).replace(/</g, '\\u003c');
+}
 
 /** The Pyodide release pycells.js loads (its `const PYODIDE = "..."`), e.g. https://cdn.jsdelivr.net/pyodide/v314.0.7/full/ */
 export function pyodideBaseUrl(pycellsSource: string): string {
