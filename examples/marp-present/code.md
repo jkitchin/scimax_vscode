@@ -144,6 +144,20 @@ print("doubled:", 2 * float(val))
 
 ---
 
+## Reading a data file
+
+The deck carries files its cells name in quotes, so this works in the browser.
+
+```python run
+import pandas as pd
+
+df: pd.DataFrame = pd.read_csv("example_file.csv")
+display(df.head())
+df.describe()
+```
+
+---
+
 ## A plot
 
 Figures show under the cell. Click one for full size.

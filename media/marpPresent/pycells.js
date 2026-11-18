@@ -20,7 +20,11 @@
  * Python starts downloading in the background as soon as the deck opens, runs the `hidden` setup
  * cells, then prefetches every cell's packages and imports (in slide order) without running
  * them, so the first Run is quick. A Run jumps ahead of the prefetching.
- * Output: printed text, errors, the value of the last expression, matplotlib figures.
+ * Output: printed text, errors, the value of the last expression, matplotlib figures. display()
+ * works as in Jupyter, and a DataFrame (anything with _repr_html_) shows as a table.
+ * Data files: the deck carries the files its cells name in quotes (pd.read_csv("data.csv")) and
+ * those in its `python-files:` front matter (<script id="marp-pyfiles">); they are put in Python's
+ * file system, relative to its working folder, so the cells read them as they would on disk.
  * input() shows a text box under the cell (Enter answers, Esc cancels with EOFError); it needs a
  * browser with WebAssembly JSPI (Chrome, Edge) and says so elsewhere.
  * Needs internet to run code; editing works offline. A deck built with `presenter: offline` carries
@@ -67,6 +71,10 @@
 .pyc-in input { flex: 1; min-width: 6em; font: inherit; color: #111827; background: #f0fdf4; border: 1px solid #16a34a;
   border-radius: 4px; padding: 1px 6px; outline: none; }
 .pyc-in input:focus { box-shadow: 0 0 0 2px rgba(22,163,74,.35); }
+.pyc-out .html { padding: 4px 14px; overflow-x: auto; font: 0.7em/1.35 Helvetica, Arial, sans-serif; color: #111827; }
+.pyc-out .html table { border-collapse: collapse; margin: 0; font-size: 1em; background: white; }
+.pyc-out .html th, .pyc-out .html td { padding: 2px 8px; border: 0; border-bottom: 1px solid #e5e7eb; text-align: right; background: none; }
+.pyc-out .html thead th { border-bottom: 1px solid #9ca3af; }
 .pyc-out img { display: block; max-width: 100%; max-height: 280px; margin: 4px auto; cursor: zoom-in; }
 .pyc-out img.full { max-width: none; max-height: none; cursor: zoom-out; }
 @media print { .pyc-bar button { display: none; } .pyc .cm-editor { max-height: none; } .pyc { max-height: none !important; } }`;
@@ -92,6 +100,20 @@ self.fetch = (input, opts) => {
 };
 const moduleURL = name => OFFLINE ? "data:text/javascript;base64," + OFFLINE[name] : BASE + name;
 let py = null, cur = null, pycseDone = false, quiet = false;   // quiet: installer chatter goes to the status line
+// The deck's data files (path as the cells open it -> base64): Python in the browser can't see the
+// disk, so they go into its file system, relative to its working folder, at start and on a change.
+let FILES = null;
+function writeFiles() {
+  if (!FILES || !py) return;
+  const cwd = py.FS.cwd();
+  for (const [name, b64] of Object.entries(FILES)) {
+    const parts = [];
+    for (const p of (cwd + "/" + name).split("/")) { if (p === "..") parts.pop(); else if (p && p !== ".") parts.push(p); }
+    const full = "/" + parts.join("/");
+    try { py.FS.mkdirTree(full.slice(0, full.lastIndexOf("/")) || "/"); py.FS.writeFile(full, bytes(b64)); }
+    catch (e) { post("stream", { name: "stderr", text: "could not add the data file " + name + ": " + e + "\\n" }); }
+  }
+}
 const tried = new Set();
 const post = (type, extra) => postMessage(Object.assign({ type, id: cur }, extra));
 const note = text => post("status", { text });
@@ -111,6 +133,7 @@ async function init() {
   py.setStdout({ batched: s => quiet ? note(s.slice(0, 120)) : post("stream", { name: "stdout", text: s + "\\n" }) });
   py.setStderr({ batched: s => post("stream", { name: "stderr", text: s + "\\n" }) });
   await py.loadPackage("micropip", { messageCallback: () => {} });
+  writeFiles();
   await py.runPythonAsync(\`
 import os, sys, warnings
 os.environ["MPLBACKEND"] = "Agg"
@@ -121,7 +144,44 @@ async def __pycells_run(code, name):
     import linecache   # so a traceback shows the cell's lines, like Jupyter
     linecache.cache[name] = (len(code), None, code.splitlines(True), name)
     r = await eval_code_async(code, globals(), filename=name)
-    return None if r is None else repr(r)
+    if r is None:
+        return None
+    kind, text = __pycells_rich(r)
+    if kind == "text":
+        return text
+    import js
+    js.pycellsDisplay(kind, text)
+    return None
+
+# How Jupyter would show a value: a matplotlib figure as a PNG, an object with _repr_html_ (a
+# pandas DataFrame) as HTML, anything else as its repr.
+def __pycells_rich(obj):
+    if hasattr(obj, "savefig") and hasattr(obj, "get_axes"):
+        import io, base64
+        buf = io.BytesIO()
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            obj.savefig(buf, format="png", dpi=110, bbox_inches="tight")
+        if "matplotlib.pyplot" in sys.modules:
+            sys.modules["matplotlib.pyplot"].close(obj)     # shown now, not again at the end
+        return "png", base64.b64encode(buf.getvalue()).decode()
+    if not isinstance(obj, type):
+        try:
+            html = obj._repr_html_() if callable(getattr(obj, "_repr_html_", None)) else None
+        except Exception:
+            html = None
+        if html:
+            return "html", str(html)
+    return "text", repr(obj)
+
+# display(), as in Jupyter: shows each object in the cell's output, where the call is.
+def __pycells_display(*objs, **kwargs):
+    import js
+    sys.stdout.flush()
+    sys.stderr.flush()
+    for obj in objs:
+        kind, text = __pycells_rich(obj)
+        js.pycellsDisplay(kind, text)
 
 def __pycells_preimport(code):
     import ast, importlib
@@ -159,6 +219,7 @@ def __pycells_input(prompt=""):
     print(prompt + answer)
     return answer
 builtins.input = __pycells_input
+builtins.display = __pycells_display
 
 def __pycells_figures():
     if "matplotlib.pyplot" not in sys.modules:
@@ -213,6 +274,8 @@ const quietly = async f => { quiet = true; try { return await f(); } finally { q
 
 // input(): ask the page for a line for the running cell; null (Esc, or a setup cell) means no input
 const asks = new Map();
+self.pycellsDisplay = (kind, text) =>
+  kind === "png" ? post("image", { png: text }) : kind === "html" ? post("html", { html: text }) : post("result", { text });
 self.pycellsAsk = prompt => new Promise(resolve => { asks.set(cur, resolve); post("input", { prompt }); });
 
 // %pip / !pip install lines: collected, and blanked so the rest keeps its line numbers
@@ -298,6 +361,7 @@ async function pump() {
 }
 self.onmessage = e => {
   if (e.data.type === "offline") { OFFLINE = e.data.files; return; }
+  if (e.data.type === "files") { FILES = e.data.files; writeFiles(); return; }
   if (e.data.type === "input-reply") {
     const resolve = asks.get(e.data.id);
     // undefined, not null: Python gets None for undefined (null arrives as a JsNull object)
@@ -308,8 +372,24 @@ self.onmessage = e => {
 };
 `;
 
+  // HTML from Python (display(df), a DataFrame as the last value) without anything that runs:
+  // no scripts, frames or event handlers, so a cell's output can't act on the page
+  function richHtml(html) {
+    const t = document.createElement("template");
+    t.innerHTML = html;
+    t.content.querySelectorAll("script, iframe, frame, object, embed, link, meta, base, form").forEach(el => el.remove());
+    t.content.querySelectorAll("*").forEach(el => [...el.attributes].forEach(a => {
+      if (/^on/i.test(a.name) || /^\s*(javascript|vbscript|data:text\/html)/i.test(a.value)) el.removeAttribute(a.name);
+    }));
+    const div = document.createElement("div");
+    div.className = "html";
+    div.appendChild(t.content);
+    return div;
+  }
+
   // Scimax's Python panel (runner.js) runs cells in VS Code with this same worker
   window.__PYCELLS_WORKER__ = WORKER;
+  window.__PYCELLS_HTML__ = richHtml;
   window.__PYCELLS_PYODIDE__ = PYODIDE;      // presenter.js downloads Pyodide from here for an offline copy
 
   let worker = null, nextId = 0, counter = 0, setupQueued = false;
@@ -321,6 +401,8 @@ self.onmessage = e => {
     worker = new Worker("data:text/javascript;charset=utf-8," + encodeURIComponent(WORKER), { type: "module" });
     const offline = document.getElementById("marp-pyodide");
     if (offline && offline.textContent.trim()) worker.postMessage({ type: "offline", files: JSON.parse(offline.textContent) });
+    const data = document.getElementById("marp-pyfiles");
+    if (data && data.textContent.trim()) worker.postMessage({ type: "files", files: JSON.parse(data.textContent) });
     worker.onmessage = e => { const h = handlers.get(e.data.id); if (h) h(e.data); };
     worker.onerror = e => {
       e.preventDefault();
@@ -388,6 +470,7 @@ self.onmessage = e => {
       else if (m.type === "input") cell.ask(m.prompt, value => getWorker().postMessage({ type: "input-reply", id, value }));
       else if (m.type === "stream") cell.show(m.name, m.text);
       else if (m.type === "result") cell.show("result", m.text);
+      else if (m.type === "html") { cell.out.appendChild(richHtml(m.html)); fit(cell); }
       else if (m.type === "error") { cell.show("error", m.text); cell.error = m.text.trim().split("\n").pop(); }
       else if (m.type === "image") {
         const img = document.createElement("img"); img.src = "data:image/png;base64," + m.png;

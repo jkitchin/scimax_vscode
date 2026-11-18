@@ -300,6 +300,7 @@ shows what a directive does when you hover over it.
 | ~header~, ~footer~, ~color~, ~background*~                                    | Local  | (free text; ~background*~ positions, repeats and sizes are offered)                                                          |
 | ~style~, ~lang~, ~title~, ~author~, ~description~, ~keywords~, ~url~, ~image~ | Global | (free text)                                                                                                                  |
 | ~bibliography~                                                                | Global | (BibTeX file or list of files, relative to the deck)                                                                         |
+| ~python-files~                                                                | Global | (data files or folders for the Python cells, relative to the deck)                                                           |
 
 * Slide Thumbnails
 
@@ -1183,7 +1184,7 @@ another machine or share it, press =s=: the browser downloads one HTML file
 with the theme, images, iframes, fonts, tools and ink inside. Open it
 anywhere, keep annotating, and press =s= again.
 
-** Live Python cells
+** 👀 Live Python cells
 
 Mark a Python code block with ~run~ to make it a cell you can edit and run
 during the talk:
@@ -1212,7 +1213,9 @@ without running. =PageUp= and =PageDown=, which presentation clickers send,
 always change slides, even while you are editing a cell. =↺=
 restores the original code and =⟲= restarts Python. All cells share one
 Python session, like a notebook. Output shows printed text, errors, the value
-of the last expression and matplotlib figures.
+of the last expression and matplotlib figures. A pandas DataFrame (anything
+with ~_repr_html_~) shows as a table, and ~display()~ works as in Jupyter (see
+[[*Data files and ~display()~][Data files and display()]]).
 
 Code that fails is useful for teaching, so errors stay in view. The cell
 shows the traceback with the failing lines of code (as Jupyter does), and the
@@ -1244,9 +1247,54 @@ The cell has to pause Python while you type, which needs WebAssembly JSPI:
 without it, ~input()~ stops the cell with a message saying so; set the value in
 the code instead. A ~run hidden~ setup cell gets no input (~EOFError~).
 
+*** ⚠️ Data files and ~display()~
+
+Python runs in the browser, which cannot read files from your disk, so the deck
+carries the data files its cells read. Any file a cell names in quotes,
+relative to the deck, comes along by itself:
+
+#+begin_src markdown
+```python run
+import pandas as pd
+
+df: pd.DataFrame = pd.read_csv("example_file.csv")
+display(df.head())
+```
+#+end_src
+
+When the deck is built, ~example_file.csv~ (next to the deck) is put inside the
+HTML, and when Python starts it is written into Python's own file system at the
+same relative path. ~open()~, ~pd.read_csv()~, ~np.loadtxt()~ and so on then
+find it as they would on disk. Paths in subfolders (~"data/run1.csv"~) and above
+the deck (~"../data/run1.csv"~) work too; absolute paths are never embedded.
+
+For a file the code builds a name for (~os.path.join("data", name)~), list it,
+or its folder, in the front matter's ~python-files~:
+
+#+begin_src markdown
+---
+marp: true
+presenter: true
+python-files: [data/, results.json]
+---
+#+end_src
+
+A folder brings every file in it (hidden files excepted). The build reports
+how many data files it added, and any listed file it could not find. Files over
+25 MB are left out (the deck carries them as base64). A cell can write files
+too, but they live only in that Python: =⟲= (restart) puts the deck's files
+back as they were built, and nothing is saved to disk.
+
+~display(obj)~ shows each object under the cell where it is called, as in
+Jupyter: a DataFrame (or anything with ~_repr_html_~) as a table, a matplotlib
+figure as a picture, anything else as its ~repr~. The last expression of a
+cell is shown the same way, so ~df.head()~ alone on the last line is a table
+too. The HTML is cleaned before it is shown (no scripts, frames or event
+handlers).
+
 ~examples/marp-present/code.md~ has a slide for each kind of code: plain
 highlighted code, live cells (the last value, shared variables, ~hidden~ and
-~auto~ cells, ~input()~, a plot, ~%pip~) and broken cells for teaching (NameError,
+~auto~ cells, ~input()~, reading a CSV file, a plot, ~%pip~) and broken cells for teaching (NameError,
 SyntaxError, IndentationError, TypeError, an error inside a function,
 IndexError, KeyError, numpy, ~raise~, ~try~/~except~, a warning). Try the
 [[https://kitchingroup.cheme.cmu.edu/scimax_vscode/slides/code.html][built copy]] in the browser.
@@ -1264,7 +1312,7 @@ deck opens, along with the packages the cells import.
 In PDF, PowerPoint and image exports a ~run~ cell is ordinary highlighted code,
 and a ~run hidden~ cell is left out.
 
-** Running cells in VS Code
+** 👀 Running cells in VS Code
 
 Press =C-c C-c= in a ~run~ cell to run it while you write the deck, without
 presenting. The output shows in a /Python/ panel beside the editor, from the
@@ -1282,6 +1330,8 @@ same Pyodide the slideshow uses, so code that works there works in the talk.
   go to the cell. *Clear* removes the output and *Restart* restarts Python.
 - ~input()~ shows a text box in the panel, as in the slideshow (=Enter=
   answers, =Esc= cancels).
+- The deck's data files (see [[*Data files and ~display()~][Data files and display()]]) are read from disk
+  before each run, so a changed file is seen at once.
 - The panel is for one deck at a time: running a cell of another deck
   restarts Python for that deck.
 - A ~presenter: offline~ deck runs from the Python files it carries, so this

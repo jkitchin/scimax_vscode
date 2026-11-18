@@ -5,6 +5,7 @@
  * Messages from the extension:
  *   { type: "run", code, name, label, line, setup: [code, ...] }  run a cell (setup cells first, once)
  *   { type: "offline", files }   Pyodide files of a presenter: offline deck (used from the next start)
+ *   { type: "files", files }     the deck's data files (path -> base64), put in Python's file system
  *   { type: "restart" }          a fresh Python
  *   { type: "clear" }            remove the output
  * Messages to the extension: { type: "ready" }, { type: "reveal", line }
@@ -13,7 +14,7 @@
   const vscode = acquireVsCodeApi();
   const log = document.getElementById("log");
   const status = document.getElementById("status");
-  let worker = null, nextId = 0, counter = 0, setupDone = false, offline = null;
+  let worker = null, nextId = 0, counter = 0, setupDone = false, offline = null, files = null;
   const handlers = new Map();
 
   const setStatus = (text, busy) => { status.textContent = text; status.classList.toggle("busy", !!busy); };
@@ -24,6 +25,7 @@
     const url = URL.createObjectURL(new Blob([window.__PYCELLS_WORKER__], { type: "text/javascript" }));
     worker = new Worker(url, { type: "module" });
     if (offline) worker.postMessage({ type: "offline", files: offline });
+    if (files) worker.postMessage({ type: "files", files });
     worker.onmessage = e => { const h = handlers.get(e.data.id); if (h) h(e.data); };
     worker.onerror = e => {
       e.preventDefault();
@@ -112,6 +114,7 @@
       else if (m.type === "input") ask(e.out, m.prompt, reply);
       else if (m.type === "stream") show(e.out, m.name, m.text);
       else if (m.type === "result") show(e.out, "result", m.text);
+      else if (m.type === "html") e.out.appendChild(window.__PYCELLS_HTML__(m.html));
       else if (m.type === "error") show(e.out, "error", m.text);
       else if (m.type === "image") {
         const img = document.createElement("img");
@@ -131,6 +134,7 @@
     const msg = ev.data || {};
     if (msg.type === "run") run(msg);
     else if (msg.type === "offline") { offline = msg.files; if (worker) restart("Python restarted with the deck's offline packages"); }
+    else if (msg.type === "files") { files = msg.files; if (worker) worker.postMessage({ type: "files", files }); }
     else if (msg.type === "restart") restart();
     else if (msg.type === "clear") log.textContent = "";
   });

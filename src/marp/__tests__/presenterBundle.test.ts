@@ -12,7 +12,7 @@ import { createRequire } from 'module';
 import {
     addMediaScript, addPresenterScripts, bundlePresenterDeck, hasRunCells, inlineDeck, isLocalRef,
     parseTimer, planOfflinePython, PresenterAssets, presenterAssets, presenterOffline, presenterRequested,
-    offlineIssues, pyodideBaseUrl, PyodideLock, pythonImports, runCellAt, runCellCode, runCells, scriptSafe,
+    offlineIssues, pyodideBaseUrl, PyodideLock, pythonDataFiles, pythonImports, runCellAt, runCellCode, runCells, scriptSafe,
 } from '../presenterBundle';
 import { buildMarpArgs } from '../marpExport';
 import { DIRECTIVES } from '../marpDirectives';
@@ -324,6 +324,61 @@ describe('bundlePresenterDeck', () => {
         const { html } = await bundlePresenterDeck(page('<p>x</p>'), { baseDir: dir, assets });
         await expect(bundlePresenterDeck(html, { baseDir: dir, assets })).rejects.toThrow(/already/);
         await expect(bundlePresenterDeck('<p>x</p>', { baseDir: dir, assets })).rejects.toThrow(/Marp HTML deck/);
+    });
+});
+
+describe('Python data files', () => {
+    let deck: string;
+    beforeAll(() => {
+        deck = fs.mkdtempSync(path.join(os.tmpdir(), 'pyfiles-'));
+        fs.mkdirSync(path.join(deck, 'data', 'more'), { recursive: true });
+        fs.writeFileSync(path.join(deck, 'example_file.csv'), 'a,b\n1,2\n');
+        fs.writeFileSync(path.join(deck, 'data', 'x.txt'), 'x');
+        fs.writeFileSync(path.join(deck, 'data', 'more', 'y.txt'), 'y');
+        fs.writeFileSync(path.join(deck, 'data', '.hidden'), 'h');
+        fs.writeFileSync(path.join(path.dirname(deck), 'pyfiles-outside.txt'), 'o');
+    });
+    afterAll(() => {
+        fs.rmSync(deck, { recursive: true, force: true });
+        fs.rmSync(path.join(path.dirname(deck), 'pyfiles-outside.txt'), { force: true });
+    });
+
+    it('takes files the run cells name in quotes, relative to the deck', () => {
+        const md = '---\nmarp: true\n---\n\n```python run\nimport pandas as pd\ndf = pd.read_csv("example_file.csv")\n'
+            + "open('data/x.txt')\nprint(\"missing.csv\", 'pandas')\n```\n\n```python\nopen('data/more/y.txt')\n```\n";
+        const { files, skipped } = pythonDataFiles(md, deck);
+        expect(Object.keys(files).sort()).toEqual(['data/x.txt', 'example_file.csv']);
+        expect(files['example_file.csv'].toString()).toBe('a,b\n1,2\n');
+        expect(skipped).toEqual([]);
+    });
+
+    it('never takes absolute paths, but follows ../ written in a cell', () => {
+        const abs = path.join(deck, 'example_file.csv');
+        const md = `\`\`\`python run\nopen(${JSON.stringify(abs)})\nopen("../pyfiles-outside.txt")\n\`\`\`\n`;
+        expect(Object.keys(pythonDataFiles(md, deck).files)).toEqual(['../pyfiles-outside.txt']);
+    });
+
+    it('adds the files and folders listed in python-files', () => {
+        const md = '---\nmarp: true\npython-files: [data/, nope.csv, /etc/hosts]\n---\n\n```python run\nx = 1\n```\n';
+        const { files, skipped } = pythonDataFiles(md, deck);
+        expect(Object.keys(files).sort()).toEqual(['data/more/y.txt', 'data/x.txt']);
+        expect(skipped.join('\n')).toMatch(/nope\.csv/);
+        expect(skipped.join('\n')).toMatch(/\/etc\/hosts/);
+        expect(Object.keys(pythonDataFiles('---\npython-files: example_file.csv\n---\n', deck).files)).toEqual(['example_file.csv']);
+    });
+
+    it('embeds them in a presenter deck, in its copy of itself too', async () => {
+        const md = '```python run\ndf = pd.read_csv("example_file.csv")\n```\n';
+        const { html, report } = await bundlePresenterDeck(page('<pre data-run="run">df</pre>'), { baseDir: deck, markdown: md, assets });
+        const block = /<script type="application\/json" id="marp-pyfiles">([^<]*)<\/script>/.exec(html);
+        expect(block).not.toBeNull();
+        expect(Buffer.from(JSON.parse(block![1])['example_file.csv'], 'base64').toString()).toBe('a,b\n1,2\n');
+        expect(report.counts['python data files']).toBe(1);
+        const copy = Buffer.from(/id="marp-self">([^<]+)</.exec(html)![1], 'base64').toString('utf8');
+        expect(copy).toContain('id="marp-pyfiles"');
+        // a deck without run cells carries no data
+        const plain = await bundlePresenterDeck(page('<p>x</p>'), { baseDir: deck, markdown: md, assets });
+        expect(plain.html).not.toContain('marp-pyfiles');
     });
 });
 

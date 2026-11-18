@@ -16,7 +16,7 @@ import * as vscode from 'vscode';
 import { isMarpText, slideStarts } from './slideRenderer';
 import { parseDeck } from './slideModel';
 import { frontMatterValue } from './marpAuthoring';
-import { presenterOffline, RunCell, runCellAt, runCells } from './presenterBundle';
+import { encodePythonFiles, presenterOffline, pythonDataFiles, RunCell, runCellAt, runCells } from './presenterBundle';
 import { offlinePythonFiles } from './marpExportCommands';
 
 /** 1-based number of the slide (counting all slides) that contains 0-based `line`. */
@@ -80,6 +80,9 @@ body .pyc-out pre.stderr { color: var(--vscode-editorWarning-foreground); }
 body .pyc-out pre.error { color: var(--vscode-errorForeground); background: none !important; }
 body .pyc-out pre.result { color: var(--vscode-textPreformat-foreground, var(--vscode-foreground)); }
 body .pyc-out pre.note { color: var(--vscode-descriptionForeground); font-style: italic; }
+body .pyc-out .html { padding: 2px 0; font-family: var(--vscode-font-family); font-size: var(--vscode-editor-font-size); color: var(--vscode-foreground); }
+body .pyc-out .html table { background: none; }
+body .pyc-out .html th, body .pyc-out .html td { border-bottom-color: var(--vscode-panel-border, #8884); }
 body .pyc-out img { display: block; max-width: 100%; max-height: none; margin: 4px 0; background: white; cursor: default; }
 body .pyc-in { padding: 2px 0 4px; font-family: var(--vscode-editor-font-family); font-size: var(--vscode-editor-font-size); }
 body .pyc-in span { color: var(--vscode-foreground); }
@@ -104,6 +107,8 @@ class PythonRunner {
     private deck: string | undefined;
     private ready: Promise<void> = Promise.resolve();
     private offlineSent = false;
+    /** The data files last sent to the panel (as JSON), so unchanged files are not sent again. */
+    private filesSent: string | undefined;
 
     constructor(private readonly context: vscode.ExtensionContext) {}
 
@@ -114,6 +119,7 @@ class PythonRunner {
             await this.post({ type: 'restart' });
             await this.post({ type: 'clear' });
             this.offlineSent = false;
+            this.filesSent = undefined;
         }
         this.deck = document.uri.fsPath;
         if (this.panel) {
@@ -129,6 +135,7 @@ class PythonRunner {
         });
         this.panel = panel;
         this.offlineSent = false;
+        this.filesSent = undefined;
         this.ready = new Promise(resolve => {
             const sub = panel.webview.onDidReceiveMessage(message => {
                 if (message?.type === 'ready') {
@@ -183,9 +190,23 @@ class PythonRunner {
         }
     }
 
+    /** The deck's data files, read again before each run so Python sees the files as they are now. */
+    private async sendFiles(document: vscode.TextDocument): Promise<void> {
+        if (document.isUntitled) {
+            return;
+        }
+        const { files } = pythonDataFiles(document.getText(), path.dirname(document.uri.fsPath));
+        const encoded = encodePythonFiles(files);
+        if (encoded !== this.filesSent) {
+            this.filesSent = encoded;
+            await this.post({ type: 'files', files: JSON.parse(encoded) });
+        }
+    }
+
     async run(document: vscode.TextDocument, cells: RunCell[]): Promise<void> {
         await this.open(document);
         await this.sendOffline(document);
+        await this.sendFiles(document);
         const text = document.getText();
         const all = runCells(text);
         const setup = all.filter(cell => cell.flags.includes('hidden')).map(cell => cell.code);
