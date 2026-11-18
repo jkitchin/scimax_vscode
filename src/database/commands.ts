@@ -18,6 +18,10 @@ import { databaseLogger as log } from '../utils/logger';
 import { showFuzzyQuickPick } from '../utils/fuzzyQuickPick';
 import { runDispatcher, DispatchEntry } from '../org/agendaProvider';
 import { forcedFiles, samePath, settingsPath } from '../shared/indexScope';
+import { HeadingActionOrigin, openHeading, showHeadingActions } from './headingActions';
+
+/** The open heading search (C-c d h), for its M-o action menu. */
+let activeHeadingPicker: { showActions: () => Promise<void> } | undefined;
 
 /**
  * Debounce function for dynamic QuickPick updates
@@ -725,66 +729,93 @@ export function registerDbCommands(
     // searched, not just a preloaded slice.
     context.subscriptions.push(
         vscode.commands.registerCommand('scimax.db.searchHeadings', async () => {
-            const db = await requireDatabase();
-            if (!db) return;
-
-            type HeadingItem = vscode.QuickPickItem & { heading: HeadingRecord };
-            const quickPick = vscode.window.createQuickPick<HeadingItem>();
-            quickPick.placeholder = 'Type to search headings (space-separated terms; title, TODO, tags, file path)...';
-            // The database does the matching; don't let VS Code filter again
-            quickPick.matchOnDescription = false;
-            quickPick.matchOnDetail = false;
-            // Keep the database's most-recently-modified order; without this
-            // VS Code re-sorts the items by label match score as you type.
-            // (sortByLabel exists at runtime but predates our @types/vscode.)
-            (quickPick as unknown as { sortByLabel: boolean }).sortByLabel = false;
-
-            const toItem = (heading: HeadingRecord): HeadingItem => ({
-                label: `${'  '.repeat(heading.level - 1)}${getHeadingIcon(heading)} ${heading.title}`,
-                description: formatHeadingDescription(heading),
-                detail: `${heading.file_path}:${heading.line_number}`,
-                alwaysShow: true,
-                heading
-            });
-
-            // Only the latest query's results are shown; slower earlier ones are dropped
-            let requestId = 0;
-            let debounceTimer: ReturnType<typeof setTimeout> | undefined;
-            const runSearch = async (value: string) => {
-                const id = ++requestId;
-                quickPick.busy = true;
-                try {
-                    const headings = await db.searchHeadingsByTerms(value, { limit: 200 });
-                    if (id !== requestId) return;
-                    quickPick.items = headings.map(toItem);
-                } catch (error) {
-                    log.error('Heading search failed', error as Error);
-                } finally {
-                    if (id === requestId) quickPick.busy = false;
-                }
-            };
-
-            quickPick.onDidChangeValue(value => {
-                if (debounceTimer) clearTimeout(debounceTimer);
-                debounceTimer = setTimeout(() => runSearch(value), 150);
-            });
-
-            quickPick.onDidAccept(async () => {
-                const selected = quickPick.selectedItems[0];
-                if (selected) {
-                    quickPick.hide();
-                    await openFileAtLine(selected.heading.file_path, selected.heading.line_number);
-                }
-            });
-
-            quickPick.onDidHide(() => {
-                if (debounceTimer) clearTimeout(debounceTimer);
-                quickPick.dispose();
-            });
-            quickPick.show();
-            void runSearch('');
+            await searchHeadingsPicker({ editor: vscode.window.activeTextEditor }, '');
+        }),
+        // M-o in the heading search: alternate actions on the highlighted heading
+        vscode.commands.registerCommand('scimax.db.searchHeadingsActions', () => {
+            activeHeadingPicker?.showActions();
         })
     );
+
+    async function searchHeadingsPicker(origin: HeadingActionOrigin, initialValue: string): Promise<void> {
+        const db = await requireDatabase();
+        if (!db) return;
+
+        type HeadingItem = vscode.QuickPickItem & { heading: HeadingRecord };
+        const quickPick = vscode.window.createQuickPick<HeadingItem>();
+        quickPick.placeholder = 'Search headings (space-separated terms; title, TODO, tags, file path). RET opens, M-o for actions';
+        // The database does the matching; don't let VS Code filter again
+        quickPick.matchOnDescription = false;
+        quickPick.matchOnDetail = false;
+        // Keep the database's most-recently-modified order; without this
+        // VS Code re-sorts the items by label match score as you type.
+        // (sortByLabel exists at runtime but predates our @types/vscode.)
+        (quickPick as unknown as { sortByLabel: boolean }).sortByLabel = false;
+
+        const toItem = (heading: HeadingRecord): HeadingItem => ({
+            label: `${'  '.repeat(heading.level - 1)}${getHeadingIcon(heading)} ${heading.title}`,
+            description: formatHeadingDescription(heading),
+            detail: `${heading.file_path}:${heading.line_number}`,
+            alwaysShow: true,
+            heading
+        });
+
+        // Only the latest query's results are shown; slower earlier ones are dropped
+        let requestId = 0;
+        let debounceTimer: ReturnType<typeof setTimeout> | undefined;
+        const runSearch = async (value: string) => {
+            const id = ++requestId;
+            quickPick.busy = true;
+            try {
+                const headings = await db.searchHeadingsByTerms(value, { limit: 200 });
+                if (id !== requestId) return;
+                quickPick.items = headings.map(toItem);
+            } catch (error) {
+                log.error('Heading search failed', error as Error);
+            } finally {
+                if (id === requestId) quickPick.busy = false;
+            }
+        };
+
+        quickPick.onDidChangeValue(value => {
+            if (debounceTimer) clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(() => runSearch(value), 150);
+        });
+
+        quickPick.onDidAccept(async () => {
+            const selected = quickPick.selectedItems[0];
+            if (selected) {
+                quickPick.hide();
+                await openHeading(selected.heading);
+            }
+        });
+
+        const picker = {
+            showActions: async () => {
+                const item = quickPick.activeItems[0];
+                if (!item) return;
+                const query = quickPick.value;
+                quickPick.hide();
+                const ran = await showHeadingActions(item.heading, origin);
+                // Cancelled: back to the search where we left it
+                if (!ran) await searchHeadingsPicker(origin, query);
+            }
+        };
+        activeHeadingPicker = picker;
+        void vscode.commands.executeCommand('setContext', 'scimax.headingPickerActive', true);
+
+        quickPick.onDidHide(() => {
+            if (debounceTimer) clearTimeout(debounceTimer);
+            if (activeHeadingPicker === picker) {
+                activeHeadingPicker = undefined;
+                void vscode.commands.executeCommand('setContext', 'scimax.headingPickerActive', false);
+            }
+            quickPick.dispose();
+        });
+        quickPick.value = initialValue;
+        quickPick.show();
+        void runSearch(initialValue);
+    }
 
     // Search by tag
     context.subscriptions.push(
