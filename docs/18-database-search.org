@@ -835,7 +835,7 @@ To enable query expansion and reranking with Ollama:
 
 Beyond free-text search, the database supports structured queries for specific content types.
 
-** Heading Search
+** 👀 Heading Search
 
 Jump to any indexed heading by typing a few words from it:
 
@@ -853,6 +853,34 @@ Jump to any indexed heading by typing a few words from it:
 - An empty query lists headings from your most recently modified files
 - Shows heading level, tags, TODO state, priority, deadlines and scheduled dates
 - Respects the directory search scope, if one is set
+- =RET= opens the heading; =M-o= opens the actions menu below
+
+*** ⚠️ Actions Menu (M-o)
+
+Press =M-o= (Option+O on Mac) on the highlighted heading to choose another
+action. Press the key to run it, or click it. =Esc= returns to the search with
+your query intact. Command: =scimax.db.searchHeadingsActions=.
+
+| Key | Action               | What it does                                           |
+|-----+----------------------+--------------------------------------------------------|
+| =o= | Open                 | Go to the heading (same as =RET=)                      |
+| =j= | Open in other window | Open in the editor group beside the current one        |
+| =w= | Open in new frame    | Open in a new floating window (like =C-x 5=)           |
+| =l= | Insert id link       | Insert =[[id:ID][Title]]= at point; adds an =:ID:= if needed      |
+| =L= | Insert file link     | Insert =[[file:path::*Title][Title]]= at point (no file change)               |
+| =c= | Copy id link         | Copy =[[id:ID][Title]]= to the clipboard                          |
+| =t= | Cycle TODO state     | Change the heading's TODO keyword                      |
+| =s= | Schedule             | Set =SCHEDULED= on the heading                         |
+| =d= | Deadline             | Set =DEADLINE= on the heading                          |
+| =i= | Clock in             | Start the clock on the heading                         |
+| =:= | Set tags             | Edit the heading's tags                                |
+| =D= | Add as dependency    | The heading at point becomes blocked by the chosen one |
+
+Links go where the cursor was when you started the search. In a Markdown
+file they are written as Markdown links (=[Title](file.md#title)=). A
+Markdown heading has no =:ID:=, so =l= and =c= fall back to a file link for it.
+The editing actions (=t=, =s=, =d=, =i=, =:=) open the heading, run the
+ordinary command, save the file, and return you to where you were.
 
 *** Example Use Cases
 #+BEGIN_SRC org
