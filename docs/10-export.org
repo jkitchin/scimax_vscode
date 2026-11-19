@@ -1157,7 +1157,7 @@ org-id: 3f2a9c1e-5b7d-4e2a-9c1f-0a1b2c3d4e5f
 
 If the heading has no =:ID:=, the command first creates one (a random UUID) in its properties drawer. Only the ID goes in the email: no file name or path. To go back to the heading from a sent email, run =Scimax: Go to Heading by ID= (=scimax.org.gotoId=) and paste the ID (an =org-id:= or =id:= prefix is fine), or follow an =[[id:...]]= link. Set =scimax.emailHeading.includeId= to =false= to send emails without the ID.
 
-*** Link to the email and marking the heading done
+*** 👀 Link to the email and marking the heading done
 
 Once the compose window is open, the command records it on the heading:
 
@@ -1179,7 +1179,7 @@ CLOSED: [2026-11-08 Sun 14:07]
 
 Open =EMAIL_LINK= with =Ctrl+Click= or =C-c C-o= to check the email later. A compose link gives VS Code no message ID back, so the link is a search for the =org-id:= footer in the body: it finds the email once it is sent, and replies that quote it. =EMAIL_LINK= is only added for Gmail with =scimax.emailHeading.includeId= on. Set =scimax.emailHeading.recordSent= to =false= to add neither property.
 
-After the compose window opens, a notification offers *Mark Done*. Click it once you have sent the email: the heading gets the file's first done state (=DONE= unless =#+TODO:= says otherwise) and a =CLOSED= timestamp. Set =scimax.emailHeading.markDone= to =always= to mark it done right away, or =never= to leave the TODO state alone.
+As soon as the compose window opens, the heading is marked done: it gets the file's first done state (=DONE= unless =#+TODO:= says otherwise) and a =CLOSED= timestamp. Set =scimax.emailHeading.markDone= to =ask= to get a *Mark Done* button instead (click it once you have sent the email), or =never= to leave the TODO state alone.
 
 *** Mail client
 
@@ -1195,7 +1195,7 @@ If the body is too long to fit in a compose link (about 8000 characters once enc
   "scimax.mail.gmailAccount": "me@example.com",
   "scimax.emailHeading.includeId": true,
   "scimax.emailHeading.recordSent": true,
-  "scimax.emailHeading.markDone": "ask"
+  "scimax.emailHeading.markDone": "always"
 }
 #+END_SRC
 ** Primary Keybindings

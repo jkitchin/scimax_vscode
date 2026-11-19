@@ -447,7 +447,7 @@ export async function emailHeading(): Promise<void> {
         await setHeadingProperties(document, line, props);
     }
 
-    const markDone = config.get<string>('markDone', 'ask');
+    const markDone = config.get<string>('markDone', 'always');
     if (markDone === 'always') {
         await markHeadingDone(document, email.headingLine, sentId);
     } else if (markDone === 'ask') {

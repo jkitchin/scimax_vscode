@@ -53,17 +53,17 @@ General settings that apply across Scimax features.
 
 ** Settings Overview
 
-| Setting                         | Type   | Default | Description                                         |
-|---------------------------------+--------+---------+-----------------------------------------------------|
-| scimax.email                    | string | ""      | Email for API integrations (OpenAlex)               |
-| scimax.mail.client              | string | "gmail" | Compose all email in =gmail= or the =mailto= client |
-| scimax.mail.gmailAccount        | string | ""      | Gmail account to compose from (authuser)            |
-| scimax.emailHeading.includeId   | bool   | true    | Append the heading =:ID:= to the email body         |
-| scimax.emailHeading.recordSent  | bool   | true    | Add =SENT_ON= and a Gmail =EMAIL_LINK= property     |
-| scimax.emailHeading.markDone    | string | "ask"   | Mark the heading done: =ask=, =always= or =never=   |
-| scimax.externalTerminal.app     | string | ""      | macOS terminal app to open (auto-detect if empty)   |
-| scimax.externalTerminal.command | string | ""      | Terminal executable, overrides auto-detection       |
-| scimax.externalTerminal.args    | array  | []      | Arguments for that executable (=${dir}= expanded)   |
+| Setting                         | Type   | Default  | Description                                         |
+|---------------------------------+--------+----------+-----------------------------------------------------|
+| scimax.email                    | string | ""       | Email for API integrations (OpenAlex)               |
+| scimax.mail.client              | string | "gmail"  | Compose all email in =gmail= or the =mailto= client |
+| scimax.mail.gmailAccount        | string | ""       | Gmail account to compose from (authuser)            |
+| scimax.emailHeading.includeId   | bool   | true     | Append the heading =:ID:= to the email body         |
+| scimax.emailHeading.recordSent  | bool   | true     | Add =SENT_ON= and a Gmail =EMAIL_LINK= property     |
+| scimax.emailHeading.markDone    | string | "always" | Mark the heading done: =always=, =ask= or =never=   |
+| scimax.externalTerminal.app     | string | ""       | macOS terminal app to open (auto-detect if empty)   |
+| scimax.externalTerminal.command | string | ""       | Terminal executable, overrides auto-detection       |
+| scimax.externalTerminal.args    | array  | []       | Arguments for that executable (=${dir}= expanded)   |
 
 ** Detailed Configuration
 
@@ -102,13 +102,13 @@ The older =scimax.emailHeading.client= and =scimax.emailHeading.gmailAccount= se
 }
 #+end_src
 
-*** scimax.emailHeading.includeId / .recordSent / .markDone
+*** 👀 scimax.emailHeading.includeId / .recordSent / .markDone
 
 Settings for =Scimax: Email Heading= (=scimax.org.emailHeading=). See [[file:10-export.org::*Email a Heading][Email a Heading]]. The mail client and account come from =scimax.mail.client= and =scimax.mail.gmailAccount=.
 
 - =scimax.emailHeading.includeId= (default =true=): append the heading's =:ID:= to the email (creating a UUID if needed), so you can find the heading later with =Scimax: Go to Heading by ID=. No file path is sent.
 - =scimax.emailHeading.recordSent= (default =true=): add a =SENT_ON= timestamp and, for Gmail with =includeId= on, an =EMAIL_LINK= property (a Gmail search URL that opens the sent email) to the heading.
-- =scimax.emailHeading.markDone= (default ="ask"=): =ask= shows a *Mark Done* button after the compose window opens, =always= marks the heading done right away, =never= leaves its TODO state alone.
+- =scimax.emailHeading.markDone= (default ="always"=): =always= marks the heading done as soon as the compose window opens, =ask= shows a *Mark Done* button instead, =never= leaves its TODO state alone.
 
 *** scimax.externalTerminal.app / .command / .args
 

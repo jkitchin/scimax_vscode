@@ -1,6 +1,6 @@
 {
-  "buildDate": "2026-11-18T19:34:24.008Z",
-  "count": 3810,
+  "buildDate": "2026-11-19T17:42:26.218Z",
+  "count": 3813,
   "entries": [
     {
       "heading": "Scimax VS Code",
@@ -1254,7 +1254,7 @@
       "heading": "Quick Start by Use Case",
       "level": 1,
       "file": "00-index.org",
-      "line": 543,
+      "line": 544,
       "content": "",
       "path": [],
       "commands": [],
@@ -1269,7 +1269,7 @@
       "heading": "I want to...",
       "level": 2,
       "file": "00-index.org",
-      "line": 545,
+      "line": 546,
       "content": "",
       "path": [
         "Quick Start by Use Case"
@@ -1284,7 +1284,7 @@
       "heading": "Take notes and organize information",
       "level": 3,
       "file": "00-index.org",
-      "line": 547,
+      "line": 548,
       "content": "- Start with [[file:01-getting-started.org][Getting Started]] - Learn [[file:01.5-basic-syntax.org][Basic Syntax]] for formatting text - Learn [[file:02-document-structure.org][Document Structure]] for headings and organization - Use [[file:15-capture.org][Capture]] for quick note-taking - Search with [[file:18-database-search.org][Database and Search]]",
       "path": [
         "Quick Start by Use Case",
@@ -1319,7 +1319,7 @@
       "heading": "Manage tasks and projects",
       "level": 3,
       "file": "00-index.org",
-      "line": 554,
+      "line": 555,
       "content": "- Set up tasks with [[file:03-todo-items.org][TODO Items]] - Add dates with [[file:06-timestamps.org][Timestamps]] - View agenda with [[file:13-agenda.org][Agenda]] - Organize projects with [[file:17-projectile.org][Projectile]] or [[file:16-notebook.org][Notebook]]",
       "path": [
         "Quick Start by Use Case",
@@ -1353,7 +1353,7 @@
       "heading": "Write scientific documents",
       "level": 3,
       "file": "00-index.org",
-      "line": 560,
+      "line": 561,
       "content": "- Execute code with [[file:07-source-blocks.org][Source Code Blocks]] - Preview math with [[file:11-latex-preview.org][LaTeX Preview]] - Manage citations with [[file:19-references.org][References]] - Export with [[file:10-export.org][Export]]",
       "path": [
         "Quick Start by Use Case",
@@ -1386,7 +1386,7 @@
       "heading": "Keep a journal",
       "level": 3,
       "file": "00-index.org",
-      "line": 566,
+      "line": 567,
       "content": "- Set up with [[file:14-journal.org][Journal]] - Use templates from [[file:15-capture.org][Capture]] - Navigate entries with [[file:21-navigation.org][Navigation]]",
       "path": [
         "Quick Start by Use Case",
@@ -1412,7 +1412,7 @@
       "heading": "Navigate efficiently",
       "level": 3,
       "file": "00-index.org",
-      "line": 571,
+      "line": 572,
       "content": "- Learn [[file:21-navigation.org][Navigation]] techniques - Master [[file:23-speed-commands.org][Speed Commands]] - Use [[file:22-hydra-menus.org][Hydra Menus]] for discovery - Reference [[file:24-keybindings.org][Keybindings]]",
       "path": [
         "Quick Start by Use Case",
@@ -1444,7 +1444,7 @@
       "heading": "Programmatically modify org files",
       "level": 3,
       "file": "00-index.org",
-      "line": 577,
+      "line": 578,
       "content": "CLOSED: [2026-01-16 Fri 20:04] - Use the [[file:27-org-api.org][Org API]] in TypeScript source blocks - Bulk update TODO states, properties, and tags - Extract and transform table data - Automate repetitive org file operations",
       "path": [
         "Quick Start by Use Case",
@@ -1479,7 +1479,7 @@
       "heading": "Configure the extension",
       "level": 3,
       "file": "00-index.org",
-      "line": 584,
+      "line": 585,
       "content": "CLOSED: [2026-01-16 Fri 20:04] - See all options in [[file:26-configuration.org][Configuration]] - Set up keybindings with [[file:24-keybindings.org][Keybindings]] - Customize menus with [[file:22-hydra-menus.org][Hydra Menus]]",
       "path": [
         "Quick Start by Use Case",
@@ -1510,7 +1510,7 @@
       "heading": "Navigation",
       "level": 1,
       "file": "00-index.org",
-      "line": 590,
+      "line": 591,
       "content": "- Index: [[file:00-index.org][Documentation Index]] - Next: [[file:01-getting-started.org][Getting Started]]",
       "path": [],
       "commands": [],
@@ -76962,14 +76962,119 @@
       ]
     },
     {
-      "heading": "Related Topics",
+      "heading": "Keybinding Conflicts with Other Extensions",
       "level": 2,
       "file": "24-keybindings.org",
       "line": 621,
-      "content": "- [[file:25-commands.org::#kill-ring][Kill Ring commands]] - [[file:26-configuration.org][Configuration]] (=scimax.killRing.maxSize=) - Mark Ring (above), for setting the region with =C-SPC=",
+      "content": "Some scimax keys are a single keystroke with no =when= condition, most importantly =M-x= (=alt+x=, the command palette). If another extension binds a /chord/ that starts with the same key, VS Code turns that key into a chord prefix: pressing it shows \"(Alt+X) was pressed. Waiting for second key of chord...\" and the scimax binding never fires. The known case is the Magit extension (=kahole.magit=), which binds: | Chord          | Magit command      | |----------------+--------------------| | =alt",
       "path": [
         "Kill Ring (Emacs-style)"
       ],
+      "commands": [],
+      "keybindings": [
+        "M-x",
+        "Alt+X"
+      ],
+      "keywords": [
+        "keybinding",
+        "conflicts",
+        "extensions",
+        "scimax",
+        "keys",
+        "single",
+        "keystroke",
+        "condition",
+        "importantly",
+        "m-x",
+        "altx",
+        "command",
+        "palette",
+        "another",
+        "extension",
+        "binds",
+        "chord",
+        "starts",
+        "key",
+        "code"
+      ]
+    },
+    {
+      "heading": "Automatic Detection",
+      "level": 2,
+      "file": "24-keybindings.org",
+      "line": 639,
+      "content": "On startup, and whenever extensions are installed or removed, scimax checks whether any other extension has a chord that starts with one of its global single-stroke keys. If it finds one, it shows a warning with two buttons: - *Copy Fix & Open Keybindings* - copies the removal entries to the clipboard and opens your user =keybindings.json=; paste them inside the =[ ]= and save - *Don't Show Again* - stays quiet until the set of conflicts changes Chords you already removed in your user =keybindin",
+      "path": [
+        "Kill Ring (Emacs-style)"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "automatic",
+        "detection",
+        "startup",
+        "whenever",
+        "extensions",
+        "installed",
+        "removed",
+        "scimax",
+        "checks",
+        "whether",
+        "any",
+        "extension",
+        "chord",
+        "starts",
+        "one",
+        "global",
+        "single-stroke",
+        "keys",
+        "finds",
+        "shows"
+      ]
+    },
+    {
+      "heading": "Fixing the Conflict",
+      "level": 2,
+      "file": "24-keybindings.org",
+      "line": 653,
+      "content": "Remove the conflicting chords in your user =keybindings.json= (=Preferences: Open Keyboard Shortcuts (JSON)=). For Magit, you can rebind status to the Emacs Magit key, =C-x g=: #+begin_src json [ { \"key\": \"alt+x g\",      \"command\": \"-magit.status\" }, { \"key\": \"alt+x ctrl+g\", \"command\": \"-magit.dispatch\" }, { \"key\": \"alt+x alt+g\",  \"command\": \"-magit.file-popup\" }, { \"key\": \"ctrl+x g\",     \"command\": \"magit.status\" } ] #+end_src",
+      "path": [
+        "Kill Ring (Emacs-style)"
+      ],
+      "commands": [],
+      "keybindings": [
+        "C-x"
+      ],
+      "keywords": [
+        "fixing",
+        "conflict",
+        "remove",
+        "conflicting",
+        "chords",
+        "user",
+        "keybindingsjson",
+        "preferences",
+        "open",
+        "keyboard",
+        "shortcuts",
+        "json",
+        "magit",
+        "rebind",
+        "status",
+        "emacs",
+        "key",
+        "c-x",
+        "beginsrc",
+        "altx"
+      ]
+    },
+    {
+      "heading": "Related Topics",
+      "level": 1,
+      "file": "24-keybindings.org",
+      "line": 668,
+      "content": "- [[file:25-commands.org::#kill-ring][Kill Ring commands]] - [[file:26-configuration.org][Configuration]] (=scimax.killRing.maxSize=) - Mark Ring (above), for setting the region with =C-SPC=",
+      "path": [],
       "commands": [
         "scimax.killRing.maxSize"
       ],
@@ -76996,7 +77101,7 @@
       "heading": "Rectangle Commands (Emacs-style)",
       "level": 1,
       "file": "24-keybindings.org",
-      "line": 627,
+      "line": 674,
       "content": "Emacs-style rectangle editing commands. A rectangle is defined by the column range and line range of the current selection. | Key         | Action                                | |-------------+---------------------------------------| | C-x r k     | Kill rectangle (save to rect clip)    | | C-x r M-w   | Copy rectangle (no delete)            | | C-x r d     | Delete rectangle (no save)            | | C-x r y     | Yank rectangle at point               | | C-x r o     | Open rectangle (insert b",
       "path": [],
       "commands": [],
@@ -77031,7 +77136,7 @@
       "heading": "Speed Commands",
       "level": 1,
       "file": "24-keybindings.org",
-      "line": 644,
+      "line": 691,
       "content": "Speed commands are single-key shortcuts available when the cursor is at the *beginning* of a heading (the first character of the heading line). They must be enabled in settings (scimax.speedCommands.enabled).",
       "path": [],
       "commands": [
@@ -77059,7 +77164,7 @@
       "heading": "Navigation Speed Commands",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 648,
+      "line": 695,
       "content": "| Key | Action                            | |-----+-----------------------------------| | n   | Next heading (same level)         | | p   | Previous heading (same level)     | | f   | Next sibling heading              | | b   | Previous sibling heading          | | u   | Parent heading (up one level)     | | j   | Jump to heading (quick picker)    | | g   | Goto menu (additional navigation) |",
       "path": [
         "Speed Commands"
@@ -77092,7 +77197,7 @@
       "heading": "Visibility Speed Commands",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 660,
+      "line": 707,
       "content": "| Key   | Action                            | |-------+-----------------------------------| | <tab> | Toggle fold (same as regular tab) | | c     | Cycle global fold                 | | C     | Show children only                | | o     | Overview (collapse all)           | | 1     | Show level 1 headings             | | 2     | Show level 2 headings             | | 3     | Show level 3 headings             | | 0     | Show all headings                 | | N     | Narrow to subtree             ",
       "path": [
         "Speed Commands"
@@ -77126,7 +77231,7 @@
       "heading": "Structure Editing Speed Commands",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 675,
+      "line": 722,
       "content": "| Key | Action               | |-----+----------------------| | l   | Promote heading only | | r   | Demote heading only  | | L   | Promote subtree      | | R   | Demote subtree       | | U   | Move subtree up      | | D   | Move subtree down    |",
       "path": [
         "Speed Commands"
@@ -77153,7 +77258,7 @@
       "heading": "\"TODO\" & Content Speed Commands",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 686,
+      "line": 733,
       "content": "| Key | Action                 | |-----+------------------------| | t   | Cycle TODO state       | | d   | Insert DEADLINE        | | s   | Insert SCHEDULED       | | e   | Set effort estimate    | | :   | Set tags               | | P   | Set property           | | I   | Clock in               | | O   | Clock out              |",
       "path": [
         "Speed Commands"
@@ -77186,7 +77291,7 @@
       "heading": "Editing Speed Commands",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 699,
+      "line": 746,
       "content": "| Key | Action                  | |-----+-------------------------| | k   | Kill (cut) subtree      | | y   | Yank (paste) subtree    | | w   | Refile subtree          | | W   | Clone subtree           | | m   | Mark (select) subtree   | | @   | Mark subtree (alt)      | | ^   | Sort entries            | | a   | Archive subtree         | | A   | Toggle archive tag      | | $   | Archive to sibling      | | E   | Email heading (org)     |",
       "path": [
         "Speed Commands"
@@ -77220,7 +77325,7 @@
       "heading": "Other Speed Commands",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 715,
+      "line": 762,
       "content": "| Key | Action                   | |-----+--------------------------| | ?   | Show speed commands help | | /   | Show speed commands help |",
       "path": [
         "Speed Commands"
@@ -77241,7 +77346,7 @@
       "heading": "BibTeX Speed Commands",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 722,
+      "line": 769,
       "content": "CLOSED: [2026-01-19 Mon 18:18] Speed commands for BibTeX files, active at column 0 of @entry lines (e.g., =@article{=, =@book{=).",
       "path": [
         "Speed Commands"
@@ -77268,7 +77373,7 @@
       "heading": "Navigation",
       "level": 3,
       "file": "24-keybindings.org",
-      "line": 727,
+      "line": 774,
       "content": "CLOSED: [2026-01-19 Mon 18:18] | Key | Action         | |-----+----------------| | n   | Next entry     | | p   | Previous entry | | j   | Jump to entry  |",
       "path": [
         "Speed Commands",
@@ -77295,7 +77400,7 @@
       "heading": "Formatting",
       "level": 3,
       "file": "24-keybindings.org",
-      "line": 736,
+      "line": 783,
       "content": "CLOSED: [2026-01-19 Mon 18:18] | Key | Action              | |-----+---------------------| | s   | Sort fields         | | d   | Downcase entry      | | t   | Title case title    | | S   | Sentence case title | | c   | Clean/format entry  |",
       "path": [
         "Speed Commands",
@@ -77326,7 +77431,7 @@
       "heading": "Wrap/Strip Braces (Case Protection)",
       "level": 4,
       "file": "24-keybindings.org",
-      "line": 747,
+      "line": 794,
       "content": "CLOSED: [2026-01-21 Wed 08:02] | Key         | Action                                      | |-------------+---------------------------------------------| | C-S-]       | Wrap selection or word at cursor in braces  | | C-S-[       | Strip braces from selection or word         | Wraps text in ={}= for case protection in BibTeX titles (e.g., ={NASA}=, ={Python}=). Works anywhere in the file, not just at entry start.",
       "path": [
         "Speed Commands",
@@ -77364,7 +77469,7 @@
       "heading": "Access",
       "level": 3,
       "file": "24-keybindings.org",
-      "line": 757,
+      "line": 804,
       "content": "CLOSED: [2026-01-19 Mon 18:18] | Key | Action               | |-----+----------------------| | o   | Open PDF             | | u   | Open URL/DOI         | | N   | Open notes           | | g   | Google Scholar       | | x   | CrossRef             | | w   | Web of Science       |",
       "path": [
         "Speed Commands",
@@ -77396,7 +77501,7 @@
       "heading": "OpenAlex Integration",
       "level": 3,
       "file": "24-keybindings.org",
-      "line": 769,
+      "line": 816,
       "content": "CLOSED: [2026-01-19 Mon 18:18] | Key | Action                        | |-----+-------------------------------| | C   | Show citing works (OpenAlex)  | | R   | Show related works (OpenAlex) | | r   | Show references (OpenAlex)    |",
       "path": [
         "Speed Commands",
@@ -77425,7 +77530,7 @@
       "heading": "Actions",
       "level": 3,
       "file": "24-keybindings.org",
-      "line": 778,
+      "line": 825,
       "content": "CLOSED: [2026-01-19 Mon 18:18] | Key | Action                    | |-----+---------------------------| | y   | Copy citation key         | | b   | Copy BibTeX entry         | | B   | Strip braces from entry   | | k   | Delete entry              | | K   | Generate citation key     | | U   | Update from web           | | N   | Open notes for entry      | | A   | Toggle journal abbreviation | | ?   | Show help                 |",
       "path": [
         "Speed Commands",
@@ -77460,7 +77565,7 @@
       "heading": "Toggle Speed Commands",
       "level": 1,
       "file": "24-keybindings.org",
-      "line": 793,
+      "line": 840,
       "content": "CLOSED: [2026-01-19 Mon 18:19] | Key       | Action                       | |-----------+------------------------------| | C-c C-x s | Toggle speed commands on/off |",
       "path": [],
       "commands": [],
@@ -77487,7 +77592,7 @@
       "heading": "Additional Notes",
       "level": 1,
       "file": "24-keybindings.org",
-      "line": 800,
+      "line": 847,
       "content": "CLOSED: [2026-01-19 Mon 18:19]",
       "path": [],
       "commands": [],
@@ -77505,7 +77610,7 @@
       "heading": "Context-Dependent Keybindings",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 803,
+      "line": 850,
       "content": "Many keybindings are context-aware and behave differently depending on cursor position: - C-c C-c toggles checkboxes normally, sets tags on a headline line (like C-c C-q; on a statistics cookie it updates the cookie instead), executes source blocks inside code blocks, aligns a table in a table row, recalculates tables on TBLFM lines, and runs a Marp deck's ~```python run~ cell in the Python panel - S-<arrow> keys modify timestamps normally, but transpose/sort citations when on a citation - M-S-<",
       "path": [
         "Additional Notes"
@@ -77543,7 +77648,7 @@
       "heading": "When Conditions",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 812,
+      "line": 859,
       "content": "CLOSED: [2026-01-19 Mon 18:19] Some keybindings only work in specific contexts: - Org-mode/Markdown files: Most document structure commands - On headings: Folding, promotion, demotion - In tables: Table-specific commands - In source blocks: Block execution - At heading start: Speed commands",
       "path": [
         "Additional Notes"
@@ -77577,7 +77682,7 @@
       "heading": "Mac vs Windows/Linux",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 822,
+      "line": 869,
       "content": "CLOSED: [2026-01-19 Mon 18:19] Most keybindings use C- (Ctrl) on all platforms to match Emacs conventions. Exceptions where Mac uses s- (Cmd): - s-S-j (journal) - s-<return> (execute/insert heading) - s-S-k (delete citation) - s-S-r (reload window) - C-s-v (database menu)",
       "path": [
         "Additional Notes"
@@ -77613,7 +77718,7 @@
       "heading": "LaTeX Navigation",
       "level": 1,
       "file": "24-keybindings.org",
-      "line": 832,
+      "line": 879,
       "content": "CLOSED: [2026-01-19 Mon 18:20] These keybindings are active in LaTeX files (=.tex=):",
       "path": [],
       "commands": [],
@@ -77634,7 +77739,7 @@
       "heading": "Section Navigation",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 837,
+      "line": 884,
       "content": "| Key     | Action                   | |---------+--------------------------| | C-c C-n | Next section             | | C-c C-p | Previous section         | | C-c C-u | Parent section           | | C-c C-f | Next sibling section     | | C-c C-b | Previous sibling section | | C-c C-j | Jump to any section      |",
       "path": [
         "LaTeX Navigation"
@@ -77673,7 +77778,7 @@
       "heading": "Structure Editing",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 848,
+      "line": 895,
       "content": "CLOSED: [2026-01-19 Mon 18:20] | Key              | Action                     | |------------------+----------------------------| | Alt+Left         | Promote section            | | Alt+Right        | Demote section             | | Alt+Shift+Left   | Promote subtree            | | Alt+Shift+Right  | Demote subtree             | | Alt+Up           | Move section up            | | Alt+Down         | Move section down          | | C-c @            | Mark (select) section      |",
       "path": [
         "LaTeX Navigation"
@@ -77715,7 +77820,7 @@
       "heading": "Environment Commands",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 861,
+      "line": 908,
       "content": "| Key     | Action                        | |---------+-------------------------------| | C-c C-e | Select environment            | | C-c E   | Change environment type       | | C-c w   | Wrap selection in environment | | C-c *   | Toggle starred variant        | | C-c %   | Jump to matching begin/end    | | C-c l   | Jump to label                 | | C-c C-l | Add label to environment      |",
       "path": [
         "LaTeX Navigation"
@@ -77753,7 +77858,7 @@
       "heading": "Folding",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 873,
+      "line": 920,
       "content": "CLOSED: [2026-01-19 Mon 18:20] | Key       | Action            | |-----------+-------------------| | Tab       | Toggle fold       | | Shift+Tab | Cycle global fold |",
       "path": [
         "LaTeX Navigation"
@@ -77783,7 +77888,7 @@
       "heading": "Compile and Preview",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 881,
+      "line": 928,
       "content": "CLOSED: [2026-01-19 Mon 18:20] | Key       | Action                      | |-----------+-----------------------------| | C-c C-c   | Compile document            | | C-c v     | View PDF (built-in panel)   | | C-c C-v   | View PDF (external viewer)  | | C-c C-a   | Compile and view PDF        | | C-c g     | SyncTeX forward search      | | C-c C-k   | Clean auxiliary files       | See [[file:33-latex-navigation.org][LaTeX Navigation and Structure]] for complete documentation.",
       "path": [
         "LaTeX Navigation"
@@ -77823,7 +77928,7 @@
       "heading": "LaTeX Speed Commands",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 895,
+      "line": 942,
       "content": "CLOSED: [2026-01-24 Sat 17:39] Speed commands active at the start of =\\section=, =\\subsection=, or =\\begin{}= lines:",
       "path": [
         "LaTeX Navigation"
@@ -77850,7 +77955,7 @@
       "heading": "Section Speed Commands",
       "level": 3,
       "file": "24-keybindings.org",
-      "line": 900,
+      "line": 947,
       "content": "| Key | Action             | |-----+--------------------| | n   | Next section       | | p   | Previous section   | | f   | Forward sibling    | | b   | Backward sibling   | | u   | Up to parent       | | j   | Jump to section    | | U   | Move section up    | | D   | Move section down  | | <   | Promote section    | | >   | Demote section     | | I   | Insert section     | | N   | Narrow to section  | | W   | Widen (show all)   | | /   | Show help          |",
       "path": [
         "LaTeX Navigation",
@@ -77885,7 +77990,7 @@
       "heading": "Environment Speed Commands",
       "level": 3,
       "file": "24-keybindings.org",
-      "line": 919,
+      "line": 966,
       "content": "| Key | Action                  | |-----+-------------------------| | n   | Next environment        | | p   | Previous environment    | | j   | Jump to environment     | | s   | Select environment      | | c   | Change environment      | | k   | Kill environment        | | w   | Wrap in environment     | | u   | Unwrap environment      | | *   | Toggle starred variant  | | l   | Add label               | | C   | Add caption             | | i   | Environment info        | | /   | Show help       ",
       "path": [
         "LaTeX Navigation",
@@ -77920,7 +78025,7 @@
       "heading": "Quick Reference Card",
       "level": 1,
       "file": "24-keybindings.org",
-      "line": 937,
+      "line": 984,
       "content": "CLOSED: [2026-01-19 Mon 18:20]",
       "path": [],
       "commands": [],
@@ -77939,7 +78044,7 @@
       "heading": "Most Common Commands",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 940,
+      "line": 987,
       "content": "CLOSED: [2026-01-19 Mon 18:20] | Command            | Keybinding   | |--------------------+--------------| | Open journal       | C-S-j        | | Execute code block | C-<return>   | | Cycle TODO         | C-c C-t      | | Insert timestamp   | C-c .        | | Insert link        | C-c C-l      | | Insert citation    | C-c ]        | | Export dispatcher  | C-c C-e      | | Jump to heading    | C-c C-j      | | Fuzzy search       | C-c s        | | Hydra menu         | C-c m        |",
       "path": [
         "Quick Reference Card"
@@ -77980,7 +78085,7 @@
       "heading": "Most Common Speed Commands",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 956,
+      "line": 1003,
       "content": "CLOSED: [2026-10-30 Fri 08:02] | Speed Key | Action                 | |-----------+------------------------| | n/p       | Next/Previous heading  | | f/b       | Forward/Back sibling   | | u         | Up to parent           | | j         | Jump to heading        | | t         | Cycle TODO             | | l/r       | Promote/Demote heading |",
       "path": [
         "Quick Reference Card"
@@ -78013,8 +78118,8 @@
       "heading": "Related Topics",
       "level": 1,
       "file": "24-keybindings.org",
-      "line": 968,
-      "content": "- [[file:25-commands.org][Commands Reference]] - every command, with or without a key - [[file:23-speed-commands.org][Speed Commands]] - single keys at the start of a heading - [[file:26-configuration.org][Configuration]] - settings that change key behaviour - [[file:44-marp.org][Marp Slides]] - Slide Sorter, presenter and export keys - [[file:46-org-preview.org][Org Preview]] - the live preview keys",
+      "line": 1015,
+      "content": "- [[file:25-commands.org][Commands Reference]] - every command, with or without a key - [[file:23-speed-commands.org][Speed Commands]] - single keys at the start of a heading - [[file:26-configuration.org][Configuration]] - settings that change key behaviour - [[file:44-marp.org][Marp Slides]] - Slide Sorter, presenter and export keys - [[file:46-org-preview.org][Org Preview]] - the live preview keys - [[file:25-commands.org::*Troubleshooting and Diagnostics][Troubleshooting and Diagnostics]] - ",
       "path": [],
       "commands": [],
       "keybindings": [],
@@ -78045,7 +78150,7 @@
       "heading": "Further Help",
       "level": 1,
       "file": "24-keybindings.org",
-      "line": 976,
+      "line": 1024,
       "content": "CLOSED: [2026-01-19 Mon 18:20] - Use C-c m to open the Hydra menu for guided command discovery - Use M-x to search all commands by name - Enable speed commands help with ? when at heading start - See [[file:00-index.org][Documentation Index]] for comprehensive guides",
       "path": [],
       "commands": [],
@@ -78080,7 +78185,7 @@
       "heading": "Navigation",
       "level": 1,
       "file": "24-keybindings.org",
-      "line": 984,
+      "line": 1032,
       "content": "CLOSED: [2026-01-19 Mon 18:20] - Previous: [[file:23-speed-commands.org][Speed Commands]] - Index: [[file:00-index.org][Documentation Index]] - Next: [[file:25-commands.org][Commands]]",
       "path": [],
       "commands": [],
@@ -80121,7 +80226,7 @@
       "level": 2,
       "file": "25-commands.org",
       "line": 849,
-      "content": "CLOSED: [2026-01-22 Thu 20:56] Commands for debugging issues and reporting problems. | Command ID                    | Description                | Default Keybinding | |-------------------------------+----------------------------+--------------------| | [[cmd:scimax.showErrorLog]]    | Show Error Log             | -                  | | [[cmd:scimax.clearErrors]]     | Clear Error Log            | -                  | | [[cmd:scimax.showDiagnostics]] | Show Diagnostic Report     | -            ",
+      "content": "Commands for debugging issues and reporting problems. | Command ID                          | Description                | Default Keybinding | |-------------------------------------+----------------------------+--------------------| | [[cmd:scimax.showErrorLog]]             | Show Error Log             | -                  | | [[cmd:scimax.clearErrors]]              | Clear Error Log            | -                  | | [[cmd:scimax.showDiagnostics]]          | Show Diagnostic Report     | -    ",
       "path": [
         "Database and Search"
       ],
@@ -80134,10 +80239,6 @@
       "keywords": [
         "troubleshooting",
         "diagnostics",
-        "closed",
-        "2026-01-22",
-        "thu",
-        "2056",
         "commands",
         "debugging",
         "issues",
@@ -80147,11 +80248,14 @@
         "description",
         "default",
         "keybinding",
-        "-------------------------------------------------------------------------------",
+        "-------------------------------------------------------------------------------------",
         "cmd",
         "show",
         "error",
-        "log"
+        "log",
+        "clear",
+        "diagnostic",
+        "report"
       ]
     },
     {
@@ -83785,7 +83889,7 @@
       "level": 2,
       "file": "26-configuration.org",
       "line": 54,
-      "content": "| Setting                         | Type   | Default | Description                                         | |---------------------------------+--------+---------+-----------------------------------------------------| | scimax.email                    | string | \"\"      | Email for API integrations (OpenAlex)               | | scimax.mail.client              | string | \"gmail\" | Compose all email in =gmail= or the =mailto= client | | scimax.mail.gmailAccount        | string | \"\"      | Gmail acc",
+      "content": "| Setting                         | Type   | Default  | Description                                         | |---------------------------------+--------+----------+-----------------------------------------------------| | scimax.email                    | string | \"\"       | Email for API integrations (OpenAlex)               | | scimax.mail.client              | string | \"gmail\"  | Compose all email in =gmail= or the =mailto= client | | scimax.mail.gmailAccount        | string | \"\"       | Gmai",
       "path": [
         "General Settings"
       ],
@@ -83802,7 +83906,7 @@
         "type",
         "default",
         "description",
-        "-------------------------------------------------------------------------------------------------------",
+        "--------------------------------------------------------------------------------------------------------",
         "string",
         "email",
         "api",
@@ -83812,7 +83916,7 @@
         "compose",
         "mailto",
         "client",
-        "acc"
+        "gmai"
       ]
     },
     {

@@ -7763,7 +7763,7 @@
             "Mark the heading done as soon as the compose window opens",
             "Leave the TODO state alone"
           ],
-          "default": "ask",
+          "default": "always",
           "description": "Whether Scimax: Email Heading marks the heading with the file's first done state (DONE by default) and adds CLOSED."
         },
         "scimax.export.clipboard.preferRichText": {
