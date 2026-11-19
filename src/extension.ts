@@ -121,6 +121,7 @@ import { TemplateManager, registerTemplateCommands } from './templates';
 import { registerManuscriptCommands } from './manuscript';
 import { initializeLogging, extensionLogger, getLoggingService } from './utils/logger';
 import { recordActivationFailure, getActivationFailures } from './utils/activationStatus';
+import { registerKeybindingConflictCheck } from './utils/keybindingConflicts';
 import { registerDiredCommands, DiredPanel } from './dired';
 import { registerFileCommands } from './files/fileCommands';
 import { registerFindFileCommands } from './findFile';
@@ -447,6 +448,10 @@ async function activateScimax(context: vscode.ExtensionContext) {
             await context.globalState.update('scimax.hasSetDefaultTheme', true);
         }
     });
+
+    // Warn when another extension's chord swallows a scimax key (e.g. Magit's
+    // `alt+x g` makes alt+x a chord prefix, which breaks M-x)
+    activationStep('keybindingConflicts', () => registerKeybindingConflictCheck(context));
 
     // Initialize Journal Manager
     activationStep('JournalManager', () => {

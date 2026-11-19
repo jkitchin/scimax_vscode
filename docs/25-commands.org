@@ -846,20 +846,20 @@ Commands for visualizing file connections through links.
 | [[cmd:scimax.showLinkGraphForFile]]  | Show Link Graph for File        | -                  |
 | [[cmd:scimax.showLinkStats]]         | Show Link Statistics            | -                  |
 
-** ✅ Troubleshooting and Diagnostics
-CLOSED: [2026-01-22 Thu 20:56]
+** 👀 Troubleshooting and Diagnostics
 
 Commands for debugging issues and reporting problems.
 
-| Command ID                    | Description                | Default Keybinding |
-|-------------------------------+----------------------------+--------------------|
-| [[cmd:scimax.showErrorLog]]    | Show Error Log             | -                  |
-| [[cmd:scimax.clearErrors]]     | Clear Error Log            | -                  |
-| [[cmd:scimax.showDiagnostics]] | Show Diagnostic Report     | -                  |
-| [[cmd:scimax.copyDiagnostics]] | Copy Diagnostic Report     | -                  |
-| [[cmd:scimax.reportIssue]]     | Report Issue on GitHub     | -                  |
-| [[cmd:scimax.contextHelp]]     | Context-Sensitive Help     | -                  |
-| [[cmd:scimax.openLogDirectory]]| Open Log Files Directory   | -                  |
+| Command ID                          | Description                | Default Keybinding |
+|-------------------------------------+----------------------------+--------------------|
+| [[cmd:scimax.showErrorLog]]             | Show Error Log             | -                  |
+| [[cmd:scimax.clearErrors]]              | Clear Error Log            | -                  |
+| [[cmd:scimax.showDiagnostics]]          | Show Diagnostic Report     | -                  |
+| [[cmd:scimax.copyDiagnostics]]          | Copy Diagnostic Report     | -                  |
+| [[cmd:scimax.checkKeybindingConflicts]] | Check Keybinding Conflicts | -                  |
+| [[cmd:scimax.reportIssue]]              | Report Issue on GitHub     | -                  |
+| [[cmd:scimax.contextHelp]]              | Context-Sensitive Help     | -                  |
+| [[cmd:scimax.openLogDirectory]]         | Open Log Files Directory   | -                  |
 
 ** AI Agent Skills
 

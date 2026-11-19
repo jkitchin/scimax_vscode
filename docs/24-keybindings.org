@@ -618,7 +618,54 @@ yank older kills, not just the last one. See [[file:25-commands.org::#kill-ring]
 | C-k                | Kill to end of line (repeated C-k joins into one kill)             |
 | Backspace / Delete | On a just auto-copied mouse selection: delete it and undo the copy |
 
-** Related Topics
+** ⚠️ Keybinding Conflicts with Other Extensions
+
+Some scimax keys are a single keystroke with no =when= condition, most
+importantly =M-x= (=alt+x=, the command palette). If another extension binds a
+/chord/ that starts with the same key, VS Code turns that key into a chord
+prefix: pressing it shows "(Alt+X) was pressed. Waiting for second key of
+chord..." and the scimax binding never fires.
+
+The known case is the Magit extension (=kahole.magit=), which binds:
+
+| Chord          | Magit command      |
+|----------------+--------------------|
+| =alt+x g=      | =magit.status=     |
+| =alt+x ctrl+g= | =magit.dispatch=   |
+| =alt+x alt+g=  | =magit.file-popup= |
+
+With Magit installed, M-x stops opening the command palette.
+
+** ⚠️ Automatic Detection
+
+On startup, and whenever extensions are installed or removed, scimax checks
+whether any other extension has a chord that starts with one of its global
+single-stroke keys. If it finds one, it shows a warning with two buttons:
+
+- *Copy Fix & Open Keybindings* - copies the removal entries to the clipboard
+  and opens your user =keybindings.json=; paste them inside the =[ ]= and save
+- *Don't Show Again* - stays quiet until the set of conflicts changes
+
+Chords you already removed in your user =keybindings.json= are not reported.
+Run [[cmd:scimax.checkKeybindingConflicts]] (=Scimax: Check Keybinding
+Conflicts=) from the command palette to check at any time.
+
+** ⚠️ Fixing the Conflict
+
+Remove the conflicting chords in your user =keybindings.json= (=Preferences:
+Open Keyboard Shortcuts (JSON)=). For Magit, you can rebind status to the
+Emacs Magit key, =C-x g=:
+
+#+begin_src json
+[
+  { "key": "alt+x g",      "command": "-magit.status" },
+  { "key": "alt+x ctrl+g", "command": "-magit.dispatch" },
+  { "key": "alt+x alt+g",  "command": "-magit.file-popup" },
+  { "key": "ctrl+x g",     "command": "magit.status" }
+]
+#+end_src
+
+* Related Topics
 
 - [[file:25-commands.org::#kill-ring][Kill Ring commands]]
 - [[file:26-configuration.org][Configuration]] (=scimax.killRing.maxSize=)
@@ -972,6 +1019,7 @@ CLOSED: [2026-10-30 Fri 08:02]
 - [[file:26-configuration.org][Configuration]] - settings that change key behaviour
 - [[file:44-marp.org][Marp Slides]] - Slide Sorter, presenter and export keys
 - [[file:46-org-preview.org][Org Preview]] - the live preview keys
+- [[file:25-commands.org::*Troubleshooting and Diagnostics][Troubleshooting and Diagnostics]] - =scimax.checkKeybindingConflicts=
 
 * ✅ Further Help
 CLOSED: [2026-01-19 Mon 18:20]
