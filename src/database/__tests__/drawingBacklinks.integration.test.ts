@@ -58,7 +58,11 @@ describe('drawing back-links (integration)', () => {
 
     afterAll(async () => {
         await db?.close();
-        fs.rmSync(dir, { recursive: true, force: true });
+        try {
+            fs.rmSync(dir, { recursive: true, force: true });
+        } catch {
+            // Windows can hold the SQLite file briefly after close; best-effort.
+        }
     });
 
     it('lists the drawing as a back-link of headings by ID, CUSTOM_ID and title', async () => {

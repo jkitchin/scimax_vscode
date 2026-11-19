@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest';
+import * as path from 'path';
 import { drawingLinkRow, indexDrawing } from '../indexing';
 import { encodeScenePayload, orgLinkUri, type ExcalidrawScene } from '../scene';
 
@@ -15,7 +16,7 @@ describe('drawingLinkRow', () => {
 
     it('turns *heading / #id links copied from an org file into file links to it', () => {
         expect(drawingLinkRow(orgLinkUri('*Results', '/proj/notes.org'), DRAWING))
-            .toMatchObject({ type: 'file', target: 'file:/proj/notes.org::*Results' });
+            .toMatchObject({ type: 'file', target: `file:${path.resolve('/proj/notes.org')}::*Results` });
         expect(drawingLinkRow(orgLinkUri('*Results'), DRAWING)).toBeNull();
     });
 });
