@@ -4,6 +4,7 @@
  */
 
 import * as vscode from 'vscode';
+import { registerUriRoute } from '../utils/uriHandler';
 import * as path from 'path';
 import * as fs from 'fs';
 import { spawn } from 'child_process';
@@ -1306,30 +1307,23 @@ export function startInverseSyncTeXServer(context: vscode.ExtensionContext): voi
     // For SumatraPDF: it can execute a command
     // For Zathura: it uses D-Bus
 
-    // We'll register a URI handler for synctex:// URLs
-    const handler = vscode.window.registerUriHandler({
-        handleUri(uri: vscode.Uri): vscode.ProviderResult<void> {
-            // Expected format: synctex://open?file=path&line=123
-            if (uri.path === '/open') {
-                const params = new URLSearchParams(uri.query);
-                const file = params.get('file');
-                const line = params.get('line');
+    // vscode://jkitchin.scimax-vscode/open?file=path&line=123
+    context.subscriptions.push(registerUriRoute('/open', (uri) => {
+        const params = new URLSearchParams(uri.query);
+        const file = params.get('file');
+        const line = params.get('line');
 
-                if (file && line) {
-                    const fileUri = vscode.Uri.file(file);
-                    const position = new vscode.Position(parseInt(line, 10) - 1, 0);
-                    vscode.workspace.openTextDocument(fileUri).then(doc => {
-                        vscode.window.showTextDocument(doc).then(editor => {
-                            editor.selection = new vscode.Selection(position, position);
-                            editor.revealRange(new vscode.Range(position, position), vscode.TextEditorRevealType.InCenter);
-                        });
-                    });
-                }
-            }
+        if (file && line) {
+            const fileUri = vscode.Uri.file(file);
+            const position = new vscode.Position(parseInt(line, 10) - 1, 0);
+            vscode.workspace.openTextDocument(fileUri).then(doc => {
+                vscode.window.showTextDocument(doc).then(editor => {
+                    editor.selection = new vscode.Selection(position, position);
+                    editor.revealRange(new vscode.Range(position, position), vscode.TextEditorRevealType.InCenter);
+                });
+            });
         }
-    });
-
-    context.subscriptions.push(handler);
+    }));
 }
 
 // Get the inverse SyncTeX command for different PDF viewers

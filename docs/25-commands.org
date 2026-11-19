@@ -641,6 +641,7 @@ Loaded exporters are also listed in the export dispatcher (=C-c C-e=) under
 | [[cmd:scimax.org.storeLink]]           | Store Link (for later insertion)          | -                       |
 | [[cmd:scimax.org.deleteFileLink]]      | Delete File Link (and optionally file)    | -                       |
 | [[cmd:scimax.org.openExcalidraw]]      | Open Excalidraw Drawing                   | (via link click)        |
+| [[cmd:scimax.excalidraw.copyOrgLink]]  | Copy Heading Link for Excalidraw          | -                       |
 | [[cmd:scimax.org.insertFinderLink]]    | Insert Link from Finder Selection (macOS) | -                       |
 | [[cmd:scimax.org.insertChromeLink]]    | Insert Link from Front Chrome Tab (macOS) | -                       |
 | [[cmd:scimax.org.toggleLinkDisplay]]   | Toggle Link Display (descriptive/literal) | (right-click menu)      |

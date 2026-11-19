@@ -198,6 +198,7 @@ export async function exportCommand(config: CliConfig, args: ParsedArgs): Promis
     switch (format) {
         case 'html':
             output = exportToHtml(doc, {
+                baseDir: path.dirname(path.resolve(inputPath)),
                 bibEntries,
                 citationStyle: cslStyle,
                 bibliography: true,

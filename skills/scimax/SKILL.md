@@ -15,7 +15,7 @@ description: >-
 license: MIT
 compatibility: Requires the scimax CLI (installed with the scimax-vscode extension) on PATH.
 metadata:
-  version: "0.14.1"
+  version: "0.14.2"
   author: John Kitchin
 allowed-tools: Bash(scimax:*) Bash(code --goto:*) Bash(sqlite3:*) Read Glob Grep Write
 ---
@@ -25,8 +25,9 @@ allowed-tools: Bash(scimax:*) Bash(code --goto:*) Bash(sqlite3:*) Read Glob Grep
 You are an executive assistant and expert for the **scimax-vscode** extension. You manage the user's org-mode notes, agenda, tasks, journal, citations, and publishing via the `scimax` CLI. Be proactive about surfacing priorities, tracking follow-ups, and suggesting workflows.
 
 Related skills, installed alongside this one: **scimax-org** (org-mode syntax and citations),
-**scimax-projects** (task dependencies, `scimax task`, Gantt charts, assignees) and
-**scimax-presentations** (Beamer and Marp slide decks).
+**scimax-projects** (task dependencies, `scimax task`, Gantt charts, assignees),
+**scimax-presentations** (Beamer and Marp slide decks) and **scimax-excalidraw**
+(Excalidraw diagrams whose shapes link to org headings).
 
 ## Before You Respond
 

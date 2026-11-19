@@ -87,6 +87,7 @@ import { parseCitationsFromLine, getNormalizedStyle } from '../references/citati
 import type { BibEntry } from '../references/bibtexParser';
 import { ALL_CITATION_COMMANDS } from '../references/citationTypes';
 import { blockExportRegistry } from '../adapters/blockExportAdapter';
+import { EXCALIDRAW_LINK_RE, excalidrawHtml } from '../excalidraw/htmlExport';
 import { exportHookRegistry } from '../adapters/exportHooksAdapter';
 
 // Citation link types that should be processed as citations
@@ -151,6 +152,43 @@ export interface HtmlExportOptions extends ExportOptions {
      * holding their 1-based source line (used for preview scroll sync)
      */
     sourceLineMarkers?: boolean;
+
+    /**
+     * Folder of the org file being exported. Relative links to Excalidraw
+     * drawings are read from here and inlined as SVG with clickable links.
+     */
+    baseDir?: string;
+}
+
+/**
+ * Build the href for a link to another file.
+ *
+ * Converts .org/.md to .html and turns a search option
+ * (file:doc.org::*Heading) into an anchor - without this the whole
+ * "path::search" string would be treated as a file name and 404.
+ */
+export function fileLinkHref(path: string, searchOption?: string): string {
+    // Most parsers split the search option out, but not all paths arrive
+    // that way (e.g. plain-text links), so handle both.
+    const [filePart, ...searchParts] = path.replace(/^file:/, '').split('::');
+    const search = (searchOption ?? searchParts.join('::')).trim();
+
+    const href = filePart.replace(/\.(org|md)$/i, '.html');
+
+    if (search.startsWith('*')) {
+        // Heading search - same anchor scheme the target file uses
+        return `${href}#${generateId(search.slice(1).trim())}`;
+    }
+    if (search.startsWith('#')) {
+        // Custom ID search
+        return `${href}${search}`;
+    }
+    if (search && !/^\d+$/.test(search)) {
+        // Plain text search - best-effort anchor. A bare number is a line
+        // number, which has no HTML equivalent, so link to the file.
+        return `${href}#${generateId(search)}`;
+    }
+    return href;
 }
 
 const DEFAULT_HTML_OPTIONS: HtmlExportOptions = {
@@ -597,7 +635,8 @@ export class HtmlExportBackend implements ExportBackend {
             !(c.type === 'plain-text' && !(c as PlainTextObject).properties.value.trim()));
         if (parts.length !== 1 || parts[0].type !== 'link') return false;
         const link = parts[0] as LinkObject;
-        return !link.children?.length && /\.(png|jpg|jpeg|gif|svg|webp)$/i.test(link.properties.path);
+        return !link.children?.length
+            && (/\.(png|jpg|jpeg|gif|svg|webp)$/i.test(link.properties.path) || EXCALIDRAW_LINK_RE.test(link.properties.path));
     }
 
     private exportSrcBlock(block: SrcBlockElement, state: ExportState): string {
@@ -1002,6 +1041,16 @@ export class HtmlExportBackend implements ExportBackend {
                 }
         }
 
+        // A bare link to an Excalidraw drawing is inlined as SVG so the
+        // links on its elements work in the browser
+        if (!link.children?.length && EXCALIDRAW_LINK_RE.test(path)) {
+            const baseDir = (state as HtmlExportState).htmlOptions?.baseDir;
+            const inline = baseDir
+                ? excalidrawHtml(path, { baseDir, fileHref: target => fileLinkHref(target) })
+                : null;
+            if (inline) return inline;
+        }
+
         // Handle image links
         if (/\.(png|jpg|jpeg|gif|svg|webp)$/i.test(path)) {
             const alt = link.children
@@ -1035,29 +1084,7 @@ export class HtmlExportBackend implements ExportBackend {
      * "path::search" string would be treated as a file name and 404.
      */
     private exportFileHref(link: LinkObject): string {
-        const { path, searchOption } = link.properties;
-
-        // Most parsers split the search option out, but not all paths arrive
-        // that way (e.g. plain-text links), so handle both.
-        const [filePart, ...searchParts] = path.replace(/^file:/, '').split('::');
-        const search = (searchOption ?? searchParts.join('::')).trim();
-
-        const href = filePart.replace(/\.(org|md)$/i, '.html');
-
-        if (search.startsWith('*')) {
-            // Heading search - same anchor scheme the target file uses
-            return `${href}#${generateId(search.slice(1).trim())}`;
-        }
-        if (search.startsWith('#')) {
-            // Custom ID search
-            return `${href}${search}`;
-        }
-        if (search && !/^\d+$/.test(search)) {
-            // Plain text search - best-effort anchor. A bare number is a line
-            // number, which has no HTML equivalent, so link to the file.
-            return `${href}#${generateId(search)}`;
-        }
-        return href;
+        return fileLinkHref(link.properties.path, link.properties.searchOption);
     }
 
     /**
