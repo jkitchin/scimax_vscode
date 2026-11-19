@@ -29,6 +29,7 @@ import {
 } from './references/providers';
 import { NotebookManager } from './notebook/notebookManager';
 import { registerNotebookCommands, checkPendingNavigation } from './notebook/commands';
+import { NotebookTreeProvider } from './notebook/notebookTreeProvider';
 import { OrgLinkProvider, MarkdownHeadingLinkProvider, registerOrgLinkCommands } from './org/orgLinkProvider';
 import { registerBuiltinFollowHandlers } from './adapters/linkFollowAdapter';
 import { registerSemanticTokenProvider } from './highlighting/semanticTokenProvider';
@@ -124,6 +125,7 @@ import { recordActivationFailure, getActivationFailures } from './utils/activati
 import { registerKeybindingConflictCheck } from './utils/keybindingConflicts';
 import { registerScimaxUriHandler } from './utils/uriHandler';
 import { registerExcalidrawCommands } from './excalidraw/commands';
+import { registerExcalidrawEditor } from './excalidraw/editorProvider';
 import { registerDiredCommands, DiredPanel } from './dired';
 import { registerFileCommands } from './files/fileCommands';
 import { registerFindFileCommands } from './findFile';
@@ -1019,6 +1021,9 @@ async function activateScimax(context: vscode.ExtensionContext) {
     // Register Projectile Commands
     activationStep('registerProjectileCommands', () => registerProjectileCommands(context, projectileManager));
 
+    // Scimax's Excalidraw editor: links shapes to org headings (needs projectile for nb: links).
+    activationStep('ExcalidrawEditor', () => registerExcalidrawEditor(context, projectileManager));
+
     // Agenda view: needs projectile's project list for its Project filter.
     activationStep('registerAgendaView', () => {
         if (agendaManager) registerAgendaView(context, agendaManager, projectileManager);
@@ -1037,6 +1042,17 @@ async function activateScimax(context: vscode.ExtensionContext) {
 
     // Register Notebook Commands (uses projectileManager for nb: link resolution)
     activationStep('registerNotebookCommands', () => registerNotebookCommands(context, notebookManager, projectileManager));
+
+    // Register Notebooks tree view (notebooks, recent files, collaborators, info)
+    activationStep('NotebookTreeProvider', () => {
+        const notebookTreeProvider = new NotebookTreeProvider(notebookManager);
+        context.subscriptions.push(
+            vscode.window.createTreeView('scimax.notebooks', {
+                treeDataProvider: notebookTreeProvider,
+                showCollapseAll: true
+            })
+        );
+    });
 
     // Check for pending navigation from notebook links opened in new window
     checkPendingNavigation(context).catch(err => {

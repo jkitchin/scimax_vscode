@@ -84,6 +84,12 @@ export class NotebookManager {
     private _onNotebookChanged = new vscode.EventEmitter<Notebook | undefined>();
     public readonly onNotebookChanged = this._onNotebookChanged.event;
 
+    /** Fires when the set of notebooks or any notebook's metadata changes. */
+    private _onDidChangeNotebooks = new vscode.EventEmitter<void>();
+    public readonly onDidChangeNotebooks = this._onDidChangeNotebooks.event;
+
+    private disposables: vscode.Disposable[] = [];
+
     constructor(context: vscode.ExtensionContext) {
         this.context = context;
         this.dataPath = path.join(context.globalStorageUri.fsPath, 'notebooks.json');
@@ -111,6 +117,43 @@ export class NotebookManager {
         } catch (error) {
             console.error('NotebookManager: Failed to detect workspace projects', error);
         }
+
+        // Saved notebooks.json carries a snapshot of each config; refresh it
+        // from disk so edits made while VS Code was closed show up.
+        this.reloadConfigs();
+
+        // Pick up hand edits to .scimax/config.json (e.g. via Notebook Settings)
+        this.disposables.push(
+            vscode.workspace.onDidSaveTextDocument(doc => {
+                const file = doc.uri.fsPath;
+                if (path.basename(file) === 'config.json' &&
+                    path.basename(path.dirname(file)) === '.scimax') {
+                    this.reloadConfigs(path.dirname(path.dirname(file)));
+                }
+            })
+        );
+    }
+
+    /**
+     * Re-read .scimax/config.json, master file and git status from disk.
+     * With no argument, refreshes every tracked notebook.
+     */
+    public reloadConfigs(projectPath?: string): void {
+        const targets = projectPath
+            ? [this.notebooks.get(projectPath)].filter((n): n is Notebook => !!n)
+            : Array.from(this.notebooks.values());
+
+        for (const notebook of targets) {
+            const config = this.loadConfig(notebook.path);
+            notebook.config = config;
+            notebook.name = config?.name || path.basename(notebook.path);
+            notebook.description = config?.description;
+            notebook.masterFile = this.findMasterFile(notebook.path, config);
+            notebook.hasGit = fs.existsSync(path.join(notebook.path, '.git'));
+            notebook.hasProjectile = fs.existsSync(path.join(notebook.path, '.projectile'));
+        }
+
+        this._onDidChangeNotebooks.fire();
     }
 
     /**
@@ -192,6 +235,7 @@ export class NotebookManager {
         };
 
         this.notebooks.set(projectPath, notebook);
+        this._onDidChangeNotebooks.fire();
         return notebook;
     }
 
@@ -227,7 +271,9 @@ export class NotebookManager {
             notebook.config = config;
             notebook.name = config.name || notebook.name;
             notebook.description = config.description;
+            notebook.masterFile = this.findMasterFile(projectPath, config);
         }
+        this._onDidChangeNotebooks.fire();
     }
 
     /**
@@ -431,6 +477,7 @@ ${config.description || ''}
         notebook.lastAccessed = Date.now();
         this.currentNotebook = notebook;
         this._onNotebookChanged.fire(notebook);
+        this._onDidChangeNotebooks.fire();
 
         // Open master file if available
         if (notebook.masterFile && fs.existsSync(notebook.masterFile)) {
@@ -497,9 +544,12 @@ ${config.description || ''}
     /**
      * List files in a notebook
      */
-    public async listNotebookFiles(notebook: Notebook, pattern?: string): Promise<string[]> {
+    public async listNotebookFiles(
+        notebook: Notebook,
+        pattern?: string,
+        accept: (name: string) => boolean = name => ['.org', '.md'].includes(path.extname(name).toLowerCase())
+    ): Promise<string[]> {
         const files: string[] = [];
-        const extensions = ['.org', '.md'];
 
         const walk = (dir: string) => {
             try {
@@ -514,12 +564,9 @@ ${config.description || ''}
 
                     if (item.isDirectory()) {
                         walk(fullPath);
-                    } else if (item.isFile()) {
-                        const ext = path.extname(item.name).toLowerCase();
-                        if (extensions.includes(ext)) {
-                            if (!pattern || item.name.includes(pattern)) {
-                                files.push(fullPath);
-                            }
+                    } else if (item.isFile() && accept(item.name)) {
+                        if (!pattern || item.name.includes(pattern)) {
+                            files.push(fullPath);
                         }
                     }
                 }
@@ -530,6 +577,13 @@ ${config.description || ''}
 
         walk(notebook.path);
         return files;
+    }
+
+    /** Excalidraw drawings in a notebook, by path. */
+    public async listDrawings(notebook: Notebook): Promise<string[]> {
+        const files = await this.listNotebookFiles(notebook, undefined,
+            name => /\.excalidraw(\.json|\.svg|\.png)?$/i.test(name));
+        return files.sort();
     }
 
     /**
@@ -573,15 +627,20 @@ ${config.description || ''}
             return undefined;
         }
 
-        const archiveName = `${notebook.name}-${new Date().toISOString().split('T')[0]}.zip`;
+        // Keep the name a plain file name even if config.json's name has slashes
+        const safeName = notebook.name.replace(/[\\/:*?"<>|]/g, '-');
+        const archiveName = `${safeName}-${new Date().toISOString().split('T')[0]}.zip`;
         const archivePath = path.join(path.dirname(notebook.path), archiveName);
 
         try {
+            // execFile (no shell): the archive name comes from config.json,
+            // so it must never be interpolated into a shell command line.
             // eslint-disable-next-line @typescript-eslint/no-var-requires
-            const { exec } = require('child_process');
+            const { execFile } = require('child_process');
             await new Promise<void>((resolve, reject) => {
-                exec(
-                    `git archive --format=zip --output="${archivePath}" HEAD`,
+                execFile(
+                    'git',
+                    ['archive', '--format=zip', `--output=${archivePath}`, 'HEAD'],
                     { cwd: notebook.path },
                     (error: any) => {
                         if (error) reject(error);
@@ -603,6 +662,7 @@ ${config.description || ''}
      */
     public removeNotebook(notebook: Notebook): void {
         this.notebooks.delete(notebook.path);
+        this._onDidChangeNotebooks.fire();
         if (this.currentNotebook?.path === notebook.path) {
             this.currentNotebook = undefined;
             this._onNotebookChanged.fire(undefined);
@@ -614,5 +674,7 @@ ${config.description || ''}
      */
     public dispose(): void {
         this._onNotebookChanged.dispose();
+        this._onDidChangeNotebooks.dispose();
+        this.disposables.forEach(d => d.dispose());
     }
 }

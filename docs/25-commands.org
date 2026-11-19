@@ -633,18 +633,19 @@ Loaded exporters are also listed in the export dispatcher (=C-c C-e=) under
 
 * Links
 
-| Command ID                         | Description                               | Default Keybinding      |
-|------------------------------------+-------------------------------------------+-------------------------|
-| [[cmd:scimax.org.insertLink]]          | Insert Link (edits the link at point)     | C-c C-l                 |
-| [[cmd:scimax.org.openLink]]            | Open Link at Point                        | C-c C-o / RET (on link) |
-| [[cmd:scimax.org.openLinkOtherWindow]] | Open Link at Point in Other Window        | C-u C-c C-o             |
-| [[cmd:scimax.org.storeLink]]           | Store Link (for later insertion)          | -                       |
-| [[cmd:scimax.org.deleteFileLink]]      | Delete File Link (and optionally file)    | -                       |
-| [[cmd:scimax.org.openExcalidraw]]      | Open Excalidraw Drawing                   | (via link click)        |
-| [[cmd:scimax.excalidraw.copyOrgLink]]  | Copy Heading Link for Excalidraw          | -                       |
-| [[cmd:scimax.org.insertFinderLink]]    | Insert Link from Finder Selection (macOS) | -                       |
-| [[cmd:scimax.org.insertChromeLink]]    | Insert Link from Front Chrome Tab (macOS) | -                       |
-| [[cmd:scimax.org.toggleLinkDisplay]]   | Toggle Link Display (descriptive/literal) | (right-click menu)      |
+| Command ID                                | Description                               | Default Keybinding      |
+|-------------------------------------------+-------------------------------------------+-------------------------|
+| [[cmd:scimax.org.insertLink]]                 | Insert Link (edits the link at point)     | C-c C-l                 |
+| [[cmd:scimax.org.openLink]]                   | Open Link at Point                        | C-c C-o / RET (on link) |
+| [[cmd:scimax.org.openLinkOtherWindow]]        | Open Link at Point in Other Window        | C-u C-c C-o             |
+| [[cmd:scimax.org.storeLink]]                  | Store Link (for later insertion)          | -                       |
+| [[cmd:scimax.org.deleteFileLink]]             | Delete File Link (and optionally file)    | -                       |
+| [[cmd:scimax.org.openExcalidraw]]             | Open Excalidraw Drawing                   | (via link click)        |
+| [[cmd:scimax.excalidraw.copyOrgLink]]         | Copy Heading Link for Excalidraw          | -                       |
+| [[cmd:scimax.excalidraw.addHeadingToDrawing]] | Add Heading to Drawing                    | -                       |
+| [[cmd:scimax.org.insertFinderLink]]           | Insert Link from Finder Selection (macOS) | -                       |
+| [[cmd:scimax.org.insertChromeLink]]           | Insert Link from Front Chrome Tab (macOS) | -                       |
+| [[cmd:scimax.org.toggleLinkDisplay]]          | Toggle Link Display (descriptive/literal) | (right-click menu)      |
 
 * ✅ Timestamps
 CLOSED: [2026-01-17 Sat 12:27]
@@ -691,8 +692,8 @@ CLOSED: [2026-01-17 Sat 12:28]
 
 ** Advanced Agenda
 
-| Command ID                                  | Description                                  | Default Keybinding  |
-|---------------------------------------------+----------------------------------------------+---------------------|
+| Command ID                              | Description                                  | Default Keybinding  |
+|-----------------------------------------+----------------------------------------------+---------------------|
 | [[cmd:scimax.agenda.menu]]                  | Open Agenda Menu                             | C-c a c             |
 | [[cmd:scimax.agenda.day]]                   | Day Agenda                                   | -                   |
 | [[cmd:scimax.agenda.week]]                  | Week Agenda                                  | -                   |
@@ -725,6 +726,8 @@ CLOSED: [2026-01-17 Sat 12:28]
 | [[cmd:scimax.agenda.help]]                  | Agenda Commands                              | C-c a ?             |
 | [[cmd:scimax.agendaView.refresh]]           | Agenda View - Refresh                        | g (in view)         |
 | [[cmd:scimax.agendaView.ignoreFile]]        | Agenda View - Ignore This File in the Agenda | -                   |
+| [[cmd:scimax.agendaView.undo]]              | Agenda View - Undo Last Action               | Cmd+Z (in view)     |
+| [[cmd:scimax.agendaView.redo]]              | Agenda View - Redo                           | S-Cmd+Z (in view)   |
 | [[cmd:scimax.agenda.custom]]                | Run Custom Agenda Command                    | -                   |
 | [[cmd:scimax.agenda.match]]                 | Agenda Match (Tags/Properties)               | m (agenda menu)     |
 | [[cmd:scimax.agenda.storeViews]]            | Store Agenda Views                           | e (agenda menu)     |
@@ -1017,11 +1020,10 @@ Commands for managing journal name abbreviations in BibTeX entries.
 | [[cmd:scimax.bibtex.manageJournalAbbreviations]]| Manage Custom Journal Abbreviations  | -                  |
 | [[cmd:scimax.bibtex.journalAbbreviationStats]]  | Journal Abbreviation Statistics      | -                  |
 
-* ✅ Notebook
-CLOSED: [2026-01-17 Sat 12:46]
+* 👀 Notebook
 
-| Command ID                              | Description                   | Default Keybinding |
-|-----------------------------------------+-------------------------------+--------------------|
+| Command ID                          | Description                   | Default Keybinding |
+|-------------------------------------+-------------------------------+--------------------|
 | [[cmd:scimax.notebook.new]]             | New Notebook                  | -                  |
 | [[cmd:scimax.notebook.open]]            | Open Notebook                 | -                  |
 | [[cmd:scimax.notebook.openMasterFile]]  | Open Notebook Master File     | -                  |
@@ -1034,6 +1036,10 @@ CLOSED: [2026-01-17 Sat 12:46]
 | [[cmd:scimax.notebook.index]]           | Index Notebook                | -                  |
 | [[cmd:scimax.notebook.info]]            | Notebook Info                 | -                  |
 | [[cmd:scimax.notebook.remove]]          | Remove Notebook from Tracking | -                  |
+| [[cmd:scimax.notebook.map]]             | Notebook Map (Excalidraw)     | -                  |
+| [[cmd:scimax.notebook.runCommand]]      | Run Notebook Command          | -                  |
+| [[cmd:scimax.notebook.refresh]]         | Refresh Notebooks             | -                  |
+| [[cmd:scimax.notebook.insertLink]]      | Insert Notebook Link          | -                  |
 
 * ✅ Navigation
 CLOSED: [2026-01-17 Sat 12:47]

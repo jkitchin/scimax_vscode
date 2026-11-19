@@ -19,6 +19,8 @@ export interface DbSettings {
     exclude: string[];
     /** scimax.db.fileExtensions: file types to index, e.g. ['org', 'md'] */
     fileExtensions: string[];
+    /** scimax.db.indexDrawings: also index Excalidraw drawings */
+    indexDrawings: boolean;
     maxFileSizeMB: number;
     maxFileLines: number;
 }
@@ -511,6 +513,7 @@ export function loadSettings(): ScimaxSettings {
                 getSetting<string[]>(settings, 'scimax.db.exclude', defaultDbExclude)
             ),
             fileExtensions: getSetting<string[]>(settings, 'scimax.db.fileExtensions', [...DEFAULT_FILE_EXTENSIONS]),
+            indexDrawings: getSetting<boolean>(settings, 'scimax.db.indexDrawings', true),
             maxFileSizeMB: getSetting<number>(settings, 'scimax.db.maxFileSizeMB', 10),
             maxFileLines: getSetting<number>(settings, 'scimax.db.maxFileLines', 5000),
         },
@@ -602,7 +605,7 @@ export function loadSettings(): ScimaxSettings {
 export function findOrgFiles(
     dir: string,
     excludePatterns: string[],
-    options: { maxFileSizeMB?: number; fileExtensions?: string[] } = {}
+    options: { maxFileSizeMB?: number; fileExtensions?: string[]; indexDrawings?: boolean } = {}
 ): string[] {
     const files: string[] = [];
     const maxBytes = (options.maxFileSizeMB || 10) * 1024 * 1024;
@@ -614,7 +617,7 @@ export function findOrgFiles(
         if (rootStats.isFile()) {
             // A file root is a file listed by its exact path (scimax.db.include): it beats a configured
             // exclude pattern such as its folder; only the built-in excludes apply.
-            if (isIndexableFile(dir, options.fileExtensions) && !shouldExclude(dir, BASELINE_DB_EXCLUDE) && rootStats.size <= maxBytes) {
+            if (isIndexableFile(dir, options.fileExtensions, options.indexDrawings ?? true) && !shouldExclude(dir, BASELINE_DB_EXCLUDE) && rootStats.size <= maxBytes) {
                 files.push(dir);
             }
             return files;
@@ -641,7 +644,7 @@ export function findOrgFiles(
                         continue;
                     }
                     scan(fullPath);
-                } else if (entry.isFile() && isIndexableFile(entry.name, options.fileExtensions)) {
+                } else if (entry.isFile() && isIndexableFile(entry.name, options.fileExtensions, options.indexDrawings ?? true)) {
                     // Check file size
                     try {
                         const stats = fs.statSync(fullPath);

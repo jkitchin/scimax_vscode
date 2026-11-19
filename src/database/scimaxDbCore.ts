@@ -30,6 +30,7 @@ import { isExcludedPath } from '../shared/ignorePatterns';
 import { normalizeExtensions } from '../shared/indexableFiles';
 import { parseWarning, warningStart } from '../parser/deadlineWarning';
 import { parseMarkdownHeadings } from '../parser/markdownTasks';
+import { indexDrawing, isDrawingPath } from '../excalidraw/indexing';
 import { normalizeFtsQuery, literalFtsQuery } from './ftsQuery';
 // Migration data - inlined here to avoid importing migrations.ts which pulls in vscode via logger.
 // Keep in sync with src/database/migrations.ts.
@@ -757,6 +758,8 @@ export class ScimaxDbCore {
 
     // Embedding dimensions
     private embeddingDimensions: number;
+    /** Whether Excalidraw drawings are indexed */
+    private indexDrawings = true;
     /** Normalized scimax.db.fileExtensions, e.g. ['.org', '.md'] */
     private indexableExtensions: string[];
 
@@ -977,9 +980,18 @@ export class ScimaxDbCore {
         this.indexableExtensions = normalizeExtensions(extensions);
     }
 
-    /** True when the file's type is one the database indexes (scimax.db.fileExtensions). */
+    /**
+     * True when the file's type is one the database indexes: scimax.db.fileExtensions,
+     * plus Excalidraw drawings (their shapes' text and links) unless indexDrawings is off.
+     */
     public isIndexable(filePath: string): boolean {
-        return this.indexableExtensions.includes(path.extname(filePath).toLowerCase());
+        return this.indexableExtensions.includes(path.extname(filePath).toLowerCase())
+            || (this.indexDrawings && isDrawingPath(filePath));
+    }
+
+    /** Index Excalidraw drawings (scimax.db.indexDrawings). */
+    public setIndexDrawings(on: boolean): void {
+        this.indexDrawings = on;
     }
 
     public setResilienceConfig(config: { queryTimeoutMs?: number; maxRetryAttempts?: number }): void {
@@ -1146,7 +1158,8 @@ export class ScimaxDbCore {
         return nonPrintable / sample.length > 0.1;
     }
 
-    private getFileType(filePath: string): 'org' | 'md' {
+    private getFileType(filePath: string): 'org' | 'md' | 'excalidraw' {
+        if (isDrawingPath(filePath)) return 'excalidraw';
         // Org files get the org parser; every other configured type
         // (md, and e.g. markdown if added to scimax.db.fileExtensions) is Markdown.
         return path.extname(filePath).toLowerCase() === '.org' ? 'org' : 'md';
@@ -1224,8 +1237,12 @@ export class ScimaxDbCore {
                 parsedDoc = this.parser.parse(content);
             }
 
-            const hashtags = extractHashtags(content, { markdown: fileType === 'md' });
-            let contentForDb: string | null = content;
+            // A drawing is indexed by its shapes' text and links, not its JSON/SVG.
+            const drawing = fileType === 'excalidraw' ? indexDrawing(content, filePath) : null;
+            if (fileType === 'excalidraw' && !drawing) return skip('drawing without a readable scene');
+
+            let contentForDb: string | null = drawing ? drawing.text : content;
+            const hashtags = extractHashtags(contentForDb, { markdown: fileType === 'md' });
 
             await this.withWriteLock(async () => {
                 // Remove old data
@@ -1258,6 +1275,8 @@ export class ScimaxDbCore {
                     parsedDoc = null;
                 } else if (fileType === 'md') {
                     await this.indexMarkdownDocument(fileId, filePath, contentForDb!);
+                } else if (drawing) {
+                    await this.indexLinks(fileId, filePath, drawing.links);
                 }
 
                 // Index hashtags and FTS5
@@ -2087,7 +2106,7 @@ export class ScimaxDbCore {
     }): Promise<{ checked: number; reindexed: number; removed: number }> {
         const result = { checked: 0, reindexed: 0, removed: 0 };
         if (!this.db) return result;
-        const rows = await this.db.execute(`SELECT path, mtime FROM files WHERE file_type IN ('org', 'md')`);
+        const rows = await this.db.execute(`SELECT path, mtime FROM files WHERE file_type IN ('org', 'md', 'excalidraw')`);
         const changed: string[] = [];
         const removed: string[] = [];
         const batchSize = 1000;

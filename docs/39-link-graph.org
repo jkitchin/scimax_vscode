@@ -56,13 +56,17 @@ Each node in the graph represents a file:
 - *Connected nodes* - Files that link to or from the center file
 - *Node size* - Larger nodes have more connections
 
-** ✅ Edges
-CLOSED: [2026-04-12 Sun 19:52]
+** 👀 Edges
 
 Edges (lines) represent links between files:
 
 - *Direction* - Arrows show link direction (source → target)
 - *Bidirectional* - Some file pairs may have links in both directions
+- *ID links* - an =[[id:...]]= link is an edge to the file of the heading
+  with that =:ID:=
+- *Drawings* - an Excalidraw drawing is a node, with an edge to each file its
+  shapes link to; clicking it opens the drawing in its editor (see
+  [[file:32-excalidraw.org::*Drawings in Search, Back-links and the Link Graph][Excalidraw]])
 
 ** ✅ Node Tooltips
 CLOSED: [2026-04-12 Sun 19:52]

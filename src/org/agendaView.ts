@@ -31,7 +31,7 @@ import { currentProjectRoot, isOrgFileRoot, isTaskFile, loadProjectTasks } from 
 import { isMarkdownPath } from '../parser/markdownTasks';
 import { readSourceLines } from './agendaDocumentProvider';
 import { entrySnippet, outlinePath, relocateHeading } from './agendaHover';
-import { registerTaskHost, revealTask, runOnTask, type TaskContext } from './taskActions';
+import { clearTaskUndo, registerTaskHost, revealTask, runOnTask, undoTaskAction, type TaskContext } from './taskActions';
 import {
     groupByState,
     limitToRoot,
@@ -79,6 +79,8 @@ type FromWebview =
     | { type: 'cycleTodo'; filePath: string; line: number; title?: string }
     | { type: 'planning'; action: 'deadline' | 'schedule'; filePath: string; line: number; title?: string }
     | { type: 'preview'; id: number; filePath: string; line: number; title?: string }
+    | { type: 'undo' }
+    | { type: 'redo' }
     | { type: 'close' };
 
 /** Lines of an entry's body in its tooltip, after the heading. */
@@ -152,7 +154,10 @@ class AgendaWebview implements vscode.Disposable {
         setPanelThemeIcon(this.panel, 'calendar');
         this.panel.webview.html = this.html(this.panel.webview);
         this.panel.webview.onDidReceiveMessage((m: FromWebview) => this.onMessage(m), undefined, this.disposables);
-        this.panel.onDidDispose(() => { this.panel = undefined; }, undefined, this.disposables);
+        this.panel.onDidDispose(() => {
+            this.panel = undefined;
+            clearTaskUndo(AGENDA_VIEW_TYPE);
+        }, undefined, this.disposables);
     }
 
     reveal(): void {
@@ -284,6 +289,10 @@ class AgendaWebview implements vscode.Disposable {
             case 'preview':
                 await this.preview(message.id, message.filePath, message.line, message.title);
                 break;
+            case 'undo':
+            case 'redo':
+                await undoTaskAction(AGENDA_VIEW_TYPE, message.type === 'redo');
+                break;
             case 'close':
                 this.panel?.dispose();
                 break;
@@ -376,7 +385,7 @@ class AgendaWebview implements vscode.Disposable {
   <span id="range" class="muted"></span>
   <span id="count" class="muted"></span>
   <span class="spacer"></span>
-  <span class="muted">Double-click or Enter opens an item; hover (or Space) shows its context; right-click for more. n/p move, f/b page, t cycles TODO, C-c C-d / C-c C-s set the deadline / scheduled date, q closes.</span>
+  <span class="muted">Double-click or Enter opens an item; hover (or Space) shows its context; right-click for more. n/p move, f/b page, t cycles TODO, C-c C-d / C-c C-s set the deadline / scheduled date, Cmd/Ctrl+Z undoes (Shift to redo), q closes.</span>
 </div>
 <div id="list" class="list" tabindex="0" role="listbox" aria-label="Agenda items"></div>
 <div id="preview" class="preview" role="tooltip" hidden></div>
@@ -432,6 +441,8 @@ export function registerAgendaView(
         vscode.commands.registerCommand('scimax.agenda.todoViewCurrentFile', () => openForCurrentFile(view, 'todo')),
         vscode.commands.registerCommand('scimax.agenda.viewCurrentProject', () => openForCurrentProject(view)),
         vscode.commands.registerCommand('scimax.agendaView.refresh', () => view.reload()),
+        vscode.commands.registerCommand('scimax.agendaView.undo', () => undoTaskAction(AGENDA_VIEW_TYPE)),
+        vscode.commands.registerCommand('scimax.agendaView.redo', () => undoTaskAction(AGENDA_VIEW_TYPE, true)),
         vscode.commands.registerCommand('scimax.agendaView.ignoreFile', async (arg?: TaskContext) => {
             if (!arg?.filePath) return;
             // excludeFile fires onDidRefresh, which reloads the view.

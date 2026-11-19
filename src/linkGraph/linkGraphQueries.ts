@@ -10,7 +10,17 @@ import { databaseLogger as log } from '../utils/logger';
 import { graphDataRegistry, type GraphDataContext, type CustomEdge } from '../adapters/graphDataAdapter';
 
 /** A link's target file: l.target without any ::search suffix. */
-const LINK_TARGET_FILE = `(CASE WHEN instr(l.target, '::') > 0 THEN substr(l.target, 1, instr(l.target, '::') - 1) ELSE l.target END)`;
+/** File an `id:` link points at: the file of the heading with that :ID: property. */
+const ID_TARGET_FILE = `(SELECT h2.file_path FROM headings h2
+    WHERE lower(COALESCE(json_extract(h2.properties, '$.ID'), json_extract(h2.properties, '$.id'), '')) = lower(trim(l.target))
+    LIMIT 1)`;
+
+/**
+ * File a link points at: the path before any ::search for file links, and the
+ * heading's file for id: links (Excalidraw drawings link to headings by ID).
+ */
+const LINK_TARGET_FILE = `(CASE WHEN l.link_type = 'id' THEN ${ID_TARGET_FILE}
+    WHEN instr(l.target, '::') > 0 THEN substr(l.target, 1, instr(l.target, '::') - 1) ELSE l.target END)`;
 
 /**
  * Filters for graph queries
@@ -335,10 +345,10 @@ export class LinkGraphQueryService {
     ): Promise<string[]> {
         // Match exact path or path with search string suffix
         const conditions: string[] = [
-            "(l.target = ? OR l.target LIKE ? OR l.target LIKE ?)"
+            `(l.target = ? OR l.target LIKE ? OR l.target LIKE ? OR (l.link_type = 'id' AND ${ID_TARGET_FILE} = ?))`
         ];
         const fileName = filePath.split('/').pop() || filePath;
-        const args: any[] = [filePath, `%${filePath}`, `%${fileName}::%`];
+        const args: any[] = [filePath, `%${filePath}`, `%${fileName}::%`, filePath];
 
         this.addFilterConditions(conditions, args, filters);
 
@@ -368,8 +378,8 @@ export class LinkGraphQueryService {
         args: any[],
         filters: LinkGraphFilters
     ): void {
-        // Default to file and internal links (internal = relative path links like [[./foo.org]])
-        const linkTypes = filters.linkTypes?.length ? filters.linkTypes : ['file', 'internal'];
+        // Default to file, internal (relative path links like [[./foo.org]]) and id links
+        const linkTypes = filters.linkTypes?.length ? filters.linkTypes : ['file', 'internal', 'id'];
         conditions.push(`l.link_type IN (${linkTypes.map(() => '?').join(',')})`);
         args.push(...linkTypes);
 
@@ -575,19 +585,19 @@ export class LinkGraphQueryService {
         const nodeSet = new Set(nodePaths);
         const edgeMap = new Map<string, GraphEdge>();
 
-        // Default to file links
-        const linkTypes = filters.linkTypes?.length ? filters.linkTypes : ['file'];
+        // Default to file and id links
+        const linkTypes = filters.linkTypes?.length ? filters.linkTypes : ['file', 'id'];
 
         // Build placeholders for IN clause
         const placeholders = nodePaths.map(() => '?').join(',');
         const linkTypePlaceholders = linkTypes.map(() => '?').join(',');
 
         const sql = `
-            SELECT l.file_path, l.target, l.link_type, COUNT(*) as count
+            SELECT l.file_path, COALESCE(${LINK_TARGET_FILE}, l.target) AS target, l.link_type, COUNT(*) as count
             FROM links l
             WHERE l.file_path IN (${placeholders})
               AND l.link_type IN (${linkTypePlaceholders})
-            GROUP BY l.file_path, l.target, l.link_type
+            GROUP BY l.file_path, COALESCE(${LINK_TARGET_FILE}, l.target), l.link_type
         `;
 
         const args = [...nodePaths, ...linkTypes];
