@@ -71,6 +71,32 @@ export function manifestKeybindings(packageJSON: unknown, platform: NodeJS.Platf
     return result;
 }
 
+/** Context keys that hold in an ordinary org editor. */
+const GENERIC_CONTEXTS = new Set([
+    'editorTextFocus', 'editorFocus', 'textInputFocus', 'editorIsOpen', 'isMac', 'isLinux', 'isWindows',
+]);
+
+/**
+ * Whether a binding with this `when` clause can be active while editing an
+ * org file. A clause that needs some other language, a notebook, a terminal
+ * or an extension's own context key (jupyter.hascodecells) never fires there,
+ * so its chords cannot swallow our key. Unknown terms count as inactive: a
+ * missed warning is cheaper than a false one.
+ */
+export function mayBeActiveInOrg(when: string | undefined): boolean {
+    if (!when || !when.trim()) return true;
+    return when.split('||').some(alternative =>
+        alternative.split('&&').every(raw => {
+            const term = raw.trim().replace(/^\(+|\)+$/g, '').trim();
+            if (!term) return true;
+            if (term.startsWith('!')) return true;
+            const eq = term.match(/^(editorLangId|resourceLangId)\s*==\s*'?([\w-]+)'?$/);
+            if (eq) return eq[2] === 'org';
+            if (/!=/.test(term)) return true;
+            return GENERIC_CONTEXTS.has(term);
+        }));
+}
+
 /**
  * Find chords in other extensions whose first stroke is one of our global
  * single-stroke keys. Bindings the user removed (`-command` entries in their
@@ -89,6 +115,7 @@ export function findChordPrefixConflicts(
                 if (binding.command.startsWith('-')) continue;
                 if (!binding.key.startsWith(single.key + ' ')) continue;
                 if (removed.has(`${binding.key}|${binding.command}`)) continue;
+                if (!mayBeActiveInOrg(binding.when)) continue;
                 conflicts.push({
                     key: single.key,
                     command: single.command,
