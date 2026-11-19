@@ -469,6 +469,7 @@ export async function exportHtml(
         ...options,
         bodyOnly,
         bibEntries: bibEntries.length > 0 ? bibEntries : options.bibEntries,
+        baseDir: options.baseDir ?? basePath,
     };
 
     // Yield before export

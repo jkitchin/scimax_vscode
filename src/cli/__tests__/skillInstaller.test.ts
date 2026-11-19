@@ -41,8 +41,8 @@ function frontmatter(skillMd: string): Record<string, unknown> {
 describe('bundled skills', () => {
     const names = listBundledSkills(SKILLS_DIR);
 
-    it('ships the four scimax skills', () => {
-        expect(names).toEqual(['scimax', 'scimax-org', 'scimax-presentations', 'scimax-projects']);
+    it('ships the five scimax skills', () => {
+        expect(names).toEqual(['scimax', 'scimax-excalidraw', 'scimax-org', 'scimax-presentations', 'scimax-projects']);
     });
 
     it.each(names)('%s follows the Agent Skills spec', (name) => {

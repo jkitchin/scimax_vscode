@@ -95,7 +95,7 @@ export class OrgLinkProvider implements vscode.DocumentLinkProvider {
             const range = new vscode.Range(startPos, endPos);
 
             const link = new vscode.DocumentLink(range);
-            const resolvedTarget = this.resolveTarget(target, document);
+            const resolvedTarget = this.resolveTarget(target, document.uri.fsPath);
 
             if (resolvedTarget) {
                 link.target = resolvedTarget;
@@ -257,8 +257,8 @@ export class OrgLinkProvider implements vscode.DocumentLinkProvider {
     /**
      * Resolve link target to a URI
      */
-    private resolveTarget(target: string, document: vscode.TextDocument): vscode.Uri | undefined {
-        const docDir = path.dirname(document.uri.fsPath);
+    resolveTarget(target: string, docPath: string): vscode.Uri | undefined {
+        const docDir = path.dirname(docPath);
 
         // Email links compose in the configured client (scimax.mail.client)
         if (/^mailto:/i.test(target)) {
@@ -288,7 +288,7 @@ export class OrgLinkProvider implements vscode.DocumentLinkProvider {
         // References written as org links, [[ref:label]]
         const refMatch = REF_LINK_PATH_RE.exec(target);
         if (refMatch) {
-            return refLabelUri(document.uri.fsPath, refMatch[2]);
+            return refLabelUri(docPath, refMatch[2]);
         }
 
         // DOI links
@@ -298,7 +298,7 @@ export class OrgLinkProvider implements vscode.DocumentLinkProvider {
 
         // Marp slideshow links: marp:deck.md or marp:deck.md::3 (start at slide 3)
         if (target.startsWith('marp:')) {
-            const args = marpLinkArgs(target.slice(5), document.uri.fsPath, os.homedir());
+            const args = marpLinkArgs(target.slice(5), docPath, os.homedir());
             return vscode.Uri.parse(`command:scimax.marp.present?${encodeURIComponent(JSON.stringify(args))}`);
         }
 
@@ -342,7 +342,7 @@ export class OrgLinkProvider implements vscode.DocumentLinkProvider {
             const heading = target.slice(1);
             return vscode.Uri.parse(
                 `command:scimax.org.gotoHeading?${encodeURIComponent(JSON.stringify({
-                    file: document.uri.fsPath,
+                    file: docPath,
                     heading: heading
                 }))}`
             );
@@ -353,7 +353,7 @@ export class OrgLinkProvider implements vscode.DocumentLinkProvider {
             const customId = target.slice(1);
             return vscode.Uri.parse(
                 `command:scimax.org.gotoCustomId?${encodeURIComponent(JSON.stringify({
-                    file: document.uri.fsPath,
+                    file: docPath,
                     customId: customId
                 }))}`
             );
@@ -395,7 +395,7 @@ export class OrgLinkProvider implements vscode.DocumentLinkProvider {
         // Internal target link: [[target-name]] - searches for <<target-name>>, #+NAME:, or text
         return vscode.Uri.parse(
             `command:scimax.org.gotoTarget?${encodeURIComponent(JSON.stringify({
-                file: document.uri.fsPath,
+                file: docPath,
                 target: target
             }))}`
         );
@@ -629,6 +629,14 @@ function isFileAlreadyOpen(filePath: string): boolean {
     const normalizedFilePath = filePath.replace(/\\/g, '/').toLowerCase();
     const normalizedActivePath = activeEditor.document.uri.fsPath.replace(/\\/g, '/').toLowerCase();
     return normalizedFilePath === normalizedActivePath;
+}
+
+/**
+ * Resolve an org link written in `fromFile` (relative paths, *Heading and
+ * #custom-id are taken relative to it) to the URI a click would open.
+ */
+export function resolveOrgLink(target: string, fromFile: string): vscode.Uri | undefined {
+    return new OrgLinkProvider().resolveTarget(target, fromFile);
 }
 
 /**

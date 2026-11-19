@@ -126,6 +126,7 @@ SKILLS:
     scimax-org             Org-mode syntax and citation reference
     scimax-projects        Task dependencies, scimax task, Gantt charts, assignees
     scimax-presentations   Beamer and Marp slide decks
+    scimax-excalidraw      Excalidraw diagrams linked to org headings and files
 
 ABOUT:
     Each skill is copied to ~/.agents/skills/<name>, which VS Code (GitHub Copilot),

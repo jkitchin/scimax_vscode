@@ -36,7 +36,8 @@
     "workspaceContains:**/*.org",
     "workspaceContains:**/*.bib",
     "onWebviewPanel:scimax.marp.slideSorter",
-    "onWebviewPanel:scimax.org.preview"
+    "onWebviewPanel:scimax.org.preview",
+    "onUri"
   ],
   "main": "./out/extension.js",
   "bin": {
@@ -2878,6 +2879,10 @@
       {
         "command": "scimax.org.openExcalidraw",
         "title": "Scimax: Open Excalidraw Drawing"
+      },
+      {
+        "command": "scimax.excalidraw.copyOrgLink",
+        "title": "Scimax: Copy Heading Link for Excalidraw"
       },
       {
         "command": "scimax.org.deleteFileLink",

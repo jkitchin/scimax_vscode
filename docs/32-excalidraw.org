@@ -54,7 +54,7 @@ Use standard org-mode link syntax to reference Excalidraw drawings:
 [[_static/drawing.excalidraw]]
 
 
-* ✅ Hover Preview
+* 👀 Hover Preview
 
 When you hover over an Excalidraw link, a tooltip appears showing:
 
@@ -63,13 +63,15 @@ When you hover over an Excalidraw link, a tooltip appears showing:
    - =.excalidraw.svg= and =.excalidraw.png= files show the image directly
    - =.excalidraw= and =.excalidraw.json= files show a generated SVG preview
 3. *Element count* - Number of shapes in the drawing
-4. *File information* - Size and last modified date
+4. *Links* - For =.excalidraw= files, each linked shape and the org link
+   it follows (see [[*Linking Drawings to Your Notes]])
+5. *File information* - Size and last modified date
 
-The hover preview for =.excalidraw= files renders a simplified SVG showing:
-- Rectangles, ellipses, and diamonds with their colors
-- Lines and arrows with arrowheads
-- Freedraw paths
-- Text and image placeholders
+The hover preview for =.excalidraw= files renders the drawing with:
+- Rectangles, ellipses, and diamonds with their colors and fill styles
+- Lines and arrows with their arrowheads, dashed and dotted strokes
+- Text, including labels inside shapes and on arrows
+- Freedraw paths and embedded images
 
 For best results, the extension first looks for companion export files (same name
 with =.svg= or =.png= extension). If none exist, it generates a preview from the
@@ -110,12 +112,127 @@ If the Excalidraw extension is not installed:
 1. The file opens as a text document (showing JSON)
 2. A message suggests installing the Excalidraw extension
 
-* ✅ Commands
+* ⚠️ Linking Drawings to Your Notes
+
+Shapes in a drawing can link back into your org notebook: click a box in
+the diagram and VS Code jumps to the heading, custom id, file or line it
+stands for. This turns a figure into a map of your notes.
+
+** ⚠️ How the links work
+
+Excalidraw keeps one link per element. The Excalidraw editor opens
+=http=, =https= and =mailto= links in the browser and relative file paths
+in VS Code, but it cannot follow org links such as =notes.org::*Results=.
+Scimax gives those links a URI that VS Code routes back to scimax:
+
+#+BEGIN_EXAMPLE
+vscode://jkitchin.scimax-vscode/org-link?link=file%3A..%2Fnotes.org%3A%3A*Results
+vscode://jkitchin.scimax-vscode/org-link?from=/path/notes.org&link=*Results
+#+END_EXAMPLE
+
+Scimax follows the =link= parameter exactly as it would follow the same
+link clicked in an org file, so every link type works: =file:= with
+=::*heading=, =::#custom-id=, =::42= (line) or =::text= searches, =id:=,
+=cite:=, =doi:=, =nb:=, =cmd:= and web links. A relative path is relative
+to the =from= file when the URI has one, and otherwise to the drawing.
+
+The first time you click such a link, VS Code may ask whether to let
+Scimax open the URI. Allow it once and choose to not be asked again.
+
+** ⚠️ Adding a link by hand
+
+1. Put the cursor on a heading in an org file.
+2. Run =Scimax: Copy Heading Link for Excalidraw=
+   (=scimax.excalidraw.copyOrgLink=). It copies a link to that heading: an
+   =id:= link when the heading has an =ID= property, otherwise a
+   =#custom-id= or =*Heading= link to the file.
+3. In the Excalidraw editor, select a shape, press =Ctrl+K= (=Cmd+K= on
+   macOS) and paste the link.
+
+Clicking the link icon on the shape now opens the heading.
+
+** ⚠️ Building linked drawings from a spec
+
+=scimax excalidraw build= turns a short JSON spec into a drawing. Shapes
+take a =label=, arrows connect shapes by id with =from= and =to=, and
+=orgLink= adds a link into your notes:
+
+#+BEGIN_SRC json
+{"elements": [
+  {"id": "data", "type": "rectangle", "x": 0, "y": 0, "label": "Raw data",
+   "backgroundColor": "#a5d8ff", "orgLink": "file:../notes.org::#data"},
+  {"id": "fit", "type": "ellipse", "x": 280, "y": 0, "label": "Model fit",
+   "orgLink": "file:../notes.org::*Model fitting"},
+  {"type": "arrow", "from": "data", "to": "fit", "label": "clean"}
+]}
+#+END_SRC
+
+#+BEGIN_SRC sh
+scimax excalidraw build spec.json -o diagrams/pipeline.excalidraw.svg
+#+END_SRC
+
+The output is an =.excalidraw.svg=: an image with the scene embedded, so
+the Excalidraw editor opens and edits it, and it is still an image for
+exports and GitHub. =build= reports any link whose file, heading or custom
+id does not exist and exits with status 1. See [[file:30-cli.org::*Excalidraw][Excalidraw in the CLI reference]]
+for =render=, =check=, =links= and =json=.
+
+The SVG that =build= writes has clean shapes and system fonts. The
+Excalidraw editor redraws it in its hand-drawn style the next time you
+save it.
+
+** ⚠️ Asking an AI agent for a diagram
+
+The =scimax-excalidraw= agent skill (installed with =scimax skill install=)
+does the whole round trip. Ask, for example:
+
+#+BEGIN_QUOTE
+Make a diagram of the analysis pipeline in this file, and link each box to
+its section.
+#+END_QUOTE
+
+The agent finds the headings, writes and builds the spec, checks every link,
+saves the drawing under =diagrams/= and inserts it into your org file:
+
+#+BEGIN_SRC org
+#+CAPTION: Analysis pipeline. Click a box to jump to its section.
+#+NAME: fig-pipeline
+[[file:diagrams/pipeline.excalidraw.svg]]
+#+END_SRC
+
+* ⚠️ Interactive Figures in HTML Export
+
+A bare link to a drawing (no description), such as
+=[[file:diagrams/pipeline.excalidraw.svg]]=, is exported to HTML as an
+inline SVG, so its links work in the browser:
+
+| Link in the drawing             | Link in the HTML            |
+|---------------------------------+-----------------------------|
+| =file:../notes.org::*Results=   | =notes.html#org-results=    |
+| =file:../notes.org::#data=      | =notes.html#data=           |
+| =id:abc-123=                    | =#abc-123=                  |
+| =doi:10.1021/x=                 | =https://doi.org/10.1021/x= |
+| =https://...=                   | unchanged                   |
+| =cite:=, =cmd:= and other links | removed (the shape stays)   |
+
+Paths are rewritten relative to the exported file, so they work when the
+HTML files sit next to their org files, as =scimax export= and publishing
+write them. =.excalidraw= and =.excalidraw.json= links are rendered to SVG
+the same way. A =#+CAPTION:= or =#+NAME:= above the link makes the
+drawing a =<figure>=.
+
+Scripts, event handlers and =javascript:= links in an SVG are removed
+before it is inlined. A link with a description, a missing file, or a
+drawing over 20 MB is exported as before (an image or a plain link). The
+live preview and clipboard export do not inline drawings.
+
+* 👀 Commands
 CLOSED: [2026-01-18 Sun 08:39]
 
-| Command                      | Description             | Invocation         |
-|------------------------------+-------------------------+--------------------|
-| scimax.org.openExcalidraw    | Open Excalidraw Drawing | Click on link      |
+| Command                       | Description                      | Invocation      |
+|-------------------------------+----------------------------------+-----------------|
+| scimax.org.openExcalidraw     | Open Excalidraw Drawing          | Click on link   |
+| scimax.excalidraw.copyOrgLink | Copy Heading Link for Excalidraw | Command Palette |
 
 The command is automatically invoked when clicking Excalidraw links. It can also
 be called programmatically:
@@ -187,9 +304,11 @@ Ensure the file extension is one of:
 - =.excalidraw.svg=
 - =.excalidraw.png=
 
-* ✅ Related Topics
+* 👀 Related Topics
 CLOSED: [2026-01-18 Sun 08:40]
 
 - [[file:05-links.org][Hyperlinks]] - General link syntax and handling
 - [[file:12-image-overlays.org][Image Overlays]] - Inline image display
 - [[file:10-export.org][Export]] - Including drawings in exports
+- [[file:30-cli.org][Command Line Interface]] - =scimax excalidraw= and the agent skills
+- [[file:25-commands.org][Commands]] - All scimax commands

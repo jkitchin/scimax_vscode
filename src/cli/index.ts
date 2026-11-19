@@ -29,6 +29,7 @@ import { searchCommand } from './commands/search';
 import { exportCommand } from './commands/export';
 import { tangleCommand } from './commands/tangle';
 import { tableCommand } from './commands/table';
+import { excalidrawCommand } from './commands/excalidraw';
 import { citeCommand } from './commands/cite';
 import { dbCommand } from './commands/db';
 import { publishCommand } from './commands/publish';
@@ -104,6 +105,7 @@ COMMANDS:
     export <file>           Export org file to HTML, PDF, or LaTeX
     tangle <file>           Extract source blocks to their :tangle target files
     table align <file>...   Align org/Markdown tables in place (--check, --line, --stdout)
+    excalidraw <subcommand> Build, render and check Excalidraw drawings (build, render, check, links, json)
     cite <subcommand>       Citation operations (extract, check, convert)
     db <subcommand>         Database operations (sync, clear, stats, scan, check, remove, ignore)
     journal [date]          Open journal entry (today, tomorrow, "next friday", etc.)
@@ -132,6 +134,8 @@ EXAMPLES:
     scimax table align notes.org
     scimax table align docs/*.org --check
     scimax table align README.md --line 42
+    scimax excalidraw build spec.json -o diagrams/flow.excalidraw.svg
+    scimax excalidraw check diagrams/flow.excalidraw.svg
     scimax cite extract paper.org
     scimax cite check paper.org --bib refs.bib
     scimax db sync
@@ -200,6 +204,9 @@ async function main(): Promise<void> {
                 break;
             case 'table':
                 await tableCommand(config, args);
+                break;
+            case 'excalidraw':
+                await excalidrawCommand(config, args);
                 break;
             case 'cite':
                 await citeCommand(config, args);

@@ -383,6 +383,43 @@ extension's global storage, which the extension's own exports share.
 
 See [[file:44-marp.org::*Presenter Tools and Live Python][Presenter Tools and Live Python]] for the keys while presenting.
 
+** ⚠️ Excalidraw
+
+Build, render and check [[file:32-excalidraw.org][Excalidraw]] drawings whose shapes link to
+org headings, custom ids, files and web pages.
+
+#+begin_src bash
+# Expand a JSON spec into an editable drawing (the .svg is also an image)
+scimax excalidraw build spec.json -o diagrams/pipeline.excalidraw.svg
+cat spec.json | scimax excalidraw build --stdin -o diagrams/pipeline.excalidraw.svg
+
+# Turn a .excalidraw scene into an .excalidraw.svg next to it
+scimax excalidraw render diagrams/old.excalidraw
+
+# Report broken bindings and links whose file, heading or custom id is missing
+scimax excalidraw check diagrams/*.excalidraw.svg
+
+# List each linked shape and the org link it follows
+scimax excalidraw links diagrams/pipeline.excalidraw.svg --json
+
+# Print the scene stored in a drawing
+scimax excalidraw json diagrams/pipeline.excalidraw.svg
+#+end_src
+
+| Subcommand | What it does                                                           |
+|------------+------------------------------------------------------------------------|
+| =build=    | Spec → drawing; =label=, =from=/=to= and =orgLink= shorthands expanded |
+| =render=   | Drawing → =.excalidraw.svg= (=-o= for another path)                    |
+| =check=    | Exit 1 on broken element references or org links                       |
+| =links=    | Element links and the org links behind them (=--json=)                 |
+| =json=     | The scene as JSON, from any drawing format                             |
+
+An output path ending in =.svg= is written as an SVG with the scene embedded;
+any other path gets the scene as JSON. =build= runs =check= on what it wrote and
+exits 1 if it finds a problem. Org links are relative to the drawing's folder.
+The =scimax-excalidraw= agent skill uses these commands; the spec format is in
+=skills/scimax-excalidraw/references/excalidraw-format.md=.
+
 ** Citations
 
 Citation-related operations. =extract=, =check=, and =list= accept =--json= (or
@@ -1098,17 +1135,18 @@ scimax publish --init --name docs --base ./docs --output ./_build/html
 
 If the source directory has no =_toc.yml=, =--init= prints an example one.
 
-** Skill
+** 👀 Skill
 
-Scimax ships four agent skills that let an AI coding agent use the CLI and answer
-questions about your notes, agenda, projects, org syntax and slides:
+Scimax ships five agent skills that let an AI coding agent use the CLI and answer
+questions about your notes, agenda, projects, org syntax, slides and diagrams:
 
-| Skill                    | What it covers                                                   |
-|--------------------------+------------------------------------------------------------------|
-| =scimax=                 | Search, agenda, TODOs, journal, export, citations, database      |
-| =scimax-org=             | Org-mode syntax, links, source blocks, tables, citations         |
-| =scimax-projects=        | =scimax task=, =:DEPENDS:=/=:ORDERED:=, Gantt charts, assignees  |
-| =scimax-presentations=   | Beamer and Marp decks built with =scimax marp build=             |
+| Skill                  | What it covers                                                  |
+|------------------------+-----------------------------------------------------------------|
+| =scimax=               | Search, agenda, TODOs, journal, export, citations, database     |
+| =scimax-org=           | Org-mode syntax, links, source blocks, tables, citations        |
+| =scimax-projects=      | =scimax task=, =:DEPENDS:=/=:ORDERED:=, Gantt charts, assignees |
+| =scimax-presentations= | Beamer and Marp decks built with =scimax marp build=            |
+| =scimax-excalidraw=    | Excalidraw diagrams whose shapes link to org headings and files |
 
 They live in =skills/<name>/SKILL.md= in the repository and follow the
 [[https://agentskills.io/specification][Agent Skills specification]], so they work with
@@ -1229,4 +1267,5 @@ The CLI has some limitations compared to the VS Code extension:
 - [[file:03.6-project-management.org][Project Management]] - Task tables, Gantt charts, assignees
 - [[file:25-commands.org::*AI Agent Skills][AI Agent Skills command]] - Install the skills from VS Code
 - [[file:44-marp.org][Marp Slides]] - Slides the scimax-presentations skill builds
+- [[file:32-excalidraw.org][Excalidraw]] - Linked diagrams the scimax-excalidraw skill builds
 - [[file:04-tables.org][Tables]] - Table editing and alignment in the editor

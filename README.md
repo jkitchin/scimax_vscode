@@ -42,10 +42,11 @@ Then install the generated `.vsix` file.
 
 ### AI Agent Skills
 
-Four [Agent Skills](https://agentskills.io/specification) in [`skills/`](skills/) let Claude Code,
+Five [Agent Skills](https://agentskills.io/specification) in [`skills/`](skills/) let Claude Code,
 VS Code (GitHub Copilot), Codex, Cursor and other agents use the `scimax` CLI: `scimax`
 (notes, agenda, journal, export), `scimax-org` (org syntax and citations), `scimax-projects`
-(task dependencies, Gantt charts) and `scimax-presentations` (Beamer and Marp). Install them with
+(task dependencies, Gantt charts), `scimax-presentations` (Beamer and Marp) and
+`scimax-excalidraw` (diagrams whose shapes link to your notes). Install them with
 any of:
 
 ```bash

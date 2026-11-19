@@ -942,6 +942,7 @@ export async function publishFile(
             ...toHtmlExportOptions(project),
             preambleContent,
             postambleContent,
+            baseDir: path.dirname(sourcePath),
         };
 
         // Export to HTML
@@ -1066,6 +1067,7 @@ export async function publishFileWithTheme(
         const htmlOptions: Partial<HtmlExportOptions> = {
             ...toHtmlExportOptions(project),
             bodyOnly: true,
+            baseDir: path.dirname(sourcePath),
         };
         const bodyContent = exportToHtml(doc, htmlOptions);
 
