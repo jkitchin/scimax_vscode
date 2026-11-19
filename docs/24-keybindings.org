@@ -647,6 +647,10 @@ single-stroke keys. If it finds one, it shows a warning with two buttons:
 - *Don't Show Again* - stays quiet until the set of conflicts changes
 
 Chords you already removed in your user =keybindings.json= are not reported.
+Neither are chords whose =when= clause cannot hold in an org file. For example,
+Jupyter's =ctrl+; s=, =ctrl+; b=, ... cell commands need =jupyter.hascodecells=
+(a Python file with =# %%= cells), so they only take over =ctrl+;= in those
+files, and scimax's =ctrl+;= (comment line) keeps working in org files.
 Run [[cmd:scimax.checkKeybindingConflicts]] (=Scimax: Check Keybinding
 Conflicts=) from the command palette to check at any time.
 

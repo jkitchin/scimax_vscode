@@ -4,6 +4,7 @@ vi.mock('vscode', () => ({}));
 
 import {
     findChordPrefixConflicts,
+    mayBeActiveInOrg,
     manifestKeybindings,
     parseJsonc,
     removedBindings,
@@ -37,6 +38,22 @@ const magit = {
 };
 
 describe('findChordPrefixConflicts', () => {
+    it('ignores chords that cannot be active in an org file', () => {
+        const jupyter = {
+            id: 'ms-toolsai.jupyter',
+            name: 'Jupyter',
+            keybindings: [
+                { command: 'jupyter.insertCellBelow', key: 'alt+x b',
+                    when: 'editorTextFocus && jupyter.hascodecells && !notebookEditorFocused' },
+                { command: 'py.thing', key: 'alt+x p', when: "editorLangId == 'python'" },
+                { command: 'org.thing', key: 'alt+x o', when: 'editorTextFocus && editorLangId == org' },
+                { command: 'any.thing', key: 'alt+x n', when: '!terminalFocus' },
+            ],
+        };
+        expect(findChordPrefixConflicts(ours, [jupyter]).map(c => c.chord)).toEqual(['alt+x o', 'alt+x n']);
+    });
+
+
     it('reports chords that start with our global single-stroke key', () => {
         const conflicts = findChordPrefixConflicts(ours, [magit]);
         expect(conflicts.map(c => c.chord)).toEqual(['alt+x g', 'alt+x ctrl+g']);
@@ -91,5 +108,20 @@ describe('fixSnippet', () => {
         expect(snippet).toBe(
             '  { "key": "alt+x g", "command": "-magit.status" },\n' +
             '  { "key": "alt+x ctrl+g", "command": "-magit.dispatch" }');
+    });
+});
+
+describe('mayBeActiveInOrg', () => {
+    it('treats generic, negated and org-only clauses as active', () => {
+        expect(mayBeActiveInOrg(undefined)).toBe(true);
+        expect(mayBeActiveInOrg('editorTextFocus && !editorReadonly')).toBe(true);
+        expect(mayBeActiveInOrg("resourceLangId == 'org'")).toBe(true);
+        expect(mayBeActiveInOrg('jupyter.hascodecells || editorFocus')).toBe(true);
+    });
+
+    it('treats other languages and extension contexts as inactive', () => {
+        expect(mayBeActiveInOrg('editorTextFocus && jupyter.hascodecells')).toBe(false);
+        expect(mayBeActiveInOrg('editorLangId == markdown')).toBe(false);
+        expect(mayBeActiveInOrg('terminalFocus')).toBe(false);
     });
 });
