@@ -306,6 +306,8 @@ describe('manifest consistency: when-clause contexts exist', () => {
         const panelTypes = new Set<string>();
         const panelRe = /(?:createWebviewPanel|registerWebviewPanelSerializer)\(\s*['"]([^'"]+)['"]/g;
         while ((sm = panelRe.exec(allSrc))) panelTypes.add(sm[1]);
+        // Custom editor view types, matched by `activeCustomEditorId` clauses.
+        for (const ce of contributes.customEditors ?? []) panelTypes.add(ce.viewType);
 
         const whens: string[] = [];
         for (const kb of contributes.keybindings ?? []) if (kb.when) whens.push(kb.when);

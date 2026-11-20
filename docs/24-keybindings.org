@@ -376,6 +376,16 @@ Like the Markdown preview, but for org files. See [[file:46-org-preview.org][Org
 | Cmd+K V     | Ctrl+C Shift+V      | Org editor  | Open preview to the side   |
 | Cmd+Shift+V | Ctrl+Shift+V        | Org preview | Back to the org source     |
 
+* ⚠️ SVG and Drawing Preview
+
+| Key (macOS) | Key (Windows/Linux) | Where                                          | Action                        |
+|-------------+---------------------+------------------------------------------------+-------------------------------|
+| Cmd+Shift+V | Ctrl+Shift+V        | =.svg=, =.excalidraw=, =.excalidraw.json= text | Show it as an image / drawing |
+| Cmd+Shift+V | Ctrl+Shift+V        | SVG image preview                              | Back to the SVG text          |
+
+In the drawing editor, use the *Show Source* button in the editor title bar
+($(go-to-file)): Excalidraw uses =Cmd+Shift+V= to paste as plain text.
+
 * Links
 
 | Key         | Action                                 |
