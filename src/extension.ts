@@ -121,6 +121,7 @@ import { registerAgentSkillCommands } from './agentSkills/commands';
 import { TemplateManager, registerTemplateCommands } from './templates';
 import { registerManuscriptCommands } from './manuscript';
 import { initializeLogging, extensionLogger, getLoggingService } from './utils/logger';
+import { registerCliInstallCommand, checkStaleCliLink } from './cli/installCommand';
 import { recordActivationFailure, getActivationFailures } from './utils/activationStatus';
 import { registerKeybindingConflictCheck } from './utils/keybindingConflicts';
 import { registerScimaxUriHandler } from './utils/uriHandler';
@@ -1301,6 +1302,12 @@ async function activateScimax(context: vscode.ExtensionContext) {
 
     // Register Rectangle Commands (Emacs-style rectangle editing)
     activationStep('registerRectangleCommands', () => registerRectangleCommands(context));
+
+    // `scimax` on PATH that follows extension updates (issue #97).
+    activationStep('registerCliInstallCommand', () => registerCliInstallCommand(context));
+    setTimeout(() => {
+        checkStaleCliLink(context).catch(error => extensionLogger.debug('CLI link check failed', { error: String(error) }));
+    }, 5000);
 
     // Activate LaTeX navigation and structure features
     activationStep('activateLatexFeatures', () => activateLatexFeatures(context));

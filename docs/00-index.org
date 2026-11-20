@@ -456,6 +456,8 @@ Quick reference to find specific features across documentation.
 | Markdown preview         | [[file:30-markdown-compatibility.org][Markdown Compatibility]]         | [[file:45-myst-preview.org][MyST Preview]] - reveal the cursor, MyST directives, PDF                                                  |
 | Marp build (CLI)         | [[file:30-cli.org::*Marp Slides][CLI: Marp Slides]]               | [[file:44-marp.org][Marp Slides]] - scimax marp build: one HTML file with presenter tools from a terminal                     |
 | Table align (CLI)        | [[file:30-cli.org::*Table Align][CLI: Table Align]]               | [[file:04-tables.org][Tables]] - scimax table align: align tables in files from a terminal, --check for CI                      |
+| CLI install              | [[file:30-cli.org::*Global Installation][CLI: Global Installation]]       | [[cmd:scimax.cli.install]] - scimax on PATH for any shell or cron; follows extension updates                |
+| Marp deck CSS            | [[file:44-marp.org::*Keywords][Marp Slides: Keywords]]          | #+MARP_CSS inlines a CSS file into style:, #+MARP_STYLE adds CSS on top of the theme                    |
 | Marp export              | [[file:44-marp.org][Marp Slides]]                    | PDF, PowerPoint, Google Slides via Marp CLI or Pandoc                                                   |
 | Marp link (marp:)        | [[file:05-links.org][Links]]                          | [[file:44-marp.org][Marp Slides]] - click to present; hover for a first-slide preview                                         |
 | Marp menu                | [[file:44-marp.org][Marp Slides]]                    | Right-click in a deck: layouts, images, directives, themes                                              |

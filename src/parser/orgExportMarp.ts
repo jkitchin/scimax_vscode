@@ -25,6 +25,8 @@
  * Pure: no vscode imports.
  */
 
+import * as fs from 'fs';
+import * as path from 'path';
 import { parseOrgFast } from './orgExportParser';
 import {
     BIBLIOGRAPHY_LINK_TYPES,
@@ -62,6 +64,8 @@ export interface MarpExportOptions {
     languageMap: Record<string, string>;
     /** More front matter keys. */
     frontMatter: Record<string, string | number | boolean>;
+    /** Folder that relative #+MARP_CSS paths are read from (the org file's folder). */
+    baseDir?: string;
 }
 
 export const DEFAULT_MARP_LANGUAGE_MAP: Record<string, string> = {
@@ -96,7 +100,7 @@ const VIDEO_EXTENSIONS = /\.(mp4|m4v|webm|mov|ogv)$/i;
 const AUDIO_EXTENSIONS = /\.(mp3|m4a|aac|wav|ogg|oga|flac|opus)$/i;
 
 /** Front matter keys handled by name rather than copied. */
-const SPECIAL_KEYWORDS = new Set(['MARP_THEME', 'MARP_HEADING_DIVIDER', 'MARP_PAGINATE', 'MARP_MATH', 'MARP_PRESENTER', 'MARP_FRONT_MATTER']);
+const SPECIAL_KEYWORDS = new Set(['MARP_THEME', 'MARP_HEADING_DIVIDER', 'MARP_PAGINATE', 'MARP_MATH', 'MARP_PRESENTER', 'MARP_FRONT_MATTER', 'MARP_CSS']);
 
 /** Heading properties that are not slide directives. */
 const SPECIAL_PROPERTIES = new Set(['MARP_FIT', 'MARP_HIDDEN']);
@@ -344,6 +348,25 @@ function addBibliography(ctx: Context, paths: string): void {
     }
 }
 
+/** The CSS in a #+MARP_CSS file, or a comment saying it could not be read. */
+function readCssFile(file: string, baseDir?: string): string {
+    const unquoted = file.replace(/^(["'])(.*)\1$/, '$2');
+    const full = path.resolve(baseDir ?? process.cwd(), unquoted.replace(/^~(?=$|[\\/])/, process.env.HOME ?? '~'));
+    try {
+        return `/* ${unquoted} */\n${fs.readFileSync(full, 'utf-8').replace(/\s+$/, '')}`;
+    } catch {
+        return `/* MARP_CSS: ${unquoted} could not be read */`;
+    }
+}
+
+/** The text of a YAML scalar written by yamlScalar/keywordValue (plain or JSON quoted). */
+function yamlScalarText(v: string): string {
+    if (v.startsWith('"')) {
+        try { return String(JSON.parse(v)); } catch { /* fall through */ }
+    }
+    return v;
+}
+
 function frontMatter(ctx: Context, keywordList: Keyword[]): string[] {
     const { opts, keywords } = ctx;
     const fm: Array<[string, string]> = [['marp', 'true'], ['theme', yamlScalar(opts.theme)]];
@@ -371,6 +394,16 @@ function frontMatter(ctx: Context, keywordList: Keyword[]): string[] {
     for (const k of keywordList.filter(k => k.key === 'MARP_FRONT_MATTER')) {
         const m = /^([\w-]+):\s*(.*)$/.exec(k.value);
         if (m) set(m[1], m[2]);
+    }
+    // #+MARP_CSS: file.css -> the file's CSS inlined into `style:`, ahead of
+    // any other style (MARP_STYLE, settings), so the deck stays self-contained.
+    const cssFiles = keywordList.filter(k => k.key === 'MARP_CSS' && k.value.trim());
+    if (cssFiles.length) {
+        const i = fm.findIndex(([k]) => k === 'style');
+        const parts = cssFiles.map(k => readCssFile(k.value.trim(), opts.baseDir));
+        if (i >= 0) parts.push(yamlScalarText(fm[i][1]));
+        const css = parts.join('\n').replace(/\s+$/, '');
+        set('style', `|\n${css.split(/\r?\n/).map(l => (l.trim() ? `  ${l}` : '')).join('\n')}`);
     }
     return ['---', ...fm.map(([k, v]) => (v.startsWith('\n') ? `${k}:${v}` : `${k}: ${v}`)), '---'];
 }

@@ -1062,7 +1062,8 @@ function marpExportSettings(resource?: vscode.Uri): Partial<MarpExportOptions> {
  * Export to a Marp slide deck (Markdown)
  */
 function exportMarp(content: string, resource?: vscode.Uri): string {
-    return exportToMarp(content, marpExportSettings(resource));
+    const baseDir = resource?.scheme === 'file' ? path.dirname(resource.fsPath) : undefined;
+    return exportToMarp(content, { ...marpExportSettings(resource), baseDir });
 }
 
 /**
