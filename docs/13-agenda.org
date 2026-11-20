@@ -1044,7 +1044,7 @@ menu shows how many items have each value:
 filters are remembered for the workspace, and the view always reopens at
 today.
 
-*** Acting on items
+*** 👀 Acting on items
 
 Click an item to select it. Double-click it, or press =Enter= on the selected
 item, to open its heading beside the view. Right-click an item for these actions, which it shares with the project
@@ -1071,7 +1071,23 @@ agenda buffer's hover does. =Escape= or moving on hides it.
 
 The view reloads when the agenda refreshes and whenever an org file is saved.
 
-*** Agenda View Keys
+**** ⚠️ Undoing an action
+
+Cycling an item to DONE with =t= usually makes it vanish from the view. If that
+was a mistake, press =Cmd+Z= (=Ctrl+Z= on Windows and Linux, or =C-/= / =C-_= as
+in org's agenda) and the file goes back to how it was, so the item reappears.
+=Cmd+Shift+Z= (=Ctrl+Y=) redoes. Every action from the view can be undone this way: =t=,
+=C-c C-d= / =C-c C-s=, and the right-click actions. The exceptions are
+*Refile...* and *Archive Subtree*, which also change another file. The view
+keeps the last 50 actions until it closes. The same is available in the command
+palette as [[cmd:scimax.agendaView.undo]] and [[cmd:scimax.agendaView.redo]].
+
+Undo restores the whole file as it was just before the action, including the
+CLOSED stamp, LOGBOOK note or repeater change the action made. If the file was
+edited some other way since then, it asks before overwriting those edits.
+While the cursor is in the text filter, =Cmd+Z= undoes typing there instead.
+
+*** 👀 Agenda View Keys
 
 The keys follow the agenda buffer where it has the same action:
 
@@ -1085,6 +1101,8 @@ The keys follow the agenda buffer where it has the same action:
 | =t=              | Cycle the item's TODO state          |
 | =C-c C-d=        | Set the item's DEADLINE              |
 | =C-c C-s=        | Set the item's SCHEDULED date        |
+| =Cmd+Z=, =C-/=   | Undo the last action from the view   |
+| =Cmd+Shift+Z=    | Redo                                 |
 | =f=, =b=         | Page forward, back                   |
 | =.=              | Back to today                        |
 | =d=, =w=, =m=    | Day, week, month span                |

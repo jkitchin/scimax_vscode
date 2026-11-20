@@ -453,6 +453,7 @@ Configure the full-text search database and semantic search capabilities.
 | scimax.db.include                | array   | =[]=                     | Additional directories/files                                     |
 | scimax.db.exclude                | array   | =[]=                     | Extra patterns/paths to exclude                                  |
 | scimax.db.fileExtensions         | array   | =["org", "md"]=          | File types to index                                              |
+| scimax.db.indexDrawings          | boolean | true                     | Index Excalidraw drawings' text and links                        |
 | scimax.db.autoIndex              | boolean | false                    | Auto-index workspace on activation                               |
 | scimax.db.dirsPerSession         | number  | 5                        | Directories scanned per background indexing session              |
 | scimax.db.autoCheckStale         | boolean | false                    | Find and re-index externally modified files on startup           |
@@ -549,6 +550,15 @@ CLOSED: [2026-10-02 Fri 06:58]
   "scimax.db.fileExtensions": ["org", "md", "markdown"]
 }
 #+end_src
+
+*** ⚠️ scimax.db.indexDrawings
+
+- *Type*: boolean
+- *Default*: =true=
+- *Description*: Index Excalidraw drawings (=.excalidraw=, =.excalidraw.json=,
+  =.excalidraw.svg=): the text on their shapes becomes searchable and the
+  headings their shapes link to list them as back-links. Used by the extension
+  and the =scimax= CLI. Reload the window after changing it.
 
 *** scimax.db.autoIndex
 
@@ -1463,11 +1473,12 @@ Configure the project-based notebook system.
 
 ** Settings Overview
 
-| Setting                         | Type    | Default    | Description              |
-|---------------------------------+---------+------------+--------------------------|
-| scimax.notebook.directory       | string  | ""         | Default parent directory |
-| scimax.notebook.defaultTemplate | string  | "research" | Default template         |
-| scimax.notebook.autoDetect      | boolean | true       | Auto-detect projects     |
+| Setting                              | Type    | Default    | Description                                      |
+|--------------------------------------+---------+------------+--------------------------------------------------|
+| scimax.notebook.directory            | string  | ""         | Default parent directory                         |
+| scimax.notebook.defaultTemplate      | string  | "research" | Default template                                 |
+| scimax.notebook.autoDetect           | boolean | true       | Auto-detect projects                             |
+| scimax.notebook.openLinksInNewWindow | boolean | true       | Open nb: links to other projects in a new window |
 
 ** Detailed Configuration
 
@@ -1512,6 +1523,39 @@ Configure the project-based notebook system.
 #+begin_src json
 {
   "scimax.notebook.autoDetect": false
+}
+#+end_src
+
+*** ⚠️ scimax.excalidraw.editor
+
+- *Type*: string (=scimax= or =pomdtr=)
+- *Default*: =scimax=
+- *Description*: The editor that clicking an Excalidraw link in an org file
+  opens. =scimax= is Scimax's Excalidraw editor (link picker, org links that
+  open in VS Code, TODO status on linked shapes); =pomdtr= is the Excalidraw
+  Editor extension. =.excalidraw.png= always opens in the extension.
+
+*** ⚠️ scimax.excalidraw.linkWithId
+
+- *Type*: boolean
+- *Default*: =true=
+- *Description*: When a drawing's shape is linked to a heading that has no
+  =ID= or =CUSTOM_ID=, give the heading an =:ID:= property so the link
+  survives renaming or moving it. When =false=, the link uses the heading's
+  title.
+
+*** ⚠️ scimax.notebook.openLinksInNewWindow
+
+- *Type*: boolean
+- *Default*: `true'
+- *Description*: When an =nb:= link points into a project other than the
+  current workspace, open that project in a new VS Code window and jump to the
+  target there. When =false=, the file opens in the current window.
+
+*Example*:
+#+begin_src json
+{
+  "scimax.notebook.openLinksInNewWindow": false
 }
 #+end_src
 

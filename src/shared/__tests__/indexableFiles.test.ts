@@ -42,7 +42,16 @@ describe('scimax.db.fileExtensions', () => {
     });
 
     it('builds the file watcher glob', () => {
-        expect(indexableFilesGlob()).toBe('**/*.{org,md}');
-        expect(indexableFilesGlob(['org'])).toBe('**/*.org');
+        expect(indexableFilesGlob(undefined, false)).toBe('**/*.{org,md}');
+        expect(indexableFilesGlob(['org'], false)).toBe('**/*.org');
+        expect(indexableFilesGlob(['org'])).toBe('**/*.{org,excalidraw,excalidraw.json,excalidraw.svg}');
+    });
+
+    it('indexes Excalidraw drawings unless turned off', () => {
+        expect(isIndexableFile('/a/map.excalidraw.svg')).toBe(true);
+        expect(isIndexableFile('/a/map.excalidraw')).toBe(true);
+        expect(isIndexableFile('/a/map.Excalidraw.JSON')).toBe(true);
+        expect(isIndexableFile('/a/plot.svg')).toBe(false);
+        expect(isIndexableFile('/a/map.excalidraw.svg', undefined, false)).toBe(false);
     });
 });

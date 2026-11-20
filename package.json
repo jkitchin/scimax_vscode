@@ -126,6 +126,18 @@
         "path": "./themes/leuven-color-theme.json"
       }
     ],
+    "customEditors": [
+      {
+        "viewType": "scimax.excalidraw",
+        "displayName": "Scimax Excalidraw",
+        "selector": [
+          { "filenamePattern": "*.excalidraw" },
+          { "filenamePattern": "*.excalidraw.json" },
+          { "filenamePattern": "*.excalidraw.svg" }
+        ],
+        "priority": "default"
+      }
+    ],
     "viewsContainers": {
       "activitybar": [
         {
@@ -151,6 +163,11 @@
           "id": "scimax.projects",
           "name": "Projects",
           "icon": "$(folder)"
+        },
+        {
+          "id": "scimax.notebooks",
+          "name": "Notebooks",
+          "icon": "$(notebook)"
         },
         {
           "id": "scimax.notes",
@@ -1844,7 +1861,8 @@
       },
       {
         "command": "scimax.notebook.new",
-        "title": "Scimax: New Notebook"
+        "title": "Scimax: New Notebook",
+        "icon": "$(add)"
       },
       {
         "command": "scimax.notebook.open",
@@ -1852,7 +1870,8 @@
       },
       {
         "command": "scimax.notebook.openMasterFile",
-        "title": "Scimax: Open Notebook Master File"
+        "title": "Scimax: Open Notebook Master File",
+        "icon": "$(go-to-file)"
       },
       {
         "command": "scimax.notebook.recentFiles",
@@ -1868,7 +1887,8 @@
       },
       {
         "command": "scimax.notebook.addCollaborator",
-        "title": "Scimax: Add Collaborator"
+        "title": "Scimax: Add Collaborator",
+        "icon": "$(person-add)"
       },
       {
         "command": "scimax.notebook.archive",
@@ -1889,6 +1909,25 @@
       {
         "command": "scimax.notebook.remove",
         "title": "Scimax: Remove Notebook from Tracking"
+      },
+      {
+        "command": "scimax.notebook.insertLink",
+        "title": "Scimax: Insert Notebook Link"
+      },
+      {
+        "command": "scimax.notebook.map",
+        "title": "Scimax: Notebook Map (Excalidraw)",
+        "icon": "$(type-hierarchy)"
+      },
+      {
+        "command": "scimax.notebook.runCommand",
+        "title": "Scimax: Run Notebook Command",
+        "icon": "$(play)"
+      },
+      {
+        "command": "scimax.notebook.refresh",
+        "title": "Scimax: Refresh Notebooks",
+        "icon": "$(refresh)"
       },
       {
         "command": "scimax.org.toggleFold",
@@ -2713,6 +2752,14 @@
         "title": "Ignore This File in the Agenda"
       },
       {
+        "command": "scimax.agendaView.undo",
+        "title": "Scimax: Undo Last Agenda View Action"
+      },
+      {
+        "command": "scimax.agendaView.redo",
+        "title": "Scimax: Redo Agenda View Action"
+      },
+      {
         "command": "scimax.agendaView.refresh",
         "title": "Refresh"
       },
@@ -2879,6 +2926,10 @@
       {
         "command": "scimax.org.openExcalidraw",
         "title": "Scimax: Open Excalidraw Drawing"
+      },
+      {
+        "command": "scimax.excalidraw.addHeadingToDrawing",
+        "title": "Scimax: Add Heading to Drawing"
       },
       {
         "command": "scimax.excalidraw.copyOrgLink",
@@ -7958,6 +8009,11 @@
           ],
           "markdownDescription": "File types to index, as extensions without the dot (e.g. `org`, `md`, `markdown`). `.org` files are parsed as org-mode, every other type as Markdown. Used by the extension and the `scimax` CLI. Reload the window after changing it."
         },
+        "scimax.db.indexDrawings": {
+          "type": "boolean",
+          "default": true,
+          "markdownDescription": "Index Excalidraw drawings (`.excalidraw`, `.excalidraw.json`, `.excalidraw.svg`): the text on their shapes is searchable, and the headings their shapes link to list them as back-links. Used by the extension and the `scimax` CLI. Reload the window after changing it."
+        },
         "scimax.db.autoIndex": {
           "type": "boolean",
           "default": false,
@@ -8607,6 +8663,21 @@
           "minimum": 100,
           "maximum": 1000,
           "description": "Maximum width in pixels for image previews in LaTeX hover tooltips (default 300px, approximately 3 inches)"
+        },
+        "scimax.excalidraw.editor": {
+          "type": "string",
+          "enum": ["scimax", "pomdtr"],
+          "enumDescriptions": [
+            "Scimax's Excalidraw editor: org links open in VS Code, Link to note picker, TODO status on linked shapes",
+            "The Excalidraw Editor extension (pomdtr.excalidraw-editor)"
+          ],
+          "default": "scimax",
+          "description": "Editor that clicking an Excalidraw link in an org file opens. .excalidraw.png always uses the Excalidraw extension."
+        },
+        "scimax.excalidraw.linkWithId": {
+          "type": "boolean",
+          "default": true,
+          "description": "When linking a drawing's shape to a heading that has no ID or CUSTOM_ID, give the heading an :ID: so the link survives renaming and moving it"
         },
         "scimax.notebook.directory": {
           "type": "string",
@@ -10580,6 +10651,16 @@
       ],
       "view/title": [
         {
+          "command": "scimax.notebook.new",
+          "when": "view == scimax.notebooks",
+          "group": "navigation@1"
+        },
+        {
+          "command": "scimax.notebook.refresh",
+          "when": "view == scimax.notebooks",
+          "group": "navigation@2"
+        },
+        {
           "command": "scimax.crucible.searchAll",
           "when": "view == scimax.crucible",
           "group": "navigation@1",
@@ -10707,6 +10788,81 @@
         }
       ],
       "view/item/context": [
+        {
+          "command": "scimax.notebook.openMasterFile",
+          "when": "view == scimax.notebooks && viewItem == notebook",
+          "group": "inline@1"
+        },
+        {
+          "command": "scimax.notebook.runCommand",
+          "when": "view == scimax.notebooks && viewItem == notebook",
+          "group": "inline@2"
+        },
+        {
+          "command": "scimax.notebook.open",
+          "when": "view == scimax.notebooks && viewItem == notebook",
+          "group": "1_open@1"
+        },
+        {
+          "command": "scimax.notebook.recentFiles",
+          "when": "view == scimax.notebooks && viewItem == notebook",
+          "group": "1_open@2"
+        },
+        {
+          "command": "scimax.notebook.search",
+          "when": "view == scimax.notebooks && viewItem == notebook",
+          "group": "2_find@1"
+        },
+        {
+          "command": "scimax.notebook.agenda",
+          "when": "view == scimax.notebooks && viewItem == notebook",
+          "group": "2_find@2"
+        },
+        {
+          "command": "scimax.notebook.index",
+          "when": "view == scimax.notebooks && viewItem == notebook",
+          "group": "2_find@3"
+        },
+        {
+          "command": "scimax.notebook.runCommand",
+          "when": "view == scimax.notebooks && viewItem == notebook",
+          "group": "3_run@1"
+        },
+        {
+          "command": "scimax.notebook.map",
+          "when": "view == scimax.notebooks && viewItem == notebook",
+          "group": "3_run@2"
+        },
+        {
+          "command": "scimax.notebook.map",
+          "when": "view == scimax.notebooks && viewItem == notebook-section-drawings",
+          "group": "inline@1"
+        },
+        {
+          "command": "scimax.notebook.settings",
+          "when": "view == scimax.notebooks && viewItem == notebook",
+          "group": "4_manage@1"
+        },
+        {
+          "command": "scimax.notebook.info",
+          "when": "view == scimax.notebooks && viewItem == notebook",
+          "group": "4_manage@2"
+        },
+        {
+          "command": "scimax.notebook.archive",
+          "when": "view == scimax.notebooks && viewItem == notebook",
+          "group": "4_manage@3"
+        },
+        {
+          "command": "scimax.notebook.remove",
+          "when": "view == scimax.notebooks && viewItem == notebook",
+          "group": "4_manage@4"
+        },
+        {
+          "command": "scimax.notebook.addCollaborator",
+          "when": "view == scimax.notebooks && viewItem == notebook-section-collaborators",
+          "group": "inline@1"
+        },
         {
           "command": "scimax.crucible.search",
           "when": "view == scimax.crucible && viewItem == crucible",
@@ -11061,7 +11217,8 @@
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
-    "compile": "npm run build-doc-index && tsc -p ./ && npm run bundle && npm run copy-assets",
+    "compile": "npm run build-doc-index && tsc -p ./ && npm run bundle && npm run bundle-webviews && npm run copy-assets",
+    "bundle-webviews": "node scripts/bundle-excalidraw.js",
     "bundle": "esbuild src/extension.ts --bundle --platform=node --format=cjs --target=node20 --packages=external --external:vscode --outfile=out/extension.js --log-level=warning",
     "build-doc-index": "npx ts-node scripts/build-doc-index.ts",
     "copy-assets": "shx cp src/help/docIndex.json out/help/ && shx mkdir -p out/publishing/themes/bookTheme/assets && shx cp -r src/publishing/themes/bookTheme/assets/* out/publishing/themes/bookTheme/assets/",
@@ -11074,14 +11231,19 @@
   },
   "devDependencies": {
     "@electron/rebuild": "^4.0.2",
+    "@excalidraw/excalidraw": "0.18.1",
     "@types/js-yaml": "^4.0.9",
     "@types/node": "^20.19.30",
+    "@types/react": "18.3.12",
+    "@types/react-dom": "18.3.1",
     "@types/vscode": "~1.90.0",
     "@typescript-eslint/eslint-plugin": "^6.13.0",
     "@typescript-eslint/parser": "^6.13.0",
     "@vscode/vsce": "^2.22.0",
     "esbuild": "^0.27.7",
     "eslint": "^8.55.0",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
     "shx": "^0.4.0",
     "typescript": "^5.3.0",
     "vitest": "^4.0.17",

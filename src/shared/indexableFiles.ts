@@ -29,13 +29,22 @@ export function normalizeExtensions(extensions?: readonly string[] | null): stri
     return unique.length > 0 ? unique : DEFAULT_FILE_EXTENSIONS.map(e => '.' + e);
 }
 
-/** True when the file has one of the given extensions (setting values, normalized here). */
-export function isIndexableFile(filePath: string, extensions?: readonly string[] | null): boolean {
-    return normalizeExtensions(extensions).includes(path.extname(filePath).toLowerCase());
+/** Excalidraw drawings (.excalidraw, .excalidraw.json, .excalidraw.svg), indexed by their shapes' text and links. */
+export const DRAWING_FILE_RE = /\.excalidraw(\.json|\.svg)?$/i;
+
+/**
+ * True when the file has one of the given extensions (setting values,
+ * normalized here), or is an Excalidraw drawing and `drawings` is on
+ * (scimax.db.indexDrawings).
+ */
+export function isIndexableFile(filePath: string, extensions?: readonly string[] | null, drawings = true): boolean {
+    return normalizeExtensions(extensions).includes(path.extname(filePath).toLowerCase())
+        || (drawings && DRAWING_FILE_RE.test(filePath));
 }
 
-/** Glob for VS Code file watchers, e.g. `**\/*.{org,md}`. */
-export function indexableFilesGlob(extensions?: readonly string[] | null): string {
+/** Glob for VS Code file watchers, e.g. `**\/*.{org,md}` (plus drawings when `drawings` is on). */
+export function indexableFilesGlob(extensions?: readonly string[] | null, drawings = true): string {
     const names = normalizeExtensions(extensions).map(e => e.slice(1));
+    if (drawings) names.push('excalidraw', 'excalidraw.json', 'excalidraw.svg');
     return names.length === 1 ? `**/*.${names[0]}` : `**/*.{${names.join(',')}}`;
 }

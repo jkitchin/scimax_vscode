@@ -342,8 +342,7 @@ CLOSED: [2026-01-16 Fri 20:18]
 ** ✅ Opening Notebooks
 CLOSED: [2026-01-16 Fri 20:18]
 
-*** ✅ Open Notebook Command
-CLOSED: [2026-01-16 Fri 20:18]
+*** 👀 Open Notebook Command
 
 `Scimax: Open Notebook' shows a quick pick menu of all registered notebooks:
 
@@ -356,7 +355,6 @@ The list shows:
 - Notebook name
 - Description
 - Full path
-- Git status indicator ($(git-branch) icon)
 
 Notebooks are sorted by last accessed time (most recent first).
 
@@ -425,6 +423,37 @@ Scimax tracks all `.org' and `.md' files in the notebook, automatically excludin
 - `dist/' and `build/'
 - `.git/'
 
+* ⚠️ Notebooks Sidebar View
+
+The *Notebooks* view in the Scimax activity bar lists every tracked notebook,
+most recently used first. Notebooks that are git repositories show a repository
+icon; others show a folder. Each notebook expands into:
+
+- *Recent Files*: the 20 most recently modified =.org= / =.md= files (click to open)
+- *Drawings*: the notebook's Excalidraw drawings (click to open); the
+  $(type-hierarchy) button draws a notebook map
+- *Collaborators*: people from =.scimax/config.json=, with their role or email
+- *Info*: path, master file, git status, created/last-accessed dates and keywords
+
+** ⚠️ Actions
+
+| Where                      | Action                                         |
+|----------------------------+------------------------------------------------|
+| View title bar             | New Notebook ($(add)), Refresh ($(refresh))    |
+| Notebook row (inline)      | Open Master File, Run Notebook Command         |
+| Notebook row (right-click) | Open, Recent Files, Search, Agenda, Index, Run |
+|                            | Command, Notebook Map, Settings, Info,         |
+|                            | Archive, Remove                                |
+| Drawings row (inline)      | Notebook Map                                   |
+| Collaborators row (inline) | Add Collaborator                               |
+
+Commands run from the view act on the notebook you clicked, not on the current
+notebook.
+
+The view refreshes when notebooks are added, removed or opened, and when any
+=.scimax/config.json= is saved in VS Code. Use Refresh (=scimax.notebook.refresh=)
+after editing a config outside VS Code.
+
 * Searching and Navigation
 
 ** Search in Notebook
@@ -476,6 +505,67 @@ This recursively indexes all `.org' and `.md' files in the notebook directory, u
 
 Progress is shown in a notification with a progress bar.
 
+* ⚠️ Running Notebook Commands
+
+Put shell commands you run often in the =customCommands= field of
+=.scimax/config.json=:
+
+#+begin_src json
+{
+  "customCommands": {
+    "build": "make all",
+    "test": "pytest -q",
+    "report": "python scripts/generate_report.py"
+  }
+}
+#+end_src
+
+Then run =Scimax: Run Notebook Command= (=scimax.notebook.runCommand=), or click
+the $(play) button on a notebook in the Notebooks view. Pick a command from the
+list, which shows the full command line, and it runs as a VS Code task in the
+notebook root with output in a dedicated terminal. Re-run it with
+=Tasks: Rerun Last Task=. If no folder is open in the window, the command runs
+in a new terminal instead.
+
+If the notebook has no =customCommands=, you are offered to open its settings.
+
+*Security*: commands run in a shell. A =config.json= can come from a cloned
+repository, so read the command shown in the picker before running it. The
+command refuses to run in an untrusted workspace (Workspace Trust).
+
+* ⚠️ Linking Between Notebooks
+
+Link to a file, and optionally a location in it, in another project with an
+=nb:= link:
+
+#+begin_src org
+[[nb:my-research::notes/methods.org::*Sample Prep][sample prep]]
+[[nb:my-research::README.org::#goals]]
+[[nb:my-research::analysis.org::42]]
+#+end_src
+
+The target after the second =::= can be a line number, =c<offset>=,
+=*Heading= or =#custom-id=. Insert one interactively with
+=Scimax: Insert Notebook Link= (=scimax.notebook.insertLink=), and open it with
+=C-c C-o= or a click.
+
+The project name is resolved against the [[file:17-projectile.org][Projectile]]
+project list, so the target must be a known project. If it is not the project
+open in the current window, it opens in a new window by default; set
+=scimax.notebook.openLinksInNewWindow= to =false= to open it in place.
+
+See [[file:05-links.org][Links]] for the full syntax.
+
+* ⚠️ Notebook Maps and Drawings
+
+=Scimax: Notebook Map (Excalidraw)= (=scimax.notebook.map=) draws the
+notebook's org files and their top-level headings as
+=diagrams/notebook-map.excalidraw.svg=, each box linked to its file or
+heading, with arrows where one section links to another. Linked boxes show
+their heading's TODO state in Scimax's Excalidraw editor, and a heading lists
+every drawing that links to it among its back-links. See
+[[file:32-excalidraw.org::*Notebook Maps][Excalidraw: Notebook Maps]].
+
 * Collaboration
 
 ** Adding Collaborators
@@ -524,34 +614,38 @@ Example collaborators in config:
 }
 #+end_src
 
-* Notebook Commands
+* 👀 Notebook Commands
 
-** Core Commands
+** 👀 Core Commands
 
-| Command                            | Description                           |
-|------------------------------------+---------------------------------------|
-| =Scimax: New Notebook=             | Create a new notebook                 |
-| =Scimax: Open Notebook=            | Open/switch to a notebook             |
-| =Scimax: Open Notebook Master File= | Open the master file                  |
-| =Scimax: Recent Files in Notebook= | View recently modified files          |
+| Command                             | Description                         |
+|-------------------------------------+-------------------------------------|
+| =Scimax: New Notebook=              | Create a new notebook               |
+| =Scimax: Open Notebook=             | Open/switch to a notebook           |
+| =Scimax: Open Notebook Master File= | Open the master file                |
+| =Scimax: Recent Files in Notebook=  | View recently modified files        |
+| =Scimax: Run Notebook Command=      | Run a =customCommands= entry        |
+| =Scimax: Insert Notebook Link=      | Insert an =nb:= link                |
+| =Scimax: Refresh Notebooks=         | Reload configs and refresh the view |
+| =Scimax: Notebook Map (Excalidraw)= | Draw the notebook as a linked map   |
 
 ** Search and Organization
 
-| Command                         | Description                              |
-|---------------------------------+------------------------------------------|
-| =Scimax: Search in Notebook=    | Full-text search within notebook         |
-| =Scimax: Notebook Agenda=       | View agenda items (TODOs, deadlines)     |
-| =Scimax: Index Notebook=        | Index files for search                   |
+| Command                      | Description                          |
+|------------------------------+--------------------------------------|
+| =Scimax: Search in Notebook= | Full-text search within notebook     |
+| =Scimax: Notebook Agenda=    | View agenda items (TODOs, deadlines) |
+| =Scimax: Index Notebook=     | Index files for search               |
 
 ** Management
 
-| Command                                    | Description                          |
-|--------------------------------------------+--------------------------------------|
-| =Scimax: Notebook Settings=                | Edit =.scimax/config.json=           |
-| =Scimax: Notebook Info=                    | Show notebook metadata               |
-| =Scimax: Add Collaborator=                 | Add project collaborator             |
-| =Scimax: Archive Notebook=                 | Create zip archive (git repos only)  |
-| =Scimax: Remove Notebook from Tracking=    | Unregister notebook (keeps files)    |
+| Command                                 | Description                         |
+|-----------------------------------------+-------------------------------------|
+| =Scimax: Notebook Settings=             | Edit =.scimax/config.json=          |
+| =Scimax: Notebook Info=                 | Show notebook metadata              |
+| =Scimax: Add Collaborator=              | Add project collaborator            |
+| =Scimax: Archive Notebook=              | Create zip archive (git repos only) |
+| =Scimax: Remove Notebook from Tracking= | Unregister notebook (keeps files)   |
 
 ** Notebook Info
 
@@ -609,9 +703,9 @@ Command Palette → Scimax: Remove Notebook from Tracking
 
 This removes the notebook from Scimax's registry but leaves all files on disk unchanged. Use this to clean up notebooks you no longer work with.
 
-* Configuration
+* 👀 Configuration
 
-** Settings
+** 👀 Settings
 
 Configure notebook behavior in VS Code settings:
 
@@ -624,7 +718,10 @@ Configure notebook behavior in VS Code settings:
   "scimax.notebook.defaultTemplate": "research",
 
   // Automatically detect projects in workspace
-  "scimax.notebook.autoDetect": true
+  "scimax.notebook.autoDetect": true,
+
+  // Open nb: links to other projects in a new window
+  "scimax.notebook.openLinksInNewWindow": true
 }
 #+end_src
 
@@ -665,6 +762,11 @@ Example:
   "scimax.notebook.autoDetect": false
 }
 #+end_src
+
+*** ⚠️ `scimax.notebook.openLinksInNewWindow'
+
+Whether an =nb:= link into a different project opens a new VS Code window.
+Default: `true'. See [[*Linking Between Notebooks]].
 
 * Integration with Projectile
 
@@ -883,9 +985,10 @@ While Scimax provides built-in templates, you can create custom setups:
 3. Save as a template repository
 4. Clone for new projects
 
-** Automation with Custom Commands
+** 👀 Automation with Custom Commands
 
-Add custom commands to `.scimax/config.json':
+Add custom commands to `.scimax/config.json' and run them with
+=Scimax: Run Notebook Command= (see [[*Running Notebook Commands]]):
 
 #+begin_src json
 {
@@ -898,7 +1001,7 @@ Add custom commands to `.scimax/config.json':
 }
 #+end_src
 
-These commands can be used with shell integrations or task runners.
+Each runs as a VS Code task in the notebook root.
 
 ** Nested Notebooks
 
@@ -974,9 +1077,12 @@ The Scimax notebook system provides powerful project organization for research, 
 
 Start by creating your first notebook with `Scimax: New Notebook' and exploring the commands. The notebook system scales from simple note collections to complex multi-person research projects.
 
-* Related Topics
+* 👀 Related Topics
 
-- [[file:17-projectile.org][Projectile]] - switching between projects
+- [[file:17-projectile.org][Projectile]] - switching between projects; resolves =nb:= link project names
+- [[file:05-links.org][Links]] - full =nb:= link syntax
+- [[file:26-configuration.org][Configuration]] - all notebook settings
+- [[file:32-excalidraw.org][Excalidraw]] - notebook maps and drawings linked to notes
 - [[file:18-database-search.org][Database Search]] - searching a notebook's files
 - [[file:14-journal.org][Journal]] - date-based notes alongside notebooks
 

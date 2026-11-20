@@ -11,6 +11,7 @@
  */
 
 import * as vscode from 'vscode';
+import * as path from 'path';
 import { currentHeadingLine, runOnSourceHeading } from './agendaDocumentProvider';
 import { planningLines, shiftPlanningLine } from '../parser/planningShift';
 import { headingLineRegex, isMarkdownPath } from '../parser/markdownTasks';
@@ -43,15 +44,151 @@ export function registerTaskHost(view: string, host: TaskHost): vscode.Disposabl
     return { dispose: () => { if (hosts.get(view) === host) hosts.delete(view); } };
 }
 
+// ---------------------------------------------------------------------------
+// Undo / redo
+//
+// An action edits (and saves) the task's file outside the view, so the view
+// has no editor whose undo history Cmd-Z could use; once a TODO goes DONE its
+// row vanishes and there is nothing left to click. Instead each action that
+// changes one file records that file's whole text before and after, per view.
+// Undo puts the before text back (Redo the after text) and saves. Whole-text
+// snapshots also cover the side edits an action makes: CLOSED stamps, LOGBOOK
+// notes, repeaters and the like.
+// ---------------------------------------------------------------------------
+
+interface UndoEntry {
+    file: string;
+    before: string;
+    after: string;
+    /** What was done, for messages: "Cycle TODO state" */
+    label: string;
+}
+
+/** Most actions kept per view. */
+const MAX_UNDO = 50;
+
+const undoStacks = new Map<string, UndoEntry[]>();
+const redoStacks = new Map<string, UndoEntry[]>();
+
+/** Commands that edit more than the task's own file, which a one-file snapshot cannot undo. */
+const NOT_UNDOABLE = new Set(['scimax.org.refile', 'scimax.speed.archiveSubtree', 'scimax.org.storeLink']);
+
+const COMMAND_LABELS: Record<string, string> = {
+    'scimax.org.cycleTodo': 'TODO state change',
+    'scimax.org.assignTask': 'assignment',
+    'scimax.speed.setTags': 'tag change',
+    'scimax.speed.setEffort': 'effort change',
+    'scimax.speed.schedule': 'scheduled date change',
+    'scimax.speed.deadline': 'deadline change',
+    'scimax.speed.clockIn': 'clock in',
+    'scimax.speed.priorityA': 'priority change',
+    'scimax.speed.priorityB': 'priority change',
+    'scimax.speed.priorityC': 'priority change',
+    'scimax.speed.priorityNone': 'priority change',
+};
+
+/** The file's current text: an open editor's, unsaved edits included, else the disk's. */
+async function fileText(file: string): Promise<string | undefined> {
+    try {
+        return (await vscode.workspace.openTextDocument(vscode.Uri.file(file))).getText();
+    } catch {
+        return undefined;
+    }
+}
+
+/** Run `action` on `file`, and if the file's text changed, record it for undo in `view`. */
+async function recordingUndo<T>(view: string | undefined, file: string, label: string, action: () => Promise<T>): Promise<T> {
+    const before = view ? await fileText(file) : undefined;
+    const result = await action();
+    if (view && before !== undefined) {
+        const after = await fileText(file);
+        if (after !== undefined && after !== before) {
+            const stack = undoStacks.get(view) ?? [];
+            stack.push({ file, before, after, label });
+            if (stack.length > MAX_UNDO) stack.shift();
+            undoStacks.set(view, stack);
+            redoStacks.delete(view);
+        }
+    }
+    return result;
+}
+
+/** Replace a file's whole text and save it. */
+async function writeWholeFile(file: string, text: string): Promise<boolean> {
+    const doc = await vscode.workspace.openTextDocument(vscode.Uri.file(file));
+    const edit = new vscode.WorkspaceEdit();
+    edit.replace(doc.uri, new vscode.Range(doc.positionAt(0), doc.positionAt(doc.getText().length)), text);
+    if (!(await vscode.workspace.applyEdit(edit))) return false;
+    await doc.save();
+    return true;
+}
+
+/**
+ * Undo (or redo) the last action taken from `view`. If the file was edited
+ * some other way since, ask before overwriting those edits.
+ */
+export async function undoTaskAction(view: string, redo = false): Promise<boolean> {
+    const from = (redo ? redoStacks : undoStacks).get(view) ?? [];
+    const entry = from.pop();
+    const verb = redo ? 'Redo' : 'Undo';
+    if (!entry) {
+        vscode.window.setStatusBarMessage(`Nothing to ${verb.toLowerCase()} in this view`, 3000);
+        return false;
+    }
+    const expected = redo ? entry.before : entry.after;
+    const target = redo ? entry.after : entry.before;
+    const name = path.basename(entry.file);
+
+    const current = await fileText(entry.file);
+    if (current === undefined) {
+        vscode.window.showErrorMessage(`Could not ${verb.toLowerCase()}: ${name} can no longer be read.`);
+        return false;
+    }
+    if (current !== expected) {
+        const choice = await vscode.window.showWarningMessage(
+            `${name} has changed since the ${entry.label}. ${verb} anyway? Changes made to the file since then would be lost.`,
+            { modal: true },
+            `${verb} Anyway`
+        );
+        if (!choice) {
+            from.push(entry);
+            return false;
+        }
+    }
+
+    if (!(await writeWholeFile(entry.file, target))) {
+        from.push(entry);
+        vscode.window.showErrorMessage(`Could not ${verb.toLowerCase()} the ${entry.label} in ${name}.`);
+        return false;
+    }
+
+    const to = (redo ? undoStacks : redoStacks).get(view) ?? [];
+    to.push(entry);
+    (redo ? undoStacks : redoStacks).set(view, to);
+
+    vscode.window.setStatusBarMessage(`${redo ? 'Redid' : 'Undid'} ${entry.label} in ${name}`, 4000);
+    await hosts.get(view)?.reload();
+    return true;
+}
+
+/** Forget a view's undo history (when it closes). */
+export function clearTaskUndo(view: string): void {
+    undoStacks.delete(view);
+    redoStacks.delete(view);
+}
+
 /** Run an editing command on a task's heading, then come back and reload. */
 export async function runOnTask(arg: TaskContext | undefined, command: string): Promise<boolean> {
     if (!arg?.filePath || !arg.line) return false;
     const host = arg.view ? hosts.get(arg.view) : undefined;
-    const changed = await runOnSourceHeading(
-        { file: arg.filePath, line: arg.line, title: arg.title },
+    const run = () => runOnSourceHeading(
+        { file: arg.filePath!, line: arg.line!, title: arg.title },
         command,
         () => host?.reveal()
     );
+    const changed = NOT_UNDOABLE.has(command)
+        ? await run()
+        : await recordingUndo(arg.view, arg.filePath, COMMAND_LABELS[command] ?? 'edit', run);
     if (changed) await host?.reload();
     return changed;
 }
@@ -94,11 +231,15 @@ export async function shiftTask(arg: TaskContext | undefined, days: number): Pro
         vscode.window.showInformationMessage(`This task has no ${what} date to move.`);
         return;
     }
-    if (!(await vscode.workspace.applyEdit(edit))) {
+    const moved = await recordingUndo(arg.view, arg.filePath, 'date move', async () => {
+        if (!(await vscode.workspace.applyEdit(edit))) return false;
+        await doc.save();
+        return true;
+    });
+    if (!moved) {
         vscode.window.showErrorMessage('Could not move the date.');
         return;
     }
-    await doc.save();
     await (arg.view ? hosts.get(arg.view) : undefined)?.reload();
 }
 

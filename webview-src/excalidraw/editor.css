@@ -1,0 +1,47 @@
+html, body, #app, .root { height: 100%; margin: 0; padding: 0; overflow: hidden; }
+body { background: var(--vscode-editor-background); }
+.loading { padding: 2em; color: var(--vscode-descriptionForeground); font-family: var(--vscode-font-family); }
+
+.scimax-tools { display: flex; gap: 6px; align-items: center; }
+.scimax-tools button {
+    font: 12px var(--vscode-font-family, system-ui);
+    padding: 6px 10px; border-radius: 8px; cursor: pointer; white-space: nowrap;
+    border: 1px solid var(--color-surface-high, #ddd);
+    background: var(--island-bg-color, #fff); color: var(--text-primary-color, #1b1b1f);
+    box-shadow: var(--shadow-island, none);
+}
+.scimax-tools button:disabled { opacity: .45; cursor: default; }
+.scimax-tools button.on { background: var(--color-primary-light, #e0dfff); }
+
+/* Status overlay: never intercepts the pointer */
+.scimax-frame, .scimax-badge { position: fixed; pointer-events: none; z-index: 4; }
+.scimax-frame { border: 2px dashed transparent; border-radius: 10px; }
+.scimax-frame.todo { border-color: #e8590c; }
+.scimax-frame.done { border-color: #2f9e44; }
+.scimax-frame.broken { border-color: #e03131; border-style: solid; }
+.scimax-frame.plain { display: none; }
+.scimax-badge {
+    font: 600 11px/1 var(--vscode-font-family, system-ui);
+    padding: 3px 6px; border-radius: 6px; color: #fff; white-space: nowrap;
+}
+.scimax-badge.todo { background: #e8590c; }
+.scimax-badge.done { background: #2f9e44; }
+.scimax-badge.broken { background: #e03131; }
+
+.scimax-tooltip {
+    position: fixed; z-index: 5; max-width: 360px; pointer-events: none;
+    font: 12px/1.4 var(--vscode-font-family, system-ui);
+    background: var(--vscode-editorHoverWidget-background, #f3f3f3);
+    color: var(--vscode-editorHoverWidget-foreground, #222);
+    border: 1px solid var(--vscode-editorHoverWidget-border, #c8c8c8);
+    border-radius: 6px; padding: 8px 10px; box-shadow: 0 4px 14px rgba(0,0,0,.18);
+}
+.scimax-tooltip .outline { color: var(--vscode-descriptionForeground, #777); font-size: 11px; margin-bottom: 2px; }
+.scimax-tooltip .title { font-weight: 600; }
+.scimax-tooltip .kw { font-weight: 700; margin-right: 6px; }
+.scimax-tooltip .kw.todo { color: #e8590c; }
+.scimax-tooltip .kw.done { color: #2f9e44; }
+.scimax-tooltip .pri { margin-right: 6px; color: var(--vscode-descriptionForeground, #777); }
+.scimax-tooltip .snippet { margin: 6px 0 0; white-space: pre-wrap; font: 11px/1.35 var(--vscode-editor-font-family, monospace); max-height: 12em; overflow: hidden; }
+.scimax-tooltip .where { margin-top: 6px; font-size: 11px; color: var(--vscode-descriptionForeground, #777); }
+.scimax-tooltip .broken { color: #e03131; font-weight: 600; }

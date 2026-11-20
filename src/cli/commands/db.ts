@@ -250,7 +250,7 @@ async function syncDatabase(config: CliConfig, args: ParsedArgs): Promise<void> 
     const discovered: DiskFileSlim[] = [];
     const seenDisk = new Set<string>();
     for (const root of roots) {
-        const found = findOrgFiles(root, settings.db.exclude, { maxFileSizeMB: settings.db.maxFileSizeMB, fileExtensions: settings.db.fileExtensions });
+        const found = findOrgFiles(root, settings.db.exclude, { maxFileSizeMB: settings.db.maxFileSizeMB, fileExtensions: settings.db.fileExtensions, indexDrawings: settings.db.indexDrawings });
         for (const filePath of found) {
             if (seenDisk.has(filePath)) continue;
             seenDisk.add(filePath);
@@ -438,7 +438,7 @@ async function scanDirectory(config: CliConfig, args: ParsedArgs): Promise<void>
     for (const pattern of settings.db.exclude) console.log(`  ${pattern}`);
     console.log();
 
-    const orgFiles = findOrgFiles(scanDir, settings.db.exclude, { maxFileSizeMB: settings.db.maxFileSizeMB, fileExtensions: settings.db.fileExtensions });
+    const orgFiles = findOrgFiles(scanDir, settings.db.exclude, { maxFileSizeMB: settings.db.maxFileSizeMB, fileExtensions: settings.db.fileExtensions, indexDrawings: settings.db.indexDrawings });
     console.log(`Found ${orgFiles.length} org file(s) to index.`);
     console.log();
 
