@@ -1144,8 +1144,11 @@ export function registerOrgLinkCommands(context: vscode.ExtensionContext): void 
                     fs.writeFileSync(file, JSON.stringify(emptyExcalidraw, null, 2));
                 }
 
-                // Open with Excalidraw editor
-                await vscode.commands.executeCommand('vscode.openWith', uri, 'editor.excalidraw');
+                // Scimax's own editor for the formats it edits (scimax.excalidraw.editor);
+                // .excalidraw.png and the 'pomdtr' choice go to the Excalidraw extension.
+                const own = vscode.workspace.getConfiguration('scimax.excalidraw').get<string>('editor', 'scimax') === 'scimax'
+                    && /\.excalidraw(\.json|\.svg)?$/i.test(file);
+                await vscode.commands.executeCommand('vscode.openWith', uri, own ? 'scimax.excalidraw' : 'editor.excalidraw');
             } catch (error) {
                 vscode.window.showErrorMessage(`Failed to open Excalidraw file: ${file}`);
             }

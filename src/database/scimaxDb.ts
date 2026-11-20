@@ -133,6 +133,7 @@ export class ScimaxDb extends ScimaxDbCore {
         this.setIgnorePatterns(this.loadIgnorePatterns());
         this.setForcedFiles(forcedFiles(vscode.workspace.getConfiguration('scimax.db').get<string[]>('include')));
         this.setFileExtensions(vscode.workspace.getConfiguration('scimax.db').get<string[]>('fileExtensions'));
+        this.setIndexDrawings(vscode.workspace.getConfiguration('scimax.db').get<boolean>('indexDrawings', true));
         this.setResilienceConfig(this.loadResilienceConfig());
         this.setSizeLimits(this.loadSizeLimits());
 
@@ -193,7 +194,9 @@ export class ScimaxDb extends ScimaxDbCore {
      * in scimax.db.fileExtensions. Rebuilt when either changes.
      */
     private rebuildWatchers(): void {
-        const glob = indexableFilesGlob(vscode.workspace.getConfiguration('scimax.db').get<string[]>('fileExtensions'));
+        const glob = indexableFilesGlob(
+            vscode.workspace.getConfiguration('scimax.db').get<string[]>('fileExtensions'),
+            vscode.workspace.getConfiguration('scimax.db').get<boolean>('indexDrawings', true));
         const folders = (vscode.workspace.workspaceFolders ?? []).map(f => f.uri.fsPath);
         const extra = rootsNeedingWatchers(this.roots, folders);
         const key = JSON.stringify([glob, extra]);

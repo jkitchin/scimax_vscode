@@ -4,6 +4,8 @@ import * as fs from 'fs';
 import { NotebookManager, Notebook, Collaborator } from './notebookManager';
 import { ProjectileManager, Project } from '../projectile/projectileManager';
 import { getDatabase } from '../database/lazyDb';
+import { notebookMapSpec } from '../excalidraw/notebookMap';
+import { normalizeScene, renderSceneSvg } from '../excalidraw/scene';
 
 // =============================================================================
 // Pending Navigation for Cross-Window Link Opening
@@ -172,7 +174,13 @@ export function registerNotebookCommands(
 
     // Open notebook
     context.subscriptions.push(
-        vscode.commands.registerCommand('scimax.notebook.open', async () => {
+        vscode.commands.registerCommand('scimax.notebook.open', async (arg?: NotebookArg) => {
+            const fromTree = notebookFromArg(arg);
+            if (fromTree) {
+                await notebookManager.openNotebook(fromTree);
+                return;
+            }
+
             const notebooks = notebookManager.getNotebooks();
 
             if (notebooks.length === 0) {
@@ -201,8 +209,8 @@ export function registerNotebookCommands(
 
     // Open master file
     context.subscriptions.push(
-        vscode.commands.registerCommand('scimax.notebook.openMasterFile', async () => {
-            const notebook = await getCurrentOrSelectNotebook(notebookManager);
+        vscode.commands.registerCommand('scimax.notebook.openMasterFile', async (arg?: NotebookArg) => {
+            const notebook = await getCurrentOrSelectNotebook(notebookManager, arg);
             if (!notebook) return;
 
             if (notebook.masterFile) {
@@ -216,8 +224,8 @@ export function registerNotebookCommands(
 
     // Recent files in notebook
     context.subscriptions.push(
-        vscode.commands.registerCommand('scimax.notebook.recentFiles', async () => {
-            const notebook = await getCurrentOrSelectNotebook(notebookManager);
+        vscode.commands.registerCommand('scimax.notebook.recentFiles', async (arg?: NotebookArg) => {
+            const notebook = await getCurrentOrSelectNotebook(notebookManager, arg);
             if (!notebook) return;
 
             const files = await notebookManager.getRecentFiles(notebook);
@@ -247,8 +255,8 @@ export function registerNotebookCommands(
 
     // Search in notebook
     context.subscriptions.push(
-        vscode.commands.registerCommand('scimax.notebook.search', async () => {
-            const notebook = await getCurrentOrSelectNotebook(notebookManager);
+        vscode.commands.registerCommand('scimax.notebook.search', async (arg?: NotebookArg) => {
+            const notebook = await getCurrentOrSelectNotebook(notebookManager, arg);
             if (!notebook) return;
 
             const query = await vscode.window.showInputBox({
@@ -304,8 +312,8 @@ export function registerNotebookCommands(
 
     // Notebook agenda
     context.subscriptions.push(
-        vscode.commands.registerCommand('scimax.notebook.agenda', async () => {
-            const notebook = await getCurrentOrSelectNotebook(notebookManager);
+        vscode.commands.registerCommand('scimax.notebook.agenda', async (arg?: NotebookArg) => {
+            const notebook = await getCurrentOrSelectNotebook(notebookManager, arg);
             if (!notebook) return;
 
             // Get database lazily
@@ -352,8 +360,8 @@ export function registerNotebookCommands(
 
     // Add collaborator
     context.subscriptions.push(
-        vscode.commands.registerCommand('scimax.notebook.addCollaborator', async () => {
-            const notebook = await getCurrentOrSelectNotebook(notebookManager);
+        vscode.commands.registerCommand('scimax.notebook.addCollaborator', async (arg?: NotebookArg) => {
+            const notebook = await getCurrentOrSelectNotebook(notebookManager, arg);
             if (!notebook) return;
 
             const name = await vscode.window.showInputBox({
@@ -384,8 +392,8 @@ export function registerNotebookCommands(
 
     // Archive notebook
     context.subscriptions.push(
-        vscode.commands.registerCommand('scimax.notebook.archive', async () => {
-            const notebook = await getCurrentOrSelectNotebook(notebookManager);
+        vscode.commands.registerCommand('scimax.notebook.archive', async (arg?: NotebookArg) => {
+            const notebook = await getCurrentOrSelectNotebook(notebookManager, arg);
             if (!notebook) return;
 
             if (!notebook.hasGit) {
@@ -407,8 +415,8 @@ export function registerNotebookCommands(
 
     // Notebook settings
     context.subscriptions.push(
-        vscode.commands.registerCommand('scimax.notebook.settings', async () => {
-            const notebook = await getCurrentOrSelectNotebook(notebookManager);
+        vscode.commands.registerCommand('scimax.notebook.settings', async (arg?: NotebookArg) => {
+            const notebook = await getCurrentOrSelectNotebook(notebookManager, arg);
             if (!notebook) return;
 
             const configPath = path.join(notebook.path, '.scimax', 'config.json');
@@ -429,8 +437,8 @@ export function registerNotebookCommands(
 
     // Index notebook
     context.subscriptions.push(
-        vscode.commands.registerCommand('scimax.notebook.index', async () => {
-            const notebook = await getCurrentOrSelectNotebook(notebookManager);
+        vscode.commands.registerCommand('scimax.notebook.index', async (arg?: NotebookArg) => {
+            const notebook = await getCurrentOrSelectNotebook(notebookManager, arg);
             if (!notebook) return;
 
             // Get database lazily
@@ -453,8 +461,8 @@ export function registerNotebookCommands(
 
     // Show notebook info
     context.subscriptions.push(
-        vscode.commands.registerCommand('scimax.notebook.info', async () => {
-            const notebook = await getCurrentOrSelectNotebook(notebookManager);
+        vscode.commands.registerCommand('scimax.notebook.info', async (arg?: NotebookArg) => {
+            const notebook = await getCurrentOrSelectNotebook(notebookManager, arg);
             if (!notebook) return;
 
             const files = await notebookManager.listNotebookFiles(notebook);
@@ -478,37 +486,67 @@ export function registerNotebookCommands(
 
     // Remove notebook from tracking
     context.subscriptions.push(
-        vscode.commands.registerCommand('scimax.notebook.remove', async () => {
-            const notebooks = notebookManager.getNotebooks();
+        vscode.commands.registerCommand('scimax.notebook.remove', async (arg?: NotebookArg) => {
+            let target = notebookFromArg(arg);
 
-            if (notebooks.length === 0) {
-                vscode.window.showInformationMessage('No notebooks to remove');
-                return;
+            if (!target) {
+                const notebooks = notebookManager.getNotebooks();
+
+                if (notebooks.length === 0) {
+                    vscode.window.showInformationMessage('No notebooks to remove');
+                    return;
+                }
+
+                const items = notebooks.map(nb => ({
+                    label: `$(folder) ${nb.name}`,
+                    description: nb.path,
+                    notebook: nb
+                }));
+
+                const selected = await vscode.window.showQuickPick(items, {
+                    placeHolder: 'Select notebook to remove from tracking'
+                });
+                target = selected?.notebook;
             }
 
-            const items = notebooks.map(nb => ({
-                label: `$(folder) ${nb.name}`,
-                description: nb.path,
-                notebook: nb
-            }));
-
-            const selected = await vscode.window.showQuickPick(items, {
-                placeHolder: 'Select notebook to remove from tracking'
-            });
-
-            if (!selected) return;
+            if (!target) return;
 
             const confirm = await vscode.window.showWarningMessage(
-                `Remove "${selected.notebook.name}" from tracking? Files will not be deleted.`,
+                `Remove "${target.name}" from tracking? Files will not be deleted.`,
                 'Remove',
                 'Cancel'
             );
 
             if (confirm === 'Remove') {
-                notebookManager.removeNotebook(selected.notebook);
+                notebookManager.removeNotebook(target);
                 await notebookManager.save();
-                vscode.window.showInformationMessage(`Removed ${selected.notebook.name} from tracking`);
+                vscode.window.showInformationMessage(`Removed ${target.name} from tracking`);
             }
+        })
+    );
+
+    // Run a custom command from .scimax/config.json
+    context.subscriptions.push(
+        vscode.commands.registerCommand('scimax.notebook.runCommand', async (arg?: NotebookArg) => {
+            const notebook = await getCurrentOrSelectNotebook(notebookManager, arg);
+            if (!notebook) return;
+            await runNotebookCustomCommand(notebook);
+        })
+    );
+
+    // Notebook map: a linked Excalidraw drawing of the notebook's org files
+    context.subscriptions.push(
+        vscode.commands.registerCommand('scimax.notebook.map', async (arg?: NotebookArg) => {
+            const notebook = await getCurrentOrSelectNotebook(notebookManager, arg);
+            if (!notebook) return;
+            await createNotebookMap(notebook, notebookManager);
+        })
+    );
+
+    // Refresh the Notebooks tree view
+    context.subscriptions.push(
+        vscode.commands.registerCommand('scimax.notebook.refresh', () => {
+            notebookManager.reloadConfigs();
         })
     );
 
@@ -623,9 +661,28 @@ async function listProjectFiles(projectPath: string): Promise<string[]> {
     return files;
 }
 
+/**
+ * Argument passed by tree-view context menus: a tree item carrying a notebook,
+ * or a Notebook directly.
+ */
+type NotebookArg = { notebook?: Notebook } | Notebook;
+
+function notebookFromArg(arg: unknown): Notebook | undefined {
+    if (!arg || typeof arg !== 'object') return undefined;
+    const a = arg as { notebook?: Notebook; path?: unknown; id?: unknown };
+    if (a.notebook && typeof a.notebook.path === 'string') return a.notebook;
+    if (typeof a.path === 'string' && typeof a.id === 'string') return arg as Notebook;
+    return undefined;
+}
+
 async function getCurrentOrSelectNotebook(
-    notebookManager: NotebookManager
+    notebookManager: NotebookManager,
+    arg?: unknown
 ): Promise<Notebook | undefined> {
+    // Explicit notebook from a tree-view context menu
+    const fromArg = notebookFromArg(arg);
+    if (fromArg) return fromArg;
+
     // Check if we're in a notebook
     const activeEditor = vscode.window.activeTextEditor;
     if (activeEditor) {
@@ -936,4 +993,125 @@ async function navigateToTarget(
     } else {
         vscode.window.showWarningMessage(`Target not found: ${target}`);
     }
+}
+
+/**
+ * Pick one of a notebook's `customCommands` (from .scimax/config.json) and run
+ * it as a VS Code task in the notebook root, so output lands in a terminal and
+ * the task can be re-run from "Tasks: Rerun Last Task".
+ *
+ * The command string runs in a shell by design (it is user-authored shell, like
+ * a Makefile target). Because config.json may arrive with a cloned repository,
+ * the command is shown in full before it runs and is refused in untrusted
+ * workspaces.
+ */
+async function runNotebookCustomCommand(notebook: Notebook): Promise<void> {
+    const commands = notebook.config?.customCommands ?? {};
+    const entries = Object.entries(commands).filter(
+        ([name, cmd]) => name && typeof cmd === 'string' && cmd.trim() !== ''
+    );
+
+    if (entries.length === 0) {
+        const choice = await vscode.window.showInformationMessage(
+            `${notebook.name} has no customCommands in .scimax/config.json`,
+            'Open Notebook Settings'
+        );
+        if (choice) {
+            await vscode.commands.executeCommand('scimax.notebook.settings', notebook);
+        }
+        return;
+    }
+
+    if (!vscode.workspace.isTrusted) {
+        vscode.window.showWarningMessage(
+            'Notebook custom commands are disabled in untrusted workspaces.'
+        );
+        return;
+    }
+
+    const selected = await vscode.window.showQuickPick(
+        entries.map(([name, cmd]) => ({
+            label: `$(terminal) ${name}`,
+            detail: cmd,
+            name,
+            cmd
+        })),
+        { placeHolder: `Run a command in ${notebook.name}`, matchOnDetail: true }
+    );
+    if (!selected) return;
+
+    // Tasks need an open workspace; with a bare window, use a terminal instead.
+    if (!vscode.workspace.workspaceFolders?.length) {
+        const terminal = vscode.window.createTerminal({
+            name: `${notebook.name}: ${selected.name}`,
+            cwd: notebook.path
+        });
+        terminal.show();
+        terminal.sendText(selected.cmd);
+        return;
+    }
+
+    const task = new vscode.Task(
+        { type: 'shell', notebook: notebook.path, command: selected.name },
+        vscode.TaskScope.Workspace,
+        selected.name,
+        `notebook: ${notebook.name}`,
+        new vscode.ShellExecution(selected.cmd, { cwd: notebook.path })
+    );
+    task.presentationOptions = {
+        reveal: vscode.TaskRevealKind.Always,
+        panel: vscode.TaskPanelKind.Dedicated,
+        clear: true
+    };
+
+    try {
+        await vscode.tasks.executeTask(task);
+    } catch (error) {
+        vscode.window.showErrorMessage(`Failed to run "${selected.name}": ${error}`);
+    }
+}
+
+/**
+ * Draw the notebook's org files and their top-level headings, linked, as
+ * diagrams/notebook-map.excalidraw.svg in the notebook, and open it.
+ */
+async function createNotebookMap(notebook: Notebook, notebookManager: NotebookManager): Promise<void> {
+    const out = path.join(notebook.path, 'diagrams', 'notebook-map.excalidraw.svg');
+    if (fs.existsSync(out)) {
+        const choice = await vscode.window.showWarningMessage(
+            `${path.relative(notebook.path, out)} exists. Replace it with a new map? Edits made to the drawing would be lost.`,
+            { modal: true },
+            'Replace',
+            'Open Existing'
+        );
+        if (choice === 'Open Existing') {
+            await vscode.commands.executeCommand('vscode.open', vscode.Uri.file(out));
+            return;
+        }
+        if (choice !== 'Replace') return;
+    }
+
+    const orgFiles = (await notebookManager.listNotebookFiles(notebook, undefined, name => name.toLowerCase().endsWith('.org')));
+    if (orgFiles.length === 0) {
+        vscode.window.showInformationMessage(`${notebook.name} has no org files to map.`);
+        return;
+    }
+    // Unsaved editors count, as everywhere else in scimax
+    const open = new Map(vscode.workspace.textDocuments.map(d => [d.uri.fsPath, d.getText()]));
+    const files = orgFiles.map(f => ({ path: f, content: open.get(f) ?? fs.readFileSync(f, 'utf8') }));
+
+    const spec = notebookMapSpec(files, {
+        title: notebook.name,
+        drawingDir: path.dirname(out),
+        masterFile: notebook.masterFile,
+    });
+    const svg = renderSceneSvg(normalizeScene(spec), { embedScene: true });
+    if (!svg) {
+        vscode.window.showErrorMessage('Could not draw the notebook map.');
+        return;
+    }
+    fs.mkdirSync(path.dirname(out), { recursive: true });
+    fs.writeFileSync(out, svg, 'utf8');
+    await vscode.commands.executeCommand('vscode.open', vscode.Uri.file(out));
+    vscode.window.setStatusBarMessage(`Scimax: mapped ${Math.min(files.length, 12)} of ${files.length} org files of ${notebook.name}`, 5000);
 }

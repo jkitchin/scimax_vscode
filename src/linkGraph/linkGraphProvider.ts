@@ -76,8 +76,13 @@ export class LinkGraphProvider {
         switch (message.type) {
             case 'openFile':
                 try {
-                    const doc = await vscode.workspace.openTextDocument(message.path);
-                    await vscode.window.showTextDocument(doc, vscode.ViewColumn.One);
+                    if (/\.excalidraw(\.json|\.svg|\.png)?$/i.test(message.path)) {
+                        // Drawings open in their (custom) editor, not as JSON/SVG text
+                        await vscode.commands.executeCommand('vscode.open', vscode.Uri.file(message.path), vscode.ViewColumn.One);
+                    } else {
+                        const doc = await vscode.workspace.openTextDocument(message.path);
+                        await vscode.window.showTextDocument(doc, vscode.ViewColumn.One);
+                    }
                 } catch (e) {
                     vscode.window.showErrorMessage(`Could not open file: ${message.path}`);
                 }

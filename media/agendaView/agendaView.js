@@ -678,6 +678,26 @@
         e.stopPropagation();
     });
 
+    // Undo / redo the last action taken from the view (t, C-c C-d, the
+    // right-click menu): Cmd-Z / Cmd-Shift-Z (Ctrl elsewhere), and C-/ or C-_
+    // as in org's agenda. The text filter keeps its own undo. Stopping the
+    // event keeps VS Code from also running its own Undo on the webview.
+    document.addEventListener('keydown', e => {
+        const t = e.target;
+        if (t instanceof HTMLInputElement || t instanceof HTMLSelectElement || t instanceof HTMLTextAreaElement) return;
+        const mod = e.metaKey || e.ctrlKey;
+        const key = e.key.toLowerCase();
+        let type;
+        if (mod && !e.altKey && key === 'z') type = e.shiftKey ? 'redo' : 'undo';
+        else if (mod && !e.altKey && !e.shiftKey && key === 'y' && !e.metaKey) type = 'redo';
+        else if (e.ctrlKey && !e.metaKey && !e.altKey && (e.key === '/' || e.key === '_')) type = 'undo';
+        else return;
+        hidePreview();
+        vscode.postMessage({ type });
+        e.preventDefault();
+        e.stopPropagation();
+    }, true);
+
     // Keys that work anywhere but in a text field or a menu.
     const SPAN_KEYS = { d: 'day', w: 'week', m: 'month' };
     document.addEventListener('keydown', e => {

@@ -11,8 +11,9 @@ class NotebookItem extends vscode.TreeItem {
     ) {
         super(notebook.name, collapsibleState);
         this.tooltip = notebook.description || notebook.path;
-        this.description = notebook.hasGit ? '$(git-branch)' : '';
-        this.iconPath = new vscode.ThemeIcon('folder');
+        this.id = notebook.path;
+        this.description = notebook.description || '';
+        this.iconPath = new vscode.ThemeIcon(notebook.hasGit ? 'repo' : 'folder');
         this.contextValue = 'notebook';
     }
 }
@@ -21,7 +22,7 @@ class NotebookSectionItem extends vscode.TreeItem {
     constructor(
         public readonly label: string,
         public readonly notebook: Notebook,
-        public readonly sectionType: 'files' | 'collaborators' | 'info'
+        public readonly sectionType: 'files' | 'drawings' | 'collaborators' | 'info'
     ) {
         super(label, vscode.TreeItemCollapsibleState.Collapsed);
         this.contextValue = `notebook-section-${sectionType}`;
@@ -29,6 +30,9 @@ class NotebookSectionItem extends vscode.TreeItem {
         switch (sectionType) {
             case 'files':
                 this.iconPath = new vscode.ThemeIcon('files');
+                break;
+            case 'drawings':
+                this.iconPath = new vscode.ThemeIcon('symbol-misc');
                 break;
             case 'collaborators':
                 this.iconPath = new vscode.ThemeIcon('organization');
@@ -99,7 +103,7 @@ export class NotebookTreeProvider implements vscode.TreeDataProvider<NotebookTre
 
     constructor(private notebookManager: NotebookManager) {
         // Refresh when notebook changes
-        notebookManager.onNotebookChanged(() => this.refresh());
+        notebookManager.onDidChangeNotebooks(() => this.refresh());
     }
 
     refresh(): void {
@@ -123,7 +127,8 @@ export class NotebookTreeProvider implements vscode.TreeDataProvider<NotebookTre
         if (element instanceof NotebookItem) {
             // Show notebook sections
             return [
-                new NotebookSectionItem('Files', element.notebook, 'files'),
+                new NotebookSectionItem('Recent Files', element.notebook, 'files'),
+                new NotebookSectionItem('Drawings', element.notebook, 'drawings'),
                 new NotebookSectionItem('Collaborators', element.notebook, 'collaborators'),
                 new NotebookSectionItem('Info', element.notebook, 'info')
             ];
@@ -133,6 +138,8 @@ export class NotebookTreeProvider implements vscode.TreeDataProvider<NotebookTre
             switch (element.sectionType) {
                 case 'files':
                     return this.getFileItems(element.notebook);
+                case 'drawings':
+                    return this.getDrawingItems(element.notebook);
                 case 'collaborators':
                     return this.getCollaboratorItems(element.notebook);
                 case 'info':
@@ -146,6 +153,18 @@ export class NotebookTreeProvider implements vscode.TreeDataProvider<NotebookTre
     private async getFileItems(notebook: Notebook): Promise<NotebookFileItem[]> {
         const files = await this.notebookManager.getRecentFiles(notebook, 20);
         return files.map(f => new NotebookFileItem(f, notebook));
+    }
+
+    private async getDrawingItems(notebook: Notebook): Promise<NotebookFileItem[]> {
+        const drawings = await this.notebookManager.listDrawings(notebook);
+        return drawings.map(f => {
+            const item = new NotebookFileItem(f, notebook);
+            item.iconPath = new vscode.ThemeIcon('symbol-misc');
+            item.contextValue = 'notebook-drawing';
+            // vscode.open uses the drawing's editor (Scimax Excalidraw)
+            item.command = { command: 'vscode.open', title: 'Open Drawing', arguments: [vscode.Uri.file(f)] };
+            return item;
+        });
     }
 
     private getCollaboratorItems(notebook: Notebook): CollaboratorItem[] {
