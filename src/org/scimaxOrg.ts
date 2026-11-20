@@ -4,6 +4,7 @@
  */
 
 import * as vscode from 'vscode';
+import { isViewable, openViewable } from '../utils/openViewable';
 import { openMailto } from './mail';
 import { pushKill, killRange } from '../killRing/commands';
 import { setContextKey, trackEditorContext } from '../utils/contextKeys';
@@ -3491,7 +3492,9 @@ export async function openLinkAtPoint(options: { otherWindow?: boolean } = {}): 
         // Check if it looks like a file path (has extension)
         const hasExtension = /\.[a-zA-Z0-9]+$/.test(url);
 
-        if (hasExtension) {
+        if (hasExtension && isViewable(targetUri.fsPath)) {
+            await openViewableLink(targetUri);
+        } else if (hasExtension) {
             // It's a file link - create if it doesn't exist
             try {
                 await vscode.workspace.fs.stat(targetUri);
@@ -3550,7 +3553,8 @@ async function openMarkdownLink(target: string, document: vscode.TextDocument): 
     }
 
     if (!anchor) {
-        await vscode.commands.executeCommand('vscode.open', targetUri);
+        if (isViewable(targetUri.fsPath)) await openViewable(targetUri);
+        else await vscode.commands.executeCommand('vscode.open', targetUri);
         return;
     }
     const doc = await vscode.workspace.openTextDocument(targetUri);
@@ -3609,6 +3613,25 @@ function resolveLinkPath(linkPath: string, document: vscode.TextDocument): vscod
  * Supports: file:name.org::123 (line), file:name.org::c456 (char offset),
  *           file:name.org::*Heading, file:name.org::#custom-id
  */
+/**
+ * Open a link to an image or drawing as a picture. A missing drawing is
+ * created empty, so writing a link and following it starts a new drawing; a
+ * missing image is reported, not created.
+ */
+async function openViewableLink(targetUri: vscode.Uri): Promise<void> {
+    try {
+        await vscode.workspace.fs.stat(targetUri);
+    } catch {
+        if (!/\.excalidraw(\.json|\.svg)?$/i.test(targetUri.fsPath)) {
+            vscode.window.showWarningMessage(`File not found: ${targetUri.fsPath}`);
+            return;
+        }
+        await vscode.workspace.fs.createDirectory(vscode.Uri.joinPath(targetUri, '..'));
+        await vscode.workspace.fs.writeFile(targetUri, new Uint8Array());
+    }
+    await openViewable(targetUri);
+}
+
 async function openFileLink(url: string, currentDocument: vscode.TextDocument): Promise<void> {
     const fileUrl = url.replace(/^file:/, '');
 
@@ -3619,6 +3642,12 @@ async function openFileLink(url: string, currentDocument: vscode.TextDocument): 
 
     // Resolve the file path; an empty one means the current file
     const targetUri = filePath ? resolveLinkPath(filePath, currentDocument) : currentDocument.uri;
+
+    // An image or drawing with no ::search opens as a picture, not as text
+    if (!searchPart && filePath && isViewable(targetUri.fsPath)) {
+        await openViewableLink(targetUri);
+        return;
+    }
 
     // Create the file if it doesn't exist; a directory opens in dired
     try {

@@ -373,12 +373,14 @@ CLOSED: [2026-01-17 Sat 12:27]
 
 Live rendered preview of an org file. See [[file:46-org-preview.org][Org Preview]].
 
-| Command ID                            | Description                          | Default Keybinding         |
-|---------------------------------------+--------------------------------------+----------------------------|
-| [[cmd:scimax.org.preview.open]]       | Open Org Preview (in this group)     | Cmd+Shift+V / Ctrl+Shift+V |
-| [[cmd:scimax.org.preview.openToSide]] | Open Org Preview to the Side         | Cmd+K V / Ctrl+C Shift+V   |
-| [[cmd:scimax.org.preview.showSource]] | Show Org Source (from the preview)   | Cmd+Shift+V / Ctrl+Shift+V |
-| [[cmd:scimax.org.previewHtml]]        | Alias: opens the preview to the side | -                          |
+| Command ID                        | Description                                      | Default Keybinding         |
+|-----------------------------------+--------------------------------------------------+----------------------------|
+| [[cmd:scimax.org.preview.open]]       | Open Org Preview (in this group)                 | Cmd+Shift+V / Ctrl+Shift+V |
+| [[cmd:scimax.org.preview.openToSide]] | Open Org Preview to the Side                     | Cmd+K V / Ctrl+C Shift+V   |
+| [[cmd:scimax.org.preview.showSource]] | Show Org Source (from the preview)               | Cmd+Shift+V / Ctrl+Shift+V |
+| [[cmd:scimax.org.previewHtml]]        | Alias: opens the preview to the side             | -                          |
+| [[cmd:scimax.file.showPreview]]       | Show an SVG or drawing as an image / drawing     | Cmd+Shift+V / Ctrl+Shift+V |
+| [[cmd:scimax.file.showSource]]        | Show an SVG or drawing's text (from its preview) | Cmd+Shift+V / Ctrl+Shift+V |
 
 ** ✅ HTML Export
 CLOSED: [2026-01-17 Sat 12:27]
