@@ -120,6 +120,7 @@ import { registerAgentSkillCommands } from './agentSkills/commands';
 import { TemplateManager, registerTemplateCommands } from './templates';
 import { registerManuscriptCommands } from './manuscript';
 import { initializeLogging, extensionLogger, getLoggingService } from './utils/logger';
+import { refreshCliLink } from './cli/linkRefresh';
 import { recordActivationFailure, getActivationFailures } from './utils/activationStatus';
 import { registerKeybindingConflictCheck } from './utils/keybindingConflicts';
 import { registerScimaxUriHandler } from './utils/uriHandler';
@@ -206,6 +207,24 @@ async function activateScimax(context: vscode.ExtensionContext) {
     // Initialize logging first - errors will be visible in status bar
     initializeLogging(context);
     extensionLogger.info('Extension activating...');
+
+    // Keep an `npm link`ed `scimax` command pointing at this version (issue #97).
+    // Off the activation path: it only stats a few files.
+    setTimeout(() => activationStep('refreshCliLink', () => {
+        if (!vscode.workspace.getConfiguration('scimax.cli').get<boolean>('refreshLinkOnUpdate', true)) return;
+        const result = refreshCliLink(context.extensionPath);
+        extensionLogger.debug('CLI link check', { ...result });
+        if (result.status === 'refreshed') {
+            extensionLogger.info(`Repointed the scimax CLI link ${result.link} at ${context.extensionPath}`);
+            vscode.window.showInformationMessage('Scimax: the `scimax` command-line tool now uses this version of the extension.');
+        } else if (result.status === 'failed') {
+            extensionLogger.warn(`Could not repoint the scimax CLI link ${result.link}: ${result.error}`);
+            vscode.window.showWarningMessage(
+                `Scimax: the \`scimax\` command-line link (${result.link}) points at an old version and could not be updated: ${result.error}. ` +
+                'Run `npm link` in the extension folder to fix it.'
+            );
+        }
+    }), 2000);
 
     // The directories below come from settings, which VS Code's Settings Sync shares
     // between machines. A path that only exists on one machine is a common source of

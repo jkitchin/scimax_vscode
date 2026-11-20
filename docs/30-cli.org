@@ -31,7 +31,7 @@ node out/cli/index.js --help
 npx scimax --help
 #+end_src
 
-** Global Installation
+** 👀 Global Installation
 
 To use ~scimax~ from anywhere:
 
@@ -47,6 +47,29 @@ To unlink later:
 #+begin_src bash
 npm unlink scimax-vscode
 #+end_src
+
+*** ⚠️ Keeping the link working after updates
+
+VS Code installs each version of the extension in a new folder
+(=~/.vscode/extensions/jkitchin.scimax-vscode-<version>=) and deletes the old
+one, which used to break a linked =scimax= command after every update. Run
+=npm link= once in the installed extension's folder:
+
+#+begin_src bash
+cd ~/.vscode/extensions/jkitchin.scimax-vscode-*/
+npm link
+#+end_src
+
+From then on, when VS Code starts the updated extension, Scimax repoints the
+link at the new folder and makes the CLI script executable again, and says so
+in a notification. Nothing is done when there is no link, and a link to some
+other folder, such as a development checkout, is left alone. Turn this off with
+~scimax.cli.refreshLinkOnUpdate~ (see [[file:26-configuration.org::*CLI Settings][CLI Settings]]).
+
+Scimax looks for the link in npm's global prefixes: ~npm_config_prefix~,
+~prefix=~ in =~/.npmrc=, and the prefix of each =node= on =PATH=. If the
+notification says the link could not be updated, run =npm link= in the new
+extension folder by hand.
 
 * ✅ Configuration
 CLOSED: [2026-04-12 Sun 19:48]

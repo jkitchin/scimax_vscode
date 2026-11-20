@@ -1,4 +1,7 @@
 import { describe, it, expect } from 'vitest';
+import * as fs from 'fs';
+import * as os from 'os';
+import * as path from 'path';
 import { exportToMarp, parseHeaderArgs, yamlScalar } from '../orgExportMarp';
 
 const org = (...lines: string[]) => lines.join('\n') + '\n';
@@ -109,6 +112,42 @@ describe('exportToMarp', () => {
         expect(md).toContain('theme: gaia');
         expect(md).toContain('paginate: false');
         expect(md).toContain('footer: CMU');
+    });
+
+    it('passes #+MARP_STYLE through as the style directive (issue #97)', () => {
+        const md = exportToMarp(org('#+MARP_STYLE: section { align-content: start; }', '* A'));
+        expect(md.split('\n---\n')[0]).toContain('style: "section { align-content: start; }"');
+    });
+
+    it('inlines #+MARP_CSS files into style, before #+MARP_STYLE (issue #97)', () => {
+        const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'marp-css-'));
+        try {
+            fs.writeFileSync(path.join(dir, 'ggg.css'), 'section {\n  color: red;\n}\n\nh1 { color: blue; }\n');
+            const md = exportToMarp(org(
+                '#+MARP_CSS: ggg.css',
+                '#+MARP_STYLE: section { align-content: start; }',
+                '* A',
+            ), { baseDir: dir });
+            const front = md.split('\n---\n')[0];
+            expect(front).toContain([
+                'style: |',
+                '  /* ggg.css */',
+                '  section {',
+                '    color: red;',
+                '  }',
+                '',
+                '  h1 { color: blue; }',
+                '  section { align-content: start; }',
+            ].join('\n'));
+            expect(front).not.toMatch(/^css:/m);
+        } finally {
+            fs.rmSync(dir, { recursive: true, force: true });
+        }
+    });
+
+    it('notes a #+MARP_CSS file it cannot read', () => {
+        const md = exportToMarp(org('#+MARP_CSS: missing.css', '* A'), { baseDir: os.tmpdir() });
+        expect(md).toContain('style: |\n  /* MARP_CSS: missing.css could not be read */');
     });
 
     it('turns the title slide and fragments off with #+OPTIONS', () => {

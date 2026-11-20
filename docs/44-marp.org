@@ -1542,7 +1542,7 @@ Fragment sections (~***~ headings) are raw HTML. A deck with ~presenter: true~
 (the default) always allows HTML. For other decks, turn on
 ~scimax.marp.enableHtml~, or the section shows all at once.
 
-** Keywords
+** 👀 Keywords
 
 Keywords in the file override the [[*Org export settings][settings]].
 
@@ -1555,9 +1555,26 @@ Keywords in the file override the [[*Org export settings][settings]].
 | ~#+MARP_PRESENTER: offline~             | ~presenter: offline~ (~nil~ for none)             |
 | ~#+MARP_SIZE: 4:3~                      | Any other ~MARP_X~ becomes ~x~ (camelCase)        |
 | ~#+MARP_FRONT_MATTER: key: value~       | A raw front matter line                           |
+| ~#+MARP_STYLE: section { color: red; }~ | ~style:~, CSS for this deck on top of its theme   |
+| ~#+MARP_CSS: tweaks.css~                | The file's CSS copied into ~style:~               |
 | ~#+OPTIONS: marp-title-slide:nil~       | No title slide                                    |
 | ~#+OPTIONS: marp-fragments:nil~         | Plain ~-~ and ~1.~ lists, no fragment sections    |
 | ~#+PROPERTY: header-args :exports both~ | Default header arguments for source blocks        |
+
+~#+MARP_STYLE:~ and ~#+MARP_CSS:~ adjust one deck without writing or
+registering a [[*Custom themes][custom theme]]. ~#+MARP_CSS:~ reads the file
+(relative to the org file) at export and copies its CSS into the deck's
+~style:~ front matter, so the exported ~.md~ needs no other file. Repeat the
+keyword for more files; they go in order, before any ~#+MARP_STYLE:~, so a
+one-line style can override them. Relative ~url()~ paths in the CSS are read
+from the deck's folder. A file that cannot be read leaves a CSS comment
+saying so.
+
+#+begin_src org
+,#+MARP_THEME: scimax
+,#+MARP_CSS: tweaks.css
+,#+MARP_STYLE: section { align-content: start; }
+#+end_src
 
 ** Slide properties and tags
 

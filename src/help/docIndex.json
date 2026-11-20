@@ -1,5 +1,5 @@
 {
-  "buildDate": "2026-11-19T17:59:12.946Z",
+  "buildDate": "2026-11-20T13:17:32.442Z",
   "count": 3820,
   "entries": [
     {
@@ -77037,7 +77037,7 @@
       "heading": "Fixing the Conflict",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 653,
+      "line": 657,
       "content": "Remove the conflicting chords in your user =keybindings.json= (=Preferences: Open Keyboard Shortcuts (JSON)=). For Magit, you can rebind status to the Emacs Magit key, =C-x g=: #+begin_src json [ { \"key\": \"alt+x g\",      \"command\": \"-magit.status\" }, { \"key\": \"alt+x ctrl+g\", \"command\": \"-magit.dispatch\" }, { \"key\": \"alt+x alt+g\",  \"command\": \"-magit.file-popup\" }, { \"key\": \"ctrl+x g\",     \"command\": \"magit.status\" } ] #+end_src",
       "path": [
         "Kill Ring (Emacs-style)"
@@ -77073,7 +77073,7 @@
       "heading": "Related Topics",
       "level": 1,
       "file": "24-keybindings.org",
-      "line": 668,
+      "line": 672,
       "content": "- [[file:25-commands.org::#kill-ring][Kill Ring commands]] - [[file:26-configuration.org][Configuration]] (=scimax.killRing.maxSize=) - Mark Ring (above), for setting the region with =C-SPC=",
       "path": [],
       "commands": [
@@ -77102,7 +77102,7 @@
       "heading": "Rectangle Commands (Emacs-style)",
       "level": 1,
       "file": "24-keybindings.org",
-      "line": 674,
+      "line": 678,
       "content": "Emacs-style rectangle editing commands. A rectangle is defined by the column range and line range of the current selection. | Key         | Action                                | |-------------+---------------------------------------| | C-x r k     | Kill rectangle (save to rect clip)    | | C-x r M-w   | Copy rectangle (no delete)            | | C-x r d     | Delete rectangle (no save)            | | C-x r y     | Yank rectangle at point               | | C-x r o     | Open rectangle (insert b",
       "path": [],
       "commands": [],
@@ -77137,7 +77137,7 @@
       "heading": "Speed Commands",
       "level": 1,
       "file": "24-keybindings.org",
-      "line": 691,
+      "line": 695,
       "content": "Speed commands are single-key shortcuts available when the cursor is at the *beginning* of a heading (the first character of the heading line). They must be enabled in settings (scimax.speedCommands.enabled).",
       "path": [],
       "commands": [
@@ -77165,7 +77165,7 @@
       "heading": "Navigation Speed Commands",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 695,
+      "line": 699,
       "content": "| Key | Action                            | |-----+-----------------------------------| | n   | Next heading (same level)         | | p   | Previous heading (same level)     | | f   | Next sibling heading              | | b   | Previous sibling heading          | | u   | Parent heading (up one level)     | | j   | Jump to heading (quick picker)    | | g   | Goto menu (additional navigation) |",
       "path": [
         "Speed Commands"
@@ -77198,7 +77198,7 @@
       "heading": "Visibility Speed Commands",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 707,
+      "line": 711,
       "content": "| Key   | Action                            | |-------+-----------------------------------| | <tab> | Toggle fold (same as regular tab) | | c     | Cycle global fold                 | | C     | Show children only                | | o     | Overview (collapse all)           | | 1     | Show level 1 headings             | | 2     | Show level 2 headings             | | 3     | Show level 3 headings             | | 0     | Show all headings                 | | N     | Narrow to subtree             ",
       "path": [
         "Speed Commands"
@@ -77232,7 +77232,7 @@
       "heading": "Structure Editing Speed Commands",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 722,
+      "line": 726,
       "content": "| Key | Action               | |-----+----------------------| | l   | Promote heading only | | r   | Demote heading only  | | L   | Promote subtree      | | R   | Demote subtree       | | U   | Move subtree up      | | D   | Move subtree down    |",
       "path": [
         "Speed Commands"
@@ -77259,7 +77259,7 @@
       "heading": "\"TODO\" & Content Speed Commands",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 733,
+      "line": 737,
       "content": "| Key | Action                 | |-----+------------------------| | t   | Cycle TODO state       | | d   | Insert DEADLINE        | | s   | Insert SCHEDULED       | | e   | Set effort estimate    | | :   | Set tags               | | P   | Set property           | | I   | Clock in               | | O   | Clock out              |",
       "path": [
         "Speed Commands"
@@ -77292,7 +77292,7 @@
       "heading": "Editing Speed Commands",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 746,
+      "line": 750,
       "content": "| Key | Action                  | |-----+-------------------------| | k   | Kill (cut) subtree      | | y   | Yank (paste) subtree    | | w   | Refile subtree          | | W   | Clone subtree           | | m   | Mark (select) subtree   | | @   | Mark subtree (alt)      | | ^   | Sort entries            | | a   | Archive subtree         | | A   | Toggle archive tag      | | $   | Archive to sibling      | | E   | Email heading (org)     |",
       "path": [
         "Speed Commands"
@@ -77326,7 +77326,7 @@
       "heading": "Other Speed Commands",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 762,
+      "line": 766,
       "content": "| Key | Action                   | |-----+--------------------------| | ?   | Show speed commands help | | /   | Show speed commands help |",
       "path": [
         "Speed Commands"
@@ -77347,7 +77347,7 @@
       "heading": "BibTeX Speed Commands",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 769,
+      "line": 773,
       "content": "CLOSED: [2026-01-19 Mon 18:18] Speed commands for BibTeX files, active at column 0 of @entry lines (e.g., =@article{=, =@book{=).",
       "path": [
         "Speed Commands"
@@ -77374,7 +77374,7 @@
       "heading": "Navigation",
       "level": 3,
       "file": "24-keybindings.org",
-      "line": 774,
+      "line": 778,
       "content": "CLOSED: [2026-01-19 Mon 18:18] | Key | Action         | |-----+----------------| | n   | Next entry     | | p   | Previous entry | | j   | Jump to entry  |",
       "path": [
         "Speed Commands",
@@ -77401,7 +77401,7 @@
       "heading": "Formatting",
       "level": 3,
       "file": "24-keybindings.org",
-      "line": 783,
+      "line": 787,
       "content": "CLOSED: [2026-01-19 Mon 18:18] | Key | Action              | |-----+---------------------| | s   | Sort fields         | | d   | Downcase entry      | | t   | Title case title    | | S   | Sentence case title | | c   | Clean/format entry  |",
       "path": [
         "Speed Commands",
@@ -77432,7 +77432,7 @@
       "heading": "Wrap/Strip Braces (Case Protection)",
       "level": 4,
       "file": "24-keybindings.org",
-      "line": 794,
+      "line": 798,
       "content": "CLOSED: [2026-01-21 Wed 08:02] | Key         | Action                                      | |-------------+---------------------------------------------| | C-S-]       | Wrap selection or word at cursor in braces  | | C-S-[       | Strip braces from selection or word         | Wraps text in ={}= for case protection in BibTeX titles (e.g., ={NASA}=, ={Python}=). Works anywhere in the file, not just at entry start.",
       "path": [
         "Speed Commands",
@@ -77470,7 +77470,7 @@
       "heading": "Access",
       "level": 3,
       "file": "24-keybindings.org",
-      "line": 804,
+      "line": 808,
       "content": "CLOSED: [2026-01-19 Mon 18:18] | Key | Action               | |-----+----------------------| | o   | Open PDF             | | u   | Open URL/DOI         | | N   | Open notes           | | g   | Google Scholar       | | x   | CrossRef             | | w   | Web of Science       |",
       "path": [
         "Speed Commands",
@@ -77502,7 +77502,7 @@
       "heading": "OpenAlex Integration",
       "level": 3,
       "file": "24-keybindings.org",
-      "line": 816,
+      "line": 820,
       "content": "CLOSED: [2026-01-19 Mon 18:18] | Key | Action                        | |-----+-------------------------------| | C   | Show citing works (OpenAlex)  | | R   | Show related works (OpenAlex) | | r   | Show references (OpenAlex)    |",
       "path": [
         "Speed Commands",
@@ -77531,7 +77531,7 @@
       "heading": "Actions",
       "level": 3,
       "file": "24-keybindings.org",
-      "line": 825,
+      "line": 829,
       "content": "CLOSED: [2026-01-19 Mon 18:18] | Key | Action                    | |-----+---------------------------| | y   | Copy citation key         | | b   | Copy BibTeX entry         | | B   | Strip braces from entry   | | k   | Delete entry              | | K   | Generate citation key     | | U   | Update from web           | | N   | Open notes for entry      | | A   | Toggle journal abbreviation | | ?   | Show help                 |",
       "path": [
         "Speed Commands",
@@ -77566,7 +77566,7 @@
       "heading": "Toggle Speed Commands",
       "level": 1,
       "file": "24-keybindings.org",
-      "line": 840,
+      "line": 844,
       "content": "CLOSED: [2026-01-19 Mon 18:19] | Key       | Action                       | |-----------+------------------------------| | C-c C-x s | Toggle speed commands on/off |",
       "path": [],
       "commands": [],
@@ -77593,7 +77593,7 @@
       "heading": "Additional Notes",
       "level": 1,
       "file": "24-keybindings.org",
-      "line": 847,
+      "line": 851,
       "content": "CLOSED: [2026-01-19 Mon 18:19]",
       "path": [],
       "commands": [],
@@ -77611,7 +77611,7 @@
       "heading": "Context-Dependent Keybindings",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 850,
+      "line": 854,
       "content": "Many keybindings are context-aware and behave differently depending on cursor position: - C-c C-c toggles checkboxes normally, sets tags on a headline line (like C-c C-q; on a statistics cookie it updates the cookie instead), executes source blocks inside code blocks, aligns a table in a table row, recalculates tables on TBLFM lines, and runs a Marp deck's ~```python run~ cell in the Python panel - S-<arrow> keys modify timestamps normally, but transpose/sort citations when on a citation - M-S-<",
       "path": [
         "Additional Notes"
@@ -77649,7 +77649,7 @@
       "heading": "When Conditions",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 859,
+      "line": 863,
       "content": "CLOSED: [2026-01-19 Mon 18:19] Some keybindings only work in specific contexts: - Org-mode/Markdown files: Most document structure commands - On headings: Folding, promotion, demotion - In tables: Table-specific commands - In source blocks: Block execution - At heading start: Speed commands",
       "path": [
         "Additional Notes"
@@ -77683,7 +77683,7 @@
       "heading": "Mac vs Windows/Linux",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 869,
+      "line": 873,
       "content": "CLOSED: [2026-01-19 Mon 18:19] Most keybindings use C- (Ctrl) on all platforms to match Emacs conventions. Exceptions where Mac uses s- (Cmd): - s-S-j (journal) - s-<return> (execute/insert heading) - s-S-k (delete citation) - s-S-r (reload window) - C-s-v (database menu)",
       "path": [
         "Additional Notes"
@@ -77719,7 +77719,7 @@
       "heading": "LaTeX Navigation",
       "level": 1,
       "file": "24-keybindings.org",
-      "line": 879,
+      "line": 883,
       "content": "CLOSED: [2026-01-19 Mon 18:20] These keybindings are active in LaTeX files (=.tex=):",
       "path": [],
       "commands": [],
@@ -77740,7 +77740,7 @@
       "heading": "Section Navigation",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 884,
+      "line": 888,
       "content": "| Key     | Action                   | |---------+--------------------------| | C-c C-n | Next section             | | C-c C-p | Previous section         | | C-c C-u | Parent section           | | C-c C-f | Next sibling section     | | C-c C-b | Previous sibling section | | C-c C-j | Jump to any section      |",
       "path": [
         "LaTeX Navigation"
@@ -77779,7 +77779,7 @@
       "heading": "Structure Editing",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 895,
+      "line": 899,
       "content": "CLOSED: [2026-01-19 Mon 18:20] | Key              | Action                     | |------------------+----------------------------| | Alt+Left         | Promote section            | | Alt+Right        | Demote section             | | Alt+Shift+Left   | Promote subtree            | | Alt+Shift+Right  | Demote subtree             | | Alt+Up           | Move section up            | | Alt+Down         | Move section down          | | C-c @            | Mark (select) section      |",
       "path": [
         "LaTeX Navigation"
@@ -77821,7 +77821,7 @@
       "heading": "Environment Commands",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 908,
+      "line": 912,
       "content": "| Key     | Action                        | |---------+-------------------------------| | C-c C-e | Select environment            | | C-c E   | Change environment type       | | C-c w   | Wrap selection in environment | | C-c *   | Toggle starred variant        | | C-c %   | Jump to matching begin/end    | | C-c l   | Jump to label                 | | C-c C-l | Add label to environment      |",
       "path": [
         "LaTeX Navigation"
@@ -77859,7 +77859,7 @@
       "heading": "Folding",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 920,
+      "line": 924,
       "content": "CLOSED: [2026-01-19 Mon 18:20] | Key       | Action            | |-----------+-------------------| | Tab       | Toggle fold       | | Shift+Tab | Cycle global fold |",
       "path": [
         "LaTeX Navigation"
@@ -77889,7 +77889,7 @@
       "heading": "Compile and Preview",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 928,
+      "line": 932,
       "content": "CLOSED: [2026-01-19 Mon 18:20] | Key       | Action                      | |-----------+-----------------------------| | C-c C-c   | Compile document            | | C-c v     | View PDF (built-in panel)   | | C-c C-v   | View PDF (external viewer)  | | C-c C-a   | Compile and view PDF        | | C-c g     | SyncTeX forward search      | | C-c C-k   | Clean auxiliary files       | See [[file:33-latex-navigation.org][LaTeX Navigation and Structure]] for complete documentation.",
       "path": [
         "LaTeX Navigation"
@@ -77929,7 +77929,7 @@
       "heading": "LaTeX Speed Commands",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 942,
+      "line": 946,
       "content": "CLOSED: [2026-01-24 Sat 17:39] Speed commands active at the start of =\\section=, =\\subsection=, or =\\begin{}= lines:",
       "path": [
         "LaTeX Navigation"
@@ -77956,7 +77956,7 @@
       "heading": "Section Speed Commands",
       "level": 3,
       "file": "24-keybindings.org",
-      "line": 947,
+      "line": 951,
       "content": "| Key | Action             | |-----+--------------------| | n   | Next section       | | p   | Previous section   | | f   | Forward sibling    | | b   | Backward sibling   | | u   | Up to parent       | | j   | Jump to section    | | U   | Move section up    | | D   | Move section down  | | <   | Promote section    | | >   | Demote section     | | I   | Insert section     | | N   | Narrow to section  | | W   | Widen (show all)   | | /   | Show help          |",
       "path": [
         "LaTeX Navigation",
@@ -77991,7 +77991,7 @@
       "heading": "Environment Speed Commands",
       "level": 3,
       "file": "24-keybindings.org",
-      "line": 966,
+      "line": 970,
       "content": "| Key | Action                  | |-----+-------------------------| | n   | Next environment        | | p   | Previous environment    | | j   | Jump to environment     | | s   | Select environment      | | c   | Change environment      | | k   | Kill environment        | | w   | Wrap in environment     | | u   | Unwrap environment      | | *   | Toggle starred variant  | | l   | Add label               | | C   | Add caption             | | i   | Environment info        | | /   | Show help       ",
       "path": [
         "LaTeX Navigation",
@@ -78026,7 +78026,7 @@
       "heading": "Quick Reference Card",
       "level": 1,
       "file": "24-keybindings.org",
-      "line": 984,
+      "line": 988,
       "content": "CLOSED: [2026-01-19 Mon 18:20]",
       "path": [],
       "commands": [],
@@ -78045,7 +78045,7 @@
       "heading": "Most Common Commands",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 987,
+      "line": 991,
       "content": "CLOSED: [2026-01-19 Mon 18:20] | Command            | Keybinding   | |--------------------+--------------| | Open journal       | C-S-j        | | Execute code block | C-<return>   | | Cycle TODO         | C-c C-t      | | Insert timestamp   | C-c .        | | Insert link        | C-c C-l      | | Insert citation    | C-c ]        | | Export dispatcher  | C-c C-e      | | Jump to heading    | C-c C-j      | | Fuzzy search       | C-c s        | | Hydra menu         | C-c m        |",
       "path": [
         "Quick Reference Card"
@@ -78086,7 +78086,7 @@
       "heading": "Most Common Speed Commands",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 1003,
+      "line": 1007,
       "content": "CLOSED: [2026-10-30 Fri 08:02] | Speed Key | Action                 | |-----------+------------------------| | n/p       | Next/Previous heading  | | f/b       | Forward/Back sibling   | | u         | Up to parent           | | j         | Jump to heading        | | t         | Cycle TODO             | | l/r       | Promote/Demote heading |",
       "path": [
         "Quick Reference Card"
@@ -78119,7 +78119,7 @@
       "heading": "Related Topics",
       "level": 1,
       "file": "24-keybindings.org",
-      "line": 1015,
+      "line": 1019,
       "content": "- [[file:25-commands.org][Commands Reference]] - every command, with or without a key - [[file:23-speed-commands.org][Speed Commands]] - single keys at the start of a heading - [[file:26-configuration.org][Configuration]] - settings that change key behaviour - [[file:44-marp.org][Marp Slides]] - Slide Sorter, presenter and export keys - [[file:46-org-preview.org][Org Preview]] - the live preview keys - [[file:25-commands.org::*Troubleshooting and Diagnostics][Troubleshooting and Diagnostics]] - ",
       "path": [],
       "commands": [],
@@ -78151,7 +78151,7 @@
       "heading": "Further Help",
       "level": 1,
       "file": "24-keybindings.org",
-      "line": 1024,
+      "line": 1028,
       "content": "CLOSED: [2026-01-19 Mon 18:20] - Use C-c m to open the Hydra menu for guided command discovery - Use M-x to search all commands by name - Enable speed commands help with ? when at heading start - See [[file:00-index.org][Documentation Index]] for comprehensive guides",
       "path": [],
       "commands": [],
@@ -78186,7 +78186,7 @@
       "heading": "Navigation",
       "level": 1,
       "file": "24-keybindings.org",
-      "line": 1032,
+      "line": 1036,
       "content": "CLOSED: [2026-01-19 Mon 18:20] - Previous: [[file:23-speed-commands.org][Speed Commands]] - Index: [[file:00-index.org][Documentation Index]] - Next: [[file:25-commands.org][Commands]]",
       "path": [],
       "commands": [],
@@ -111312,7 +111312,7 @@
       "heading": "Slide properties and tags",
       "level": 2,
       "file": "44-marp.org",
-      "line": 1562,
+      "line": 1579,
       "content": "| Heading property or tag | Effect                                         | |-------------------------+------------------------------------------------| | ~:MARP_FIT: t~          | A fitted heading (~# <!-- fit -->~)            | | ~:MARP_CLASS: invert~   | ~<!-- _class: invert -->~ on that slide        | | ~:MARP_<X>: value~      | Any other ~<!-- _x: value -->~ local directive | | ~:hidden:~ tag          | A [[*Hidden slides][hidden slide]] (or ~:MARP_HIDDEN: t~)          |",
       "path": [
         "Writing Slides in Org"
@@ -111346,7 +111346,7 @@
       "heading": "Source blocks",
       "level": 2,
       "file": "44-marp.org",
-      "line": 1571,
+      "line": 1588,
       "content": "~:exports~ works as in org: ~code~ (the default), ~results~, ~both~ or ~none~. Results in a ~#+RESULTS:~ block or ~: output~ lines are exported with ~both~ or ~results~. To make a [[*Live Python cells][live Python cell]], add ~:run t~ (or ~:marp-run t~). Use ~:run auto~ to run it when the slide opens and ~:run hidden~ to hide the code. For full control, ~:marp \"python run auto\"~ (or ~:python \"python run\"~, the =ox-marp= form) sets the fence's info string. #+begin_example ,#+begin_src jupyter-pyt",
       "path": [
         "Writing Slides in Org"
@@ -111380,7 +111380,7 @@
       "heading": "Images",
       "level": 2,
       "file": "44-marp.org",
-      "line": 1589,
+      "line": 1606,
       "content": "A link to an image becomes a Marp image. ~#+ATTR_MARP:~ adds Marp's image options: #+begin_example ,#+ATTR_MARP: :bg right:40% :width 300px [[file:figures/plot.png]] #+end_example gives ~![bg right:40% w:300px](figures/plot.png)~. ~:bg~ alone makes a background image, ~:height~ becomes ~h:~, ~:alt~ sets the alt text and any other word (~sepia~, ~blur~) is kept. Without ~#+ATTR_MARP:~, the width and height of ~#+ATTR_HTML:~ or ~#+ATTR_ORG:~ are used. A ~#+CAPTION:~ becomes an italic line under th",
       "path": [
         "Writing Slides in Org"
@@ -111414,7 +111414,7 @@
       "heading": "Movies, sound and YouTube",
       "level": 2,
       "file": "44-marp.org",
-      "line": 1605,
+      "line": 1622,
       "content": "A link with no description to a movie (~.mp4~, ~.webm~, ~.mov~, ~.m4v~, ~.ogv~) or a sound (~.mp3~, ~.m4a~, ~.wav~, ~.ogg~, ~.flac~, …) plays on the slide. So does a YouTube watch, ~youtu.be~, shorts, live or embed link. Its ~t=~ time (~90~, ~1m30s~) becomes the player's ~start=~: #+begin_example [[file:media/talk.mp4#t=95,120]] [[https://www.youtube.com/watch?v=VIDEO_ID&t=1m30s]] #+end_example gives #+begin_src markdown <video src=\"media/talk.mp4#t=95,120\" controls></video> <iframe src=\"https:/",
       "path": [
         "Writing Slides in Org"
@@ -111448,7 +111448,7 @@
       "heading": "Org export settings",
       "level": 2,
       "file": "44-marp.org",
-      "line": 1630,
+      "line": 1647,
       "content": "| Setting                                   | Default   | Effect                                      | |-------------------------------------------+-----------+---------------------------------------------| | ~scimax.export.marp.theme~                | ~default~ | Theme                                       | | ~scimax.export.marp.headingDivider~       | ~2~       | Heading levels that start slides            | | ~scimax.export.marp.paginate~             | ~true~    | Slide numbers             ",
       "path": [
         "Writing Slides in Org"
@@ -111481,7 +111481,7 @@
       "heading": "Exporting Slides",
       "level": 1,
       "file": "44-marp.org",
-      "line": 1646,
+      "line": 1663,
       "content": "Press =C-c C-e= in a Marp deck (or click the export button in the Marp Slides view's title bar) for the Marp export menu. In other Markdown files =C-c C-e= still opens the Markdown (Pandoc) export menu, which is also =m= in this one. Exports are written next to the deck, and the deck is saved first. When an export finishes, a notification offers to open the file or show it in its folder. | Key | Export                                               | Output                 | Needs                ",
       "path": [],
       "commands": [],
@@ -111515,7 +111515,7 @@
       "heading": "Marp CLI",
       "level": 2,
       "file": "44-marp.org",
-      "line": 1673,
+      "line": 1690,
       "content": "All exports except =d= run [[https://github.com/marp-team/marp-cli][Marp CLI]], the tool behind Marp for VS Code's own export. Scimax uses ~scimax.marp.cliPath~ if set, then ~marp~ on the PATH (=npm install -g @marp-team/marp-cli=). Failing both, it offers to run it with ~npx~, which downloads Marp CLI the first time. It asks once and remembers the answer. PDF, PowerPoint and image exports render the slides in Google Chrome, Microsoft Edge or Firefox, so one of them must be installed. Local imag",
       "path": [
         "Exporting Slides"
@@ -111551,7 +111551,7 @@
       "heading": "Which PowerPoint",
       "level": 2,
       "file": "44-marp.org",
-      "line": 1688,
+      "line": 1705,
       "content": "There are three PowerPoint exports: |                        | PowerPoint (=s=) | Editable, Marp (=e=)    | Editable, Pandoc (=d=)                  | |------------------------+------------------+-------------------------+-----------------------------------------| | Looks like the preview | Exactly          | Mostly                  | No: PowerPoint default or your template | | Text editable          | No (pictures)    | Yes                     | Yes                                     | | Presen",
       "path": [
         "Exporting Slides"
@@ -111584,7 +111584,7 @@
       "heading": "Google Slides",
       "level": 2,
       "file": "44-marp.org",
-      "line": 1713,
+      "line": 1730,
       "content": "Google Slides has no import from Marp, but it opens PowerPoint files, and editable ones import best. The =g= export makes Marp's editable PowerPoint when LibreOffice is installed, otherwise the Pandoc one, otherwise (after asking) the picture PowerPoint. The notification links to Google Drive: upload the file (New > File upload), then open it with Google Slides.",
       "path": [
         "Exporting Slides"
@@ -111618,7 +111618,7 @@
       "heading": "Export settings",
       "level": 2,
       "file": "44-marp.org",
-      "line": 1721,
+      "line": 1738,
       "content": "| Setting                          | Default | Effect                                                                | |----------------------------------+---------+-----------------------------------------------------------------------| | ~scimax.marp.cliPath~            | (empty) | Marp CLI executable; empty means ~marp~ on the PATH, else ~npx~       | | ~scimax.marp.browserPath~        | (empty) | Browser for PDF, PowerPoint and images; empty lets Marp find one      | | ~scimax.marp.libreOffi",
       "path": [
         "Exporting Slides"
@@ -111656,7 +111656,7 @@
       "heading": "Configuration",
       "level": 1,
       "file": "44-marp.org",
-      "line": 1731,
+      "line": 1748,
       "content": "| Setting                       | Default   | Effect                                                              | |-------------------------------+-----------+---------------------------------------------------------------------| | ~scimax.marp.themes~          | ~[]~      | Custom theme CSS files for thumbnails, preview and exports          | | ~scimax.marp.enableHtml~      | ~false~   | Allow all raw HTML in slides                                        | | ~scimax.marp.mathTypesetting~ | ~m",
       "path": [],
       "commands": [
@@ -111688,7 +111688,7 @@
       "heading": "Marp CLI configuration files",
       "level": 2,
       "file": "44-marp.org",
-      "line": 1751,
+      "line": 1768,
       "content": "A deck set up for Marp CLI often keeps its themes and options in a configuration file beside it rather than in VS Code settings: #+begin_src yaml # .marprc.yml themeSet: ./theme html: true #+end_src Scimax reads the same file, so the thumbnails, the slide preview, the Markdown preview and exports show the deck the way Marp CLI renders it. It uses the nearest ~.marprc~, ~.marprc.json~, ~.marprc.yaml~, ~.marprc.yml~ or ~marp~ key of ~package.json~, looking in the deck's folder and then each folder",
       "path": [
         "Configuration"
@@ -111722,7 +111722,7 @@
       "heading": "Double-click in the Markdown preview",
       "level": 2,
       "file": "44-marp.org",
-      "line": 1780,
+      "line": 1797,
       "content": "Double-click in the Markdown preview follows VS Code's own setting for double-clicking in the Markdown preview. Current VS Code releases turn it off by default, so enable it once in your user settings: #+begin_src json \"markdown.preview.doubleClickToSwitchToEditor\": true #+end_src | Setting                                        | Default | Effect                                      | |------------------------------------------------+---------+---------------------------------------------| | ~m",
       "path": [
         "Configuration"
@@ -111756,7 +111756,7 @@
       "heading": "How It Works",
       "level": 1,
       "file": "44-marp.org",
-      "line": 1799,
+      "line": 1816,
       "content": "",
       "path": [],
       "commands": [],
@@ -111769,7 +111769,7 @@
       "heading": "Slides in the Markdown preview",
       "level": 2,
       "file": "44-marp.org",
-      "line": 1801,
+      "line": 1818,
       "content": "Scimax contributes a markdown-it plugin (~markdown.markdownItPlugins~, ~src/marp/marpPreviewPlugin.ts~). For a file with ~marp: true~ in its front matter it parses and renders with Marp Core instead of plain markdown-it, adds VS Code's ~code-line~ class and ~data-line~ source line to each block (for scroll sync and double-click), and puts the deck's theme CSS in front. The preview script ~media/marp/marpPreviewMode.js~ then turns off VS Code's own Markdown styles for that preview, since they wou",
       "path": [
         "How It Works"
@@ -111803,7 +111803,7 @@
       "heading": "Double-click in the Markdown preview",
       "level": 2,
       "file": "44-marp.org",
-      "line": 1818,
+      "line": 1835,
       "content": "Scimax contributes a preview script (~media/marp/marpPreview.js~) through the ~markdown.previewScripts~ contribution point. Marp already tags each rendered element with its source line (~data-line~). On double-click inside a slide the script: 1. finds the nearest element carrying a line number; 2. adds the number of source line breaks between the start of that element and the caret (and one for the opening fence of a code block); 3. sends the preview's own ~didClick~ message with that line, so V",
       "path": [
         "How It Works"
@@ -111837,7 +111837,7 @@
       "heading": "Related Topics",
       "level": 1,
       "file": "44-marp.org",
-      "line": 1837,
+      "line": 1854,
       "content": "- [[file:30-markdown-compatibility.org][Markdown Compatibility]] - Scimax editing features in Markdown files - [[file:45-myst-preview.org][MyST Markdown Preview]] - Jupyter Book directives and roles in the preview - [[file:41-export-beamer.org][Beamer Export]] - slides from org files via LaTeX Beamer - [[file:26-configuration.org][Configuration Reference]] - [[https://marpit.marp.app/markdown][Marpit Markdown]] - slide syntax reference",
       "path": [],
       "commands": [],
