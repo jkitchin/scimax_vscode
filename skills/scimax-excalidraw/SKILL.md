@@ -11,14 +11,24 @@ description: >-
   schematic, concept map, pipeline or workflow figure for their notes, mentions
   Excalidraw, or wants parts of a figure linked to org files, headings or other resources.
 license: MIT
-compatibility: Needs the scimax CLI (scimax-vscode extension). Clicking links in VS Code needs the Excalidraw editor extension (pomdtr.excalidraw-editor).
+compatibility: Needs the scimax CLI (scimax-vscode extension). Clicking links in VS Code needs the Excalidraw editor extension (pomdtr.excalidraw-editor). Never uses Emacs.
 metadata:
-  version: "0.1.0"
+  version: "0.1.1"
   author: John Kitchin
 allowed-tools: Bash(scimax:*) Bash(rsvg-convert:*) Bash(mkdir:*) Read Glob Grep Write Edit
 ---
 
 # Scimax Excalidraw diagrams
+
+## Tools: the scimax CLI only, never Emacs
+
+"scimax" here means the **scimax-vscode** extension and its `scimax` command-line tool, not
+Emacs Scimax. Do every org-mode operation (export, tangle, table alignment, citation checks,
+agenda, search, publishing) with the `scimax` CLI, or by reading and editing the files
+directly. **Never run `emacs`, `emacsclient`, `emacs --batch`, or any Emacs Lisp**
+(`org-table-align`, `org-export-*`, `org-babel-tangle` and so on), even if Emacs is
+installed and even when it looks quicker. Do not write an ad hoc script that imitates an
+org-mode operation either. If the CLI cannot do what is needed, tell the user and stop.
 
 ## Before You Respond
 

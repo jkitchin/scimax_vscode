@@ -10,9 +10,9 @@ description: >-
   on something or overloaded, project status, a Gantt chart or project table,
   the critical path, or wants to assign, unblock or finish a task.
 license: MIT
-compatibility: Requires the scimax CLI (installed with the scimax-vscode extension) on PATH.
+compatibility: Requires the scimax CLI (installed with the scimax-vscode extension) on PATH. Never uses Emacs.
 metadata:
-  version: "0.14.0"
+  version: "0.14.1"
   author: John Kitchin
 allowed-tools: Bash(scimax:*) Bash(code --goto:*) Read Glob Grep Write
 ---
@@ -21,6 +21,16 @@ allowed-tools: Bash(scimax:*) Bash(code --goto:*) Read Glob Grep Write
 
 Task questions are answered with **`scimax task`** — never with `scimax project`,
 which is only a folder registry with no task semantics.
+
+## Tools: the scimax CLI only, never Emacs
+
+"scimax" here means the **scimax-vscode** extension and its `scimax` command-line tool, not
+Emacs Scimax. Do every org-mode operation (export, tangle, table alignment, citation checks,
+agenda, search, publishing) with the `scimax` CLI, or by reading and editing the files
+directly. **Never run `emacs`, `emacsclient`, `emacs --batch`, or any Emacs Lisp**
+(`org-table-align`, `org-export-*`, `org-babel-tangle` and so on), even if Emacs is
+installed and even when it looks quicker. Do not write an ad hoc script that imitates an
+org-mode operation either. If the CLI cannot do what is needed, tell the user and stop.
 
 ## Before You Respond
 
