@@ -15,6 +15,7 @@ import {
     parseSceneFile,
     renderSceneSvg,
     sceneLinks,
+    stampLinkFrom,
 } from '../../excalidraw/scene';
 import { checkSceneLinks } from '../../excalidraw/linkCheck';
 
@@ -74,7 +75,7 @@ function writeScene(scene: ExcalidrawScene, out: string): void {
     if (/\.svg$/i.test(outPath)) {
         const svg = renderSceneSvg(scene, { embedScene: true });
         if (!svg) fail('Nothing to draw: the scene has no elements');
-        fs.writeFileSync(outPath, svg);
+        fs.writeFileSync(outPath, stampLinkFrom(svg, outPath));
     } else {
         fs.writeFileSync(outPath, JSON.stringify(scene, null, 2) + '\n');
     }

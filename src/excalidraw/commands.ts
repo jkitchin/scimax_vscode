@@ -6,6 +6,7 @@
  * OS, which hands it back to VS Code and to the `/org-link` route here; the
  * route follows the org link as if it were clicked in an org file.
  */
+import * as os from 'os';
 import * as path from 'path';
 import * as vscode from 'vscode';
 import { registerUriRoute } from '../utils/uriHandler';
@@ -28,6 +29,7 @@ function activeTabFile(): string | undefined {
  */
 function linkBase(from: string | undefined): string {
     const root = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath ?? process.cwd();
+    if (from === '~' || from?.startsWith('~/')) return path.join(os.homedir(), from.slice(1));
     if (from) return path.isAbsolute(from) ? from : path.join(root, from);
     return activeTabFile() ?? path.join(root, '.');
 }
