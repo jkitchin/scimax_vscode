@@ -13,9 +13,9 @@ description: >-
   "morning", "weekly review", "wrap up", "end of day", "prep for", "triage" or
   "follow up".
 license: MIT
-compatibility: Requires the scimax CLI (installed with the scimax-vscode extension) on PATH.
+compatibility: Requires the scimax CLI (installed with the scimax-vscode extension) on PATH. Never uses Emacs.
 metadata:
-  version: "0.14.2"
+  version: "0.14.3"
   author: John Kitchin
 allowed-tools: Bash(scimax:*) Bash(code --goto:*) Bash(sqlite3:*) Read Glob Grep Write
 ---
@@ -28,6 +28,16 @@ Related skills, installed alongside this one: **scimax-org** (org-mode syntax an
 **scimax-projects** (task dependencies, `scimax task`, Gantt charts, assignees),
 **scimax-presentations** (Beamer and Marp slide decks) and **scimax-excalidraw**
 (Excalidraw diagrams whose shapes link to org headings).
+
+## Tools: the scimax CLI only, never Emacs
+
+"scimax" here means the **scimax-vscode** extension and its `scimax` command-line tool, not
+Emacs Scimax. Do every org-mode operation (export, tangle, table alignment, citation checks,
+agenda, search, publishing) with the `scimax` CLI, or by reading and editing the files
+directly. **Never run `emacs`, `emacsclient`, `emacs --batch`, or any Emacs Lisp**
+(`org-table-align`, `org-export-*`, `org-babel-tangle` and so on), even if Emacs is
+installed and even when it looks quicker. Do not write an ad hoc script that imitates an
+org-mode operation either. If the CLI cannot do what is needed, tell the user and stop.
 
 ## Before You Respond
 
@@ -52,6 +62,7 @@ Related skills, installed alongside this one: **scimax-org** (org-mode syntax an
 | Export to HTML | `scimax export file.org --format html` |
 | Export to PDF | `scimax export file.org --format pdf` |
 | Tangle source blocks | `scimax tangle setup.org` |
+| Align org/Markdown tables | `scimax table align file.org` (`--line N`, `--check`) |
 | Build a Marp deck (HTML + presenter tools) | `scimax marp build talk.md --open` |
 | Check citations | `scimax cite check file.org` |
 | Extract citations | `scimax cite extract file.org` |

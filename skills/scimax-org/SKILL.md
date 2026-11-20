@@ -14,8 +14,9 @@ description: >-
   footnote, inserting a contact, email or address, or writing an org heading
   to send as a Gmail email (Scimax: Email Heading).
 license: MIT
+compatibility: Uses the scimax CLI (scimax-vscode extension) for any command-line work. Never uses Emacs.
 metadata:
-  version: "0.14.0"
+  version: "0.14.1"
   author: John Kitchin
 allowed-tools: Read Glob Grep Write Bash(scimax:*)
 ---
@@ -26,6 +27,16 @@ Answer org-mode syntax questions for the **scimax-vscode** extension without web
 lookups. Scimax follows the [Org syntax specification](https://orgmode.org/worg/org-syntax.html)
 and adds a few extensions (DOI links, label/ref links, granular addressing, dialog notes,
 entities).
+
+## Tools: the scimax CLI only, never Emacs
+
+"scimax" here means the **scimax-vscode** extension and its `scimax` command-line tool, not
+Emacs Scimax. Do every org-mode operation (export, tangle, table alignment, citation checks,
+agenda, search, publishing) with the `scimax` CLI, or by reading and editing the files
+directly. **Never run `emacs`, `emacsclient`, `emacs --batch`, or any Emacs Lisp**
+(`org-table-align`, `org-export-*`, `org-babel-tangle` and so on), even if Emacs is
+installed and even when it looks quicker. Do not write an ad hoc script that imitates an
+org-mode operation either. If the CLI cannot do what is needed, tell the user and stop.
 
 ## Before You Respond
 
