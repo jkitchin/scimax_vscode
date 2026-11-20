@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest';
+import * as path from 'path';
 import {
     normalizeScene,
     checkScene,
@@ -204,6 +205,6 @@ describe('stampLinkFrom', () => {
 
     it('drawingFromPath uses ~ inside home and an absolute path outside it', () => {
         expect(drawingFromPath('/home/u/a/b.svg', '/home/u')).toBe('~/a/b.svg');
-        expect(drawingFromPath('/srv/a/b.svg', '/home/u')).toBe('/srv/a/b.svg');
+        expect(drawingFromPath('/srv/a/b.svg', '/home/u')).toBe(path.resolve('/srv/a/b.svg'));
     });
 });
