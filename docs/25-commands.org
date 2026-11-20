@@ -867,11 +867,12 @@ Commands for debugging issues and reporting problems.
 Install the bundled scimax skills for Claude Code, VS Code (GitHub Copilot), Codex,
 Cursor and other agents. See [[file:30-cli.org::*Skill][CLI: Skill]].
 
-| Command ID                  | Description                    | Default Keybinding |
-|-----------------------------+--------------------------------+--------------------|
-| [[cmd:scimax.skills.install]] | Install AI Agent Skills        | -                  |
-| [[cmd:scimax.setLogLevel]]     | Set Logging Level          | -                  |
-| [[cmd:scimax.db.searchCapabilities]] | Show Search Capabilities | -                |
+| Command ID                       | Description               | Default Keybinding |
+|----------------------------------+---------------------------+--------------------|
+| [[cmd:scimax.skills.install]]        | Install AI Agent Skills   | -                  |
+| [[cmd:scimax.cli.install]]           | Install Command-Line Tool | -                  |
+| [[cmd:scimax.setLogLevel]]           | Set Logging Level         | -                  |
+| [[cmd:scimax.db.searchCapabilities]] | Show Search Capabilities  | -                  |
 
 * ✅ References (org-ref)
 CLOSED: [2026-01-17 Sat 12:46]

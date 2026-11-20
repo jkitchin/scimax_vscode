@@ -2328,18 +2328,6 @@ the file (~#+MARP_THEME:~ and so on) override them.
 
 See [[file:44-marp.org::*Writing Slides in Org][Writing Slides in Org]].
 
-* ⚠️ CLI Settings
-
-| Setting                        | Type    | Default | Description                                                                  |
-|--------------------------------+---------+---------+------------------------------------------------------------------------------|
-| scimax.cli.refreshLinkOnUpdate | boolean | true    | Repoint an =npm link=ed =scimax= command at the current extension on startup |
-
-When the =scimax= command was installed with =npm link= from the installed
-extension's folder, each update moves the extension to a new folder and the
-link stops working. With this setting on, Scimax repoints the link when it
-starts after an update. Links to other folders, such as a development
-checkout, are left alone. See [[file:30-cli.org::*Global Installation][Global Installation]].
-
 * Dired Settings
 
 | Setting                    | Type    | Default | Description                                                              |

@@ -33,43 +33,42 @@ npx scimax --help
 
 ** 👀 Global Installation
 
-To use ~scimax~ from anywhere:
+To use ~scimax~ from any terminal, script or cron job, run /Scimax: Install
+Command-Line Tool/ ([[cmd:scimax.cli.install]]) from the command palette once on
+each machine. It asks for a folder on your =PATH= (=~/.local/bin= by default;
+on Windows, npm's folder =%APPDATA%\npm=) and writes a small =scimax= launcher
+there. Then, in a new terminal:
 
 #+begin_src bash
-# From the extension directory
-npm link
-
-# Now available globally
 scimax --help
 #+end_src
 
-To unlink later:
+The launcher does not point at one version of the extension. VS Code installs
+each version in a new folder (=~/.vscode/extensions/jkitchin.scimax-vscode-<version>=)
+and deletes the old one, so each time it runs the launcher finds the newest
+installed version and runs that version's CLI. Updating the extension needs
+nothing redone, even before VS Code is opened again. It needs =node= on =PATH=.
+
+- If the folder is not on =PATH=, Scimax says so and offers the line to add to
+  =~/.zshrc= or =~/.bashrc=, e.g. ~export PATH="$HOME/.local/bin:$PATH"~.
+- To search another extensions folder (VS Code Insiders, a remote server), set
+  ~SCIMAX_EXTENSIONS_DIR~.
+- To uninstall, delete the =scimax= file (on Windows, =scimax.cmd= and
+  =scimax-launcher.js=).
+
+*** ⚠️ Replacing an older npm link
+
+Earlier versions of this page suggested =npm link= in the extension folder.
+That link points at one version's folder, so it broke after every update. If
+Scimax finds such a link on =PATH=, it says so once and offers to install the
+launcher in its place. You can also remove the link yourself:
+
 #+begin_src bash
-npm unlink scimax-vscode
+npm unlink -g scimax-vscode
 #+end_src
 
-*** ⚠️ Keeping the link working after updates
-
-VS Code installs each version of the extension in a new folder
-(=~/.vscode/extensions/jkitchin.scimax-vscode-<version>=) and deletes the old
-one, which used to break a linked =scimax= command after every update. Run
-=npm link= once in the installed extension's folder:
-
-#+begin_src bash
-cd ~/.vscode/extensions/jkitchin.scimax-vscode-*/
-npm link
-#+end_src
-
-From then on, when VS Code starts the updated extension, Scimax repoints the
-link at the new folder and makes the CLI script executable again, and says so
-in a notification. Nothing is done when there is no link, and a link to some
-other folder, such as a development checkout, is left alone. Turn this off with
-~scimax.cli.refreshLinkOnUpdate~ (see [[file:26-configuration.org::*CLI Settings][CLI Settings]]).
-
-Scimax looks for the link in npm's global prefixes: ~npm_config_prefix~,
-~prefix=~ in =~/.npmrc=, and the prefix of each =node= on =PATH=. If the
-notification says the link could not be updated, run =npm link= in the new
-extension folder by hand.
+=npm link= is still the way to use a development checkout of this repository:
+run it in the checkout, after =npm run compile=.
 
 * ✅ Configuration
 CLOSED: [2026-04-12 Sun 19:48]
@@ -1071,8 +1070,9 @@ crontab -e
 0 6,17 * * * /usr/local/bin/scimax db sync >> ~/.local/state/scimax/db-sync.log 2>&1
 #+end_src
 
-Use an absolute path to the binary: cron's =PATH= is minimal and will not find a
-=scimax= installed via =npm link=.
+Use an absolute path to the =scimax= launcher, and make sure cron can find
+=node=: cron's =PATH= is minimal (add a ~PATH=...~ line to the crontab if =node=
+lives somewhere like =~/.nvm=).
 
 **** Command Comparison
 

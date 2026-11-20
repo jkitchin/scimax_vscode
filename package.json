@@ -1635,6 +1635,10 @@
         "title": "Scimax: Report Issue on GitHub"
       },
       {
+        "command": "scimax.cli.install",
+        "title": "Scimax: Install Command-Line Tool"
+      },
+      {
         "command": "scimax.skills.install",
         "title": "Scimax: Install AI Agent Skills"
       },
@@ -8030,11 +8034,6 @@
           "minimum": 1,
           "maximum": 10,
           "description": "Maximum retry attempts for transient database failures (e.g., locked database)."
-        },
-        "scimax.cli.refreshLinkOnUpdate": {
-          "type": "boolean",
-          "default": true,
-          "description": "If the `scimax` command-line tool was installed with `npm link` from the installed extension, repoint the link at the current version when the extension starts, so the command keeps working after updates. Links to other folders (such as a development checkout) are left alone."
         },
         "scimax.db.maxFileSizeMB": {
           "type": "number",
