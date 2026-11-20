@@ -5,7 +5,7 @@ import { NotebookManager, Notebook, Collaborator } from './notebookManager';
 import { ProjectileManager, Project } from '../projectile/projectileManager';
 import { getDatabase } from '../database/lazyDb';
 import { notebookMapSpec } from '../excalidraw/notebookMap';
-import { normalizeScene, renderSceneSvg } from '../excalidraw/scene';
+import { normalizeScene, renderSceneSvg, stampLinkFrom } from '../excalidraw/scene';
 
 // =============================================================================
 // Pending Navigation for Cross-Window Link Opening
@@ -1111,7 +1111,7 @@ async function createNotebookMap(notebook: Notebook, notebookManager: NotebookMa
         return;
     }
     fs.mkdirSync(path.dirname(out), { recursive: true });
-    fs.writeFileSync(out, svg, 'utf8');
+    fs.writeFileSync(out, stampLinkFrom(svg, out), 'utf8');
     await vscode.commands.executeCommand('vscode.open', vscode.Uri.file(out));
     vscode.window.setStatusBarMessage(`Scimax: mapped ${Math.min(files.length, 12)} of ${files.length} org files of ${notebook.name}`, 5000);
 }

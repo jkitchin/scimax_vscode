@@ -150,7 +150,8 @@ Clicking an Excalidraw link opens the drawing in the Excalidraw visual editor.
 
 ** 👀 Existing Files
 
-When you click a link to an existing Excalidraw file:
+When you click a link to an existing Excalidraw file, or press =RET= on it
+(=[[cmd:scimax.org.dwimReturn]]=), the same thing happens:
 1. The file opens in the Scimax Excalidraw editor (=.excalidraw.png= in the
    Excalidraw extension)
 2. You can edit the drawing visually
@@ -201,6 +202,16 @@ link clicked in an org file, so every link type works: =file:= with
 =::*heading=, =::#custom-id=, =::42= (line) or =::text= searches, =id:=,
 =cite:=, =doi:=, =nb:=, =cmd:= and web links. A relative path is relative
 to the =from= file when the URI has one, and otherwise to the drawing.
+
+When an =.excalidraw.svg= is written (by =scimax excalidraw build= or
+=render=, the Notebook Map, or the editor when it saves), each org link in
+its SVG markup gets =from== set to the drawing itself, written with =~= for
+your home folder. A shape clicked outside VS Code (the SVG opened in a
+browser or Quick Look) then still resolves its relative links against the
+drawing, not whichever file is active in VS Code. The scene stored inside
+the SVG is not changed, so the editor keeps resolving against wherever the
+drawing is now. A drawing made before this change picks up =from== the next
+time it is saved, or with =scimax excalidraw render drawing.excalidraw.svg=.
 
 The first time you click such a link, VS Code may ask whether to let
 Scimax open the URI. Allow it once and choose to not be asked again.
@@ -323,8 +334,17 @@ drawing a =<figure>=.
 
 Scripts, event handlers and =javascript:= links in an SVG are removed
 before it is inlined. A link with a description, a missing file, or a
-drawing over 20 MB is exported as before (an image or a plain link). The
-live preview and clipboard export do not inline drawings.
+drawing over 20 MB is exported as before (an image or a plain link).
+Clipboard export does not inline drawings.
+
+** 👀 Drawings in the org preview
+
+The org preview (=[[cmd:scimax.org.preview.openToSide]]=) inlines drawings
+the same way, so their shapes are clickable there too. Clicking a shape
+linked to a heading opens the org file in the editor with the cursor on that
+heading (matched by its exported id or =CUSTOM_ID=). Links to Markdown files
+open the =.md= file. The drawing is not editable in the preview; open the
+link in the org file to edit it on the canvas.
 
 * 👀 Commands
 

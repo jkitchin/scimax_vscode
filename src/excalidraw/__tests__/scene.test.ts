@@ -11,6 +11,8 @@ import {
     parseOrgLinkUri,
     parseOrgLinkQuery,
     prepareSvgForHtml,
+    stampLinkFrom,
+    drawingFromPath,
 } from '../scene';
 
 const spec = {
@@ -164,5 +166,44 @@ describe('prepareSvgForHtml', () => {
         expect(out).not.toMatch(/script|onload|metadata|javascript|target=/);
         expect(out).toContain('<a href="n.html#H">');
         expect(out).toContain('<a><rect/></a>');
+    });
+});
+
+describe('stampLinkFrom', () => {
+    const link = 'file:../notes.org::*A heading';
+    const scene = normalizeScene({
+        elements: [{ id: 'a', type: 'rectangle', x: 0, y: 0, width: 100, height: 50, label: 'A', orgLink: link }],
+    } as never);
+    const hrefs = (svg: string) => [...svg.matchAll(/<a href="([^"]*)"/g)].map(m => m[1].replace(/&amp;/g, '&'));
+
+    it('names the drawing in org-link hrefs, as ~ under the home folder', () => {
+        const svg = stampLinkFrom(renderSceneSvg(scene, { embedScene: true })!, '/home/u/j/diagrams/x.excalidraw.svg');
+        const parsed = hrefs(svg).map(h => parseOrgLinkUri(h));
+        expect(parsed.length).toBeGreaterThan(0);
+        for (const p of parsed) {
+            expect(p?.link).toBe(link);
+            expect(p?.from).toBe(drawingFromPath('/home/u/j/diagrams/x.excalidraw.svg'));
+        }
+    });
+
+    it('leaves the embedded scene alone, so the editor still resolves against the drawing', () => {
+        const svg = stampLinkFrom(renderSceneSvg(scene, { embedScene: true })!, '/tmp/x.excalidraw.svg');
+        const reread = parseSceneFile(svg, 'x.excalidraw.svg')!;
+        expect(sceneLinks(reread).map(l => parseOrgLinkUri(l.link)?.from)).toEqual([undefined]);
+    });
+
+    it('keeps a from= the link already has, and is idempotent', () => {
+        const own = renderSceneSvg(normalizeScene({
+            elements: [{ id: 'a', type: 'rectangle', x: 0, y: 0, width: 100, height: 50, link: orgLinkUri('*H', 'notes.org') }],
+        } as never))!;
+        expect(own).toContain('from=notes.org');
+        expect(stampLinkFrom(own, '/tmp/x.excalidraw.svg')).toBe(own);
+        const once = stampLinkFrom(renderSceneSvg(scene)!, '/tmp/x.excalidraw.svg');
+        expect(stampLinkFrom(once, '/tmp/x.excalidraw.svg')).toBe(once);
+    });
+
+    it('drawingFromPath uses ~ inside home and an absolute path outside it', () => {
+        expect(drawingFromPath('/home/u/a/b.svg', '/home/u')).toBe('~/a/b.svg');
+        expect(drawingFromPath('/srv/a/b.svg', '/home/u')).toBe('/srv/a/b.svg');
     });
 });

@@ -6,6 +6,7 @@
 import * as path from 'path';
 import { fileURLToPath } from 'url';
 import { escapeHtml } from '../utils/escapeUtils';
+import { generateId } from '../parser/orgExport';
 
 /** The parts of an exported HTML page the preview reuses */
 export interface ExportedPageParts {
@@ -175,4 +176,56 @@ ${parts.body}
 </div>
 </body>
 </html>`;
+}
+
+/**
+ * Split a link followed from the preview into the file part and the place
+ * in it: an HTML fragment (`notes.html#org-intro`) or an org search
+ * (`notes.org::*Intro`, `notes.org::#intro`). The anchor is in the form the
+ * exporter uses for heading ids, so headingLineForAnchor can find it.
+ */
+export function splitPreviewLink(href: string): { file: string; anchor?: string } {
+    const search = href.match(/^(.*?)::(.*)$/);
+    if (search) {
+        const [, file, rest] = search;
+        if (rest.startsWith('*')) return { file, anchor: generateId(rest.slice(1).trim()) };
+        if (rest.startsWith('#')) return { file, anchor: rest.slice(1) };
+        return { file };
+    }
+    const hash = href.indexOf('#');
+    if (hash < 0) return { file: href };
+    let anchor = href.slice(hash + 1);
+    try {
+        anchor = decodeURIComponent(anchor);
+    } catch {
+        // Keep the raw value
+    }
+    return { file: href.slice(0, hash), anchor: anchor || undefined };
+}
+
+/**
+ * 0-based line of the heading an export anchor points at: a heading whose
+ * exported id (generateId of its title) or CUSTOM_ID equals `anchor`.
+ */
+export function headingLineForAnchor(content: string, anchor: string): number | undefined {
+    const lines = content.split('\n');
+    let heading: number | undefined;
+    for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+        const m = line.match(/^\*+\s+(.*)$/);
+        if (m) {
+            heading = i;
+            const title = m[1]
+                .replace(/\s+:[\w@#%:-]+:\s*$/, '')
+                .replace(/^\[#[A-Z0-9]\]\s*/, '')
+                .trim();
+            // A leading all-caps word may be a TODO keyword; try both ways
+            const noTodo = title.replace(/^[A-Z]+\s+/, '').replace(/^\[#[A-Z0-9]\]\s*/, '');
+            if (generateId(title) === anchor || generateId(noTodo) === anchor) return i;
+            continue;
+        }
+        const id = line.match(/^\s*:CUSTOM_ID:\s*(\S+)\s*$/i);
+        if (id && id[1] === anchor && heading !== undefined) return heading;
+    }
+    return undefined;
 }

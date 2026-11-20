@@ -5,15 +5,20 @@
  */
 
 import { describe, it, expect } from 'vitest';
+import * as fs from 'fs';
+import * as os from 'os';
 import * as path from 'path';
 import {
     buildPreviewPage,
+    headingLineForAnchor,
+    splitPreviewLink,
     resolveLocalResource,
     rewriteResourceUrls,
     splitExportedHtml,
 } from '../orgPreviewHtml';
 import { parseOrgFast } from '../../parser/orgExportParser';
 import { addSourceLineMarker, exportToHtml } from '../../parser/orgExportHtml';
+import { normalizeScene, renderSceneSvg, stampLinkFrom } from '../../excalidraw/scene';
 
 const BASE = path.resolve('/docs/notes');
 const toUri = (p: string) => `webview://${p}`;
@@ -144,5 +149,55 @@ describe('source line markers', () => {
         expect(addSourceLineMarker('plain', 4)).toBe('<span class="org-line-marker" data-line="4"></span>plain');
         expect(addSourceLineMarker('', 4)).toBe('');
         expect(addSourceLineMarker('<hr/>', 2)).toBe('<hr data-line="2"/>');
+    });
+});
+
+describe('following links from the preview to a heading', () => {
+    const org = [
+        '#+TITLE: Day',
+        '* TODO [#A] Agenda for CLAIRE (BU) :work:',
+        'text',
+        '* Notes',
+        ':PROPERTIES:',
+        ':CUSTOM_ID: notes',
+        ':END:',
+    ].join('\n');
+
+    it('splits fragments and org searches', () => {
+        expect(splitPreviewLink('day.html#org-notes')).toEqual({ file: 'day.html', anchor: 'org-notes' });
+        expect(splitPreviewLink('day.org::*Notes')).toEqual({ file: 'day.org', anchor: 'org-notes' });
+        expect(splitPreviewLink('day.org::#notes')).toEqual({ file: 'day.org', anchor: 'notes' });
+        expect(splitPreviewLink('day.org::12')).toEqual({ file: 'day.org' });
+        expect(splitPreviewLink('day.org')).toEqual({ file: 'day.org' });
+    });
+
+    it('finds headings by exported id or CUSTOM_ID, ignoring TODO, priority and tags', () => {
+        expect(headingLineForAnchor(org, 'org-agenda-for-claire-bu')).toBe(1);
+        expect(headingLineForAnchor(org, 'org-notes')).toBe(3);
+        expect(headingLineForAnchor(org, 'notes')).toBe(3);
+        expect(headingLineForAnchor(org, 'org-missing')).toBeUndefined();
+    });
+
+    it('a drawing inlined in the preview links to the heading it names', () => {
+        const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'scimax-preview-'));
+        try {
+            fs.writeFileSync(path.join(dir, 'day.org'), org);
+            fs.mkdirSync(path.join(dir, 'diagrams'));
+            const drawing = path.join(dir, 'diagrams', 'x.excalidraw.svg');
+            const scene = normalizeScene({
+                elements: [{ id: 'a', type: 'rectangle', x: 0, y: 0, width: 100, height: 50, label: 'A',
+                    orgLink: 'file:../day.org::*Agenda for CLAIRE (BU)' }],
+            } as never);
+            fs.writeFileSync(drawing, stampLinkFrom(renderSceneSvg(scene, { embedScene: true })!, drawing));
+
+            const html = exportToHtml(parseOrgFast('[[file:diagrams/x.excalidraw.svg]]\n'), { baseDir: dir, bodyOnly: true });
+            const href = html.match(/<a href="([^"]*day[^"]*)"/)?.[1].replace(/&amp;/g, '&');
+            expect(href).toBeDefined();
+            const { file, anchor } = splitPreviewLink(href!);
+            expect(resolveLocalResource(file.replace(/\.html$/, '.org'), dir)).toBe(path.join(dir, 'day.org'));
+            expect(headingLineForAnchor(org, anchor!)).toBe(1);
+        } finally {
+            fs.rmSync(dir, { recursive: true, force: true });
+        }
     });
 });

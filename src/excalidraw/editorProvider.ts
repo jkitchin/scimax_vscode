@@ -25,7 +25,7 @@ import type { ProjectileManager } from '../projectile/projectileManager';
 import { extensionLogger as log } from '../utils/logger';
 import { openResolvedUri } from './commands';
 import { linkForHeading, linkStatus, NoteHeading, NoteIndex, parseOrgHeadings, type LinkStatus, type ResolveContext } from './noteIndex';
-import { orgLinkUri, parseOrgLinkUri, parseSceneFile, type ExcalidrawScene } from './scene';
+import { orgLinkUri, parseOrgLinkUri, parseSceneFile, stampLinkFrom, type ExcalidrawScene } from './scene';
 
 export const EXCALIDRAW_VIEW_TYPE = 'scimax.excalidraw';
 
@@ -155,6 +155,7 @@ export class ExcalidrawEditorProvider implements vscode.CustomTextEditorProvider
     /** Replace the document's text with the webview's. */
     private async applyEdit(session: Session, text: string): Promise<void> {
         const doc = session.document;
+        if (isSvg(doc)) text = stampLinkFrom(text, doc.uri.fsPath);
         if (text === doc.getText()) return;
         session.lastFromWebview = text;
         const edit = new vscode.WorkspaceEdit();

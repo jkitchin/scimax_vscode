@@ -18,9 +18,11 @@ import { escapeHtml } from '../utils/escapeUtils';
 import { extensionLogger as log } from '../utils/logger';
 import {
     buildPreviewPage,
+    headingLineForAnchor,
     resolveLocalResource,
     rewriteResourceUrls,
     splitExportedHtml,
+    splitPreviewLink,
 } from './orgPreviewHtml';
 
 export const ORG_PREVIEW_VIEW_TYPE = 'scimax.org.preview';
@@ -312,6 +314,8 @@ export class OrgPreviewManager implements vscode.WebviewPanelSerializer, vscode.
                 {
                     sourceLineMarkers: true,
                     bibEntries: bibEntries.length > 0 ? bibEntries : undefined,
+                    // Lets Excalidraw drawings inline as SVG with working links
+                    baseDir,
                 },
                 false
             );
@@ -463,8 +467,10 @@ export class OrgPreviewManager implements vscode.WebviewPanelSerializer, vscode.
             return;
         }
         const baseDir = path.dirname(entry.uri.fsPath);
-        // Drop org search options (file.org::*Heading) and URL fragments
-        let target = href.replace(/::.*$/, '').replace(/#.*$/, '');
+        // Split off the place in the file: a heading anchor (file.html#org-x)
+        // or an org search (file.org::*Heading)
+        const { file, anchor } = splitPreviewLink(href);
+        let target = file;
         try {
             target = decodeURI(target);
         } catch {
@@ -475,11 +481,14 @@ export class OrgPreviewManager implements vscode.WebviewPanelSerializer, vscode.
             vscode.window.showInformationMessage(`Cannot open link from preview: ${href}`);
             return;
         }
-        // The exporter points links to other org files at their .html export
+        // The exporter points links to other org and Markdown files at their
+        // .html export
         if (!fs.existsSync(filePath) && filePath.endsWith('.html')) {
-            const orgPath = filePath.replace(/\.html$/, '.org');
-            if (fs.existsSync(orgPath)) {
-                filePath = orgPath;
+            const source = ['.org', '.md']
+                .map(ext => filePath!.replace(/\.html$/, ext))
+                .find(p => fs.existsSync(p));
+            if (source) {
+                filePath = source;
             }
         }
         if (!fs.existsSync(filePath)) {
@@ -487,6 +496,18 @@ export class OrgPreviewManager implements vscode.WebviewPanelSerializer, vscode.
             return;
         }
         const column = this.visibleEditors(entry)[0]?.viewColumn ?? entry.panel.viewColumn;
+        if (anchor && /\.org$/i.test(filePath)) {
+            const doc = await vscode.workspace.openTextDocument(filePath);
+            const line = headingLineForAnchor(doc.getText(), anchor);
+            if (line !== undefined) {
+                const pos = new vscode.Position(line, 0);
+                await vscode.window.showTextDocument(doc, {
+                    viewColumn: column,
+                    selection: new vscode.Range(pos, pos),
+                });
+                return;
+            }
+        }
         await vscode.commands.executeCommand('vscode.open', vscode.Uri.file(filePath), column);
     }
 }

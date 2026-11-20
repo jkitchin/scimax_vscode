@@ -3644,6 +3644,13 @@ async function openFileLink(url: string, currentDocument: vscode.TextDocument): 
         }
     }
 
+    // Excalidraw drawings open in their default editor (the canvas), as a
+    // Cmd-click on the same link does; showTextDocument would force raw text.
+    if (!searchPart && /\.excalidraw(\.json|\.svg)?$/i.test(targetUri.fsPath)) {
+        await vscode.commands.executeCommand('vscode.open', targetUri);
+        return;
+    }
+
     // Open the file
     let doc: vscode.TextDocument;
     let editor: vscode.TextEditor;

@@ -14,6 +14,8 @@
  * contain `&` or `=` (VS Code decodes the query before handlers see it).
  */
 import * as crypto from 'crypto';
+import * as os from 'os';
+import * as path from 'path';
 import * as zlib from 'zlib';
 
 export const ORG_LINK_URI_PREFIX = 'vscode://jkitchin.scimax-vscode/org-link';
@@ -102,6 +104,37 @@ export function parseOrgLinkQuery(query: string, encoded: boolean): { link: stri
 export function parseOrgLinkUri(href: string): { link: string; from?: string } | null {
     if (!href.startsWith(ORG_LINK_URI_PREFIX + '?')) return null;
     return parseOrgLinkQuery(href.slice(ORG_LINK_URI_PREFIX.length + 1), true);
+}
+
+/**
+ * `from` value naming a drawing: its absolute path, with the home folder
+ * written as `~` so the link still resolves on another machine that syncs
+ * the same folder (Dropbox) under a different home.
+ */
+export function drawingFromPath(drawingPath: string, home: string = os.homedir()): string {
+    const abs = path.resolve(drawingPath);
+    const rel = path.relative(home, abs);
+    if (rel && !rel.startsWith('..') && !path.isAbsolute(rel)) {
+        return '~/' + rel.split(path.sep).join('/');
+    }
+    return abs;
+}
+
+const ORG_LINK_HREF = new RegExp(
+    `(<a\\b[^>]*?\\bhref=")(${ORG_LINK_URI_PREFIX.replace(/[.*+?^${}()|[\]\\/]/g, '\\$&')}\\?)([^"]*)"`, 'g');
+
+/**
+ * Add `from=<drawing>` to the org-link hrefs in rendered SVG markup that do
+ * not name one. Shape links are written relative to the drawing, but a click
+ * on the SVG outside the scimax editor (a browser, Quick Look) reaches the URI
+ * handler with no drawing to resolve against. Only the `<a href>` markup is
+ * changed: the embedded scene keeps its links as they are, so the editor
+ * still resolves against wherever the drawing is now.
+ */
+export function stampLinkFrom(svg: string, drawingPath: string): string {
+    const from = encodeURIComponent(drawingFromPath(drawingPath));
+    return svg.replace(ORG_LINK_HREF, (whole, open: string, prefix: string, query: string) =>
+        /(^|&amp;|&)from=/.test(query) ? whole : `${open}${prefix}from=${from}&amp;${query}"`);
 }
 
 // ---------------------------------------------------------------------------
