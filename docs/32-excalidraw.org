@@ -89,6 +89,20 @@ heading's title. From an org file, *Scimax: Add Heading to Drawing*
 ([[cmd:scimax.excalidraw.addHeadingToDrawing]]) adds a box for the heading at
 the cursor to the drawing in view, or to one you pick (or a new one).
 
+** ⚠️ Opening drawings and SVGs from org files
+
+Following a link to a drawing (=Enter= or =C-c C-o= on it, or a click) opens
+it in the drawing editor, and a link to any other image (=.svg= included) in
+VS Code's image preview, never as SVG/JSON text. A missing drawing is created
+empty, so writing a link and following it starts a new drawing.
+
+If an SVG or drawing is open as text, =Cmd+Shift+V= (=Ctrl+Shift+V=)
+([[cmd:scimax.file.showPreview]]) shows it as a picture or drawing in its place,
+like the Markdown preview. From an SVG's image preview, =Cmd+Shift+V= goes back
+to the text; from the drawing editor, use the *Show Source* button in the
+editor title bar ([[cmd:scimax.file.showSource]]), since Excalidraw uses
+=Cmd+Shift+V= to paste as plain text.
+
 ** ⚠️ Following links
 
 Click a shape's link icon (or the link in its tooltip) and the heading opens

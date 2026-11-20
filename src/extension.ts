@@ -126,6 +126,7 @@ import { recordActivationFailure, getActivationFailures } from './utils/activati
 import { registerKeybindingConflictCheck } from './utils/keybindingConflicts';
 import { registerScimaxUriHandler } from './utils/uriHandler';
 import { registerExcalidrawCommands } from './excalidraw/commands';
+import { registerViewableCommands } from './utils/openViewable';
 import { registerExcalidrawEditor } from './excalidraw/editorProvider';
 import { registerDiredCommands, DiredPanel } from './dired';
 import { registerFileCommands } from './files/fileCommands';
@@ -459,6 +460,7 @@ async function activateScimax(context: vscode.ExtensionContext) {
     activationStep('keybindingConflicts', () => registerKeybindingConflictCheck(context));
     activationStep('uriHandler', () => registerScimaxUriHandler(context));
     activationStep('excalidraw', () => registerExcalidrawCommands(context));
+    activationStep('viewableFiles', () => registerViewableCommands(context));
 
     // Initialize Journal Manager
     activationStep('JournalManager', () => {

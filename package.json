@@ -2932,6 +2932,16 @@
         "title": "Scimax: Open Excalidraw Drawing"
       },
       {
+        "command": "scimax.file.showPreview",
+        "title": "Scimax: Show Image or Drawing Preview",
+        "icon": "$(open-preview)"
+      },
+      {
+        "command": "scimax.file.showSource",
+        "title": "Scimax: Show Source (SVG/JSON text)",
+        "icon": "$(go-to-file)"
+      },
+      {
         "command": "scimax.excalidraw.addHeadingToDrawing",
         "title": "Scimax: Add Heading to Drawing"
       },
@@ -5110,6 +5120,18 @@
         "key": "ctrl+c shift+v",
         "mac": "cmd+k v",
         "when": "editorTextFocus && editorLangId == 'org'"
+      },
+      {
+        "command": "scimax.file.showPreview",
+        "key": "ctrl+shift+v",
+        "mac": "cmd+shift+v",
+        "when": "editorTextFocus && resourceFilename =~ /\\.(svg|excalidraw|excalidraw\\.json)$/i"
+      },
+      {
+        "command": "scimax.file.showSource",
+        "key": "ctrl+shift+v",
+        "mac": "cmd+shift+v",
+        "when": "activeCustomEditorId == 'imagePreview.previewEditor' && resourceExtname == .svg"
       },
       {
         "command": "scimax.org.preview.showSource",
@@ -10132,6 +10154,16 @@
         }
       ],
       "editor/title": [
+        {
+          "command": "scimax.file.showPreview",
+          "when": "!activeCustomEditorId && resourceFilename =~ /\\.(svg|excalidraw|excalidraw\\.json)$/i",
+          "group": "navigation"
+        },
+        {
+          "command": "scimax.file.showSource",
+          "when": "activeCustomEditorId == 'scimax.excalidraw' || (activeCustomEditorId == 'imagePreview.previewEditor' && resourceExtname == .svg)",
+          "group": "navigation"
+        },
         {
           "command": "scimax.markdown.preview.exportPdf",
           "when": "activeWebviewPanelId == 'markdown.preview'",

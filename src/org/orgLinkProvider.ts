@@ -1,4 +1,5 @@
 import * as vscode from 'vscode';
+import { isViewable, openViewable } from '../utils/openViewable';
 import * as path from 'path';
 import * as fs from 'fs';
 import { getDatabase } from '../database/lazyDb';
@@ -1072,6 +1073,16 @@ export function registerOrgLinkCommands(context: vscode.ExtensionContext): void 
                     return;
                 }
 
+                // Images open as pictures (SVG included), not as text
+                if (isViewable(file)) {
+                    if (!fs.existsSync(file)) {
+                        vscode.window.showWarningMessage(`File not found: ${file}`);
+                        return;
+                    }
+                    await openViewable(uri);
+                    return;
+                }
+
                 // Create the file if it doesn't exist
                 if (!fs.existsSync(file)) {
                     const dir = path.dirname(file);
@@ -1141,14 +1152,14 @@ export function registerOrgLinkCommands(context: vscode.ExtensionContext): void 
                         files: {}
                     };
 
-                    fs.writeFileSync(file, JSON.stringify(emptyExcalidraw, null, 2));
+                    // An .excalidraw.svg starts empty: the editor saves it as an SVG
+                    // with the scene embedded. JSON in a .svg could not be opened.
+                    fs.writeFileSync(file, /\.svg$/i.test(file) ? '' : JSON.stringify(emptyExcalidraw, null, 2));
                 }
 
                 // Scimax's own editor for the formats it edits (scimax.excalidraw.editor);
                 // .excalidraw.png and the 'pomdtr' choice go to the Excalidraw extension.
-                const own = vscode.workspace.getConfiguration('scimax.excalidraw').get<string>('editor', 'scimax') === 'scimax'
-                    && /\.excalidraw(\.json|\.svg)?$/i.test(file);
-                await vscode.commands.executeCommand('vscode.openWith', uri, own ? 'scimax.excalidraw' : 'editor.excalidraw');
+                await openViewable(uri);
             } catch (error) {
                 vscode.window.showErrorMessage(`Failed to open Excalidraw file: ${file}`);
             }
