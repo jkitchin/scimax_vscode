@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- *Scimax: New Drawing* (`scimax.excalidraw.newDrawing`): create an
+  `.excalidraw.svg` (named after the heading at the cursor, in `diagrams/`),
+  link it at the cursor of an org or Markdown file, and open the canvas beside
+  the note.
+- Right-clicking the Excalidraw canvas offers *Link to note…* (on a shape) and
+  *Add linked box…* at the top of Excalidraw's own menu.
+
+### Fixed
+
+- Excalidraw *Link to note* (`C-c C-l`) missed headings in large projects: it
+  scanned the first 3,000 org files in path order, so in a journal it showed
+  years-old days and never today's. It now lists the notes that link to the
+  drawing first, then open org files, then the project newest first.
+
 ## [0.16.0] - 2026-11-21
 
 ### Added

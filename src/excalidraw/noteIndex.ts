@@ -152,6 +152,23 @@ interface CachedFile {
     headings: NoteHeading[];
 }
 
+/** How many files to walk, and to keep, when scanning a project. */
+const MAX_WALK_FILES = 20000;
+const MAX_PROJECT_FILES = 5000;
+
+/** Files sorted by modification time, newest first; unreadable ones last. */
+export function newestFirst(files: string[]): string[] {
+    const mtime = new Map<string, number>();
+    for (const f of files) {
+        try {
+            mtime.set(f, fs.statSync(f).mtimeMs);
+        } catch {
+            mtime.set(f, -Infinity);
+        }
+    }
+    return [...files].sort((a, b) => (mtime.get(b) as number) - (mtime.get(a) as number));
+}
+
 export class NoteIndex {
     private cache = new Map<string, CachedFile>();
     /** Unsaved text of open editors, by absolute path */
@@ -184,20 +201,49 @@ export class NoteIndex {
         return entry;
     }
 
-    /** Org files under a project root (cached until `forget`). */
+    /**
+     * Org files under a project root, most recently modified first (cached
+     * until `forget`). A project with more than MAX_PROJECT_FILES keeps the
+     * newest: a journal's old days are dropped, never today's.
+     */
     async scanProject(root: string): Promise<string[]> {
         const known = this.projects.get(root);
         if (known) return known;
-        const result = await findOrgFiles([root], { maxFiles: 3000 });
-        const files = result.files.filter(f => f.endsWith('.org'));
+        const result = await findOrgFiles([root], { maxFiles: MAX_WALK_FILES });
+        const files = newestFirst(result.files.filter(f => f.endsWith('.org'))).slice(0, MAX_PROJECT_FILES);
         this.projects.set(root, files);
         return files;
     }
 
-    /** Every heading in a project's org files. */
+    /** Every heading in a project's org files, newest file first. */
     async projectHeadings(root: string): Promise<NoteHeading[]> {
         const files = await this.scanProject(root);
         return files.flatMap(f => this.read(f)?.headings ?? []);
+    }
+
+    /**
+     * Org files in the drawing's folder and the folder above it, where the
+     * note that embeds a drawing (e.g. `diagrams/x.excalidraw.svg`) usually is.
+     */
+    async nearbyOrgFiles(drawing: string): Promise<string[]> {
+        const dir = path.dirname(drawing);
+        const out: string[] = [];
+        for (const d of [dir, path.dirname(dir)]) {
+            let names: string[];
+            try {
+                names = await fs.promises.readdir(d);
+            } catch {
+                continue;
+            }
+            for (const n of names.sort()) if (/\.org$/i.test(n)) out.push(path.join(d, n));
+        }
+        return out;
+    }
+
+    /** Which of `files` mention the drawing's file name, i.e. link to it. */
+    filesLinkingTo(drawing: string, files: string[]): string[] {
+        const name = path.basename(drawing);
+        return files.filter(f => this.read(f)?.content.includes(name));
     }
 
     /** Drop cached file lists, e.g. after files are created or deleted. */

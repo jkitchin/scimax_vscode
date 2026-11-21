@@ -2942,6 +2942,10 @@
         "icon": "$(go-to-file)"
       },
       {
+        "command": "scimax.excalidraw.newDrawing",
+        "title": "Scimax: New Drawing"
+      },
+      {
         "command": "scimax.excalidraw.addHeadingToDrawing",
         "title": "Scimax: Add Heading to Drawing"
       },
