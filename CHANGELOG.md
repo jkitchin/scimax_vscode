@@ -7,14 +7,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.16.0] - 2026-11-21
+
 ### Added
 
+- **Excalidraw diagrams that link into your notes** - Scimax now has its own Excalidraw editor for `.excalidraw`, `.excalidraw.json` and `.excalidraw.svg` files. *Link to note* (`C-c C-l`) and *Linked box* (`C-c C-b`) tie a shape to a heading, notebook, file or any org link; clicking the shape opens the heading beside the drawing. Linked shapes show the heading's TODO state and priority and a hover preview. Drawings are indexed (`scimax.db.indexDrawings`): their text is searchable, linked headings list them as back-links, and the link graph shows them (and now follows `id:` links). The org preview and HTML export inline drawings as SVG with clickable shapes, and links in an exported `.excalidraw.svg` work from a browser too. `scimax excalidraw build/render/check/links/json` builds drawings from a compact spec and checks their links.
+- **Notebooks sidebar view** - recent files, collaborators and notebook info, with context-menu actions, a *Notebook Map* drawing, and a Drawings section. *Run Notebook Command* runs a notebook's `customCommands` as a VS Code task (not in untrusted workspaces), and *Insert Notebook Link* is in the command palette.
+- **Undo in the agenda view** - `Cmd+Z` / `Ctrl+Z` (or `C-/`) undoes the last action taken from the view, such as marking an item DONE, and `Cmd+Shift+Z` redoes it. It asks before overwriting edits made since.
+- **Actions menu in heading search (`C-c d h`)** - `M-o` on a candidate opens a single-key menu: open in the other window or a new frame, insert or copy an id or file link, cycle TODO, schedule, deadline, clock in, set tags, or add it as a dependency of the heading at point.
+- **SVG and drawing links open as previews** - `RET`, `C-c C-o` or a click on a link to an image (SVG included) opens VS Code's image preview, and a drawing link opens the drawing editor, instead of the file's text. `Cmd+Shift+V` / `Ctrl+Shift+V` switches between an SVG or drawing's text and its preview.
+- **`scimax` command-line launcher that survives updates (#97)** - *Scimax: Install Command-Line Tool* writes a small `scimax` launcher to a folder on your PATH (`~/.local/bin` by default). It always runs the newest installed extension, so updates no longer break the CLI. A stale `npm link` gets a one-time notice offering the launcher.
+- **`#+MARP_CSS: file.css` (#97)** - inlines a CSS file into the exported Marp deck's style, so the deck stays self-contained.
+- **Marp Python cells can read data files (#77)** - a presenter deck carries the files its cells name (and those listed under the new `python-files:` front-matter key), so `pd.read_csv("data.csv")` works in the browser. `display()` works as in Jupyter: DataFrames show as tables and matplotlib figures as images.
+- **Warning when another extension's chord blocks a scimax key** - e.g. Magit's `alt+x g` chords stop scimax's `M-x`. Scimax offers the `keybindings.json` entries that fix it; the check is also *Scimax: Check Keybinding Conflicts*.
 - **Fast TODO state selection** - `#+TODO: INVITED(i) AGREED(a) | DECLINED(d)` keys now work as in org-mode. When a file declares keys, the `t` speed key opens a picker that takes a single keystroke (SPC removes the keyword). `T` and `Scimax: Set TODO State` always open the picker. The command also accepts a state name for keybindings.
+
+### Changed
+
+- **Emailed headings are marked done automatically** - `scimax.emailHeading.markDone` now defaults to `always`: the heading gets its done state and CLOSED stamp as soon as the compose window opens. Set it to `ask` for the old *Mark Done* button.
+- **Bundled agent skills say to use the scimax CLI, never Emacs** - for example `scimax table align` instead of `org-table-align`.
 
 ### Fixed
 
 - **`STATE(k)` suffixes were read as part of the keyword** - `TODO(t)` became the literal keyword `TODO(t)`, so headings like `* TODO task` were not recognised. Keys and logging specs (`(w@/!)`) are now stripped.
 - **TODO cycling stays within a keyword's own sequence** - with several `#+TODO` lines, cycling ran through every state of every line. Now it follows the current keyword's line and returns to no keyword after the last state, as in org-mode.
+- **Enter at the start of a heading** pushed it off column 0, so it stopped being a heading. It now moves the heading down a line.
+- **Selecting text to delete it no longer replaces the clipboard** - deleting or typing over a just auto-copied selection restores the previous clipboard (`scimax.autoCopy.undoOnDelete`, default on).
 
 ## [0.15.4] - 2026-11-14
 
