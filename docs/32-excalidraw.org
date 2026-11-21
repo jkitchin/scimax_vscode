@@ -47,9 +47,9 @@ Excalidraw supports multiple file formats, all of which work with this integrati
 - They embed the full Excalidraw scene data, so they remain fully editable
 - They can be displayed in exports (HTML, LaTeX, Markdown)
 
-* 👀 Scimax's Excalidraw Editor
+* Scimax's Excalidraw Editor
 
-** ⚠️ Starting a new drawing
+** Starting a new drawing
 
 *Scimax: New Drawing* ([[cmd:scimax.excalidraw.newDrawing]]) creates a drawing,
 links it in the note you are in and opens the canvas beside the note:
@@ -92,7 +92,7 @@ To use the Excalidraw extension instead, right-click the file and choose
 *Open With...*, or set =scimax.excalidraw.editor= to =pomdtr= for links in
 org files.
 
-** 👀 Linking a shape to a note
+** Linking a shape to a note
 
 Select one or more shapes and press *🔗 Link to note* (=C-c C-l=), or
 right-click a shape and choose *Link to note…*. A picker
