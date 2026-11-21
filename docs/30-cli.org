@@ -31,7 +31,7 @@ node out/cli/index.js --help
 npx scimax --help
 #+end_src
 
-** 👀 Global Installation
+** Global Installation
 
 To use ~scimax~ from any terminal, script or cron job, run /Scimax: Install
 Command-Line Tool/ ([[cmd:scimax.cli.install]]) from the command palette once on
@@ -56,7 +56,7 @@ nothing redone, even before VS Code is opened again. It needs =node= on =PATH=.
 - To uninstall, delete the =scimax= file (on Windows, =scimax.cmd= and
   =scimax-launcher.js=).
 
-*** ⚠️ Replacing an older npm link
+*** Replacing an older npm link
 
 Earlier versions of this page suggested =npm link= in the extension folder.
 That link points at one version's folder, so it broke after every update. If
@@ -405,7 +405,7 @@ extension's global storage, which the extension's own exports share.
 
 See [[file:44-marp.org::*Presenter Tools and Live Python][Presenter Tools and Live Python]] for the keys while presenting.
 
-** ⚠️ Excalidraw
+** Excalidraw
 
 Build, render and check [[file:32-excalidraw.org][Excalidraw]] drawings whose shapes link to
 org headings, custom ids, files and web pages.
@@ -1158,7 +1158,7 @@ scimax publish --init --name docs --base ./docs --output ./_build/html
 
 If the source directory has no =_toc.yml=, =--init= prints an example one.
 
-** 👀 Skill
+** Skill
 
 Scimax ships five agent skills that let an AI coding agent use the CLI and answer
 questions about your notes, agenda, projects, org syntax, slides and diagrams:

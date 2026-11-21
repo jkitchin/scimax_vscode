@@ -342,7 +342,7 @@ CLOSED: [2026-01-16 Fri 20:18]
 ** ✅ Opening Notebooks
 CLOSED: [2026-01-16 Fri 20:18]
 
-*** 👀 Open Notebook Command
+*** Open Notebook Command
 
 `Scimax: Open Notebook' shows a quick pick menu of all registered notebooks:
 
@@ -423,7 +423,7 @@ Scimax tracks all `.org' and `.md' files in the notebook, automatically excludin
 - `dist/' and `build/'
 - `.git/'
 
-* ⚠️ Notebooks Sidebar View
+* Notebooks Sidebar View
 
 The *Notebooks* view in the Scimax activity bar lists every tracked notebook,
 most recently used first. Notebooks that are git repositories show a repository
@@ -435,7 +435,7 @@ icon; others show a folder. Each notebook expands into:
 - *Collaborators*: people from =.scimax/config.json=, with their role or email
 - *Info*: path, master file, git status, created/last-accessed dates and keywords
 
-** ⚠️ Actions
+** Actions
 
 | Where                      | Action                                         |
 |----------------------------+------------------------------------------------|
@@ -505,7 +505,7 @@ This recursively indexes all `.org' and `.md' files in the notebook directory, u
 
 Progress is shown in a notification with a progress bar.
 
-* ⚠️ Running Notebook Commands
+* Running Notebook Commands
 
 Put shell commands you run often in the =customCommands= field of
 =.scimax/config.json=:
@@ -533,7 +533,7 @@ If the notebook has no =customCommands=, you are offered to open its settings.
 repository, so read the command shown in the picker before running it. The
 command refuses to run in an untrusted workspace (Workspace Trust).
 
-* ⚠️ Linking Between Notebooks
+* Linking Between Notebooks
 
 Link to a file, and optionally a location in it, in another project with an
 =nb:= link:
@@ -556,7 +556,7 @@ open in the current window, it opens in a new window by default; set
 
 See [[file:05-links.org][Links]] for the full syntax.
 
-* ⚠️ Notebook Maps and Drawings
+* Notebook Maps and Drawings
 
 =Scimax: Notebook Map (Excalidraw)= (=scimax.notebook.map=) draws the
 notebook's org files and their top-level headings as
@@ -614,9 +614,9 @@ Example collaborators in config:
 }
 #+end_src
 
-* 👀 Notebook Commands
+* Notebook Commands
 
-** 👀 Core Commands
+** Core Commands
 
 | Command                             | Description                         |
 |-------------------------------------+-------------------------------------|
@@ -703,9 +703,9 @@ Command Palette → Scimax: Remove Notebook from Tracking
 
 This removes the notebook from Scimax's registry but leaves all files on disk unchanged. Use this to clean up notebooks you no longer work with.
 
-* 👀 Configuration
+* Configuration
 
-** 👀 Settings
+** Settings
 
 Configure notebook behavior in VS Code settings:
 
@@ -763,7 +763,7 @@ Example:
 }
 #+end_src
 
-*** ⚠️ `scimax.notebook.openLinksInNewWindow'
+*** `scimax.notebook.openLinksInNewWindow'
 
 Whether an =nb:= link into a different project opens a new VS Code window.
 Default: `true'. See [[*Linking Between Notebooks]].
@@ -985,7 +985,7 @@ While Scimax provides built-in templates, you can create custom setups:
 3. Save as a template repository
 4. Clone for new projects
 
-** 👀 Automation with Custom Commands
+** Automation with Custom Commands
 
 Add custom commands to `.scimax/config.json' and run them with
 =Scimax: Run Notebook Command= (see [[*Running Notebook Commands]]):
@@ -1077,7 +1077,7 @@ The Scimax notebook system provides powerful project organization for research, 
 
 Start by creating your first notebook with `Scimax: New Notebook' and exploring the commands. The notebook system scales from simple note collections to complex multi-person research projects.
 
-* 👀 Related Topics
+* Related Topics
 
 - [[file:17-projectile.org][Projectile]] - switching between projects; resolves =nb:= link project names
 - [[file:05-links.org][Links]] - full =nb:= link syntax
