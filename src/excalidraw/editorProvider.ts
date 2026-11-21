@@ -24,6 +24,7 @@ import { resolveOrgLink } from '../org/orgLinkProvider';
 import type { ProjectileManager } from '../projectile/projectileManager';
 import { extensionLogger as log } from '../utils/logger';
 import { openResolvedUri } from './commands';
+import { drawingFileName } from './newDrawing';
 import { linkForHeading, linkStatus, NoteHeading, NoteIndex, parseOrgHeadings, type LinkStatus, type ResolveContext } from './noteIndex';
 import { orgLinkUri, parseOrgLinkUri, parseSceneFile, stampLinkFrom, type ExcalidrawScene } from './scene';
 
@@ -257,7 +258,7 @@ export class ExcalidrawEditorProvider implements vscode.CustomTextEditorProvider
     async pickNote(drawing: string, title: string): Promise<{ uri: string; label: string } | undefined> {
         const drawingDir = path.dirname(drawing);
         const root = findProjectRoot(drawingDir) ?? vscode.workspace.workspaceFolders?.[0]?.uri.fsPath ?? drawingDir;
-        const picked = await this.pickHeading(root, title, true);
+        const picked = await this.pickHeading(root, title, true, drawing);
         if (!picked) return undefined;
         if ('special' in picked) {
             if (picked.special === 'file') {
@@ -291,7 +292,12 @@ export class ExcalidrawEditorProvider implements vscode.CustomTextEditorProvider
         return { uri: orgLinkUri(linkForHeading(heading, drawingDir)), label: heading.title };
     }
 
-    private async pickHeading(root: string, title: string, withExtras: boolean):
+    /**
+     * Pick a heading under `root`. For a drawing, headings of the notes that
+     * link to it come first, then open org files, then the rest of the
+     * project, newest file first.
+     */
+    private async pickHeading(root: string, title: string, withExtras: boolean, drawing?: string):
         Promise<NoteHeading | { special: 'file' | 'notebook' | 'typed' } | undefined> {
         type Item = vscode.QuickPickItem & { heading?: NoteHeading; special?: 'file' | 'notebook' | 'typed' };
         const qp = vscode.window.createQuickPick<Item>();
@@ -303,13 +309,38 @@ export class ExcalidrawEditorProvider implements vscode.CustomTextEditorProvider
         qp.show();
 
         this.resolveContext(path.join(root, 'x'));
-        const headings = await this.index.projectHeadings(root);
-        const items: Item[] = headings.map(h => ({
-            label: `${'  '.repeat(Math.min(h.level - 1, 4))}${h.todo ? h.todo + ' ' : ''}${h.priority ? `[#${h.priority}] ` : ''}${h.title}`,
-            description: h.outline.join(' › '),
-            detail: `${path.relative(root, h.file)}:${h.line}${h.id ? '  · ID' : h.customId ? `  · #${h.customId}` : ''}`,
-            heading: h,
-        }));
+        const projectFiles = await this.index.scanProject(root);
+        const openFiles = vscode.workspace.textDocuments
+            .filter(d => d.uri.scheme === 'file' && /\.org$/i.test(d.fileName))
+            .map(d => d.uri.fsPath);
+        // A note next to the drawing may sit outside the project (or past its cap).
+        const nearby = drawing ? await this.index.nearbyOrgFiles(drawing) : [];
+        const linking = drawing
+            ? this.index.filesLinkingTo(drawing, [...new Set([...openFiles, ...nearby, ...projectFiles])])
+            : [];
+        const groups: Array<[string, string[]]> = [
+            ['Notes that link to this drawing', linking],
+            ['Open org files', openFiles],
+            [`Project ${path.basename(root)}`, projectFiles],
+        ];
+        const seen = new Set<string>();
+        const items: Item[] = [];
+        for (const [label, files] of groups) {
+            const fresh = files.filter(f => !seen.has(f));
+            fresh.forEach(f => seen.add(f));
+            const headings = fresh.flatMap(f => this.index.read(f)?.headings ?? []);
+            if (!headings.length) continue;
+            items.push({ label, kind: vscode.QuickPickItemKind.Separator });
+            for (const h of headings) {
+                const rel = path.relative(root, h.file);
+                items.push({
+                    label: `${'  '.repeat(Math.min(h.level - 1, 4))}${h.todo ? h.todo + ' ' : ''}${h.priority ? `[#${h.priority}] ` : ''}${h.title}`,
+                    description: h.outline.join(' › '),
+                    detail: `${rel.startsWith('..') ? h.file : rel}:${h.line}${h.id ? '  · ID' : h.customId ? `  · #${h.customId}` : ''}`,
+                    heading: h,
+                });
+            }
+        }
         if (withExtras) {
             items.push(
                 { label: '', kind: vscode.QuickPickItemKind.Separator },
@@ -391,7 +422,7 @@ export class ExcalidrawEditorProvider implements vscode.CustomTextEditorProvider
                     filters: { 'Excalidraw SVG': ['svg'], Excalidraw: ['excalidraw'] },
                 });
                 if (!uri) return;
-                target = /\.excalidraw(\.svg|\.json)?$/i.test(uri.fsPath) ? uri.fsPath : uri.fsPath.replace(/(\.svg)?$/i, '.excalidraw.svg');
+                target = drawingFileName(uri.fsPath);
                 await vscode.workspace.fs.createDirectory(vscode.Uri.file(path.dirname(target)));
                 await vscode.workspace.fs.writeFile(vscode.Uri.file(target), new Uint8Array());
             }

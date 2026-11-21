@@ -2,7 +2,7 @@ import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
-import { headingSnippet, linkForHeading, linkStatus, NoteIndex, parseOrgHeadings, type ResolveContext } from '../noteIndex';
+import { headingSnippet, linkForHeading, linkStatus, newestFirst, NoteIndex, parseOrgHeadings, type ResolveContext } from '../noteIndex';
 import { orgLinkUri } from '../scene';
 
 const NOTES = `#+TODO: TODO DOING | DONE KILLED
@@ -98,5 +98,34 @@ describe('linkForHeading', () => {
         expect(linkForHeading({ ...base, id: 'u1' }, '/p/diagrams')).toBe('id:u1');
         expect(linkForHeading({ ...base, customId: 'res' }, '/p/diagrams')).toBe('file:../notes.org::#res');
         expect(linkForHeading(base, '/p')).toBe('file:notes.org::*Results');
+    });
+});
+
+describe('finding the note a drawing belongs to', () => {
+    let dir: string;
+    beforeAll(() => {
+        dir = fs.mkdtempSync(path.join(os.tmpdir(), 'scimax-noteidx-near-'));
+        fs.mkdirSync(path.join(dir, 'old'));
+        fs.mkdirSync(path.join(dir, 'today', 'diagrams'), { recursive: true });
+        fs.writeFileSync(path.join(dir, 'old', 'old.org'), '* Old\n');
+        fs.utimesSync(path.join(dir, 'old', 'old.org'), new Date(2020, 0, 1), new Date(2020, 0, 1));
+        fs.writeFileSync(path.join(dir, 'today', 'today.org'), '* Train\n[[file:diagrams/train.excalidraw.svg]]\n** Feed\n');
+        fs.writeFileSync(path.join(dir, 'today', 'other.org'), '* Unrelated\n');
+        fs.writeFileSync(path.join(dir, 'today', 'diagrams', 'train.excalidraw.svg'), '');
+    });
+    afterAll(() => fs.rmSync(dir, { recursive: true, force: true }));
+
+    it('scans a project newest file first', async () => {
+        const files = await new NoteIndex().scanProject(dir);
+        expect(files[files.length - 1]).toBe(path.join(dir, 'old', 'old.org'));
+        expect(newestFirst([path.join(dir, 'missing.org'), files[0]])[0]).toBe(files[0]);
+    });
+
+    it('finds the org files beside and above a drawing, and those that link to it', async () => {
+        const index = new NoteIndex();
+        const drawing = path.join(dir, 'today', 'diagrams', 'train.excalidraw.svg');
+        const nearby = await index.nearbyOrgFiles(drawing);
+        expect(nearby).toEqual([path.join(dir, 'today', 'other.org'), path.join(dir, 'today', 'today.org')]);
+        expect(index.filesLinkingTo(drawing, nearby)).toEqual([path.join(dir, 'today', 'today.org')]);
     });
 });

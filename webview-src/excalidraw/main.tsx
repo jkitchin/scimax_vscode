@@ -217,12 +217,31 @@ function App(): JSX.Element {
 
     const pickLink = useCallback(() => {
         if (!api) return;
-        const byId = new Map<string, AnyElement>(api.getSceneElements().map((e: AnyElement) => [e.id, e]));
-        const ids = [...new Set(selected.map(id => byId.get(id)).filter(Boolean).map(e => owner(e as AnyElement, byId).id))];
+        const ids = selectedOwners(api);
         if (ids.length) vscode.postMessage({ type: 'pickLink', elementIds: ids });
-    }, [api, selected]);
+    }, [api]);
 
     const pickInsert = useCallback(() => vscode.postMessage({ type: 'pickInsert' }), []);
+
+    // ---- our items in Excalidraw's right-click menu ----
+    useEffect(() => {
+        if (!api) return;
+        const observer = new MutationObserver(() => {
+            const menu = document.querySelector<HTMLUListElement>('ul.context-menu');
+            if (!menu || menu.querySelector('[data-scimax]')) return;
+            const close = () => api.updateScene({ appState: { contextMenu: null } as never });
+            const items: Array<[string, string, () => void]> = [];
+            if (selectedOwners(api).length) items.push(['Link to note…', 'C-c C-l', pickLink]);
+            items.push(['Add linked box…', 'C-c C-b', pickInsert]);
+            const nodes = items.map(([label, keys, run]) => contextMenuItem(label, keys, () => { close(); run(); }));
+            const hr = document.createElement('hr');
+            hr.className = 'context-menu-item-separator';
+            hr.dataset.scimax = '';
+            menu.prepend(...nodes, hr);
+        });
+        observer.observe(document.body, { childList: true, subtree: true });
+        return () => observer.disconnect();
+    }, [api, pickLink, pickInsert]);
 
     // ---- hover tooltips for linked shapes ----
     const onPointerUpdate = useCallback((payload: { pointer: { x: number; y: number } }) => {
@@ -362,6 +381,33 @@ function insertLinked(api: Api, items: Array<{ uri: string; label: string }>): v
 }
 
 // Org-style chords inside the canvas: C-c C-l links the selection, C-c C-b adds a linked box.
+/** Ids of the selected shapes, with a label's text mapped to its container. */
+function selectedOwners(api: NonNullable<Api>): string[] {
+    const selectedIds = api.getAppState().selectedElementIds as Record<string, boolean>;
+    const byId = new Map<string, AnyElement>(api.getSceneElements().map((e: AnyElement) => [e.id, e]));
+    return [...new Set(Object.keys(selectedIds).filter(id => selectedIds[id])
+        .map(id => byId.get(id)).filter(Boolean).map(e => owner(e as AnyElement, byId).id))];
+}
+
+/** An item shaped like Excalidraw's own context-menu items. */
+function contextMenuItem(label: string, keys: string, onClick: () => void): HTMLLIElement {
+    const li = document.createElement('li');
+    li.dataset.scimax = '';
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'context-menu-item';
+    const text = document.createElement('div');
+    text.className = 'context-menu-item__label';
+    text.textContent = label;
+    const kbd = document.createElement('kbd');
+    kbd.className = 'context-menu-item__shortcut';
+    kbd.textContent = keys;
+    button.append(text, kbd);
+    li.append(button);
+    li.addEventListener('click', e => { e.stopPropagation(); onClick(); });
+    return li;
+}
+
 let ctrlC = 0;
 document.addEventListener('keydown', e => {
     if (!e.ctrlKey || e.metaKey || e.altKey) return;

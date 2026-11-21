@@ -11,6 +11,7 @@ import * as path from 'path';
 import * as vscode from 'vscode';
 import { registerUriRoute } from '../utils/uriHandler';
 import { resolveOrgLink } from '../org/orgLinkProvider';
+import { newDrawing } from './newDrawing';
 import { orgLinkUri, parseOrgLinkQuery } from './scene';
 import { extensionLogger as log } from '../utils/logger';
 
@@ -122,6 +123,8 @@ export function headingOrgLink(document: vscode.TextDocument, line: number): { l
 export function registerExcalidrawCommands(context: vscode.ExtensionContext): void {
     context.subscriptions.push(
         registerUriRoute('/org-link', handleOrgLinkUri),
+
+        vscode.commands.registerCommand('scimax.excalidraw.newDrawing', newDrawing),
 
         vscode.commands.registerCommand('scimax.excalidraw.copyOrgLink', async () => {
             const editor = vscode.window.activeTextEditor;

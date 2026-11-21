@@ -47,7 +47,27 @@ Excalidraw supports multiple file formats, all of which work with this integrati
 - They embed the full Excalidraw scene data, so they remain fully editable
 - They can be displayed in exports (HTML, LaTeX, Markdown)
 
-* Scimax's Excalidraw Editor
+* 👀 Scimax's Excalidraw Editor
+
+** ⚠️ Starting a new drawing
+
+*Scimax: New Drawing* ([[cmd:scimax.excalidraw.newDrawing]]) creates a drawing,
+links it in the note you are in and opens the canvas beside the note:
+
+1. In an org or Markdown file, put the cursor where the drawing belongs.
+2. Run *Scimax: New Drawing* from the Command Palette.
+3. Accept or edit the file name. It is relative to the note and defaults to
+   =diagrams/<heading>.excalidraw.svg=, named after the heading above the
+   cursor.
+4. The link (=[[file:diagrams/x.excalidraw.svg]]=, or =![](...)= in Markdown)
+   goes on the cursor's line if it is empty, else on a new line below it, and
+   the empty drawing opens in the drawing editor.
+
+A name without an Excalidraw extension gets =.excalidraw.svg=. If the file
+already exists, you can link and open it instead. Run from anywhere else, the
+command asks where to save the drawing and opens it.
+
+** The canvas
 
 Opening a drawing (from the Explorer, the Notebooks view, or a link in an org
 file) opens it in the Scimax Excalidraw editor: the full Excalidraw canvas,
@@ -59,6 +79,10 @@ with three buttons at the top right:
 | ＋ Linked box   | =C-c C-b= | Add a box linked to a heading, in the middle of the view        |
 | Status          |           | Show or hide the TODO state of linked headings                  |
 
+Right-clicking the canvas adds the same actions to the top of Excalidraw's
+menu: *Link to note…* (on a shape, or with shapes selected) and *Add linked
+box…*.
+
 The drawing is an ordinary file: edits mark it unsaved, =Cmd+S= saves it, and
 =Cmd+Z= is Excalidraw's own undo. An =.excalidraw.svg= is saved as an SVG with
 the scene embedded, so it is still an image for exports and GitHub. Editing the
@@ -68,11 +92,23 @@ To use the Excalidraw extension instead, right-click the file and choose
 *Open With...*, or set =scimax.excalidraw.editor= to =pomdtr= for links in
 org files.
 
-** Linking a shape to a note
+** 👀 Linking a shape to a note
 
-Select one or more shapes and press *🔗 Link to note* (=C-c C-l=). A picker
-lists every heading in the drawing's project, indented by level, with its
-TODO keyword, outline path and file; type to filter. The list ends with:
+Select one or more shapes and press *🔗 Link to note* (=C-c C-l=), or
+right-click a shape and choose *Link to note…*. A picker
+lists headings, indented by level, with their TODO keyword, outline path and
+file; type to filter. They come in groups:
+
+1. *Notes that link to this drawing*: org files in the drawing's folder or
+   the folder above it (where a =diagrams/x.excalidraw.svg= usually sits),
+   and in the project, that mention the drawing's file name
+2. *Open org files*
+3. *Project*: every org file in the drawing's project (the nearest folder
+   above it with =.projectile=, =.git= or =.scimax=, else the first workspace
+   folder), newest first. A large project such as a journal keeps its 5,000
+   newest files.
+
+The list ends with:
 
 - *Heading in another notebook...*: pick a project, then a heading; the link
   is an =nb:= link, so it works from any notebook
@@ -365,6 +401,7 @@ link in the org file to edit it on the canvas.
 | Command                               | Description                      | Invocation                      |
 |---------------------------------------+----------------------------------+---------------------------------|
 | scimax.org.openExcalidraw             | Open Excalidraw Drawing          | Click on link                   |
+| scimax.excalidraw.newDrawing          | New Drawing                      | Command Palette                 |
 | scimax.excalidraw.copyOrgLink         | Copy Heading Link for Excalidraw | Command Palette                 |
 | scimax.excalidraw.addHeadingToDrawing | Add Heading to Drawing           | Command Palette                 |
 | scimax.notebook.map                   | Notebook Map (Excalidraw)        | Command Palette, Notebooks view |
