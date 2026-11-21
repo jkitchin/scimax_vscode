@@ -1044,7 +1044,7 @@ menu shows how many items have each value:
 filters are remembered for the workspace, and the view always reopens at
 today.
 
-*** 👀 Acting on items
+*** Acting on items
 
 Click an item to select it. Double-click it, or press =Enter= on the selected
 item, to open its heading beside the view. Right-click an item for these actions, which it shares with the project
@@ -1071,7 +1071,7 @@ agenda buffer's hover does. =Escape= or moving on hides it.
 
 The view reloads when the agenda refreshes and whenever an org file is saved.
 
-**** ⚠️ Undoing an action
+**** Undoing an action
 
 Cycling an item to DONE with =t= usually makes it vanish from the view. If that
 was a mistake, press =Cmd+Z= (=Ctrl+Z= on Windows and Linux, or =C-/= / =C-_= as
@@ -1087,7 +1087,7 @@ CLOSED stamp, LOGBOOK note or repeater change the action made. If the file was
 edited some other way since then, it asks before overwriting those edits.
 While the cursor is in the text filter, =Cmd+Z= undoes typing there instead.
 
-*** 👀 Agenda View Keys
+*** Agenda View Keys
 
 The keys follow the agenda buffer where it has the same action:
 

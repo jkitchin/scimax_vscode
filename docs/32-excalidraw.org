@@ -7,7 +7,7 @@
 
 *Keybinding Note:* This extension uses Emacs-style keybindings where Ctrl is used on all platforms (not Cmd on Mac), except where explicitly noted.
 
-* 👀 Overview
+* Overview
 
 Scimax has its own Excalidraw editor for =.excalidraw=, =.excalidraw.json= and
 =.excalidraw.svg= files, built to tie drawings to your org notes: a shape can
@@ -16,7 +16,7 @@ heading's TODO state. Drawings are indexed with your notes, so they show up in
 search, in a heading's back-links and in the link graph. See [[*Scimax's
 Excalidraw Editor]].
 
-** 👀 Prerequisites
+** Prerequisites
 
 Nothing to install for =.excalidraw=, =.excalidraw.json= and =.excalidraw.svg=.
 For =.excalidraw.png= files, or if you prefer it (=scimax.excalidraw.editor=),
@@ -47,7 +47,7 @@ Excalidraw supports multiple file formats, all of which work with this integrati
 - They embed the full Excalidraw scene data, so they remain fully editable
 - They can be displayed in exports (HTML, LaTeX, Markdown)
 
-* ⚠️ Scimax's Excalidraw Editor
+* Scimax's Excalidraw Editor
 
 Opening a drawing (from the Explorer, the Notebooks view, or a link in an org
 file) opens it in the Scimax Excalidraw editor: the full Excalidraw canvas,
@@ -68,7 +68,7 @@ To use the Excalidraw extension instead, right-click the file and choose
 *Open With...*, or set =scimax.excalidraw.editor= to =pomdtr= for links in
 org files.
 
-** ⚠️ Linking a shape to a note
+** Linking a shape to a note
 
 Select one or more shapes and press *🔗 Link to note* (=C-c C-l=). A picker
 lists every heading in the drawing's project, indented by level, with its
@@ -89,7 +89,7 @@ heading's title. From an org file, *Scimax: Add Heading to Drawing*
 ([[cmd:scimax.excalidraw.addHeadingToDrawing]]) adds a box for the heading at
 the cursor to the drawing in view, or to one you pick (or a new one).
 
-** ⚠️ Opening drawings and SVGs from org files
+** Opening drawings and SVGs from org files
 
 Following a link to a drawing (=Enter= or =C-c C-o= on it, or a click) opens
 it in the drawing editor, and a link to any other image (=.svg= included) in
@@ -103,7 +103,7 @@ to the text; from the drawing editor, use the *Show Source* button in the
 editor title bar ([[cmd:scimax.file.showSource]]), since Excalidraw uses
 =Cmd+Shift+V= to paste as plain text.
 
-** ⚠️ Following links
+** Following links
 
 Click a shape's link icon (or the link in its tooltip) and the heading opens
 beside the drawing. Links work with every org link type; =id:=, =nb:=,
@@ -111,7 +111,7 @@ beside the drawing. Links work with every org link type; =id:=, =nb:=,
 the operating-system round trip and "allow this URI?" prompt the Excalidraw
 extension needs.
 
-** ⚠️ Live status on linked shapes
+** Live status on linked shapes
 
 A shape linked to a heading is outlined, and badged with the heading's TODO
 keyword and priority: orange for an open TODO, green for a done one, red for a
@@ -134,7 +134,7 @@ Use standard org-mode link syntax to reference Excalidraw drawings:
 [[_static/drawing.excalidraw]]
 
 
-* 👀 Hover Preview
+* Hover Preview
 
 When you hover over an Excalidraw link, a tooltip appears showing:
 
@@ -162,7 +162,7 @@ CLOSED: [2026-01-18 Sun 08:36]
 
 Clicking an Excalidraw link opens the drawing in the Excalidraw visual editor.
 
-** 👀 Existing Files
+** Existing Files
 
 When you click a link to an existing Excalidraw file, or press =RET= on it
 (=[[cmd:scimax.org.dwimReturn]]=), the same thing happens:
@@ -186,20 +186,20 @@ This makes it easy to create new diagrams - just write the link and click it:
 [[new-diagram.excalidraw][My New Diagram]]
 #+END_SRC
 
-** 👀 Fallback Behavior
+** Fallback Behavior
 
 For =.excalidraw.png= files, or with =scimax.excalidraw.editor= set to
 =pomdtr=, if the Excalidraw extension is not installed:
 1. The file opens as a text document (showing JSON)
 2. A message suggests installing the Excalidraw extension
 
-* ⚠️ Linking Drawings to Your Notes
+* Linking Drawings to Your Notes
 
 Shapes in a drawing can link back into your org notebook: click a box in
 the diagram and VS Code jumps to the heading, custom id, file or line it
 stands for. This turns a figure into a map of your notes.
 
-** ⚠️ How the links work
+** How the links work
 
 Excalidraw keeps one link per element. The Excalidraw editor opens
 =http=, =https= and =mailto= links in the browser and relative file paths
@@ -230,7 +230,7 @@ time it is saved, or with =scimax excalidraw render drawing.excalidraw.svg=.
 The first time you click such a link, VS Code may ask whether to let
 Scimax open the URI. Allow it once and choose to not be asked again.
 
-** 👀 Adding a link by hand
+** Adding a link by hand
 
 In the Scimax editor, use *🔗 Link to note* instead (see [[*Linking a shape
 to a note]]). For the Excalidraw extension:
@@ -245,7 +245,7 @@ to a note]]). For the Excalidraw extension:
 
 Clicking the link icon on the shape now opens the heading.
 
-** ⚠️ Building linked drawings from a spec
+** Building linked drawings from a spec
 
 =scimax excalidraw build= turns a short JSON spec into a drawing. Shapes
 take a =label=, arrows connect shapes by id with =from= and =to=, and
@@ -275,7 +275,7 @@ The SVG that =build= writes has clean shapes and system fonts. The
 Excalidraw editor redraws it in its hand-drawn style the next time you
 save it.
 
-** ⚠️ Asking an AI agent for a diagram
+** Asking an AI agent for a diagram
 
 The =scimax-excalidraw= agent skill (installed with =scimax skill install=)
 does the whole round trip. Ask, for example:
@@ -294,7 +294,7 @@ saves the drawing under =diagrams/= and inserts it into your org file:
 [[file:diagrams/pipeline.excalidraw.svg]]
 #+END_SRC
 
-* ⚠️ Drawings in Search, Back-links and the Link Graph
+* Drawings in Search, Back-links and the Link Graph
 
 The database indexes drawings along with your notes
 (=scimax.db.indexDrawings=, on by default):
@@ -308,7 +308,7 @@ The database indexes drawings along with your notes
 
 Drawings are re-indexed when saved, like org files.
 
-* ⚠️ Notebook Maps
+* Notebook Maps
 
 *Scimax: Notebook Map (Excalidraw)* ([[cmd:scimax.notebook.map]]), also on a
 notebook's right-click menu and its *Drawings* section in the Notebooks view,
@@ -325,7 +325,7 @@ editor, where its boxes open their headings and show their TODO state, and
 you can rearrange it like any drawing. Running the command again asks before
 replacing it.
 
-* ⚠️ Interactive Figures in HTML Export
+* Interactive Figures in HTML Export
 
 A bare link to a drawing (no description), such as
 =[[file:diagrams/pipeline.excalidraw.svg]]=, is exported to HTML as an
@@ -351,7 +351,7 @@ before it is inlined. A link with a description, a missing file, or a
 drawing over 20 MB is exported as before (an image or a plain link).
 Clipboard export does not inline drawings.
 
-** 👀 Drawings in the org preview
+** Drawings in the org preview
 
 The org preview (=[[cmd:scimax.org.preview.openToSide]]=) inlines drawings
 the same way, so their shapes are clickable there too. Clicking a shape
@@ -360,7 +360,7 @@ heading (matched by its exported id or =CUSTOM_ID=). Links to Markdown files
 open the =.md= file. The drawing is not editable in the preview; open the
 link in the org file to edit it on the canvas.
 
-* 👀 Commands
+* Commands
 
 | Command                               | Description                      | Invocation                      |
 |---------------------------------------+----------------------------------+---------------------------------|
@@ -369,7 +369,7 @@ link in the org file to edit it on the canvas.
 | scimax.excalidraw.addHeadingToDrawing | Add Heading to Drawing           | Command Palette                 |
 | scimax.notebook.map                   | Notebook Map (Excalidraw)        | Command Palette, Notebooks view |
 
-** ⚠️ Settings
+** Settings
 
 | Setting                      | Default  | Description                                                |
 |------------------------------+----------+------------------------------------------------------------|
@@ -423,7 +423,7 @@ meaningful diffs for the SVG portions.
 * ✅ Troubleshooting
 CLOSED: [2026-01-18 Sun 08:40]
 
-** 👀 Drawing won't open in visual editor
+** Drawing won't open in visual editor
 
 - If VS Code asks which editor to use, pick *Scimax Excalidraw* (both it and
   the Excalidraw extension can open drawings); *Open With...* changes it later
@@ -450,8 +450,7 @@ Ensure the file extension is one of:
 - =.excalidraw.svg=
 - =.excalidraw.png=
 
-* 👀 Related Topics
-CLOSED: [2026-01-18 Sun 08:40]
+* Related Topics
 
 - [[file:05-links.org][Hyperlinks]] - General link syntax and handling
 - [[file:12-image-overlays.org][Image Overlays]] - Inline image display

@@ -102,7 +102,7 @@ The older =scimax.emailHeading.client= and =scimax.emailHeading.gmailAccount= se
 }
 #+end_src
 
-*** 👀 scimax.emailHeading.includeId / .recordSent / .markDone
+*** scimax.emailHeading.includeId / .recordSent / .markDone
 
 Settings for =Scimax: Email Heading= (=scimax.org.emailHeading=). See [[file:10-export.org::*Email a Heading][Email a Heading]]. The mail client and account come from =scimax.mail.client= and =scimax.mail.gmailAccount=.
 
@@ -551,7 +551,7 @@ CLOSED: [2026-10-02 Fri 06:58]
 }
 #+end_src
 
-*** ⚠️ scimax.db.indexDrawings
+*** scimax.db.indexDrawings
 
 - *Type*: boolean
 - *Default*: =true=
@@ -1526,7 +1526,7 @@ Configure the project-based notebook system.
 }
 #+end_src
 
-*** ⚠️ scimax.excalidraw.editor
+*** scimax.excalidraw.editor
 
 - *Type*: string (=scimax= or =pomdtr=)
 - *Default*: =scimax=
@@ -1535,7 +1535,7 @@ Configure the project-based notebook system.
   open in VS Code, TODO status on linked shapes); =pomdtr= is the Excalidraw
   Editor extension. =.excalidraw.png= always opens in the extension.
 
-*** ⚠️ scimax.excalidraw.linkWithId
+*** scimax.excalidraw.linkWithId
 
 - *Type*: boolean
 - *Default*: =true=
@@ -1544,7 +1544,7 @@ Configure the project-based notebook system.
   survives renaming or moving it. When =false=, the link uses the heading's
   title.
 
-*** ⚠️ scimax.notebook.openLinksInNewWindow
+*** scimax.notebook.openLinksInNewWindow
 
 - *Type*: boolean
 - *Default*: `true'
@@ -1734,7 +1734,7 @@ color must be opaque. Any CSS color works.
 - [[file:24-keybindings.org][Keybindings]] - Jump keybindings (=C-c j c=, =C-c j w=, …)
 - [[file:25-commands.org][Commands]] - Full command reference
 
-* 👀 Kill Ring Settings
+* Kill Ring Settings
 
 | Setting                      | Type    | Default | Description                                                    |
 |------------------------------+---------+---------+----------------------------------------------------------------|
@@ -1747,7 +1747,7 @@ color must be opaque. Any CSS color works.
 ring is full, the oldest kill is dropped. The ring lives in memory only and
 starts empty each session.
 
-** 👀 Auto-Copy
+** Auto-Copy
 
 With =scimax.autoCopy.enabled= on (the default), text you highlight with the
 mouse is copied as soon as you release it. Keyboard selections are never

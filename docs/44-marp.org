@@ -1184,7 +1184,7 @@ another machine or share it, press =s=: the browser downloads one HTML file
 with the theme, images, iframes, fonts, tools and ink inside. Open it
 anywhere, keep annotating, and press =s= again.
 
-** 👀 Live Python cells
+** Live Python cells
 
 Mark a Python code block with ~run~ to make it a cell you can edit and run
 during the talk:
@@ -1247,7 +1247,7 @@ The cell has to pause Python while you type, which needs WebAssembly JSPI:
 without it, ~input()~ stops the cell with a message saying so; set the value in
 the code instead. A ~run hidden~ setup cell gets no input (~EOFError~).
 
-*** ⚠️ Data files and ~display()~
+*** Data files and ~display()~
 
 Python runs in the browser, which cannot read files from your disk, so the deck
 carries the data files its cells read. Any file a cell names in quotes,
@@ -1312,7 +1312,7 @@ deck opens, along with the packages the cells import.
 In PDF, PowerPoint and image exports a ~run~ cell is ordinary highlighted code,
 and a ~run hidden~ cell is left out.
 
-** 👀 Running cells in VS Code
+** Running cells in VS Code
 
 Press =C-c C-c= in a ~run~ cell to run it while you write the deck, without
 presenting. The output shows in a /Python/ panel beside the editor, from the
@@ -1542,7 +1542,7 @@ Fragment sections (~***~ headings) are raw HTML. A deck with ~presenter: true~
 (the default) always allows HTML. For other decks, turn on
 ~scimax.marp.enableHtml~, or the section shows all at once.
 
-** 👀 Keywords
+** Keywords
 
 Keywords in the file override the [[*Org export settings][settings]].
 

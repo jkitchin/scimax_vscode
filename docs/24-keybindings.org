@@ -376,7 +376,7 @@ Like the Markdown preview, but for org files. See [[file:46-org-preview.org][Org
 | Cmd+K V     | Ctrl+C Shift+V      | Org editor  | Open preview to the side   |
 | Cmd+Shift+V | Ctrl+Shift+V        | Org preview | Back to the org source     |
 
-* ⚠️ SVG and Drawing Preview
+* SVG and Drawing Preview
 
 | Key (macOS) | Key (Windows/Linux) | Where                                          | Action                        |
 |-------------+---------------------+------------------------------------------------+-------------------------------|
@@ -613,7 +613,7 @@ Emacs-style mark and region commands.
 | C-x C-x           | Exchange point and mark    |
 | C-c M             | Show mark ring             |
 
-* 👀 Kill Ring (Emacs-style)
+* Kill Ring (Emacs-style)
 
 Kills and copies go onto a kill ring as well as the system clipboard, so you can
 yank older kills, not just the last one. See [[file:25-commands.org::#kill-ring][Kill Ring commands]] for details.
@@ -628,7 +628,7 @@ yank older kills, not just the last one. See [[file:25-commands.org::#kill-ring]
 | C-k                | Kill to end of line (repeated C-k joins into one kill)             |
 | Backspace / Delete | On a just auto-copied mouse selection: delete it and undo the copy |
 
-** ⚠️ Keybinding Conflicts with Other Extensions
+** Keybinding Conflicts with Other Extensions
 
 Some scimax keys are a single keystroke with no =when= condition, most
 importantly =M-x= (=alt+x=, the command palette). If another extension binds a
@@ -646,7 +646,7 @@ The known case is the Magit extension (=kahole.magit=), which binds:
 
 With Magit installed, M-x stops opening the command palette.
 
-** ⚠️ Automatic Detection
+** Automatic Detection
 
 On startup, and whenever extensions are installed or removed, scimax checks
 whether any other extension has a chord that starts with one of its global
@@ -664,7 +664,7 @@ files, and scimax's =ctrl+;= (comment line) keeps working in org files.
 Run [[cmd:scimax.checkKeybindingConflicts]] (=Scimax: Check Keybinding
 Conflicts=) from the command palette to check at any time.
 
-** ⚠️ Fixing the Conflict
+** Fixing the Conflict
 
 Remove the conflicting chords in your user =keybindings.json= (=Preferences:
 Open Keyboard Shortcuts (JSON)=). For Magit, you can rebind status to the

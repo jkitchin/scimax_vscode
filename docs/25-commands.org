@@ -852,7 +852,7 @@ Commands for visualizing file connections through links.
 | [[cmd:scimax.showLinkGraphForFile]]  | Show Link Graph for File        | -                  |
 | [[cmd:scimax.showLinkStats]]         | Show Link Statistics            | -                  |
 
-** 👀 Troubleshooting and Diagnostics
+** Troubleshooting and Diagnostics
 
 Commands for debugging issues and reporting problems.
 
@@ -1023,7 +1023,7 @@ Commands for managing journal name abbreviations in BibTeX entries.
 | [[cmd:scimax.bibtex.manageJournalAbbreviations]]| Manage Custom Journal Abbreviations  | -                  |
 | [[cmd:scimax.bibtex.journalAbbreviationStats]]  | Journal Abbreviation Statistics      | -                  |
 
-* 👀 Notebook
+* Notebook
 
 | Command ID                          | Description                   | Default Keybinding |
 |-------------------------------------+-------------------------------+--------------------|
@@ -1848,7 +1848,7 @@ environment, killing or copying a BibTeX entry, the jump kill-line and
 copy-line actions, and rectangle kill and copy. Rectangle yank (=C-x r y=)
 still inserts the last killed rectangle as a rectangle.
 
-** 👀 Auto-Copy (Copy on Select)
+** Auto-Copy (Copy on Select)
 :PROPERTIES:
 :CUSTOM_ID: auto-copy
 :END:
