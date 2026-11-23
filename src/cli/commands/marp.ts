@@ -24,6 +24,7 @@ import { scimaxGlobalStorageDir } from '../globalStorage';
 import { parseJsonc, readVSCodeSettings } from '../settings';
 import { appWindowCommand, openAppWindow, presentWindow, resolveAppBrowser, systemSearch } from '../../marp/appWindow';
 import { pathToFileURL } from 'url';
+import { marpExportOptionsFromSettings, writeMarpDeck } from '../marpFromOrg';
 
 interface CliConfig {
     dbPath: string;
@@ -110,9 +111,11 @@ export function marpCliSettings(
     };
 }
 
-const USAGE = `Usage: scimax marp build <deck.md> [options] [-- marp options]
+const USAGE = `Usage: scimax marp build <deck.md|talk.org> [options] [-- marp options]
 
 Build a Marp deck into one self-contained HTML file with presenter tools.
+An org file is first exported to a deck next to it (talk.md, or its
+#+EXPORT_FILE_NAME), as C-c C-e m s does in VS Code, and that deck is built.
 
 Options:
     -o, --output <file>   HTML to write (default: the deck with .html)
@@ -229,9 +232,17 @@ export async function marpCommand(_config: CliConfig, args: ParsedArgs): Promise
         process.exit(1);
     }
     const json = args.flags.json === true;
-    const input = path.resolve(args.args[1]);
-    if (!fs.existsSync(input)) {
-        throw new Error(`File not found: ${input}`);
+    const given = path.resolve(args.args[1]);
+    if (!fs.existsSync(given)) {
+        throw new Error(`File not found: ${given}`);
+    }
+    // An org file: export it to a deck first, with the scimax.export.marp settings.
+    const orgFile = /\.org$/i.test(given) ? given : undefined;
+    const input = orgFile
+        ? writeMarpDeck(orgFile, marpExportOptionsFromSettings(readVSCodeSettings(), findWorkspaceSettings(path.dirname(orgFile))?.settings))
+        : given;
+    if (orgFile && !json) {
+        console.error(`Exported ${path.basename(orgFile)} to ${path.basename(input)}`);
     }
     const outFlag = args.flags.output ?? args.flags.o;
     const output = path.resolve(typeof outFlag === 'string' ? outFlag : input.replace(/\.[^./\\]+$/, '') + '.html');
@@ -324,7 +335,8 @@ export async function marpCommand(_config: CliConfig, args: ParsedArgs): Promise
     if (json) {
         console.log(JSON.stringify({
             success: true,
-            input_file: input,
+            input_file: orgFile ?? input,
+            deck: input,
             output,
             pdf,
             presenter,

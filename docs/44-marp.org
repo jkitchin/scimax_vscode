@@ -1484,12 +1484,17 @@ style: |
 - PDF and PowerPoint exports show a movie's poster and an empty box for a web
   page. Put the link under it for a handout.
 
-* Writing Slides in Org
+* 👀 Writing Slides in Org
 
 You can write a talk as an org file and export it to a Marp deck. In the org
 file, =C-c C-e m s= writes ~talk.md~ next to ~talk.org~. =C-c C-e m S= also
 opens the ~.md~ file, and =C-c C-e m p= starts the slideshow. Each export
 replaces the ~.md~ file, so edit the org file, not the deck.
+
+From a terminal, =scimax export talk.org --format marp= writes the same
+~talk.md~, and =scimax marp build talk.org= exports it and builds the
+slideshow HTML with the presenter tools in one step (see
+[[file:30-cli.org::*Marp Slides][CLI: Marp Slides]]).
 
 =C-c C-e m p= starts at the slide the cursor is on: the heading above the
 cursor, or the slide after a ~-----~ break, counting the title slide and
