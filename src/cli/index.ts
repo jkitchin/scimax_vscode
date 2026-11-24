@@ -6,14 +6,14 @@
  *   scimax agenda [today|week|todos|overdue|custom <key>|store]
  *   scimax search <query> [--semantic]
  *   scimax search headings [query] [-t tag] [--todo STATE]
- *   scimax export <file> [--format html|pdf|latex|beamer|beamer-pdf]
+ *   scimax export <file> [--format html|pdf|latex|beamer|beamer-pdf|marp]
  *   scimax cite [extract|check] <file>
  *   scimax db [sync|clear|stats|scan|check|remove|ignore]
  *   scimax journal [date]
  *   scimax project [query] [--add path] [--list]
  *   scimax task [next|list|who|show|path|done|assign|files]
  *   scimax publish [project] [--init|--list]
- *   scimax marp build <deck.md> [--open] [--pdf] [-- marp options]
+ *   scimax marp build <deck.md|talk.org> [--open] [--pdf] [-- marp options]
  */
 
 // Must be first: installs a 'vscode' module stub so CLI can load code that
@@ -102,7 +102,7 @@ COMMANDS:
     agenda [view]           Show agenda (today, week, todos, overdue, custom <key>, store)
     search <query>          Full-text search across org files
     search headings         Search headings by title, tag, or TODO state
-    export <file>           Export org file to HTML, PDF, or LaTeX
+    export <file>           Export org file to HTML, PDF, LaTeX, or a Marp deck
     tangle <file>           Extract source blocks to their :tangle target files
     table align <file>...   Align org/Markdown tables in place (--check, --line, --stdout)
     excalidraw <subcommand> Build, render and check Excalidraw drawings (build, render, check, links, json)
@@ -112,7 +112,7 @@ COMMANDS:
     project [query]         Fuzzy-select and open a known project in VS Code
     task <subcommand>       Project tasks (next, list, who, show, path, done, assign)
     publish [project]       Publish org project(s) to HTML
-    marp build <deck.md>    Build a Marp deck into one HTML file with presenter tools
+    marp build <deck.md>    Build a Marp deck (or an org file) into one HTML file with presenter tools
     skill <subcommand>      Manage the scimax agent skills (Claude Code, VS Code, Codex, ...)
     help                    Show this help message
 
@@ -127,6 +127,7 @@ EXAMPLES:
     scimax export paper.org --format html
     scimax export slides.org --format beamer
     scimax export slides.org --format beamer-pdf
+    scimax export talk.org --format marp
     scimax export memo.org --exporter cmu-memo
     scimax export --list-exporters
     scimax tangle setup.org
@@ -159,6 +160,7 @@ EXAMPLES:
     scimax publish
     scimax publish --init
     scimax marp build talk.md --open
+    scimax marp build talk.org --open
     scimax marp build talk.md --pdf -- --theme-set theme/custom.css
     scimax skill install
     scimax skill update
@@ -167,7 +169,7 @@ OPTIONS:
     --help, -h              Show help for a command
     --db <path>             Override database path
     --json                  Output structured JSON (agenda, search, db stats, cite, export, publish)
-    --format <fmt>          Output format for export (html, pdf, latex, beamer, beamer-pdf)
+    --format <fmt>          Output format for export (html, pdf, latex, beamer, beamer-pdf, marp)
     --exporter <id>         Use a custom exporter (e.g., cmu-memo)
     --list-exporters        List available custom exporters
     --output <path>         Output file or directory

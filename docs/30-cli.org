@@ -242,9 +242,9 @@ Deep Learning Overview (score: 10.21)
   "...introduction to machine learning and..."
 #+end_example
 
-** Export
+** 👀 Export
 
-Export org files to HTML, LaTeX, or PDF.
+Export org files to HTML, LaTeX, PDF, Beamer, or a Marp deck.
 
 #+begin_src bash
 # Export to HTML
@@ -264,6 +264,9 @@ scimax export slides.org --format beamer
 
 # Compile Beamer slides to PDF
 scimax export slides.org --format beamer-pdf
+
+# Export to a Marp deck (talk.md), as C-c C-e m s does in VS Code
+scimax export talk.org --format marp
 
 # Specify output file
 scimax export paper.org --format html --output build/paper.html
@@ -295,6 +298,12 @@ For =--format latex= and =--format pdf=, a document that names a custom exporter
 with =#+EXPORTER:=, or whose =#+LATEX_CLASS= is mapped in
 =scimax.export.latexClassExporters=, is routed to that exporter, as in the
 editor.
+
+=--format marp= writes the Markdown deck next to the org file (or to
+=#+EXPORT_FILE_NAME= / =--output=), with =#+INCLUDE= expanded and the
+=scimax.export.marp.*= settings applied. Build the slideshow from it with
+=scimax marp build= (see [[*Marp Slides][Marp Slides]]), or give that command the org file
+directly.
 
 ** ✅ Tangle
 CLOSED: [2026-07-11 Sat 09:08]
@@ -350,7 +359,7 @@ on: =[[url][desc]]= counts as =desc=. Pass =--raw-links= to measure links as
 written, which is how Emacs =org-table-align= lines them up. Tables inside
 blocks (=#+begin_src= ... =#+end_src=, Markdown code fences) are not touched.
 
-** Marp Slides
+** 👀 Marp Slides
 
 Build a Marp deck into one self-contained HTML file with the presenter tools
 (pen, laser, spotlight, sticky notes, talk timer, saving with ink, live Python
@@ -362,6 +371,9 @@ the first time).
 #+begin_src bash
 # deck.md -> deck.html with presenter tools
 scimax marp build talk.md
+
+# An org file: export it to talk.md, then build talk.html
+scimax marp build talk.org --open
 
 # Build and open it in the browser
 scimax marp build talk.md --open
@@ -381,6 +393,14 @@ scimax marp build talk.md -- --theme-set theme/custom.css
 # JSON result (output, inlined counts, missing files, web references, offline issues)
 scimax marp build talk.md --json
 #+end_src
+
+Given an org file, =scimax marp build= first exports it to a deck next to it
+(=talk.md=, or =#+EXPORT_FILE_NAME=), as =C-c C-e m s= does in VS Code: with
+=#+INCLUDE= expanded and the =scimax.export.marp.*= settings (user, then the
+nearest =.vscode/settings.json=). Each build replaces that =.md= file, so edit
+the org file, not the deck. To export without building, use
+=scimax export talk.org --format marp=. See
+[[file:44-marp.org::*Writing Slides in Org][Writing Slides in Org]] for how org maps to slides.
 
 From the CLI every deck gets the presenter tools unless its front matter says
 ~presenter: false~. ~presenter: offline~ embeds Python and the packages the

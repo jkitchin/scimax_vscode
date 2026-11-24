@@ -11,7 +11,7 @@ import { exportToHtml } from '../../parser/orgExportHtml';
 import { exportToLatex } from '../../parser/orgExportLatex';
 import { exportToBeamer, BeamerExportOptions } from '../../parser/orgExportBeamer';
 import { parseBibTeX } from '../../references/bibtexParser';
-import { loadSettings, expandPath, ExportSettings, RefSettings } from '../settings';
+import { loadSettings, expandPath, ExportSettings, RefSettings, readVSCodeSettings } from '../settings';
 import { extractFirstLatexError } from './latexLog';
 import {
     initializeExporterRegistry,
@@ -20,6 +20,8 @@ import {
     getDefaultExporterPaths,
     resolveCustomExporterRouteForContent,
 } from '../../export/customExporter';
+import { marpExportOptionsFromSettings, writeMarpDeck } from '../marpFromOrg';
+import { findWorkspaceSettings } from './marp';
 import {
     loadBuildProfiles,
     resolveBuildProfile,
@@ -72,7 +74,7 @@ export async function exportCommand(config: CliConfig, args: ParsedArgs): Promis
     const inputFile = args.args[0];
 
     if (!inputFile && !args.flags['list-exporters']) {
-        console.error('Usage: scimax export <file.org> [--format html|latex|pdf|beamer|beamer-pdf] [--exporter <id>] [--output path] [--json]');
+        console.error('Usage: scimax export <file.org> [--format html|latex|pdf|beamer|beamer-pdf|marp] [--exporter <id>] [--output path] [--json]');
         console.error('       scimax export --list-exporters');
         process.exit(1);
     }
@@ -152,6 +154,32 @@ export async function exportCommand(config: CliConfig, args: ParsedArgs): Promis
     // Custom exporter path (bypasses normal format switch)
     if (exporterId) {
         await runCustomExporter(exporterId, content, inputPath, outputPath, settings.export, json, verbose);
+        return;
+    }
+
+    // Marp deck (Markdown), as C-c C-e m s writes it; `scimax marp build`
+    // turns it (or the org file itself) into HTML.
+    if (format === 'marp') {
+        const dir = path.dirname(inputPath);
+        const options = marpExportOptionsFromSettings(readVSCodeSettings(), findWorkspaceSettings(dir)?.settings);
+        let deck: string;
+        try {
+            deck = writeMarpDeck(inputPath, options, outputPath);
+        } catch (error) {
+            const msg = error instanceof Error ? error.message : String(error);
+            if (json) {
+                console.log(JSON.stringify({ success: false, error: `Marp export failed: ${msg}` }));
+            } else {
+                console.error(`Marp export failed: ${msg}`);
+            }
+            process.exit(1);
+        }
+        if (json) {
+            console.log(JSON.stringify({ success: true, input_file: inputPath, output_path: deck, format }));
+        } else {
+            console.log(`Exported to: ${deck}`);
+            console.log(`Build the slideshow with: scimax marp build ${path.relative(process.cwd(), deck) || deck}`);
+        }
         return;
     }
 
@@ -261,10 +289,10 @@ export async function exportCommand(config: CliConfig, args: ParsedArgs): Promis
 
         default:
             if (json) {
-                console.log(JSON.stringify({ success: false, error: `Unknown format: ${format}. Supported: html, latex, pdf, beamer, beamer-pdf` }));
+                console.log(JSON.stringify({ success: false, error: `Unknown format: ${format}. Supported: html, latex, pdf, beamer, beamer-pdf, marp` }));
             } else {
                 console.error(`Unknown format: ${format}`);
-                console.error('Supported formats: html, latex, pdf, beamer, beamer-pdf');
+                console.error('Supported formats: html, latex, pdf, beamer, beamer-pdf, marp');
             }
             process.exit(1);
     }

@@ -46,6 +46,8 @@ org-mode operation either. If the CLI cannot do what is needed, tell the user an
 | Export org to Beamer LaTeX | `scimax export slides.org --format beamer` |
 | Compile Beamer to PDF | `scimax export slides.org --format beamer-pdf` |
 | Build a Marp deck (one HTML file + presenter tools) | `scimax marp build talk.md --open` |
+| Export org to a Marp deck (`talk.md`) | `scimax export talk.org --format marp` |
+| Export org to Marp and build it in one step | `scimax marp build talk.org --open` |
 | Build a poster (HTML + full-size PDF) | `scimax marp build poster.md --pdf` |
 
 - **org → Beamer** (`scimax export slides.org --format beamer-pdf`): LaTeX-quality PDF slides
@@ -57,8 +59,13 @@ org-mode operation either. If the CLI cannot do what is needed, tell the user an
   ```` ```python run ```` blocks become editable, runnable Python cells (Pyodide), warmed up in the
   background when the deck opens.
 
-Default to Marp + `scimax marp build` for lectures and talks shown from a browser, and to Beamer when
-the source is org or the output must be a PDF. If `scimax marp` is not available, build with plain
+- **org → Marp** (`scimax marp build talk.org`): the org file is exported to `talk.md` next to
+  it (as `C-c C-e m s` does in VS Code, with `#+INCLUDE` expanded and the
+  `scimax.export.marp.*` settings), then built. Each build replaces `talk.md`, so edit the org
+  file, not the deck.
+
+Default to Marp + `scimax marp build` for lectures and talks shown from a browser (from an org
+source too), and to Beamer when the output must be a LaTeX-quality PDF. If `scimax marp` is not available, build with plain
 Marp CLI and say that the presenter tools are missing. Put `presenter: true` in the front matter of every new
 Marp deck (unless the user asks for a plain slideshow). When handing over a Marp deck, list the
 presenter keys from the reference.
