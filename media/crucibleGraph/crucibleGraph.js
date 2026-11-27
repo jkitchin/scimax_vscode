@@ -462,13 +462,13 @@
         }
     });
 
-    /** A click: open an article or source; centre on a concept tag. */
+    /** A click: open an article or source; filter by a concept tag. */
     function activate(n) {
         if (n.path) {
             focus(n.id, true);
             vscode.postMessage({ type: 'open', path: n.path });
-        } else {
-            focus(n.id, true);
+        } else if (n.type === 'concept') {
+            addTagFilter(n.label);
         }
     }
 
@@ -501,7 +501,8 @@
         meta.textContent = `${n.meta} · ${neighbours.get(n.id).size} connections`;
         const hint = document.createElement('div');
         hint.className = 'meta';
-        hint.textContent = n.path ? 'Click to open' : 'Click to centre';
+        hint.textContent = n.path ? 'Click to open'
+            : filter.tags.includes(n.label) ? 'Already a tag filter' : 'Click to show only articles with this tag';
         tooltip.append(title, meta, hint);
         tooltip.hidden = false;
         moveTooltip(ev);
@@ -616,12 +617,16 @@
             if (name) setStatus(`No tag "${name}"`, true);
             return;
         }
-        if (!filter.tags.includes(tag.label)) {
-            filter.tags.push(tag.label);
+        addTagFilter(tag.label);
+    });
+
+    function addTagFilter(tag) {
+        if (!filter.tags.includes(tag)) {
+            filter.tags.push(tag);
             renderChips();
             refilter();
         }
-    });
+    }
 
     for (const box of typeBoxes) {
         box.addEventListener('change', () => {
