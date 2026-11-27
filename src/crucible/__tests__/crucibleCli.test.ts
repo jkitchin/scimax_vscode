@@ -3,7 +3,8 @@ import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
 import {
-    CrucibleCliError, findCrucibleRoot, lintIssueRange, listWikiArticles, orgTitle, runCrucible, runCrucibleJson,
+    CrucibleCliError, askPrompt, distillPrompt, findCrucibleRoot, graphNodeForFile, lintIssueRange, listWikiArticles, orgTitle, parseIngestOutput,
+    runCrucible, runCrucibleJson, sourceCiteKey,
 } from '../crucibleCli';
 
 let tmp: string;
@@ -104,5 +105,109 @@ describe('lintIssueRange', () => {
 
     it('puts other issues on the first line', () => {
         expect(lintIssueRange({ type: 'missing_tags', severity: 'warning', message: '' }, text)).toEqual([0, 0, 0]);
+    });
+});
+
+describe('parseIngestOutput', () => {
+    it('reads a new ingest', () => {
+        const output = [
+            'Ingested: Test notes',
+            '  Source ID: 1',
+            '  Cite key: test2026',
+            '  Type: notebook (shareable)',
+            '  Stored: .crucible/sources/notebooks/notes.org',
+            '  Extracted: 51 chars',
+            '',
+            'Ready for distillation. Use citep:test2026 in articles.',
+        ].join('\n');
+        expect(parseIngestOutput(output)).toEqual({
+            title: 'Test notes', citeKey: 'test2026',
+            stored: '.crucible/sources/notebooks/notes.org', alreadyIngested: false,
+        });
+    });
+
+    it('reads a repeat ingest', () => {
+        const output = [
+            'Already ingested (identical content): Test notes',
+            '  Source ID: 1',
+            '  Cite key: test2026',
+            '  Stored: .crucible/sources/notebooks/notes.org',
+            '  Skipped: no changes made.',
+        ].join('\n');
+        const result = parseIngestOutput(output);
+        expect(result.alreadyIngested).toBe(true);
+        expect(result.title).toBe('Test notes');
+        expect(result.citeKey).toBe('test2026');
+    });
+
+    it('tolerates output it does not recognize', () => {
+        expect(parseIngestOutput('something else')).toEqual({
+            title: undefined, citeKey: undefined, stored: undefined, alreadyIngested: false,
+        });
+    });
+});
+
+describe('sourceCiteKey', () => {
+    const source = { id: 1, path: 'p', title: 't', source_type: 'pdf' };
+    it('reads the key from the metadata JSON', () => {
+        expect(sourceCiteKey({ ...source, metadata: '{"cite_key": "smith2024", "content_hash": "x"}' })).toBe('smith2024');
+    });
+    it('is undefined without metadata or a key', () => {
+        expect(sourceCiteKey({ ...source, metadata: null })).toBeUndefined();
+        expect(sourceCiteKey({ ...source, metadata: '{}' })).toBeUndefined();
+        expect(sourceCiteKey({ ...source, metadata: 'not json' })).toBeUndefined();
+    });
+});
+
+describe('distillPrompt', () => {
+    const source = { path: '.crucible/sources/notebooks/notes.org', title: 'Test notes', citeKey: 'test2026' };
+
+    it('names the crucible, source and cite key, and asks for a plan first', () => {
+        const prompt = distillPrompt('/kb', source);
+        expect(prompt).toContain('crucible at /kb');
+        expect(prompt).toContain(path.join('/kb', source.path));
+        expect(prompt).toContain('cite key test2026');
+        expect(prompt).toContain('SOURCE_KEYS set to test2026');
+        expect(prompt).toMatch(/plan .* before writing anything/);
+        expect(prompt).not.toContain('Focus on');
+    });
+
+    it('adds a focus when given', () => {
+        expect(distillPrompt('/kb', source, '  the kinetics  ')).toMatch(/Focus on: the kinetics\.$/);
+        expect(distillPrompt('/kb', source, '   ')).not.toContain('Focus on');
+    });
+
+    it('works without a cite key', () => {
+        const prompt = distillPrompt('/kb', { path: 'x.pdf', title: 'X' });
+        expect(prompt).not.toContain('cite key');
+        expect(prompt).toContain('SOURCE_KEYS set,');
+    });
+});
+
+describe('graphNodeForFile', () => {
+    const graph = {
+        root: '/kb',
+        nodes: [
+            { id: 'a1', type: 'article' as const, path: '.crucible/wiki/concepts/x.org', title: 'X' },
+            { id: 's1', type: 'source' as const, path: '.crucible/sources/notebooks/x.org', title: 'X' },
+            { id: 'c1', type: 'concept' as const, name: 'x', article_count: 1 },
+        ],
+        edges: [],
+    };
+    it('finds the article at a file', () => {
+        expect(graphNodeForFile(graph, '/kb/.crucible/wiki/concepts/x.org')).toBe('a1');
+    });
+    it('ignores sources and other files', () => {
+        expect(graphNodeForFile(graph, '/kb/.crucible/sources/notebooks/x.org')).toBeUndefined();
+        expect(graphNodeForFile(graph, '/elsewhere/x.org')).toBeUndefined();
+    });
+});
+
+describe('askPrompt', () => {
+    it('names the crucible and question, and keeps the wiki unedited', () => {
+        const prompt = askPrompt('/kb', '  What limits NSF CAREER success?  ');
+        expect(prompt).toContain('crucible knowledge base at /kb: What limits NSF CAREER success?\n');
+        expect(prompt).toContain('from /kb');
+        expect(prompt).toContain('Do not edit the wiki.');
     });
 });

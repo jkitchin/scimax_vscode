@@ -1,6 +1,6 @@
 {
-  "buildDate": "2026-11-23T23:15:06.247Z",
-  "count": 3844,
+  "buildDate": "2026-11-27T18:11:01.799Z",
+  "count": 3846,
   "entries": [
     {
       "heading": "Scimax VS Code",
@@ -78733,7 +78733,7 @@
       "level": 2,
       "file": "25-commands.org",
       "line": 98,
-      "content": "Browse and search [[https://github.com/jkitchin/crucible][crucible]] wikis, and show the graph around an article. See [[file:48-crucible.org][Crucible Knowledge Bases]]. | Command ID                        | Description                                     | Default Keybinding | |-----------------------------------+-------------------------------------------------+--------------------| | [[cmd:scimax.crucible.search]]    | Search a crucible                               | -                  | | [",
+      "content": "Browse and search [[https://github.com/jkitchin/crucible][crucible]] wikis, show the graph around an article, ingest files and distill sources. See [[file:48-crucible.org][Crucible Knowledge Bases]]. | Command ID                    | Description                                     | Default Keybinding | |-------------------------------+-------------------------------------------------+--------------------| | [[cmd:scimax.crucible.search]]    | Search a crucible                               | - ",
       "path": [
         "Document Structure"
       ],
@@ -78753,20 +78753,22 @@
         "graph",
         "around",
         "article",
+        "ingest",
+        "distill",
+        "sources",
         "file48-crucibleorg",
         "command",
         "description",
         "default",
         "keybinding",
-        "--------------------------------------------------------------------------------------------------------",
-        "cmd"
+        "----------------------------------------------------------------------------------------------------"
       ]
     },
     {
       "heading": "DWIM Commands",
       "level": 2,
       "file": "25-commands.org",
-      "line": 115,
+      "line": 119,
       "content": "CLOSED: [2026-04-12 Sun 19:53] | Command ID                    | Description                         | Default Keybinding | |-------------------------------+-------------------------------------+--------------------| | [[cmd:scimax.org.dwimReturn]] | DWIM Return                         | -                  | | [[cmd:scimax.insertNewline]]  | Insert Newline                      | -                  | | [[cmd:scimax.org.dwimComment]]| DWIM Comment (toggle =# = on lines) | M-;                |",
       "path": [
         "Document Structure"
@@ -78802,7 +78804,7 @@
       "heading": "Org Utility Commands",
       "level": 2,
       "file": "25-commands.org",
-      "line": 124,
+      "line": 128,
       "content": "CLOSED: [2026-04-12 Sun 19:53] | Command ID                            | Description              | Default Keybinding | |---------------------------------------+--------------------------+--------------------| | [[cmd:scimax.org.updateStatistics]]   | Update Statistics Cookie | -                  | | [[cmd:scimax.org.renumberList]]       | Renumber Ordered List    | -                  | | [[cmd:scimax.org.updateDynamicBlock]] | Update Dynamic Block     | C-c C-x C-u (org)  | | [[cmd:scimax.org.",
       "path": [
         "Document Structure"
@@ -78843,7 +78845,7 @@
       "heading": "Lists",
       "level": 2,
       "file": "25-commands.org",
-      "line": 134,
+      "line": 138,
       "content": "CLOSED: [2026-01-24 Sat 17:41] Commands for manipulating org-mode and markdown lists. | Command ID                       | Description            | Default Keybinding | |----------------------------------+------------------------+--------------------| | [[cmd:scimax.list.cycleIndent]]  | Cycle List Item Indent | -                  | | [[cmd:scimax.list.cycleOutdent]] | Cycle List Item Outdent| -                  |",
       "path": [
         "Document Structure"
@@ -78880,7 +78882,7 @@
       "heading": "TODO and Tasks",
       "level": 1,
       "file": "25-commands.org",
-      "line": 144,
+      "line": 148,
       "content": "",
       "path": [],
       "commands": [],
@@ -78894,7 +78896,7 @@
       "heading": "TODO Keywords",
       "level": 2,
       "file": "25-commands.org",
-      "line": 146,
+      "line": 150,
       "content": "CLOSED: [2026-01-17 Sat 12:24] | Command ID                    | Description             | Default Keybinding | |-------------------------------+-------------------------+--------------------| | [[cmd:scimax.org.cycleTodo]]  | Cycle TODO State        | C-c C-t            | | [[cmd:scimax.org.showTodos]]  | Show TODOs in Document  | -                  |",
       "path": [
         "TODO and Tasks"
@@ -78932,7 +78934,7 @@
       "heading": "Task Dependencies",
       "level": 2,
       "file": "25-commands.org",
-      "line": 154,
+      "line": 158,
       "content": "CLOSED: [2026-07-02 Thu 08:03] Express dependencies between TODO tasks (org-depend style). See [[file:03.5-task-dependencies.org][Task Dependencies]] for the full guide. | Command ID                            | Description                  | Default Keybinding | |---------------------------------------+------------------------------+--------------------| | [[cmd:scimax.org.addDependency]]      | Add Dependency (depends on…) | -                  | | [[cmd:scimax.org.gotoBlocker]]        | Go to ",
       "path": [
         "TODO and Tasks"
@@ -78969,7 +78971,7 @@
       "heading": "Project Management",
       "level": 2,
       "file": "25-commands.org",
-      "line": 166,
+      "line": 170,
       "content": "CLOSED: [2026-10-24 Sat 20:49] Task tables, a project view with a Gantt chart, a dependency graph, and a people database. See [[file:03.6-project-management.org][Project Management]] for the full guide. | Command ID                                   | Description                              | Default Keybinding | |----------------------------------------------+------------------------------------------+--------------------| | [[cmd:scimax.org.insertProjectTable]]        | Insert Project Task Ta",
       "path": [
         "TODO and Tasks"
@@ -79005,7 +79007,7 @@
       "heading": "Contacts & Entities",
       "level": 2,
       "file": "25-commands.org",
-      "line": 202,
+      "line": 206,
       "content": "Fuzzy-pick a tagged/propertied heading (contact, location, reagent, …) and act on it. See [[file:03.7-contacts-and-locations.org][Contacts, Locations & Entity Selector]]. | Command ID                | Description                          | Default Keybinding | |---------------------------+--------------------------------------+--------------------| | [[cmd:scimax.org.pickEntity]] | Pick Entity (Contact/Location/…)     | -                  | | [[cmd:scimax.contacts]]       | Contacts: insert, ema",
       "path": [
         "TODO and Tasks"
@@ -79042,7 +79044,7 @@
       "heading": "Checkboxes",
       "level": 2,
       "file": "25-commands.org",
-      "line": 213,
+      "line": 217,
       "content": "CLOSED: [2026-01-17 Sat 12:24] | Command ID                        | Description       | Default Keybinding | |-----------------------------------+-------------------+--------------------| | [[cmd:scimax.org.toggleCheckbox]] | Toggle Checkbox   | -                  | | [[cmd:scimax.org.insertCheckbox]] | Insert Checkbox   | -                  |",
       "path": [
         "TODO and Tasks"
@@ -79073,7 +79075,7 @@
       "heading": "Markdown Tasks",
       "level": 2,
       "file": "25-commands.org",
-      "line": 221,
+      "line": 225,
       "content": "CLOSED: [2026-01-17 Sat 12:24] | Command ID                                | Description           | Default Keybinding | |-------------------------------------------+-----------------------+--------------------| | [[cmd:scimax.markdown.toggleCheckbox]]    | Toggle Checkbox       | C-c C-c            | | [[cmd:scimax.markdown.insertTask]]        | Insert Task           | -                  | | [[cmd:scimax.markdown.insertDueDate]]     | Insert Due Date       | C-c C-d            | | [[cmd:scimax",
       "path": [
         "TODO and Tasks"
@@ -79114,7 +79116,7 @@
       "heading": "Tables",
       "level": 1,
       "file": "25-commands.org",
-      "line": 236,
+      "line": 240,
       "content": "CLOSED: [2026-01-17 Sat 12:25]",
       "path": [],
       "commands": [],
@@ -79131,7 +79133,7 @@
       "heading": "Basic Table Operations",
       "level": 2,
       "file": "25-commands.org",
-      "line": 239,
+      "line": 243,
       "content": "CLOSED: [2026-01-17 Sat 12:25] | Command ID                          | Description              | Default Keybinding     | |-------------------------------------+--------------------------+------------------------| | [[cmd:scimax.table.create]]         | Create Table             | C-c \\vert              | | [[cmd:scimax.table.align]]          | Align Table              | -                      | | [[cmd:scimax.table.nextCell]]       | Next Table Cell          | -                      | | [[cmd:s",
       "path": [
         "Tables"
@@ -79171,7 +79173,7 @@
       "heading": "Row and Column Operations",
       "level": 2,
       "file": "25-commands.org",
-      "line": 250,
+      "line": 254,
       "content": "CLOSED: [2026-01-17 Sat 12:25] | Command ID                             | Description               | Default Keybinding   | |----------------------------------------+---------------------------+----------------------| | [[cmd:scimax.table.insertRowBelow]]    | Insert Table Row Below    | M-S-down             | | [[cmd:scimax.table.insertRowAbove]]    | Insert Table Row Above    | M-S-up               | | [[cmd:scimax.table.deleteRow]]         | Delete Table Row          | M-S-BACKSPACE        |",
       "path": [
         "Tables"
@@ -79213,7 +79215,7 @@
       "heading": "Advanced Table Operations",
       "level": 2,
       "file": "25-commands.org",
-      "line": 270,
+      "line": 274,
       "content": "CLOSED: [2026-01-17 Sat 12:25] | Command ID                       | Description                 | Default Keybinding | |----------------------------------+-----------------------------+--------------------| | [[cmd:scimax.table.gotoNamed]]   | Go to Named Table           | -                  | | [[cmd:scimax.table.export]]      | Export Table                | -                  | | [[cmd:scimax.table.import]]      | Import Table from Clipboard | -                  | | [[cmd:scimax.table.importFi",
       "path": [
         "Tables"
@@ -79249,7 +79251,7 @@
       "heading": "Table Formulas",
       "level": 2,
       "file": "25-commands.org",
-      "line": 283,
+      "line": 287,
       "content": "CLOSED: [2026-01-17 Sat 12:26] | Command ID                             | Description                | Default Keybinding | |----------------------------------------+----------------------------+--------------------| | [[cmd:scimax.table.recalculate]]       | Recalculate Table Formulas | C-c C-c (tblfm)    | |                                        |                            | C-c * (org)        | | [[cmd:scimax.table.insertColumnFormula]]| Insert Column Formula       | -                  | | ",
       "path": [
         "Tables"
@@ -79288,7 +79290,7 @@
       "heading": "Source Blocks",
       "level": 1,
       "file": "25-commands.org",
-      "line": 295,
+      "line": 299,
       "content": "CLOSED: [2026-01-17 Sat 12:26]",
       "path": [],
       "commands": [],
@@ -79306,7 +79308,7 @@
       "heading": "Basic Babel Operations",
       "level": 2,
       "file": "25-commands.org",
-      "line": 298,
+      "line": 302,
       "content": "CLOSED: [2026-07-11 Sat 09:59] | Command ID                              | Description                        | Default Keybinding | |-----------------------------------------+------------------------------------+--------------------| | [[cmd:scimax.org.executeBlock]]         | Execute Code Block                 | C-RET              | |                                         |                                    | C-c C-c (in src)   | | [[cmd:scimax.org.executeAllBlocks]]     | Execute All Code ",
       "path": [
         "Source Blocks"
@@ -79345,7 +79347,7 @@
       "heading": "Advanced Babel Operations (scimax-ob)",
       "level": 2,
       "file": "25-commands.org",
-      "line": 313,
+      "line": 317,
       "content": "CLOSED: [2026-01-17 Sat 12:26] | Command ID                            | Description                     | Default Keybinding | |---------------------------------------+---------------------------------+--------------------| | [[cmd:scimax.ob.insertBlockAbove]]    | Insert Block Above              | -                  | | [[cmd:scimax.ob.insertBlockBelow]]    | Insert Block Below              | C-c C-,            | | [[cmd:scimax.ob.insertBlockBelowSame]]| Insert Block Below (Same Lang)  | -    ",
       "path": [
         "Source Blocks"
@@ -79385,7 +79387,7 @@
       "heading": "Extended Babel Features",
       "level": 2,
       "file": "25-commands.org",
-      "line": 342,
+      "line": 346,
       "content": "| Command ID                                  | Description                         | Default Keybinding | |---------------------------------------------+-------------------------------------+--------------------| | [[cmd:scimax.babel.tangle]]                 | Tangle Source Blocks                | C-c C-v t          | | [[cmd:scimax.babel.executeToPoint]]         | Execute Blocks to Point             | C-c C-v P          | | [[cmd:scimax.babel.executeInline]]          | Execute Inline Source at",
       "path": [
         "Source Blocks"
@@ -79422,7 +79424,7 @@
       "heading": "Export",
       "level": 1,
       "file": "25-commands.org",
-      "line": 359,
+      "line": 363,
       "content": "CLOSED: [2026-01-17 Sat 12:27]",
       "path": [],
       "commands": [],
@@ -79439,7 +79441,7 @@
       "heading": "Export Dispatcher",
       "level": 2,
       "file": "25-commands.org",
-      "line": 362,
+      "line": 366,
       "content": "CLOSED: [2026-01-17 Sat 12:27] | Command ID                         | Description           | Default Keybinding | |------------------------------------+-----------------------+--------------------| | [[cmd:scimax.org.export]]          | Export Org Document   | -                  | | [[cmd:scimax.org.exportDispatcher]]| Export Dispatcher     | -                  | | [[cmd:scimax.org.exportMenu]]      | Export Menu (C-c C-e) | C-c C-e            | | [[cmd:scimax.org.previewHtml]]     | Preview HT",
       "path": [
         "Export"
@@ -79478,7 +79480,7 @@
       "heading": "Org Preview",
       "level": 2,
       "file": "25-commands.org",
-      "line": 372,
+      "line": 376,
       "content": "Live rendered preview of an org file. See [[file:46-org-preview.org][Org Preview]]. | Command ID                        | Description                                      | Default Keybinding         | |-----------------------------------+--------------------------------------------------+----------------------------| | [[cmd:scimax.org.preview.open]]       | Open Org Preview (in this group)                 | Cmd+Shift+V / Ctrl+Shift+V | | [[cmd:scimax.org.preview.openToSide]] | Open Org Preview",
       "path": [
         "Export"
@@ -79513,7 +79515,7 @@
       "heading": "HTML Export",
       "level": 2,
       "file": "25-commands.org",
-      "line": 385,
+      "line": 389,
       "content": "CLOSED: [2026-01-17 Sat 12:27] | Command ID                       | Description            | Default Keybinding | |----------------------------------+------------------------+--------------------| | [[cmd:scimax.org.exportHtml]]    | Export to HTML         | C-c C-e h h        | | [[cmd:scimax.org.exportHtmlOpen]]| Export to HTML and Open| C-c C-e h o        |",
       "path": [
         "Export"
@@ -79547,7 +79549,7 @@
       "heading": "LaTeX/PDF Export",
       "level": 2,
       "file": "25-commands.org",
-      "line": 393,
+      "line": 397,
       "content": "CLOSED: [2026-01-17 Sat 12:27] | Command ID                          | Description                   | Default Keybinding | |-------------------------------------+-------------------------------+--------------------| | [[cmd:scimax.org.exportLatex]]      | Export to LaTeX               | C-c C-e l l        | | [[cmd:scimax.org.exportPdf]]        | Export to PDF                 | C-c C-e l p        | | [[cmd:scimax.org.exportLatexOpen]]  | Export to PDF and Open        | C-c C-e l o        | | [[",
       "path": [
         "Export"
@@ -79584,7 +79586,7 @@
       "heading": "LaTeX Build Profiles",
       "level": 2,
       "file": "25-commands.org",
-      "line": 407,
+      "line": 411,
       "content": "Named sequences of build commands (pdflatex+bibtex, lualatex+biber, ...) defined in =latex-profiles.json= or settings. See [[file:10-export.org::*Build Profiles][Build Profiles documentation]]. | Command ID                                    | Description                     | Default Keybinding | |-----------------------------------------------+---------------------------------+--------------------| | [[cmd:scimax.latex.selectBuildProfile]]       | Select LaTeX Build Profile      | -           ",
       "path": [
         "Export"
@@ -79620,7 +79622,7 @@
       "heading": "Other Export Formats",
       "level": 2,
       "file": "25-commands.org",
-      "line": 418,
+      "line": 422,
       "content": "| Command ID                       | Description                       | Default Keybinding | |----------------------------------+-----------------------------------+--------------------| | [[cmd:scimax.org.exportMarkdown]]    | Export to Markdown                | C-c C-e m m        | | [[cmd:scimax.org.exportMarp]]        | Export to Marp slides             | C-c C-e m s        | | [[cmd:scimax.org.exportMarpOpen]]    | Export to Marp slides and open    | C-c C-e m S        | | [[cmd:scimax.org",
       "path": [
         "Export"
@@ -79655,7 +79657,7 @@
       "heading": "Markdown File Export",
       "level": 2,
       "file": "25-commands.org",
-      "line": 427,
+      "line": 431,
       "content": "CLOSED: [2026-04-12 Sun 19:49] Export markdown (=.md=) files to other formats via Pandoc. Complements the org-to-markdown export above — these commands operate on markdown source files. | Command ID                             | Description                       | Default Keybinding | |----------------------------------------+-----------------------------------+--------------------| | [[cmd:scimax.markdown.exportMenu]]     | Markdown Export Menu              | -                  | | [[cmd:scimax",
       "path": [
         "Export"
@@ -79691,7 +79693,7 @@
       "heading": "Markdown Preview",
       "level": 2,
       "file": "25-commands.org",
-      "line": 455,
+      "line": 459,
       "content": "| Command ID                         | Description                            | Default Keybinding | |------------------------------------+----------------------------------------+--------------------| | [[cmd:scimax.marp.revealInPreview]] | Reveal Cursor in Markdown Preview      | -                  | | [[cmd:scimax.markdown.preview.exportPdf]] | Export Previewed Markdown to PDF (title-bar button) | -  | | [[cmd:scimax.marp.refreshSlides]]   | Refresh Marp Slide Thumbnails          | -         ",
       "path": [
         "Export"
@@ -79728,7 +79730,7 @@
       "heading": "Marp Slides and Slideshow",
       "level": 3,
       "file": "25-commands.org",
-      "line": 468,
+      "line": 472,
       "content": "Preview and present Marp decks. See [[file:44-marp.org][Marp Slides]]. | Command ID                              | Description                                             | Default Keybinding           | |-----------------------------------------+---------------------------------------------------------+------------------------------| | [[cmd:scimax.marp.insertHeader]]        | Make a Markdown file a Marp deck (insert the header)    | -                            | | [[cmd:scimax.marp.help]]    ",
       "path": [
         "Export",
@@ -79764,7 +79766,7 @@
       "heading": "Marp Menu (Editor)",
       "level": 3,
       "file": "25-commands.org",
-      "line": 486,
+      "line": 490,
       "content": "Right-click in a Marp deck > Marp. These act on the slide under the cursor or every selected slide. See [[file:44-marp.org::*The Marp Menu][The Marp Menu]]. | Command ID                                    | Description                     | Default Keybinding | |-----------------------------------------------+---------------------------------+--------------------| | [[cmd:scimax.marp.newSlide]]                  | New Slide After This One        | -                  | | [[cmd:scimax.marp.splitSli",
       "path": [
         "Export",
@@ -79802,7 +79804,7 @@
       "heading": "Marp Slide Export",
       "level": 3,
       "file": "25-commands.org",
-      "line": 542,
+      "line": 546,
       "content": "Export a Marp deck with Marp CLI or Pandoc. =C-c C-e= in a Marp deck opens the menu. See [[file:44-marp.org::*Exporting Slides][Exporting Slides]]. | Command ID                             | Description                                        | Default Keybinding       | |----------------------------------------+----------------------------------------------------+--------------------------| | [[cmd:scimax.marp.exportMenu]]         | Marp export menu                                   | C-c C-e (i",
       "path": [
         "Export",
@@ -79840,7 +79842,7 @@
       "heading": "Slide Sorter",
       "level": 3,
       "file": "25-commands.org",
-      "line": 560,
+      "line": 564,
       "content": "These commands act on the selected thumbnails in the Slide Sorter. They are in the thumbnails' right-click menu, not the command palette. The keys work while the sorter has focus (=Ctrl= in place of =Cmd= on Windows and Linux) and are handled by the sorter, so they cannot be rebound. See [[file:44-marp.org::*Editing Slides][Editing Slides]]. | Command ID                                | Description                     | Key in the view | |-------------------------------------------+-------------",
       "path": [
         "Export",
@@ -79875,7 +79877,7 @@
       "heading": "Jupyter Notebook Export",
       "level": 2,
       "file": "25-commands.org",
-      "line": 587,
+      "line": 591,
       "content": "CLOSED: [2026-01-25 Sun 20:43] Export org documents to Jupyter notebook (.ipynb) format. | Command ID                                | Description                 | Default Keybinding | |-------------------------------------------+-----------------------------+--------------------| | [[cmd:scimax.org.exportIpynb]]            | Export to Jupyter Notebook  | -                  | | [[cmd:scimax.org.exportIpynbOpen]]        | Export to Notebook and Open | -                  | | [[cmd:scimax.org.expo",
       "path": [
         "Export"
@@ -79911,7 +79913,7 @@
       "heading": "Clipboard Export",
       "level": 2,
       "file": "25-commands.org",
-      "line": 598,
+      "line": 602,
       "content": "CLOSED: [2026-01-25 Sun 20:43] Copy document content to clipboard in various formats for pasting into other applications. | Command ID                             | Description                        | Default Keybinding | |----------------------------------------+------------------------------------+--------------------| | [[cmd:scimax.org.clipboardHtmlRich]]   | Copy as Rich HTML (for Word, etc.) | -                  | | [[cmd:scimax.org.clipboardHtmlSource]] | Copy as HTML Source             ",
       "path": [
         "Export"
@@ -79948,7 +79950,7 @@
       "heading": "Email Heading",
       "level": 2,
       "file": "25-commands.org",
-      "line": 610,
+      "line": 614,
       "content": "Compose an email from the heading at point, record a Gmail link to it, and optionally mark the heading done. See [[file:10-export.org::*Email a Heading][Email a Heading]]. | Command ID                     | Description                               | Default Keybinding | |--------------------------------+-------------------------------------------+--------------------| | [[cmd:scimax.org.emailHeading]] | Email heading (Gmail or mailto)           | E (speed key)      | | [[cmd:scimax.org.gotoId]]",
       "path": [
         "Export"
@@ -79985,7 +79987,7 @@
       "heading": "Custom Exporters",
       "level": 2,
       "file": "25-commands.org",
-      "line": 619,
+      "line": 623,
       "content": "CLOSED: [2026-01-24 Sat 17:42] User-defined export backends using Handlebars templates. See [[file:extension-points.org::*Custom Exporters][Custom Exporters documentation]]. Loaded exporters are also listed in the export dispatcher (=C-c C-e=) under =[c 1]=, =[c 2]=, ..., with =[c c]= opening the picker. | Command ID                                  | Description                      | Default Keybinding | |---------------------------------------------+----------------------------------+--------",
       "path": [
         "Export"
@@ -80021,7 +80023,7 @@
       "heading": "Links",
       "level": 1,
       "file": "25-commands.org",
-      "line": 636,
+      "line": 640,
       "content": "| Command ID                                | Description                               | Default Keybinding      | |-------------------------------------------+-------------------------------------------+-------------------------| | [[cmd:scimax.org.insertLink]]                 | Insert Link (edits the link at point)     | C-c C-l                 | | [[cmd:scimax.org.openLink]]                   | Open Link at Point                        | C-c C-o / RET (on link) | | [[cmd:scimax.org.openLinkO",
       "path": [],
       "commands": [
@@ -80056,7 +80058,7 @@
       "heading": "Timestamps",
       "level": 1,
       "file": "25-commands.org",
-      "line": 653,
+      "line": 657,
       "content": "CLOSED: [2026-01-17 Sat 12:27] | Command ID                             | Description                      | Default Keybinding | |----------------------------------------+----------------------------------+--------------------| | [[cmd:scimax.org.insertTimestamp]]     | Insert Timestamp                 | C-c .              | | [[cmd:scimax.org.insertActiveTimestamp]]| Insert Active Timestamp          | -                  | | [[cmd:scimax.org.insertInactiveTimestamp]]| Insert Inactive Timestamp ",
       "path": [],
       "commands": [
@@ -80090,7 +80092,7 @@
       "heading": "Clocking",
       "level": 2,
       "file": "25-commands.org",
-      "line": 667,
+      "line": 671,
       "content": "CLOSED: [2026-01-18 Sun 09:58] Time tracking commands for measuring effort on tasks. | Command ID                     | Description           | Default Keybinding | |--------------------------------+-----------------------+--------------------| | [[cmd:scimax.speed.clockIn]]        | Clock In                   | I (speed cmd) | | [[cmd:scimax.speed.clockOut]]       | Clock Out                  | O (speed cmd) | | [[cmd:scimax.org.clockReport]]      | Generate Clock Report      | -             | ",
       "path": [
         "Timestamps"
@@ -80128,7 +80130,7 @@
       "heading": "Agenda",
       "level": 1,
       "file": "25-commands.org",
-      "line": 684,
+      "line": 688,
       "content": "CLOSED: [2026-01-17 Sat 12:28]",
       "path": [],
       "commands": [],
@@ -80145,7 +80147,7 @@
       "heading": "Agenda Views",
       "level": 2,
       "file": "25-commands.org",
-      "line": 687,
+      "line": 691,
       "content": "| Command ID                       | Description             | Default Keybinding | |----------------------------------+-------------------------+--------------------| | [[cmd:scimax.db.agenda]]         | Show Agenda             | -                  | | [[cmd:scimax.db.showTodos]]      | Show TODO Items         | -                  | | [[cmd:scimax.db.deadlines]]      | Show Upcoming Deadlines | -                  | | [[cmd:scimax.agenda.currentFile]]| Agenda for Current File | -                ",
       "path": [
         "Agenda"
@@ -80178,7 +80180,7 @@
       "heading": "Advanced Agenda",
       "level": 2,
       "file": "25-commands.org",
-      "line": 696,
+      "line": 700,
       "content": "| Command ID                              | Description                                  | Default Keybinding  | |-----------------------------------------+----------------------------------------------+---------------------| | [[cmd:scimax.agenda.menu]]                  | Open Agenda Menu                             | C-c a c             | | [[cmd:scimax.agenda.day]]                   | Day Agenda                                   | -                   | | [[cmd:scimax.agenda.week]]            ",
       "path": [
         "Agenda"
@@ -80210,7 +80212,7 @@
       "heading": "Journal",
       "level": 1,
       "file": "25-commands.org",
-      "line": 749,
+      "line": 753,
       "content": "CLOSED: [2026-01-17 Sat 12:51]",
       "path": [],
       "commands": [],
@@ -80227,7 +80229,7 @@
       "heading": "Basic Journal Operations",
       "level": 2,
       "file": "25-commands.org",
-      "line": 752,
+      "line": 756,
       "content": "CLOSED: [2026-10-22 Thu 09:56] | Command ID                          | Description              | Default Keybinding      | |-------------------------------------+--------------------------+-------------------------| | [[cmd:scimax.journal.today]]        | Open Today's Journal     | M-j j, C-S-j            | | [[cmd:scimax.journal.yesterday]]    | Open Yesterday's Journal | M-j y                   | | [[cmd:scimax.journal.tomorrow]]     | Open Tomorrow's Journal  | M-j m                   | | [[",
       "path": [
         "Journal"
@@ -80267,7 +80269,7 @@
       "heading": "Journal Utilities",
       "level": 2,
       "file": "25-commands.org",
-      "line": 768,
+      "line": 772,
       "content": "| Command ID                             | Description             | Default Keybinding | |----------------------------------------+-------------------------+--------------------| | [[cmd:scimax.journal.refresh]]         | Refresh Journal View    | -                  | | [[cmd:scimax.journal.openDirectory]]   | Open Journal Directory  | -                  | | [[cmd:scimax.journal.insertTimestamp]] | Insert Timestamp        | M-j t              | | [[cmd:scimax.journal.quickLog]]        | Quick L",
       "path": [
         "Journal"
@@ -80304,7 +80306,7 @@
       "heading": "Database and Search",
       "level": 1,
       "file": "25-commands.org",
-      "line": 779,
+      "line": 783,
       "content": "CLOSED: [2026-01-17 Sat 12:45]",
       "path": [],
       "commands": [],
@@ -80322,7 +80324,7 @@
       "heading": "Basic Database Operations",
       "level": 2,
       "file": "25-commands.org",
-      "line": 782,
+      "line": 786,
       "content": "CLOSED: [2026-11-09 Mon 08:15] | Command ID                          | Description                     | Default Keybinding | |-------------------------------------+---------------------------------+--------------------| | [[cmd:scimax.db.refresh]]               | Refresh Database (incremental)  | -                  | | [[cmd:scimax.db.reindex]]               | Sync Files                      | -                  | | [[cmd:scimax.db.rebuild]]               | Rebuild Database (from scratch) | -  ",
       "path": [
         "Database and Search"
@@ -80358,7 +80360,7 @@
       "heading": "Advanced Search",
       "level": 2,
       "file": "25-commands.org",
-      "line": 799,
+      "line": 803,
       "content": "| Command ID                       | Description                  | Default Keybinding | |----------------------------------+------------------------------+--------------------| | [[cmd:scimax.db.searchBlocks]]   | Search Code Blocks           | -                  | | [[cmd:scimax.db.searchHashtags]] | Search by Hashtag            | -                  | | [[cmd:scimax.hashtag.show]]      | Show Hashtag Occurrences     | C-c C-o, Ctrl+click | | [[cmd:scimax.hashtag.insert]]    | Insert Hashtag   ",
       "path": [
         "Database and Search"
@@ -80397,7 +80399,7 @@
       "heading": "Semantic Search (AI)",
       "level": 2,
       "file": "25-commands.org",
-      "line": 812,
+      "line": 816,
       "content": "CLOSED: [2026-01-17 Sat 12:45] | Command ID                            | Description                   | Default Keybinding | |---------------------------------------+-------------------------------+--------------------| | [[cmd:scimax.db.searchSemantic]]      | Semantic Search (AI)          | -                  | | [[cmd:scimax.db.searchHybrid]]        | Hybrid Search (Keywords + AI) | -                  | | [[cmd:scimax.db.configureEmbeddings]] | Configure Embedding Service   | -              ",
       "path": [
         "Database and Search"
@@ -80432,7 +80434,7 @@
       "heading": "Database Maintenance",
       "level": 2,
       "file": "25-commands.org",
-      "line": 821,
+      "line": 825,
       "content": "CLOSED: [2026-01-17 Sat 12:46] | Command ID                           | Description                                            | Default Keybinding | |--------------------------------------+--------------------------------------------------------+--------------------| | [[cmd:scimax.db.optimize]]               | Optimize Database                                      | -                  | | [[cmd:scimax.db.clear]]                  | Clear Database                                         | -     ",
       "path": [
         "Database and Search"
@@ -80463,7 +80465,7 @@
       "heading": "Link Graph Visualization",
       "level": 2,
       "file": "25-commands.org",
-      "line": 845,
+      "line": 849,
       "content": "CLOSED: [2026-04-12 Sun 19:49] Commands for visualizing file connections through links. | Command ID                           | Description                     | Default Keybinding | |--------------------------------------+---------------------------------+--------------------| | [[cmd:scimax.showLinkGraph]]         | Show Link Graph for Current File| C-c S-g            | | [[cmd:scimax.showLinkGraphForFile]]  | Show Link Graph for File        | -                  | | [[cmd:scimax.showLinkStats",
       "path": [
         "Database and Search"
@@ -80503,7 +80505,7 @@
       "heading": "Troubleshooting and Diagnostics",
       "level": 2,
       "file": "25-commands.org",
-      "line": 856,
+      "line": 860,
       "content": "Commands for debugging issues and reporting problems. | Command ID                          | Description                | Default Keybinding | |-------------------------------------+----------------------------+--------------------| | [[cmd:scimax.showErrorLog]]             | Show Error Log             | -                  | | [[cmd:scimax.clearErrors]]              | Clear Error Log            | -                  | | [[cmd:scimax.showDiagnostics]]          | Show Diagnostic Report     | -    ",
       "path": [
         "Database and Search"
@@ -80540,7 +80542,7 @@
       "heading": "AI Agent Skills",
       "level": 2,
       "file": "25-commands.org",
-      "line": 871,
+      "line": 875,
       "content": "Install the bundled scimax skills for Claude Code, VS Code (GitHub Copilot), Codex, Cursor and other agents. See [[file:30-cli.org::*Skill][CLI: Skill]]. | Command ID                       | Description               | Default Keybinding | |----------------------------------+---------------------------+--------------------| | [[cmd:scimax.skills.install]]        | Install AI Agent Skills   | -                  | | [[cmd:scimax.cli.install]]           | Install Command-Line Tool | -              ",
       "path": [
         "Database and Search"
@@ -80577,7 +80579,7 @@
       "heading": "References (org-ref)",
       "level": 1,
       "file": "25-commands.org",
-      "line": 883,
+      "line": 887,
       "content": "CLOSED: [2026-01-17 Sat 12:46]",
       "path": [],
       "commands": [],
@@ -80595,7 +80597,7 @@
       "heading": "Citation Management",
       "level": 2,
       "file": "25-commands.org",
-      "line": 886,
+      "line": 890,
       "content": "| Command ID                                | Description                             | Default Keybinding            | |-------------------------------------------+-----------------------------------------+-------------------------------| | [[cmd:scimax.ref.insertCitation]]         | Insert Citation                         | C-c ] (org/md/latex)          | | [[cmd:scimax.ref.insertCitationForKey]]   | Insert Citation for Key                 | - (used by hover)             | | [[cmd:scimax.ref.a",
       "path": [
         "References (org-ref)"
@@ -80628,7 +80630,7 @@
       "heading": "Citation Editing",
       "level": 2,
       "file": "25-commands.org",
-      "line": 899,
+      "line": 903,
       "content": "CLOSED: [2026-01-17 Sat 12:46] | Command ID                                     | Description                   | Default Keybinding    | |------------------------------------------------+-------------------------------+-----------------------| | [[cmd:scimax.ref.transposeCitationLeft]]       | Transpose Citation Left       | S-LEFT (on citation)  | | [[cmd:scimax.ref.transposeCitationRight]]      | Transpose Citation Right      | S-RIGHT (on citation) | | [[cmd:scimax.ref.sortCitations]]       ",
       "path": [
         "References (org-ref)"
@@ -80663,7 +80665,7 @@
       "heading": "Bibliography Management",
       "level": 2,
       "file": "25-commands.org",
-      "line": 911,
+      "line": 915,
       "content": "CLOSED: [2026-01-17 Sat 12:46] | Command ID                             | Description                    | Default Keybinding | |----------------------------------------+--------------------------------+--------------------| | [[cmd:scimax.ref.openBibliography]]    | Open Bibliography              | -                  | | [[cmd:scimax.ref.fetchFromDOI]]        | Fetch BibTeX from DOI          | -                  | | [[cmd:scimax.ref.searchReferences]]    | Search References              | -    ",
       "path": [
         "References (org-ref)"
@@ -80699,7 +80701,7 @@
       "heading": "OpenAlex Integration",
       "level": 2,
       "file": "25-commands.org",
-      "line": 923,
+      "line": 927,
       "content": "CLOSED: [2026-01-17 Sat 12:46] | Command ID                          | Description                   | Default Keybinding | |-------------------------------------+-------------------------------+--------------------| | [[cmd:scimax.ref.showCitingWorks]]  | Show Citing Works (OpenAlex)  | -                  | | [[cmd:scimax.ref.showRelatedWorks]] | Show Related Works (OpenAlex) | -                  | | [[cmd:scimax.ref.searchOpenAlex]]   | Search OpenAlex               | -                  | | [[",
       "path": [
         "References (org-ref)"
@@ -80734,7 +80736,7 @@
       "heading": "BibTeX Speed Commands",
       "level": 2,
       "file": "25-commands.org",
-      "line": 934,
+      "line": 938,
       "content": "CLOSED: [2026-01-21 Wed 08:03] :PROPERTIES: :CUSTOM_ID: bibtex-speed-commands :END: Speed commands for BibTeX files, active at column 0 of @entry lines.",
       "path": [
         "References (org-ref)"
@@ -80763,7 +80765,7 @@
       "heading": "Navigation",
       "level": 3,
       "file": "25-commands.org",
-      "line": 942,
+      "line": 946,
       "content": "CLOSED: [2026-01-21 Wed 08:03] | Command ID                         | Description      | Speed Key | |------------------------------------+------------------+-----------| | [[cmd:scimax.bibtex.nextEntry]]    | Next Entry       | n         | | [[cmd:scimax.bibtex.previousEntry]]| Previous Entry   | p         | | [[cmd:scimax.bibtex.jumpToEntry]]  | Jump to Entry    | j         |",
       "path": [
         "References (org-ref)",
@@ -80797,7 +80799,7 @@
       "heading": "Formatting",
       "level": 3,
       "file": "25-commands.org",
-      "line": 951,
+      "line": 955,
       "content": "CLOSED: [2026-01-21 Wed 08:03] | Command ID                          | Description         | Speed Key   | |-------------------------------------+---------------------+-------------| | [[cmd:scimax.bibtex.sortFields]]    | Sort Fields         | s           | | [[cmd:scimax.bibtex.downcaseEntry]] | Downcase Entry      | d           | | [[cmd:scimax.bibtex.titleCase]]     | Title Case Title    | t           | | [[cmd:scimax.bibtex.sentenceCase]]  | Sentence Case Title | S           | | [[cmd:scima",
       "path": [
         "References (org-ref)",
@@ -80836,7 +80838,7 @@
       "heading": "Access",
       "level": 3,
       "file": "25-commands.org",
-      "line": 966,
+      "line": 970,
       "content": "CLOSED: [2026-01-21 Wed 11:31] | Command ID                          | Description            | Speed Key | |-------------------------------------+------------------------+-----------| | [[cmd:scimax.bibtex.openPdf]]       | Open PDF               | o         | | [[cmd:scimax.bibtex.openUrl]]       | Open URL/DOI           | u         | | [[cmd:scimax.bibtex.openNotes]]     | Open Notes             | N         | | [[cmd:scimax.bibtex.googleScholar]] | Google Scholar         | g         | | [[cmd",
       "path": [
         "References (org-ref)",
@@ -80873,7 +80875,7 @@
       "heading": "OpenAlex Integration",
       "level": 3,
       "file": "25-commands.org",
-      "line": 978,
+      "line": 982,
       "content": "CLOSED: [2026-01-21 Wed 11:31] | Command ID                             | Description           | Speed Key | |----------------------------------------+-----------------------+-----------| | [[cmd:scimax.bibtex.showCitingWorks]]  | Show Citing Works     | C         | | [[cmd:scimax.bibtex.showRelatedWorks]] | Show Related Works    | R         | | [[cmd:scimax.bibtex.showReferences]]   | Show References       | r         |",
       "path": [
         "References (org-ref)",
@@ -80909,7 +80911,7 @@
       "heading": "Actions",
       "level": 3,
       "file": "25-commands.org",
-      "line": 987,
+      "line": 991,
       "content": "CLOSED: [2026-01-21 Wed 11:31] | Command ID                         | Description          | Speed Key | |------------------------------------+----------------------+-----------| | [[cmd:scimax.bibtex.copyKey]]      | Copy Citation Key    | y         | | [[cmd:scimax.bibtex.copyBibtex]]   | Copy BibTeX Entry    | b         | | [[cmd:scimax.bibtex.killEntry]]    | Delete Entry         | k         | | [[cmd:scimax.bibtex.generateKey]]  | Generate Citation Key| K         | | [[cmd:scimax.bibtex.upd",
       "path": [
         "References (org-ref)",
@@ -80947,7 +80949,7 @@
       "heading": "File-Wide Commands",
       "level": 3,
       "file": "25-commands.org",
-      "line": 999,
+      "line": 1003,
       "content": "CLOSED: [2026-01-21 Wed 11:31] These commands operate on the entire file. They appear as code lens buttons at the top of .bib files. | Command ID                              | Description          | Code Lens   | |-----------------------------------------+----------------------+-------------| | [[cmd:scimax.bibtex.validateFile]]      | Validate File        | ✓ Validate | | [[cmd:scimax.bibtex.showStatistics]]    | Show File Statistics | N entries   | | [[cmd:scimax.bibtex.sortEntries]]       | ",
       "path": [
         "References (org-ref)",
@@ -80986,7 +80988,7 @@
       "heading": "Journal Abbreviations",
       "level": 3,
       "file": "25-commands.org",
-      "line": 1011,
+      "line": 1015,
       "content": "CLOSED: [2026-01-21 Wed 11:32] Commands for managing journal name abbreviations in BibTeX entries. | Command ID                                      | Description                          | Default Keybinding | |-------------------------------------------------+--------------------------------------+--------------------| | [[cmd:scimax.bibtex.toggleJournalAbbreviation]] | Toggle Journal Abbreviation          | -                  | | [[cmd:scimax.bibtex.abbreviateAllJournals]]     | Abbreviate Al",
       "path": [
         "References (org-ref)",
@@ -81024,7 +81026,7 @@
       "heading": "Notebook",
       "level": 1,
       "file": "25-commands.org",
-      "line": 1027,
+      "line": 1031,
       "content": "| Command ID                          | Description                   | Default Keybinding | |-------------------------------------+-------------------------------+--------------------| | [[cmd:scimax.notebook.new]]             | New Notebook                  | -                  | | [[cmd:scimax.notebook.open]]            | Open Notebook                 | -                  | | [[cmd:scimax.notebook.openMasterFile]]  | Open Notebook Master File     | -                  | | [[cmd:scimax.notebook",
       "path": [],
       "commands": [
@@ -81051,7 +81053,7 @@
       "heading": "Navigation",
       "level": 1,
       "file": "25-commands.org",
-      "line": 1048,
+      "line": 1052,
       "content": "CLOSED: [2026-01-17 Sat 12:47]",
       "path": [],
       "commands": [],
@@ -81068,7 +81070,7 @@
       "heading": "Fuzzy Search (Swiper)",
       "level": 2,
       "file": "25-commands.org",
-      "line": 1051,
+      "line": 1055,
       "content": "| Command ID                                       | Description                      | Default Keybinding | |--------------------------------------------------+----------------------------------+--------------------| | [[cmd:scimax.fuzzySearch]]                       | Fuzzy Search (Current File)      | C-s or C-c s       | | [[cmd:scimax.fuzzySearchOpenFiles]]              | Fuzzy Search (Open Files)        | C-c S-s            | | [[cmd:scimax.fuzzySearchOutline]]                | Fuzzy Searc",
       "path": [
         "Navigation"
@@ -81104,7 +81106,7 @@
       "heading": "Jump (Avy)",
       "level": 2,
       "file": "25-commands.org",
-      "line": 1061,
+      "line": 1065,
       "content": "CLOSED: [2026-10-01 Thu 20:03] | Command ID                        | Description                  | Default Keybinding    | |-----------------------------------+------------------------------+-----------------------| | [[cmd:scimax.jump.gotoChar]]      | Jump to Character            | C-c j c               | | [[cmd:scimax.jump.gotoChar2]]     | Jump to 2-Character Sequence | C-c j j               | | [[cmd:scimax.jump.gotoCharTimer]] | Jump to Text (Timer)         | C-c j t               | | [[",
       "path": [
         "Navigation"
@@ -81142,7 +81144,7 @@
       "heading": "Recenter",
       "level": 2,
       "file": "25-commands.org",
-      "line": 1080,
+      "line": 1084,
       "content": "CLOSED: [2026-07-11 Sat 09:59] | Command ID                       | Description         | Default Keybinding | |----------------------------------+---------------------+--------------------| | [[cmd:scimax.recenterTopBottom]] | Recenter Top Bottom | C-l                | Emacs-style =recenter-top-bottom=. Pressing =C-l= repeatedly while the cursor stays put cycles the cursor line through three scroll positions: center on the first press, top on the second, bottom on the third, then back to center",
       "path": [
         "Navigation"
@@ -81180,7 +81182,7 @@
       "heading": "Projectile",
       "level": 1,
       "file": "25-commands.org",
-      "line": 1092,
+      "line": 1096,
       "content": "CLOSED: [2026-01-17 Sat 12:47] | Command ID                            | Description                   | Default Keybinding | |---------------------------------------+-------------------------------+--------------------| | [[cmd:scimax.projectile.switch]]      | Switch Project                | C-c p p            | | [[cmd:scimax.projectile.switchActions]]| Project Picker Actions       | M-o                | | [[cmd:scimax.projectile.findFile]]    | Find File in Project          | C-c p f        ",
       "path": [],
       "commands": [
@@ -81217,7 +81219,7 @@
       "heading": "Editmarks",
       "level": 1,
       "file": "25-commands.org",
-      "line": 1116,
+      "line": 1120,
       "content": "CLOSED: [2026-01-17 Sat 12:47]",
       "path": [],
       "commands": [],
@@ -81234,7 +81236,7 @@
       "heading": "Mark Edits",
       "level": 2,
       "file": "25-commands.org",
-      "line": 1119,
+      "line": 1123,
       "content": "CLOSED: [2026-01-17 Sat 12:47] | Command ID                         | Description          | Default Keybinding | |------------------------------------+----------------------+--------------------| | [[cmd:scimax.editmarks.insertion]] | Mark Insertion       | C-c e i            | | [[cmd:scimax.editmarks.deletion]]  | Mark Deletion        | C-c e d            | | [[cmd:scimax.editmarks.comment]]   | Insert Edit Comment  | C-c e c            | | [[cmd:scimax.editmarks.typo]]      | Mark Typo Corre",
       "path": [
         "Editmarks"
@@ -81275,7 +81277,7 @@
       "heading": "Review Edits",
       "level": 2,
       "file": "25-commands.org",
-      "line": 1129,
+      "line": 1133,
       "content": "CLOSED: [2026-01-17 Sat 12:47] | Command ID                         | Description             | Default Keybinding | |------------------------------------+-------------------------+--------------------| | [[cmd:scimax.editmarks.accept]]    | Accept Edit Mark        | C-c e a            | | [[cmd:scimax.editmarks.reject]]    | Reject Edit Mark        | C-c e r            | | [[cmd:scimax.editmarks.acceptAll]] | Accept All Edit Marks   | -                  | | [[cmd:scimax.editmarks.rejectAll]] | ",
       "path": [
         "Editmarks"
@@ -81314,7 +81316,7 @@
       "heading": "Version Control",
       "level": 1,
       "file": "25-commands.org",
-      "line": 1142,
+      "line": 1146,
       "content": "See [[file:47-version-control.org][Version Control]]. | Command ID                      | Description                                      | Default Keybinding   | |---------------------------------+--------------------------------------------------+----------------------| | [[cmd:scimax.vc.nextAction]]        | VC Next Action (register, commit, resolve, sync) | C-x v v              | | [[cmd:scimax.vc.logFinish]]         | VC Log - Commit                                  | C-c C-c (log buffer) ",
       "path": [],
       "commands": [
@@ -81351,7 +81353,7 @@
       "heading": "Hydra",
       "level": 1,
       "file": "25-commands.org",
-      "line": 1176,
+      "line": 1180,
       "content": "| Command ID                   | Description          | Default Keybinding | |------------------------------+----------------------+--------------------| | [[cmd:scimax.hydra.show]]        | Show Hydra Menu      | -                  | | [[cmd:scimax.hydra.hide]]        | Hide Hydra Menu      | -                  | | [[cmd:scimax.hydra.back]]        | Hydra Menu Back      | -                  | | [[cmd:scimax.hydra.main]]        | Main Menu            | C-c m              | | [[cmd:scimax.hydra.d",
       "path": [],
       "commands": [
@@ -81384,7 +81386,7 @@
       "heading": "Markup",
       "level": 1,
       "file": "25-commands.org",
-      "line": 1189,
+      "line": 1193,
       "content": "CLOSED: [2026-01-17 Sat 12:48] | Command ID                             | Description                 | Default Keybinding | |----------------------------------------+-----------------------------+--------------------| | [[cmd:scimax.markup.bold]]             | Bold (Markup)               | C-c b              | | [[cmd:scimax.markup.italic]]           | Italic (Markup)             | C-c i              | | [[cmd:scimax.markup.underline]]        | Underline (Markup)          | C-c _              |",
       "path": [],
       "commands": [
@@ -81417,7 +81419,7 @@
       "heading": "Word Case & Navigation",
       "level": 1,
       "file": "25-commands.org",
-      "line": 1206,
+      "line": 1210,
       "content": "| Command ID                        | Description                   | Default Keybinding | |-----------------------------------+-------------------------------+--------------------| | [[cmd:scimax.capitalizeWord]]     | Capitalize Word and Move Next | M-c                | | [[cmd:scimax.lowercaseWord]]      | Lowercase Word and Move Next  | M-l                | | [[cmd:scimax.uppercaseWord]]      | Uppercase Word and Move Next  | M-u                | | [[cmd:scimax.beginningOfBuffer]]  | Beginni",
       "path": [],
       "commands": [
@@ -81456,7 +81458,7 @@
       "heading": "Speed Commands",
       "level": 1,
       "file": "25-commands.org",
-      "line": 1218,
+      "line": 1222,
       "content": "CLOSED: [2026-01-17 Sat 12:48] Speed commands are single-key commands available when cursor is at the beginning of a heading line (with scimax.speedCommandsEnabled).",
       "path": [],
       "commands": [
@@ -81482,7 +81484,7 @@
       "heading": "Navigation",
       "level": 2,
       "file": "25-commands.org",
-      "line": 1223,
+      "line": 1227,
       "content": "CLOSED: [2026-01-17 Sat 12:48] | Command ID                           | Description          | Speed Key | |--------------------------------------+----------------------+-----------| | [[cmd:scimax.speed.nextSibling]]     | Next Sibling Heading | f         | | [[cmd:scimax.speed.previousSibling]] | Previous Sibling     | b         | | [[cmd:scimax.org.nextHeading]]       | Next Heading         | n         | | [[cmd:scimax.org.previousHeading]]   | Previous Heading     | p         | | [[cmd:scima",
       "path": [
         "Speed Commands"
@@ -81517,7 +81519,7 @@
       "heading": "Visibility",
       "level": 2,
       "file": "25-commands.org",
-      "line": 1238,
+      "line": 1242,
       "content": "| Command ID                       | Description                       | Speed Key | |----------------------------------+-----------------------------------+-----------| | [[cmd:scimax.org.cycleGlobalFold]]   | Cycle Global Fold                 | c         | | [[cmd:scimax.speed.showChildren]]    | Show All Children                 | C (S-c)   | | [[cmd:scimax.speed.overview]]        | Overview (Fold All)               | o         | | [[cmd:scimax.speed.narrowToSubtree]] | Narrow to Subtree (Fol",
       "path": [
         "Speed Commands"
@@ -81553,7 +81555,7 @@
       "heading": "Structure Editing",
       "level": 2,
       "file": "25-commands.org",
-      "line": 1248,
+      "line": 1252,
       "content": "CLOSED: [2026-01-17 Sat 12:48] | Command ID                            | Description          | Speed Key | |---------------------------------------+----------------------+-----------| | [[cmd:scimax.heading.moveUp]]         | Move Heading Up      | U (S-u)   | | [[cmd:scimax.heading.moveDown]]       | Move Heading Down    | D (S-d)   | | [[cmd:scimax.heading.demote]]         | Demote Heading       | r         | | [[cmd:scimax.heading.promote]]        | Promote Heading      | l         | | [[cmd",
       "path": [
         "Speed Commands"
@@ -81591,7 +81593,7 @@
       "heading": "TODO and Tags",
       "level": 2,
       "file": "25-commands.org",
-      "line": 1266,
+      "line": 1270,
       "content": "CLOSED: [2026-01-17 Sat 12:48] | Command ID                        | Description      | Speed Key | |-----------------------------------+------------------+-----------| | [[cmd:scimax.org.cycleTodo]]      | Cycle TODO State | t         | | [[cmd:scimax.speed.setTags]]      | Set Tags         | : (S-;)   | | [[cmd:scimax.speed.priorityA]]    | Set Priority A   | 1         | | [[cmd:scimax.speed.priorityB]]    | Set Priority B   | 2         | | [[cmd:scimax.speed.priorityC]]    | Set Priority C   ",
       "path": [
         "Speed Commands"
@@ -81627,7 +81629,7 @@
       "heading": "Scheduling and Timestamps",
       "level": 2,
       "file": "25-commands.org",
-      "line": 1278,
+      "line": 1282,
       "content": "CLOSED: [2026-01-17 Sat 12:48] | Command ID                          | Description        | Speed Key | |-------------------------------------+--------------------+-----------| | [[cmd:scimax.speed.schedule]]       | Add/Edit SCHEDULED | s         | | [[cmd:scimax.speed.deadline]]       | Add/Edit DEADLINE  | d         | | [[cmd:scimax.org.insertTimestamp]]  | Insert Timestamp   | .         | | [[cmd:scimax.org.shiftTimestampUp]] | Shift Timestamp Up | ,         |",
       "path": [
         "Speed Commands"
@@ -81664,7 +81666,7 @@
       "heading": "Properties and Clocking",
       "level": 2,
       "file": "25-commands.org",
-      "line": 1288,
+      "line": 1292,
       "content": "CLOSED: [2026-01-17 Sat 12:48] | Command ID                       | Description  | Speed Key | |----------------------------------+--------------+-----------| | [[cmd:scimax.speed.setProperty]] | Set Property | P (S-p)   | | [[cmd:scimax.speed.setEffort]]   | Set Effort   | e         | | [[cmd:scimax.speed.clockIn]]     | Clock In     | I (S-i)   | | [[cmd:scimax.speed.clockOut]]    | Clock Out    | O (S-o)   |",
       "path": [
         "Speed Commands"
@@ -81703,7 +81705,7 @@
       "heading": "Archiving",
       "level": 2,
       "file": "25-commands.org",
-      "line": 1298,
+      "line": 1302,
       "content": "CLOSED: [2026-01-17 Sat 12:48] | Command ID                            | Description        | Speed Key | |---------------------------------------+--------------------+-----------| | [[cmd:scimax.speed.archiveSubtree]]   | Archive Subtree    | a         | | [[cmd:scimax.speed.toggleArchiveTag]] | Toggle Archive Tag | A (S-a)   | | [[cmd:scimax.speed.archiveToSibling]] | Archive to Sibling | $ (S-4)   |",
       "path": [
         "Speed Commands"
@@ -81739,7 +81741,7 @@
       "heading": "Help",
       "level": 2,
       "file": "25-commands.org",
-      "line": 1307,
+      "line": 1311,
       "content": "CLOSED: [2026-01-17 Sat 12:49] | Command ID                  | Description           | Speed Key | |-----------------------------+-----------------------+-----------| | [[cmd:scimax.speed.help]]   | Speed Commands Help   | ? (S-/)   | | [[cmd:scimax.speed.toggle]] | Toggle Speed Commands | C-c C-x s |",
       "path": [
         "Speed Commands"
@@ -81773,7 +81775,7 @@
       "heading": "LaTeX",
       "level": 1,
       "file": "25-commands.org",
-      "line": 1315,
+      "line": 1319,
       "content": "CLOSED: [2026-01-21 Wed 11:33] Comprehensive LaTeX editing support with structural navigation, environment manipulation, and compilation.",
       "path": [],
       "commands": [],
@@ -81798,7 +81800,7 @@
       "heading": "Section Navigation",
       "level": 2,
       "file": "25-commands.org",
-      "line": 1320,
+      "line": 1324,
       "content": "| Command ID                                  | Description              | Default Keybinding | |---------------------------------------------+--------------------------+--------------------| | [[cmd:scimax.latex.nextSection]]            | Next Section             | C-c C-n            | | [[cmd:scimax.latex.previousSection]]        | Previous Section         | C-c C-p            | | [[cmd:scimax.latex.parentSection]]          | Parent Section           | C-c C-u            | | [[cmd:scimax.latex",
       "path": [
         "LaTeX"
@@ -81836,7 +81838,7 @@
       "heading": "Environment Navigation",
       "level": 2,
       "file": "25-commands.org",
-      "line": 1333,
+      "line": 1337,
       "content": "CLOSED: [2026-01-21 Wed 11:33] | Command ID                                     | Description                | Default Keybinding | |------------------------------------------------+----------------------------+--------------------| | [[cmd:scimax.latex.nextEnvironment]]           | Next Environment           | -                  | | [[cmd:scimax.latex.previousEnvironment]]       | Previous Environment       | -                  | | [[cmd:scimax.latex.jumpToEnvironment]]         | Jump to Enviro",
       "path": [
         "LaTeX"
@@ -81870,7 +81872,7 @@
       "heading": "Structure Editing",
       "level": 2,
       "file": "25-commands.org",
-      "line": 1344,
+      "line": 1348,
       "content": "CLOSED: [2026-01-21 Wed 11:33] | Command ID                              | Description        | Default Keybinding | |-----------------------------------------+--------------------+--------------------| | [[cmd:scimax.latex.promoteSection]]     | Promote Section    | M-LEFT             | | [[cmd:scimax.latex.demoteSection]]      | Demote Section     | M-RIGHT            | | [[cmd:scimax.latex.promoteSubtree]]     | Promote Subtree    | M-S-LEFT           | | [[cmd:scimax.latex.demoteSubtree]]   ",
       "path": [
         "LaTeX"
@@ -81912,7 +81914,7 @@
       "heading": "Environment Manipulation",
       "level": 2,
       "file": "25-commands.org",
-      "line": 1363,
+      "line": 1367,
       "content": "| Command ID                                    | Description                | Default Keybinding | |-----------------------------------------------+----------------------------+--------------------| | [[cmd:scimax.latex.selectEnvironment]]        | Select Environment         | C-c C-e            | | [[cmd:scimax.latex.selectEnvironmentContent]] | Select Environment Content | -                  | | [[cmd:scimax.latex.changeEnvironment]]        | Change Environment         | C-c E              | ",
       "path": [
         "LaTeX"
@@ -81946,7 +81948,7 @@
       "heading": "Compilation and PDF Viewing",
       "level": 2,
       "file": "25-commands.org",
-      "line": 1378,
+      "line": 1382,
       "content": "CLOSED: [2026-01-21 Wed 11:33] | Command ID                               | Description                        | Default Keybinding | |------------------------------------------+------------------------------------+--------------------| | [[cmd:scimax.latex.compile]]             | Compile Document                   | C-c C-c            | | [[cmd:scimax.latex.viewPdf]]             | View PDF (External)                | C-c C-v            | | [[cmd:scimax.latex.viewPdfPanel]]        | View PDF (Bu",
       "path": [
         "LaTeX"
@@ -81986,7 +81988,7 @@
       "heading": "Error Navigation",
       "level": 2,
       "file": "25-commands.org",
-      "line": 1397,
+      "line": 1401,
       "content": "CLOSED: [2026-01-21 Wed 11:33] | Command ID                         | Description          | Default Keybinding | |------------------------------------+----------------------+--------------------| | [[cmd:scimax.latex.nextError]]     | Go to Next Error     | C-c `              | | [[cmd:scimax.latex.previousError]] | Go to Previous Error | C-c S-`            | | [[cmd:scimax.latex.showErrors]]    | Show All Errors      | C-c !              |",
       "path": [
         "LaTeX"
@@ -82023,7 +82025,7 @@
       "heading": "Insertion Commands",
       "level": 2,
       "file": "25-commands.org",
-      "line": 1406,
+      "line": 1410,
       "content": "CLOSED: [2026-01-21 Wed 11:34] | Command ID                          | Description     | Default Keybinding | |-------------------------------------+-----------------+--------------------| | [[cmd:scimax.latex.insertFigure]]   | Insert Figure   | -                  | | [[cmd:scimax.latex.insertTable]]    | Insert Table    | -                  | | [[cmd:scimax.latex.insertEquation]] | Insert Equation | -                  |",
       "path": [
         "LaTeX"
@@ -82057,7 +82059,7 @@
       "heading": "Utilities",
       "level": 2,
       "file": "25-commands.org",
-      "line": 1415,
+      "line": 1419,
       "content": "CLOSED: [2026-11-09 Mon 08:15] | Command ID                                     | Description                  | Default Keybinding | |------------------------------------------------+------------------------------+--------------------| | [[cmd:scimax.latex.format]]                    | Format Document              | C-c C-q            | | [[cmd:scimax.latex.wordCount]]                 | Word Count                   | -                  | | [[cmd:scimax.latex.addToDictionary]]           | Add Wo",
       "path": [
         "LaTeX"
@@ -82095,7 +82097,7 @@
       "heading": "Speed Commands",
       "level": 2,
       "file": "25-commands.org",
-      "line": 1425,
+      "line": 1429,
       "content": "CLOSED: [2026-01-21 Wed 11:34] Speed commands are available when cursor is at the beginning of a section line. | Command ID                            | Description        | Speed Key | |---------------------------------------+--------------------+-----------| | [[cmd:scimax.latex.speedCommandHelp]] | Speed Command Help | ?         | Section speed commands (at \\section, \\subsection, etc.): - n :: Next section - p :: Previous section - f :: Next sibling - b :: Previous sibling - u :: Parent secti",
       "path": [
         "LaTeX"
@@ -82131,7 +82133,7 @@
       "heading": "Environment Speed Commands",
       "level": 2,
       "file": "25-commands.org",
-      "line": 1451,
+      "line": 1455,
       "content": "CLOSED: [2026-01-21 Wed 11:36] Environment speed commands available at \\begin{...} lines. | Command ID                               | Description               | Speed Key | |------------------------------------------+---------------------------+-----------| | [[cmd:scimax.latex.envSpeedCommand]]     | Environment Speed Command | -         | | [[cmd:scimax.latex.envSpeedCommandHelp]] | Environment Speed Help    | ?         | Environment speed command keys: - n :: Next environment - p :: Previou",
       "path": [
         "LaTeX"
@@ -82167,7 +82169,7 @@
       "heading": "Inline LaTeX Previews",
       "level": 2,
       "file": "25-commands.org",
-      "line": 1475,
+      "line": 1479,
       "content": "| Command ID                                  | Description                                        | Default Keybinding      | |---------------------------------------------+----------------------------------------------------+-------------------------| | [[cmd:scimax.org.latexPreview]]             | Toggle LaTeX Preview (fragment, region or section) | C-c C-x C-l             | | [[cmd:scimax.org.latexPreviewClearSection]] | Remove LaTeX Previews in Section                   | C-u C-c C-x C-l   ",
       "path": [
         "LaTeX"
@@ -82206,7 +82208,7 @@
       "heading": "LaTeX Cache Management",
       "level": 2,
       "file": "25-commands.org",
-      "line": 1484,
+      "line": 1488,
       "content": "CLOSED: [2026-01-21 Wed 11:36] | Command ID                     | Description                     | Default Keybinding | |--------------------------------+---------------------------------+--------------------| | [[cmd:scimax.clearLatexCache]] | Clear LaTeX Preview Cache       | -                  | | [[cmd:scimax.checkLatexTools]] | Check LaTeX Tools Availability  | -                  | | [[cmd:scimax.latexCacheStats]] | Show LaTeX Cache Statistics     | -                  |",
       "path": [
         "LaTeX"
@@ -82244,7 +82246,7 @@
       "heading": "Capture",
       "level": 1,
       "file": "25-commands.org",
-      "line": 1493,
+      "line": 1497,
       "content": "CLOSED: [2026-01-17 Sat 12:50] | Command ID                            | Description                 | Default Keybinding | |---------------------------------------+-----------------------------+--------------------| | [[cmd:scimax.capture]]                | Capture                     | C-c c              | | [[cmd:scimax.captureByKey]]           | Capture by Key              | -                  | | [[cmd:scimax.capture.todo]]           | Quick Capture TODO          | C-c t              | | [[",
       "path": [],
       "commands": [
@@ -82277,7 +82279,7 @@
       "heading": "Templates",
       "level": 1,
       "file": "25-commands.org",
-      "line": 1506,
+      "line": 1510,
       "content": "CLOSED: [2026-01-21 Wed 11:36] :PROPERTIES: :CUSTOM_ID: templates :END: Insert and manage file templates for org, markdown, and LaTeX files.",
       "path": [],
       "commands": [],
@@ -82302,7 +82304,7 @@
       "heading": "Insert Templates",
       "level": 2,
       "file": "25-commands.org",
-      "line": 1514,
+      "line": 1518,
       "content": "| Command ID                               | Description               | Default Keybinding | |------------------------------------------+---------------------------+--------------------| | [[cmd:scimax.templates.insert]]          | Insert Template           | -                  | | [[cmd:scimax.templates.insertOrg]]       | Insert Org Template       | -                  | | [[cmd:scimax.templates.insertMarkdown]]  | Insert Markdown Template  | -                  | | [[cmd:scimax.templates.inser",
       "path": [
         "Templates"
@@ -82332,7 +82334,7 @@
       "heading": "New Files from Templates",
       "level": 2,
       "file": "25-commands.org",
-      "line": 1524,
+      "line": 1528,
       "content": "| Command ID                               | Description                  | Default Keybinding | |------------------------------------------+------------------------------+--------------------| | [[cmd:scimax.templates.newFile]]         | New File from Template       | C-c T n            | | [[cmd:scimax.templates.newOrgFile]]      | New Org File from Template   | -                  | | [[cmd:scimax.templates.newMarkdownFile]] | New Markdown from Template   | -                  | | [[cmd:scimax.",
       "path": [
         "Templates"
@@ -82365,7 +82367,7 @@
       "heading": "Template Management",
       "level": 2,
       "file": "25-commands.org",
-      "line": 1533,
+      "line": 1537,
       "content": "CLOSED: [2026-01-21 Wed 11:36] | Command ID                                  | Description                    | Default Keybinding | |---------------------------------------------+--------------------------------+--------------------| | [[cmd:scimax.templates.createFromSelection]]| Create Template from Selection | -                  | | [[cmd:scimax.templates.openDirectory]]      | Open Templates Directory       | -                  | | [[cmd:scimax.templates.editTemplates]]      | Edit User Tem",
       "path": [
         "Templates"
@@ -82403,7 +82405,7 @@
       "heading": "Manuscript",
       "level": 1,
       "file": "25-commands.org",
-      "line": 1544,
+      "line": 1548,
       "content": "CLOSED: [2026-01-21 Wed 11:36] :PROPERTIES: :CUSTOM_ID: manuscript :END: Commands for preparing LaTeX manuscripts for journal submission by flattening includes. | Command ID                                | Description                       | Default Keybinding | |-------------------------------------------+-----------------------------------+--------------------| | [[cmd:scimax.manuscript.flatten]]         | Flatten Manuscript for Submission | -                  | | [[cmd:scimax.manuscript.prev",
       "path": [],
       "commands": [
@@ -82438,7 +82440,7 @@
       "heading": "Image Overlays",
       "level": 1,
       "file": "25-commands.org",
-      "line": 1563,
+      "line": 1567,
       "content": "CLOSED: [2026-10-30 Fri 08:06] | Command ID                                     | Description                            | Default Keybinding | |------------------------------------------------+----------------------------------------+--------------------| | [[cmd:scimax.imageOverlays.toggle]]            | Toggle Image Overlays                  | -                  | | [[cmd:scimax.imageOverlays.toggleCurrentFile]] | Toggle Image Overlays for Current File | C-c C-x C-v        | | [[cmd:scimax.im",
       "path": [],
       "commands": [
@@ -82473,7 +82475,7 @@
       "heading": "Spelling",
       "level": 1,
       "file": "25-commands.org",
-      "line": 1577,
+      "line": 1581,
       "content": "CLOSED: [2026-01-24 Sat 17:41] Commands for navigating spelling errors. Requires VS Code spell-checking extension. | Command ID                            | Description                   | Default Keybinding | |---------------------------------------+-------------------------------+--------------------| | [[cmd:scimax.spelling.nextError]]     | Go to Next Spelling Error     | -                  | | [[cmd:scimax.spelling.previousError]] | Go to Previous Spelling Error | -                  |",
       "path": [],
       "commands": [
@@ -82508,7 +82510,7 @@
       "heading": "Jupyter",
       "level": 1,
       "file": "25-commands.org",
-      "line": 1587,
+      "line": 1591,
       "content": "CLOSED: [2026-01-17 Sat 12:50]",
       "path": [],
       "commands": [],
@@ -82525,7 +82527,7 @@
       "heading": "Kernel Management",
       "level": 2,
       "file": "25-commands.org",
-      "line": 1590,
+      "line": 1594,
       "content": "CLOSED: [2026-01-17 Sat 12:50] | Command ID                             | Description                    | Default Keybinding | |----------------------------------------+--------------------------------+--------------------| | [[cmd:scimax.jupyter.showKernels]]     | Show Available Jupyter Kernels | -                  | | [[cmd:scimax.jupyter.showRunning]]     | Show Running Kernels           | -                  | | [[cmd:scimax.jupyter.startKernel]]     | Start Jupyter Kernel           | -    ",
       "path": [
         "Jupyter"
@@ -82561,7 +82563,7 @@
       "heading": "Appendix: Keybinding Quick Reference",
       "level": 1,
       "file": "25-commands.org",
-      "line": 1604,
+      "line": 1608,
       "content": "CLOSED: [2026-01-17 Sat 12:50]",
       "path": [],
       "commands": [],
@@ -82581,7 +82583,7 @@
       "heading": "Most Common Keybindings",
       "level": 2,
       "file": "25-commands.org",
-      "line": 1607,
+      "line": 1611,
       "content": "CLOSED: [2026-01-17 Sat 12:50] | Keybinding   | Command                             | |--------------+-------------------------------------| | C-RET        | Execute code block / Insert heading | | C-c C-e      | Export dispatcher                   | | C-c C-j      | Jump to heading                     | | C-c C-t      | Cycle TODO state                    | | C-c C-l      | Insert link                         | | C-c C-o      | Open link                           | | C-c ]        | Insert citat",
       "path": [
         "Appendix: Keybinding Quick Reference"
@@ -82623,7 +82625,7 @@
       "heading": "Export Keybindings",
       "level": 2,
       "file": "25-commands.org",
-      "line": 1629,
+      "line": 1633,
       "content": "CLOSED: [2026-01-17 Sat 12:50] | Keybinding  | Export Target      | |-------------+--------------------| | C-c C-e h h | HTML               | | C-c C-e h o | HTML and open      | | C-c C-e l l | LaTeX              | | C-c C-e l p | PDF                | | C-c C-e l o | PDF and open       | | C-c C-e l v | LaTeX live preview | | C-c C-e m m | Markdown           |",
       "path": [
         "Appendix: Keybinding Quick Reference"
@@ -82657,7 +82659,7 @@
       "heading": "Babel/Source Block Keybindings",
       "level": 2,
       "file": "25-commands.org",
-      "line": 1642,
+      "line": 1646,
       "content": "| Keybinding | Action                 | |------------+------------------------| | C-RET      | Execute block          | | C-c C-c    | Execute block (in src) | | S-RET      | Execute and next       | | C-c C-v t  | Tangle                 | | C-c C-v P  | Execute to point       | | C-c C-v i  | Execute inline         | | C-c C-v q  | Queue block            | | C-DOWN     | Next source block      | | C-UP       | Previous source block  | | C-c C-n    | Insert block below     | | C-c C-b    | Jump ",
       "path": [
         "Appendix: Keybinding Quick Reference"
@@ -82699,7 +82701,7 @@
       "heading": "Project and Navigation Keybindings",
       "level": 2,
       "file": "25-commands.org",
-      "line": 1658,
+      "line": 1662,
       "content": "CLOSED: [2026-01-17 Sat 12:51] | Keybinding | Action                    | |------------+---------------------------| | C-c p p    | Switch project            | | C-c p .    | Switch to file's project  | | C-c p f    | Find file in project      | | C-c p s    | Search in project         | | C-c p d    | Open project root         | | C-c p a    | Add project               | | C-c s      | Fuzzy search (current)    | | C-c S-s    | Fuzzy search (open files) | | C-c M-s    | Fuzzy search (outline)  ",
       "path": [
         "Appendix: Keybinding Quick Reference"
@@ -82736,7 +82738,7 @@
       "heading": "Help System",
       "level": 1,
       "file": "25-commands.org",
-      "line": 1676,
+      "line": 1680,
       "content": "CLOSED: [2026-01-18 Sun 09:59] :PROPERTIES: :CUSTOM_ID: help-system :END: Commands for discovering keybindings and command functionality. | Command ID                           | Description            | Default Keybinding | |--------------------------------------+------------------------+--------------------| | [[cmd:scimax.help.describeCommand]]  | Describe Command       | C-h f              | | [[cmd:scimax.help.describeKey]]      | Describe Key           | C-h k              | | [[cmd:scimax",
       "path": [],
       "commands": [
@@ -82773,7 +82775,7 @@
       "heading": "scimax.help.describeCommand",
       "level": 2,
       "file": "25-commands.org",
-      "line": 1693,
+      "line": 1697,
       "content": "Shows the keybindings for a specific command. Useful for learning keyboard shortcuts.",
       "path": [
         "Help System"
@@ -82797,7 +82799,7 @@
       "heading": "scimax.help.describeKey",
       "level": 2,
       "file": "25-commands.org",
-      "line": 1697,
+      "line": 1701,
       "content": "Describes what a specific key combination does. Enter the key sequence to see its bound command.",
       "path": [
         "Help System"
@@ -82821,7 +82823,7 @@
       "heading": "scimax.help.listKeybindings",
       "level": 2,
       "file": "25-commands.org",
-      "line": 1701,
+      "line": 1705,
       "content": "Lists all keybindings defined by the extension. Opens a quick pick to browse available shortcuts.",
       "path": [
         "Help System"
@@ -82847,7 +82849,7 @@
       "heading": "scimax.help.describeVariable",
       "level": 2,
       "file": "25-commands.org",
-      "line": 1705,
+      "line": 1709,
       "content": "Browse all scimax settings with completion. Shows the setting type, default value, current value, and description. Select a setting to open VS Code Settings.",
       "path": [
         "Help System"
@@ -82877,7 +82879,7 @@
       "heading": "scimax.help.apropos",
       "level": 2,
       "file": "25-commands.org",
-      "line": 1709,
+      "line": 1713,
       "content": "Search the documentation for keywords. Enter search terms to find relevant documentation sections. Results are ranked by relevance (headings, commands, keybindings, content). Select a result to view details or open the documentation file.",
       "path": [
         "Help System"
@@ -82913,7 +82915,7 @@
       "heading": "scimax.update",
       "level": 2,
       "file": "25-commands.org",
-      "line": 1713,
+      "line": 1717,
       "content": "CLOSED: [2026-01-24 Sat 17:41] Update Scimax VS Code from GitHub releases. This command: 1. Fetches the latest release from the [[https://github.com/jkitchin/scimax_vscode][GitHub repository]] 2. Shows the current version vs. the latest available version 3. Downloads the VSIX file with progress indication 4. Installs it using VS Code's extension manager 5. Offers to reload VS Code to activate the new version This provides an easy way to update without leaving VS Code. Requires the repository to ",
       "path": [
         "Help System"
@@ -82949,7 +82951,7 @@
       "heading": "Linting",
       "level": 1,
       "file": "25-commands.org",
-      "line": 1726,
+      "line": 1730,
       "content": "CLOSED: [2026-01-18 Sun 09:59] :PROPERTIES: :CUSTOM_ID: linting :END: Commands for checking org-mode document quality. | Command ID                     | Description        | Default Keybinding | |--------------------------------+--------------------+--------------------| | [[cmd:scimax.org.lint]]        | Run Linter         | -                  | | [[cmd:scimax.org.lintCheckers]]| Show Lint Checkers | -                  |",
       "path": [],
       "commands": [
@@ -82984,7 +82986,7 @@
       "heading": "scimax.org.lint",
       "level": 2,
       "file": "25-commands.org",
-      "line": 1739,
+      "line": 1743,
       "content": "Runs the org-mode linter on the current document. The linter checks for: - Duplicate IDs - Broken internal links - Missing TODO keywords in sequences - Unbalanced brackets and quotes - Invalid timestamps - Missing required properties - And more Results appear in the Problems panel.",
       "path": [
         "Linting"
@@ -83020,7 +83022,7 @@
       "heading": "scimax.org.lintCheckers",
       "level": 2,
       "file": "25-commands.org",
-      "line": 1752,
+      "line": 1756,
       "content": "Shows available lint checkers and allows enabling/disabling specific checks.",
       "path": [
         "Linting"
@@ -83044,7 +83046,7 @@
       "heading": "Mark Ring",
       "level": 1,
       "file": "25-commands.org",
-      "line": 1756,
+      "line": 1760,
       "content": ":PROPERTIES: :CUSTOM_ID: mark-ring :END: Emacs-style mark ring for navigation and selection. Save cursor positions (marks) and return to them later. Each document has its own mark ring, plus there's a global mark ring that tracks positions across all documents. | Command ID                       | Description              | Default Keybinding | |----------------------------------+--------------------------+--------------------| | [[cmd:scimax.mark.set]]          | Set Mark (for selection) | C-SP",
       "path": [],
       "commands": [
@@ -83080,7 +83082,7 @@
       "heading": "Mark Ring Concepts",
       "level": 2,
       "file": "25-commands.org",
-      "line": 1776,
+      "line": 1780,
       "content": "- **Mark**: A saved cursor position that you can return to - **Point**: The current cursor position - **Mark Ring**: A stack of marks (per-document), most recent first (default size: 16) - **Global Mark Ring**: A cross-file stack of marks for navigating between documents - **Selection Mode**: When mark is set, cursor movement extends the selection from the mark",
       "path": [
         "Mark Ring"
@@ -83114,7 +83116,7 @@
       "heading": "Common Workflows",
       "level": 2,
       "file": "25-commands.org",
-      "line": 1784,
+      "line": 1788,
       "content": "",
       "path": [
         "Mark Ring"
@@ -83130,7 +83132,7 @@
       "heading": "Setting a Mark for Selection",
       "level": 3,
       "file": "25-commands.org",
-      "line": 1786,
+      "line": 1790,
       "content": "1. Press =C-SPC= to set mark at current position (line flashes briefly as feedback) 2. Move cursor to end of desired selection - the region automatically expands 3. Press =C-SPC= again to deactivate selection mode (toggle behavior) 4. Press =C-g= to cancel selection and collapse to cursor position",
       "path": [
         "Mark Ring",
@@ -83168,7 +83170,7 @@
       "heading": "Returning to Previous Positions",
       "level": 3,
       "file": "25-commands.org",
-      "line": 1792,
+      "line": 1796,
       "content": "1. Press =C-SPC C-SPC= to push mark without activating selection mode 2. Navigate elsewhere in the file 3. Press =C-u C-SPC= to pop the most recent mark and jump to it 4. Current position is saved before jumping, so you can return with another pop",
       "path": [
         "Mark Ring",
@@ -83206,7 +83208,7 @@
       "heading": "Cross-file Navigation",
       "level": 3,
       "file": "25-commands.org",
-      "line": 1798,
+      "line": 1802,
       "content": "1. Marks are automatically pushed to the global ring when set 2. Press =C-x C-SPC= to pop from global mark ring and jump (can cross files) 3. Use =C-x C-x= to exchange point and mark (swap current position with last mark)",
       "path": [
         "Mark Ring",
@@ -83244,7 +83246,7 @@
       "heading": "Viewing the Mark Ring",
       "level": 3,
       "file": "25-commands.org",
-      "line": 1803,
+      "line": 1807,
       "content": "1. Run =scimax.mark.show= from command palette 2. Quick pick shows local marks and global marks with line previews 3. Select an entry to jump to that position",
       "path": [
         "Mark Ring",
@@ -83279,7 +83281,7 @@
       "heading": "Kill Ring",
       "level": 1,
       "file": "25-commands.org",
-      "line": 1808,
+      "line": 1812,
       "content": ":PROPERTIES: :CUSTOM_ID: kill-ring :END: An Emacs-style kill ring. Every kill and copy is pushed onto the ring and also written to the system clipboard, so pasting into other applications still works, and you can yank kills older than the last one. | Command ID                         | Description                          | Default Keybinding | |------------------------------------+--------------------------------------+--------------------| | [[cmd:scimax.killRing.yank]]       | Yank from Kill",
       "path": [],
       "commands": [
@@ -83313,7 +83315,7 @@
       "heading": "How It Works",
       "level": 2,
       "file": "25-commands.org",
-      "line": 1826,
+      "line": 1830,
       "content": "=C-y= inserts the entry under the yank pointer, which is normally the newest kill. Pressing =M-y= straight after a yank replaces the yanked text with the next older kill, and each further =M-y= steps back one more, wrapping around at the oldest. The status bar shows which entry you are on (for example =Kill ring: 3/12=). Once you move the cursor or edit, =M-y= instead opens a picker over the whole ring: type to filter, press Enter to insert, or click the trash icon to drop an entry. Whichever en",
       "path": [
         "Kill Ring"
@@ -83350,7 +83352,7 @@
       "heading": "Auto-Copy (Copy on Select)",
       "level": 2,
       "file": "25-commands.org",
-      "line": 1852,
+      "line": 1856,
       "content": ":PROPERTIES: :CUSTOM_ID: auto-copy :END: Text you highlight with the mouse (drag, double-click a word, triple-click a line) is copied to the system clipboard and pushed onto the kill ring as soon as you let go, like copy-on-select in a terminal. A notification in the lower right shows what was copied and closes itself after two seconds (turn it off with =scimax.autoCopy.notify=). Paste it with =Cmd+V= or =C-y=. The clipboard you had before is not lost: it is pulled onto the ring first, so =M-y= ",
       "path": [
         "Kill Ring"
@@ -83389,7 +83391,7 @@
       "heading": "Related Topics",
       "level": 2,
       "file": "25-commands.org",
-      "line": 1884,
+      "line": 1888,
       "content": "- [[file:24-keybindings.org][Keybindings]] - Kill Ring keys - [[#mark-ring][Mark Ring]] - setting the region with =C-SPC= - [[file:26-configuration.org::*Kill Ring Settings][Configuration]] - =scimax.autoCopy.enabled= - [[file:26-configuration.org][Configuration]] - =scimax.killRing.maxSize= 4. Timestamps show how long ago each mark was set",
       "path": [
         "Kill Ring"
@@ -83428,7 +83430,7 @@
       "heading": "Rectangle",
       "level": 1,
       "file": "25-commands.org",
-      "line": 1892,
+      "line": 1896,
       "content": "CLOSED: [2026-04-12 Sun 19:47] :PROPERTIES: :CUSTOM_ID: rectangle :END: Emacs-style rectangle editing commands. A rectangle is a column-aligned block of text defined by two corners of the current selection. These commands operate on the rectangular region rather than contiguous text. | Command ID                              | Description                    | Default Keybinding | |-----------------------------------------+--------------------------------+--------------------| | [[cmd:scimax.rect",
       "path": [],
       "commands": [
@@ -83462,7 +83464,7 @@
       "heading": "Rectangle Concepts",
       "level": 2,
       "file": "25-commands.org",
-      "line": 1913,
+      "line": 1917,
       "content": "CLOSED: [2026-04-12 Sun 19:48] - **Rectangle**: A column-aligned region of text defined by two corners (the selection's anchor and active positions) - **Rectangle Clipboard**: A separate clipboard (not the system clipboard) that stores the last killed/copied rectangle. This matches Emacs behavior. - **Kill**: Delete the rectangle and save it to the rectangle clipboard - **Yank**: Insert the rectangle clipboard contents at the cursor position",
       "path": [
         "Rectangle"
@@ -83496,7 +83498,7 @@
       "heading": "Common Workflows",
       "level": 2,
       "file": "25-commands.org",
-      "line": 1921,
+      "line": 1925,
       "content": "CLOSED: [2026-04-12 Sun 19:48]",
       "path": [
         "Rectangle"
@@ -83516,7 +83518,7 @@
       "heading": "Cut and Paste a Column",
       "level": 3,
       "file": "25-commands.org",
-      "line": 1924,
+      "line": 1928,
       "content": "1. Select the rectangular region (anchor at one corner, cursor at the opposite corner) 2. Press =C-x r k= to kill the rectangle 3. Move cursor to the insertion point 4. Press =C-x r y= to yank the rectangle",
       "path": [
         "Rectangle",
@@ -83552,7 +83554,7 @@
       "heading": "Add a Prefix to Multiple Lines",
       "level": 3,
       "file": "25-commands.org",
-      "line": 1930,
+      "line": 1934,
       "content": "1. Place cursor at column 0 of the first line, select down to the last line (zero-width selection at column 0) 2. Press =C-x r t= and enter the prefix string (e.g. =// = for comments) 3. The string is inserted at column 0 on each line",
       "path": [
         "Rectangle",
@@ -83589,7 +83591,7 @@
       "heading": "Number a List",
       "level": 3,
       "file": "25-commands.org",
-      "line": 1935,
+      "line": 1939,
       "content": "1. Select the rectangular region where numbers should be inserted 2. Press =C-x r S-n= 3. Enter the starting number (default 1) and optional format string 4. Line numbers are inserted, replacing the rectangle content",
       "path": [
         "Rectangle",
@@ -83626,7 +83628,7 @@
       "heading": "Remove a Column of Text",
       "level": 3,
       "file": "25-commands.org",
-      "line": 1941,
+      "line": 1945,
       "content": "1. Select the rectangular region to remove 2. Press =C-x r d= to delete without saving, or =C-x r k= to save for later yanking",
       "path": [
         "Rectangle",
@@ -83657,7 +83659,7 @@
       "heading": "Related Topics",
       "level": 2,
       "file": "25-commands.org",
-      "line": 1945,
+      "line": 1949,
       "content": "CLOSED: [2026-04-12 Sun 19:48] - [[file:24-keybindings.org::*Rectangle Commands (Emacs-style)][Keybinding Reference: Rectangle Commands]] - [[file:22-hydra-menus.org][Hydra Menus]] - Rectangle commands are available in the Hydra menu system",
       "path": [
         "Rectangle"
@@ -83689,7 +83691,7 @@
       "heading": "Publishing",
       "level": 1,
       "file": "25-commands.org",
-      "line": 1951,
+      "line": 1955,
       "content": "CLOSED: [2026-01-18 Sun 10:02] :PROPERTIES: :CUSTOM_ID: publishing :END: Commands for publishing org files to HTML, creating static sites similar to Emacs org-publish. | Command ID                        | Description                   | Default Keybinding | |-----------------------------------+-------------------------------+--------------------| | [[cmd:scimax.publish.init]]       | Initialize Publishing Project | -                  | | [[cmd:scimax.publish.project]]    | Publish Project      ",
       "path": [],
       "commands": [
@@ -83724,7 +83726,7 @@
       "heading": "Setting Up a Publishing Project",
       "level": 2,
       "file": "25-commands.org",
-      "line": 1968,
+      "line": 1972,
       "content": "1. Run =scimax.publish.init= to create a publishing configuration 2. Configure the project in the generated =.org-publish.json= file 3. Use =scimax.publish.project= to publish the configured project",
       "path": [
         "Publishing"
@@ -83752,7 +83754,7 @@
       "heading": "Publishing Configuration",
       "level": 2,
       "file": "25-commands.org",
-      "line": 1974,
+      "line": 1978,
       "content": "The =.org-publish.json= file configures: - Source directory for org files - Output directory for HTML - Include/exclude patterns - HTML template settings - Asset handling (CSS, images)",
       "path": [
         "Publishing"
@@ -83783,7 +83785,7 @@
       "heading": "Query Replace",
       "level": 1,
       "file": "25-commands.org",
-      "line": 1983,
+      "line": 1987,
       "content": "CLOSED: [2026-01-18 Sun 10:02] :PROPERTIES: :CUSTOM_ID: query-replace :END: Interactive search and replace. | Command ID                  | Description   | Default Keybinding | |-----------------------------+---------------+--------------------| | [[cmd:scimax.queryReplace]] | Query Replace | M-%                | Provides Emacs-style interactive query-replace with confirmation for each replacement.",
       "path": [],
       "commands": [
@@ -83817,7 +83819,7 @@
       "heading": "Utilities",
       "level": 1,
       "file": "25-commands.org",
-      "line": 1998,
+      "line": 2002,
       "content": "CLOSED: [2026-10-30 Fri 10:54] :PROPERTIES: :CUSTOM_ID: utilities :END: Miscellaneous utility commands. | Command ID                          | Description                     | Default Keybinding | |-------------------------------------+---------------------------------+--------------------| | [[cmd:scimax.findFile]]                 | Find File                       | C-x C-f            | | [[cmd:scimax.findFileOtherWindow]]      | Find File in New Window         | C-x 5 f, C-x 5 C-f | | [[cmd:",
       "path": [],
       "commands": [
@@ -83856,7 +83858,7 @@
       "heading": "Dired Commands",
       "level": 2,
       "file": "25-commands.org",
-      "line": 2032,
+      "line": 2036,
       "content": "Dired (Directory Editor) provides Emacs-style file management. Open with =C-x d= and use these keys in the dired panel: - Navigation: =n/p= (next/prev), =RET= (open), =^= (parent), =g= (refresh) - Marking: =m= (mark), =u= (unmark), =U= (unmark all), =t= (toggle marks) - Operations: =D= (delete), =C= (copy), =R= (rename/move), =+= (create directory) - WDired: =C-x C-q= (enter edit mode), =C-c C-c= (commit), =C-c C-k= (cancel) See [[file:37-dired.org][Dired documentation]] for full details.",
       "path": [
         "Utilities"
@@ -83895,7 +83897,7 @@
       "heading": "scimax.replaceNonAscii",
       "level": 2,
       "file": "25-commands.org",
-      "line": 2043,
+      "line": 2047,
       "content": "Replaces common non-ASCII characters (smart quotes, em-dashes, etc.) with their ASCII equivalents. Useful for preparing documents for systems that don't handle Unicode well.",
       "path": [
         "Utilities"
@@ -83929,7 +83931,7 @@
       "heading": "scimax.showDebugInfo",
       "level": 2,
       "file": "25-commands.org",
-      "line": 2047,
+      "line": 2051,
       "content": "Displays diagnostic information about the scimax extension, including version, enabled features, and configuration state. Useful for troubleshooting.",
       "path": [
         "Utilities"
@@ -83959,7 +83961,7 @@
       "heading": "Index",
       "level": 1,
       "file": "25-commands.org",
-      "line": 2051,
+      "line": 2055,
       "content": "CLOSED: [2026-01-17 Sat 12:51] This document contains [[*Introduction][310+ commands]] organized into [[*Document Structure][27 categories]] with their keybindings and descriptions. For configuration options, see the VS Code settings under scimax.*. For more information about the Scimax VS Code extension, visit the project repository.",
       "path": [],
       "commands": [],
@@ -83991,7 +83993,7 @@
       "heading": "Navigation",
       "level": 1,
       "file": "25-commands.org",
-      "line": 2060,
+      "line": 2064,
       "content": "- Previous: [[file:24-keybindings.org][Keybindings]] - Index: [[file:00-index.org][Documentation Index]] - Next: [[file:26-configuration.org][Configuration]]",
       "path": [],
       "commands": [],
@@ -113852,10 +113854,82 @@
       ]
     },
     {
-      "heading": "Keeping the Database Current",
+      "heading": "The Crucible Graph",
       "level": 2,
       "file": "48-crucible.org",
       "line": 76,
+      "content": "*Scimax: Show Crucible Graph* ([[cmd:scimax.crucible.graph]], also the graph button on a crucible's row in the panel) opens the crucible's knowledge graph beside the editor, as an interactive SVG. It needs a crucible with =crucible graph --json=. The graph shows the whole crucible. Articles are circles coloured by kind (concept, summary, comparison, method) and sized by their connections; concept tags are grey squares, and sources (off by default) are yellow squares. Lines are links between arti",
+      "path": [
+        "Crucible Knowledge Bases"
+      ],
+      "commands": [
+        "scimax.crucible.graph"
+      ],
+      "keybindings": [],
+      "keywords": [
+        "crucible",
+        "graph",
+        "scimax",
+        "show",
+        "cmd",
+        "button",
+        "row",
+        "panel",
+        "opens",
+        "knowledge",
+        "beside",
+        "editor",
+        "interactive",
+        "svg",
+        "needs",
+        "--json",
+        "shows",
+        "whole",
+        "articles",
+        "circles"
+      ]
+    },
+    {
+      "heading": "Ingesting, Distilling and Asking",
+      "level": 2,
+      "file": "48-crucible.org",
+      "line": 110,
+      "content": "*Scimax: Ingest File into Crucible* ([[cmd:scimax.crucible.ingest]]) runs =crucible ingest= on the active file, or on the file you right-click in the Explorer or on an editor tab. The file goes into the crucible it sits in, or else the one you pick. For a PDF, Markdown or HTML file it asks for an optional DOI, so the source gets the full BibTeX entry from doi.org; leave it empty and crucible looks for a DOI in the text. Unsaved changes are saved first, since crucible stores a sealed copy of the ",
+      "path": [
+        "Crucible Knowledge Bases"
+      ],
+      "commands": [
+        "scimax.crucible.ingest"
+      ],
+      "keybindings": [],
+      "keywords": [
+        "ingesting",
+        "distilling",
+        "asking",
+        "scimax",
+        "ingest",
+        "into",
+        "crucible",
+        "cmd",
+        "runs",
+        "active",
+        "right-click",
+        "explorer",
+        "editor",
+        "tab",
+        "goes",
+        "sits",
+        "one",
+        "pick",
+        "pdf",
+        "markdown"
+      ]
+    },
+    {
+      "heading": "Keeping the Database Current",
+      "level": 2,
+      "file": "48-crucible.org",
+      "line": 140,
       "content": "Crucible's database is updated by =crucible sync=. When you save an article in a crucible wiki, Scimax runs it in the background once your saves pause, then refreshes the panel, the bibliography and the lint issues; set ~scimax.crucible.syncOnSave~ to =false= to turn this off. A failed background sync shows a warning in the status bar (and in the Scimax log), not a pop-up. *Scimax: Sync Crucible Database* ([[cmd:scimax.crucible.sync]]) runs it for the current crucible (or the one whose sync butt",
       "path": [
         "Crucible Knowledge Bases"
@@ -113892,7 +113966,7 @@
       "heading": "Lint Issues in the Problems Panel",
       "level": 2,
       "file": "48-crucible.org",
-      "line": 89,
+      "line": 153,
       "content": "Scimax shows =crucible lint= issues in the Problems panel: broken links, citation keys missing from =references.bib=, articles without =ARTICLE_TYPE= or file tags, wiki files not yet synced, orphan articles and undigested sources. Each issue is on the file it concerns, at the broken link or citation when there is one; issues about the crucible as a whole (a concept with no article of its own) are on its =index.org=. Errors, warnings and notes keep crucible's severity. The issues are checked when",
       "path": [
         "Crucible Knowledge Bases"
@@ -113926,8 +114000,8 @@
       "heading": "Commands",
       "level": 2,
       "file": "48-crucible.org",
-      "line": 104,
-      "content": "| Command                           | Description                               | |-----------------------------------+-------------------------------------------| | [[cmd:scimax.crucible.search]]    | Search a crucible                         | | [[cmd:scimax.crucible.searchAll]] | Search all registered crucibles           | | [[cmd:scimax.crucible.backlinks]] | Articles that link to the current article | | [[cmd:scimax.crucible.related]]   | Articles related to the current article   | | [[cmd:",
+      "line": 168,
+      "content": "| Command                       | Description                                | |-------------------------------+--------------------------------------------| | [[cmd:scimax.crucible.search]]    | Search a crucible                          | | [[cmd:scimax.crucible.searchAll]] | Search all registered crucibles            | | [[cmd:scimax.crucible.backlinks]] | Articles that link to the current article  | | [[cmd:scimax.crucible.related]]   | Articles related to the current article    | | [[cmd:sc",
       "path": [
         "Crucible Knowledge Bases"
       ],
@@ -113942,7 +114016,7 @@
         "commands",
         "command",
         "description",
-        "------------------------------------------------------------------------------",
+        "---------------------------------------------------------------------------",
         "cmd",
         "search",
         "crucible",
@@ -113952,14 +114026,15 @@
         "link",
         "current",
         "article",
-        "related"
+        "related",
+        "cmdsc"
       ]
     },
     {
       "heading": "Settings",
       "level": 2,
       "file": "48-crucible.org",
-      "line": 120,
+      "line": 188,
       "content": "| Setting                     | Default    | Description                                 | |-----------------------------+------------+---------------------------------------------| | scimax.crucible.command     | \"crucible\" | The crucible CLI (full path if not on PATH) | | scimax.crucible.searchMode  | \"auto\"     | auto, fts, semantic or hybrid               | | scimax.crucible.searchLimit | 20         | Most search results shown                   | | scimax.crucible.syncOnSave  | true       | ",
       "path": [
         "Crucible Knowledge Bases"
@@ -113995,7 +114070,7 @@
       "heading": "Related Topics",
       "level": 2,
       "file": "48-crucible.org",
-      "line": 130,
+      "line": 198,
       "content": "- [[file:19-references.org][References]] - Citations and bibliographies - [[file:18-database-search.org][Database Search]] - Scimax's own full-text and semantic search of your org files - [[file:39-link-graph.org][Link Graph]] - Visualize the links between your files - [[file:25-commands.org][Commands]] - All commands - [[file:26-configuration.org][Configuration]] - All settings",
       "path": [
         "Crucible Knowledge Bases"

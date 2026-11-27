@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- *Scimax: Show Crucible Graph* (`scimax.crucible.graph`): an interactive SVG
+  of a crucible's knowledge graph (`crucible graph --json`), centred on the
+  open article and following you between articles; click a node to open it.
+  Filter it by a `crucible search` query, concept tags and article types.
+- *Scimax: Ingest File into Crucible* (`scimax.crucible.ingest`): run
+  `crucible ingest` on the active file, or one right-clicked in the Explorer or
+  on an editor tab, with an optional DOI for PDF, Markdown and HTML files.
+- *Scimax: Distill Crucible Source with Claude Code* (`scimax.crucible.distill`):
+  pick an undigested source and open a Claude Code chat prefilled with a prompt
+  to plan, then write, its wiki articles.
+- *Scimax: Ask Crucible with Claude Code* (`scimax.crucible.ask`): type a
+  question and open a Claude Code chat that answers it from the crucible's
+  articles, with links and cite keys.
+
 ## [0.17.0] - 2026-11-21
 
 ### Added

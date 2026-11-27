@@ -1,0 +1,242 @@
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    overflow: hidden;
+    color: var(--vscode-foreground);
+    background: var(--vscode-editor-background);
+    font-family: var(--vscode-font-family);
+    font-size: var(--vscode-font-size);
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+}
+
+.toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 12px;
+    padding: 6px 10px;
+    border-bottom: 1px solid var(--vscode-panel-border);
+}
+
+.toolbar input[type="search"] {
+    min-width: 16em;
+    padding: 3px 6px;
+    color: var(--vscode-input-foreground);
+    background: var(--vscode-input-background);
+    border: 1px solid var(--vscode-input-border, transparent);
+}
+
+.toolbar button {
+    padding: 3px 10px;
+    color: var(--vscode-button-secondaryForeground);
+    background: var(--vscode-button-secondaryBackground);
+    border: none;
+    cursor: pointer;
+}
+
+.toolbar button:hover {
+    background: var(--vscode-button-secondaryHoverBackground);
+}
+
+#status {
+    margin-left: auto;
+    color: var(--vscode-descriptionForeground);
+}
+
+#status.error {
+    color: var(--vscode-errorForeground);
+}
+
+#graph {
+    flex: 1;
+    width: 100%;
+    cursor: grab;
+    outline: none;
+}
+
+#graph.panning {
+    cursor: grabbing;
+}
+
+/* ---- Edges ---------------------------------------------------------------- */
+
+.edge {
+    stroke: var(--vscode-foreground);
+    stroke-opacity: 0.18;
+    stroke-width: 1;
+    fill: none;
+}
+
+.edge.concept {
+    stroke-dasharray: 2 3;
+    stroke-opacity: 0.1;
+}
+
+.edge.derivation {
+    stroke: var(--vscode-charts-orange);
+    stroke-opacity: 0.5;
+    stroke-width: 1.5;
+}
+
+.edge.source {
+    stroke: var(--vscode-charts-yellow);
+    stroke-opacity: 0.3;
+}
+
+.arrow {
+    fill: var(--vscode-foreground);
+    fill-opacity: 0.35;
+}
+
+.arrow.derivation {
+    fill: var(--vscode-charts-orange);
+    fill-opacity: 0.7;
+}
+
+/* ---- Nodes ---------------------------------------------------------------- */
+
+.node {
+    cursor: pointer;
+}
+
+.node circle,
+.node rect {
+    stroke: var(--vscode-editor-background);
+    stroke-width: 1.5;
+}
+
+.node.article.concept circle,
+.key.concept-article::before { fill: var(--vscode-charts-blue); background: var(--vscode-charts-blue); }
+.node.article.summary circle,
+.key.summary::before { fill: var(--vscode-charts-green); background: var(--vscode-charts-green); }
+.node.article.comparison circle,
+.key.comparison::before { fill: var(--vscode-charts-purple); background: var(--vscode-charts-purple); }
+.node.article.method circle,
+.key.method::before { fill: var(--vscode-charts-red); background: var(--vscode-charts-red); }
+.node.tag rect,
+.key.tag::before { fill: var(--vscode-descriptionForeground); background: var(--vscode-descriptionForeground); }
+.node.source rect,
+.key.source::before { fill: var(--vscode-charts-yellow); background: var(--vscode-charts-yellow); }
+
+.node text {
+    display: none;
+    fill: var(--vscode-foreground);
+    font-size: 11px;
+    paint-order: stroke;
+    stroke: var(--vscode-editor-background);
+    stroke-width: 3px;
+    pointer-events: none;
+}
+
+.node.tag text {
+    fill: var(--vscode-descriptionForeground);
+    font-style: italic;
+}
+
+svg.labels .node text,
+svg.zoomed .node.article text,
+.node.lit text,
+.node.focus text {
+    display: inline;
+}
+
+/* ---- Highlighting: the focused or hovered node and its neighbours ---------- */
+
+svg.highlighting .node { opacity: 0.2; }
+svg.highlighting .edge { stroke-opacity: 0.04; }
+svg.highlighting .node.lit,
+svg.highlighting .node.focus { opacity: 1; }
+svg.highlighting .edge.lit { stroke-opacity: 0.7; stroke-width: 1.5; }
+
+.node.focus circle {
+    stroke: var(--vscode-focusBorder);
+    stroke-width: 3;
+}
+
+.node.focus text {
+    font-weight: bold;
+    font-size: 13px;
+}
+
+.hidden { display: none; }
+
+/* ---- Tooltip and legend ---------------------------------------------------- */
+
+#tooltip {
+    position: fixed;
+    max-width: 24em;
+    padding: 4px 8px;
+    pointer-events: none;
+    color: var(--vscode-editorHoverWidget-foreground);
+    background: var(--vscode-editorHoverWidget-background);
+    border: 1px solid var(--vscode-editorHoverWidget-border);
+}
+
+#tooltip .meta {
+    color: var(--vscode-descriptionForeground);
+    font-size: 0.9em;
+}
+
+.legend {
+    position: fixed;
+    bottom: 8px;
+    left: 10px;
+    display: flex;
+    gap: 12px;
+    color: var(--vscode-descriptionForeground);
+    font-size: 0.9em;
+    pointer-events: none;
+}
+
+.key::before {
+    content: "";
+    display: inline-block;
+    width: 9px;
+    height: 9px;
+    margin-right: 4px;
+    border-radius: 50%;
+}
+
+.key.tag::before,
+.key.source::before {
+    border-radius: 1px;
+}
+
+/* ---- Filters ---------------------------------------------------------------- */
+
+.toolbar.filters input[type="search"] {
+    min-width: 12em;
+}
+
+#query {
+    min-width: 18em !important;
+}
+
+.chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin-left: 4px;
+    padding: 1px 6px;
+    border-radius: 9px;
+    color: var(--vscode-badge-foreground);
+    background: var(--vscode-badge-background);
+}
+
+.chip button {
+    padding: 0 2px;
+    color: inherit;
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+.node.match circle {
+    stroke: var(--vscode-charts-yellow);
+    stroke-width: 2.5;
+}

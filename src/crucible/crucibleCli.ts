@@ -243,3 +243,123 @@ function citeKeyColumn(line: string, key: string): number {
     const match = new RegExp(`(?<=[:,;\\s])${escaped}(?![\\w-])`).exec(line);
     return match ? match.index : -1;
 }
+
+// =============================================================================
+// Ingest and distill
+// =============================================================================
+
+/** A source from `crucible undigested --json`. `path` is relative to the crucible root. */
+export interface CrucibleSource {
+    id: number;
+    path: string;
+    title: string;
+    source_type: string;
+    /** JSON text holding `cite_key` among other fields. */
+    metadata?: string | null;
+}
+
+/** The cite key of a source, from its metadata. */
+export function sourceCiteKey(source: CrucibleSource): string | undefined {
+    if (!source.metadata) {
+        return undefined;
+    }
+    try {
+        const key = (JSON.parse(source.metadata) as { cite_key?: unknown }).cite_key;
+        return typeof key === 'string' && key ? key : undefined;
+    } catch {
+        return undefined;
+    }
+}
+
+/** What `crucible ingest` reported. */
+export interface IngestResult {
+    title?: string;
+    citeKey?: string;
+    /** Stored copy, relative to the crucible root. */
+    stored?: string;
+    /** The same content was ingested before; nothing changed. */
+    alreadyIngested: boolean;
+}
+
+/** Read the result of `crucible ingest` from its (text) output. */
+export function parseIngestOutput(output: string): IngestResult {
+    const field = (name: string) => new RegExp(`^\\s*${name}:[ \\t]*(.+?)[ \\t]*$`, 'm').exec(output)?.[1];
+    const header = /^(Ingested|Already ingested[^:]*):[ \t]*(.+?)[ \t]*$/m.exec(output);
+    return {
+        title: header?.[2],
+        citeKey: field('Cite key'),
+        stored: field('Stored'),
+        alreadyIngested: header ? header[1] !== 'Ingested' : false,
+    };
+}
+
+/**
+ * The prompt Scimax prefills in Claude Code to distill a source: the
+ * crucible, the source and its cite key, and the plan-then-write process,
+ * with an optional focus from the user.
+ */
+export function distillPrompt(root: string, source: { path: string; title: string; citeKey?: string }, focus?: string): string {
+    const key = source.citeKey ? ` (cite key ${source.citeKey})` : '';
+    const focusText = focus?.trim() ? ` Focus on: ${focus.trim()}.` : '';
+    return `Distill the source "${source.title}"${key} in the crucible at ${root} into wiki articles. `
+        + `The source is ${path.join(root, source.path)}. Use the crucible skill and run crucible commands from ${root}. `
+        + 'First read the source and the related existing articles, and show me a plan (summary article, '
+        + 'new and updated concept articles, cross-links) before writing anything. '
+        + `After I approve it, write the articles with SOURCE_KEYS set${source.citeKey ? ` to ${source.citeKey}` : ''}, `
+        + `cite with citep:, then run crucible sync and crucible lint.${focusText}`;
+}
+
+// =============================================================================
+// The knowledge graph (`crucible graph --json`)
+// =============================================================================
+
+export interface CrucibleGraphNode {
+    /** `a<id>` article, `c<id>` concept, `s<id>` source. */
+    id: string;
+    type: 'article' | 'concept' | 'source';
+    /** Articles: concept, summary, comparison or method. */
+    kind?: string;
+    title?: string;
+    /** Concepts. */
+    name?: string;
+    article_count?: number;
+    /** Articles and sources, relative to the crucible root. */
+    path?: string;
+    status?: string;
+    source_type?: string;
+    /** Sources: cite key. */
+    key?: string | null;
+}
+
+export interface CrucibleGraphEdge {
+    source: string;
+    target: string;
+    type: 'link' | 'concept' | 'derivation' | 'source';
+}
+
+export interface CrucibleGraph {
+    /** Absolute crucible root. */
+    root: string;
+    nodes: CrucibleGraphNode[];
+    edges: CrucibleGraphEdge[];
+}
+
+/** The id of the article node at `file` (absolute), if the graph has one. */
+export function graphNodeForFile(graph: CrucibleGraph, file: string): string | undefined {
+    const rel = path.relative(graph.root, path.resolve(file));
+    const normalized = rel.split(path.sep).join('/');
+    return graph.nodes.find(n => n.type === 'article' && n.path === normalized)?.id;
+}
+
+/**
+ * The prompt Scimax prefills in Claude Code to answer `question` from the
+ * crucible at `root`: search the wiki, read the articles, answer with links
+ * to them, and say what the wiki does not cover. The wiki is not edited.
+ */
+export function askPrompt(root: string, question: string): string {
+    return `Answer this question from the crucible knowledge base at ${root}: ${question.trim()}\n\n`
+        + `Use the crucible skill and run crucible commands (search, concepts, related) from ${root} `
+        + 'to find the relevant wiki articles, and read them. Base the answer on what the articles say, '
+        + 'link each article you use as an org file link, and give the cite keys (citep:) of the sources behind '
+        + 'its claims. Say plainly what the wiki does not cover. Do not edit the wiki.';
+}
