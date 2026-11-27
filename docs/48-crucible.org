@@ -73,6 +73,70 @@ the entries live in the crucible's =.crucible/references.bib=. Opening an
 article loads that bibliography, so citation hovers, completion and
 navigation work in it (see [[file:19-references.org][References]]).
 
+** ⚠️ The Crucible Graph
+
+*Scimax: Show Crucible Graph* ([[cmd:scimax.crucible.graph]], also the graph
+button on a crucible's row in the panel) opens the crucible's knowledge
+graph beside the editor, as an interactive SVG. It needs a crucible with
+=crucible graph --json=.
+
+The graph shows the whole crucible. Articles are circles coloured by kind
+(concept, summary, comparison, method) and sized by their connections;
+concept tags are grey squares, and sources (off by default) are yellow
+squares. Lines are links between articles (with arrows), tags (dotted) and
+derivations (orange). Opened from an article, the view centres on it and
+highlights its neighbours, and it follows you as you open other articles of
+the crucible.
+
+Hover a node for its title, kind and number of connections, with its
+neighbours highlighted. Click an article or source to open it; click a
+concept tag to centre on it. Drag the background to pan; zoom with the
+scroll wheel, a trackpad pinch, the =+= and =-= buttons or keys (titles
+appear as you zoom in) and drag a node to move it. The toolbar finds
+a node by title, shows or hides concept tags, sources and all labels,
+centres on the current article (=c=), fits the whole graph (=f=) and
+reloads it. The graph reloads itself after each =crucible sync=.
+
+The second toolbar row filters the graph down to the articles you want.
+Type a query and press Enter to keep only the articles =crucible search=
+finds for it (with ~scimax.crucible.searchMode~); add concept tags to keep
+only articles carrying every one of them; tick article types to keep only
+those. The filters combine, and a query is searched with the tags and types
+too. *Neighbours* also shows the nodes linked to the matches (matches have a
+yellow ring); *Clear* shows everything again. The graph fits the matches as
+you filter. Tags are matched as they are on articles, without the tags under
+them in a =taxonomy.org=.
+
+** ⚠️ Ingesting, Distilling and Asking
+
+*Scimax: Ingest File into Crucible* ([[cmd:scimax.crucible.ingest]]) runs
+=crucible ingest= on the active file, or on the file you right-click in the
+Explorer or on an editor tab. The file goes into the crucible it sits in, or
+else the one you pick. For a PDF, Markdown or HTML file it asks for an
+optional DOI, so the source gets the full BibTeX entry from doi.org; leave it
+empty and crucible looks for a DOI in the text. Unsaved changes are saved
+first, since crucible stores a sealed copy of the file as it is on disk:
+later edits to the file do not change the source. When it is done, Scimax
+shows the cite key, with buttons to copy it or distill the source.
+
+Distilling a source into wiki articles is the LLM's work, so Scimax hands it
+to Claude Code (the Claude Code extension must be installed). *Scimax:
+Distill Crucible Source with Claude Code* ([[cmd:scimax.crucible.distill]],
+also on a crucible's right-click menu in the panel) lists the crucible's
+undigested sources (=crucible undigested=). Pick one, optionally type a focus
+(for example /the kinetics results/; press Enter for the whole source), and
+a new Claude Code chat opens with a prompt naming the crucible, the source
+and its cite key. The prompt asks Claude to show you a plan before writing
+any article, and to run =crucible sync= and =crucible lint= when it is done.
+Review the prompt and send it.
+
+*Scimax: Ask Crucible with Claude Code* ([[cmd:scimax.crucible.ask]], also on
+a crucible's right-click menu) asks a question of the knowledge base. Type
+the question and a Claude Code chat opens with it, asking Claude to search
+the crucible, read the relevant articles, and answer from them with links to
+the articles and the cite keys of their sources, saying what the wiki does
+not cover. It does not edit the wiki.
+
 ** Keeping the Database Current
 
 Crucible's database is updated by =crucible sync=. When you save an article
@@ -101,19 +165,23 @@ after each sync. *Scimax: Lint Crucible* ([[cmd:scimax.crucible.lint]], also
 on a crucible's right-click menu in the panel) checks again and opens the
 Problems panel. Set ~scimax.crucible.showLint~ to =false= to hide them.
 
-** Commands
+** 👀 Commands
 
-| Command                           | Description                               |
-|-----------------------------------+-------------------------------------------|
-| [[cmd:scimax.crucible.search]]    | Search a crucible                         |
-| [[cmd:scimax.crucible.searchAll]] | Search all registered crucibles           |
-| [[cmd:scimax.crucible.backlinks]] | Articles that link to the current article |
-| [[cmd:scimax.crucible.related]]   | Articles related to the current article   |
-| [[cmd:scimax.crucible.history]]   | Derivation history of the current article |
-| [[cmd:scimax.crucible.openIndex]] | Open a crucible's index.org               |
-| [[cmd:scimax.crucible.sync]]      | Run crucible sync                         |
-| [[cmd:scimax.crucible.lint]]      | Show crucible lint issues in Problems     |
-| [[cmd:scimax.crucible.refresh]]   | Refresh the Crucible panel                |
+| Command                       | Description                                |
+|-------------------------------+--------------------------------------------|
+| [[cmd:scimax.crucible.search]]    | Search a crucible                          |
+| [[cmd:scimax.crucible.searchAll]] | Search all registered crucibles            |
+| [[cmd:scimax.crucible.backlinks]] | Articles that link to the current article  |
+| [[cmd:scimax.crucible.related]]   | Articles related to the current article    |
+| [[cmd:scimax.crucible.history]]   | Derivation history of the current article  |
+| [[cmd:scimax.crucible.graph]]     | Show the crucible's knowledge graph        |
+| [[cmd:scimax.crucible.ingest]]    | Ingest a file into a crucible              |
+| [[cmd:scimax.crucible.distill]]   | Distill a source with Claude Code          |
+| [[cmd:scimax.crucible.ask]]       | Ask a crucible a question with Claude Code |
+| [[cmd:scimax.crucible.openIndex]] | Open a crucible's index.org                |
+| [[cmd:scimax.crucible.sync]]      | Run crucible sync                          |
+| [[cmd:scimax.crucible.lint]]      | Show crucible lint issues in Problems      |
+| [[cmd:scimax.crucible.refresh]]   | Refresh the Crucible panel                 |
 
 None has a default keybinding.
 

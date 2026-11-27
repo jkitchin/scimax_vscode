@@ -2853,6 +2853,23 @@
         "icon": "$(checklist)"
       },
       {
+        "command": "scimax.crucible.graph",
+        "title": "Scimax: Show Crucible Graph",
+        "icon": "$(type-hierarchy)"
+      },
+      {
+        "command": "scimax.crucible.ingest",
+        "title": "Scimax: Ingest File into Crucible"
+      },
+      {
+        "command": "scimax.crucible.distill",
+        "title": "Scimax: Distill Crucible Source with Claude Code"
+      },
+      {
+        "command": "scimax.crucible.ask",
+        "title": "Scimax: Ask Crucible with Claude Code"
+      },
+      {
         "command": "scimax.notes.refresh",
         "title": "Scimax: Refresh Notes Panel",
         "icon": "$(refresh)"
@@ -9788,6 +9805,11 @@
           "submenu": "scimax.vc.contextMenu",
           "when": "resourceScheme == file",
           "group": "9_scimaxVc@1"
+        },
+        {
+          "command": "scimax.crucible.ingest",
+          "when": "resourceScheme == file",
+          "group": "9_scimaxCrucible@1"
         }
       ],
       "explorer/context": [
@@ -9803,6 +9825,11 @@
           "submenu": "scimax.vc.contextMenu",
           "when": "resourceScheme == file",
           "group": "7_modification@90"
+        },
+        {
+          "command": "scimax.crucible.ingest",
+          "when": "resourceScheme == file && !explorerResourceIsFolder",
+          "group": "7_modification@91"
         }
       ],
       "editor/context": [
@@ -10919,9 +10946,24 @@
           "group": "inline@3"
         },
         {
+          "command": "scimax.crucible.graph",
+          "when": "view == scimax.crucible && viewItem == crucible",
+          "group": "inline@4"
+        },
+        {
           "command": "scimax.crucible.lint",
           "when": "view == scimax.crucible && viewItem == crucible",
           "group": "crucible@1"
+        },
+        {
+          "command": "scimax.crucible.distill",
+          "when": "view == scimax.crucible && viewItem == crucible",
+          "group": "crucible@2"
+        },
+        {
+          "command": "scimax.crucible.ask",
+          "when": "view == scimax.crucible && viewItem == crucible",
+          "group": "crucible@3"
         },
         {
           "command": "scimax.agenda.gotoItem",

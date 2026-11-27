@@ -7,6 +7,9 @@
  * the wiki's org files. Opening a crucible article also loads the crucible's
  * references.bib, so its citations resolve, and shows `crucible lint` issues
  * in the Problems panel. Saving an article runs `crucible sync`.
+ *
+ * Ingesting a file runs `crucible ingest`. Distilling a source is the LLM's
+ * work, so Scimax hands it to Claude Code with a prompt naming the source.
  */
 
 import * as vscode from 'vscode';
@@ -15,10 +18,12 @@ import * as os from 'os';
 import * as path from 'path';
 import type { ReferenceManager } from '../references/referenceManager';
 import { extensionLogger as log } from '../utils/logger';
+import { ensureClaudeCode, openClaudeCodeWithPrompt } from '../shared/claudeCode';
+import { CrucibleGraphView } from './crucibleGraphView';
 import {
-    ARTICLE_TYPES, CrucibleArticle, CrucibleCliError, CrucibleConcept, CrucibleHistory, CrucibleLintIssue,
-    RegistryEntry, SearchMode, cruciblePaths, findCrucibleRoot, lintIssueRange, listWikiArticles, runCrucible,
-    runCrucibleJson,
+    ARTICLE_TYPES, CRUCIBLE_DIR, askPrompt, CrucibleArticle, CrucibleCliError, CrucibleConcept, CrucibleHistory,
+    CrucibleGraph, CrucibleLintIssue, CrucibleSource, RegistryEntry, SearchMode, cruciblePaths, distillPrompt, findCrucibleRoot,
+    lintIssueRange, listWikiArticles, parseIngestOutput, runCrucible, runCrucibleJson, sourceCiteKey,
 } from './crucibleCli';
 
 interface Crucible {
@@ -290,6 +295,149 @@ async function showHistory(): Promise<void> {
 }
 
 // =============================================================================
+// Ingest and distill
+// =============================================================================
+
+/** Extensions crucible treats as external sources, which may have a DOI. */
+const EXTERNAL_EXTENSIONS = new Set(['.pdf', '.md', '.html', '.htm']);
+
+interface SourceToDistill {
+    path: string;
+    title: string;
+    citeKey?: string;
+}
+
+/**
+ * Ask for an optional focus, then open Claude Code with a prompt to distill
+ * `source` of the crucible at `root`.
+ */
+async function distillWithClaudeCode(root: string, source: SourceToDistill): Promise<void> {
+    if (!(await ensureClaudeCode('Distilling a crucible source'))) {
+        return;
+    }
+    const focus = await vscode.window.showInputBox({
+        prompt: `Distill "${source.title}" with Claude Code`,
+        placeHolder: 'Optional focus, e.g. "the kinetics results" (Enter for the whole source)',
+    });
+    if (focus === undefined) {
+        return;
+    }
+    await openClaudeCodeWithPrompt(distillPrompt(root, source, focus));
+}
+
+/** `crucible ingest` the given file (or the active editor's), into its crucible or one the user picks. */
+async function ingest(uri: vscode.Uri | undefined, onIngested: (root: string) => void): Promise<void> {
+    const target = uri ?? vscode.window.activeTextEditor?.document.uri;
+    if (!target || target.scheme !== 'file') {
+        vscode.window.showInformationMessage('Open or select a file to ingest.');
+        return;
+    }
+    const file = target.fsPath;
+    // crucible ingests the file on disk.
+    const document = vscode.workspace.textDocuments.find(d => d.uri.fsPath === file);
+    if (document?.isDirty && !(await document.save())) {
+        return;
+    }
+    const ownRoot = findCrucibleRoot(file);
+    if (ownRoot && file.startsWith(path.join(ownRoot, CRUCIBLE_DIR) + path.sep)) {
+        vscode.window.showInformationMessage('This file is part of a crucible already; ingest files from outside .crucible/.');
+        return;
+    }
+    const crucible = ownRoot
+        ? { name: path.basename(ownRoot), root: ownRoot }
+        : await chooseCrucible(`Ingest ${path.basename(file)} into which crucible?`);
+    if (!crucible) {
+        return;
+    }
+    const args = ['ingest', file];
+    if (EXTERNAL_EXTENSIONS.has(path.extname(file).toLowerCase())) {
+        const doi = await vscode.window.showInputBox({
+            prompt: `DOI of ${path.basename(file)} (optional)`,
+            placeHolder: 'Leave empty to find one in the text or make a minimal BibTeX entry',
+        });
+        if (doi === undefined) {
+            return;
+        }
+        if (doi.trim()) {
+            args.push('--doi', doi.trim());
+        }
+    }
+    let output: string;
+    try {
+        output = await vscode.window.withProgress(
+            { location: vscode.ProgressLocation.Notification, title: `Ingesting ${path.basename(file)} into ${crucible.name}` },
+            () => runCrucible(args, { command: config().command, cwd: crucible.root, timeoutMs: 300_000 }));
+    } catch (error) {
+        await showCliError(error);
+        return;
+    }
+    const result = parseIngestOutput(output);
+    onIngested(crucible.root);
+    const title = result.title ?? path.basename(file);
+    const key = result.citeKey ? ` as ${result.citeKey}` : '';
+    const message = result.alreadyIngested
+        ? `${title} was already ingested in ${crucible.name}${key}.`
+        : `Ingested ${title} into ${crucible.name}${key}.`;
+    const actions = [
+        ...(result.stored ? ['Distill with Claude Code'] : []),
+        ...(result.citeKey ? ['Copy Cite Key'] : []),
+    ];
+    const choice = await vscode.window.showInformationMessage(message, ...actions);
+    if (choice === 'Copy Cite Key' && result.citeKey) {
+        await vscode.env.clipboard.writeText(result.citeKey);
+    } else if (choice === 'Distill with Claude Code' && result.stored) {
+        await distillWithClaudeCode(crucible.root, { path: result.stored, title, citeKey: result.citeKey });
+    }
+}
+
+/** Ask a question about a crucible and hand it to Claude Code to answer from the wiki. */
+async function ask(crucible: Crucible | undefined): Promise<void> {
+    const target = crucible ?? await chooseCrucible('Ask which crucible?');
+    if (!target || !(await ensureClaudeCode('Asking a crucible'))) {
+        return;
+    }
+    const question = await vscode.window.showInputBox({
+        prompt: `Ask ${target.name} with Claude Code`,
+        placeHolder: 'A question for the knowledge base',
+    });
+    if (question?.trim()) {
+        await openClaudeCodeWithPrompt(askPrompt(target.root, question));
+    }
+}
+
+/** Pick an undigested source of a crucible and hand it to Claude Code to distill. */
+async function distill(crucible: Crucible | undefined): Promise<void> {
+    const target = crucible ?? await chooseCrucible('Distill a source of which crucible?');
+    if (!target) {
+        return;
+    }
+    let sources: CrucibleSource[];
+    try {
+        sources = await cli<CrucibleSource[]>(['undigested'], target.root);
+    } catch (error) {
+        await showCliError(error);
+        return;
+    }
+    if (sources.length === 0) {
+        vscode.window.showInformationMessage(`Every source in ${target.name} has been distilled.`);
+        return;
+    }
+    const pick = await vscode.window.showQuickPick(
+        sources.map(source => ({
+            label: source.title,
+            description: [sourceCiteKey(source), source.source_type].filter(Boolean).join(' · '),
+            detail: source.path,
+            source,
+        })),
+        { placeHolder: `${sources.length} undigested sources in ${target.name}`, matchOnDescription: true, matchOnDetail: true });
+    if (pick) {
+        await distillWithClaudeCode(target.root, {
+            path: pick.source.path, title: pick.source.title, citeKey: sourceCiteKey(pick.source),
+        });
+    }
+}
+
+// =============================================================================
 // Lint issues in the Problems panel
 // =============================================================================
 
@@ -462,6 +610,22 @@ class CrucibleTreeProvider implements vscode.TreeDataProvider<CrucibleNode> {
 export function registerCrucible(context: vscode.ExtensionContext, referenceManager?: ReferenceManager): void {
     const tree = new CrucibleTreeProvider();
     const lint = new CrucibleLint();
+    const graphView = new CrucibleGraphView(
+        context.extensionUri,
+        root => cli<CrucibleGraph>(['graph', '--sources'], root),
+        async (root, query, tags, types) => {
+            const args = ['search', query, '--mode', config().searchMode, '--raw', '--limit', '1000',
+                ...tags.flatMap(tag => ['--tag', tag]), ...types.flatMap(type => ['--type', type])];
+            const results = await cli<CrucibleArticle[]>(args, root);
+            return results.map(article => article.path);
+        },
+        async error => {
+            if (error instanceof CrucibleCliError && /no such option/i.test(error.message)) {
+                vscode.window.showErrorMessage('The Crucible graph needs a newer crucible (with crucible graph --json). Update crucible.');
+                return;
+            }
+            await showCliError(error);
+        });
     const loadedBibliographies = new Set<string>();
     const opened = new Set<string>();
 
@@ -519,6 +683,7 @@ export function registerCrucible(context: vscode.ExtensionContext, referenceMana
                     { location: vscode.ProgressLocation.Notification, title: `Syncing ${name}` }, run);
             vscode.window.setStatusBarMessage(output.split('\n').pop() || `Synced ${name}`, 5000);
             tree.refresh();
+            void graphView.refresh(root);
             await loadBibliography(root, true);
             lintQuietly(root);
         } catch (error) {
@@ -559,6 +724,7 @@ export function registerCrucible(context: vscode.ExtensionContext, referenceMana
 
     context.subscriptions.push(
         lint,
+        graphView,
         { dispose: () => saveTimers.forEach(timer => clearTimeout(timer)) },
         vscode.window.registerTreeDataProvider('scimax.crucible', tree),
         vscode.window.onDidChangeActiveTextEditor(onEditor),
@@ -570,6 +736,16 @@ export function registerCrucible(context: vscode.ExtensionContext, referenceMana
         vscode.commands.registerCommand('scimax.crucible.backlinks', showBacklinks),
         vscode.commands.registerCommand('scimax.crucible.related', showRelated),
         vscode.commands.registerCommand('scimax.crucible.history', showHistory),
+        vscode.commands.registerCommand('scimax.crucible.ingest', (uri?: vscode.Uri) =>
+            ingest(uri instanceof vscode.Uri ? uri : undefined, () => tree.refresh())),
+        vscode.commands.registerCommand('scimax.crucible.graph', async (node?: CrucibleNode) => {
+            const crucible = nodeCrucible(node) ?? await chooseCrucible('Show the graph of which crucible?');
+            if (crucible) {
+                await graphView.show(crucible.root, crucible.name, vscode.window.activeTextEditor?.document.uri.fsPath);
+            }
+        }),
+        vscode.commands.registerCommand('scimax.crucible.ask', (node?: CrucibleNode) => ask(nodeCrucible(node))),
+        vscode.commands.registerCommand('scimax.crucible.distill', (node?: CrucibleNode) => distill(nodeCrucible(node))),
         vscode.commands.registerCommand('scimax.crucible.openIndex', async (node?: CrucibleNode) => {
             const crucible = nodeCrucible(node) ?? await chooseCrucible('Open the index of which crucible?');
             if (!crucible) {

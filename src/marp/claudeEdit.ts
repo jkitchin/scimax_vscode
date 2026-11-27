@@ -18,8 +18,8 @@ import { slideStarts, isMarpText } from './slideRenderer';
 import { parseDeck } from './slideModel';
 import { slidesInSelection } from './deckEdits';
 import { slideEditPrompt, slideLineSpan } from './claudePrompt';
+import { ensureClaudeCode, openClaudeCodeWithPrompt } from '../shared/claudeCode';
 
-const CLAUDE_CODE_ID = 'anthropic.claude-code';
 /** Claude Code's webview panel type; VS Code reports it with a prefix in tab inputs. */
 const CLAUDE_PANEL_VIEW_TYPE = 'claudeVSCodePanel';
 
@@ -40,14 +40,7 @@ async function mentionInOpenChat(document: vscode.TextDocument, start: number, e
 
 /** Open Claude Code with a prompt to edit slides `indices` (0-based) of `document`. */
 export async function editSlidesWithClaudeCode(document: vscode.TextDocument, indices: number[]): Promise<void> {
-    if (!vscode.extensions.getExtension(CLAUDE_CODE_ID)) {
-        const choice = await vscode.window.showInformationMessage(
-            'Edit with Claude Code needs the Claude Code extension.',
-            'Show Extension'
-        );
-        if (choice) {
-            await vscode.commands.executeCommand('extension.open', CLAUDE_CODE_ID);
-        }
+    if (!(await ensureClaudeCode('Edit with Claude Code'))) {
         return;
     }
     // Claude Code reads the file from disk.
@@ -71,8 +64,7 @@ export async function editSlidesWithClaudeCode(document: vscode.TextDocument, in
         deck.slides,
         indices
     );
-    const uri = vscode.Uri.parse(`${vscode.env.uriScheme}://${CLAUDE_CODE_ID}/open?prompt=${encodeURIComponent(prompt)}`);
-    await vscode.env.openExternal(uri);
+    await openClaudeCodeWithPrompt(prompt);
 }
 
 export function registerClaudeEditCommand(context: vscode.ExtensionContext): void {
