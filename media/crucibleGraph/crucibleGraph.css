@@ -240,3 +240,65 @@ svg.highlighting .edge.lit { stroke-opacity: 0.7; stroke-width: 1.5; }
     stroke: var(--vscode-charts-yellow);
     stroke-width: 2.5;
 }
+
+/* ---- Right-click menu ---------------------------------------------------------- */
+
+#nodeMenu {
+    position: fixed;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    min-width: 14em;
+    max-width: 30em;
+    padding: 4px 0;
+    color: var(--vscode-menu-foreground);
+    background: var(--vscode-menu-background);
+    border: 1px solid var(--vscode-menu-border, var(--vscode-panel-border));
+    box-shadow: 0 2px 8px var(--vscode-widget-shadow);
+}
+
+#nodeMenu[hidden] {
+    display: none;
+}
+
+#nodeMenu button {
+    padding: 4px 12px;
+    overflow: hidden;
+    color: inherit;
+    text-align: left;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+#nodeMenu button:hover:not(:disabled),
+#nodeMenu button:focus {
+    color: var(--vscode-menu-selectionForeground);
+    background: var(--vscode-menu-selectionBackground);
+    outline: none;
+}
+
+#nodeMenu button:disabled {
+    color: var(--vscode-disabledForeground);
+    cursor: default;
+}
+
+#nodeMenu {
+    max-height: 70vh;
+    overflow-y: auto;
+}
+
+#nodeMenu .menuHeading {
+    margin-top: 4px;
+    padding: 4px 12px 2px;
+    border-top: 1px solid var(--vscode-menu-separatorBackground, var(--vscode-panel-border));
+    color: var(--vscode-descriptionForeground);
+    font-size: 0.9em;
+}
+
+#nodeMenu .detail {
+    color: var(--vscode-descriptionForeground);
+    font-size: 0.9em;
+}

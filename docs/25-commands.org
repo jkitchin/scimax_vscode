@@ -100,21 +100,22 @@ excluded from exports. See [[file:43-notes.org][Dialog Notes]].
 Browse and search [[https://github.com/jkitchin/crucible][crucible]] wikis, show the graph around an article, ingest files and distill sources.
 See [[file:48-crucible.org][Crucible Knowledge Bases]].
 
-| Command ID                    | Description                                     | Default Keybinding |
-|-------------------------------+-------------------------------------------------+--------------------|
-| [[cmd:scimax.crucible.search]]    | Search a crucible                               | -                  |
-| [[cmd:scimax.crucible.searchAll]] | Search all registered crucibles                 | -                  |
-| [[cmd:scimax.crucible.backlinks]] | Articles that link to the current article       | -                  |
-| [[cmd:scimax.crucible.related]]   | Articles related to the current article         | -                  |
-| [[cmd:scimax.crucible.history]]   | Derivation history of the current article       | -                  |
-| [[cmd:scimax.crucible.graph]]     | Show the crucible's knowledge graph             | -                  |
-| [[cmd:scimax.crucible.ingest]]    | Ingest a file into a crucible                   | -                  |
-| [[cmd:scimax.crucible.distill]]   | Distill a source with Claude Code               | -                  |
-| [[cmd:scimax.crucible.ask]]       | Ask a crucible a question with Claude Code      | -                  |
-| [[cmd:scimax.crucible.openIndex]] | Open a crucible's index.org                     | -                  |
-| [[cmd:scimax.crucible.lint]]      | Show crucible lint issues in the Problems panel | -                  |
-| [[cmd:scimax.crucible.sync]]      | Run crucible sync on a crucible                 | -                  |
-| [[cmd:scimax.crucible.refresh]]   | Refresh the Crucible panel                      | -                  |
+| Command ID                             | Description                                     | Default Keybinding       |
+|----------------------------------------+-------------------------------------------------+--------------------------|
+| [[cmd:scimax.crucible.search]]             | Search a crucible                               | -                        |
+| [[cmd:scimax.crucible.searchAll]]          | Search all registered crucibles                 | -                        |
+| [[cmd:scimax.crucible.backlinks]]          | Articles that link to the current article       | -                        |
+| [[cmd:scimax.crucible.related]]            | Articles related to the current article         | -                        |
+| [[cmd:scimax.crucible.history]]            | Derivation history of the current article       | -                        |
+| [[cmd:scimax.crucible.graph]]              | Show the crucible's knowledge graph             | -                        |
+| [[cmd:scimax.crucible.searchResultsGraph]] | Graph of crucible search results                | M-o (in crucible search) |
+| [[cmd:scimax.crucible.ingest]]             | Ingest a file into a crucible                   | -                        |
+| [[cmd:scimax.crucible.distill]]            | Distill a source with Claude Code               | -                        |
+| [[cmd:scimax.crucible.ask]]                | Ask a crucible a question with Claude Code      | -                        |
+| [[cmd:scimax.crucible.openIndex]]          | Open a crucible's index.org                     | -                        |
+| [[cmd:scimax.crucible.lint]]               | Show crucible lint issues in the Problems panel | -                        |
+| [[cmd:scimax.crucible.sync]]               | Run crucible sync on a crucible                 | -                        |
+| [[cmd:scimax.crucible.refresh]]            | Refresh the Crucible panel                      | -                        |
 
 ** ✅ DWIM Commands
 CLOSED: [2026-04-12 Sun 19:53]

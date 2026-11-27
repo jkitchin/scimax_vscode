@@ -2862,6 +2862,10 @@
         "title": "Scimax: Ingest File into Crucible"
       },
       {
+        "command": "scimax.crucible.searchResultsGraph",
+        "title": "Scimax: Graph of Crucible Search Results"
+      },
+      {
         "command": "scimax.crucible.distill",
         "title": "Scimax: Distill Crucible Source with Claude Code"
       },
@@ -5778,6 +5782,12 @@
         "key": "ctrl+c d h",
         "mac": "ctrl+c d h",
         "when": "!terminalFocus"
+      },
+      {
+        "command": "scimax.crucible.searchResultsGraph",
+        "key": "alt+o",
+        "mac": "alt+o",
+        "when": "inQuickOpen && scimax.cruciblePickerActive"
       },
       {
         "command": "scimax.db.searchHeadingsActions",
@@ -10247,6 +10257,10 @@
         }
       ],
       "commandPalette": [
+        {
+          "command": "scimax.crucible.searchResultsGraph",
+          "when": "scimax.cruciblePickerActive"
+        },
         {
           "command": "scimax.ref.acceptCitationWithType",
           "when": "false"
