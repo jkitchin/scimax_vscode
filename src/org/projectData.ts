@@ -86,13 +86,16 @@ export async function findProjectOrgFiles(root: string): Promise<string[]> {
 
 /** Parse every org file in the project (or the one file, for an .org root), preferring open editors' text. */
 export async function loadProjectDocuments(root: string): Promise<ProjectDocument[]> {
+    return loadOrgDocuments(isOrgFileRoot(root) ? [root] : await findProjectOrgFiles(root));
+}
+
+/** Parse the given org (or Markdown) files, preferring open editors' text; unreadable files are left out. */
+export async function loadOrgDocuments(files: string[]): Promise<ProjectDocument[]> {
     const open = new Map<string, string>();
     for (const doc of vscode.workspace.textDocuments) {
         if (doc.uri.scheme === 'file') open.set(doc.uri.fsPath, doc.getText());
     }
-
     const docs: ProjectDocument[] = [];
-    const files = isOrgFileRoot(root) ? [root] : await findProjectOrgFiles(root);
     for (const filePath of files) {
         try {
             const content = open.get(filePath) ?? await fs.promises.readFile(filePath, 'utf-8');

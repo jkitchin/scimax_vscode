@@ -62,6 +62,8 @@ Dependencies are always resolved against every indexed task, whatever the
 scope, so a task waiting on another project is blocked only while that task is
 open. A dependency on an id no file defines keeps the task blocked and shows as
 "(not found)". An `:ID:` defined twice prints a warning, and the first is used.
+A dependency cycle prints a warning naming its tasks; report it to the user,
+since open tasks in a cycle can never become ready.
 
 ## Answering questions
 

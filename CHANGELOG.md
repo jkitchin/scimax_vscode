@@ -7,20 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Changed
-
-- `scimax task` reads tasks with the editor's project parser, and covers every
-  indexed project by default (`--local` for the current folder, `--file` for
-  one file). `task who` is now the team's workload across projects. Inherited
-  `:ASSIGNEE:` and `@name` tags count, a task with several assignees counts for
-  each of them (its effort split), and `90m` and `0:30` efforts are no longer
-  zero. Dependencies in other files are followed, and a duplicated `:ID:` is
-  reported.
-- Added `examples/project-portfolio`, a generated team portfolio for
-  stress-testing project management (`scripts/gen-stress-portfolio.cjs`).
-
 ### Added
 
+- *Scimax: Team View (Workload)* (`scimax.team.view`): each person's planned
+  hours, week by week, against their `:CAPACITY:`, across every project, with
+  time away from "Away" subheadings. Click a person for their tasks by
+  project, or a cell for the tasks behind that week.
+- `scimax.team.defaultCapacity` sets the capacity of a person without
+  `:CAPACITY:`.
 - In *Search Crucible* and *Search All Crucibles*, `M-o` opens the crucible
   graph filtered to the results, one graph per crucible with results
   (`scimax.crucible.searchResultsGraph`).
@@ -40,6 +34,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - *Scimax: Ask Crucible with Claude Code* (`scimax.crucible.ask`): type a
   question and open a Claude Code chat that answers it from the crucible's
   articles, with links and cite keys.
+
+### Changed
+
+- `scimax task` reads tasks with the editor's project parser, and covers every
+  indexed project by default (`--local` for the current folder, `--file` for
+  one file). `task who` is now the team's workload across projects. Inherited
+  `:ASSIGNEE:` and `@name` tags count, a task with several assignees counts for
+  each of them (its effort split), and `90m` and `0:30` efforts are no longer
+  zero. Dependencies in other files are followed, and a duplicated `:ID:` is
+  reported.
+- `scimax task` warns about dependency cycles in the tasks it covers.
+- `scimax db scan` and `scimax db sync` list the files they did not index
+  and why (a size or line limit, with the setting to raise, a binary file, or
+  a failure). Before, a file over `scimax.db.maxFileLines` was skipped
+  silently and still counted as indexed.
+- Added `examples/project-portfolio`, a generated team portfolio for
+  stress-testing project management (`scripts/gen-stress-portfolio.cjs`).
+
+### Fixed
+
+- Gantt SVG, PNG and PDF exports no longer draw two month labels over each
+  other when a chart starts at the end of a month.
 
 ## [0.17.0] - 2026-11-21
 

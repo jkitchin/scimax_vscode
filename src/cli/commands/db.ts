@@ -294,6 +294,7 @@ async function syncDatabase(config: CliConfig, args: ParsedArgs): Promise<void> 
         let skippedOutOfScope = 0;
         let removed = 0;
         let errors = 0;
+        const skipped: SkippedFile[] = [];
 
         for (const entry of entries) {
             const display = homeDisplay(entry.path);
@@ -316,8 +317,11 @@ async function syncDatabase(config: CliConfig, args: ParsedArgs): Promise<void> 
                     }
                     if (!dryRun) {
                         try {
-                            await db.indexFile(entry.path, { queueEmbeddings: updateEmbeddings });
-                            if (entry.action === 'new') added++;
+                            const result = await db.indexFile(entry.path, { queueEmbeddings: updateEmbeddings });
+                            if (!result.indexed) {
+                                if (result.failed) errors++;
+                                skipped.push({ file: display, reason: result.reason ?? 'not indexed' });
+                            } else if (entry.action === 'new') added++;
                             else if (entry.action === 'updated') updated++;
                             else refreshedOutOfScope++;
                         } catch (err) {
@@ -358,12 +362,26 @@ async function syncDatabase(config: CliConfig, args: ParsedArgs): Promise<void> 
         console.log(`  ${unchanged} unchanged`);
         if (skippedOutOfScope > 0) console.log(`  ${skippedOutOfScope} out-of-scope unchanged`);
         if (errors > 0) console.log(`  ${errors} error(s)`);
+        reportSkipped(skipped);
         if (updateEmbeddings && !dryRun) {
             await db.queueMissingEmbeddings();
             await finishEmbeddings(db);
         }
     } finally {
         await db.close();
+    }
+}
+
+interface SkippedFile { file: string; reason: string }
+
+/** List the files that were not indexed and why, so none drop out unnoticed. */
+function reportSkipped(skipped: SkippedFile[]): void {
+    if (skipped.length === 0) return;
+    console.log();
+    console.log(`Not indexed: ${skipped.length} file(s). Search, the agenda and \`scimax task\` will not see them:`);
+    for (const s of skipped) console.log(`  ${s.file}: ${s.reason}`);
+    if (skipped.some(s => /scimax\.db\.max/.test(s.reason))) {
+        console.log('  Raise the named setting, or split the file, to index it.');
     }
 }
 
@@ -475,13 +493,20 @@ async function scanDirectory(config: CliConfig, args: ParsedArgs): Promise<void>
     try {
         let indexed = 0;
         let errors = 0;
+        const skipped: SkippedFile[] = [];
 
         for (const filePath of orgFiles) {
             const relativePath = path.relative(scanDir, filePath);
             process.stdout.write(`  Indexing: ${relativePath}...`);
 
             try {
-                await db.indexFile(filePath, { queueEmbeddings: updateEmbeddings });
+                const result = await db.indexFile(filePath, { queueEmbeddings: updateEmbeddings });
+                if (!result.indexed) {
+                    if (result.failed) errors++;
+                    skipped.push({ file: relativePath, reason: result.reason ?? 'not indexed' });
+                    console.log(` SKIPPED: ${result.reason ?? 'not indexed'}`);
+                    continue;
+                }
                 indexed++;
                 console.log(updateEmbeddings ? ' OK (+embeddings queued)' : ' OK');
             } catch (err) {
@@ -493,6 +518,7 @@ async function scanDirectory(config: CliConfig, args: ParsedArgs): Promise<void>
         console.log();
         console.log(`Indexed: ${indexed} file(s)`);
         if (errors > 0) console.log(`Errors: ${errors} file(s)`);
+        reportSkipped(skipped);
         if (updateEmbeddings) await finishEmbeddings(db);
     } finally {
         await db.close();

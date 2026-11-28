@@ -134,8 +134,16 @@ export function ganttToSvg(model: GanttModel, title = 'Project'): GanttSvg {
             grid.push(`<rect x="${n(x)}" y="${bodyTop}" width="${n(dayW)}" height="${bodyH}" fill="${css(C.weekend)}"/>`);
         }
         if (d.getMonth() !== lastMonth) {
-            const month = d.toLocaleString('en-US', { month: 'short', year: 'numeric' });
-            grid.push(`<text x="${n(x + 2)}" y="${margin + 42}" font-size="11" font-weight="bold" fill="${css(C.text)}">${month}</text>`);
+            // Each month's label fits the room the month has, as in the view:
+            // with the year, without it, or none (a chart starting on the
+            // 31st would otherwise draw two labels over each other).
+            const next = new Date(d.getFullYear(), d.getMonth() + 1, 1);
+            const room = Math.min(daysBetween(d, next), days - i) * dayW;
+            const format: Intl.DateTimeFormatOptions | undefined = room >= 64 ? { month: 'short', year: 'numeric' } : room >= 30 ? { month: 'short' } : undefined;
+            if (format) {
+                const month = d.toLocaleString('en-US', format);
+                grid.push(`<text x="${n(x + 2)}" y="${margin + 42}" font-size="11" font-weight="bold" fill="${css(C.text)}">${month}</text>`);
+            }
             lastMonth = d.getMonth();
         }
         if (i % labelEvery === 0) {

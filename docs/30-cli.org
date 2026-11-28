@@ -686,7 +686,9 @@ Dependencies are resolved against every indexed task whatever the scope, so a
 task that waits on another project is blocked only while that task is open. A
 dependency on an id no file defines keeps the task blocked and is shown as
 "(not found)". An =:ID:= defined twice prints a warning, and the first
-definition is used.
+definition is used. A dependency cycle (including one made by =:ORDERED:=)
+prints a warning naming its tasks, since open tasks in a cycle can never
+become ready. The editor flags the same cycles as diagnostics.
 
 In =scimax task who=, days are 8-hour days of open effort, and a task with
 several assignees is split evenly between them.

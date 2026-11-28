@@ -339,6 +339,70 @@ mark behind rows. The Excel sheet gains a *% done* column and a *Status* column
 (=behind=, =done= or =on track=); the PDF legend explains the hatch, the summary
 bar and the behind mark. Folded rows, Depth and Behind only are respected.
 
+** ⚠️ Team view
+:PROPERTIES:
+:CUSTOM_ID: team-view
+:END:
+
+[[cmd:scimax.team.view]] (*Scimax: Team View (Workload)*) shows each person's
+planned work, week by week, against their capacity, across every project.
+The project view shows one project's tasks over time; the team view shows
+people's time, so you can see who is overloaded, when, and because of which
+projects.
+
+Each row is a person (the =:person:= headings, then any other assignee
+handle, then unassigned work). The columns are *Overdue* (unfinished work
+scheduled before the first week), one column per week, and *Later*. A cell
+holds the planned hours, or the percent of capacity with *Show: % of
+capacity*. Its colour compares the load to that week's capacity: under 80%,
+80 to 100%, or over. A hatched cell is a week the person is away.
+
+- Click a person to list their tasks, grouped by project, with each task's
+  hours per week. Blocked tasks are dimmed. Double-click a task to open it;
+  double-click a person to open their heading.
+- Click a cell to list the tasks behind it, largest first, with the capacity
+  and the hours over or free.
+- The toolbar moves the weeks (‹ ›, *This week*), sets how many weeks to show,
+  narrows the view to some projects, or to one workspace folder (*Scope*).
+
+*** Where the numbers come from
+
+The tasks are every TODO heading in the indexed files that use =:ASSIGNEE:= or
+=:DEPENDS:= (and open org files), read from disk, so unsaved and new work
+counts. A task's project is the folder of its nearest project marker
+(=.projectile=, =.git=, ...). Assignees are the same as everywhere else: own
+and inherited =:ASSIGNEE:=, and =@name= tags.
+
+Each open task is laid out the way the Gantt chart lays it out (=SCHEDULED=,
+after its dependencies, before its =DEADLINE=, ...), and its =EFFORT= is
+spread evenly over the working days of that span. A task with several
+assignees is split evenly between them. Tasks without an =EFFORT= add no hours;
+a person's tooltip counts them. Milestones (deadline only) add nothing.
+
+Capacity is a person's =:CAPACITY:= property, in hours a week:
+
+#+begin_src org
+,* Kwame Osei                                  :person:
+  :PROPERTIES:
+  :NICK: osei
+  :CAPACITY: 40h/week
+  :END:
+,** Away
+   <2026-12-21 Mon>--<2027-01-01 Fri>
+#+end_src
+
+=:CAPACITY:= takes =32h/week=, =32h=, =4d/week= (8-hour days), =80%= (of a
+40-hour week), =0.5= (a fraction of a week) or a plain number of hours. A
+person without one has no capacity, unless =scimax.team.defaultCapacity= sets
+one, and their cells are grey.
+
+Time away is a subheading of the person titled =Away= (anything starting with
+"Away") or tagged =:away:=, with a date range or a single date in its title or
+text. Each working day away takes a fifth off that week's capacity.
+
+The view reloads when an org file is saved. To try it on a team, open the
+[[file:../examples/project-portfolio/README.org][project portfolio example]]: eight people, six projects and about 350 tasks.
+
 ** ✅ Dependency graph
 CLOSED: [2026-07-02 Thu 08:07]
 
@@ -387,8 +451,7 @@ The tag must be on the person's own heading. Subheadings that only inherit
 Assignees feed the table's =assignee= column and grouping (=:groupby assignee=),
 the project view's assignee filter and grouping, and the agenda's =@= filter.
 
-** ✅ Configuration
-CLOSED: [2026-10-22 Thu 09:46]
+** 👀 Configuration
 
 | Setting                            | Default | Description                                                  |
 |------------------------------------+---------+--------------------------------------------------------------|
@@ -396,6 +459,7 @@ CLOSED: [2026-10-22 Thu 09:46]
 | =scimax.project.progressWeighting= | =auto=  | Progress rollup: =auto=, =count= or =effort=                 |
 | =scimax.project.defaultEffort=     | =1d=    | Effort assumed for a task without =EFFORT= when weighting    |
 | =scimax.project.behindTolerance=   | =10=    | Points below the expected percentage before a task is behind |
+| =scimax.team.defaultCapacity=      | (empty) | Team view capacity for a person without =:CAPACITY:=         |
 
 Task-dependency settings (blocking, promotion, indicators) are documented in
 [[file:03.5-task-dependencies.org][Task Dependencies]].

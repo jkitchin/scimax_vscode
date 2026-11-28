@@ -33,6 +33,14 @@ tool yet. They are the data the planned resource features need.
 [[file:portfolio.json]] summarises the generated portfolio: counts, the
 cross-project dependencies, and the deliberate problems below.
 
+* Things to try
+
+- Open any project file and run *Scimax: Team View (Workload)* to see each
+  person's load against their capacity, across all six projects.
+- Run *Scimax: Project View (Gantt Chart)* from a project's file for its chart.
+- From a terminal, =scimax task who= gives the workload across projects (see
+  below for indexing into a separate database first).
+
 * Deliberate problems
 
 The generator plants three mistakes that real projects contain, so the tools

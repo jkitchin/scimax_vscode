@@ -794,14 +794,17 @@ CLOSED: [2026-10-02 Fri 07:33]
 - *Description*: Files with more lines than this are not indexed, to prevent
   memory problems while parsing.
 
-*** ✅ scimax.db.maxParseSizeKB
-CLOSED: [2026-10-02 Fri 07:33]
+*** 👀 scimax.db.maxParseSizeKB
 
 - *Type*: number
 - *Default*: =500=
 - *Range*: 100 - 10000
 - *Description*: Files larger than this (in KB) are skipped before parsing, to
   prevent running out of memory while building the syntax tree.
+
+=scimax db scan= and =scimax db sync= list every file a limit kept out of the
+index, with the setting to raise. A project file with a few thousand tasks
+can pass 5000 lines.
 
 *Example*:
 #+begin_src json

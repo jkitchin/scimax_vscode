@@ -86,3 +86,39 @@ describe('task CLI loading', () => {
         expect(cp.days).toBeCloseTo(1 + 30 / 480);
     });
 });
+
+describe('task CLI cycles', () => {
+    it('finds a dependency cycle, including one through ORDERED', () => {
+        const text = `* TODO A
+  :PROPERTIES:
+  :ID: a
+  :DEPENDS: id:b
+  :END:
+* TODO B
+  :PROPERTIES:
+  :ID: b
+  :DEPENDS: id:a
+  :END:
+* Steps
+  :PROPERTIES:
+  :ORDERED: t
+  :END:
+** TODO C
+   :PROPERTIES:
+   :ID: c
+   :DEPENDS: id:d
+   :END:
+** TODO D
+   :PROPERTIES:
+   :ID: d
+   :END:
+* TODO E
+  :PROPERTIES:
+  :ID: e
+  :DEPENDS: id:a id:missing
+  :END:
+`;
+        const { cycles } = resolveTasks(parseTasks(text, '/p/c.org'));
+        expect(cycles.map(c => [...c].sort())).toEqual([['a', 'b'], ['c', 'd']]);
+    });
+});

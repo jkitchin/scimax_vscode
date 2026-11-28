@@ -34,7 +34,7 @@ export {
     ScimaxDbCore
 } from './scimaxDbCore';
 
-import { ScimaxDbCore, ScimaxDbCoreOptions } from './scimaxDbCore';
+import { IndexResult, ScimaxDbCore, ScimaxDbCoreOptions } from './scimaxDbCore';
 
 import { withBaselineExcludes } from '../shared/ignorePatterns';
 import { isTooBroadForProject } from '../shared/projectRoots';
@@ -333,10 +333,11 @@ export class ScimaxDb extends ScimaxDbCore {
     // Override indexFile to also fire the VS Code event
     // ----------------------------------------------------------
 
-    public async indexFile(filePath: string, options?: { queueEmbeddings?: boolean }): Promise<void> {
-        await super.indexFile(filePath, options);
+    public async indexFile(filePath: string, options?: { queueEmbeddings?: boolean }): Promise<IndexResult> {
+        const result = await super.indexFile(filePath, options);
         // Note: The event is fired by queueIndex/processIndexQueue for auto-index,
         // and by rebuild() for manual reindex. We don't fire it here to avoid double-firing.
+        return result;
     }
 
     // ----------------------------------------------------------

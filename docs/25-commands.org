@@ -174,11 +174,12 @@ CLOSED: [2026-10-24 Sat 20:49]
 Task tables, a project view with a Gantt chart, a dependency graph, and a people database. See
 [[file:03.6-project-management.org][Project Management]] for the full guide.
 
-| Command ID                                   | Description                              | Default Keybinding |
-|----------------------------------------------+------------------------------------------+--------------------|
+| Command ID                               | Description                              | Default Keybinding |
+|------------------------------------------+------------------------------------------+--------------------|
 | [[cmd:scimax.org.insertProjectTable]]        | Insert Project Task Table                | -                  |
 | [[cmd:scimax.org.showTaskGraph]]             | Show Task Dependency Graph               | -                  |
 | [[cmd:scimax.project.view]]                  | Project View (Gantt Chart)               | -                  |
+| [[cmd:scimax.team.view]]                     | Team View (Workload)                     | -                  |
 | [[cmd:scimax.project.exportExcel]]           | Export Project Gantt to Excel            | -                  |
 | [[cmd:scimax.project.exportPdf]]             | Export Project Gantt to PDF              | -                  |
 | [[cmd:scimax.project.exportSvg]]             | Export Project Gantt to SVG              | -                  |

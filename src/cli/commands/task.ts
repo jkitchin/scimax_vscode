@@ -25,7 +25,7 @@ import { createCliDatabase } from '../database';
 import type { ScimaxDbCore } from '../../database/scimaxDbCore';
 import { parseOrg } from '../../parser/orgParserUnified';
 import { org } from '../../parser/orgModify';
-import { extractProjectTasks } from '../../parser/projectTasks';
+import { extractProjectTasks, findCycles } from '../../parser/projectTasks';
 import { loadSettings } from '../settings';
 import { vscodeLinkAt } from '../links';
 
@@ -62,7 +62,9 @@ export interface Task {
     filePath: string;
     lineNumber: number;
     level: number;
-    /** Unfinished or unknown ids this task waits on (explicit + ORDERED). */
+    /** Every id this task depends on (explicit + ORDERED), done or not. */
+    dependsIds: string[];
+    /** Unfinished or unknown ids this task waits on. */
     blockedBy: string[];
 }
 
@@ -76,6 +78,8 @@ export interface TaskScope {
     byId: Map<string, Task>;
     /** Ids defined more than once, with where. */
     duplicates: Map<string, string[]>;
+    /** Dependency cycles among all loaded tasks. */
+    cycles: string[][];
 }
 
 // ============================================================
@@ -118,6 +122,7 @@ export function parseTasks(text: string, filePath: string, doneStates: string[] 
             filePath,
             lineNumber: t.line,
             level: t.level,
+            dependsIds: [...new Set(t.dependsIds)],
             blockedBy: [...new Set(t.dependsIds)],
         });
     }
@@ -128,7 +133,7 @@ export function parseTasks(text: string, filePath: string, doneStates: string[] 
  * Resolve blocking: a task waits on each dependency that is not done, or that
  * no loaded file defines. Returns tasks by id and the ids defined twice.
  */
-export function resolveTasks(all: Task[]): { byId: Map<string, Task>; duplicates: Map<string, string[]> } {
+export function resolveTasks(all: Task[]): { byId: Map<string, Task>; duplicates: Map<string, string[]>; cycles: string[][] } {
     const byId = new Map<string, Task>();
     const duplicates = new Map<string, string[]>();
     for (const t of all) {
@@ -144,7 +149,8 @@ export function resolveTasks(all: Task[]): { byId: Map<string, Task>; duplicates
     for (const t of all) {
         t.blockedBy = t.blockedBy.filter(id => id !== t.id && !byId.get(id)?.done);
     }
-    return { byId, duplicates };
+    const cycles = findCycles(new Map([...byId.values()].map(t => [t.id, t.dependsIds.filter(d => byId.has(d))])));
+    return { byId, duplicates, cycles };
 }
 
 /** Read and parse task files; unreadable files are skipped. */
@@ -163,10 +169,10 @@ export async function loadScope(db: ScimaxDbCore, label: string, files: string[]
     const doneStates = loadSettings().agenda.doneStates;
     const universe = [...new Set([...files, ...(await findProjectFiles(db)).map(f => f.file)])];
     const all = readTasks(universe, doneStates);
-    const { byId, duplicates } = resolveTasks(all);
+    const { byId, duplicates, cycles } = resolveTasks(all);
     const inScope = new Set(files);
     const tasks = all.filter(t => inScope.has(t.filePath) && byId.get(t.id) === t);
-    return { label, files, tasks, byId, duplicates };
+    return { label, files, tasks, byId, duplicates, cycles };
 }
 
 /** Open tasks only (a done task is not actionable). */
@@ -174,11 +180,17 @@ function openTasks(tasks: Task[]): Task[] {
     return tasks.filter(t => !t.done);
 }
 
-/** Warn about ids defined more than once, which make dependencies ambiguous. */
-function warnDuplicates(scope: TaskScope): void {
+/** Warn about problems in the scope's task graph: ids defined twice, and dependency cycles. */
+function warnProblems(scope: TaskScope): void {
     for (const [id, where] of scope.duplicates) {
         if (!where.some(w => scope.files.some(f => w.startsWith(f + ':')))) continue;
         console.error(`Warning: :ID: ${id} is defined ${where.length} times (${where.join(', ')}); the first is used.`);
+    }
+    const inScope = new Set(scope.tasks.map(t => t.id));
+    for (const cycle of scope.cycles) {
+        if (!cycle.some(id => inScope.has(id))) continue;
+        const open = cycle.some(id => !scope.byId.get(id)?.done);
+        console.error(`Warning: dependency cycle ${[...cycle, cycle[0]].join(' -> ')} (each waits on the next)${open ? '; these tasks can never become ready' : ''}.`);
     }
 }
 
@@ -692,7 +704,7 @@ export async function taskCommand(config: CliConfig, args: ParsedArgs): Promise<
         const operands = (rawSub && !rawSub.endsWith('.org') ? args.args.slice(1) : args.args)
             .filter(a => !a.endsWith('.org'));
 
-        warnDuplicates(scope);
+        warnProblems(scope);
         switch (sub) {
             case 'next': taskNext(scope, json); break;
             case 'list': taskList(scope, args, json); break;

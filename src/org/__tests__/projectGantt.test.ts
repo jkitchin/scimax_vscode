@@ -447,6 +447,14 @@ describe('SVG and HTML exports', () => {
         expect(deps[0].getAttribute('data-to')).toBe((figures as { ganttId: string }).ganttId);
     });
 
+    it('fits month labels to the room the month has, so a chart starting on the 31st does not overlap two', () => {
+        const model = buildGanttModel(tasksOf(MAIN), {}, TODAY);
+        const { svg } = ganttToSvg({ ...model, start: '2026-10-31', end: '2026-12-15' });
+        const months = [...svg.matchAll(/font-weight="bold"[^>]*>([A-Z][a-z]{2}(?: \d{4})?)</g)].map(m => m[1]);
+        expect(months).not.toContain('Oct 2026');
+        expect(months).toContain('Nov 2026');
+    });
+
     it('puts dates, assignees and effort in the hover text', () => {
         const model = buildGanttModel(tasksOf(MAIN), {}, TODAY);
         const { svg } = ganttToSvg(model);
