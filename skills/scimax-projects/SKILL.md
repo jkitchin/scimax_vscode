@@ -64,13 +64,13 @@ instead of re-deriving one from a raw task list.
   guard. Report the blockers; do not pass `--force` on the user's behalf.
 - **Say what got unblocked.** After a `done`, the command reports newly ready
   tasks — that is usually the most useful part of the answer.
-- **Pick the right file.** Selection is global by default — the file with the
-  most tasks anywhere wins, regardless of the working directory. Add `--local`
-  when the user means the current project, `--file <path>` when you know which,
-  and run `scimax task files` to see the candidates when you don't.
+- **Pick the right scope.** The scope is global by default: every indexed file
+  with tasks, so `task who` is the whole team's load across projects. Add
+  `--local` (run in the project's folder) when the user means the current
+  project, or `--file <path>` for one file. `scimax task files` lists the files.
 
-Effort totals only count `Nd`/`Nh`; `task who` reports an `unestimated` column.
-Mention it rather than presenting a total as complete.
+Tasks without an `:EFFORT:` count as 0 days; `task who` reports them in an
+`unestimated` column. Mention it rather than presenting a total as complete.
 
 ## Display Conventions
 

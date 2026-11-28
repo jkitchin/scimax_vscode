@@ -1,0 +1,25 @@
+{
+  "start": "2026-11-30",
+  "seed": 42,
+  "scale": 1,
+  "projects": 6,
+  "tasks": 351,
+  "milestones": 26,
+  "people": 8,
+  "resources": 5,
+  "crossProjectDependencies": [
+    "mlpot-10 → co2-37",
+    "h2-21 → battery-26",
+    "grant-20 → h2-34",
+    "grant-20 → mlpot-28",
+    "grant-20 → co2-45",
+    "co2-40 → mlpot-33",
+    "course-10 → mlpot-12",
+    "battery-1 → h2-18"
+  ],
+  "deliberateProblems": {
+    "cycle": "battery-10 ↔ battery-12",
+    "missingDependency": "co2-22 → co2-does-not-exist",
+    "duplicateId": "h2-38 reuses the :ID: h2-34"
+  }
+}

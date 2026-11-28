@@ -545,6 +545,15 @@ export interface ProjectRecord {
 // Core configuration
 // ============================================================
 
+/** What indexFile did with a file. */
+export interface IndexResult {
+    indexed: boolean;
+    /** Why the file was not indexed (a size limit, excluded, a failure). */
+    reason?: string;
+    /** True when indexing threw, as opposed to a deliberate skip. */
+    failed?: boolean;
+}
+
 export interface ScimaxDbCoreOptions {
     dbPath: string;
     ignorePatterns?: string[];
@@ -1169,14 +1178,14 @@ export class ScimaxDbCore {
     // Index file
     // ----------------------------------------------------------
 
-    public async indexFile(filePath: string, options?: { queueEmbeddings?: boolean }): Promise<void> {
-        if (!this.db) return;
+    public async indexFile(filePath: string, options?: { queueEmbeddings?: boolean }): Promise<IndexResult> {
+        if (!this.db) return { indexed: false, reason: 'database not open' };
         // Saves and file-watcher events arrive here directly, not through the
         // directory walk, so check the excludes here too (VS Code's local
         // history, for one, is a folder of `.org` copies of every edit).
         if (this.isExcluded(filePath)) {
             await this.removeFileData(filePath);
-            return;
+            return { indexed: false, reason: 'excluded' };
         }
 
         // Same for file types: only scimax.db.fileExtensions are indexed, by
@@ -1184,16 +1193,17 @@ export class ScimaxDbCore {
         // setting clear its files as they are next touched.
         if (!this.isIndexable(filePath)) {
             await this.removeFileData(filePath);
-            return;
+            return { indexed: false, reason: 'not an indexed file type' };
         }
 
         // A file over a size limit is dropped from the index, not left as it
         // was. Its old row would otherwise stay stale (older than the file,
         // or mtime 0 after migration 7) forever, so every staleness check
         // (e.g. the agenda's, every few seconds) re-reads and skips it again.
-        const skip = async (reason: string): Promise<void> => {
+        const skip = async (reason: string): Promise<IndexResult> => {
             console.warn(`[ScimaxDbCore] Skipping ${reason}: ${filePath}`);
             await this.removeFileData(filePath);
+            return { indexed: false, reason };
         };
 
         try {
@@ -1203,24 +1213,24 @@ export class ScimaxDbCore {
 
             const maxSizeBytes = (this.options.maxFileSizeMB ?? 10) * 1024 * 1024;
             if (stats.size > maxSizeBytes) {
-                return skip(`large file (${(stats.size / 1024 / 1024).toFixed(2)}MB)`);
+                return skip(`large file (${(stats.size / 1024 / 1024).toFixed(2)} MB, over scimax.db.maxFileSizeMB = ${this.options.maxFileSizeMB ?? 10})`);
             }
 
             const maxParseSizeKB = this.options.maxParseSizeKB ?? 500;
             if (stats.size > maxParseSizeKB * 1024) {
-                return skip('file too large for parsing');
+                return skip(`file too large to parse (${Math.round(stats.size / 1024)} KB, over scimax.db.maxParseSizeKB = ${maxParseSizeKB})`);
             }
 
             const maxLines = this.options.maxFileLines ?? 5000;
             const estimatedLines = Math.ceil(stats.size / 80);
             if (estimatedLines > maxLines * 1.1) {
-                return skip('file with estimated too many lines');
+                return skip(`file with too many lines (about ${estimatedLines}, over scimax.db.maxFileLines = ${maxLines})`);
             }
 
             const content = await fs.promises.readFile(filePath, 'utf8');
             const lineCount = content.split('\n').length;
             if (lineCount > maxLines) {
-                return skip(`file with too many lines (${lineCount})`);
+                return skip(`file with too many lines (${lineCount}, over scimax.db.maxFileLines = ${maxLines})`);
             }
 
             // Catches a binary file with an indexed extension. Only control
@@ -1319,9 +1329,10 @@ export class ScimaxDbCore {
 
             contentForDb = null;
             console.error(`[ScimaxDbCore] INDEX_COMPLETE ${filePath}`);
-
+            return { indexed: true };
         } catch (error) {
             console.error(`[ScimaxDbCore] Failed to index file: ${filePath}`, error);
+            return { indexed: false, reason: `failed: ${error instanceof Error ? error.message : String(error)}`, failed: true };
         }
     }
 

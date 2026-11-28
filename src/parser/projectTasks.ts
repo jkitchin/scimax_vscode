@@ -434,3 +434,43 @@ export function scheduleProjectTasks(tasks: ProjectTask[], today: Date = new Dat
     for (const t of tasks) place(t);
     return spans;
 }
+
+/**
+ * Every dependency cycle (A → B → … → A) in a graph of task id → the ids it
+ * depends on, each cycle once, in the order found.
+ */
+export function findCycles(adj: Map<string, string[]>): string[][] {
+    const cycles: string[][] = [];
+    const seenCycleKeys = new Set<string>();
+    const state = new Map<string, 0 | 1 | 2>(); // 0/undefined=white, 1=gray, 2=black
+    const stack: string[] = [];
+
+    const visit = (node: string): void => {
+        state.set(node, 1);
+        stack.push(node);
+        for (const next of adj.get(node) ?? []) {
+            const s = state.get(next) ?? 0;
+            if (s === 1) {
+                // A back-edge: the cycle is the stack from `next` on.
+                const idx = stack.indexOf(next);
+                if (idx >= 0) {
+                    const cycle = stack.slice(idx);
+                    const key = [...cycle].sort().join('|');
+                    if (!seenCycleKeys.has(key)) {
+                        seenCycleKeys.add(key);
+                        cycles.push(cycle);
+                    }
+                }
+            } else if (s === 0) {
+                visit(next);
+            }
+        }
+        stack.pop();
+        state.set(node, 2);
+    };
+
+    for (const node of adj.keys()) {
+        if ((state.get(node) ?? 0) === 0) visit(node);
+    }
+    return cycles;
+}

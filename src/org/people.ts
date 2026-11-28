@@ -38,6 +38,8 @@ export interface Person {
     name: string;        // heading title
     email?: string;
     role?: string;
+    /** :CAPACITY:, hours of work a week (`32h/week`, `4d/week`, `80%`). */
+    capacity?: string;
     id?: string;
     filePath: string;
     lineNumber: number;
@@ -86,6 +88,7 @@ export function toPeople(rows: HeadingRecord[]): Person[] {
             name,
             email: getPropCaseInsensitive(props, 'EMAIL'),
             role: getPropCaseInsensitive(props, 'ROLE'),
+            capacity: getPropCaseInsensitive(props, 'CAPACITY'),
             id: getPropCaseInsensitive(props, 'ID')?.replace(/^id:/i, ''),
             filePath: h.file_path,
             lineNumber: h.line_number,

@@ -148,13 +148,14 @@ Commands for manipulating org-mode and markdown lists.
 
 * TODO and Tasks
 
-** ✅ TODO Keywords
-CLOSED: [2026-01-17 Sat 12:24]
+** 👀 TODO Keywords
 
-| Command ID                    | Description             | Default Keybinding |
-|-------------------------------+-------------------------+--------------------|
-| [[cmd:scimax.org.cycleTodo]]  | Cycle TODO State        | C-c C-t            |
-| [[cmd:scimax.org.showTodos]]  | Show TODOs in Document  | -                  |
+| Command ID                  | Description                     | Default Keybinding |
+|-----------------------------+---------------------------------+--------------------|
+| [[cmd:scimax.org.cycleTodo]]    | Cycle TODO State                | C-c C-t            |
+| [[cmd:scimax.org.todo]]         | TODO (Fast Selection or Cycle)  | t (speed command)  |
+| [[cmd:scimax.org.setTodoState]] | Set TODO State (Fast Selection) | T (speed command)  |
+| [[cmd:scimax.org.showTodos]]    | Show TODOs in Document          | -                  |
 
 ** ✅ Task Dependencies
 CLOSED: [2026-07-02 Thu 08:03]
@@ -174,11 +175,12 @@ CLOSED: [2026-10-24 Sat 20:49]
 Task tables, a project view with a Gantt chart, a dependency graph, and a people database. See
 [[file:03.6-project-management.org][Project Management]] for the full guide.
 
-| Command ID                                   | Description                              | Default Keybinding |
-|----------------------------------------------+------------------------------------------+--------------------|
+| Command ID                               | Description                              | Default Keybinding |
+|------------------------------------------+------------------------------------------+--------------------|
 | [[cmd:scimax.org.insertProjectTable]]        | Insert Project Task Table                | -                  |
 | [[cmd:scimax.org.showTaskGraph]]             | Show Task Dependency Graph               | -                  |
 | [[cmd:scimax.project.view]]                  | Project View (Gantt Chart)               | -                  |
+| [[cmd:scimax.team.view]]                     | Team View (Workload)                     | -                  |
 | [[cmd:scimax.project.exportExcel]]           | Export Project Gantt to Excel            | -                  |
 | [[cmd:scimax.project.exportPdf]]             | Export Project Gantt to PDF              | -                  |
 | [[cmd:scimax.project.exportSvg]]             | Export Project Gantt to SVG              | -                  |

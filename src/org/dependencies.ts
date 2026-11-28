@@ -31,6 +31,7 @@ import {
     getPropCaseInsensitive,
 } from '../database/scimaxDbCore';
 import { getTodoStatesFromText } from './todoStates';
+import { findCycles } from '../parser/projectTasks';
 
 export const DEPENDS_PROPERTY = 'DEPENDS';
 export const ORDERED_PROPERTY = 'ORDERED';
@@ -309,37 +310,5 @@ export async function findDependencyCycles(): Promise<string[][]> {
         adj.set(e.from_id, list);
     }
 
-    const cycles: string[][] = [];
-    const seenCycleKeys = new Set<string>();
-    const state = new Map<string, 0 | 1 | 2>(); // 0/undefined=white, 1=gray, 2=black
-    const stack: string[] = [];
-
-    const visit = (node: string): void => {
-        state.set(node, 1);
-        stack.push(node);
-        for (const next of adj.get(node) ?? []) {
-            const s = state.get(next) ?? 0;
-            if (s === 1) {
-                // Found a back-edge: extract the cycle from the stack.
-                const idx = stack.indexOf(next);
-                if (idx >= 0) {
-                    const cycle = stack.slice(idx);
-                    const key = [...cycle].sort().join('|');
-                    if (!seenCycleKeys.has(key)) {
-                        seenCycleKeys.add(key);
-                        cycles.push(cycle);
-                    }
-                }
-            } else if (s === 0) {
-                visit(next);
-            }
-        }
-        stack.pop();
-        state.set(node, 2);
-    };
-
-    for (const node of adj.keys()) {
-        if ((state.get(node) ?? 0) === 0) visit(node);
-    }
-    return cycles;
+    return findCycles(adj);
 }

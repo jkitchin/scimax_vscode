@@ -94,6 +94,7 @@ import { registerPeopleProviders } from './org/people';
 import { registerProjectCommands } from './org/projectCommands';
 import { registerTaskGraph } from './org/taskGraphProvider';
 import { registerProjectView } from './org/projectView';
+import { registerTeamView } from './org/teamView';
 import { registerEntitySelector } from './org/entitySelector';
 import { registerContactCommands } from './org/contacts';
 import { MarkdownMailtoLinkProvider, mailtoPreviewPlugin, registerMailCommands } from './org/mail';
@@ -941,6 +942,7 @@ async function activateScimax(context: vscode.ExtensionContext) {
     activationStep('registerTaskGraph', () => registerTaskGraph(context));
     activationStep('registerTaskActions', () => registerTaskActions(context));
     activationStep('registerProjectView', () => registerProjectView(context));
+    activationStep('registerTeamView', () => registerTeamView(context));
 
     // Entity selector: fuzzy-pick a tagged/propertied heading (contacts,
     // locations, reagents…) and act on it (insert link/field, mailto, maps).

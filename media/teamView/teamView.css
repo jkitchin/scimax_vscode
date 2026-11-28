@@ -1,0 +1,283 @@
+html, body {
+    margin: 0;
+    padding: 0;
+    color: var(--vscode-foreground);
+    background: var(--vscode-editor-background);
+    font-family: var(--vscode-font-family);
+    font-size: var(--vscode-font-size);
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+.toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px 12px;
+    padding: 6px 10px;
+    border-bottom: 1px solid var(--vscode-panel-border);
+}
+
+.toolbar button,
+.menu button {
+    padding: 3px 10px;
+    color: var(--vscode-button-secondaryForeground);
+    background: var(--vscode-button-secondaryBackground);
+    border: none;
+    cursor: pointer;
+}
+
+.toolbar button:hover,
+.menu button:hover {
+    background: var(--vscode-button-secondaryHoverBackground);
+}
+
+.toolbar select {
+    color: var(--vscode-dropdown-foreground);
+    background: var(--vscode-dropdown-background);
+    border: 1px solid var(--vscode-dropdown-border, transparent);
+}
+
+#status {
+    margin-left: auto;
+    color: var(--vscode-descriptionForeground);
+}
+
+.projects {
+    position: relative;
+}
+
+.menu {
+    position: absolute;
+    z-index: 10;
+    top: 100%;
+    left: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 12em;
+    max-height: 60vh;
+    overflow-y: auto;
+    padding: 6px 8px;
+    background: var(--vscode-menu-background, var(--vscode-editorWidget-background));
+    border: 1px solid var(--vscode-menu-border, var(--vscode-panel-border));
+    box-shadow: 0 2px 8px var(--vscode-widget-shadow);
+}
+
+.menu[hidden] {
+    display: none;
+}
+
+/* ---- The grid ------------------------------------------------------------ */
+
+.grid {
+    flex: 1;
+    display: grid;
+    align-content: start;
+    /* Rows keep their content's height; the grid scrolls instead of squeezing them. */
+    grid-auto-rows: max-content;
+    overflow: auto;
+    padding: 0 10px 10px;
+}
+
+.grid > div {
+    padding: 3px 6px;
+    border-bottom: 1px solid var(--vscode-panel-border);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.head {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    font-weight: bold;
+    background: var(--vscode-editor-background);
+    border-bottom: 2px solid var(--vscode-panel-border) !important;
+}
+
+.head.now {
+    color: var(--vscode-textLink-foreground);
+}
+
+.num {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+}
+
+.name.person {
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.name .twisty {
+    display: inline-block;
+    width: 1.1em;
+    color: var(--vscode-descriptionForeground);
+}
+
+.name .meta,
+.details .meta {
+    margin-left: 0.6em;
+    font-weight: normal;
+    color: var(--vscode-descriptionForeground);
+    font-size: 0.9em;
+}
+
+.name.unknown .label {
+    font-style: italic;
+}
+
+.cell {
+    cursor: pointer;
+}
+
+.cell.free { background: color-mix(in srgb, var(--vscode-charts-green) 22%, transparent); }
+.cell.busy { background: color-mix(in srgb, var(--vscode-charts-yellow) 35%, transparent); }
+.cell.over { background: color-mix(in srgb, var(--vscode-charts-red) 40%, transparent); font-weight: bold; }
+.cell.unknown { background: color-mix(in srgb, var(--vscode-descriptionForeground) 15%, transparent); }
+
+.cell.away {
+    background-image: repeating-linear-gradient(45deg, transparent 0 4px,
+        color-mix(in srgb, var(--vscode-descriptionForeground) 30%, transparent) 4px 6px);
+}
+
+.cell.selected {
+    outline: 2px solid var(--vscode-focusBorder);
+    outline-offset: -2px;
+}
+
+.overdue,
+.later {
+    cursor: pointer;
+    color: var(--vscode-descriptionForeground);
+}
+
+.overdue.late {
+    color: var(--vscode-errorForeground);
+}
+
+.project {
+    padding-left: 2em !important;
+    color: var(--vscode-descriptionForeground);
+    font-size: 0.9em;
+    font-weight: 600;
+    border-bottom: none !important;
+}
+
+.name.task {
+    padding-left: 2.4em;
+    cursor: default;
+}
+
+.name.task .todo {
+    margin-right: 0.4em;
+    color: var(--vscode-descriptionForeground);
+    font-size: 0.85em;
+}
+
+.name.task.blocked .label {
+    color: var(--vscode-descriptionForeground);
+}
+
+.sub {
+    color: var(--vscode-descriptionForeground);
+    font-size: 0.9em;
+}
+
+.sub.has {
+    color: var(--vscode-foreground);
+}
+
+/* ---- Details and legend ---------------------------------------------------------- */
+
+.details {
+    max-height: 35vh;
+    overflow-y: auto;
+    padding: 6px 10px;
+    border-top: 1px solid var(--vscode-panel-border);
+    background: var(--vscode-editorWidget-background);
+}
+
+.details[hidden] {
+    display: none;
+}
+
+.detailsTitle {
+    display: flex;
+    justify-content: space-between;
+    font-weight: bold;
+}
+
+.detailsTitle .close {
+    color: inherit;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.2em;
+}
+
+.detailsMeta {
+    color: var(--vscode-descriptionForeground);
+    margin: 2px 0 4px;
+}
+
+.detailsList {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.detailsList li {
+    display: flex;
+    gap: 0.8em;
+    padding: 2px 0;
+    cursor: default;
+}
+
+.detailsList li.blocked .label {
+    color: var(--vscode-descriptionForeground);
+}
+
+.detailsList .hours {
+    min-width: 3.5em;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+}
+
+.detailsList .project {
+    min-width: 6em;
+    padding: 0 !important;
+}
+
+.legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding: 4px 10px;
+    border-top: 1px solid var(--vscode-panel-border);
+    color: var(--vscode-descriptionForeground);
+    font-size: 0.9em;
+}
+
+.key::before {
+    content: "";
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    margin-right: 4px;
+    vertical-align: -1px;
+}
+
+.key.free::before { background: color-mix(in srgb, var(--vscode-charts-green) 45%, transparent); }
+.key.busy::before { background: color-mix(in srgb, var(--vscode-charts-yellow) 60%, transparent); }
+.key.over::before { background: color-mix(in srgb, var(--vscode-charts-red) 60%, transparent); }
+.key.away::before {
+    background-image: repeating-linear-gradient(45deg, transparent 0 3px,
+        var(--vscode-descriptionForeground) 3px 4px);
+}
