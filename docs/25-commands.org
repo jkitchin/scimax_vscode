@@ -148,13 +148,14 @@ Commands for manipulating org-mode and markdown lists.
 
 * TODO and Tasks
 
-** ✅ TODO Keywords
-CLOSED: [2026-01-17 Sat 12:24]
+** 👀 TODO Keywords
 
-| Command ID                    | Description             | Default Keybinding |
-|-------------------------------+-------------------------+--------------------|
-| [[cmd:scimax.org.cycleTodo]]  | Cycle TODO State        | C-c C-t            |
-| [[cmd:scimax.org.showTodos]]  | Show TODOs in Document  | -                  |
+| Command ID                  | Description                     | Default Keybinding |
+|-----------------------------+---------------------------------+--------------------|
+| [[cmd:scimax.org.cycleTodo]]    | Cycle TODO State                | C-c C-t            |
+| [[cmd:scimax.org.todo]]         | TODO (Fast Selection or Cycle)  | t (speed command)  |
+| [[cmd:scimax.org.setTodoState]] | Set TODO State (Fast Selection) | T (speed command)  |
+| [[cmd:scimax.org.showTodos]]    | Show TODOs in Document          | -                  |
 
 ** ✅ Task Dependencies
 CLOSED: [2026-07-02 Thu 08:03]
