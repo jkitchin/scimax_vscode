@@ -176,7 +176,51 @@ async function openArticleFrom(items: ArticlePick[], placeHolder: string): Promi
 // Search
 // =============================================================================
 
-async function search(crucible: Crucible | undefined, all: boolean): Promise<void> {
+/** Opens a graph of a crucible filtered to search results. */
+type ShowResultsGraph = (root: string, name: string, query: string, paths: string[]) => Promise<void>;
+
+/** While the search results picker is open: show its results as graphs (M-o). */
+let graphSearchResults: (() => void) | undefined;
+
+/** Run M-o in the search results picker. */
+function searchResultsGraph(): void {
+    graphSearchResults?.();
+}
+
+/**
+ * Pick a search result to open it, or press M-o to open a graph of each
+ * crucible with results, filtered to them.
+ */
+async function pickSearchResult(items: ArticlePick[], placeHolder: string, graph: () => void): Promise<void> {
+    const picker = vscode.window.createQuickPick<ArticlePick>();
+    picker.items = items;
+    picker.placeholder = `${placeHolder} (M-o: graph of the results)`;
+    picker.matchOnDescription = true;
+    picker.matchOnDetail = true;
+    const file = await new Promise<string | undefined>(resolve => {
+        graphSearchResults = () => {
+            picker.hide();
+            graph();
+        };
+        void vscode.commands.executeCommand('setContext', 'scimax.cruciblePickerActive', true);
+        picker.onDidAccept(() => {
+            resolve(picker.selectedItems[0]?.file);
+            picker.hide();
+        });
+        picker.onDidHide(() => {
+            graphSearchResults = undefined;
+            void vscode.commands.executeCommand('setContext', 'scimax.cruciblePickerActive', false);
+            resolve(undefined);
+            picker.dispose();
+        });
+        picker.show();
+    });
+    if (file) {
+        await vscode.window.showTextDocument(vscode.Uri.file(file));
+    }
+}
+
+async function search(crucible: Crucible | undefined, all: boolean, showGraph: ShowResultsGraph): Promise<void> {
     const target = crucible ?? await chooseCrucible(all ? 'Search from which crucible?' : 'Search which crucible?');
     if (!target) {
         return;
@@ -211,7 +255,21 @@ async function search(crucible: Crucible | undefined, all: boolean): Promise<voi
     }
     const rootOf = (article: CrucibleArticle) =>
         (article._crucible && roots.get(article._crucible)) || target.root;
-    await openArticleFrom(results.map(a => articlePick(a, rootOf(a))), `${results.length} results for "${query}"`);
+    // One graph per crucible with results.
+    const graph = () => {
+        const byRoot = new Map<string, { name: string; paths: string[] }>();
+        for (const article of results) {
+            const root = rootOf(article);
+            const name = article._crucible && article._crucible !== 'local' ? article._crucible : target.name;
+            const group = byRoot.get(root) ?? { name, paths: [] };
+            group.paths.push(article.path);
+            byRoot.set(root, group);
+        }
+        for (const [root, group] of byRoot) {
+            void showGraph(root, group.name, query, group.paths);
+        }
+    };
+    await pickSearchResult(results.map(a => articlePick(a, rootOf(a))), `${results.length} results for "${query}"`, graph);
 }
 
 // =============================================================================
@@ -720,6 +778,9 @@ export function registerCrucible(context: vscode.ExtensionContext, referenceMana
         }, 1500));
     };
 
+    const showResultsGraph: ShowResultsGraph = (root, name, query, paths) =>
+        graphView.show(root, name, undefined, { query, paths });
+
     const nodeCrucible = (node?: CrucibleNode) => node?.kind === 'crucible' ? node.crucible : undefined;
 
     context.subscriptions.push(
@@ -731,8 +792,9 @@ export function registerCrucible(context: vscode.ExtensionContext, referenceMana
         vscode.workspace.onDidSaveTextDocument(onSave),
         vscode.workspace.onDidChangeWorkspaceFolders(() => tree.refresh()),
         vscode.commands.registerCommand('scimax.crucible.refresh', () => tree.refresh()),
-        vscode.commands.registerCommand('scimax.crucible.search', (node?: CrucibleNode) => search(nodeCrucible(node), false)),
-        vscode.commands.registerCommand('scimax.crucible.searchAll', () => search(undefined, true)),
+        vscode.commands.registerCommand('scimax.crucible.search', (node?: CrucibleNode) => search(nodeCrucible(node), false, showResultsGraph)),
+        vscode.commands.registerCommand('scimax.crucible.searchAll', () => search(undefined, true, showResultsGraph)),
+        vscode.commands.registerCommand('scimax.crucible.searchResultsGraph', searchResultsGraph),
         vscode.commands.registerCommand('scimax.crucible.backlinks', showBacklinks),
         vscode.commands.registerCommand('scimax.crucible.related', showRelated),
         vscode.commands.registerCommand('scimax.crucible.history', showHistory),

@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- In *Search Crucible* and *Search All Crucibles*, `M-o` opens the crucible
+  graph filtered to the results, one graph per crucible with results
+  (`scimax.crucible.searchResultsGraph`).
+- Right-clicking a node in the crucible graph opens a menu: for a concept
+  tag, open its concept article or any article carrying the tag, or filter
+  by it; for an article or source, open it; for any node, centre there.
 - *Scimax: Show Crucible Graph* (`scimax.crucible.graph`): an interactive SVG
   of a crucible's knowledge graph (`crucible graph --json`), centred on the
   open article and following you between articles; click a node to open it.

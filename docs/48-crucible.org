@@ -44,7 +44,9 @@ crucible of the file you are in, the only crucible in the workspace, or one
 you pick. *Scimax: Search All Crucibles* ([[cmd:scimax.crucible.searchAll]])
 searches every registered crucible, and labels each result with the crucible
 it came from. Results show the article's title, kind and abstract; pick one
-to open it.
+to open it, or press =M-o= to see them in [[The Crucible Graph][the graph]]: it opens the
+crucible's graph filtered to the results (with the query in its filter row),
+or, for *Search All Crucibles*, one graph for each crucible with results.
 
 ~scimax.crucible.searchMode~ chooses the search: =auto= (the default) uses
 hybrid search when the crucible has embeddings and keyword search otherwise,
@@ -90,7 +92,12 @@ the crucible.
 
 Hover a node for its title, kind and number of connections, with its
 neighbours highlighted. Click an article or source to open it; click a
-concept tag to centre on it. Drag the background to pan; zoom with the
+concept tag to add it to the tag filter, showing only its articles.
+Right-click a node for a menu: on a concept tag it opens the tag's own
+concept article (the concept article whose file name or title names the
+tag, as =crucible lint= decides), filters by the tag, and lists the
+articles carrying the tag (concept articles first) to open; on an article or
+source it opens it; on any node it centres the view there. Drag the background to pan; zoom with the
 scroll wheel, a trackpad pinch, the =+= and =-= buttons or keys (titles
 appear as you zoom in) and drag a node to move it. The toolbar finds
 a node by title, shows or hides concept tags, sources and all labels,
@@ -167,21 +174,22 @@ Problems panel. Set ~scimax.crucible.showLint~ to =false= to hide them.
 
 ** 👀 Commands
 
-| Command                       | Description                                |
-|-------------------------------+--------------------------------------------|
-| [[cmd:scimax.crucible.search]]    | Search a crucible                          |
-| [[cmd:scimax.crucible.searchAll]] | Search all registered crucibles            |
-| [[cmd:scimax.crucible.backlinks]] | Articles that link to the current article  |
-| [[cmd:scimax.crucible.related]]   | Articles related to the current article    |
-| [[cmd:scimax.crucible.history]]   | Derivation history of the current article  |
-| [[cmd:scimax.crucible.graph]]     | Show the crucible's knowledge graph        |
-| [[cmd:scimax.crucible.ingest]]    | Ingest a file into a crucible              |
-| [[cmd:scimax.crucible.distill]]   | Distill a source with Claude Code          |
-| [[cmd:scimax.crucible.ask]]       | Ask a crucible a question with Claude Code |
-| [[cmd:scimax.crucible.openIndex]] | Open a crucible's index.org                |
-| [[cmd:scimax.crucible.sync]]      | Run crucible sync                          |
-| [[cmd:scimax.crucible.lint]]      | Show crucible lint issues in Problems      |
-| [[cmd:scimax.crucible.refresh]]   | Refresh the Crucible panel                 |
+| Command                                | Description                                |
+|----------------------------------------+--------------------------------------------|
+| [[cmd:scimax.crucible.search]]             | Search a crucible                          |
+| [[cmd:scimax.crucible.searchAll]]          | Search all registered crucibles            |
+| [[cmd:scimax.crucible.backlinks]]          | Articles that link to the current article  |
+| [[cmd:scimax.crucible.related]]            | Articles related to the current article    |
+| [[cmd:scimax.crucible.history]]            | Derivation history of the current article  |
+| [[cmd:scimax.crucible.graph]]              | Show the crucible's knowledge graph        |
+| [[cmd:scimax.crucible.searchResultsGraph]] | Graph of search results (=M-o= in search)  |
+| [[cmd:scimax.crucible.ingest]]             | Ingest a file into a crucible              |
+| [[cmd:scimax.crucible.distill]]            | Distill a source with Claude Code          |
+| [[cmd:scimax.crucible.ask]]                | Ask a crucible a question with Claude Code |
+| [[cmd:scimax.crucible.openIndex]]          | Open a crucible's index.org                |
+| [[cmd:scimax.crucible.sync]]               | Run crucible sync                          |
+| [[cmd:scimax.crucible.lint]]               | Show crucible lint issues in Problems      |
+| [[cmd:scimax.crucible.refresh]]            | Refresh the Crucible panel                 |
 
 None has a default keybinding.
 

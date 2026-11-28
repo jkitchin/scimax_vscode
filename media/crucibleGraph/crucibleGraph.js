@@ -32,6 +32,8 @@
     // types) and keeps the articles it returns.
     const filter = { query: '', searchPaths: null, tags: [], types: new Set() };
     let searchId = 0;
+    /** Concept id -> its own concept article (see conceptKey). */
+    let conceptArticle = new Map();
     /** Article id -> names of its concept tags. */
     let tagsOf = new Map();
 
@@ -88,6 +90,14 @@
     }
 
     // ---- Building the graph ---------------------------------------------------
+
+    /**
+     * A concept name, slug or title normalized for comparison, as crucible's
+     * _concept_key: case, whitespace, underscores, dashes and apostrophes are ignored.
+     */
+    function conceptKey(name) {
+        return String(name || '').toLowerCase().replace(/[\s_'\u2019\p{Pd}]/gu, '');
+    }
 
     function label(n) {
         return n.type === 'concept' ? n.name : (n.title || n.path || n.id);
@@ -148,6 +158,23 @@
         for (const e of edges) {
             if (e.type === 'concept') tagsOf.get(e.source.id)?.add(e.target.label);
         }
+        // A concept's own article is a concept-type article whose file name or
+        // title names it, as in crucible's concepts_without_articles.
+        const articleByKey = new Map();
+        for (const n of nodes) {
+            if (n.type === 'article' && n.kind === 'concept') {
+                const stem = (n.path || '').split('/').pop().replace(/\.org$/, '');
+                for (const key of [conceptKey(stem), conceptKey(n.label)]) {
+                    if (key && !articleByKey.has(key)) articleByKey.set(key, n);
+                }
+            }
+        }
+        conceptArticle = new Map();
+        for (const n of nodes) {
+            const own = n.type === 'concept' ? articleByKey.get(conceptKey(n.label)) : undefined;
+            if (own) conceptArticle.set(n.id, own);
+        }
+
         tagNames.textContent = '';
         for (const n of nodes.filter(n => n.type === 'concept').sort((a, b) => a.label.localeCompare(b.label))) {
             const option = document.createElement('option');
@@ -194,6 +221,11 @@
         g.addEventListener('pointermove', ev => moveTooltip(ev));
         g.addEventListener('pointerleave', () => { hoverId = null; highlight(); tooltip.hidden = true; });
         g.addEventListener('pointerdown', ev => startNodeDrag(n, ev));
+        g.addEventListener('contextmenu', ev => {
+            ev.preventDefault();
+            ev.stopPropagation();
+            showMenu(n, ev);
+        });
         return g;
     }
 
@@ -462,13 +494,13 @@
         }
     });
 
-    /** A click: open an article or source; centre on a concept tag. */
+    /** A click: open an article or source; filter by a concept tag. */
     function activate(n) {
         if (n.path) {
             focus(n.id, true);
             vscode.postMessage({ type: 'open', path: n.path });
-        } else {
-            focus(n.id, true);
+        } else if (n.type === 'concept') {
+            addTagFilter(n.label);
         }
     }
 
@@ -501,7 +533,9 @@
         meta.textContent = `${n.meta} · ${neighbours.get(n.id).size} connections`;
         const hint = document.createElement('div');
         hint.className = 'meta';
-        hint.textContent = n.path ? 'Click to open' : 'Click to centre';
+        hint.textContent = n.path ? 'Click to open'
+            : `${filter.tags.includes(n.label) ? 'Already a tag filter' : 'Click to show only articles with this tag'}`
+                + (conceptArticle.has(n.id) ? ' · right-click to open its concept article' : '');
         tooltip.append(title, meta, hint);
         tooltip.hidden = false;
         moveTooltip(ev);
@@ -616,12 +650,117 @@
             if (name) setStatus(`No tag "${name}"`, true);
             return;
         }
-        if (!filter.tags.includes(tag.label)) {
-            filter.tags.push(tag.label);
+        addTagFilter(tag.label);
+    });
+
+    // ---- Right-click menu ---------------------------------------------------------
+
+    const menu = document.getElementById('nodeMenu');
+    const MENU_ARTICLES = 15;
+
+    function menuItems(n) {
+        const items = [];
+        if (n.type === 'concept') {
+            const own = conceptArticle.get(n.id);
+            items.push(own
+                ? { label: `Open concept article: ${own.label}`, run: () => openNode(own) }
+                : { label: 'No concept article for this tag', disabled: true });
+            items.push({ label: 'Show only articles with this tag', run: () => addTagFilter(n.label),
+                disabled: filter.tags.includes(n.label) });
+            // The articles carrying the tag, concept articles first.
+            const order = { concept: 0, method: 1, comparison: 2, summary: 3 };
+            const tagged = [...neighbours.get(n.id)].map(id => byId.get(id))
+                .filter(a => a.type === 'article' && a !== own)
+                .sort((a, b) => (order[a.kind] ?? 9) - (order[b.kind] ?? 9) || a.label.localeCompare(b.label));
+            if (tagged.length > 0) {
+                items.push({ heading: `Articles with this tag (${tagged.length})` });
+                for (const a of tagged.slice(0, MENU_ARTICLES)) {
+                    items.push({ label: a.label, detail: a.kind, run: () => openNode(a) });
+                }
+                if (tagged.length > MENU_ARTICLES) {
+                    items.push({ label: `${tagged.length - MENU_ARTICLES} more: show them all in the graph`,
+                        run: () => addTagFilter(n.label) });
+                }
+            }
+        } else if (n.path) {
+            items.push({ label: n.type === 'source' ? 'Open source' : 'Open article', run: () => openNode(n) });
+        }
+        items.push({ label: 'Centre here', run: () => focus(n.id, true) });
+        return items;
+    }
+
+    function openNode(n) {
+        focus(n.id, true);
+        vscode.postMessage({ type: 'open', path: n.path });
+    }
+
+    function showMenu(n, ev) {
+        tooltip.hidden = true;
+        menu.textContent = '';
+        for (const item of menuItems(n)) {
+            if (item.heading) {
+                const heading = document.createElement('div');
+                heading.className = 'menuHeading';
+                heading.textContent = item.heading;
+                menu.appendChild(heading);
+                continue;
+            }
+            const button = document.createElement('button');
+            button.textContent = item.label;
+            if (item.detail) {
+                const detail = document.createElement('span');
+                detail.className = 'detail';
+                detail.textContent = ` ${item.detail}`;
+                button.appendChild(detail);
+            }
+            button.disabled = !!item.disabled || !item.run;
+            if (item.run) {
+                button.addEventListener('click', () => {
+                    hideMenu();
+                    item.run();
+                });
+            }
+            menu.appendChild(button);
+        }
+        menu.hidden = false;
+        menu.style.left = `${Math.min(ev.clientX, window.innerWidth - menu.offsetWidth - 4)}px`;
+        menu.style.top = `${Math.min(ev.clientY, window.innerHeight - menu.offsetHeight - 4)}px`;
+        menu.querySelector('button:not(:disabled)')?.focus();
+    }
+
+    function hideMenu() {
+        menu.hidden = true;
+    }
+
+    document.addEventListener('pointerdown', ev => {
+        if (!menu.hidden && !menu.contains(ev.target)) hideMenu();
+    }, true);
+    document.addEventListener('keydown', ev => {
+        if (ev.key === 'Escape') hideMenu();
+    }, true);
+    // No browser menu on the background.
+    svg.addEventListener('contextmenu', ev => ev.preventDefault());
+
+    /** Replace the filters with a search's query and results. */
+    function setSearchFilter(query, paths) {
+        searchId++;
+        queryInput.value = query;
+        filter.query = query;
+        filter.searchPaths = new Set(paths);
+        filter.tags = [];
+        filter.types = new Set();
+        typeBoxes.forEach(b => { b.checked = false; });
+        renderChips();
+        applyVisibility();
+    }
+
+    function addTagFilter(tag) {
+        if (!filter.tags.includes(tag)) {
+            filter.tags.push(tag);
             renderChips();
             refilter();
         }
-    });
+    }
 
     for (const box of typeBoxes) {
         box.addEventListener('change', () => {
@@ -651,7 +790,15 @@
         switch (message.type) {
             case 'graph':
                 build(message.graph, message.keepView);
-                if (message.focus) {
+                if (message.filter) {
+                    // Search results from Search Crucible (M-o): show them and fit.
+                    setSearchFilter(message.filter.query, message.filter.paths);
+                    focusId = message.focus || null;
+                    followFocus = false;
+                    view.scale = 0.4;
+                    fitWhenSettled = true;
+                    highlight();
+                } else if (message.focus) {
                     focusId = message.focus;
                     highlight();
                 } else if (!message.keepView) {

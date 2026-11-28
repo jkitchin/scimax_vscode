@@ -16,9 +16,17 @@ type LoadGraph = (root: string) => Promise<CrucibleGraph>;
 /** Search a crucible; returns the matching article paths, relative to its root. */
 export type SearchGraph = (root: string, query: string, tags: string[], types: string[]) => Promise<string[]>;
 
+/** Search results to filter a graph to: the query and the matching article paths. */
+export interface GraphSearchFilter {
+    query: string;
+    paths: string[];
+}
+
 interface GraphPanel {
     panel: vscode.WebviewPanel;
     graph?: CrucibleGraph;
+    /** A search filter to apply when the graph is next sent. */
+    pendingFilter?: GraphSearchFilter;
 }
 
 export class CrucibleGraphView implements vscode.Disposable {
@@ -40,10 +48,14 @@ export class CrucibleGraphView implements vscode.Disposable {
         }));
     }
 
-    /** Show the graph of the crucible at `root`, centred on `file` when it is one of its articles. */
-    async show(root: string, name: string, file?: string): Promise<void> {
+    /**
+     * Show the graph of the crucible at `root`, centred on `file` when it is
+     * one of its articles, or filtered to the results of a search.
+     */
+    async show(root: string, name: string, file?: string, filter?: GraphSearchFilter): Promise<void> {
         let entry = this.panels.get(root);
         if (entry) {
+            entry.pendingFilter = filter;
             entry.panel.reveal(undefined, true);
         } else {
             const panel = vscode.window.createWebviewPanel('scimax.crucibleGraph', `Graph: ${name}`,
@@ -53,7 +65,7 @@ export class CrucibleGraphView implements vscode.Disposable {
                     retainContextWhenHidden: true,
                     localResourceRoots: [vscode.Uri.joinPath(this.extensionUri, 'media', 'crucibleGraph')],
                 });
-            const created: GraphPanel = { panel };
+            const created: GraphPanel = { panel, pendingFilter: filter };
             entry = created;
             this.panels.set(root, created);
             panel.onDidDispose(() => this.panels.delete(root));
@@ -96,7 +108,9 @@ export class CrucibleGraphView implements vscode.Disposable {
             return;
         }
         const focus = file && findCrucibleRoot(file) === root ? graphNodeForFile(entry.graph, file) : undefined;
-        void entry.panel.webview.postMessage({ type: 'graph', graph: entry.graph, focus, keepView });
+        const filter = entry.pendingFilter;
+        entry.pendingFilter = undefined;
+        void entry.panel.webview.postMessage({ type: 'graph', graph: entry.graph, focus, keepView, filter });
     }
 
     private async onMessage(root: string, entry: GraphPanel, message: {
@@ -183,6 +197,7 @@ export class CrucibleGraphView implements vscode.Disposable {
 </div>
 <svg id="graph" tabindex="0" aria-label="Crucible knowledge graph"></svg>
 <div id="tooltip" hidden></div>
+<div id="nodeMenu" role="menu" hidden></div>
 <div class="legend">
   <span class="key concept-article">concept article</span>
   <span class="key summary">summary</span>
