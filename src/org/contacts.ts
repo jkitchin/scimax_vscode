@@ -12,6 +12,7 @@
  * insert a link, copy, or, for one contact, go to it, add a dated note under
  * it, or insert/copy any of its properties.
  */
+import * as fs from 'fs';
 import * as vscode from 'vscode';
 import { displayAddress } from './addressList';
 import { getDatabase } from '../database/lazyDb';
@@ -19,7 +20,8 @@ import { HeadingRecord, getPropCaseInsensitive } from '../database/scimaxDbCore'
 import { ensureHeadingId } from './dependencyCommands';
 import { inactiveTimestamp } from './emailHeading';
 import { composeEmail } from './mail';
-import { PERSON_TAG, pickMany } from './people';
+import { PERSON_TAG } from './people';
+import { acceptedItems } from './quickPickMatch';
 
 export interface Contact {
     name: string;
@@ -27,6 +29,8 @@ export interface Contact {
     email?: string;
     props: Record<string, string>;
     tags: string[];
+    /** Tags inherited from parent headings (and #+FILETAGS). */
+    inheritedTags?: string[];
     filePath: string;
     /** 1-based, as stored in the database. */
     lineNumber: number;
@@ -68,9 +72,11 @@ export function toContacts(rows: HeadingRecord[]): Contact[] {
         try { props = JSON.parse(h.properties || '{}'); } catch { props = {}; }
         let tags: string[] = [];
         try { tags = JSON.parse(h.tags || '[]'); } catch { tags = []; }
+        let inheritedTags: string[] = [];
+        try { inheritedTags = JSON.parse(h.inherited_tags || '[]'); } catch { inheritedTags = []; }
         const email = getPropCaseInsensitive(props, 'EMAIL')?.trim() || undefined;
         if (!email && !tags.includes(PERSON_TAG)) continue;
-        contacts.push({ name: stripTags(h.title), email, props, tags, filePath: h.file_path, lineNumber: h.line_number });
+        contacts.push({ name: stripTags(h.title), email, props, tags, inheritedTags, filePath: h.file_path, lineNumber: h.line_number });
     }
     return contacts.sort((a, b) => a.name.localeCompare(b.name));
 }
@@ -102,6 +108,79 @@ export function noteLine(date: Date): string {
 }
 
 // ---------------------------------------------------------------------------
+// Filtering: +tag / -tag, and words matched against the contact and its notes
+// ---------------------------------------------------------------------------
+
+export interface ContactQuery {
+    /** Tags a contact must have (lowercase). */
+    include: string[];
+    /** Tags a contact must not have (lowercase). */
+    exclude: string[];
+    /** Words that must each appear somewhere in the contact (lowercase). */
+    words: string[];
+}
+
+/** Parse picker text: `+tag` requires a tag, `-tag` excludes one, other words are searched. */
+export function parseContactQuery(value: string): ContactQuery {
+    const q: ContactQuery = { include: [], exclude: [], words: [] };
+    for (const token of value.toLowerCase().split(/\s+/).filter(Boolean)) {
+        const tag = token.match(/^([+-]):?([\w@#%-]+?):?$/);
+        if (tag) (tag[1] === '+' ? q.include : q.exclude).push(tag[2]);
+        else q.words.push(token);
+    }
+    return q;
+}
+
+/** All of a contact's tags, own and inherited, lowercase. */
+export function contactTags(c: Contact): string[] {
+    return [...c.tags, ...(c.inheritedTags ?? [])].map(t => t.toLowerCase());
+}
+
+export interface ContactMatch {
+    /** A line of the notes that matched, when some word was only found there. */
+    noteLine?: string;
+}
+
+/**
+ * Whether `c` matches `q`. Each word must appear in the name, email, a tag,
+ * a property value, or the notes (`notes`, the text under the heading).
+ * Returns undefined when it does not match.
+ */
+export function matchContact(c: Contact, q: ContactQuery, notes = ''): ContactMatch | undefined {
+    const tags = contactTags(c);
+    if (!q.include.every(t => tags.includes(t))) return undefined;
+    if (q.exclude.some(t => tags.includes(t))) return undefined;
+    const card = [c.name, c.email ?? '', ...tags, ...Object.values(c.props)].join('\n').toLowerCase();
+    const lowerNotes = notes.toLowerCase();
+    let noteWord: string | undefined;
+    for (const w of q.words) {
+        if (card.includes(w)) continue;
+        if (!lowerNotes.includes(w)) return undefined;
+        noteWord ??= w;
+    }
+    if (!noteWord) return {};
+    const line = notes.split('\n').find(l => l.toLowerCase().includes(noteWord!))!.trim();
+    return { noteLine: line.length > 100 ? line.slice(0, 99) + '…' : line };
+}
+
+/**
+ * The notes under the heading at `headingLine` (0-based): its own text up to
+ * the next heading, without the property drawer.
+ */
+export function contactNotes(lines: string[], headingLine: number, markdown: boolean): string {
+    const end = noteInsertLine(lines, headingLine, markdown);
+    const out: string[] = [];
+    let drawer = false;
+    for (let i = headingLine + 1; i < end; i++) {
+        const t = lines[i].trim();
+        if (/^:PROPERTIES:$/i.test(t)) { drawer = true; continue; }
+        if (drawer) { if (/^:END:$/i.test(t)) drawer = false; continue; }
+        out.push(lines[i]);
+    }
+    return out.join('\n').trim();
+}
+
+// ---------------------------------------------------------------------------
 // Database
 // ---------------------------------------------------------------------------
 
@@ -114,6 +193,33 @@ export async function getContacts(): Promise<Contact[] | undefined> {
         db.searchHeadings('', { tag: PERSON_TAG, limit: 5000 }) as Promise<HeadingRecord[]>,
     ]);
     return toContacts([...withEmail, ...people]);
+}
+
+/**
+ * The notes of each contact, read from its file. The stored line is checked
+ * against the title, in case the index is stale. Unreadable files give no notes.
+ */
+export async function loadContactNotes(contacts: Contact[]): Promise<Map<Contact, string>> {
+    const notes = new Map<Contact, string>();
+    const files = new Map<string, Promise<string[] | undefined>>();
+    const read = (file: string) => {
+        if (!files.has(file)) {
+            files.set(file, fs.promises.readFile(file, 'utf8').then(t => t.split(/\r?\n/), () => undefined));
+        }
+        return files.get(file)!;
+    };
+    await Promise.all(contacts.map(async c => {
+        const lines = await read(c.filePath);
+        if (!lines) return;
+        const markdown = !c.filePath.endsWith('.org');
+        const heading = markdown ? MD_HEADING : ORG_HEADING;
+        const isHeadingFor = (n: number) => heading.test(lines[n] ?? '')
+            && stripTags(lines[n].replace(/^(\*+|#+)\s+/, '')).endsWith(c.name);
+        let line = c.lineNumber - 1;
+        if (!isHeadingFor(line)) line = lines.findIndex((_, n) => isHeadingFor(n));
+        if (line >= 0) notes.set(c, contactNotes(lines, line, markdown));
+    }));
+    return notes;
 }
 
 // ---------------------------------------------------------------------------
@@ -265,6 +371,90 @@ function buildActions(picked: Contact[], editor: vscode.TextEditor | undefined):
     return actions;
 }
 
+type ContactItem = vscode.QuickPickItem & { contact?: Contact; create?: boolean };
+
+/**
+ * Pick one or more contacts. The text filters them: `+tag` and `-tag` by tag
+ * (own or inherited), and words must each appear in the name, email, tags,
+ * properties or notes. Enter also takes the highlighted contact (see acceptedItems).
+ */
+function pickContacts(contacts: Contact[], notes: Map<Contact, string>): Promise<ContactItem[] | undefined> {
+    const items = contacts.map(c => {
+        const tags = [...c.tags, ...(c.inheritedTags ?? [])];
+        const where = `${vscode.workspace.asRelativePath(c.filePath)}:${c.lineNumber}`;
+        const base = { label: c.name, description: [c.email ?? '', tags.length ? `:${tags.join(':')}:` : ''].filter(Boolean).join('  '), alwaysShow: true, contact: c };
+        return { base, where };
+    });
+    const itemOf = new Map<Contact, ContactItem>();
+    const create: ContactItem = { label: '$(add) New contact…', alwaysShow: true, create: true };
+    return new Promise(resolve => {
+        const qp = vscode.window.createQuickPick<ContactItem>();
+        qp.canSelectMany = true;
+        qp.placeholder = contacts.length
+            ? `Contacts (${contacts.length}): +tag / -tag filter by tag, words also search notes; Space checks several`
+            : 'No contacts yet: headings with an :EMAIL: property or a :person: tag';
+        const checked = new Set<ContactItem>();
+        let visible: ContactItem[] = [];
+        let updating = false;
+        let moved = false;
+        const update = () => {
+            const q = parseContactQuery(qp.value);
+            const inCard: ContactItem[] = [];
+            const inNotes: ContactItem[] = [];
+            for (const { base, where } of items) {
+                const m = matchContact(base.contact, q, notes.get(base.contact));
+                if (!m) continue;
+                // One item object per contact and detail, so checks survive refiltering.
+                const detail = m.noteLine ? `$(note) ${m.noteLine}` : where;
+                let item = itemOf.get(base.contact);
+                if (!item || item.detail !== detail) {
+                    const fresh: ContactItem = { ...base, detail };
+                    if (item && checked.delete(item)) checked.add(fresh);
+                    item = fresh;
+                    itemOf.set(base.contact, item);
+                }
+                (m.noteLine ? inNotes : inCard).push(item);
+            }
+            visible = [...inCard, ...inNotes];
+            updating = true;
+            qp.items = [...visible, create];
+            qp.selectedItems = visible.filter(i => checked.has(i));
+            updating = false;
+            moved = false;
+        };
+        qp.onDidChangeSelection(sel => {
+            if (updating) return;
+            for (const i of visible) {
+                if (sel.includes(i)) checked.add(i); else checked.delete(i);
+            }
+            if (sel.includes(create)) checked.add(create); else checked.delete(create);
+        });
+        qp.onDidChangeActive(active => {
+            if (active[0] && active[0] !== qp.items[0]) moved = true;
+        });
+        qp.onDidChangeValue(update);
+        let result: ContactItem[] | undefined;
+        qp.onDidAccept(() => {
+            const shown = [...visible, create];
+            result = acceptedItems({
+                items: shown,
+                selected: [...checked],
+                initial: [],
+                active: qp.activeItems[0] ?? (visible.length === 1 ? visible[0] : undefined),
+                moved,
+                value: qp.value,
+            });
+            qp.hide();
+        });
+        qp.onDidHide(() => {
+            qp.dispose();
+            resolve(result);
+        });
+        update();
+        qp.show();
+    });
+}
+
 async function contactsCommand(): Promise<void> {
     const editor = vscode.window.activeTextEditor;
     const contacts = await getContacts();
@@ -273,18 +463,7 @@ async function contactsCommand(): Promise<void> {
         return;
     }
 
-    type Item = vscode.QuickPickItem & { contact?: Contact; create?: boolean };
-    const items: Item[] = contacts.map(c => ({
-        label: c.name,
-        description: c.email ?? '',
-        detail: `${vscode.workspace.asRelativePath(c.filePath)}:${c.lineNumber}`,
-        contact: c,
-    }));
-    items.push({ label: '$(add) New contact…', alwaysShow: true, create: true });
-
-    const picked = await pickMany(items, contacts.length
-        ? `Contacts (${contacts.length}): type to filter, Enter to choose; Space checks several`
-        : 'No contacts yet: headings with an :EMAIL: property or a :person: tag');
+    const picked = await pickContacts(contacts, await loadContactNotes(contacts));
     if (!picked || picked.length === 0) return;
     if (picked.some(i => i.create)) {
         await vscode.commands.executeCommand('scimax.org.newPerson');

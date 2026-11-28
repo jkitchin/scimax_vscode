@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- *Scimax: Contacts* filters as you type: `+tag` and `-tag` keep or drop
+  contacts by tag (own or inherited), and other words are matched against the
+  name, email, tags, properties and the notes under the contact's heading. A
+  match found only in the notes shows the matching line.
 - In *Search Crucible* and *Search All Crucibles*, `M-o` opens the crucible
   graph filtered to the results, one graph per crucible with results
   (`scimax.crucible.searchResultsGraph`).

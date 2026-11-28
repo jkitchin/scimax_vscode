@@ -14,7 +14,7 @@ vi.mock('vscode', () => ({
 vi.mock('../../database/lazyDb', () => ({ getDatabase: vi.fn() }));
 vi.mock('../dependencyCommands', () => ({ ensureHeadingId: vi.fn() }));
 
-import { firstAddress, nameAddress, nonOrgContactLink, noteInsertLine, noteLine, stripTags, toContacts } from '../contacts';
+import { contactNotes, firstAddress, matchContact, nameAddress, parseContactQuery, nonOrgContactLink, noteInsertLine, noteLine, stripTags, toContacts } from '../contacts';
 import { composeUrl, findMarkdownMailtoLinks, mailSettings, mailtoPreviewPlugin, parseMailto } from '../mail';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const MarkdownIt = require('markdown-it');
@@ -135,5 +135,39 @@ describe('Markdown mailto links', () => {
         expect(html).toContain('to=ana%40x.org');
         const system = new MarkdownIt().use(mailtoPreviewPlugin, () => ({ client: 'mailto' as const }));
         expect(system.render('[Ana](mailto:ana@x.org)')).toContain('href="mailto:ana@x.org"');
+    });
+});
+
+describe('contact filtering', () => {
+    const ana = {
+        name: 'Ana Ramirez', email: 'ana@cmu.edu', props: { EMAIL: 'ana@cmu.edu', ORG: 'Chemistry' },
+        tags: ['person', 'Collaborator'], inheritedTags: ['cmu'], filePath: '/n/p.org', lineNumber: 1,
+    };
+    const notes = '- [2026-11-09 Mon] Talked about catalysis and DFT\n- Visit in spring';
+
+    it('parses +tag, -tag and words', () => {
+        expect(parseContactQuery(' +Collab -alumni  DFT :x ')).toEqual({ include: ['collab'], exclude: ['alumni'], words: ['dft', ':x'] });
+        expect(parseContactQuery('+:student:')).toEqual({ include: ['student'], exclude: [], words: [] });
+        expect(parseContactQuery('- x')).toEqual({ include: [], exclude: [], words: ['-', 'x'] });
+    });
+
+    it('filters by own and inherited tags, case-insensitively', () => {
+        expect(matchContact(ana, parseContactQuery('+collaborator +cmu'))).toEqual({});
+        expect(matchContact(ana, parseContactQuery('-cmu'))).toBeUndefined();
+        expect(matchContact(ana, parseContactQuery('+student'))).toBeUndefined();
+    });
+
+    it('matches words in the card or the notes, and reports the note line', () => {
+        expect(matchContact(ana, parseContactQuery('chem ana'), notes)).toEqual({});
+        expect(matchContact(ana, parseContactQuery('+collaborator catalysis'), notes))
+            .toEqual({ noteLine: '- [2026-11-09 Mon] Talked about catalysis and DFT' });
+        expect(matchContact(ana, parseContactQuery('catalysis zeolite'), notes)).toBeUndefined();
+        expect(matchContact(ana, parseContactQuery('catalysis'))).toBeUndefined();
+    });
+
+    it('takes a heading\'s own text, without the drawer or subheadings', () => {
+        const lines = ['* Ana', ':PROPERTIES:', ':EMAIL: a@x', ':END:', 'note one', '', '** Sub', 'not mine'];
+        expect(contactNotes(lines, 0, false)).toBe('note one');
+        expect(contactNotes(['# Bo', 'md note', '## Next'], 0, true)).toBe('md note');
     });
 });
