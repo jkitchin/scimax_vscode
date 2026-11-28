@@ -7,16 +7,25 @@
  *   - `:DEPENDS: id:a id:b`  explicit edges, indexed in the `dependencies` table
  *   - `:ORDERED: t`          on a parent, forcing its children to run in order
  *
- * ORDERED edges are NOT stored anywhere; the extension derives them from
- * document structure at edit time. This module reconstructs them from heading
- * levels so `ready`/`blocked` matches what the editor enforces. Reading only
- * the dependencies table reports sequential subtasks as ready when they are not.
+ * Tasks are read from the org files with the same parser the editor's
+ * project view uses (src/parser/projectTasks.ts), so assignees (own,
+ * inherited and @tags), efforts in every unit, and ORDERED edges mean the
+ * same thing here as there. The database is only used to find which files
+ * hold tasks.
+ *
+ * A scope is the set of files whose tasks are listed: every indexed project
+ * by default, the current directory with --local, or one file. Blocking is
+ * always judged against every indexed task, so a dependency in another file
+ * counts as done when it is done.
  */
 
 import * as fs from 'fs';
 import * as path from 'path';
 import { createCliDatabase } from '../database';
-import type { ScimaxDbCore, HeadingRecord, DependencyRecord } from '../../database/scimaxDbCore';
+import type { ScimaxDbCore } from '../../database/scimaxDbCore';
+import { parseOrg } from '../../parser/orgParserUnified';
+import { org } from '../../parser/orgModify';
+import { extractProjectTasks } from '../../parser/projectTasks';
 import { loadSettings } from '../settings';
 import { vscodeLinkAt } from '../links';
 
@@ -32,14 +41,20 @@ interface ParsedArgs {
     flags: Record<string, string | boolean>;
 }
 
-const DONE_STATES = new Set(['DONE', 'CANCELLED', 'CANCELED']);
-
 export interface Task {
     id: string;
     title: string;
     state: string | null;
+    /** Whether the state is a done state (DONE, CANCELLED, or configured). */
+    done: boolean;
+    /** Own, inherited and @tag assignees. */
+    assignees: string[];
+    /** The assignees joined with spaces, or null (kept for output). */
     assignee: string | null;
+    /** The :ASSIGNEE: written on this heading itself, if any. */
+    ownAssignee: string | null;
     effort: string | null;
+    /** Effort in 8-hour days (0 when there is none). */
     effortDays: number;
     scheduled: string | null;
     deadline: string | null;
@@ -47,115 +62,124 @@ export interface Task {
     filePath: string;
     lineNumber: number;
     level: number;
-    /** Unfinished ids this task waits on (explicit + ORDERED). */
+    /** Unfinished or unknown ids this task waits on (explicit + ORDERED). */
     blockedBy: string[];
+}
+
+/** The tasks a command works on, and every indexed task for resolving dependencies. */
+export interface TaskScope {
+    /** What the scope covers, for headers: a file, a directory, or "all". */
+    label: string;
+    files: string[];
+    tasks: Task[];
+    /** Every loaded task by id, inside and outside the scope. */
+    byId: Map<string, Task>;
+    /** Ids defined more than once, with where. */
+    duplicates: Map<string, string[]>;
 }
 
 // ============================================================
 // Loading
 // ============================================================
 
-function props(h: HeadingRecord): Record<string, string> {
-    if (!h.properties) return {};
-    try {
-        const parsed = typeof h.properties === 'string' ? JSON.parse(h.properties) : h.properties;
-        const out: Record<string, string> = {};
-        for (const [k, v] of Object.entries(parsed || {})) {
-            out[k.toUpperCase()] = String(v);
-        }
-        return out;
-    } catch {
-        return {};
-    }
-}
-
-/** Parse an org effort string into days. Only `Nd` and `Nh` are understood. */
-function effortToDays(effort: string | null): number {
-    if (!effort) return 0;
-    const d = effort.match(/^([\d.]+)\s*d$/i);
-    if (d) return parseFloat(d[1]);
-    const h = effort.match(/^([\d.]+)\s*h$/i);
-    if (h) return parseFloat(h[1]) / 8;
-    return 0;
+const DOW = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+/** An org-style date, `2026-12-01 Tue`, which also sorts as a string. */
+function orgDate(d: Date | undefined): string | null {
+    if (!d) return null;
+    const pad = (n: number) => String(n).padStart(2, '0');
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${DOW[d.getDay()]}`;
 }
 
 /**
- * Derive implicit edges from `:ORDERED: t` parents: each direct child depends
- * on the previous sibling. Uses heading levels to establish parentage, which is
- * why the full outline is loaded rather than only tasks.
+ * The tasks (headings with a TODO keyword and an :ID:) in org `text`, with
+ * dependencies not yet resolved: blockedBy holds every id the task depends on.
  */
-function orderedEdges(headings: HeadingRecord[]): Array<{ from: string; to: string }> {
-    const edges: Array<{ from: string; to: string }> = [];
-
-    for (let i = 0; i < headings.length; i++) {
-        const parent = headings[i];
-        if ((props(parent).ORDERED || '').toLowerCase() !== 't') continue;
-
-        // Direct children: level+1, until a heading at or above the parent's level.
-        let prevChildId: string | null = null;
-        for (let j = i + 1; j < headings.length; j++) {
-            const h = headings[j];
-            if (h.level <= parent.level) break;
-            if (h.level !== parent.level + 1) continue;
-
-            const id = props(h).ID;
-            if (!id) continue;
-            if (prevChildId) edges.push({ from: id, to: prevChildId });
-            prevChildId = id;
-        }
-    }
-    return edges;
-}
-
-/** Load one project file into a task graph with blocking resolved. */
-export async function loadProject(db: ScimaxDbCore, filePath: string): Promise<Task[]> {
-    const headings = await db.getHeadingsInFile(filePath);
-    if (headings.length === 0) return [];
-
-    const explicit: DependencyRecord[] = await db.getAllDependencies();
-    const edges = [
-        ...explicit.filter(e => e.file_path === filePath).map(e => ({ from: e.from_id, to: e.to_id })),
-        ...orderedEdges(headings),
-    ];
-
+export function parseTasks(text: string, filePath: string, doneStates: string[] = []): Task[] {
+    const doc = parseOrg(text, { filePath });
+    const extracted = extractProjectTasks(doc, org.getAllHeadlines(doc), { todoOnly: true, file: filePath, doneStates: new Set(doneStates) });
     const tasks: Task[] = [];
-    const doneIds = new Set<string>();
-
-    for (const h of headings) {
-        const p = props(h);
-        if (!p.ID) continue;
-        if (h.todo_type === 'done' || (h.todo_state && DONE_STATES.has(h.todo_state))) doneIds.add(p.ID);
+    for (const t of extracted) {
+        if (!t.id) continue;
+        const props: Record<string, string> = {};
+        for (const [k, v] of Object.entries(t.properties ?? {})) props[k.toUpperCase()] = String(v);
         tasks.push({
-            id: p.ID,
-            title: h.title,
-            state: h.todo_state || null,
-            assignee: p.ASSIGNEE || null,
-            effort: p.EFFORT || null,
-            effortDays: effortToDays(p.EFFORT || null),
-            scheduled: h.scheduled || null,
-            deadline: h.deadline || null,
-            priority: h.priority || null,
-            filePath: h.file_path,
-            lineNumber: h.line_number,
-            level: h.level,
-            blockedBy: [],
+            id: t.id,
+            title: t.title,
+            state: t.todo ?? null,
+            done: t.isDone,
+            assignees: t.assignees,
+            assignee: t.assignees.length ? t.assignees.join(' ') : null,
+            ownAssignee: props.ASSIGNEE?.trim() || null,
+            effort: props.EFFORT?.trim() || null,
+            effortDays: t.effortMinutes ? t.effortMinutes / 480 : 0,
+            scheduled: orgDate(t.scheduled),
+            deadline: orgDate(t.deadline),
+            priority: t.priority ?? null,
+            filePath,
+            lineNumber: t.line,
+            level: t.level,
+            blockedBy: [...new Set(t.dependsIds)],
         });
     }
-
-    const byId = new Map(tasks.map(t => [t.id, t]));
-    for (const e of edges) {
-        const from = byId.get(e.from);
-        if (!from) continue;
-        if (doneIds.has(e.to)) continue;      // satisfied
-        if (!from.blockedBy.includes(e.to)) from.blockedBy.push(e.to);
-    }
-
     return tasks;
+}
+
+/**
+ * Resolve blocking: a task waits on each dependency that is not done, or that
+ * no loaded file defines. Returns tasks by id and the ids defined twice.
+ */
+export function resolveTasks(all: Task[]): { byId: Map<string, Task>; duplicates: Map<string, string[]> } {
+    const byId = new Map<string, Task>();
+    const duplicates = new Map<string, string[]>();
+    for (const t of all) {
+        const prior = byId.get(t.id);
+        if (prior) {
+            const where = duplicates.get(t.id) ?? [`${prior.filePath}:${prior.lineNumber}`];
+            where.push(`${t.filePath}:${t.lineNumber}`);
+            duplicates.set(t.id, where);
+            continue; // The first definition wins, as in the editor.
+        }
+        byId.set(t.id, t);
+    }
+    for (const t of all) {
+        t.blockedBy = t.blockedBy.filter(id => id !== t.id && !byId.get(id)?.done);
+    }
+    return { byId, duplicates };
+}
+
+/** Read and parse task files; unreadable files are skipped. */
+function readTasks(files: string[], doneStates: string[]): Task[] {
+    const out: Task[] = [];
+    for (const f of files) {
+        let text: string;
+        try { text = fs.readFileSync(f, 'utf-8'); } catch { continue; }
+        out.push(...parseTasks(text, f, doneStates));
+    }
+    return out;
+}
+
+/** Load the tasks of `files`, resolving dependencies against every indexed task file. */
+export async function loadScope(db: ScimaxDbCore, label: string, files: string[]): Promise<TaskScope> {
+    const doneStates = loadSettings().agenda.doneStates;
+    const universe = [...new Set([...files, ...(await findProjectFiles(db)).map(f => f.file)])];
+    const all = readTasks(universe, doneStates);
+    const { byId, duplicates } = resolveTasks(all);
+    const inScope = new Set(files);
+    const tasks = all.filter(t => inScope.has(t.filePath) && byId.get(t.id) === t);
+    return { label, files, tasks, byId, duplicates };
 }
 
 /** Open tasks only (a done task is not actionable). */
 function openTasks(tasks: Task[]): Task[] {
-    return tasks.filter(t => t.state && !DONE_STATES.has(t.state));
+    return tasks.filter(t => !t.done);
+}
+
+/** Warn about ids defined more than once, which make dependencies ambiguous. */
+function warnDuplicates(scope: TaskScope): void {
+    for (const [id, where] of scope.duplicates) {
+        if (!where.some(w => scope.files.some(f => w.startsWith(f + ':')))) continue;
+        console.error(`Warning: :ID: ${id} is defined ${where.length} times (${where.join(', ')}); the first is used.`);
+    }
 }
 
 // ============================================================
@@ -264,15 +288,23 @@ async function findProjectFiles(
         .sort((a, b) => b.tasks - a.tasks);
 }
 
-/** Resolve the project file to operate on. */
-async function resolveFile(db: ScimaxDbCore, args: ParsedArgs): Promise<string | null> {
+/**
+ * The scope to operate on: the file named with --file (or as an .org
+ * argument), every task file under the current directory with --local, or
+ * every indexed task file. Undefined when there are none.
+ */
+async function resolveScope(db: ScimaxDbCore, args: ParsedArgs): Promise<TaskScope | undefined> {
     const explicitFile = typeof args.flags.file === 'string' ? args.flags.file : undefined;
     const candidate = explicitFile || args.args.find(a => a.endsWith('.org'));
-    if (candidate) return fs.existsSync(candidate) ? fs.realpathSync(candidate) : candidate;
-
-    const projects = await findProjectFiles(db, localRoot(args));
-    if (projects.length === 0) return null;
-    return projects[0].file;
+    if (candidate) {
+        const file = fs.existsSync(candidate) ? fs.realpathSync(candidate) : path.resolve(candidate);
+        return loadScope(db, file, [file]);
+    }
+    const root = localRoot(args);
+    const files = (await findProjectFiles(db, root)).map(f => f.file);
+    if (files.length === 0) return undefined;
+    const label = root ?? `all indexed projects (${files.length} file${files.length === 1 ? '' : 's'})`;
+    return loadScope(db, label, files);
 }
 
 // ============================================================
@@ -285,6 +317,7 @@ function taskToJson(t: Task) {
         title: t.title,
         state: t.state,
         assignee: t.assignee,
+        assignees: t.assignees,
         effort: t.effort,
         effort_days: t.effortDays,
         scheduled: t.scheduled,
@@ -299,7 +332,7 @@ function taskToJson(t: Task) {
 
 function printTask(n: number, t: Task, byId: Map<string, Task>): void {
     const bits: string[] = [];
-    if (t.assignee) bits.push(`@${t.assignee}`);
+    if (t.assignees.length) bits.push(t.assignees.map(a => `@${a}`).join(' '));
     if (t.effort) bits.push(t.effort);
     if (t.priority) bits.push(`[#${t.priority}]`);
     if (t.deadline) bits.push(`due ${t.deadline}`);
@@ -308,7 +341,7 @@ function printTask(n: number, t: Task, byId: Map<string, Task>): void {
 
     console.log(`  ${String(n).padStart(2)}. ${(t.state || '').padEnd(6)} ${t.title}${meta}`);
     if (t.blockedBy.length) {
-        const names = t.blockedBy.map(id => byId.get(id)?.title || id).join(', ');
+        const names = t.blockedBy.map(id => byId.get(id)?.title || `${id} (not found)`).join(', ');
         console.log(`      waiting on: ${names}`);
     }
     console.log(`      ${vscodeLinkAt(t.filePath, t.lineNumber)}`);
@@ -318,8 +351,8 @@ function printTask(n: number, t: Task, byId: Map<string, Task>): void {
 // Subcommands
 // ============================================================
 
-async function taskNext(db: ScimaxDbCore, file: string, json: boolean): Promise<void> {
-    const tasks = await loadProject(db, file);
+function taskNext(scope: TaskScope, json: boolean): void {
+    const tasks = scope.tasks;
     const open = openTasks(tasks);
     const ready = open.filter(t => t.blockedBy.length === 0);
     const cp = criticalPath(tasks);
@@ -328,7 +361,8 @@ async function taskNext(db: ScimaxDbCore, file: string, json: boolean): Promise<
 
     if (json) {
         console.log(JSON.stringify({
-            file,
+            scope: scope.label,
+            files: scope.files,
             ready_count: ready.length,
             blocked_count: open.length - ready.length,
             critical_path_days: cp.days,
@@ -339,7 +373,7 @@ async function taskNext(db: ScimaxDbCore, file: string, json: boolean): Promise<
         return;
     }
 
-    console.log(`=== Next Actions ===\n${file}\n`);
+    console.log(`=== Next Actions ===\n${scope.label}\n`);
     if (ranked.length === 0) {
         console.log(open.length === 0
             ? 'No open tasks.'
@@ -347,7 +381,7 @@ async function taskNext(db: ScimaxDbCore, file: string, json: boolean): Promise<
         return;
     }
 
-    const byId = new Map(tasks.map(t => [t.id, t]));
+    const byId = scope.byId;
     console.log(`Ready now (${ranked.length} of ${open.length} open):\n`);
     ranked.forEach((t, i) => printTask(i + 1, t, byId));
 
@@ -359,67 +393,71 @@ async function taskNext(db: ScimaxDbCore, file: string, json: boolean): Promise<
     }
 }
 
-async function taskList(db: ScimaxDbCore, file: string, args: ParsedArgs, json: boolean): Promise<void> {
-    const tasks = await loadProject(db, file);
+function taskList(scope: TaskScope, args: ParsedArgs, json: boolean): void {
+    const tasks = scope.tasks;
     let open = openTasks(tasks);
 
     const assignee = typeof args.flags.assignee === 'string' ? args.flags.assignee : undefined;
-    if (assignee) open = open.filter(t => t.assignee === assignee);
+    if (assignee) open = open.filter(t => t.assignees.includes(assignee));
     if (args.flags.ready === true) open = open.filter(t => t.blockedBy.length === 0);
     if (args.flags.blocked === true) open = open.filter(t => t.blockedBy.length > 0);
 
     open.sort((a, b) => (a.blockedBy.length - b.blockedBy.length) || (a.lineNumber - b.lineNumber));
 
     if (json) {
-        console.log(JSON.stringify({ file, count: open.length, items: open.map(taskToJson) }, null, 2));
+        console.log(JSON.stringify({ scope: scope.label, files: scope.files, count: open.length, items: open.map(taskToJson) }, null, 2));
         return;
     }
 
-    console.log(`=== Tasks ===\n${file}\n`);
+    console.log(`=== Tasks ===\n${scope.label}\n`);
     if (open.length === 0) { console.log('No matching tasks.'); return; }
-    const byId = new Map(tasks.map(t => [t.id, t]));
-    open.forEach((t, i) => printTask(i + 1, t, byId));
+    open.forEach((t, i) => printTask(i + 1, t, scope.byId));
 }
 
-async function taskWho(db: ScimaxDbCore, file: string, json: boolean): Promise<void> {
-    const tasks = await loadProject(db, file);
+function taskWho(scope: TaskScope, json: boolean): void {
+    const tasks = scope.tasks;
     const open = openTasks(tasks);
 
     const rows = new Map<string, { open: number; ready: number; days: number; unestimated: number }>();
     for (const t of open) {
-        const who = t.assignee || '(unassigned)';
-        const r = rows.get(who) || { open: 0, ready: 0, days: 0, unestimated: 0 };
-        r.open++;
-        if (t.blockedBy.length === 0) r.ready++;
-        r.days += t.effortDays;
-        if (!t.effort) r.unestimated++;
-        rows.set(who, r);
+        // A shared task's effort is split evenly between its assignees.
+        const people = t.assignees.length ? t.assignees : ['(unassigned)'];
+        for (const who of people) {
+            const r = rows.get(who) || { open: 0, ready: 0, days: 0, unestimated: 0 };
+            r.open++;
+            if (t.blockedBy.length === 0) r.ready++;
+            r.days += t.effortDays / people.length;
+            if (!t.effortDays) r.unestimated++;
+            rows.set(who, r);
+        }
     }
+    for (const r of rows.values()) r.days = Math.round(r.days * 100) / 100;
 
     const sorted = [...rows.entries()].sort((a, b) => b[1].days - a[1].days);
 
     if (json) {
         console.log(JSON.stringify({
-            file,
+            scope: scope.label,
+            files: scope.files,
             assignees: sorted.map(([who, r]) => ({ assignee: who, ...r })),
         }, null, 2));
         return;
     }
 
-    console.log(`=== Workload ===\n${file}\n`);
-    console.log('  assignee        open  ready  days  unestimated');
+    console.log(`=== Workload ===\n${scope.label}\n`);
+    console.log('  assignee        open  ready   days  unestimated');
     for (const [who, r] of sorted) {
-        console.log(`  ${who.padEnd(15)} ${String(r.open).padStart(4)} ${String(r.ready).padStart(6)} ${String(r.days).padStart(5)} ${String(r.unestimated).padStart(12)}`);
+        console.log(`  ${who.padEnd(15)} ${String(r.open).padStart(4)} ${String(r.ready).padStart(6)} ${r.days.toFixed(1).padStart(6)} ${String(r.unestimated).padStart(12)}`);
     }
-    console.log('\n  days counts only Nd/Nh efforts; unestimated tasks contribute 0.');
+    console.log('\n  days are 8-hour days of open effort; a shared task is split between its assignees.');
 }
 
-async function taskShow(db: ScimaxDbCore, file: string, id: string, json: boolean): Promise<void> {
-    const tasks = await loadProject(db, file);
-    const byId = new Map(tasks.map(t => [t.id, t]));
+function taskShow(scope: TaskScope, id: string, json: boolean): void {
+    const byId = scope.byId;
+    const tasks = [...byId.values()];
     const t = byId.get(id);
     if (!t) {
-        console.error(`No task with id "${id}" in ${file}`);
+        console.error(`No task with id "${id}" in any indexed file`);
         process.exitCode = 1;
         return;
     }
@@ -438,6 +476,7 @@ async function taskShow(db: ScimaxDbCore, file: string, id: string, json: boolea
     console.log(`  id:        ${t.id}`);
     console.log(`  state:     ${t.state || '-'}`);
     console.log(`  assignee:  ${t.assignee || '-'}`);
+    console.log(`  file:      ${t.filePath}`);
     console.log(`  effort:    ${t.effort || '-'}`);
     if (t.scheduled) console.log(`  scheduled: ${t.scheduled}`);
     if (t.deadline) console.log(`  deadline:  ${t.deadline}`);
@@ -477,16 +516,16 @@ function replaceLine(filePath: string, lineNumber: number, transform: (line: str
     fs.writeFileSync(filePath, lines.join('\n'), 'utf-8');
 }
 
-async function taskDone(db: ScimaxDbCore, file: string, id: string, args: ParsedArgs, json: boolean): Promise<void> {
-    const tasks = await loadProject(db, file);
-    const byId = new Map(tasks.map(t => [t.id, t]));
+async function taskDone(db: ScimaxDbCore, scope: TaskScope, id: string, args: ParsedArgs, json: boolean): Promise<void> {
+    const byId = scope.byId;
+    const tasks = [...byId.values()];
     const t = byId.get(id);
     if (!t) {
-        console.error(`No task with id "${id}" in ${file}`);
+        console.error(`No task with id "${id}" in any indexed file`);
         process.exitCode = 1;
         return;
     }
-    if (t.state && DONE_STATES.has(t.state)) {
+    if (t.done) {
         console.log(`"${t.title}" is already ${t.state}.`);
         return;
     }
@@ -512,10 +551,10 @@ async function taskDone(db: ScimaxDbCore, file: string, id: string, args: Parsed
     await db.indexFile(t.filePath);
 
     // Report what this opened up, using freshly indexed state.
-    const after = await loadProject(db, file);
-    const nowReady = after.filter(o => o.blockedBy.length === 0
-        && o.state && !DONE_STATES.has(o.state)
-        && tasks.find(p => p.id === o.id)?.blockedBy.includes(id));
+    const after = await loadScope(db, scope.label, scope.files);
+    const nowReady = [...after.byId.values()].filter(o => o.blockedBy.length === 0
+        && !o.done
+        && byId.get(o.id)?.blockedBy.includes(id));
 
     if (json) {
         console.log(JSON.stringify({
@@ -528,15 +567,14 @@ async function taskDone(db: ScimaxDbCore, file: string, id: string, args: Parsed
     console.log(`${oldState || '(none)'} -> ${doneState}: ${t.title}`);
     if (nowReady.length) {
         console.log('\nNow ready:');
-        nowReady.forEach(o => console.log(`  - ${o.title}${o.assignee ? ` (@${o.assignee})` : ''}`));
+        nowReady.forEach(o => console.log(`  - ${o.title}${o.assignees.length ? ` (${o.assignees.map(a => `@${a}`).join(' ')})` : ''}`));
     }
 }
 
-async function taskAssign(db: ScimaxDbCore, file: string, id: string, who: string, json: boolean): Promise<void> {
-    const tasks = await loadProject(db, file);
-    const t = tasks.find(x => x.id === id);
+async function taskAssign(db: ScimaxDbCore, scope: TaskScope, id: string, who: string, json: boolean): Promise<void> {
+    const t = scope.byId.get(id);
     if (!t) {
-        console.error(`No task with id "${id}" in ${file}`);
+        console.error(`No task with id "${id}" in any indexed file`);
         process.exitCode = 1;
         return;
     }
@@ -572,10 +610,10 @@ async function taskAssign(db: ScimaxDbCore, file: string, id: string, who: strin
     await db.indexFile(t.filePath);
 
     if (json) {
-        console.log(JSON.stringify({ id, title: t.title, assignee: who, previous: t.assignee }));
+        console.log(JSON.stringify({ id, title: t.title, assignee: who, previous: t.ownAssignee }));
         return;
     }
-    console.log(`Assigned "${t.title}" to ${who}${t.assignee ? ` (was ${t.assignee})` : ''}.`);
+    console.log(`Assigned "${t.title}" to ${who}${t.ownAssignee ? ` (was ${t.ownAssignee})` : ''}.`);
 }
 
 // ============================================================
@@ -597,8 +635,8 @@ USAGE:
     scimax task files                    List files containing tasks
 
 OPTIONS:
-    --file <path>    Project file (otherwise the file with the most tasks)
-    --local          Only consider files under the current directory
+    --file <path>    Only this file's tasks
+    --local          Only the task files under the current directory
     --json           Structured output
     --force          Allow 'done' on a blocked task
 
@@ -607,9 +645,12 @@ NOTES:
     and from :ORDERED: parents; both are honored. Writes update the org file
     and reindex it immediately.
 
-    File selection is global by default: the database spans every indexed file,
-    so 'scimax task next' answers from any directory. Use --local to confine it
-    to the current project, or name the file outright.
+    The scope is global by default: every indexed file with tasks, so
+    'scimax task who' is the whole team's workload across projects. Use
+    --local to confine it to the current project (run it in the project's
+    folder), or name one file. Dependencies are always resolved against every
+    indexed task, so a task waiting on another project is blocked only while
+    that task is open. Assignees include inherited :ASSIGNEE: and @tags.
 `);
 }
 
@@ -637,8 +678,8 @@ export async function taskCommand(config: CliConfig, args: ParsedArgs): Promise<
             return;
         }
 
-        const file = await resolveFile(db, args);
-        if (!file) {
+        const scope = await resolveScope(db, args);
+        if (!scope) {
             console.error(args.flags.local === true
                 ? `No project file under ${process.cwd()}. Drop --local to search all indexed files, or pass --file <path>.`
                 : 'No project file found. Pass one with --file, or add :ASSIGNEE:/:DEPENDS: properties to a file and run `scimax db sync`.');
@@ -651,35 +692,35 @@ export async function taskCommand(config: CliConfig, args: ParsedArgs): Promise<
         const operands = (rawSub && !rawSub.endsWith('.org') ? args.args.slice(1) : args.args)
             .filter(a => !a.endsWith('.org'));
 
+        warnDuplicates(scope);
         switch (sub) {
-            case 'next': await taskNext(db, file, json); break;
-            case 'list': await taskList(db, file, args, json); break;
-            case 'who': await taskWho(db, file, json); break;
+            case 'next': taskNext(scope, json); break;
+            case 'list': taskList(scope, args, json); break;
+            case 'who': taskWho(scope, json); break;
             case 'path': {
-                const tasks = await loadProject(db, file);
-                const cp = criticalPath(tasks);
+                const cp = criticalPath(scope.tasks);
                 if (json) {
-                    console.log(JSON.stringify({ file, days: cp.days, path: cp.path.map(taskToJson) }, null, 2));
+                    console.log(JSON.stringify({ scope: scope.label, files: scope.files, days: cp.days, path: cp.path.map(taskToJson) }, null, 2));
                     break;
                 }
-                console.log(`=== Critical Path ===\n${file}\n`);
+                console.log(`=== Critical Path ===\n${scope.label}\n`);
                 if (!cp.path.length) { console.log('No open tasks.'); break; }
-                console.log(`${cp.days}d of remaining work across ${cp.path.length} tasks:\n`);
+                console.log(`${Math.round(cp.days * 10) / 10}d of remaining work across ${cp.path.length} tasks:\n`);
                 cp.path.forEach((t, i) => {
                     const mark = t.blockedBy.length === 0 ? '>' : ' ';
-                    console.log(`  ${mark} ${String(i + 1).padStart(2)}. ${(t.effort || '-').padStart(4)}  ${t.title}${t.assignee ? `  @${t.assignee}` : ''}`);
+                    console.log(`  ${mark} ${String(i + 1).padStart(2)}. ${(t.effort || '-').padStart(4)}  ${t.title}${t.assignees.length ? `  ${t.assignees.map(a => `@${a}`).join(' ')}` : ''}`);
                 });
                 console.log('\n  ">" marks tasks that are ready to start.');
                 break;
             }
             case 'show': {
                 if (!operands[0]) { console.error('Usage: scimax task show <id>'); process.exitCode = 1; break; }
-                await taskShow(db, file, operands[0], json);
+                taskShow(scope, operands[0], json);
                 break;
             }
             case 'done': {
                 if (!operands[0]) { console.error('Usage: scimax task done <id>'); process.exitCode = 1; break; }
-                await taskDone(db, file, operands[0], args, json);
+                await taskDone(db, scope, operands[0], args, json);
                 break;
             }
             case 'assign': {
@@ -688,7 +729,7 @@ export async function taskCommand(config: CliConfig, args: ParsedArgs): Promise<
                     process.exitCode = 1;
                     break;
                 }
-                await taskAssign(db, file, operands[0], operands[1], json);
+                await taskAssign(db, scope, operands[0], operands[1], json);
                 break;
             }
             default:

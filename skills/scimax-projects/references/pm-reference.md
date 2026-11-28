@@ -48,18 +48,20 @@ scimax task files                # which files contain tasks
 
 Every command takes `--file <path>`, `--local`, and `--json`.
 
-**File selection is global by default.** The database spans every indexed file,
-so `scimax task next` answers the same way from any directory: it picks the file
-with the most task metadata anywhere. That is usually right with one active
-project and wrong with several.
+**The scope is global by default.** Commands cover every indexed file with
+tasks, so `scimax task who` is the whole team's workload across projects and
+`scimax task next` ranks ready work everywhere.
 
-- `--local` confines the search to files under the current directory. Reach for
-  it whenever the user is clearly asking about *this* project ("what's next
-  here?", or the conversation is rooted in a repo).
-- `--file <path>` names the file outright. Use it when you know which project.
-- Run `scimax task files` first if you are unsure — it lists candidates with
-  task counts. If more than one looks live, ask which the user means rather
-  than guessing.
+- `--local` confines it to the task files under the current directory. Reach
+  for it whenever the user is clearly asking about *this* project ("what's
+  next here?", or the conversation is rooted in a project folder).
+- `--file <path>` limits it to one file.
+- `scimax task files` lists the files with task counts.
+
+Dependencies are always resolved against every indexed task, whatever the
+scope, so a task waiting on another project is blocked only while that task is
+open. A dependency on an id no file defines keeps the task blocked and shows as
+"(not found)". An `:ID:` defined twice prints a warning, and the first is used.
 
 ## Answering questions
 
@@ -101,11 +103,13 @@ Lead with the answer, then the reasoning:
 
 ## Limitations — state these when they matter
 
-1. **Index freshness.** Results reflect the last saved+indexed state. If the user
-   just edited a project file outside VS Code, run `scimax db sync` first.
-2. **Effort math.** `days` sums only `Nd`/`Nh`; unestimated tasks count as 0.
-   `scimax task who` reports an `unestimated` column — mention it rather than
-   presenting a total as complete.
+1. **Index freshness.** Task files are read from disk, so edits count at once,
+   but which files hold tasks comes from the index. A new project file needs
+   `scimax db sync` before it shows up.
+2. **Effort math.** `days` are 8-hour days in any effort unit (`2d`, `4h`,
+   `90m`, `0:30`); a shared task is split between its assignees, and tasks
+   without an effort count as 0. `scimax task who` reports an `unestimated`
+   column — mention it rather than presenting a total as complete.
 3. **`ORDERED` covers direct children only.** Deeper descendants of an ORDERED
    parent are not chained.
 4. **Ids are resolved within one file.** Cross-file `:DEPENDS:` works in the

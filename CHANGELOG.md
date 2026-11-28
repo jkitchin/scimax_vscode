@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- `scimax task` reads tasks with the editor's project parser, and covers every
+  indexed project by default (`--local` for the current folder, `--file` for
+  one file). `task who` is now the team's workload across projects. Inherited
+  `:ASSIGNEE:` and `@name` tags count, a task with several assignees counts for
+  each of them (its effort split), and `90m` and `0:30` efforts are no longer
+  zero. Dependencies in other files are followed, and a duplicated `:ID:` is
+  reported.
+- Added `examples/project-portfolio`, a generated team portfolio for
+  stress-testing project management (`scripts/gen-stress-portfolio.cjs`).
+
 ### Added
 
 - In *Search Crucible* and *Search All Crucibles*, `M-o` opens the crucible
