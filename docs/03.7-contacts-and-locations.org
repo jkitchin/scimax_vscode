@@ -16,8 +16,29 @@ contact, as in scimax-contacts for Emacs:
 #+end_src
 
 Run [[cmd:scimax.contacts]] (*Scimax: Contacts*, =C-c S-c=, or =c= in the main
-menu =C-c m=) and fuzzy-pick a contact. Check several with Space to act on all
-of them at once. Then choose an action:
+menu =C-c m=) and pick a contact. Check several with Space to act on all of
+them at once. Then choose an action (see the table below).
+
+** ⚠️ Filtering contacts
+
+What you type in the picker filters the contacts:
+
+- =+tag= keeps contacts with that tag, =-tag= drops them. Own and inherited
+  tags (parent headings, =#+FILETAGS=) both count, and case is ignored.
+- Every other word must appear somewhere in the contact: the name, email,
+  tags, any property value, or the notes under its heading (the text up to the
+  next heading, without the property drawer).
+
+For example, =+collaborator catalysis= finds collaborators whose notes mention
+catalysis, and =+student -alumni= finds current students. Contacts that match
+on their name or properties come first. A contact that matched only in its
+notes shows the matching note line under its name. Checks you make survive
+changing the filter.
+
+The notes are read from the files when the picker opens, so they are current
+even before the database is synced.
+
+** ⚠️ Contact actions
 
 | Action                    | What it does                                                                                        |
 |---------------------------+-----------------------------------------------------------------------------------------------------|
