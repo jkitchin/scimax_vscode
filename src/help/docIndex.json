@@ -1,6 +1,6 @@
 {
-  "buildDate": "2026-11-27T20:04:24.977Z",
-  "count": 3846,
+  "buildDate": "2026-11-28T01:10:16.928Z",
+  "count": 3848,
   "entries": [
     {
       "heading": "Scimax VS Code",
@@ -9613,7 +9613,7 @@
       "level": 1,
       "file": "03.7-contacts-and-locations.org",
       "line": 4,
-      "content": "Any indexed heading with an =:EMAIL:= property or a =:person:= tag is a contact, as in scimax-contacts for Emacs: #+begin_src org ,* Ana Ramirez                                   :person: :PROPERTIES: :EMAIL: ana@example.edu :PHONE: 555-0100 :ADDRESS: 123 Science Dr, Pittsburgh PA :END: #+end_src Run [[cmd:scimax.contacts]] (*Scimax: Contacts*, =C-c S-c=, or =c= in the main menu =C-c m=) and fuzzy-pick a contact. Check several with Space to act on all of them at once. Then choose an action: | Ac",
+      "content": "Any indexed heading with an =:EMAIL:= property or a =:person:= tag is a contact, as in scimax-contacts for Emacs: #+begin_src org ,* Ana Ramirez                                   :person: :PROPERTIES: :EMAIL: ana@example.edu :PHONE: 555-0100 :ADDRESS: 123 Science Dr, Pittsburgh PA :END: #+end_src Run [[cmd:scimax.contacts]] (*Scimax: Contacts*, =C-c S-c=, or =c= in the main menu =C-c m=) and pick a contact. Check several with Space to act on all of them at once. Then choose an action (see the ta",
       "path": [],
       "commands": [
         "scimax.contacts"
@@ -9645,10 +9645,74 @@
       ]
     },
     {
+      "heading": "Filtering contacts",
+      "level": 2,
+      "file": "03.7-contacts-and-locations.org",
+      "line": 22,
+      "content": "What you type in the picker filters the contacts: - =+tag= keeps contacts with that tag, =-tag= drops them. Own and inherited tags (parent headings, =#+FILETAGS=) both count, and case is ignored. - Every other word must appear somewhere in the contact: the name, email, tags, any property value, or the notes under its heading (the text up to the next heading, without the property drawer). For example, =+collaborator catalysis= finds collaborators whose notes mention catalysis, and =+student -alum",
+      "path": [
+        "Contacts"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "filtering",
+        "contacts",
+        "type",
+        "picker",
+        "filters",
+        "tag",
+        "keeps",
+        "-tag",
+        "drops",
+        "them",
+        "own",
+        "inherited",
+        "tags",
+        "parent",
+        "headings",
+        "filetags",
+        "count",
+        "case",
+        "ignored",
+        "word"
+      ]
+    },
+    {
+      "heading": "Contact actions",
+      "level": 2,
+      "file": "03.7-contacts-and-locations.org",
+      "line": 41,
+      "content": "| Action                    | What it does                                                                                        | |---------------------------+-----------------------------------------------------------------------------------------------------| | Insert email              | Inserts the address(es) at the cursor, comma-separated                                              | | Insert Name <email>       | Inserts =Ana Ramirez <ana@example.edu>=, ready for a To: line             ",
+      "path": [
+        "Contacts"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "contact",
+        "actions",
+        "action",
+        "--------------------------------------------------------------------------------------------------------------------------------",
+        "insert",
+        "email",
+        "inserts",
+        "address",
+        "cursor",
+        "comma-separated",
+        "name",
+        "ana",
+        "ramirez",
+        "anaexampleedu",
+        "ready",
+        "line"
+      ]
+    },
+    {
       "heading": "Email client",
       "level": 2,
       "file": "03.7-contacts-and-locations.org",
-      "line": 46,
+      "line": 67,
       "content": "All email Scimax composes goes through one setting, =scimax.mail.client=: - =gmail= (the default) opens a Gmail compose window in the browser. - =mailto= hands a =mailto:= link to the system mail client, such as Apple Mail. If you are signed in to several Google accounts, set =scimax.mail.gmailAccount= to the address (or account index) to send from. This applies to Contacts, to =mailto:= links in org and Markdown files (Ctrl+click, =C-c C-o=, and the preview), to the email link in person hovers,",
       "path": [
         "Contacts"
@@ -9688,7 +9752,7 @@
       "heading": "Entity Selector (Contacts, Locations, …)",
       "level": 1,
       "file": "03.7-contacts-and-locations.org",
-      "line": 73,
+      "line": 94,
       "content": "CLOSED: [2026-07-02 Thu 08:08] Use org headings as a lightweight database of people, places, and things — a contact manager, a locations list, a reagent/resource catalog — and fuzzy-pick one to act on it. An \"entity\" is just a heading identified by a *tag* (or a *property*), with details in its property drawer: #+begin_src org ,* Ana Ramirez                                   :person: :PROPERTIES: :ID: person-ana :EMAIL: ana@example.edu :NICK: ana :END: ,* Lab B                                   ",
       "path": [],
       "commands": [],
@@ -9720,7 +9784,7 @@
       "heading": "Picking and acting",
       "level": 2,
       "file": "03.7-contacts-and-locations.org",
-      "line": 96,
+      "line": 117,
       "content": "Run [[cmd:scimax.org.pickEntity]] (*Scimax: Pick Entity*): 1. Choose an entity type — the configured types plus ad-hoc *By tag…* / *By property…* (so you can select on any tag/property with no setup). 2. Fuzzy-pick a heading (matches on title, the shown field, and file:line). 3. Choose an action: - *Insert link* — inserts =[[id:…][Title]]= at the cursor (assigns an =:ID:= to the target if it lacks one). - *Copy link* — the same link to the clipboard. - *Insert field… / Copy field…* — pick any of",
       "path": [
         "Entity Selector (Contacts, Locations, …)"
@@ -9756,7 +9820,7 @@
       "heading": "Defining your own entity type",
       "level": 2,
       "file": "03.7-contacts-and-locations.org",
-      "line": 121,
+      "line": 142,
       "content": "CLOSED: [2026-07-02 Thu 08:08] Entity types are pure configuration — add a new kind (Reagents, Resources, Equipment, Samples…) with no code by appending to =scimax.org.entities= in =settings.json=: #+begin_src json \"scimax.org.entities\": [ { \"name\": \"Reagents\",  \"tag\": \"reagent\",  \"display\": \"CAS\", \"url\": \"SUPPLIER_URL\" }, { \"name\": \"Resources\", \"tag\": \"resource\", \"display\": \"KIND\", \"url\": \"URL\" } ] #+end_src Then any =:reagent:= heading is selectable. The *Insert/Copy field* chooser lists *all*",
       "path": [
         "Entity Selector (Contacts, Locations, …)"
@@ -9792,7 +9856,7 @@
       "heading": "Related Topics",
       "level": 2,
       "file": "03.7-contacts-and-locations.org",
-      "line": 155,
+      "line": 176,
       "content": "- [[file:10-export.org::*Email a Heading][Email a Heading]] — send a heading as an email, with the same mail settings - [[file:03.6-project-management.org][Project Management]] — assignees reuse the same =:person:= headings - [[file:03-todo-items.org][TODO Items]] — tags and properties on headings - [[file:42-granular-addressing.org][Granular Addressing]] — the =id:= links this inserts - [[file:18-database-search.org][Database & Search]] — the index these selectors query (also =scimax.db.searchB",
       "path": [
         "Entity Selector (Contacts, Locations, …)"
